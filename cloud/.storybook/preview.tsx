@@ -154,7 +154,8 @@ const preview: Preview = {
       // Apply viewport based on the global type or story parameter
       if (context.globals.viewport && context.viewMode !== "docs") {
         const viewportKey =
-          context.parameters.viewport?.defaultViewport || context.globals.viewport;
+          context.parameters.viewport?.defaultViewport ||
+          context.globals.viewport;
         const viewportValue = VIEWPORT_PRESETS[viewportKey];
 
         if (viewportValue) {

@@ -23,7 +23,7 @@ interface ConversionStats {
 async function convertImageToWebP(
   filePath: string,
   quality: number = 95,
-  removeOriginal: boolean = true
+  removeOriginal: boolean = true,
 ): Promise<boolean> {
   try {
     // Generate WebP output path
@@ -59,9 +59,13 @@ async function convertToWebP(
     quality?: number;
     removeOriginals?: boolean;
     verbose?: boolean;
-  } = {}
+  } = {},
 ): Promise<ConversionStats> {
-  const { sourcePath = "public/assets", quality = 80, removeOriginals = true } = options;
+  const {
+    sourcePath = "public/assets",
+    quality = 80,
+    removeOriginals = true,
+  } = options;
 
   printHeader("Converting Images to WebP");
   console.log(`📁 Source directory: ${sourcePath}`);
@@ -70,7 +74,9 @@ async function convertToWebP(
 
   // Find all PNG/JPG images
   const imagePatterns = "**/*.{png,jpg,jpeg}";
-  const imagePaths = await glob(path.join(sourcePath, imagePatterns), { absolute: true });
+  const imagePaths = await glob(path.join(sourcePath, imagePatterns), {
+    absolute: true,
+  });
 
   console.log(`\n🔍 Found ${imagePaths.length} images to convert`);
 
@@ -91,7 +97,11 @@ async function convertToWebP(
       stats.sizeBefore += fileStats.size;
 
       // Convert image
-      const success = await convertImageToWebP(imagePath, quality, removeOriginals);
+      const success = await convertImageToWebP(
+        imagePath,
+        quality,
+        removeOriginals,
+      );
 
       if (success) {
         stats.converted++;
@@ -121,8 +131,12 @@ async function convertToWebP(
 
   // Output results
   coloredLog("\n🎉 Conversion complete!", "green");
-  console.log(`📊 Converted: ${stats.converted} images, Errors: ${stats.errors}`);
-  console.log(`💾 Size reduction: ${sizeBefore} MB → ${sizeAfter} MB (${savingsPercent}% saved)`);
+  console.log(
+    `📊 Converted: ${stats.converted} images, Errors: ${stats.errors}`,
+  );
+  console.log(
+    `💾 Size reduction: ${sizeBefore} MB → ${sizeAfter} MB (${savingsPercent}% saved)`,
+  );
 
   return stats;
 }
@@ -135,7 +149,9 @@ async function main() {
   const verbose = args.includes("--verbose");
   const noRemove = args.includes("--no-remove");
   const qualityArg = args.find((arg) => arg.startsWith("--quality="));
-  const quality = qualityArg ? parseInt(qualityArg.split("=")[1], 10) : undefined;
+  const quality = qualityArg
+    ? parseInt(qualityArg.split("=")[1], 10)
+    : undefined;
 
   try {
     await convertToWebP({

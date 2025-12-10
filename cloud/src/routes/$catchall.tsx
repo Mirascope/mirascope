@@ -8,4 +8,3 @@ export const Route = createFileRoute("/$catchall")({
   onError: (error: Error) => environment.onError(error),
   validateSearch: () => ({}),
 });
-

@@ -121,7 +121,7 @@ export class ContentError extends Error {
   constructor(
     message: string,
     public path?: string,
-    public cause?: Error
+    public cause?: Error,
   ) {
     super(message);
     this.name = "ContentError";
@@ -143,7 +143,11 @@ export class DocumentNotFoundError extends ContentError {
  */
 export class ContentLoadError extends ContentError {
   constructor(path: string, cause?: Error) {
-    super(`Failed to load content: ${path}${cause ? ` - ${cause.message}` : ""}`, path, cause);
+    super(
+      `Failed to load content: ${path}${cause ? ` - ${cause.message}` : ""}`,
+      path,
+      cause,
+    );
     this.name = "ContentLoadError";
   }
 }
@@ -159,7 +163,9 @@ export class ContentLoadError extends ContentError {
  */
 export function handleContentError(error: unknown, path: string): never {
   // Pass the error to the environment handler, to e.g. let the prerenderer know the build is broken
-  environment.onError(error instanceof Error ? error : new Error(String(error)));
+  environment.onError(
+    error instanceof Error ? error : new Error(String(error)),
+  );
 
   // Handle known error types
   if (error instanceof DocumentNotFoundError || error instanceof ContentError) {
@@ -177,7 +183,10 @@ export function handleContentError(error: unknown, path: string): never {
   }
 
   // Wrap other errors
-  throw new ContentLoadError(path, error instanceof Error ? error : new Error(String(error)));
+  throw new ContentLoadError(
+    path,
+    error instanceof Error ? error : new Error(String(error)),
+  );
 }
 
 /* ========== CORE CONTENT LOADING =========== */
@@ -221,23 +230,30 @@ function resolveContentPath(path: string, type: ContentType): string {
  * @returns The parsed JSON data
  * @throws ContentError on fetch or parsing failures
  */
-async function fetchJSON<T>(path: string, errorPath: string = path): Promise<T> {
+async function fetchJSON<T>(
+  path: string,
+  errorPath: string = path,
+): Promise<T> {
   try {
     // Fetch the JSON file
     const response = await environment.fetch(path);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch: ${response.status} ${response.statusText}`,
+      );
     }
 
     // Parse the JSON data
     return await response.json();
   } catch (error) {
     console.error(`Error fetching JSON from ${path}:`, error);
-    environment.onError(error instanceof Error ? error : new Error(String(error)));
+    environment.onError(
+      error instanceof Error ? error : new Error(String(error)),
+    );
     throw new ContentError(
       `Failed to fetch data: ${error instanceof Error ? error.message : String(error)}`,
-      errorPath
+      errorPath,
     );
   }
 }
@@ -258,14 +274,17 @@ async function fetchJSON<T>(path: string, errorPath: string = path): Promise<T> 
  */
 export async function loadContent<T extends ContentMeta>(
   path: string,
-  contentType: ContentType
+  contentType: ContentType,
 ): Promise<Content<T>> {
   try {
     // Get content path
     const contentPath = resolveContentPath(path, contentType);
 
     // Fetch content JSON data using the shared utility
-    const data = await fetchJSON<{ meta: T; content: string }>(contentPath, path);
+    const data = await fetchJSON<{ meta: T; content: string }>(
+      contentPath,
+      path,
+    );
 
     // Raw content from JSON (includes frontmatter)
     const rawContent = data.content;
@@ -315,7 +334,10 @@ export async function getBlogContent(slug: string): Promise<BlogContent> {
  */
 export async function getAllBlogMeta(): Promise<BlogMeta[]> {
   // Use the shared fetchJSON utility to get blog metadata
-  return fetchJSON<BlogMeta[]>("/static/content-meta/blog/index.json", "blog/index");
+  return fetchJSON<BlogMeta[]>(
+    "/static/content-meta/blog/index.json",
+    "blog/index",
+  );
 }
 
 /* ========== DOC CONTENT OPERATIONS =========== */
@@ -345,7 +367,10 @@ export function getAllDocInfo(): DocInfo[] {
  * @returns Array of document metadata objects
  */
 export async function getAllDocMeta(): Promise<DocMeta[]> {
-  return fetchJSON<DocMeta[]>("/static/content-meta/docs/index.json", "docs/index");
+  return fetchJSON<DocMeta[]>(
+    "/static/content-meta/docs/index.json",
+    "docs/index",
+  );
 }
 
 /* ========== POLICY CONTENT OPERATIONS =========== */
@@ -390,7 +415,7 @@ export async function getAllPolicyMeta(): Promise<PolicyMeta[]> {
     throw new ContentError(
       `Failed to get all policy documents: ${error instanceof Error ? error.message : String(error)}`,
       "policy",
-      undefined
+      undefined,
     );
   }
 }
@@ -431,5 +456,8 @@ export async function getDevContent(slug: string): Promise<DevContent> {
  * @returns Array of dev page metadata objects
  */
 export async function getAllDevMeta(): Promise<DevMeta[]> {
-  return fetchJSON<DevMeta[]>("/static/content-meta/dev/index.json", "dev/index");
+  return fetchJSON<DevMeta[]>(
+    "/static/content-meta/dev/index.json",
+    "dev/index",
+  );
 }

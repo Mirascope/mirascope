@@ -2,7 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { getProductRoute } from "@/src/lib/routes";
 import { PRODUCT_CONFIGS } from "@/src/lib/constants/site";
 import { type Product, productKey } from "@/src/lib/content/spec";
-import { NAV_LINK_STYLES, PRODUCT_LINK_STYLES, MOBILE_MENU_STYLES } from "./styles";
+import {
+  NAV_LINK_STYLES,
+  PRODUCT_LINK_STYLES,
+  MOBILE_MENU_STYLES,
+} from "./styles";
 
 interface MobileMenuProps {
   /**
@@ -55,7 +59,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           Blog
         </Link>
 
-        <Link to="/pricing" className={NAV_LINK_STYLES.mobile} onClick={onClose}>
+        <Link
+          to="/pricing"
+          className={NAV_LINK_STYLES.mobile}
+          onClick={onClose}
+        >
           Pricing
         </Link>
       </div>

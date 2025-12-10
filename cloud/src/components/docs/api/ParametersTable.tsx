@@ -33,17 +33,24 @@ export function ParametersTable({ parameters }: ParametersTableProps) {
           </thead>
           <tbody>
             {parameters.map((param, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}>
+              <tr
+                key={index}
+                className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}
+              >
                 <td className="border-b px-4 py-2 font-mono">
                   {param.name}
                   {param.default && (
-                    <span className="text-muted-foreground ml-2">= {param.default}</span>
+                    <span className="text-muted-foreground ml-2">
+                      = {param.default}
+                    </span>
                   )}
                 </td>
                 <td className="border-b px-4 py-2">
                   <TypeLink type={param.type_info} />
                 </td>
-                <td className="border-b px-4 py-2">{param.description || "-"}</td>
+                <td className="border-b px-4 py-2">
+                  {param.description || "-"}
+                </td>
               </tr>
             ))}
           </tbody>

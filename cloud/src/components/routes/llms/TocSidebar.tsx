@@ -17,7 +17,9 @@ export default function TocSidebar({ content }: TocSidebarProps) {
       content: (
         <div className="flex items-center gap-2">
           <div className="flex w-10 justify-end">
-            <span className={tokenBadge}>{formatTokenCount(item.tokenCount)}</span>
+            <span className={tokenBadge}>
+              {formatTokenCount(item.tokenCount)}
+            </span>
           </div>
           <span className="font-medium">{item.title}</span>
         </div>
@@ -32,7 +34,9 @@ export default function TocSidebar({ content }: TocSidebarProps) {
         content: (
           <div className="flex items-center gap-2">
             <div className="flex w-10 justify-end">
-              <span className={tokenBadge}>{formatTokenCount(child.tokenCount)}</span>
+              <span className={tokenBadge}>
+                {formatTokenCount(child.tokenCount)}
+              </span>
             </div>
             <span>{child.title}</span>
           </div>

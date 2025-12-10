@@ -1,6 +1,7 @@
 /* Base code styles */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 /* Code blocks use different fonts based on mode */
@@ -13,8 +14,8 @@ pre,
 .mono-enabled .shiki,
 .mono-enabled .shiki code {
   font-family:
-    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace !important;
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace !important;
   /* Font size is defined in .shiki */
 }
 .shiki {
@@ -33,7 +34,9 @@ pre,
   padding-left: 1rem !important;
   margin-left: -1rem !important;
   margin-right: -0.75rem !important;
-  width: calc(100% + 1.75rem) !important; /* Full width + left margin + right margin */
+  width: calc(
+    100% + 1.75rem
+  ) !important; /* Full width + left margin + right margin */
 }
 
 /* Ensure the code doesn't get additional styling */
@@ -88,7 +91,11 @@ pre,
   content: "+";
 }
 .shiki .line.diff.remove {
-  background-color: color-mix(in oklch, var(--color-destructive) 20%, transparent);
+  background-color: color-mix(
+    in oklch,
+    var(--color-destructive) 20%,
+    transparent
+  );
 }
 
 .shiki .line.diff.remove span:first-child::before {

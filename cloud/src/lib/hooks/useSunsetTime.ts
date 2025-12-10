@@ -83,12 +83,16 @@ function estimateSunsetHour(latitude: number, dayOfYear: number): number {
 
   // Calculate solar declination angle (in degrees)
   // 23.44° is Earth's axial tilt, and the offset of 81 days aligns with the spring equinox
-  const declination = 23.44 * Math.sin(((2 * Math.PI) / 365) * (dayOfYear - 81));
+  const declination =
+    23.44 * Math.sin(((2 * Math.PI) / 365) * (dayOfYear - 81));
 
   // Calculate the hour angle (in degrees, then converted to hours)
   // This is the angular displacement of the sun from the local meridian
   const hourAngle =
-    (Math.acos(-Math.tan((latitude * Math.PI) / 180) * Math.tan((declination * Math.PI) / 180)) *
+    (Math.acos(
+      -Math.tan((latitude * Math.PI) / 180) *
+        Math.tan((declination * Math.PI) / 180),
+    ) *
       (180 / Math.PI)) /
     15;
 
@@ -152,13 +156,16 @@ function isAroundSunsetTime(): boolean {
 
   // Check if current time is within 30 minutes of calculated sunset
   const windowStartMinute = sunsetMinute - 30;
-  const windowStartHour = windowStartMinute < 0 ? sunsetHourInt - 1 : sunsetHourInt;
+  const windowStartHour =
+    windowStartMinute < 0 ? sunsetHourInt - 1 : sunsetHourInt;
   const actualWindowStartMinute =
     windowStartMinute < 0 ? windowStartMinute + 60 : windowStartMinute;
 
   const windowEndMinute = sunsetMinute + 30;
-  const windowEndHour = windowEndMinute >= 60 ? sunsetHourInt + 1 : sunsetHourInt;
-  const actualWindowEndMinute = windowEndMinute >= 60 ? windowEndMinute - 60 : windowEndMinute;
+  const windowEndHour =
+    windowEndMinute >= 60 ? sunsetHourInt + 1 : sunsetHourInt;
+  const actualWindowEndMinute =
+    windowEndMinute >= 60 ? windowEndMinute - 60 : windowEndMinute;
 
   const formattedWindowStart = `${windowStartHour}:${actualWindowStartMinute.toString().padStart(2, "0")}`;
   const formattedWindowEnd = `${windowEndHour}:${actualWindowEndMinute.toString().padStart(2, "0")}`;
@@ -175,14 +182,14 @@ function isAroundSunsetTime(): boolean {
     console.log(
       `%cSunset Check %c${isSunsetTime ? "✅ IS SUNSET TIME" : "❌ not sunset time"}`,
       "color: orange; font-weight: bold",
-      isSunsetTime ? "color: #FFB347; font-weight: bold" : "color: gray"
+      isSunsetTime ? "color: #FFB347; font-weight: bold" : "color: gray",
     );
     console.log(
       `- Location: ${countryCode} (source: ${locationSource}, latitude: ${latitude}°)
       - Current time: ${formattedCurrentTime}
       - Estimated sunset: ${formattedSunsetTime}
       - Sunset window: ${formattedWindowStart} - ${formattedWindowEnd}
-      - Day of year: ${dayOfYear}/365`
+      - Day of year: ${dayOfYear}/365`,
     );
   }
 
@@ -206,7 +213,7 @@ export function useSunsetTime(): boolean {
     if (VERBOSE_LOGGING) {
       console.log(
         `%cSunset Hook: Initial check - ${initialCheck ? "Sunset time!" : "Not sunset time"}`,
-        "color: #FFA500; font-weight: bold"
+        "color: #FFA500; font-weight: bold",
       );
     }
     setIsSunsetTime(initialCheck);
@@ -219,7 +226,7 @@ export function useSunsetTime(): boolean {
       if (VERBOSE_LOGGING) {
         console.log(
           `%cSunset Hook: Periodic check - ${checkResult ? "Sunset time!" : "Not sunset time"}`,
-          "color: #FFA500; font-weight: bold"
+          "color: #FFA500; font-weight: bold",
         );
       }
       setIsSunsetTime(checkResult);
@@ -240,13 +247,19 @@ export function useSunsetTime(): boolean {
       if (VERBOSE_LOGGING) {
         console.log(
           "%cSunset Hook: Adding sunset-time class to document",
-          "color: #FFA500; font-weight: bold"
+          "color: #FFA500; font-weight: bold",
         );
       }
       document.documentElement.classList.add("sunset-time");
     } else {
-      if (VERBOSE_LOGGING && document.documentElement.classList.contains("sunset-time")) {
-        console.log("%cSunset Hook: Removing sunset-time class from document", "color: #FFA500");
+      if (
+        VERBOSE_LOGGING &&
+        document.documentElement.classList.contains("sunset-time")
+      ) {
+        console.log(
+          "%cSunset Hook: Removing sunset-time class from document",
+          "color: #FFA500",
+        );
       }
       document.documentElement.classList.remove("sunset-time");
     }

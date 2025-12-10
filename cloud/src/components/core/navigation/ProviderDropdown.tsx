@@ -6,7 +6,11 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { useProvider, providers, providerDefaults } from "../providers/ProviderContext";
+import {
+  useProvider,
+  providers,
+  providerDefaults,
+} from "../providers/ProviderContext";
 import { cn } from "@/src/lib/utils";
 
 interface ProviderDropdownProps {
@@ -25,7 +29,7 @@ export function ProviderDropdown({ className }: ProviderDropdownProps) {
             size="sm"
             className={cn(
               "w-full justify-between text-base",
-              "text-primary border-primary" // Always show the selected provider in primary color
+              "text-primary border-primary", // Always show the selected provider in primary color
             )}
           >
             {providerDefaults[provider].displayName}
@@ -39,7 +43,7 @@ export function ProviderDropdown({ className }: ProviderDropdownProps) {
               onClick={() => setProvider(p)}
               className={cn(
                 "text-foreground cursor-pointer text-base",
-                provider === p && "text-primary font-medium"
+                provider === p && "text-primary font-medium",
               )}
             >
               {providerDefaults[p].displayName}

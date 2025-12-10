@@ -37,7 +37,10 @@ async function extractRouteMetadata(route: string): Promise<RouteMetadata> {
 /**
  * Save metadata to file as an array
  */
-function saveMetadataToFile(metadata: RouteMetadata[], verbose = false): string {
+function saveMetadataToFile(
+  metadata: RouteMetadata[],
+  verbose = false,
+): string {
   // Ensure the output directory exists
   const projectRoot = getProjectRoot();
   const outputDir = path.join(projectRoot, "public");
@@ -75,7 +78,7 @@ async function main() {
   const allRoutes = isTestMode ? ["/", "/pricing"] : await getAllRoutes();
   coloredLog(
     `Found ${allRoutes.length} routes (${((performance.now() - routesStart) / 1000).toFixed(2)}s)`,
-    "cyan"
+    "cyan",
   );
 
   // Extract metadata
@@ -83,7 +86,9 @@ async function main() {
   const metadataStart = performance.now();
 
   // Map to title for social card generation
-  const socialCardPromises = allRoutes.map((route) => extractRouteMetadata(route));
+  const socialCardPromises = allRoutes.map((route) =>
+    extractRouteMetadata(route),
+  );
 
   // Wait for all metadata to be extracted
   const metadataList = await Promise.all(socialCardPromises);
@@ -92,7 +97,7 @@ async function main() {
   const metadataTime = (performance.now() - metadataStart) / 1000;
   coloredLog(
     `Metadata extraction complete for ${metadataList.length} routes (${metadataTime.toFixed(2)}s)`,
-    "green"
+    "green",
   );
 
   // Save full metadata (with descriptions) to file

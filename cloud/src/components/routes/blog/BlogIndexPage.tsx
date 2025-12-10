@@ -21,7 +21,9 @@ export function BlogLayout({ children }: BlogLayoutProps) {
         <div className="min-w-0 flex-1">
           <div className="mx-auto max-w-5xl">
             <div className="mb-8 text-center">
-              <h1 className="font-handwriting mb-4 text-center text-4xl font-bold">Blog</h1>
+              <h1 className="font-handwriting mb-4 text-center text-4xl font-bold">
+                Blog
+              </h1>
               <p className="text-foreground font-handwriting mx-auto max-w-2xl text-xl">
                 The latest news, updates, and insights about
                 <br />
@@ -83,8 +85,12 @@ export function BlogIndexPage({ posts }: BlogIndexPageProps) {
         <div className="mb-10 min-h-[700px]">
           {posts.length === 0 ? (
             <div className="py-12 text-center">
-              <h2 className="text-foreground text-xl font-medium">No posts found</h2>
-              <p className="text-foreground mt-2">Check back soon for new content!</p>
+              <h2 className="text-foreground text-xl font-medium">
+                No posts found
+              </h2>
+              <p className="text-foreground mt-2">
+                Check back soon for new content!
+              </p>
             </div>
           ) : (
             <div className="grid min-h-[650px] grid-cols-1 gap-8 md:grid-cols-2">
@@ -117,8 +123,13 @@ export function BlogIndexPage({ posts }: BlogIndexPageProps) {
               ))}
 
               {/* Spacer elements to maintain grid layout when fewer than POSTS_PER_PAGE posts */}
-              {[...Array(Math.max(0, POSTS_PER_PAGE - currentPosts.length))].map((_, index) => (
-                <div key={`spacer-${index}`} className="invisible h-[320px] md:h-[320px]" />
+              {[
+                ...Array(Math.max(0, POSTS_PER_PAGE - currentPosts.length)),
+              ].map((_, index) => (
+                <div
+                  key={`spacer-${index}`}
+                  className="invisible h-[320px] md:h-[320px]"
+                />
               ))}
             </div>
           )}

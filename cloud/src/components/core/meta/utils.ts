@@ -73,7 +73,10 @@ export function extractMetadata(children: React.ReactNode): RawMetadata {
         case "meta":
           const metaProps = element.props as MetaProps;
           // Extract description specifically
-          if (metaProps.name === "description" || metaProps.property === "og:description") {
+          if (
+            metaProps.name === "description" ||
+            metaProps.property === "og:description"
+          ) {
             description = metaProps.content || "";
           }
           // Add to metaTags collection
@@ -98,8 +101,14 @@ export function extractMetadata(children: React.ReactNode): RawMetadata {
           break;
         case "script":
           // Extract JSON-LD scripts
-          const scriptProps = element.props as { type?: string; children?: React.ReactNode };
-          if (scriptProps.type === "application/ld+json" && scriptProps.children) {
+          const scriptProps = element.props as {
+            type?: string;
+            children?: React.ReactNode;
+          };
+          if (
+            scriptProps.type === "application/ld+json" &&
+            scriptProps.children
+          ) {
             // Add to jsonLdScripts collection
             const scriptContent =
               typeof scriptProps.children === "string"
@@ -138,7 +147,10 @@ export function extractMetadata(children: React.ReactNode): RawMetadata {
  * @param route Route metadata (page-specific)
  * @returns Unified metadata with required fields
  */
-export function unifyMetadata(base: RawMetadata, route: RawMetadata): UnifiedMetadata {
+export function unifyMetadata(
+  base: RawMetadata,
+  route: RawMetadata,
+): UnifiedMetadata {
   // Route takes precedence for title and description
   const title = route.title || base.title;
   const description = route.description || base.description;
@@ -159,7 +171,7 @@ export function unifyMetadata(base: RawMetadata, route: RawMetadata): UnifiedMet
 
   // Track existing meta tags by name/property to avoid duplicates
   const existingMetaKeys = new Set(
-    base.metaTags.map((tag) => tag.name || tag.property).filter(Boolean)
+    base.metaTags.map((tag) => tag.name || tag.property).filter(Boolean),
   );
 
   // Add route meta tags, avoiding duplicates
@@ -182,7 +194,9 @@ export function unifyMetadata(base: RawMetadata, route: RawMetadata): UnifiedMet
   });
 
   // Track existing link tags by rel+href to avoid duplicates
-  const existingLinkKeys = new Set(base.linkTags.map((link) => `${link.rel}:${link.href}`));
+  const existingLinkKeys = new Set(
+    base.linkTags.map((link) => `${link.rel}:${link.href}`),
+  );
 
   // Add route link tags, avoiding duplicates
   route.linkTags.forEach((link) => {

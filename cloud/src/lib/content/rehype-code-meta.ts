@@ -21,7 +21,7 @@ export function rehypeCodeMeta() {
       // Check for pre > code structure
       if (node.tagName === "pre") {
         const codeNode = node.children.find(
-          (child: any) => child.type === "element" && child.tagName === "code"
+          (child: any) => child.type === "element" && child.tagName === "code",
         ) as ElementWithData | undefined;
 
         if (codeNode?.data?.meta) {

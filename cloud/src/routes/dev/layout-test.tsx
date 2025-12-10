@@ -17,14 +17,20 @@ function LayoutTestPage() {
     const content = [];
     for (let i = 1; i <= count; i++) {
       content.push(
-        <div key={i} className="bg-muted/50 border-secondary mb-4 border-l-4 p-4">
+        <div
+          key={i}
+          className="bg-muted/50 border-secondary mb-4 border-l-4 p-4"
+        >
           <h2 className="mb-2 font-bold">Content Section {i}</h2>
-          <p>This is repeated content section {i} for testing scroll behavior.</p>
-          <p className="mt-2">
-            The sidebars should remain fixed while this content scrolls independently. Long content
-            ensures we can properly test the layout's scroll behavior.
+          <p>
+            This is repeated content section {i} for testing scroll behavior.
           </p>
-        </div>
+          <p className="mt-2">
+            The sidebars should remain fixed while this content scrolls
+            independently. Long content ensures we can properly test the
+            layout's scroll behavior.
+          </p>
+        </div>,
       );
     }
     return content;
@@ -32,7 +38,10 @@ function LayoutTestPage() {
 
   return (
     <>
-      <PageMeta title="Layout Test" description="Test AppLayout component behavior" />
+      <PageMeta
+        title="Layout Test"
+        description="Test AppLayout component behavior"
+      />
       <AppLayout>
         <AppLayout.LeftSidebar>
           <div className="border-primary border-2">
@@ -70,10 +79,13 @@ function LayoutTestPage() {
 
                 <div className="bg-muted/50 mb-4 p-4">
                   <h2 className="mb-2 font-bold">Main Content Area</h2>
-                  <p>This area represents the main content region with typical styling patterns.</p>
+                  <p>
+                    This area represents the main content region with typical
+                    styling patterns.
+                  </p>
                   <p className="mt-2">
-                    It includes py-6 padding and max-w-5xl for readable content width. The content
-                    below is long to test scrolling behavior.
+                    It includes py-6 padding and max-w-5xl for readable content
+                    width. The content below is long to test scrolling behavior.
                   </p>
                 </div>
 
@@ -81,18 +93,34 @@ function LayoutTestPage() {
                   <h2 className="mb-2 font-bold">Layout Structure</h2>
                   <p>AppLayout manages the three-column layout structure:</p>
                   <ul className="mt-2 list-disc pl-5">
-                    <li>Left sidebar (fixed position, fixed width, independent scrolling)</li>
-                    <li>Main content (flexible width, scrolls independently)</li>
-                    <li>Right sidebar (fixed position, fixed width, independent scrolling)</li>
+                    <li>
+                      Left sidebar (fixed position, fixed width, independent
+                      scrolling)
+                    </li>
+                    <li>
+                      Main content (flexible width, scrolls independently)
+                    </li>
+                    <li>
+                      Right sidebar (fixed position, fixed width, independent
+                      scrolling)
+                    </li>
                   </ul>
                 </div>
 
                 <div className="border-accent bg-accent/5 mb-8 border-l-4 p-4 text-sm font-medium">
-                  <p>Scroll down to test the sidebar behavior. The sidebars should:</p>
+                  <p>
+                    Scroll down to test the sidebar behavior. The sidebars
+                    should:
+                  </p>
                   <ul className="mt-2 list-disc pl-5">
                     <li>Stay fixed in place while main content scrolls</li>
-                    <li>Have their own independent scrollbars if their content is too long</li>
-                    <li>Maintain proper alignment with header and main content</li>
+                    <li>
+                      Have their own independent scrollbars if their content is
+                      too long
+                    </li>
+                    <li>
+                      Maintain proper alignment with header and main content
+                    </li>
                   </ul>
                 </div>
 
@@ -103,7 +131,8 @@ function LayoutTestPage() {
                   <h2 className="mb-2 font-bold">Bottom of Content</h2>
                   <p>You've reached the end of the test content.</p>
                   <p className="mt-2">
-                    The sidebars should have remained fixed in place while scrolling.
+                    The sidebars should have remained fixed in place while
+                    scrolling.
                   </p>
                 </div>
 
@@ -149,4 +178,3 @@ function LayoutTestPage() {
     </>
   );
 }
-

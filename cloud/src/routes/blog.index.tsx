@@ -23,7 +23,10 @@ export const Route = createFileRoute("/blog/")({
 
   component: () => {
     // Access the loaded posts directly
-    const posts = useLoaderData({ from: "/blog/", structuralSharing: false }) as BlogMeta[];
+    const posts = useLoaderData({
+      from: "/blog/",
+      structuralSharing: false,
+    }) as BlogMeta[];
     return <BlogIndexPage posts={posts} />;
   },
 
@@ -42,4 +45,3 @@ export const Route = createFileRoute("/blog/")({
 
   onError: (error: Error) => environment.onError(error),
 });
-

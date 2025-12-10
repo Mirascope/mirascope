@@ -7,7 +7,10 @@ interface LLMContainerProps {
   level?: number;
 }
 
-export default function LLMContainer({ content, level = 1 }: LLMContainerProps) {
+export default function LLMContainer({
+  content,
+  level = 1,
+}: LLMContainerProps) {
   const sectionId = `section-${content.slug}`;
 
   return (

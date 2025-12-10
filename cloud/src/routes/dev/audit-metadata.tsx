@@ -4,7 +4,11 @@ import { routeToFilename } from "../../lib/utils";
 import DevLayout from "@/src/components/routes/dev/DevLayout";
 import { environment } from "@/src/lib/content/environment";
 import { getAllDevMeta } from "@/src/lib/content";
-import { LoadingContent, ContentErrorHandler, PageMeta } from "@/src/components";
+import {
+  LoadingContent,
+  ContentErrorHandler,
+  PageMeta,
+} from "@/src/components";
 
 export const Route = createFileRoute("/dev/audit-metadata")({
   ssr: false, // Client-side rendered
@@ -91,7 +95,8 @@ function AuditMetadata() {
         <h1 className="mb-6 text-3xl font-bold">Page Metadata Audit</h1>
 
         <p className="text-muted-foreground mb-6">
-          This page displays all routes with their page metadata for auditing purposes.
+          This page displays all routes with their page metadata for auditing
+          purposes.
         </p>
 
         <div className="space-y-6">
@@ -148,11 +153,13 @@ function AuditMetadata() {
 
   return (
     <>
-      <PageMeta title="SEO Metadata Audit" description="Audit page metadata and social cards" />
+      <PageMeta
+        title="SEO Metadata Audit"
+        description="Audit page metadata and social cards"
+      />
       <DevLayout devPages={devPages}>
         <div className="container">{content()}</div>
       </DevLayout>
     </>
   );
 }
-

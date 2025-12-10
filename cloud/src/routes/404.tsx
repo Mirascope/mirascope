@@ -8,4 +8,3 @@ export const Route = createFileRoute("/404")({
   onError: (error: Error) => environment.onError(error),
   validateSearch: () => ({}),
 });
-

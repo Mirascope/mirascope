@@ -30,14 +30,22 @@ export async function preprocessContent(verbose = true): Promise<void> {
 /**
  * Write LLM documents to disk as JSON and TXT files
  */
-async function writeLLMDocuments(llmDocs: LLMContent[], verbose = true): Promise<void> {
+async function writeLLMDocuments(
+  llmDocs: LLMContent[],
+  verbose = true,
+): Promise<void> {
   const publicDir = path.join(process.cwd(), "public");
 
   for (const doc of llmDocs) {
     const routePath = doc.route!;
 
     // Write JSON file for viewer consumption at public/static/content/{routePath}.json
-    const jsonPath = path.join(publicDir, "static", "content", `${routePath}.json`);
+    const jsonPath = path.join(
+      publicDir,
+      "static",
+      "content",
+      `${routePath}.json`,
+    );
     fs.mkdirSync(path.dirname(jsonPath), { recursive: true });
     fs.writeFileSync(jsonPath, JSON.stringify(doc.toJSON(), null, 2));
 
@@ -47,7 +55,9 @@ async function writeLLMDocuments(llmDocs: LLMContent[], verbose = true): Promise
     fs.writeFileSync(txtPath, doc.getContent());
 
     if (verbose) {
-      console.log(`Generated LLM document: ${routePath} (${doc.tokenCount} tokens)`);
+      console.log(
+        `Generated LLM document: ${routePath} (${doc.tokenCount} tokens)`,
+      );
     }
   }
 }
@@ -55,7 +65,10 @@ async function writeLLMDocuments(llmDocs: LLMContent[], verbose = true): Promise
 /**
  * Generate sitemap.xml file based on the processed content
  */
-async function generateSitemap(blogPosts: BlogMeta[], llmDocs: LLMContent[]): Promise<void> {
+async function generateSitemap(
+  blogPosts: BlogMeta[],
+  llmDocs: LLMContent[],
+): Promise<void> {
   console.log("Generating sitemap.xml...");
 
   // Get all routes using our centralized utility
@@ -69,7 +82,9 @@ async function generateSitemap(blogPosts: BlogMeta[], llmDocs: LLMContent[]): Pr
 
   // Get the date of the latest blog post for the /blog route
   const latestBlogDate =
-    postsList.length > 0 ? postsList[0].lastUpdated || postsList[0].date : today;
+    postsList.length > 0
+      ? postsList[0].lastUpdated || postsList[0].date
+      : today;
 
   // Generate sitemap XML
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -125,7 +140,7 @@ async function generateSitemap(blogPosts: BlogMeta[], llmDocs: LLMContent[]): Pr
 export function contentPreprocessPlugin(options = { verbose: true }) {
   // Get all content directories (docs includes LLM document templates)
   const contentDirs = ["blog", "docs", "policy", "dev"].map((type) =>
-    path.join(process.cwd(), "content", type)
+    path.join(process.cwd(), "content", type),
   );
 
   return {
@@ -168,7 +183,8 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
 
       // Run preprocessing when the server starts
       server.httpServer?.once("listening", async () => {
-        if (verbose) console.log("Initial content preprocessing for development...");
+        if (verbose)
+          console.log("Initial content preprocessing for development...");
         await preprocessContent(verbose).catch((error) => {
           console.error("Error preprocessing content:", error);
         });
@@ -195,10 +211,18 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
       });
 
       // Also watch the output directory (public/static/content) even though it's in .gitignore
-      const publicContentDir = path.join(process.cwd(), "public", "static", "content");
+      const publicContentDir = path.join(
+        process.cwd(),
+        "public",
+        "static",
+        "content",
+      );
       if (fs.existsSync(publicContentDir)) {
         server.watcher.add(publicContentDir);
-        if (verbose) console.log(`Watching output directory for changes: ${publicContentDir}`);
+        if (verbose)
+          console.log(
+            `Watching output directory for changes: ${publicContentDir}`,
+          );
       }
 
       // React to content changes - these will work for any content directory
@@ -210,11 +234,17 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
         ) {
           if (verbose) console.log(`Content file changed: ${filePath}`);
           await preprocessContent(false).catch((error) => {
-            console.error("Error preprocessing content after file change:", error);
+            console.error(
+              "Error preprocessing content after file change:",
+              error,
+            );
           });
         }
         // Handle JSON changes - debounce and trigger HMR once after all files are done
-        else if (filePath.endsWith(".json") && filePath.includes("public/static/content")) {
+        else if (
+          filePath.endsWith(".json") &&
+          filePath.includes("public/static/content")
+        ) {
           debouncedHMR();
         }
       });
@@ -231,7 +261,10 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
           });
         }
         // Handle new JSON files - debounce and trigger HMR
-        else if (filePath.endsWith(".json") && filePath.includes("public/static/content")) {
+        else if (
+          filePath.endsWith(".json") &&
+          filePath.includes("public/static/content")
+        ) {
           debouncedHMR();
         }
       });
@@ -244,11 +277,17 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
         ) {
           if (verbose) console.log(`Content file deleted: ${filePath}`);
           await preprocessContent(false).catch((error) => {
-            console.error("Error preprocessing content after file delete:", error);
+            console.error(
+              "Error preprocessing content after file delete:",
+              error,
+            );
           });
         }
         // Handle deleted JSON files - debounce and trigger HMR
-        else if (filePath.endsWith(".json") && filePath.includes("public/static/content")) {
+        else if (
+          filePath.endsWith(".json") &&
+          filePath.includes("public/static/content")
+        ) {
           debouncedHMR();
         }
       });

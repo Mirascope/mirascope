@@ -39,9 +39,14 @@ const TocSidebar: React.FC<TocSidebarProps> = ({ document }) => {
             <ProviderDropdown />
           </div>
 
-          <h4 className="text-muted-foreground mt-4 text-sm font-medium">On this page</h4>
+          <h4 className="text-muted-foreground mt-4 text-sm font-medium">
+            On this page
+          </h4>
         </div>
-        <TableOfContents headings={document?.mdx?.tableOfContents || []} observeHeadings={true} />
+        <TableOfContents
+          headings={document?.mdx?.tableOfContents || []}
+          observeHeadings={true}
+        />
       </div>
     </div>
   );

@@ -9,4 +9,3 @@ export const Route = createFileRoute("/terms/")({
   },
   onError: (error: Error) => environment.onError(error),
 });
-

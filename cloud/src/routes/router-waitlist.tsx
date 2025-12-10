@@ -7,4 +7,3 @@ export const Route = createFileRoute("/router-waitlist")({
   component: RouterWaitlist,
   onError: (error: Error) => environment.onError(error),
 });
-

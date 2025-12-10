@@ -48,7 +48,11 @@ export function AnalyticsCodeBlock({
   };
 
   return (
-    <div ref={codeRef} data-code-hash={codeHash} className="analytics-code-block">
+    <div
+      ref={codeRef}
+      data-code-hash={codeHash}
+      className="analytics-code-block"
+    >
       <CodeBlock
         code={code}
         language={language}

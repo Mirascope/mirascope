@@ -54,13 +54,24 @@ export default function Header({ showProductSelector = false }: HeaderProps) {
   }, [scrolled]);
 
   return (
-    <header className={HEADER_STYLES.container(isLandingPage || isRouterWaitlistPage, scrolled)}>
+    <header
+      className={HEADER_STYLES.container(
+        isLandingPage || isRouterWaitlistPage,
+        scrolled,
+      )}
+    >
       <nav className={HEADER_STYLES.nav}>
-        <Link to="/" className={HEADER_STYLES.logo(isLandingPage || isRouterWaitlistPage)}>
+        <Link
+          to="/"
+          className={HEADER_STYLES.logo(isLandingPage || isRouterWaitlistPage)}
+        >
           <ProductLogo
             size="small"
             withText={true}
-            textClassName={cn("landing-text", HEADER_STYLES.logoText(isSearchOpen))}
+            textClassName={cn(
+              "landing-text",
+              HEADER_STYLES.logoText(isSearchOpen),
+            )}
           />
         </Link>
 

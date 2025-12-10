@@ -1,9 +1,15 @@
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { getSearchService, type SearchResultItem } from "@/src/lib/services/search";
+import {
+  getSearchService,
+  type SearchResultItem,
+} from "@/src/lib/services/search";
 import { environment } from "@/src/lib/content/environment";
-import { useIsLandingPage, useIsRouterWaitlistPage } from "@/src/components/core";
+import {
+  useIsLandingPage,
+  useIsRouterWaitlistPage,
+} from "@/src/components/core";
 import { SEARCH_BAR_STYLES, ANIMATION_TIMING } from "./styles";
 import { useIsMobile } from "./hooks/useIsMobile";
 
@@ -16,7 +22,13 @@ interface SearchResultProps {
   onHover: (index: number) => void;
 }
 
-function SearchResult({ result, onSelect, isSelected = false, index, onHover }: SearchResultProps) {
+function SearchResult({
+  result,
+  onSelect,
+  isSelected = false,
+  index,
+  onHover,
+}: SearchResultProps) {
   // Get development mode from environment
   const isDev = environment.isDev();
 
@@ -45,7 +57,9 @@ function SearchResult({ result, onSelect, isSelected = false, index, onHover }: 
 
             {/* Score indicator in development mode */}
             {isDev && result.score !== undefined && (
-              <span className="text-muted-foreground text-[10px]">{result.score.toFixed(2)}</span>
+              <span className="text-muted-foreground text-[10px]">
+                {result.score.toFixed(2)}
+              </span>
             )}
           </div>
         </div>
@@ -133,9 +147,14 @@ function SearchInput({
   const isRouterWaitlistPage = useIsRouterWaitlistPage();
   return (
     <div
-      className={SEARCH_BAR_STYLES.inputContainer(isLandingPage || isRouterWaitlistPage, isMobile)}
+      className={SEARCH_BAR_STYLES.inputContainer(
+        isLandingPage || isRouterWaitlistPage,
+        isMobile,
+      )}
       data-testid="search-input"
-      style={SEARCH_BAR_STYLES.getInputContainerStyles(isLandingPage || isRouterWaitlistPage)}
+      style={SEARCH_BAR_STYLES.getInputContainerStyles(
+        isLandingPage || isRouterWaitlistPage,
+      )}
       onClick={onFocus}
     >
       <SearchIcon size={16} className={SEARCH_BAR_STYLES.icon(isOpen)} />
@@ -144,13 +163,22 @@ function SearchInput({
         readOnly={!isOpen}
         type="text"
         placeholder="Search..."
-        className={SEARCH_BAR_STYLES.input(isOpen, isLandingPage || isRouterWaitlistPage, isMobile)}
+        className={SEARCH_BAR_STYLES.input(
+          isOpen,
+          isLandingPage || isRouterWaitlistPage,
+          isMobile,
+        )}
         value={query}
         onChange={(e) => onChange(e.target.value)}
         onFocus={onFocus}
         autoFocus={isMobile && isOpen} // Auto-focus in mobile mode
       />
-      <kbd className={SEARCH_BAR_STYLES.kbd(isLandingPage || isRouterWaitlistPage, isOpen)}>
+      <kbd
+        className={SEARCH_BAR_STYLES.kbd(
+          isLandingPage || isRouterWaitlistPage,
+          isOpen,
+        )}
+      >
         <span className="text-xs">⌘</span>K
       </kbd>
     </div>
@@ -194,9 +222,11 @@ function SearchResultsContainer({
       className={SEARCH_BAR_STYLES.resultsContainer(
         isLandingPage || isRouterWaitlistPage,
         isMobile,
-        isOpen
+        isOpen,
       )}
-      style={SEARCH_BAR_STYLES.getResultsContainerStyles(isLandingPage || isRouterWaitlistPage)}
+      style={SEARCH_BAR_STYLES.getResultsContainerStyles(
+        isLandingPage || isRouterWaitlistPage,
+      )}
       ref={resultsRef}
     >
       {renderSearchContent()}
@@ -206,7 +236,11 @@ function SearchResultsContainer({
 
   function renderSearchContent() {
     if (isLoading && !isPagefindLoaded) {
-      return <div className="text-muted-foreground p-6 text-center">Loading search engine...</div>;
+      return (
+        <div className="text-muted-foreground p-6 text-center">
+          Loading search engine...
+        </div>
+      );
     }
 
     if (isLoading || isSearching) {
@@ -223,8 +257,9 @@ function SearchResultsContainer({
         <div className="text-muted-foreground p-4 text-center">
           <p className="mb-2">Search index not available</p>
           <p className="text-xs">
-            Run <code className="bg-muted rounded px-1 py-0.5">bun run build</code> to generate the
-            search index
+            Run{" "}
+            <code className="bg-muted rounded px-1 py-0.5">bun run build</code>{" "}
+            to generate the search index
           </p>
         </div>
       );
@@ -250,12 +285,16 @@ function SearchResultsContainer({
     // and there's actually no results to show
     if (query.trim() && !isLoading && !isSearching && !hasResults) {
       return (
-        <div className="text-muted-foreground p-4 text-center">No results found for "{query}"</div>
+        <div className="text-muted-foreground p-4 text-center">
+          No results found for "{query}"
+        </div>
       );
     }
 
     return (
-      <div className="text-muted-foreground font-handwriting p-4 text-center">Type to search</div>
+      <div className="text-muted-foreground font-handwriting p-4 text-center">
+        Type to search
+      </div>
     );
   }
 }
@@ -279,7 +318,9 @@ function SearchFooter() {
         <span>to search</span>
       </div>
       <div className="flex items-center gap-2 px-2">
-        <kbd className="border-border rounded border px-1.5 py-0.5 text-[10px]">Esc</kbd>
+        <kbd className="border-border rounded border px-1.5 py-0.5 text-[10px]">
+          Esc
+        </kbd>
         <span>to close</span>
       </div>
     </div>
@@ -381,18 +422,24 @@ export default function SearchBar({
           setSelectedIndex((prevIndex) =>
             prevIndex < Math.min(results.length - 1, MAX_DISPLAYED_RESULTS - 1)
               ? prevIndex + 1
-              : prevIndex
+              : prevIndex,
           );
         }
 
         // Navigate up with up arrow
         if (e.key === "ArrowUp") {
           e.preventDefault();
-          setSelectedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : prevIndex));
+          setSelectedIndex((prevIndex) =>
+            prevIndex > 0 ? prevIndex - 1 : prevIndex,
+          );
         }
 
         // Select item with Enter key
-        if (e.key === "Enter" && selectedIndex >= 0 && selectedIndex < results.length) {
+        if (
+          e.key === "Enter" &&
+          selectedIndex >= 0 &&
+          selectedIndex < results.length
+        ) {
           e.preventDefault();
           // Let the result selection be handled by the Link component
           // by programmatically clicking the selected result item
@@ -411,7 +458,10 @@ export default function SearchBar({
   // Close on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -501,7 +551,8 @@ export default function SearchBar({
       setIsPagefindLoaded(true);
       setError("");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "An error occurred";
       if (environment.isDev()) {
         console.error("🔍 [SearchBar] Error initializing search:", error);
       }

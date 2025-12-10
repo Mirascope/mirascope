@@ -47,7 +47,7 @@ function createJson404Middleware(): Connect.NextHandleFunction {
         JSON.stringify({
           error: "Not Found",
           message: `The requested resource ${req.url} could not be found.`,
-        })
+        }),
       );
       return;
     }

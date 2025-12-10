@@ -42,7 +42,9 @@ async function fetchFromGitHub(endpoint: string): Promise<any> {
         // Check for rate limiting or other error status codes
         if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
           return reject(
-            new Error(`GitHub API returned status code ${res.statusCode}: ${res.statusMessage}`)
+            new Error(
+              `GitHub API returned status code ${res.statusCode}: ${res.statusMessage}`,
+            ),
           );
         }
 
@@ -57,7 +59,9 @@ async function fetchFromGitHub(endpoint: string): Promise<any> {
             // Check for error message in the response
             if (parsed.message && parsed.documentation_url) {
               return reject(
-                new Error(`GitHub API error: ${parsed.message} (${parsed.documentation_url})`)
+                new Error(
+                  `GitHub API error: ${parsed.message} (${parsed.documentation_url})`,
+                ),
               );
             }
 
@@ -124,7 +128,14 @@ async function main() {
   }
 
   // Write results to a JSON file
-  const outputPath = path.join(__dirname, "..", "src", "lib", "constants", "github-stats.json");
+  const outputPath = path.join(
+    __dirname,
+    "..",
+    "src",
+    "lib",
+    "constants",
+    "github-stats.json",
+  );
   fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
 
   console.log(`GitHub stats written to ${outputPath}`);

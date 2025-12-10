@@ -13,7 +13,9 @@ function checkPort(port: string) {
 
     server.on("error", (e: NodeJS.ErrnoException) => {
       if (e.code === "EADDRINUSE") {
-        console.error(`Error: Port ${port} is already in use. Please try another port.`);
+        console.error(
+          `Error: Port ${port} is already in use. Please try another port.`,
+        );
         resolve(false);
       } else {
         console.error(`Error checking port: ${e.message}`);
@@ -39,7 +41,9 @@ async function start() {
   } else {
     console.log(`Port ${port} is available. Starting server...`);
     // Force Vite to use the same host address we checked
-    spawn("bun", ["--bun", "vite", "--port", port, "--host", host], { stdio: "inherit" });
+    spawn("bun", ["--bun", "vite", "--port", port, "--host", host], {
+      stdio: "inherit",
+    });
   }
 }
 

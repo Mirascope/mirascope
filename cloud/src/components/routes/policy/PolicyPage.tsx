@@ -12,7 +12,10 @@ interface PolicyPageProps {
 /**
  * PolicyPage - Reusable component for rendering policy and terms pages
  */
-const PolicyPage: React.FC<PolicyPageProps> = ({ content, type = "privacy" }) => {
+const PolicyPage: React.FC<PolicyPageProps> = ({
+  content,
+  type = "privacy",
+}) => {
   // Content ID for the article element
   const contentId = "policy-content";
 
@@ -24,7 +27,9 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ content, type = "privacy" }) =>
   }[type];
 
   const title = content?.meta?.title ?? defaultTitle;
-  const lastUpdated = content?.meta?.lastUpdated ? formatDate(content.meta.lastUpdated) : "";
+  const lastUpdated = content?.meta?.lastUpdated
+    ? formatDate(content.meta.lastUpdated)
+    : "";
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -33,7 +38,9 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ content, type = "privacy" }) =>
         <div>
           <h1 className="text-3xl font-bold uppercase">{title}</h1>
           {lastUpdated && (
-            <p className="text-muted-foreground mt-1 font-medium">Last Updated: {lastUpdated}</p>
+            <p className="text-muted-foreground mt-1 font-medium">
+              Last Updated: {lastUpdated}
+            </p>
           )}
         </div>
       </div>
@@ -43,7 +50,10 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ content, type = "privacy" }) =>
         className="bg-background border-border rounded-xl border p-4 shadow-sm sm:p-6"
       >
         <article className="prose prose-lg max-w-none">
-          <MDXRenderer code={content.mdx.code} frontmatter={content.mdx.frontmatter} />
+          <MDXRenderer
+            code={content.mdx.code}
+            frontmatter={content.mdx.frontmatter}
+          />
         </article>
       </div>
     </div>
@@ -77,9 +87,9 @@ export const PolicyPageError: React.FC<{
 /**
  * PolicyPageLoading - Loading state for policy pages
  */
-export const PolicyPageLoading: React.FC<{ type: "privacy" | "terms-use" | "terms-service" }> = ({
-  type,
-}) => {
+export const PolicyPageLoading: React.FC<{
+  type: "privacy" | "terms-use" | "terms-service";
+}> = ({ type }) => {
   const defaultTitle = {
     privacy: "PRIVACY POLICY",
     "terms-use": "TERMS OF USE",

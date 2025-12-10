@@ -45,7 +45,7 @@ export const HEADER_STYLES = {
       // Background color (only on non-landing pages)
       isLandingPage ? "" : "bg-background",
       // Bottom border and shadow when scrolled (only on non-landing pages)
-      scrolled && !isLandingPage ? "border-border border-b shadow-sm" : ""
+      scrolled && !isLandingPage ? "border-border border-b shadow-sm" : "",
     ),
 
   // Navigation container
@@ -55,7 +55,7 @@ export const HEADER_STYLES = {
   logo: (isLandingPage: boolean) =>
     cn(
       "relative z-10 flex items-center flex-shrink-0 px-1 mr-2",
-      isLandingPage ? "invisible" : "visible"
+      isLandingPage ? "invisible" : "visible",
     ),
 
   // Logo text container with fade transition
@@ -66,14 +66,14 @@ export const HEADER_STYLES = {
       // On small screens when search is open, fade out the text but maintain position
       isSearchOpen
         ? "opacity-0 md:opacity-100 w-0 md:w-auto overflow-hidden md:overflow-visible pointer-events-none md:pointer-events-auto translate-x-0"
-        : "opacity-100 w-auto overflow-visible pointer-events-auto translate-x-0"
+        : "opacity-100 w-auto overflow-visible pointer-events-auto translate-x-0",
     ),
 
   // Right section with controls
   controls: cn(
     "flex items-center gap-2 md:gap-3 flex-shrink-0",
     // Keep controls at the right edge but prevent shrinking
-    "justify-end"
+    "justify-end",
   ),
 
   // GitHub button container
@@ -98,7 +98,7 @@ export const NAV_LINK_STYLES = {
     // Layout and typography
     "relative flex cursor-pointer items-center px-2 py-2 text-xl font-medium",
     // Uses the nav-text utility for consistent text styling based on page type
-    "nav-text"
+    "nav-text",
   ),
 
   // Styles for mobile navigation links
@@ -108,7 +108,7 @@ export const NAV_LINK_STYLES = {
     // Transitions
     "transition-colors duration-300 ease-in-out",
     // Interactive states
-    "hover:text-primary"
+    "hover:text-primary",
   ),
 };
 
@@ -127,7 +127,7 @@ export const PRODUCT_LINK_STYLES = {
       "hover:bg-primary/20 focus:bg-primary/20",
       "active:bg-primary/60 active:scale-[0.98]",
       // Selected state via data attribute
-      "data-[active=true]:bg-primary/50 data-[active=true]:hover:bg-primary/60"
+      "data-[active=true]:bg-primary/50 data-[active=true]:hover:bg-primary/60",
     ),
     title: "text-primary text-xl font-medium",
     description: "text-foreground text-base",
@@ -142,7 +142,7 @@ export const PRODUCT_LINK_STYLES = {
       "transition-colors duration-300 ease-in-out",
       // Interactive states
       "hover:bg-primary/20 focus:bg-primary/20",
-      "active:bg-primary/60 active:scale-[0.98]"
+      "active:bg-primary/60 active:scale-[0.98]",
     ),
   },
 };
@@ -158,7 +158,7 @@ export const MOBILE_MENU_STYLES = {
     // Appearance
     "bg-background text-foreground rounded-lg p-6 shadow-lg",
     // Reset text shadow from parent header
-    "[text-shadow:none]"
+    "[text-shadow:none]",
   ),
 
   // Content container
@@ -186,7 +186,7 @@ export const THEME_SWITCHER_STYLES = {
     // Icon styling from nav (includes default color)
     "nav-icon",
     // Hover color change (similar to nav links)
-    "hover:text-primary"
+    "hover:text-primary",
   ),
 
   // Dropdown content
@@ -194,14 +194,14 @@ export const THEME_SWITCHER_STYLES = {
     cn(
       // Base styling comes from the UI component
       // Apply textured background on landing page
-      isLandingPage && "textured-bg-absolute"
+      isLandingPage && "textured-bg-absolute",
     ),
 
   // Radio items (inherited from dropdown menu component)
   radioItem: cn(
     // Added styles for consistent interaction
     "transition-colors",
-    "focus:bg-primary/20 data-[highlighted]:bg-primary/20"
+    "focus:bg-primary/20 data-[highlighted]:bg-primary/20",
   ),
 };
 
@@ -233,7 +233,7 @@ export const DESKTOP_NAV_STYLES = {
       // Transitions
       "transition-opacity duration-300 ease-in-out",
       // Visibility based on search state
-      isSearchOpen ? "pointer-events-none opacity-0" : "opacity-100"
+      isSearchOpen ? "pointer-events-none opacity-0" : "opacity-100",
     ),
 
   // Menu trigger styles
@@ -245,7 +245,7 @@ export const DESKTOP_NAV_STYLES = {
     // Interactive states - maintaining transparency
     "hover:!bg-transparent focus:!bg-transparent data-[state=open]:!bg-transparent data-[state=open]:hover:!bg-transparent",
     // Text styling consistent with nav
-    "nav-text"
+    "nav-text",
   ),
 
   // Menu content styles
@@ -254,7 +254,7 @@ export const DESKTOP_NAV_STYLES = {
       // Base styles
       "bg-background p-2 [text-shadow:none]",
       // Conditional textured background
-      isLandingPage ? "textured-bg-absolute" : ""
+      isLandingPage ? "textured-bg-absolute" : "",
     ),
 
   // Product grid styles
@@ -276,7 +276,9 @@ export const SEARCH_BAR_STYLES = {
       // Add transitions using centralized timing config
       `transition-all duration-[${ANIMATION_TIMING.searchExpand.duration}ms] ease-in-out delay-[${ANIMATION_TIMING.searchExpand.delay}ms]`,
       // Simplified width approach - set ideal width with flex-shrink to respect space
-      isOpen ? SEARCH_STATE_STYLES.open.container : SEARCH_STATE_STYLES.closed.container
+      isOpen
+        ? SEARCH_STATE_STYLES.open.container
+        : SEARCH_STATE_STYLES.closed.container,
     ),
 
   // Mobile search button
@@ -286,7 +288,7 @@ export const SEARCH_BAR_STYLES = {
       "transition-colors duration-300",
       isLandingPage
         ? "border-0 bg-white/10 hover:bg-white/20"
-        : "bg-background/20 hover:bg-primary/10 hover:border-primary/80 border"
+        : "bg-background/20 hover:bg-primary/10 hover:border-primary/80 border",
     ),
 
   // Mobile search overlay container
@@ -299,7 +301,9 @@ export const SEARCH_BAR_STYLES = {
       // Transition properties
       `transition-all duration-[${ANIMATION_TIMING.searchExpand.duration}ms] ease-in-out`,
       // Visibility based on search state
-      isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      isOpen
+        ? "opacity-100 pointer-events-auto"
+        : "opacity-0 pointer-events-none",
     ),
 
   // Mobile search inner container
@@ -311,7 +315,7 @@ export const SEARCH_BAR_STYLES = {
       "absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full",
       "transition-colors duration-300",
       "cursor-pointer",
-      isLandingPage ? "text-white" : "text-foreground"
+      isLandingPage ? "text-white" : "text-foreground",
     ),
 
   // Input container styles - matches parent width
@@ -324,13 +328,16 @@ export const SEARCH_BAR_STYLES = {
       isLandingPage
         ? "border-0 bg-white/10 hover:bg-white/20"
         : "border-border bg-background/20 hover:bg-primary/10 hover:border-primary/80 border",
-      isMobile && !isLandingPage ? "bg-background hover:bg-background" : ""
+      isMobile && !isLandingPage ? "bg-background hover:bg-background" : "",
     ),
 
   // Inline styles for input container based on landing page
   getInputContainerStyles: (isLandingPage: boolean) =>
     isLandingPage
-      ? { boxShadow: "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)" }
+      ? {
+          boxShadow:
+            "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",
+        }
       : undefined,
 
   // Search icon styles
@@ -341,7 +348,7 @@ export const SEARCH_BAR_STYLES = {
       // Icon styling
       "nav-icon",
       // Position based on open state
-      isOpen ? SEARCH_STATE_STYLES.open.icon : SEARCH_STATE_STYLES.closed.icon
+      isOpen ? SEARCH_STATE_STYLES.open.icon : SEARCH_STATE_STYLES.closed.icon,
     ),
 
   // Input field styles
@@ -362,7 +369,7 @@ export const SEARCH_BAR_STYLES = {
         ? isMobile
           ? "w-full pr-8 pl-10 opacity-100"
           : SEARCH_STATE_STYLES.open.input
-        : SEARCH_STATE_STYLES.closed.input
+        : SEARCH_STATE_STYLES.closed.input,
     ),
 
   // Keyboard shortcut badge
@@ -378,14 +385,16 @@ export const SEARCH_BAR_STYLES = {
         ? "opacity-80 translate-x-0 scale-100"
         : "opacity-0 translate-x-4 scale-90 pointer-events-none",
       // Background color based on page type
-      isLandingPage ? "bg-white/10 text-white" : "border-border bg-muted text-foreground"
+      isLandingPage
+        ? "bg-white/10 text-white"
+        : "border-border bg-muted text-foreground",
     ),
 
   // Results container - matches parent container width
   resultsContainer: (
     isLandingPage: boolean,
     isMobile: boolean = false,
-    isVisible: boolean = false
+    isVisible: boolean = false,
   ) =>
     cn(
       // Base styles
@@ -394,7 +403,9 @@ export const SEARCH_BAR_STYLES = {
       "transition-opacity duration-300 ease-in-out",
       "font-sans",
       // Use Tailwind's animation utilities for better control with a subtle slide effect
-      isVisible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+      isVisible
+        ? "pointer-events-auto opacity-100"
+        : "pointer-events-none opacity-0",
       // Match width to parent container (container manages actual width constraints)
       "w-full",
       // Mobile vs desktop positioning
@@ -402,7 +413,7 @@ export const SEARCH_BAR_STYLES = {
         ? "absolute top-full mt-4 left-0 right-0 z-90 max-h-[calc(100vh-var(--header-height-base)*1.2)]" // Mobile: now part of the overlay
         : "absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0", // Desktop: dropdown below
       // Conditional textured background
-      isLandingPage ? "textured-bg-absolute" : ""
+      isLandingPage ? "textured-bg-absolute" : "",
     ),
 
   // Inline styles for results container based on page type
@@ -410,7 +421,8 @@ export const SEARCH_BAR_STYLES = {
   getResultsContainerStyles: (isLandingPage: boolean) => {
     if (isLandingPage) {
       return {
-        boxShadow: "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",
+        boxShadow:
+          "0 1px 5px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)",
       };
     }
 
@@ -425,7 +437,7 @@ export const SEARCH_BAR_STYLES = {
       // Transitions
       "transition-colors duration-150",
       // Selected state
-      isSelected ? "bg-accent/50" : ""
+      isSelected ? "bg-accent/50" : "",
     ),
 
   // Search footer styles
@@ -433,5 +445,6 @@ export const SEARCH_BAR_STYLES = {
     "border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-t p-2 text-xs font-handwriting",
 
   // Loading indicator
-  loadingIndicator: "border-primary h-6 w-6 animate-spin rounded-full border-t-2 border-b-2",
+  loadingIndicator:
+    "border-primary h-6 w-6 animate-spin rounded-full border-t-2 border-b-2",
 };

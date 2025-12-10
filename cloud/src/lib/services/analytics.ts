@@ -2,7 +2,12 @@
  * Analytics service to handle all tracking functionality.
  * Integrated with Google Analytics 4 and PostHog.
  */
-import { GA_MEASUREMENT_ID, GTM_ID, POSTHOG_PUBLIC_KEY, SITE_VERSION } from "../constants/site";
+import {
+  GA_MEASUREMENT_ID,
+  GTM_ID,
+  POSTHOG_PUBLIC_KEY,
+  SITE_VERSION,
+} from "../constants/site";
 import { type Product, productKey } from "../content/spec";
 
 // Centralized check for browser environment
@@ -33,7 +38,7 @@ export class AnalyticsManager {
     gaMeasurementId: string = GA_MEASUREMENT_ID,
     gtmId: string = GTM_ID,
     posthogApiKey: string = POSTHOG_PUBLIC_KEY,
-    siteVersion: string = SITE_VERSION
+    siteVersion: string = SITE_VERSION,
   ) {
     this.gaMeasurementId = gaMeasurementId;
     this.gtmId = gtmId;
@@ -289,7 +294,7 @@ export class AnalyticsManager {
     if (!(await this.enableAnalytics())) return;
 
     console.log(
-      `Web vital reported to GA: ${metric.name} - ${Math.round(metric.value * 100) / 100}`
+      `Web vital reported to GA: ${metric.name} - ${Math.round(metric.value * 100) / 100}`,
     );
 
     await this.trackEvent("web-vitals", {

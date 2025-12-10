@@ -39,7 +39,8 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
     threshold: 0,
   },
 }) => {
-  const [internalActiveId, setInternalActiveId] = useState<string>(initialActiveId);
+  const [internalActiveId, setInternalActiveId] =
+    useState<string>(initialActiveId);
 
   // The active ID is either controlled externally or tracked internally
   const activeId = observeHeadings ? internalActiveId : initialActiveId;
@@ -70,7 +71,11 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
   }, [headings, observeHeadings, observerOptions]);
 
   if (headings.length === 0) {
-    return <p className="text-muted-foreground pl-5 text-sm italic">No headings found</p>;
+    return (
+      <p className="text-muted-foreground pl-5 text-sm italic">
+        No headings found
+      </p>
+    );
   }
 
   return (
@@ -97,7 +102,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
                 heading.level === 6 && "pl-10",
                 activeId === heading.id
                   ? "border-primary text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted border-transparent hover:rounded-md"
+                  : "text-muted-foreground hover:bg-muted border-transparent hover:rounded-md",
               )}
             >
               {heading.content}

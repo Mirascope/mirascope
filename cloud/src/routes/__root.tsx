@@ -29,7 +29,10 @@ import { TabbedSectionMemoryProvider } from "@/src/components/core/providers/Tab
 export const Route = createRootRoute({
   beforeLoad: ({ location }) => {
     // Skip redirect logic for app routes (SSR)
-    if (location.pathname.startsWith("/app") || location.pathname.startsWith("/auth")) {
+    if (
+      location.pathname.startsWith("/app") ||
+      location.pathname.startsWith("/auth")
+    ) {
       return;
     }
 
@@ -38,7 +41,9 @@ export const Route = createRootRoute({
     // Canonicalize the path by removing trailing slash
     const canonical = canonicalizePath(path);
     if (path !== canonical) {
-      console.log(`Canonicalizing path by removing trailing slash: ${canonical}`);
+      console.log(
+        `Canonicalizing path by removing trailing slash: ${canonical}`,
+      );
       if (typeof window !== "undefined") {
         window.history.replaceState(null, "", canonical);
       }

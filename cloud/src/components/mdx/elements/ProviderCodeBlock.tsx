@@ -81,7 +81,9 @@ export function ProviderCodeBlock({
           Example for {provider} not available yet.
         </div>
       )}
-      {currentProviderCode && <AnalyticsCodeBlock code={currentProviderCode} language={language} />}
+      {currentProviderCode && (
+        <AnalyticsCodeBlock code={currentProviderCode} language={language} />
+      )}
     </>
   );
 }

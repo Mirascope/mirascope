@@ -27,7 +27,14 @@ export function getProjectRoot(): string {
 
 // Get path to blog metadata json
 export function getPostsListPath(): string {
-  return path.join(getProjectRoot(), "public", "static", "content-meta", "blog", "index.json");
+  return path.join(
+    getProjectRoot(),
+    "public",
+    "static",
+    "content-meta",
+    "blog",
+    "index.json",
+  );
 }
 
 /**
@@ -41,7 +48,7 @@ export function getStaticRoutes(): string[] {
 
   // Extract routes from the manifest section
   const manifestMatch = routeTreeContent.match(
-    /ROUTE_MANIFEST_START\s*(\{[\s\S]*?\})\s*ROUTE_MANIFEST_END/
+    /ROUTE_MANIFEST_START\s*(\{[\s\S]*?\})\s*ROUTE_MANIFEST_END/,
   );
   if (manifestMatch && manifestMatch[1]) {
     try {
@@ -57,7 +64,7 @@ export function getStaticRoutes(): string[] {
             (route) =>
               route !== "__root__" &&
               !route.includes("$") &&
-              !ROUTES_TO_EXCLUDE.some((exclude) => route == exclude)
+              !ROUTES_TO_EXCLUDE.some((exclude) => route == exclude),
           )
           .map((route) => {
             // Normalize trailing slashes to match real URLs
@@ -69,7 +76,9 @@ export function getStaticRoutes(): string[] {
           .sort();
       }
     } catch (error) {
-      console.warn("Failed to parse route manifest, falling back to regex extraction");
+      console.warn(
+        "Failed to parse route manifest, falling back to regex extraction",
+      );
     }
   }
 
@@ -110,11 +119,15 @@ export function getBlogRoutes(): string[] {
     const postsListPath = getPostsListPath();
     if (fs.existsSync(postsListPath)) {
       try {
-        const postsList: BlogMeta[] = JSON.parse(fs.readFileSync(postsListPath, "utf8"));
+        const postsList: BlogMeta[] = JSON.parse(
+          fs.readFileSync(postsListPath, "utf8"),
+        );
         return postsList.map((post) => `/blog/${post.slug}`).sort();
       } catch (error) {
         // Fall through to the file system method if this fails
-        console.warn(`Failed to load posts list, falling back to file system: ${error}`);
+        console.warn(
+          `Failed to load posts list, falling back to file system: ${error}`,
+        );
       }
     }
 
@@ -125,7 +138,9 @@ export function getBlogRoutes(): string[] {
     }
 
     // Get all .mdx files in the posts directory
-    const postFiles = fs.readdirSync(postsDir).filter((file) => file.endsWith(".mdx"));
+    const postFiles = fs
+      .readdirSync(postsDir)
+      .filter((file) => file.endsWith(".mdx"));
 
     // Convert filenames to routes by stripping the .mdx extension
     return postFiles.map((file) => `/blog/${file.replace(".mdx", "")}`).sort();
@@ -145,7 +160,9 @@ export function getDevRoutes(): string[] {
     }
 
     // Get all .mdx files in the dev directory
-    const devFiles = fs.readdirSync(devDir).filter((file) => file.endsWith(".mdx"));
+    const devFiles = fs
+      .readdirSync(devDir)
+      .filter((file) => file.endsWith(".mdx"));
 
     // Convert filenames to routes by stripping the .mdx extension
     return devFiles.map((file) => `/dev/${file.replace(".mdx", "")}`).sort();
@@ -190,6 +207,14 @@ export function getAllRoutes(includeHidden = false): string[] {
   const devRoutes = getDevRoutes();
 
   // Combine all routes and remove duplicates
-  const allRoutes = [...staticRoutes, ...blogRoutes, ...docRoutes, ...llmDocRoutes, ...devRoutes];
-  return [...new Set(allRoutes)].filter((route) => includeHidden || !isHiddenRoute(route)).sort();
+  const allRoutes = [
+    ...staticRoutes,
+    ...blogRoutes,
+    ...docRoutes,
+    ...llmDocRoutes,
+    ...devRoutes,
+  ];
+  return [...new Set(allRoutes)]
+    .filter((route) => includeHidden || !isHiddenRoute(route))
+    .sort();
 }

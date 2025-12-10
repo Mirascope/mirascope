@@ -31,7 +31,10 @@ export const Route = createFileRoute("/terms/use")({
 
 function TermsOfUsePage() {
   // Access the loaded content directly
-  const content = useLoaderData({ from: "/terms/use", structuralSharing: false }) as PolicyContent;
+  const content = useLoaderData({
+    from: "/terms/use",
+    structuralSharing: false,
+  }) as PolicyContent;
 
   return (
     <>
@@ -47,4 +50,3 @@ function TermsOfUsePage() {
     </>
   );
 }
-

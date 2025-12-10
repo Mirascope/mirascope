@@ -1,6 +1,11 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import DevLayout from "@/src/components/routes/dev/DevLayout";
-import { MDXRenderer, ContentErrorHandler, LoadingContent, PageMeta } from "@/src/components/";
+import {
+  MDXRenderer,
+  ContentErrorHandler,
+  LoadingContent,
+  PageMeta,
+} from "@/src/components/";
 import { getDevContent } from "@/src/lib/content";
 import { environment } from "@/src/lib/content/environment";
 
@@ -48,15 +53,20 @@ function DevContentPage() {
 
   return (
     <>
-      <PageMeta title={content.meta.title} description={content.meta.description} />
+      <PageMeta
+        title={content.meta.title}
+        description={content.meta.description}
+      />
       <DevLayout devPages={devPages}>
         <div className="mx-auto w-full">
           <div className="prose dark:prose-invert max-w-none">
-            <MDXRenderer code={content.mdx.code} frontmatter={content.mdx.frontmatter} />
+            <MDXRenderer
+              code={content.mdx.code}
+              frontmatter={content.mdx.frontmatter}
+            />
           </div>
         </div>
       </DevLayout>
     </>
   );
 }
-

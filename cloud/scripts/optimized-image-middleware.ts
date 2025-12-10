@@ -37,7 +37,11 @@ export function optimizedImageMiddleware() {
     configureServer(server: {
       middlewares: { use: (middleware: Connect.NextHandleFunction) => void };
     }) {
-      console.log("🖼️  Optimized image middleware enabled (quality: " + CONFIG.quality.webp + "%)");
+      console.log(
+        "🖼️  Optimized image middleware enabled (quality: " +
+          CONFIG.quality.webp +
+          "%)",
+      );
       server.middlewares.use(createImageMiddleware());
     },
   };
@@ -90,7 +94,9 @@ function createImageMiddleware(): Connect.NextHandleFunction {
       }
 
       // Convert to WebP and get buffer
-      const imageBuffer = await imageProcessor.webp({ quality: CONFIG.quality.webp }).toBuffer();
+      const imageBuffer = await imageProcessor
+        .webp({ quality: CONFIG.quality.webp })
+        .toBuffer();
 
       // Cache the processed image
       CONFIG.imageCache.set(url, imageBuffer);

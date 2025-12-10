@@ -29,7 +29,11 @@ type BlogPostPageProps = {
   isLoading?: boolean;
 };
 
-export function BlogPostPage({ post, slug, isLoading = false }: BlogPostPageProps) {
+export function BlogPostPage({
+  post,
+  slug,
+  isLoading = false,
+}: BlogPostPageProps) {
   const [ogImage, setOgImage] = useState<string | undefined>(undefined);
 
   // Find the first available image in the blog post directory
@@ -69,7 +73,9 @@ export function BlogPostPage({ post, slug, isLoading = false }: BlogPostPageProp
     <div className="min-w-0 flex-1 px-4">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6">
-          <h1 className="mb-4 text-2xl font-semibold sm:text-3xl md:text-4xl">{title}</h1>
+          <h1 className="mb-4 text-2xl font-semibold sm:text-3xl md:text-4xl">
+            {title}
+          </h1>
           <p className="text-muted-foreground text-sm sm:text-base">
             {date} · {readTime} · By {author}
           </p>
@@ -86,7 +92,10 @@ export function BlogPostPage({ post, slug, isLoading = false }: BlogPostPageProp
               description={post.meta.description}
               section={"blog"}
             >
-              <MDXRenderer code={post.mdx.code} frontmatter={post.mdx.frontmatter} />
+              <MDXRenderer
+                code={post.mdx.code}
+                frontmatter={post.mdx.frontmatter}
+              />
             </PagefindMeta>
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
@@ -104,13 +113,22 @@ export function BlogPostPage({ post, slug, isLoading = false }: BlogPostPageProp
   ) : (
     <div className="flex h-full flex-col">
       <div className="px-4 pt-4 lg:pt-0">
-        <CopyMarkdownButton content={post.content} itemId={slug} contentType="blog_markdown" />
+        <CopyMarkdownButton
+          content={post.content}
+          itemId={slug}
+          contentType="blog_markdown"
+        />
 
-        <h4 className="text-muted-foreground mt-3 mb-3 text-sm font-medium">On this page</h4>
+        <h4 className="text-muted-foreground mt-3 mb-3 text-sm font-medium">
+          On this page
+        </h4>
       </div>
 
       <div className="flex-grow overflow-y-auto pr-4 pb-6 pl-4">
-        <TableOfContents headings={post.mdx?.tableOfContents || []} observeHeadings={true} />
+        <TableOfContents
+          headings={post.mdx?.tableOfContents || []}
+          observeHeadings={true}
+        />
       </div>
     </div>
   );

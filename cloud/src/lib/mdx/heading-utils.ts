@@ -17,7 +17,8 @@ const HEADING_PATTERN = /^(#{1,6})\s+(.+?)(?:\s+\{#([a-zA-Z0-9_-]+)\})?$/;
  * - Group 1: type attribute value
  * - Group 2: slug attribute value (optional)
  */
-const API_TYPE_PATTERN = /<ApiType\s+type="([^"]+)"(?:[^>]*?slug="([^"]+)")?[^>]*?\/>/;
+const API_TYPE_PATTERN =
+  /<ApiType\s+type="([^"]+)"(?:[^>]*?slug="([^"]+)")?[^>]*?\/>/;
 
 /**
  * Extracts the slug from an ApiType component if present in the children
@@ -46,7 +47,9 @@ function extractApiTypeSlug(children: React.ReactNode): string | undefined {
  * @param children - React children to generate ID from
  * @returns A URL-friendly slug ID or undefined if no valid text content
  */
-export function idSlugFromChildren(children: React.ReactNode): string | undefined {
+export function idSlugFromChildren(
+  children: React.ReactNode,
+): string | undefined {
   // First check if there's an ApiType component with a slug
   const apiTypeSlug = extractApiTypeSlug(children);
   if (apiTypeSlug) {
@@ -65,7 +68,9 @@ export function idSlugFromChildren(children: React.ReactNode): string | undefine
  * @param children - React children that may include ApiType components
  * @returns Plain text content with ApiType components removed
  */
-export function extractTextFromReactChildren(children: React.ReactNode): string {
+export function extractTextFromReactChildren(
+  children: React.ReactNode,
+): string {
   let textContent = "";
 
   if (typeof children === "string") {
@@ -116,7 +121,9 @@ export function extractTextFromReactChildren(children: React.ReactNode): string 
  * @param component - React component
  * @returns The component's display name or type name
  */
-function getComponentName(component: React.ComponentType<any> | string | undefined): string {
+function getComponentName(
+  component: React.ComponentType<any> | string | undefined,
+): string {
   if (!component) return "";
   if (typeof component === "string") return component;
   return component.displayName || component.name || "Unknown";

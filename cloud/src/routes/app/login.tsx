@@ -9,4 +9,3 @@ export const Route = createFileRoute("/app/login")({
     </DashboardLayout>
   ),
 });
-

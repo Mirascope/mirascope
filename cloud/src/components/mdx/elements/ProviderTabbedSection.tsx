@@ -37,7 +37,9 @@ export function ProviderTabbedSection({
 
     // Scroll the selected tab into view
     if (tabsListRef.current) {
-      const selectedTab = tabsListRef.current.querySelector(`[data-state="active"]`);
+      const selectedTab = tabsListRef.current.querySelector(
+        `[data-state="active"]`,
+      );
       if (selectedTab) {
         const tabsList = tabsListRef.current;
         const tabsListRect = tabsList.getBoundingClientRect();
@@ -116,7 +118,7 @@ export function ProviderTabbedSection({
     <div
       className={cn(
         "bg-card overflow-hidden rounded-md border-1 px-2 pt-2 pb-0 shadow-md",
-        className
+        className,
       )}
     >
       {customHeader ? (
@@ -127,7 +129,11 @@ export function ProviderTabbedSection({
         </div>
       ) : null}
 
-      <Tabs value={activeProvider} onValueChange={handleProviderChange} className="mb-2 w-full">
+      <Tabs
+        value={activeProvider}
+        onValueChange={handleProviderChange}
+        className="mb-2 w-full"
+      >
         <div className="relative mb-0">
           {/* Left scroll button - always rendered but conditionally visible */}
           <button

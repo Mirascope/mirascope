@@ -15,7 +15,10 @@ import sharp from "sharp";
 async function main() {
   console.log("🚀 Creating favicons from SVG...");
 
-  const svgPath = path.join(process.cwd(), "public/assets/branding/mirascope-favicon.svg");
+  const svgPath = path.join(
+    process.cwd(),
+    "public/assets/branding/mirascope-favicon.svg",
+  );
 
   try {
     // Create favicon.png (32x32) for Safari fallback
@@ -23,14 +26,21 @@ async function main() {
     await sharp(svgPath).resize(32, 32).png().toFile(faviconPath);
 
     const faviconStats = fs.statSync(faviconPath);
-    console.log(`✅ favicon.png created: ${(faviconStats.size / 1024).toFixed(2)}KB`);
+    console.log(
+      `✅ favicon.png created: ${(faviconStats.size / 1024).toFixed(2)}KB`,
+    );
 
     // Create apple-touch-icon.png (180x180) for iOS devices
-    const appleTouchPath = path.join(process.cwd(), "public/apple-touch-icon.png");
+    const appleTouchPath = path.join(
+      process.cwd(),
+      "public/apple-touch-icon.png",
+    );
     await sharp(svgPath).resize(180, 180).png().toFile(appleTouchPath);
 
     const appleTouchStats = fs.statSync(appleTouchPath);
-    console.log(`✅ apple-touch-icon.png created: ${(appleTouchStats.size / 1024).toFixed(2)}KB`);
+    console.log(
+      `✅ apple-touch-icon.png created: ${(appleTouchStats.size / 1024).toFixed(2)}KB`,
+    );
 
     // Generate the inline SVG code
     const svgContent = fs.readFileSync(svgPath, "utf8");

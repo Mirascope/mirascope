@@ -26,7 +26,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/src/components/ui/pagination";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/mirascope-ui/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/mirascope-ui/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -41,7 +46,13 @@ export interface ColorThemeDisplayProps {
 }
 
 export const ColorThemeDisplay: React.FC<ColorThemeDisplayProps> = ({
-  bgColors = ["bg-background", "bg-muted", "bg-primary", "bg-secondary", "bg-accent"],
+  bgColors = [
+    "bg-background",
+    "bg-muted",
+    "bg-primary",
+    "bg-secondary",
+    "bg-accent",
+  ],
   textColors = [
     "text-foreground",
     "text-primary",
@@ -80,16 +91,40 @@ export const ShadCnThemeDisplay: React.FC = () => {
     { name: "card", bg: "bg-card", text: "text-card-foreground" },
     { name: "card-foreground", bg: "bg-card-foreground", text: "text-card" },
     { name: "popover", bg: "bg-popover", text: "text-popover-foreground" },
-    { name: "popover-foreground", bg: "bg-popover-foreground", text: "text-popover" },
+    {
+      name: "popover-foreground",
+      bg: "bg-popover-foreground",
+      text: "text-popover",
+    },
     { name: "primary", bg: "bg-primary", text: "text-primary-foreground" },
-    { name: "primary-foreground", bg: "bg-primary-foreground", text: "text-primary" },
-    { name: "secondary", bg: "bg-secondary", text: "text-secondary-foreground" },
-    { name: "secondary-foreground", bg: "bg-secondary-foreground", text: "text-secondary" },
+    {
+      name: "primary-foreground",
+      bg: "bg-primary-foreground",
+      text: "text-primary",
+    },
+    {
+      name: "secondary",
+      bg: "bg-secondary",
+      text: "text-secondary-foreground",
+    },
+    {
+      name: "secondary-foreground",
+      bg: "bg-secondary-foreground",
+      text: "text-secondary",
+    },
     { name: "muted", bg: "bg-muted", text: "text-muted-foreground" },
     { name: "muted-foreground", bg: "bg-muted-foreground", text: "text-muted" },
     { name: "accent", bg: "bg-accent", text: "text-accent-foreground" },
-    { name: "accent-foreground", bg: "bg-accent-foreground", text: "text-accent" },
-    { name: "destructive", bg: "bg-destructive", text: "text-destructive-foreground" },
+    {
+      name: "accent-foreground",
+      bg: "bg-accent-foreground",
+      text: "text-accent",
+    },
+    {
+      name: "destructive",
+      bg: "bg-destructive",
+      text: "text-destructive-foreground",
+    },
     { name: "border", bg: "bg-border", text: "text-foreground" },
     { name: "input", bg: "bg-input", text: "text-foreground" },
     { name: "ring", bg: "bg-ring", text: "text-foreground" },
@@ -108,7 +143,9 @@ export const ShadCnThemeDisplay: React.FC = () => {
               >
                 {color.name}
               </div>
-              <div className="text-muted-foreground text-center text-xs">{color.name}</div>
+              <div className="text-muted-foreground text-center text-xs">
+                {color.name}
+              </div>
             </div>
           ))}
         </div>
@@ -122,7 +159,9 @@ export const ShadCnThemeDisplay: React.FC = () => {
             <Button variant="default" className="w-full">
               Default/Primary Button
             </Button>
-            <div className="text-muted-foreground text-center text-xs">variant="default"</div>
+            <div className="text-muted-foreground text-center text-xs">
+              variant="default"
+            </div>
           </div>
           <div className="space-y-2">
             <Button
@@ -139,7 +178,9 @@ export const ShadCnThemeDisplay: React.FC = () => {
             <Button variant="outline" className="w-full">
               Outline Button
             </Button>
-            <div className="text-muted-foreground text-center text-xs">variant="outline"</div>
+            <div className="text-muted-foreground text-center text-xs">
+              variant="outline"
+            </div>
           </div>
           <div className="space-y-2">
             <Button
@@ -156,13 +197,17 @@ export const ShadCnThemeDisplay: React.FC = () => {
             <Button variant="ghost" className="w-full">
               Ghost Button
             </Button>
-            <div className="text-muted-foreground text-center text-xs">variant="ghost"</div>
+            <div className="text-muted-foreground text-center text-xs">
+              variant="ghost"
+            </div>
           </div>
           <div className="space-y-2">
             <Button variant="link" className="w-full">
               Link Button
             </Button>
-            <div className="text-muted-foreground text-center text-xs">variant="link"</div>
+            <div className="text-muted-foreground text-center text-xs">
+              variant="link"
+            </div>
           </div>
         </div>
       </section>
@@ -174,7 +219,9 @@ export const ShadCnThemeDisplay: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card description with muted foreground text</CardDescription>
+              <CardDescription>
+                Card description with muted foreground text
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p>This is the main card content area with foreground text.</p>
@@ -223,7 +270,9 @@ export const ShadCnThemeDisplay: React.FC = () => {
                 <DropdownMenuItem>Billing</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">Logout</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive">
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -237,13 +286,22 @@ export const ShadCnThemeDisplay: React.FC = () => {
                 <TabsTrigger value="password">Password</TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
-              <TabsContent value="account" className="bg-muted mt-2 rounded-md p-4">
+              <TabsContent
+                value="account"
+                className="bg-muted mt-2 rounded-md p-4"
+              >
                 Account tab content
               </TabsContent>
-              <TabsContent value="password" className="bg-muted mt-2 rounded-md p-4">
+              <TabsContent
+                value="password"
+                className="bg-muted mt-2 rounded-md p-4"
+              >
                 Password tab content
               </TabsContent>
-              <TabsContent value="settings" className="bg-muted mt-2 rounded-md p-4">
+              <TabsContent
+                value="settings"
+                className="bg-muted mt-2 rounded-md p-4"
+              >
                 Settings tab content
               </TabsContent>
             </Tabs>
@@ -301,7 +359,9 @@ export const ShadCnThemeDisplay: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>User Dashboard</CardTitle>
-            <CardDescription>A complex UI combining multiple components</CardDescription>
+            <CardDescription>
+              A complex UI combining multiple components
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="overview" className="mb-6">
@@ -366,10 +426,14 @@ export const ShadCnThemeDisplay: React.FC = () => {
                 </div>
               </TabsContent>
               <TabsContent value="analytics" className="mt-4">
-                <div className="bg-muted rounded-md p-4">Analytics content would go here</div>
+                <div className="bg-muted rounded-md p-4">
+                  Analytics content would go here
+                </div>
               </TabsContent>
               <TabsContent value="reports" className="mt-4">
-                <div className="bg-muted rounded-md p-4">Reports content would go here</div>
+                <div className="bg-muted rounded-md p-4">
+                  Reports content would go here
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -384,13 +448,17 @@ export const ShadCnThemeDisplay: React.FC = () => {
 };
 
 // Component to display dev pages
-export const DevPagesList: React.FC<{ devPages: DevMeta[] }> = ({ devPages }) => {
+export const DevPagesList: React.FC<{ devPages: DevMeta[] }> = ({
+  devPages,
+}) => {
   return (
     <div className="space-y-4">
       {devPages.map((page) => (
         <div key={page.slug} className="rounded-lg border p-6 shadow-sm">
           <a href={`/dev/${page.slug}`} className="hover:underline">
-            <h2 className="text-primary mb-2 text-xl font-semibold">{page.title}</h2>
+            <h2 className="text-primary mb-2 text-xl font-semibold">
+              {page.title}
+            </h2>
           </a>
           <p className="mb-4">{page.description}</p>
         </div>
@@ -449,22 +517,33 @@ export const ThemeColorCombinations: React.FC = () => {
     {
       title: "Primary UI Elements",
       background: "bg-primary",
-      combinations: [{ name: "primary-foreground", textClass: "text-primary-foreground" }],
+      combinations: [
+        { name: "primary-foreground", textClass: "text-primary-foreground" },
+      ],
     },
     {
       title: "Secondary UI Elements",
       background: "bg-secondary",
-      combinations: [{ name: "secondary-foreground", textClass: "text-secondary-foreground" }],
+      combinations: [
+        {
+          name: "secondary-foreground",
+          textClass: "text-secondary-foreground",
+        },
+      ],
     },
     {
       title: "Accent UI Elements",
       background: "bg-accent",
-      combinations: [{ name: "accent-foreground", textClass: "text-accent-foreground" }],
+      combinations: [
+        { name: "accent-foreground", textClass: "text-accent-foreground" },
+      ],
     },
     {
       title: "Destructive UI Elements",
       background: "bg-destructive",
-      combinations: [{ name: "Default", textClass: "text-destructive-foreground" }],
+      combinations: [
+        { name: "Default", textClass: "text-destructive-foreground" },
+      ],
     },
   ];
 
@@ -479,18 +558,25 @@ export const ThemeColorCombinations: React.FC = () => {
     <div className="space-y-10">
       {/* Text content combinations */}
       <section>
-        <h2 className="mb-4 text-2xl font-bold">Realistic Text/Background Combinations</h2>
+        <h2 className="mb-4 text-2xl font-bold">
+          Realistic Text/Background Combinations
+        </h2>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {textBackgroundCombinations.map((combo) => (
-            <div key={combo.title} className={`rounded-lg border p-5 ${combo.background}`}>
+            <div
+              key={combo.title}
+              className={`rounded-lg border p-5 ${combo.background}`}
+            >
               <h3 className="mb-3 text-xl font-semibold">{combo.title}</h3>
               {combo.combinations.map((textCombo) => (
                 <div key={textCombo.name} className="mb-4">
                   <div className={`mb-1 font-medium ${textCombo.textClass}`}>
                     {textCombo.name}: {sampleText.heading}
                   </div>
-                  <div className={`text-sm ${textCombo.textClass}`}>{sampleText.paragraph}</div>
+                  <div className={`text-sm ${textCombo.textClass}`}>
+                    {sampleText.paragraph}
+                  </div>
                 </div>
               ))}
             </div>
@@ -500,11 +586,15 @@ export const ThemeColorCombinations: React.FC = () => {
 
       {/* Realistic UI examples */}
       <section>
-        <h2 className="mb-4 text-2xl font-bold">UI Examples with Text Emphasis</h2>
+        <h2 className="mb-4 text-2xl font-bold">
+          UI Examples with Text Emphasis
+        </h2>
 
         {/* Article/Blog Post Card */}
         <div className="mb-8">
-          <h3 className="mb-3 text-lg font-medium">Article/Blog Post Example</h3>
+          <h3 className="mb-3 text-lg font-medium">
+            Article/Blog Post Example
+          </h3>
           <Card>
             <CardHeader>
               <CardTitle className="text-foreground">
@@ -516,10 +606,13 @@ export const ThemeColorCombinations: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-foreground">
-                Color is one of the most powerful tools in a designer's toolkit. It can influence
-                mood, direct attention, and communicate meaning.
+                Color is one of the most powerful tools in a designer's toolkit.
+                It can influence mood, direct attention, and communicate
+                meaning.
               </p>
-              <h4 className="text-primary font-medium">The Psychology of Color</h4>
+              <h4 className="text-primary font-medium">
+                The Psychology of Color
+              </h4>
               <p className="text-foreground">
                 Different colors evoke different emotional responses.{" "}
                 <span className="text-primary">
@@ -533,13 +626,17 @@ export const ThemeColorCombinations: React.FC = () => {
               </p>
               <div className="bg-muted rounded-md p-3">
                 <p className="text-muted-foreground italic">
-                  "Color is a power which directly influences the soul." — Wassily Kandinsky
+                  "Color is a power which directly influences the soul." —
+                  Wassily Kandinsky
                 </p>
               </div>
-              <h4 className="text-secondary font-medium">Building a Coherent Color Palette</h4>
+              <h4 className="text-secondary font-medium">
+                Building a Coherent Color Palette
+              </h4>
               <p className="text-foreground">
-                Creating a balanced color palette is essential for a cohesive design. The{" "}
-                <span className="text-accent">60-30-10 rule</span> suggests using:
+                Creating a balanced color palette is essential for a cohesive
+                design. The <span className="text-accent">60-30-10 rule</span>{" "}
+                suggests using:
               </p>
               <ul className="text-foreground list-inside list-disc space-y-1">
                 <li>60% primary color</li>
@@ -569,7 +666,9 @@ export const ThemeColorCombinations: React.FC = () => {
           <Card>
             <CardHeader className="border-b">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-foreground">Analytics Dashboard</CardTitle>
+                <CardTitle className="text-foreground">
+                  Analytics Dashboard
+                </CardTitle>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm">
                     Export
@@ -604,7 +703,9 @@ export const ThemeColorCombinations: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-foreground text-2xl font-bold">$54,237</p>
+                    <p className="text-foreground text-2xl font-bold">
+                      $54,237
+                    </p>
                     <p className="text-accent text-xs">+8% from last month</p>
                   </CardContent>
                 </Card>
@@ -616,25 +717,35 @@ export const ThemeColorCombinations: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <p className="text-foreground text-2xl font-bold">1,342</p>
-                    <p className="text-destructive text-xs">-3% from last month</p>
+                    <p className="text-destructive text-xs">
+                      -3% from last month
+                    </p>
                   </CardContent>
                 </Card>
               </div>
 
               <div className="bg-card mb-6 rounded-md border p-4">
-                <h3 className="text-card-foreground mb-2 font-medium">Recent Activity</h3>
+                <h3 className="text-card-foreground mb-2 font-medium">
+                  Recent Activity
+                </h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b pb-2">
                     <span className="text-foreground">New user signup</span>
-                    <span className="text-muted-foreground text-sm">5 minutes ago</span>
+                    <span className="text-muted-foreground text-sm">
+                      5 minutes ago
+                    </span>
                   </div>
                   <div className="flex items-center justify-between border-b pb-2">
                     <span className="text-foreground">Purchase completed</span>
                     <span className="text-primary text-sm">10 minutes ago</span>
                   </div>
                   <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-foreground">Server error reported</span>
-                    <span className="text-destructive text-sm">25 minutes ago</span>
+                    <span className="text-foreground">
+                      Server error reported
+                    </span>
+                    <span className="text-destructive text-sm">
+                      25 minutes ago
+                    </span>
                   </div>
                 </div>
               </div>
@@ -652,7 +763,9 @@ export const ThemeColorCombinations: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1">
-                <label className="text-foreground text-sm font-medium">Email</label>
+                <label className="text-foreground text-sm font-medium">
+                  Email
+                </label>
                 <div className="bg-input text-foreground rounded-md border px-3 py-2">
                   user@example.com
                 </div>
@@ -662,16 +775,24 @@ export const ThemeColorCombinations: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-foreground text-sm font-medium">Password</label>
+                <label className="text-foreground text-sm font-medium">
+                  Password
+                </label>
                 <div className="bg-input text-foreground rounded-md border px-3 py-2">
                   ••••••••••••
                 </div>
-                <p className="text-muted-foreground text-xs">Last changed 30 days ago.</p>
+                <p className="text-muted-foreground text-xs">
+                  Last changed 30 days ago.
+                </p>
               </div>
 
               <div className="pt-2">
-                <p className="text-accent text-sm">Two-factor authentication is enabled.</p>
-                <p className="text-destructive text-xs">Your security key will expire in 5 days.</p>
+                <p className="text-accent text-sm">
+                  Two-factor authentication is enabled.
+                </p>
+                <p className="text-destructive text-xs">
+                  Your security key will expire in 5 days.
+                </p>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end space-x-2 border-t pt-4">

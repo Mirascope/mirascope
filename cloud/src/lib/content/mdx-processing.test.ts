@@ -21,7 +21,9 @@ This is the content.`;
         description: "This is a test",
         author: "Test Author",
       });
-      expect(result.content.trim()).toBe("# Test Document\n\nThis is the content.");
+      expect(result.content.trim()).toBe(
+        "# Test Document\n\nThis is the content.",
+      );
     });
 
     test("handles frontmatter with quoted values", () => {
@@ -73,7 +75,9 @@ Content here.`;
       const result = parseFrontmatter(input);
 
       expect(result.frontmatter.title).toBe("Document with Empty Lines");
-      expect(result.frontmatter.description).toBe("Has a blank line in frontmatter");
+      expect(result.frontmatter.description).toBe(
+        "Has a blank line in frontmatter",
+      );
     });
 
     test("handles documents containing triple dashes in content", () => {
@@ -90,7 +94,9 @@ This should be part of the content too.`;
 
       expect(result.frontmatter.title).toBe("Document with Dashes");
       expect(result.content).toContain("Content with --- dashes");
-      expect(result.content).toContain("This should be part of the content too.");
+      expect(result.content).toContain(
+        "This should be part of the content too.",
+      );
     });
 
     test("handles malformed frontmatter gracefully", () => {
@@ -104,13 +110,18 @@ Content after malformed frontmatter.`;
       const result = parseFrontmatter(input);
 
       expect(result.frontmatter).toEqual({});
-      expect(result.content.trim()).toBe("Content after malformed frontmatter.");
+      expect(result.content.trim()).toBe(
+        "Content after malformed frontmatter.",
+      );
     });
   });
 
   describe("mergeFrontmatter", () => {
     test("merges two frontmatter objects without overwriting", () => {
-      const target = { title: "Original Title", description: "Original Description" };
+      const target = {
+        title: "Original Title",
+        description: "Original Description",
+      };
       const source = { title: "New Title", author: "Test Author" };
 
       const result = mergeFrontmatter(target, source);
@@ -121,7 +132,10 @@ Content after malformed frontmatter.`;
     });
 
     test("merges with overwrite when specified", () => {
-      const target = { title: "Original Title", description: "Original Description" };
+      const target = {
+        title: "Original Title",
+        description: "Original Description",
+      };
       const source = { title: "New Title", author: "Test Author" };
 
       const result = mergeFrontmatter(target, source, true);

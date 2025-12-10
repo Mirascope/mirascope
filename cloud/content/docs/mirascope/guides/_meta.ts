@@ -211,11 +211,13 @@ const guidesMeta: SectionSpec = {
           children: [
             {
               slug: "self-refine",
-              label: "Self-Refine: Enhancing LLM Outputs Through Iterative Self-Improvement",
+              label:
+                "Self-Refine: Enhancing LLM Outputs Through Iterative Self-Improvement",
             },
             {
               slug: "self-consistency",
-              label: "Self-Consistency: Enhancing LLM Reasoning with Multiple Outputs",
+              label:
+                "Self-Consistency: Enhancing LLM Reasoning with Multiple Outputs",
             },
             {
               slug: "reverse-chain-of-thought",
@@ -228,15 +230,18 @@ const guidesMeta: SectionSpec = {
             },
             {
               slug: "mixture-of-reasoning",
-              label: "Mixture of Reasoning: Enhancing LLM Performance with Multiple Techniques",
+              label:
+                "Mixture of Reasoning: Enhancing LLM Performance with Multiple Techniques",
             },
             {
               slug: "demonstration-ensembling",
-              label: "Demonstration Ensembling: Enhancing LLM Responses with Aggregated Examples",
+              label:
+                "Demonstration Ensembling: Enhancing LLM Responses with Aggregated Examples",
             },
             {
               slug: "chain-of-verification",
-              label: "Chain of Verification: Enhancing LLM Accuracy through Self-Verification",
+              label:
+                "Chain of Verification: Enhancing LLM Accuracy through Self-Verification",
             },
             {
               slug: "least-to-most",
@@ -254,11 +259,13 @@ const guidesMeta: SectionSpec = {
             },
             {
               slug: "system-to-attention",
-              label: "System to Attention (S2A): Enhancing LLM Focus with Query Filtering",
+              label:
+                "System to Attention (S2A): Enhancing LLM Focus with Query Filtering",
             },
             {
               slug: "step-back",
-              label: "Step-back Prompting: Enhancing LLM Reasoning with High-Level Questions",
+              label:
+                "Step-back Prompting: Enhancing LLM Reasoning with High-Level Questions",
             },
             {
               slug: "skeleton-of-thought",
@@ -266,7 +273,8 @@ const guidesMeta: SectionSpec = {
             },
             {
               slug: "sim-to-m",
-              label: "Sim to M: Enhancing LLM Reasoning with Perspective-Taking",
+              label:
+                "Sim to M: Enhancing LLM Reasoning with Perspective-Taking",
             },
           ],
         },

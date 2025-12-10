@@ -29,7 +29,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
       "focus:bg-accent data-[state=open]:bg-accent",
       // Conditional styles
       inset && "pl-8",
-      className
+      className,
     )}
     {...props}
   >
@@ -37,7 +37,8 @@ const DropdownMenuSubTrigger = React.forwardRef<
     <ChevronRight className="ml-auto h-4 w-4" />
   </DropdownMenuPrimitive.SubTrigger>
 ));
-DropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayName;
+DropdownMenuSubTrigger.displayName =
+  DropdownMenuPrimitive.SubTrigger.displayName;
 
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
@@ -69,14 +70,15 @@ const DropdownMenuSubContent = React.forwardRef<
           // Apply dark theme class when needed
           current === "dark" && "dark",
           // Custom classes
-          className
+          className,
         )}
         {...props}
       />
     </ProductProvider>
   );
 });
-DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
+DropdownMenuSubContent.displayName =
+  DropdownMenuPrimitive.SubContent.displayName;
 
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
@@ -110,7 +112,7 @@ const DropdownMenuContent = React.forwardRef<
             // Apply dark theme class when needed
             current === "dark" && "dark",
             // Custom classes
-            className
+            className,
           )}
           {...props}
         />
@@ -137,7 +139,7 @@ const DropdownMenuItem = React.forwardRef<
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       // Conditional styles
       inset && "pl-8",
-      className
+      className,
     )}
     {...props}
   />
@@ -158,7 +160,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
       // Disabled state
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       // Custom classes
-      className
+      className,
     )}
     checked={checked}
     {...props}
@@ -171,7 +173,8 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
-DropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName;
+DropdownMenuCheckboxItem.displayName =
+  DropdownMenuPrimitive.CheckboxItem.displayName;
 
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
@@ -187,7 +190,7 @@ const DropdownMenuRadioItem = React.forwardRef<
       // Disabled state
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       // Custom classes
-      className
+      className,
     )}
     {...props}
   >
@@ -214,7 +217,7 @@ const DropdownMenuLabel = React.forwardRef<
       "px-2 py-1.5 text-sm font-semibold",
       // Conditional styles
       inset && "pl-8",
-      className
+      className,
     )}
     {...props}
   />
@@ -231,21 +234,24 @@ const DropdownMenuSeparator = React.forwardRef<
       // Base styles
       "bg-muted -mx-1 my-1 h-px",
       // Custom classes
-      className
+      className,
     )}
     {...props}
   />
 ));
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
-const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+const DropdownMenuShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
       className={cn(
         // Base styles
         "ml-auto text-xs tracking-widest opacity-60",
         // Custom classes
-        className
+        className,
       )}
       {...props}
     />

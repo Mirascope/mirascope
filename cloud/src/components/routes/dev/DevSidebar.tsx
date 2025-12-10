@@ -1,7 +1,10 @@
 import React from "react";
 import { Sidebar } from "@/src/components/core/layout";
 import type { DevMeta } from "@/src/lib/content";
-import type { SidebarConfig, SidebarItem } from "@/src/components/core/layout/Sidebar";
+import type {
+  SidebarConfig,
+  SidebarItem,
+} from "@/src/components/core/layout/Sidebar";
 
 interface DevSidebarProps {
   devPages: DevMeta[];

@@ -91,7 +91,7 @@ function shouldSkipFile(filePath: string): boolean {
       `Non-WebP image found: ${filePath}\n` +
         `All images must be WebP format before running image optimization.\n` +
         `Please convert this image using 'bun run convert-to-webp'.\n` +
-        `Run 'bun run validate-assets --skip-dist-check' to identify all PNG/JPG files that need conversion.`
+        `Run 'bun run validate-assets --skip-dist-check' to identify all PNG/JPG files that need conversion.`,
     );
   }
 
@@ -126,7 +126,9 @@ async function processImage(filePath: string) {
 
         sharpInstance = sharpInstance.resize({ width: size.width });
 
-        await sharpInstance.webp({ quality: config.quality }).toFile(outputPath);
+        await sharpInstance
+          .webp({ quality: config.quality })
+          .toFile(outputPath);
       } catch (error) {
         console.error(`❌  Error processing ${outputPath}:`, error);
         stats.errors++;
@@ -151,16 +153,21 @@ async function main() {
   // Make sure the base directory exists
   if (!fs.existsSync(CONFIG.baseDirectory)) {
     console.error(
-      `❌ Error: Base directory ${CONFIG.baseDirectory} does not exist. The build may have failed or no assets were copied.`
+      `❌ Error: Base directory ${CONFIG.baseDirectory} does not exist. The build may have failed or no assets were copied.`,
     );
     process.exit(1);
   }
 
   // Find all images recursively in the base directory
-  const imageFiles = await glob(`${CONFIG.baseDirectory}/**/*.{png,jpg,jpeg,webp}`, {
-    absolute: true,
-  });
-  console.log(`📁 Found ${imageFiles.length} images in ${CONFIG.baseDirectory}`);
+  const imageFiles = await glob(
+    `${CONFIG.baseDirectory}/**/*.{png,jpg,jpeg,webp}`,
+    {
+      absolute: true,
+    },
+  );
+  console.log(
+    `📁 Found ${imageFiles.length} images in ${CONFIG.baseDirectory}`,
+  );
 
   // Process images in parallel, but with a limit
   const batchSize = 5; // Process 5 images at a time
@@ -176,9 +183,11 @@ async function main() {
   console.log("\n🎉 Responsive WebP generation complete!");
   console.log(`⏱️  Duration: ${durationSeconds}s`);
   console.log(
-    `📊 Processed: ${stats.processed} images, Skipped: ${stats.skipped}, Errors: ${stats.errors}`
+    `📊 Processed: ${stats.processed} images, Skipped: ${stats.skipped}, Errors: ${stats.errors}`,
   );
-  console.log(`🔍 Created ${stats.processed * 2} responsive versions (medium and small sizes)`);
+  console.log(
+    `🔍 Created ${stats.processed * 2} responsive versions (medium and small sizes)`,
+  );
 
   if (stats.errors > 0) {
     process.exit(1);

@@ -22,10 +22,19 @@ import {
   AttributesTable,
   TypeLink,
 } from "@/src/components/docs/api";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/mirascope-ui/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/mirascope-ui/ui/tabs";
 import { Button } from "@/mirascope-ui/ui/button";
 import { ButtonLink } from "@/mirascope-ui/ui/button-link";
-import { ProductLogo, MirascopeLogo, LilypadLogo } from "@/src/components/core/branding";
+import {
+  ProductLogo,
+  MirascopeLogo,
+  LilypadLogo,
+} from "@/src/components/core/branding";
 import { ProviderCodeWrapper } from "./ProviderCodeWrapper";
 import { ResponsiveImage } from "@/src/components/mdx/providers/ResponsiveImage";
 import { devComponents } from "@/src/components/mdx/elements/DevComponents";
@@ -45,10 +54,13 @@ const MDXButtonLink = (props: React.ComponentProps<typeof ButtonLink>) => {
         // If it's a paragraph element, extract its children
         if (
           React.isValidElement(child) &&
-          (child.type === "p" || (typeof child.type === "function" && child.type.name === "p"))
+          (child.type === "p" ||
+            (typeof child.type === "function" && child.type.name === "p"))
         ) {
           // Type assertion to access props safely
-          const elementProps = (child as React.ReactElement<{ children?: React.ReactNode }>).props;
+          const elementProps = (
+            child as React.ReactElement<{ children?: React.ReactNode }>
+          ).props;
           return elementProps.children;
         }
         return child;
@@ -203,11 +215,18 @@ const headingElements = {
 };
 
 const textElements = {
-  p: (props: React.ComponentPropsWithoutRef<"p">) => <p className="my-3 text-base" {...props} />,
-  strong: (props: React.ComponentPropsWithoutRef<"strong">) => <strong {...props} />,
+  p: (props: React.ComponentPropsWithoutRef<"p">) => (
+    <p className="my-3 text-base" {...props} />
+  ),
+  strong: (props: React.ComponentPropsWithoutRef<"strong">) => (
+    <strong {...props} />
+  ),
   em: (props: React.ComponentPropsWithoutRef<"em">) => <em {...props} />,
   blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => (
-    <blockquote className="border-border my-4 border-l-4 pl-4 italic" {...props} />
+    <blockquote
+      className="border-border my-4 border-l-4 pl-4 italic"
+      {...props}
+    />
   ),
   hr: (props: React.ComponentPropsWithoutRef<"hr">) => (
     <hr className="border-border my-6" {...props} />
@@ -221,7 +240,9 @@ const listElements = {
   ol: (props: React.ComponentPropsWithoutRef<"ol">) => (
     <ol className="my-4 list-decimal pl-5" {...props} />
   ),
-  li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="mb-2" {...props} />,
+  li: (props: React.ComponentPropsWithoutRef<"li">) => (
+    <li className="mb-2" {...props} />
+  ),
 };
 
 const tableElements = {
@@ -243,7 +264,9 @@ const tableElements = {
 
 const mediaElements = {
   // Responsive image component
-  img: (props: React.ComponentPropsWithoutRef<"img">) => <ResponsiveImage {...props} />,
+  img: (props: React.ComponentPropsWithoutRef<"img">) => (
+    <ResponsiveImage {...props} />
+  ),
   a: (props: React.ComponentPropsWithoutRef<"a">) => {
     const { href, ...rest } = props;
     const navigate = useNavigate();
@@ -298,12 +321,21 @@ const mediaElements = {
           !href.startsWith("tel:")))
     ) {
       return (
-        <Link to={href} className="text-primary text-base no-underline hover:underline" {...rest} />
+        <Link
+          to={href}
+          className="text-primary text-base no-underline hover:underline"
+          {...rest}
+        />
       );
     }
 
     // Use regular <a> for external links
-    return <a className="text-primary text-base no-underline hover:underline" {...props} />;
+    return (
+      <a
+        className="text-primary text-base no-underline hover:underline"
+        {...props}
+      />
+    );
   },
 };
 
@@ -314,7 +346,9 @@ const codeElements = {
     const isInPre = React.useRef<boolean>(false);
     React.useLayoutEffect(() => {
       // Type assertion for DOM properties access
-      const element = props as unknown as { parentElement?: { tagName: string } };
+      const element = props as unknown as {
+        parentElement?: { tagName: string };
+      };
       const parentIsPre =
         props.className?.includes("language-") ||
         props.className?.includes("shiki") ||
@@ -360,7 +394,8 @@ const codeElements = {
 
         // Extract language from className
         if (childProps.className?.includes("language-")) {
-          language = (childProps.className.match(/language-(\w+)/) || [])[1] || "txt";
+          language =
+            (childProps.className.match(/language-(\w+)/) || [])[1] || "txt";
 
           // Also check for meta in className (legacy approach)
           // This looks for patterns like {1-3} or {1,3} after the language
@@ -384,7 +419,11 @@ const codeElements = {
     }
 
     return (
-      <ProviderCodeWrapper code={codeContent.replace(/\n$/, "")} language={language} meta={meta} />
+      <ProviderCodeWrapper
+        code={codeContent.replace(/\n$/, "")}
+        language={language}
+        meta={meta}
+      />
     );
   },
 };

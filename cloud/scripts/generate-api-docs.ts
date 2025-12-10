@@ -15,7 +15,9 @@ function run(command: string, args: string[], cwd?: string): void {
   }
 
   if (result.status !== 0) {
-    throw new Error(`Command failed with exit code ${result.status}: ${command} ${args.join(" ")}`);
+    throw new Error(
+      `Command failed with exit code ${result.status}: ${command} ${args.join(" ")}`,
+    );
   }
 }
 
@@ -48,11 +50,11 @@ async function generateApiDocs(): Promise<void> {
     console.error("Error: Missing required arguments");
     console.error("\nUsage:");
     console.error(
-      "  bun run scripts/generate-api-docs.ts --source-path <path> --package <name> --output <path> --api-root <path>"
+      "  bun run scripts/generate-api-docs.ts --source-path <path> --package <name> --output <path> --api-root <path>",
     );
     console.error("\nExample:");
     console.error(
-      "  bun run scripts/generate-api-docs.ts --source-path .build-cache/mirascope/python --package mirascope.llm --output content/docs/mirascope/v2/api --api-root /docs/mirascope/api"
+      "  bun run scripts/generate-api-docs.ts --source-path .build-cache/mirascope/python --package mirascope.llm --output content/docs/mirascope/v2/api --api-root /docs/mirascope/api",
     );
     process.exit(1);
   }
@@ -80,7 +82,7 @@ async function generateApiDocs(): Promise<void> {
       "--api-root",
       apiRoot,
     ],
-    api2mdxDir
+    api2mdxDir,
   );
 
   console.log("✓ API documentation generation complete");

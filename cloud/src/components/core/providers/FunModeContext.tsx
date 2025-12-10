@@ -6,7 +6,9 @@ interface FunModeContextType {
   toggleFunMode: () => void;
 }
 
-export const FunModeContext = createContext<FunModeContextType | undefined>(undefined);
+export const FunModeContext = createContext<FunModeContextType | undefined>(
+  undefined,
+);
 
 export function FunModeProvider({ children }: { children: ReactNode }) {
   // Initialize state but update after mount to avoid hydration mismatch

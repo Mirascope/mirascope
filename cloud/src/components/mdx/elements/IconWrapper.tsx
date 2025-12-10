@@ -56,12 +56,19 @@ interface IconWrapperProps {
   [key: string]: any;
 }
 
-export function Icon({ name, size = 24, className = "", ...props }: IconWrapperProps) {
+export function Icon({
+  name,
+  size = 24,
+  className = "",
+  ...props
+}: IconWrapperProps) {
   const LucideIcon = ICONS[name];
 
   if (!LucideIcon) {
     // Error so we will fail CI and ensure this gets fixed.
-    throw new Error(`Icon "${name}" not found. Available icons: ${Object.keys(ICONS).join(", ")}`);
+    throw new Error(
+      `Icon "${name}" not found. Available icons: ${Object.keys(ICONS).join(", ")}`,
+    );
   }
 
   return <LucideIcon size={size} className={className} {...props} />;

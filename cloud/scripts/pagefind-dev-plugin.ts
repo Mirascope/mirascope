@@ -48,7 +48,10 @@ export function pagefindDevPlugin(): Plugin {
           // Special handling for pagefind-entry.json with query parameters
           // Pagefind often requests this with a timestamp
           if (pagefindPath.startsWith("pagefind-entry.json")) {
-            const entryPath = path.resolve("dist/_pagefind", "pagefind-entry.json");
+            const entryPath = path.resolve(
+              "dist/_pagefind",
+              "pagefind-entry.json",
+            );
             if (fs.existsSync(entryPath)) {
               res.setHeader("Content-Type", "application/json");
               const content = fs.readFileSync(entryPath);

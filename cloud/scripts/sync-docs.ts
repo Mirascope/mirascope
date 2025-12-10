@@ -28,7 +28,9 @@ function run(command: string, args: string[], cwd?: string): void {
   }
 
   if (result.status !== 0) {
-    throw new Error(`Command failed with exit code ${result.status}: ${command} ${args.join(" ")}`);
+    throw new Error(
+      `Command failed with exit code ${result.status}: ${command} ${args.join(" ")}`,
+    );
   }
 }
 

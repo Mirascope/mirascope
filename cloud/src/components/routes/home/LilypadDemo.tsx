@@ -55,7 +55,9 @@ interface MessagesPaneProps {
 // Component: MessageCard
 function MessageCard({ type, content }: MessageCardProps) {
   const badgeClass =
-    type === "user" ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary";
+    type === "user"
+      ? "bg-muted text-muted-foreground"
+      : "bg-primary/10 text-primary";
 
   return (
     <div className="bg-muted/20 rounded-lg px-3 py-1">
@@ -95,7 +97,11 @@ function CodePane({ code }: CodePaneProps) {
   return (
     <div className="border-border/60 border-b">
       <div className="max-h-64 overflow-y-auto">
-        <AnalyticsCodeBlock code={code} language="python" className="rounded-none border-none" />
+        <AnalyticsCodeBlock
+          code={code}
+          language="python"
+          className="rounded-none border-none"
+        />
       </div>
     </div>
   );
@@ -134,7 +140,11 @@ function TraceRow({ trace, isSelected, onSelect }: TraceRowProps) {
 }
 
 // Component: TracesTable
-function TracesTable({ traces, selectedTraceId, onSelectTrace }: TracesTableProps) {
+function TracesTable({
+  traces,
+  selectedTraceId,
+  onSelectTrace,
+}: TracesTableProps) {
   return (
     <div className="border-border/60 border-r md:w-1/2">
       <div className="border-border/60 bg-muted border-b px-4 py-2">
@@ -243,7 +253,8 @@ export function LilypadDemo() {
   const [selectedTraceId, setSelectedTraceId] = useState<string>(traces[0].id);
 
   // Get the selected trace
-  const selectedTrace = traces.find((trace) => trace.id === selectedTraceId) || traces[0];
+  const selectedTrace =
+    traces.find((trace) => trace.id === selectedTraceId) || traces[0];
 
   // Format the input message from the template and question
   const formatInputMessage = (trace: Trace) => {
@@ -277,7 +288,10 @@ answer_question("${trace.question}")`;
           selectedTraceId={selectedTraceId}
           onSelectTrace={setSelectedTraceId}
         />
-        <MessagesPane input={formatInputMessage(selectedTrace)} output={selectedTrace.output} />
+        <MessagesPane
+          input={formatInputMessage(selectedTrace)}
+          output={selectedTrace.output}
+        />
       </div>
     </div>
   );

@@ -37,7 +37,10 @@ export function MDXRenderer({ code, frontmatter }: MDXRendererProps) {
     };
 
     return (
-      <div className="mdx-content prose max-w-none overflow-y-auto" id="mdx-container">
+      <div
+        className="mdx-content prose max-w-none overflow-y-auto"
+        id="mdx-container"
+      >
         <MDXProvider components={components}>
           <MDXRemote {...mdxProps} />
         </MDXProvider>

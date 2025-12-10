@@ -3,7 +3,8 @@
  */
 
 import { describe, test, expect } from "bun:test";
-const { renderRouteToString, createHtmlDocument } = await import("../static-renderer");
+const { renderRouteToString, createHtmlDocument } =
+  await import("../static-renderer");
 
 describe("Static Renderer", () => {
   // This test renders an actual route and verifies expected metadata
@@ -19,7 +20,9 @@ describe("Static Renderer", () => {
 
     // Verify metadata contents
     expect(result.metadata.title).toBe("Home | Mirascope");
-    expect(result.metadata.description).toBe("The AI Engineer's Developer Stack");
+    expect(result.metadata.description).toBe(
+      "The AI Engineer's Developer Stack",
+    );
 
     // Verify meta tags include important SEO tags
     expect(result.metadata.meta).toContain("og:title");
@@ -53,7 +56,9 @@ describe("Static Renderer", () => {
     // Verify the Article schema is included in the JSON-LD scripts
     expect(result.metadata.jsonLdScripts).toContain("application/ld+json");
     expect(result.metadata.jsonLdScripts).toContain('"@type":"Article"');
-    expect(result.metadata.jsonLdScripts).toContain('"@context":"https://schema.org"');
+    expect(result.metadata.jsonLdScripts).toContain(
+      '"@context":"https://schema.org"',
+    );
 
     // Verify specific fields are present in the metadata
     expect(result.metadata.jsonLdScripts).toContain('"headline"');

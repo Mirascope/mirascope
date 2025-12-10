@@ -65,7 +65,10 @@ export function getProductFromPath(path: string): Product {
       // Check the URL for search params if available
       const url = new URL(window.location.href);
       const productParam = url.searchParams.get("product") as ProductName;
-      if (productParam && (productParam === "mirascope" || productParam === "lilypad")) {
+      if (
+        productParam &&
+        (productParam === "mirascope" || productParam === "lilypad")
+      ) {
         return { name: productParam };
       }
     } catch (e) {
@@ -74,8 +77,13 @@ export function getProductFromPath(path: string): Product {
 
     // Then check session storage
     if (typeof sessionStorage !== "undefined") {
-      const storedProduct = sessionStorage.getItem(DEV_PRODUCT_STORAGE_KEY) as ProductName;
-      if (storedProduct && (storedProduct === "mirascope" || storedProduct === "lilypad")) {
+      const storedProduct = sessionStorage.getItem(
+        DEV_PRODUCT_STORAGE_KEY,
+      ) as ProductName;
+      if (
+        storedProduct &&
+        (storedProduct === "mirascope" || storedProduct === "lilypad")
+      ) {
         return { name: storedProduct };
       }
     }

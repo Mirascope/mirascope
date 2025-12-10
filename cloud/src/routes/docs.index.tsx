@@ -27,4 +27,3 @@ function DocsIndexPage() {
   // Redirect to the Mirascope docs by default
   return <Navigate to={getProductRoute({ name: "mirascope" })} />;
 }
-

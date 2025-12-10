@@ -3,7 +3,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import DevLayout from "@/src/components/routes/dev/DevLayout";
 import { environment } from "@/src/lib/content/environment";
 import { getAllDevMeta, type ProductName } from "@/src/lib/content";
-import { LoadingContent, ContentErrorHandler, PageMeta } from "@/src/components";
+import {
+  LoadingContent,
+  ContentErrorHandler,
+  PageMeta,
+} from "@/src/components";
 
 export const Route = createFileRoute("/dev/social-card")({
   ssr: false, // Client-side rendered
@@ -82,7 +86,9 @@ function SocialCardPreview() {
 
     // Get font size config from iframe
     if (iframeRef.current?.contentWindow?.SOCIAL_CARD_CONFIG?.fontSizes) {
-      setFontSizeRules(iframeRef.current.contentWindow.SOCIAL_CARD_CONFIG.fontSizes);
+      setFontSizeRules(
+        iframeRef.current.contentWindow.SOCIAL_CARD_CONFIG.fontSizes,
+      );
     }
 
     // Apply initial values
@@ -93,15 +99,19 @@ function SocialCardPreview() {
 
   return (
     <>
-      <PageMeta title="Social Card Preview" description="Preview and test social card designs" />
+      <PageMeta
+        title="Social Card Preview"
+        description="Preview and test social card designs"
+      />
       <DevLayout devPages={devPages}>
         <div className="container">
           <h1 className="mb-6 text-3xl font-bold">Social Card Preview</h1>
 
           <p className="mb-6 text-gray-600">
-            This page lets you preview how social cards will look. Edit the title to see the card
-            update in real-time. Useful for iterating on the social-card.html file to preview
-            changes to social cards and testing font sizing rules.
+            This page lets you preview how social cards will look. Edit the
+            title to see the card update in real-time. Useful for iterating on
+            the social-card.html file to preview changes to social cards and
+            testing font sizing rules.
           </p>
 
           <div className="mb-6">
@@ -165,4 +175,3 @@ function SocialCardPreview() {
     </>
   );
 }
-

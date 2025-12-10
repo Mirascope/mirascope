@@ -151,7 +151,9 @@ export const MobileMenuOpen: Story = {
     // Open the mobile menu for this story
     if (typeof document !== "undefined") {
       setTimeout(() => {
-        const menuButton = document.querySelector('button[aria-label="Toggle menu"]');
+        const menuButton = document.querySelector(
+          'button[aria-label="Toggle menu"]',
+        );
         if (menuButton instanceof HTMLElement) {
           menuButton.click();
         }

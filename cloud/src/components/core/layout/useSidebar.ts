@@ -16,11 +16,17 @@ export const MEDIA_QUERIES = {
 
 // Helper functions for responsive checks
 export const isMobileView = (): boolean => {
-  return typeof window !== "undefined" && window.matchMedia(MEDIA_QUERIES.mdAndDown).matches;
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia(MEDIA_QUERIES.mdAndDown).matches
+  );
 };
 
 export const isDesktopView = (): boolean => {
-  return typeof window !== "undefined" && window.matchMedia(MEDIA_QUERIES.mdAndUp).matches;
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia(MEDIA_QUERIES.mdAndUp).matches
+  );
 };
 
 export interface UseSidebarOptions {
@@ -40,7 +46,10 @@ export interface UseSidebarOptions {
  * Simple hook for managing mobile sidebar state
  * Desktop visibility is handled purely with CSS
  */
-export function useSidebar({ onOpen, closeOnRouteChange = true }: UseSidebarOptions = {}) {
+export function useSidebar({
+  onOpen,
+  closeOnRouteChange = true,
+}: UseSidebarOptions = {}) {
   // Only tracks the mobile state - desktop visibility is CSS-driven
   const [isOpen, setIsOpen] = useState(false);
 
@@ -71,7 +80,8 @@ export function useSidebar({ onOpen, closeOnRouteChange = true }: UseSidebarOpti
   const toggle = () => {
     // Save the currently focused element when opening
     if (!isOpen) {
-      previouslyFocusedElementRef.current = document.activeElement as HTMLElement;
+      previouslyFocusedElementRef.current =
+        document.activeElement as HTMLElement;
 
       // Notify when opening
       if (onOpen) {

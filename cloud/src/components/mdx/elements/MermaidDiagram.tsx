@@ -17,7 +17,9 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const mermaidRef = useRef<HTMLDivElement>(null);
-  const uniqueId = useRef(`mermaid-${Math.random().toString(36).substring(2, 11)}`);
+  const uniqueId = useRef(
+    `mermaid-${Math.random().toString(36).substring(2, 11)}`,
+  );
   const themeRef = useRef<ThemeName>(getThemeConfig());
 
   // Determine which theme config to use based on current theme
@@ -75,7 +77,9 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
       setError(null);
     } catch (err) {
       console.error("Mermaid rendering error:", err);
-      setError(`Failed to render diagram: ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        `Failed to render diagram: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   };
 
@@ -99,7 +103,10 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
     // Use MutationObserver to detect theme changes
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class"
+        ) {
           handleThemeChange();
           break;
         }
@@ -124,7 +131,10 @@ export function MermaidDiagram({ chart, className = "" }: MermaidDiagramProps) {
   }
 
   return (
-    <div className={`mermaid-diagram ${styles.mermaidWrapper} ${className}`} ref={mermaidRef}>
+    <div
+      className={`mermaid-diagram ${styles.mermaidWrapper} ${className}`}
+      ref={mermaidRef}
+    >
       {svgContent ? (
         <div dangerouslySetInnerHTML={{ __html: svgContent }} />
       ) : (

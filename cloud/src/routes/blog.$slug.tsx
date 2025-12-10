@@ -1,4 +1,8 @@
-import { createFileRoute, useParams, useLoaderData } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useParams,
+  useLoaderData,
+} from "@tanstack/react-router";
 import { ContentErrorHandler } from "@/src/components/core/feedback";
 import { getBlogContent, type BlogContent } from "@/src/lib/content";
 import { environment } from "@/src/lib/content/environment";
@@ -19,7 +23,10 @@ async function blogLoader({ params }: { params: { slug: string } }) {
 // Wrapper component that connects route data to the BlogPostPage component
 function BlogRoute() {
   const { slug } = useParams({ from: "/blog/$slug" });
-  const post = useLoaderData({ from: "/blog/$slug", structuralSharing: false }) as BlogContent;
+  const post = useLoaderData({
+    from: "/blog/$slug",
+    structuralSharing: false,
+  }) as BlogContent;
 
   return <BlogPostPage post={post} slug={slug} />;
 }
@@ -71,4 +78,3 @@ export const Route = createFileRoute("/blog/$slug")({
   },
   onError: (error: Error) => environment.onError(error),
 });
-

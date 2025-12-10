@@ -76,7 +76,11 @@ export function TypeLink({ type }: TypeLinkProps) {
   }
 
   // For optional types (T | None or T?)
-  if (type.kind === "optional" && type.parameters && type.parameters.length > 0) {
+  if (
+    type.kind === "optional" &&
+    type.parameters &&
+    type.parameters.length > 0
+  ) {
     return (
       <span className="font-mono">
         <TypeLink type={type.parameters[0]} />
@@ -86,7 +90,11 @@ export function TypeLink({ type }: TypeLinkProps) {
   }
 
   // For callable types (Callable[[args], return_type])
-  if (type.kind === "callable" && type.parameters && type.parameters.length === 2) {
+  if (
+    type.kind === "callable" &&
+    type.parameters &&
+    type.parameters.length === 2
+  ) {
     const argsType = type.parameters[0]; // This is usually a tuple
     const returnType = type.parameters[1];
 

@@ -90,7 +90,7 @@ export class SearchScorer {
 
     // Count how many query terms have matches in the title
     const matchingTerms = queryTerms.filter((queryTerm) =>
-      titleTerms.some((titleTerm) => queryTerm === titleTerm)
+      titleTerms.some((titleTerm) => queryTerm === titleTerm),
     ).length;
 
     // Calculate coverage ratio
@@ -128,32 +128,39 @@ export class SearchScorer {
    * 3. Applies title-based boosting
    * 4. Sorts by final weighted score
    */
-  scoreAndRankResults(rawResults: RawSearchResult[], query: string): SearchResultItem[] {
+  scoreAndRankResults(
+    rawResults: RawSearchResult[],
+    query: string,
+  ): SearchResultItem[] {
     // Filter out results without metadata
-    const resultsWithMeta = rawResults.filter((result) => result.meta !== undefined);
+    const resultsWithMeta = rawResults.filter(
+      (result) => result.meta !== undefined,
+    );
 
     // Transform raw results into weighted results
-    const weightedResults: SearchResultItem[] = resultsWithMeta.map((rawResult) => {
-      // Get content type weight (meta is guaranteed to exist from the filter above)
-      const weight = this.getContentWeight(rawResult.meta);
-      const titleBoost = this.calculateTitleBoost(query, rawResult.title);
-      const rawScore = rawResult.score;
+    const weightedResults: SearchResultItem[] = resultsWithMeta.map(
+      (rawResult) => {
+        // Get content type weight (meta is guaranteed to exist from the filter above)
+        const weight = this.getContentWeight(rawResult.meta);
+        const titleBoost = this.calculateTitleBoost(query, rawResult.title);
+        const rawScore = rawResult.score;
 
-      // Calculate the final score with both content weight and title boost
-      const score = rawScore * weight * titleBoost;
+        // Calculate the final score with both content weight and title boost
+        const score = rawScore * weight * titleBoost;
 
-      // Create the weighted result with all required fields
-      return {
-        title: rawResult.title,
-        excerpt: rawResult.excerpt,
-        url: rawResult.url,
-        section: rawResult.section,
-        rawScore: rawScore,
-        weight: weight,
-        score: score,
-        meta: rawResult.meta!, // Non-null assertion is safe due to the filter above
-      };
-    });
+        // Create the weighted result with all required fields
+        return {
+          title: rawResult.title,
+          excerpt: rawResult.excerpt,
+          url: rawResult.url,
+          section: rawResult.section,
+          rawScore: rawScore,
+          weight: weight,
+          score: score,
+          meta: rawResult.meta!, // Non-null assertion is safe due to the filter above
+        };
+      },
+    );
 
     // Filter out items with zero weight or score
     const filteredItems = weightedResults.filter((item) => item.score > 0);

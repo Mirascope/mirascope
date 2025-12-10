@@ -17,7 +17,12 @@ interface ValidationResult {
   brokenLinks: { page: string; link: string; text: string }[];
   brokenImages: { page: string; src: string; alt: string }[];
   disallowedAssets: string[]; // Paths to PNG images that should be WebP
-  nonCanonicalLinks: { page: string; link: string; canonical: string; text: string }[];
+  nonCanonicalLinks: {
+    page: string;
+    link: string;
+    canonical: string;
+    text: string;
+  }[];
 }
 
 /**
@@ -33,7 +38,9 @@ function parseSitemap(sitemapPath: string): Set<string> {
   const validRoutes = new Set<string>();
 
   if (!fs.existsSync(sitemapPath)) {
-    console.warn(`⚠️  Sitemap not found at ${sitemapPath}, falling back to empty route set`);
+    console.warn(
+      `⚠️  Sitemap not found at ${sitemapPath}, falling back to empty route set`,
+    );
     return validRoutes;
   }
 
@@ -71,7 +78,7 @@ function parseSitemap(sitemapPath: string): Set<string> {
 
 async function validateLinksAndImages(
   distDir: string,
-  verbose: boolean = false
+  verbose: boolean = false,
 ): Promise<ValidationResult> {
   printHeader("Validating Internal Links and Images");
 
@@ -116,7 +123,9 @@ async function validateLinksAndImages(
     validAssetSet.add(webPath);
 
     // Add WebP variants to valid assets set since they'll be generated during build
-    if (![".svg", ".gif", ".webp"].includes(path.extname(assetPath).toLowerCase())) {
+    if (
+      ![".svg", ".gif", ".webp"].includes(path.extname(assetPath).toLowerCase())
+    ) {
       const basePath = webPath.substring(0, webPath.lastIndexOf("."));
       validAssetSet.add(`${basePath}.webp`);
       validAssetSet.add(`${basePath}-medium.webp`);
@@ -130,7 +139,12 @@ async function validateLinksAndImages(
 
   const brokenLinks: { page: string; link: string; text: string }[] = [];
   const brokenImages: { page: string; src: string; alt: string }[] = [];
-  const nonCanonicalLinks: { page: string; link: string; canonical: string; text: string }[] = [];
+  const nonCanonicalLinks: {
+    page: string;
+    link: string;
+    canonical: string;
+    text: string;
+  }[] = [];
   let totalLinks = 0;
   let totalImages = 0;
 
@@ -144,10 +158,13 @@ async function validateLinksAndImages(
     // Get the relative path for reporting
     const relativePath = path.relative(distDir, htmlFile);
     // Convert dist/some/path/index.html to /some/path or dist/page.html to /page
-    const currentPage = "/" + relativePath.replace(/\/index\.html$/, "").replace(/\.html$/, "");
+    const currentPage =
+      "/" + relativePath.replace(/\/index\.html$/, "").replace(/\.html$/, "");
 
     if (verbose) {
-      console.log(`Checking ${links.length} links and ${images.length} images in ${relativePath}`);
+      console.log(
+        `Checking ${links.length} links and ${images.length} images in ${relativePath}`,
+      );
     }
 
     // Check each internal link
@@ -231,7 +248,10 @@ async function validateLinksAndImages(
 
   if (brokenLinks.length > 0) {
     isValid = false;
-    coloredLog(`\n${icons.error} Found ${brokenLinks.length} broken internal links:`, "red");
+    coloredLog(
+      `\n${icons.error} Found ${brokenLinks.length} broken internal links:`,
+      "red",
+    );
 
     // Group by page for easier readability
     const byPage = brokenLinks.reduce(
@@ -240,26 +260,29 @@ async function validateLinksAndImages(
         acc[page].push({ link, text });
         return acc;
       },
-      {} as Record<string, { link: string; text: string }[]>
+      {} as Record<string, { link: string; text: string }[]>,
     );
 
     Object.entries(byPage).forEach(([page, links]) => {
       console.log(`\n${colorize(`Page: ${page}`, "yellow")}`);
       links.forEach(({ link, text }) => {
         console.log(
-          `  ${icons.arrow} ${colorize(link, "red")} (${text.substring(0, 30)}${text.length > 30 ? "..." : ""})`
+          `  ${icons.arrow} ${colorize(link, "red")} (${text.substring(0, 30)}${text.length > 30 ? "..." : ""})`,
         );
       });
     });
   } else {
-    coloredLog(`\n${icons.success} All ${totalLinks} internal links are valid!`, "green");
+    coloredLog(
+      `\n${icons.success} All ${totalLinks} internal links are valid!`,
+      "green",
+    );
   }
 
   // Output results for non-canonical links
   if (nonCanonicalLinks.length > 0) {
     coloredLog(
       `\n${icons.error} Found ${nonCanonicalLinks.length} links using non-canonical URLs:`,
-      "yellow"
+      "yellow",
     );
 
     // Group by page for easier readability
@@ -269,28 +292,31 @@ async function validateLinksAndImages(
         acc[page].push({ link, canonical, text });
         return acc;
       },
-      {} as Record<string, { link: string; canonical: string; text: string }[]>
+      {} as Record<string, { link: string; canonical: string; text: string }[]>,
     );
 
     Object.entries(byPage).forEach(([page, links]) => {
       console.log(`\n${colorize(`Page: ${page}`, "yellow")}`);
       links.forEach(({ link, canonical, text }) => {
         console.log(
-          `  ${icons.arrow} ${colorize(link, "yellow")} should be ${colorize(canonical, "green")} (${text.substring(0, 30)}${text.length > 30 ? "..." : ""})`
+          `  ${icons.arrow} ${colorize(link, "yellow")} should be ${colorize(canonical, "green")} (${text.substring(0, 30)}${text.length > 30 ? "..." : ""})`,
         );
       });
     });
 
     coloredLog(
       `\nThese links will be automatically redirected, but should be updated to use canonical URLs.`,
-      "cyan"
+      "cyan",
     );
   }
 
   // Output results for images
   if (brokenImages.length > 0) {
     isValid = false;
-    coloredLog(`\n${icons.error} Found ${brokenImages.length} broken internal images:`, "red");
+    coloredLog(
+      `\n${icons.error} Found ${brokenImages.length} broken internal images:`,
+      "red",
+    );
 
     // Group by page for easier readability
     const byPage = brokenImages.reduce(
@@ -299,19 +325,22 @@ async function validateLinksAndImages(
         acc[page].push({ src, alt });
         return acc;
       },
-      {} as Record<string, { src: string; alt: string }[]>
+      {} as Record<string, { src: string; alt: string }[]>,
     );
 
     Object.entries(byPage).forEach(([page, images]) => {
       console.log(`\n${colorize(`Page: ${page}`, "yellow")}`);
       images.forEach(({ src, alt }) => {
         console.log(
-          `  ${icons.arrow} ${colorize(src, "red")} (${alt.substring(0, 30)}${alt.length > 30 ? "..." : ""})`
+          `  ${icons.arrow} ${colorize(src, "red")} (${alt.substring(0, 30)}${alt.length > 30 ? "..." : ""})`,
         );
       });
     });
   } else {
-    coloredLog(`\n${icons.success} All ${totalImages} internal images are valid!`, "green");
+    coloredLog(
+      `\n${icons.success} All ${totalImages} internal images are valid!`,
+      "green",
+    );
   }
 
   // Check for PNG files in the source public directory that should be WebP
@@ -319,7 +348,9 @@ async function validateLinksAndImages(
   const sourceAssetsDir = path.join(process.cwd(), "public/assets");
 
   // Find all PNG/JPG images in the source directory
-  const pngFiles = await glob(`${sourceAssetsDir}/**/*.{png,jpg,jpeg}`, { absolute: true });
+  const pngFiles = await glob(`${sourceAssetsDir}/**/*.{png,jpg,jpeg}`, {
+    absolute: true,
+  });
 
   // Add all found PNG/JPG files to disallowed assets
   for (const pngFile of pngFiles) {
@@ -333,7 +364,7 @@ async function validateLinksAndImages(
     isValid = false;
     coloredLog(
       `\n${icons.error} Found ${disallowedAssets.length} PNG/JPG images that should be converted to WebP:`,
-      "red"
+      "red",
     );
 
     disallowedAssets.forEach((assetPath) => {
@@ -342,10 +373,13 @@ async function validateLinksAndImages(
 
     coloredLog(
       `\nPlease run 'bun run convert-to-webp' to convert these images to WebP format.`,
-      "yellow"
+      "yellow",
     );
   } else {
-    coloredLog(`\n${icons.success} No disallowed image formats found in source assets!`, "green");
+    coloredLog(
+      `\n${icons.success} No disallowed image formats found in source assets!`,
+      "green",
+    );
   }
 
   return {
@@ -367,16 +401,22 @@ async function main() {
 
   // Check if dist directory exists (unless skipped)
   if (!skipDistCheck && !fs.existsSync(distDir)) {
-    coloredLog(`${icons.error} Dist directory not found! Run \`bun run build\` first.`, "red");
+    coloredLog(
+      `${icons.error} Dist directory not found! Run \`bun run build\` first.`,
+      "red",
+    );
     coloredLog(
       `To validate source assets only, use \`bun run validate-assets --skip-dist-check\``,
-      "yellow"
+      "yellow",
     );
     process.exit(1);
   }
 
   try {
-    const result = await validateLinksAndImages(skipDistCheck ? process.cwd() : distDir, verbose);
+    const result = await validateLinksAndImages(
+      skipDistCheck ? process.cwd() : distDir,
+      verbose,
+    );
 
     // Determine if we should fail the validation
     let shouldFail = false;
@@ -393,8 +433,14 @@ async function main() {
     // Only fail on disallowed assets if not ignored
     if (!ignoreDisallowed && result.disallowedAssets.length > 0) {
       shouldFail = true;
-      coloredLog(`\nTo convert PNG/JPG to WebP: \`bun run convert-to-webp\``, "cyan");
-      coloredLog(`To ignore this check: \`bun run validate-assets --ignore-disallowed\``, "cyan");
+      coloredLog(
+        `\nTo convert PNG/JPG to WebP: \`bun run convert-to-webp\``,
+        "cyan",
+      );
+      coloredLog(
+        `To ignore this check: \`bun run validate-assets --ignore-disallowed\``,
+        "cyan",
+      );
     }
 
     if (shouldFail) {

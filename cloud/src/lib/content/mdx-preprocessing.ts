@@ -63,7 +63,9 @@ function processCodeExamples(filePath: string): string {
         // Process lines if specified (e.g., "1-5" or "10-20")
         let processedContent = exampleContent;
         if (lines) {
-          const [start, end] = lines.split("-").map((n) => parseInt(n.trim(), 10));
+          const [start, end] = lines
+            .split("-")
+            .map((n) => parseInt(n.trim(), 10));
           if (!isNaN(start) && !isNaN(end)) {
             const fileLines = exampleContent.split("\n");
             // Convert to 0-based indexing and slice
@@ -83,10 +85,10 @@ function processCodeExamples(filePath: string): string {
         throw new ContentError(
           `Error processing CodeExample: ${error instanceof Error ? error.message : String(error)}`,
           filePath,
-          error instanceof Error ? error : undefined
+          error instanceof Error ? error : undefined,
         );
       }
-    }
+    },
   );
 }
 

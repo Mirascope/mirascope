@@ -1,5 +1,9 @@
 import { createContext, useContext, type ReactNode } from "react";
-import { type ProductName, type Product, productKey } from "@/src/lib/content/spec";
+import {
+  type ProductName,
+  type Product,
+  productKey,
+} from "@/src/lib/content/spec";
 
 export { type ProductName, type Product, productKey };
 

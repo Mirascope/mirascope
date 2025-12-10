@@ -49,7 +49,11 @@ book: Book = extract_book(text) # [!code highlight]`;
             </div>
           }
         >
-          <ProviderCodeWrapper className="textured-bg" code={codeExample} language="python" />
+          <ProviderCodeWrapper
+            className="textured-bg"
+            code={codeExample}
+            language="python"
+          />
         </ProviderTabbedSection>
       </div>
 

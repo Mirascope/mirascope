@@ -25,5 +25,12 @@ export function ProviderCodeWrapper({
     code = replaceProviderVariables(code, provider);
   }
 
-  return <AnalyticsCodeBlock className={className} code={code} language={language} meta={meta} />;
+  return (
+    <AnalyticsCodeBlock
+      className={className}
+      code={code}
+      language={language}
+      meta={meta}
+    />
+  );
 }

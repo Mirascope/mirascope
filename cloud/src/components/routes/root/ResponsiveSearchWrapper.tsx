@@ -3,7 +3,10 @@ import { Search as SearchIcon, X } from "lucide-react";
 import { useIsMobile } from "./hooks/useIsMobile";
 import SearchBar from "./SearchBar";
 import { SEARCH_BAR_STYLES } from "./styles";
-import { useIsLandingPage, useIsRouterWaitlistPage } from "@/src/components/core";
+import {
+  useIsLandingPage,
+  useIsRouterWaitlistPage,
+} from "@/src/components/core";
 
 /**
  * Props for search wrappers
@@ -47,8 +50,12 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
   if (!isOpen) {
     return (
       <button
-        className={SEARCH_BAR_STYLES.mobileSearchButton(isLandingPage || isRouterWaitlistPage)}
-        style={SEARCH_BAR_STYLES.getInputContainerStyles(isLandingPage || isRouterWaitlistPage)}
+        className={SEARCH_BAR_STYLES.mobileSearchButton(
+          isLandingPage || isRouterWaitlistPage,
+        )}
+        style={SEARCH_BAR_STYLES.getInputContainerStyles(
+          isLandingPage || isRouterWaitlistPage,
+        )}
         onClick={handleOpenSearch}
         aria-label="Open search"
       >
@@ -79,7 +86,9 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
 
             {/* Close button positioned on the right side */}
             <button
-              className={SEARCH_BAR_STYLES.closeButton(isLandingPage || isRouterWaitlistPage)}
+              className={SEARCH_BAR_STYLES.closeButton(
+                isLandingPage || isRouterWaitlistPage,
+              )}
               onClick={handleCloseSearch}
               aria-label="Close search"
             >
@@ -96,7 +105,9 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
  * Responsive wrapper that renders either mobile or desktop search UI
  * based on screen size
  */
-export default function ResponsiveSearchWrapper({ onOpenChange }: SearchWrapperProps) {
+export default function ResponsiveSearchWrapper({
+  onOpenChange,
+}: SearchWrapperProps) {
   // Use the mobile detection hook
   const isMobile = useIsMobile();
 
@@ -106,5 +117,10 @@ export default function ResponsiveSearchWrapper({ onOpenChange }: SearchWrapperP
   }
 
   // Desktop UI - render the SearchBar normally
-  return <SearchBar onOpenChange={onOpenChange} onResultSelect={() => onOpenChange(false)} />;
+  return (
+    <SearchBar
+      onOpenChange={onOpenChange}
+      onResultSelect={() => onOpenChange(false)}
+    />
+  );
 }

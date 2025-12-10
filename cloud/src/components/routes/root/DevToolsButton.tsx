@@ -18,7 +18,7 @@ const DevToolsButton: React.FC<DevToolsButtonProps> = ({ className }) => {
       to="/dev"
       className={cn(
         "border-primary bg-background hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center rounded-md border px-4 py-1 text-sm font-medium shadow-sm",
-        className
+        className,
       )}
     >
       Dev

@@ -78,7 +78,9 @@ export class ContentPreprocessor {
 
     // Create content type directories
     for (const contentType of CONTENT_TYPES) {
-      fs.mkdirSync(path.join(this.contentDir, contentType), { recursive: true });
+      fs.mkdirSync(path.join(this.contentDir, contentType), {
+        recursive: true,
+      });
       fs.mkdirSync(path.join(this.metaDir, contentType), { recursive: true });
     }
   }
@@ -120,7 +122,10 @@ export class ContentPreprocessor {
 
     // Skip if source directory doesn't exist
     if (!fs.existsSync(srcDir)) {
-      if (this.verbose) console.warn(`Source directory for ${contentType} not found: ${srcDir}`);
+      if (this.verbose)
+        console.warn(
+          `Source directory for ${contentType} not found: ${srcDir}`,
+        );
       return;
     }
 
@@ -135,7 +140,7 @@ export class ContentPreprocessor {
       }
     } catch (error) {
       this.addError(
-        `Error processing ${contentType} content: ${error instanceof Error ? error.message : String(error)}`
+        `Error processing ${contentType} content: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -146,7 +151,7 @@ export class ContentPreprocessor {
   private async processContentDirectory(
     srcDir: string,
     contentType: ContentType,
-    outputBase: string
+    outputBase: string,
   ): Promise<void> {
     // Create output directory if it doesn't exist
     fs.mkdirSync(outputBase, { recursive: true });
@@ -164,7 +169,7 @@ export class ContentPreprocessor {
         await this.processMdxFile(filePath, srcDir, contentType, outputBase);
       } catch (error) {
         this.addError(
-          `Error processing ${filePath}: ${error instanceof Error ? error.message : String(error)}`
+          `Error processing ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
     }
@@ -176,7 +181,7 @@ export class ContentPreprocessor {
   private createContentPath(
     contentType: ContentType,
     relativePath: string,
-    filename: string
+    filename: string,
   ): ContentPath {
     // Remove .mdx extension from relative path
     const cleanPath = relativePath.replace(/\.mdx$/, "");
@@ -201,7 +206,10 @@ export class ContentPreprocessor {
    * Generate a full URL route from content type and path
    * This creates routes that match the actual URLs used in the site
    */
-  private generateRouteFromPath(contentType: ContentType, contentPath: ContentPath): string {
+  private generateRouteFromPath(
+    contentType: ContentType,
+    contentPath: ContentPath,
+  ): string {
     switch (contentType) {
       case "blog":
         return `/blog/${contentPath.slug}`;
@@ -216,7 +224,7 @@ export class ContentPreprocessor {
 
         // If doc not found in registry, this is an error condition
         throw new Error(
-          `Doc not found in registry: ${contentPath.subpath}. Make sure it's defined in the _meta.ts file.`
+          `Doc not found in registry: ${contentPath.subpath}. Make sure it's defined in the _meta.ts file.`,
         );
 
       case "policy":
@@ -241,7 +249,7 @@ export class ContentPreprocessor {
       throw new Error(
         `Invalid filename "${filename}" in ${filePath}. ` +
           `Filenames must be lowercase, contain only letters, numbers, and hyphens, ` +
-          `and cannot have consecutive or leading/trailing hyphens.`
+          `and cannot have consecutive or leading/trailing hyphens.`,
       );
     }
   }
@@ -261,7 +269,7 @@ export class ContentPreprocessor {
     filePath: string,
     srcDir: string,
     contentType: ContentType,
-    outputBase: string
+    outputBase: string,
   ): Promise<void> {
     const { frontmatter, fullContent } = preprocessMdx(filePath);
 
@@ -275,14 +283,18 @@ export class ContentPreprocessor {
     this.validateSlug(filename, filePath);
 
     // Create a consistent content path object
-    const contentPath = this.createContentPath(contentType, relativePath, filename);
+    const contentPath = this.createContentPath(
+      contentType,
+      relativePath,
+      filename,
+    );
 
     // Create and validate metadata in one step
     const metadata = this.createAndValidateMetadata(
       contentType,
       frontmatter,
       contentPath,
-      filePath
+      filePath,
     );
 
     // Add to the appropriate metadata collection
@@ -296,7 +308,9 @@ export class ContentPreprocessor {
       content: fullContent,
     };
 
-    const outputDir = path.dirname(path.join(outputBase, `${contentPath.subpath}.json`));
+    const outputDir = path.dirname(
+      path.join(outputBase, `${contentPath.subpath}.json`),
+    );
     fs.mkdirSync(outputDir, { recursive: true });
 
     const outputPath = path.join(outputBase, `${contentPath.subpath}.json`);
@@ -311,7 +325,7 @@ export class ContentPreprocessor {
     contentType: ContentType,
     frontmatter: Record<string, any>,
     contentPath: ContentPath,
-    filePath: string
+    filePath: string,
   ): ContentMeta {
     // Start with collecting missing fields
     const missingFields: string[] = [];
@@ -340,7 +354,9 @@ export class ContentPreprocessor {
 
         // Validate date format
         if (frontmatter.date && !/^\d{4}-\d{2}-\d{2}$/.test(frontmatter.date)) {
-          throw new Error(`Invalid date format in ${filePath}. Date must be in YYYY-MM-DD format.`);
+          throw new Error(
+            `Invalid date format in ${filePath}. Date must be in YYYY-MM-DD format.`,
+          );
         }
 
         // Construct blog metadata
@@ -351,7 +367,9 @@ export class ContentPreprocessor {
           date: frontmatter.date,
           readTime: frontmatter.readTime,
           author: frontmatter.author,
-          ...(frontmatter.lastUpdated && { lastUpdated: frontmatter.lastUpdated }),
+          ...(frontmatter.lastUpdated && {
+            lastUpdated: frontmatter.lastUpdated,
+          }),
         } as Partial<BlogMeta>;
         break;
 
@@ -364,7 +382,7 @@ export class ContentPreprocessor {
         if (!docInfo) {
           throw new Error(
             `No DocInfo found for path: ${contentPath.subpath}. ` +
-              `Ensure this document is defined in the product's _meta.ts file.`
+              `Ensure this document is defined in the product's _meta.ts file.`,
           );
         }
         const product: Product = docInfo.product;
@@ -405,7 +423,7 @@ export class ContentPreprocessor {
     if (missingFields.length > 0) {
       throw new Error(
         `Missing required fields in ${filePath}: ${missingFields.join(", ")}. ` +
-          `These fields must be provided in the frontmatter.`
+          `These fields must be provided in the frontmatter.`,
       );
     }
 
@@ -415,7 +433,10 @@ export class ContentPreprocessor {
   /**
    * Add metadata to the appropriate collection based on content type
    */
-  private addToMetadataCollection(contentType: ContentType, metadata: ContentMeta): void {
+  private addToMetadataCollection(
+    contentType: ContentType,
+    metadata: ContentMeta,
+  ): void {
     switch (contentType) {
       case "blog":
         this.blogMetadata.push(metadata as BlogMeta);
@@ -438,7 +459,9 @@ export class ContentPreprocessor {
   private sortBlogPosts(): void {
     if (this.blogMetadata.length > 0) {
       this.blogMetadata.sort((a, b) => {
-        return new Date(b.date || "").getTime() - new Date(a.date || "").getTime();
+        return (
+          new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+        );
       });
 
       if (this.verbose) {
@@ -455,10 +478,12 @@ export class ContentPreprocessor {
     if (this.blogMetadata.length > 0) {
       fs.writeFileSync(
         path.join(this.metaDir, "blog", "index.json"),
-        JSON.stringify(this.blogMetadata)
+        JSON.stringify(this.blogMetadata),
       );
       if (this.verbose) {
-        console.log(`Created metadata index for blog with ${this.blogMetadata.length} items`);
+        console.log(
+          `Created metadata index for blog with ${this.blogMetadata.length} items`,
+        );
       }
     }
 
@@ -466,10 +491,12 @@ export class ContentPreprocessor {
     if (this.docMetadata.length > 0) {
       fs.writeFileSync(
         path.join(this.metaDir, "docs", "index.json"),
-        JSON.stringify(this.docMetadata)
+        JSON.stringify(this.docMetadata),
       );
       if (this.verbose) {
-        console.log(`Created metadata index for docs with ${this.docMetadata.length} items`);
+        console.log(
+          `Created metadata index for docs with ${this.docMetadata.length} items`,
+        );
       }
     }
 
@@ -477,10 +504,12 @@ export class ContentPreprocessor {
     if (this.policyMetadata.length > 0) {
       fs.writeFileSync(
         path.join(this.metaDir, "policy", "index.json"),
-        JSON.stringify(this.policyMetadata)
+        JSON.stringify(this.policyMetadata),
       );
       if (this.verbose) {
-        console.log(`Created metadata index for policy with ${this.policyMetadata.length} items`);
+        console.log(
+          `Created metadata index for policy with ${this.policyMetadata.length} items`,
+        );
       }
     }
 
@@ -488,10 +517,12 @@ export class ContentPreprocessor {
     if (this.devMetadata.length > 0) {
       fs.writeFileSync(
         path.join(this.metaDir, "dev", "index.json"),
-        JSON.stringify(this.devMetadata)
+        JSON.stringify(this.devMetadata),
       );
       if (this.verbose) {
-        console.log(`Created metadata index for dev with ${this.devMetadata.length} items`);
+        console.log(
+          `Created metadata index for dev with ${this.devMetadata.length} items`,
+        );
       }
     }
   }
@@ -515,10 +546,15 @@ export class ContentPreprocessor {
     }
 
     // Write to the unified metadata file
-    fs.writeFileSync(path.join(this.metaDir, "unified.json"), JSON.stringify(allMetadata));
+    fs.writeFileSync(
+      path.join(this.metaDir, "unified.json"),
+      JSON.stringify(allMetadata),
+    );
 
     if (this.verbose) {
-      console.log(`Created unified metadata file with ${allMetadata.length} items`);
+      console.log(
+        `Created unified metadata file with ${allMetadata.length} items`,
+      );
     }
   }
 
@@ -544,7 +580,10 @@ export class ContentPreprocessor {
  * Main preprocessing function that creates the ContentPreprocessor
  * and processes all content
  */
-export async function preprocessContent(baseDir: string, verbose = true): Promise<void> {
+export async function preprocessContent(
+  baseDir: string,
+  verbose = true,
+): Promise<void> {
   try {
     const preprocessor = new ContentPreprocessor(baseDir, verbose);
     await preprocessor.processAllContent();

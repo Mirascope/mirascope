@@ -25,7 +25,9 @@ export function ReturnTable({ returnType }: ReturnTableProps) {
         <table className="w-full border-collapse">
           <thead className="bg-muted">
             <tr>
-              {returnType.name && <th className="border-b px-4 py-2 text-left">Name</th>}
+              {returnType.name && (
+                <th className="border-b px-4 py-2 text-left">Name</th>
+              )}
               <th className="border-b px-4 py-2 text-left">Type</th>
               <th className="border-b px-4 py-2 text-left">Description</th>
             </tr>
@@ -33,12 +35,16 @@ export function ReturnTable({ returnType }: ReturnTableProps) {
           <tbody>
             <tr className="bg-background">
               {returnType.name && (
-                <td className="border-b px-4 py-2 font-mono">{returnType.name}</td>
+                <td className="border-b px-4 py-2 font-mono">
+                  {returnType.name}
+                </td>
               )}
               <td className="border-b px-4 py-2">
                 <TypeLink type={returnType.type_info} />
               </td>
-              <td className="border-b px-4 py-2">{returnType.description || "-"}</td>
+              <td className="border-b px-4 py-2">
+                {returnType.description || "-"}
+              </td>
             </tr>
           </tbody>
         </table>

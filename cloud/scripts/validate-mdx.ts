@@ -16,7 +16,10 @@ interface ValidationResult {
   errors: ValidationError[];
 }
 
-async function validateMDXSyntax(content: string, filePath: string): Promise<ValidationResult> {
+async function validateMDXSyntax(
+  content: string,
+  filePath: string,
+): Promise<ValidationResult> {
   try {
     await processMDXContent(content, { path: filePath });
     return { isValid: true, errors: [] };
@@ -92,7 +95,7 @@ async function validateMdxFile(filePath: string): Promise<ValidationResult> {
 }
 
 async function validateMdxDirectory(
-  dirPath: string
+  dirPath: string,
 ): Promise<{ file: string; result: ValidationResult }[]> {
   const pattern = path.join(dirPath, "**/*.mdx");
   const files = await glob(pattern, { nodir: true });

@@ -29,8 +29,10 @@ const specialInstallInstructions: Record<string, Record<OS, string>> = {
     Windows: "aws configure",
   },
   azure: {
-    "MacOS / Linux": "export AZURE_INFERENCE_ENDPOINT=XXXX\nexport AZURE_INFERENCE_CREDENTIAL=XXXX",
-    Windows: "set AZURE_INFERENCE_ENDPOINT=XXXX\nset AZURE_INFERENCE_CREDENTIAL=XXXX",
+    "MacOS / Linux":
+      "export AZURE_INFERENCE_ENDPOINT=XXXX\nexport AZURE_INFERENCE_CREDENTIAL=XXXX",
+    Windows:
+      "set AZURE_INFERENCE_ENDPOINT=XXXX\nset AZURE_INFERENCE_CREDENTIAL=XXXX",
   },
 };
 

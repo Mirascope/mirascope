@@ -5,7 +5,10 @@ interface DiscordLinkProps {
   className?: string;
 }
 
-export default function DiscordLink({ isLandingPage, className }: DiscordLinkProps) {
+export default function DiscordLink({
+  isLandingPage,
+  className,
+}: DiscordLinkProps) {
   const logoColor = isLandingPage ? "White" : "Blurple";
 
   return (

@@ -51,7 +51,9 @@ async function checkPort() {
 
     testServer.once("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE") {
-        console.error(`❌ Error: Port ${PORT} is already in use. Please try another port.`);
+        console.error(
+          `❌ Error: Port ${PORT} is already in use. Please try another port.`,
+        );
         resolve(false);
       } else {
         console.error(`❌ Error checking port: ${err.message}`);
@@ -113,7 +115,11 @@ const server = createServer((req, res) => {
   }
 
   // Check if there's an index.html in the requested directory
-  const indexFilePath = path.join(distDir, normalizedPath.slice(1), "index.html");
+  const indexFilePath = path.join(
+    distDir,
+    normalizedPath.slice(1),
+    "index.html",
+  );
 
   if (fs.existsSync(indexFilePath)) {
     serveFile(path.join(normalizedPath, "index.html"), res);

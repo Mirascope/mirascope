@@ -42,7 +42,9 @@ function printRoutes(routes: string[], color: string = RESET): void {
 // Main function to run tests
 async function main() {
   printHeader("TanStack Router Utils Test", CYAN);
-  console.log("Testing the router-utils.ts utility to verify route extraction\n");
+  console.log(
+    "Testing the router-utils.ts utility to verify route extraction\n",
+  );
 
   try {
     // Test static routes extraction
@@ -70,16 +72,18 @@ async function main() {
 
     // Check if there are any static routes in docs routes
     const staticInDocs = staticRoutes.filter(
-      (route) => docsRoutes.includes(route) && route.startsWith("/docs")
+      (route) => docsRoutes.includes(route) && route.startsWith("/docs"),
     );
 
     if (staticInDocs.length > 0) {
       console.log(
-        `${YELLOW}Found ${staticInDocs.length} static routes that overlap with docs routes:${RESET}`
+        `${YELLOW}Found ${staticInDocs.length} static routes that overlap with docs routes:${RESET}`,
       );
       staticInDocs.forEach((route) => console.log(`  - ${route}`));
     } else {
-      console.log(`${GREEN}No overlaps found between static and docs routes${RESET}`);
+      console.log(
+        `${GREEN}No overlaps found between static and docs routes${RESET}`,
+      );
     }
 
     console.log("\n" + CYAN + "=".repeat(50) + RESET);

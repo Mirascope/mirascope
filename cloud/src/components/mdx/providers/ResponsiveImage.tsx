@@ -90,13 +90,24 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   return (
     <>
       <picture
-        className={cn("cursor-pointer", isExpanded ? "pointer-events-none" : "")}
+        className={cn(
+          "cursor-pointer",
+          isExpanded ? "pointer-events-none" : "",
+        )}
         onClick={toggleExpanded}
       >
         {/* Small viewport */}
-        <source media="(max-width: 640px)" srcSet={smallWebp} type="image/webp" />
+        <source
+          media="(max-width: 640px)"
+          srcSet={smallWebp}
+          type="image/webp"
+        />
         {/* Medium viewport */}
-        <source media="(max-width: 1024px)" srcSet={mediumWebp} type="image/webp" />
+        <source
+          media="(max-width: 1024px)"
+          srcSet={mediumWebp}
+          type="image/webp"
+        />
         {/* Large viewport - WebP */}
         <source srcSet={largeWebp} type="image/webp" />
         {/* Original fallback */}

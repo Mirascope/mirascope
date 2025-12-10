@@ -91,7 +91,8 @@ export function getAlternativeProvider(primaryProvider: Provider): {
   provider: Provider;
   model: string;
 } {
-  const alternativeProvider = primaryProvider === "anthropic" ? "openai" : "anthropic";
+  const alternativeProvider =
+    primaryProvider === "anthropic" ? "openai" : "anthropic";
   return {
     provider: alternativeProvider,
     model: providerDefaults[alternativeProvider].defaultModel,
@@ -102,13 +103,19 @@ export function getAlternativeProvider(primaryProvider: Provider): {
  * Replace provider variables in content
  * Replaces $PROVIDER, $MODEL, $OTHER_PROVIDER, $OTHER_MODEL, and $PROVIDER:MODEL
  */
-export function replaceProviderVariables(content: string, primaryProvider: Provider): string {
+export function replaceProviderVariables(
+  content: string,
+  primaryProvider: Provider,
+): string {
   const primaryInfo = providerDefaults[primaryProvider];
   const { provider: secondaryProvider, model: secondaryModel } =
     getAlternativeProvider(primaryProvider);
 
   const after = content
-    .replace(/\$PROVIDER:MODEL/g, `${primaryProvider}:${primaryInfo.defaultModel}`)
+    .replace(
+      /\$PROVIDER:MODEL/g,
+      `${primaryProvider}:${primaryInfo.defaultModel}`,
+    )
     .replace(/\$PROVIDER/g, primaryProvider)
     .replace(/\$MODEL/g, primaryInfo.defaultModel)
     .replace(/\$OTHER_PROVIDER/g, secondaryProvider)

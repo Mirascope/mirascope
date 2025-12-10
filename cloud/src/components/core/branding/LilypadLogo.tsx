@@ -34,15 +34,27 @@ const LilypadLogo: React.FC<LilypadLogoProps> = ({
 
   const logoContent = (
     <div
-      className={cn("flex flex-shrink-0 flex-row items-center justify-start", containerClassName)}
+      className={cn(
+        "flex flex-shrink-0 flex-row items-center justify-start",
+        containerClassName,
+      )}
     >
       <div className={cn(selectedSize.spacing, imgClassName)}>
-        <img src={logoPath} alt="Lilypad Logo" className={cn(selectedSize.img, imgClassName)} />
+        <img
+          src={logoPath}
+          alt="Lilypad Logo"
+          className={cn(selectedSize.img, imgClassName)}
+        />
       </div>
 
       {withText && (
         <div className={cn("flex items-center", textClassName)}>
-          <span className={cn(selectedSize.text, "text-lilypad-green font-handwriting mb-0")}>
+          <span
+            className={cn(
+              selectedSize.text,
+              "text-lilypad-green font-handwriting mb-0",
+            )}
+          >
             Lilypad
           </span>
 
@@ -52,7 +64,7 @@ const LilypadLogo: React.FC<LilypadLogoProps> = ({
                 "rounded-md bg-yellow-400 py-0.5 leading-none font-semibold text-white",
                 "font-handwriting flex items-center justify-center",
                 betaSizeMap[size],
-                betaClassName
+                betaClassName,
               )}
             >
               Beta

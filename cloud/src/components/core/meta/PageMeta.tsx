@@ -29,14 +29,23 @@ export function PageMeta(props: PageMetaProps) {
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
-  const { title, description, image, type = "website", product, article, robots } = props;
+  const {
+    title,
+    description,
+    image,
+    type = "website",
+    product,
+    article,
+    robots,
+  } = props;
 
   // Calculate metadata values
   const siteTitle = product ? `${PRODUCT_CONFIGS[product].title}` : "Mirascope";
   const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
 
   // Auto-set noindex/nofollow for hidden routes (can be overridden by explicit robots prop)
-  const computedRobots = robots ?? (isHiddenRoute(currentPath) ? "noindex, nofollow" : undefined);
+  const computedRobots =
+    robots ?? (isHiddenRoute(currentPath) ? "noindex, nofollow" : undefined);
 
   // Generate image path if not provided
   const computedImage = image || routeToImagePath(currentPath);
@@ -46,7 +55,9 @@ export function PageMeta(props: PageMetaProps) {
   const canonicalUrl = `${BASE_URL}${canonicalPath}`;
 
   // Create absolute image URL
-  const ogImage = computedImage.startsWith("http") ? computedImage : `${BASE_URL}${computedImage}`;
+  const ogImage = computedImage.startsWith("http")
+    ? computedImage
+    : `${BASE_URL}${computedImage}`;
 
   return (
     <RouteMeta>
@@ -79,8 +90,12 @@ export function PageMeta(props: PageMetaProps) {
                 url: `${BASE_URL}/assets/branding/mirascope-logo.svg`,
               },
             },
-            ...(article.publishedTime ? { datePublished: article.publishedTime } : {}),
-            ...(article.modifiedTime ? { dateModified: article.modifiedTime } : {}),
+            ...(article.publishedTime
+              ? { datePublished: article.publishedTime }
+              : {}),
+            ...(article.modifiedTime
+              ? { dateModified: article.modifiedTime }
+              : {}),
             ...(article.author
               ? {
                   author: {
@@ -109,7 +124,10 @@ export function PageMeta(props: PageMetaProps) {
 
       {/* Article specific metadata */}
       {type === "article" && article?.publishedTime && (
-        <meta property="article:published_time" content={article.publishedTime} />
+        <meta
+          property="article:published_time"
+          content={article.publishedTime}
+        />
       )}
       {type === "article" && article?.modifiedTime && (
         <meta property="article:modified_time" content={article.modifiedTime} />

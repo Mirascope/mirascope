@@ -12,7 +12,7 @@ describe("router-utils", () => {
       expect(routeToFilename("/blog")).toBe("blog");
       expect(routeToFilename("/blog/post")).toBe("blog-post");
       expect(routeToFilename("/docs/mirascope/getting-started")).toBe(
-        "docs-mirascope-getting-started"
+        "docs-mirascope-getting-started",
       );
     });
 
@@ -35,7 +35,7 @@ describe("router-utils", () => {
           acc[filename] = (acc[filename] || 0) + 1;
           return acc;
         },
-        {} as Record<string, number>
+        {} as Record<string, number>,
       );
 
       // Find duplicates (filenames that appear more than once)
@@ -43,7 +43,9 @@ describe("router-utils", () => {
         .filter(([_, count]) => count > 1)
         .map(([filename, count]) => {
           // Find the routes that map to this filename
-          const routesWithFilename = routes.filter((route) => routeToFilename(route) === filename);
+          const routesWithFilename = routes.filter(
+            (route) => routeToFilename(route) === filename,
+          );
           return { filename, count, routes: routesWithFilename };
         });
 

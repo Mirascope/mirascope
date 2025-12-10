@@ -9,11 +9,19 @@ import {
   NavigationMenuLink,
 } from "@/src/components/ui/navigation-menu";
 import { getProductRoute } from "@/src/lib/routes";
-import { useProduct, useIsLandingPage, useIsRouterWaitlistPage } from "@/src/components/core";
+import {
+  useProduct,
+  useIsLandingPage,
+  useIsRouterWaitlistPage,
+} from "@/src/components/core";
 import { PRODUCT_CONFIGS } from "@/src/lib/constants/site";
 import { type Product, productKey } from "@/src/lib/content/spec";
 import { cn } from "@/src/lib/utils";
-import { NAV_LINK_STYLES, PRODUCT_LINK_STYLES, DESKTOP_NAV_STYLES } from "./styles";
+import {
+  NAV_LINK_STYLES,
+  PRODUCT_LINK_STYLES,
+  DESKTOP_NAV_STYLES,
+} from "./styles";
 
 // Reusable navigation link component
 interface NavLinkProps {
@@ -42,8 +50,12 @@ const ProductMenuLink = ({ product }: ProductMenuLinkProps) => {
           className={PRODUCT_LINK_STYLES.desktop.container}
           data-product={productKey(product)}
         >
-          <div className={PRODUCT_LINK_STYLES.desktop.title}>{config.title}</div>
-          <p className={PRODUCT_LINK_STYLES.desktop.description}>{config.tagline}</p>
+          <div className={PRODUCT_LINK_STYLES.desktop.title}>
+            {config.title}
+          </div>
+          <p className={PRODUCT_LINK_STYLES.desktop.description}>
+            {config.tagline}
+          </p>
         </Link>
       </NavigationMenuLink>
     </li>
@@ -52,7 +64,11 @@ const ProductMenuLink = ({ product }: ProductMenuLinkProps) => {
 
 const NavLink = ({ href, children, className, onClick }: NavLinkProps) => {
   return (
-    <Link to={href} className={cn(NAV_LINK_STYLES.base, className)} onClick={onClick}>
+    <Link
+      to={href}
+      className={cn(NAV_LINK_STYLES.base, className)}
+      onClick={onClick}
+    >
       {children}
     </Link>
   );
@@ -65,7 +81,9 @@ interface DesktopNavigationProps {
   isSearchOpen: boolean;
 }
 
-export default function DesktopNavigation({ isSearchOpen }: DesktopNavigationProps) {
+export default function DesktopNavigation({
+  isSearchOpen,
+}: DesktopNavigationProps) {
   // Get the current product
   const product = useProduct();
   const isLandingPage = useIsLandingPage();
@@ -85,7 +103,9 @@ export default function DesktopNavigation({ isSearchOpen }: DesktopNavigationPro
               </span>
             </NavigationMenuTrigger>
             <NavigationMenuContent
-              className={DESKTOP_NAV_STYLES.menuContent(isLandingPage || isRouterWaitlistPage)}
+              className={DESKTOP_NAV_STYLES.menuContent(
+                isLandingPage || isRouterWaitlistPage,
+              )}
             >
               <ul className={DESKTOP_NAV_STYLES.productGrid}>
                 <ProductMenuLink product={{ name: "mirascope" }} />

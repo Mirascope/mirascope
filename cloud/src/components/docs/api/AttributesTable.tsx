@@ -32,12 +32,17 @@ export function AttributesTable({ attributes }: AttributesTableProps) {
           </thead>
           <tbody>
             {attributes.map((attr, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}>
+              <tr
+                key={index}
+                className={index % 2 === 0 ? "bg-background" : "bg-muted/20"}
+              >
                 <td className="border-b px-4 py-2 font-mono">{attr.name}</td>
                 <td className="border-b px-4 py-2">
                   <TypeLink type={attr.type_info} />
                 </td>
-                <td className="border-b px-4 py-2">{attr.description || "-"}</td>
+                <td className="border-b px-4 py-2">
+                  {attr.description || "-"}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -1,6 +1,14 @@
 /// <reference lib="dom" />
 
-import { describe, test, expect, beforeEach, afterEach, mock, spyOn } from "bun:test";
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  mock,
+  spyOn,
+} from "bun:test";
 import { AnalyticsManager } from "./analytics";
 
 describe("AnalyticsManager", () => {
@@ -66,13 +74,19 @@ describe("AnalyticsManager", () => {
 
     // Add necessary properties that aren't in happy-dom by default
     window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || mock((_command: string, _action: string, _params?: any) => {});
+    window.gtag =
+      window.gtag ||
+      mock((_command: string, _action: string, _params?: any) => {});
 
     // Mock PostHog with all required methods
     window.posthog = window.posthog || {
       init: mock((_apiKey: string, _options?: any) => {}),
-      capture: mock((_eventName: string, _properties?: Record<string, any>) => {}),
-      identify: mock((_distinctId: string, _properties?: Record<string, any>) => {}),
+      capture: mock(
+        (_eventName: string, _properties?: Record<string, any>) => {},
+      ),
+      identify: mock(
+        (_distinctId: string, _properties?: Record<string, any>) => {},
+      ),
       opt_in_capturing: mock(() => {}),
       opt_out_capturing: mock(() => {}),
       has_opted_in_capturing: mock((): boolean => false),
@@ -88,7 +102,7 @@ describe("AnalyticsManager", () => {
       "test-ga-id",
       "test-gtm-id",
       "test-ph-key",
-      "test-version"
+      "test-version",
     );
   });
 
@@ -127,8 +141,14 @@ describe("AnalyticsManager", () => {
 
   test("enableAnalytics initializes tracking when enabled", async () => {
     // Spy on private initializeGoogleAnalytics method
-    const initializeSpy = spyOn(analyticsManager as any, "initializeGoogleAnalytics");
-    const initializePostHogSpy = spyOn(analyticsManager as any, "initializePostHog");
+    const initializeSpy = spyOn(
+      analyticsManager as any,
+      "initializeGoogleAnalytics",
+    );
+    const initializePostHogSpy = spyOn(
+      analyticsManager as any,
+      "initializePostHog",
+    );
 
     // When analytics should be enabled
     const isEnabledSpy = spyOn(analyticsManager, "isEnabled");
@@ -148,7 +168,9 @@ describe("AnalyticsManager", () => {
 
   test("trackPageView only tracks when analytics is enabled", async () => {
     // Create a fresh gtag mock for this test
-    const gtagMock = mock((_command: string, _action: string, _params?: any) => {});
+    const gtagMock = mock(
+      (_command: string, _action: string, _params?: any) => {},
+    );
     window.gtag = gtagMock;
 
     // When analytics is enabled
@@ -170,10 +192,14 @@ describe("AnalyticsManager", () => {
 
   test("trackEvent sends events to both GA and PostHog when enabled", async () => {
     // Create fresh mocks for this test
-    const gtagMock = mock((_command: string, _action: string, _params?: any) => {});
+    const gtagMock = mock(
+      (_command: string, _action: string, _params?: any) => {},
+    );
     window.gtag = gtagMock;
 
-    const posthogCaptureMock = mock((_eventName: string, _properties?: Record<string, any>) => {});
+    const posthogCaptureMock = mock(
+      (_eventName: string, _properties?: Record<string, any>) => {},
+    );
     window.posthog = {
       ...window.posthog!,
       capture: posthogCaptureMock,

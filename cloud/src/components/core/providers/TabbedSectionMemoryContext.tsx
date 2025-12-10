@@ -5,7 +5,9 @@ type TabMemoryContextType = {
   setTabValue: (options: string[], value: string) => void;
 };
 
-const TabMemoryContext = createContext<TabMemoryContextType | undefined>(undefined);
+const TabMemoryContext = createContext<TabMemoryContextType | undefined>(
+  undefined,
+);
 
 const STORAGE_KEY = "mirascope-tabbed-section-memory";
 
@@ -22,8 +24,13 @@ function loadFromStorage(): Record<string, string> {
   }
 }
 
-export function TabbedSectionMemoryProvider({ children }: { children: React.ReactNode }) {
-  const [tabMemory, setTabMemory] = useState<Record<string, string>>(loadFromStorage);
+export function TabbedSectionMemoryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [tabMemory, setTabMemory] =
+    useState<Record<string, string>>(loadFromStorage);
 
   const getTabValue = (options: string[]): string | undefined => {
     const key = createTabKey(options);
@@ -39,7 +46,10 @@ export function TabbedSectionMemoryProvider({ children }: { children: React.Reac
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newMemory));
       } catch (e) {
-        console.error("Failed to save tabbed section memory to localStorage", e);
+        console.error(
+          "Failed to save tabbed section memory to localStorage",
+          e,
+        );
       }
     }
 
@@ -62,7 +72,9 @@ function createTabKey(options: string[]): string {
 export function useTabMemory() {
   const context = useContext(TabMemoryContext);
   if (context === undefined) {
-    throw new Error("useTabMemory must be used within a TabbedSectionMemoryProvider");
+    throw new Error(
+      "useTabMemory must be used within a TabbedSectionMemoryProvider",
+    );
   }
   return context;
 }

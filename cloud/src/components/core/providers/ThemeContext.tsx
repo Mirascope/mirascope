@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { useRouterState } from "@tanstack/react-router";
 
 export type Theme = "light" | "dark" | "system";
@@ -51,7 +57,9 @@ function getStoredTheme(): Theme {
 function getEffectiveTheme(theme: Theme): "light" | "dark" {
   if (theme !== "system") return theme;
   if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 // Apply theme to document

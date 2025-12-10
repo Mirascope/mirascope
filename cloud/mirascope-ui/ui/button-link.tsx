@@ -21,15 +21,25 @@ export function ButtonLink({
   external,
   children,
   ...props
-}: ButtonLinkProps & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof ButtonLinkProps>) {
+}: ButtonLinkProps &
+  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof ButtonLinkProps>) {
   const isExternal =
-    external || href.startsWith("http") || href.startsWith("https") || href.startsWith("//");
+    external ||
+    href.startsWith("http") ||
+    href.startsWith("https") ||
+    href.startsWith("//");
 
   const classNames = cn(buttonVariants({ variant, size, className }));
 
   if (isExternal) {
     return (
-      <a href={href} className={classNames} target="_blank" rel="noopener noreferrer" {...props}>
+      <a
+        href={href}
+        className={classNames}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...props}
+      >
         {children}
       </a>
     );

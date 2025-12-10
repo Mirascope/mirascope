@@ -1,4 +1,6 @@
-export async function contentMetaCorsHandler(request: Request): Promise<Response> {
+export async function contentMetaCorsHandler(
+  request: Request,
+): Promise<Response> {
   const url = new URL(request.url);
   console.log(`contentMetaCorsHandler: ${request.method} ${url.pathname}`);
 
@@ -14,7 +16,10 @@ export async function contentMetaCorsHandler(request: Request): Promise<Response
   }
 
   // Extract the file path from /cf/content-meta/... and map to /static/content-meta/...
-  const contentMetaPath = url.pathname.replace("/cf/content-meta/", "/static/content-meta/");
+  const contentMetaPath = url.pathname.replace(
+    "/cf/content-meta/",
+    "/static/content-meta/",
+  );
   console.log(`Mapped ${url.pathname} → ${contentMetaPath}`);
 
   // Defensive checks to prevent directory traversal and ensure valid paths
@@ -38,7 +43,7 @@ export async function contentMetaCorsHandler(request: Request): Promise<Response
       new Request(staticFileUrl.toString(), {
         method: "GET",
         headers: { "User-Agent": "Cloudflare-Worker" },
-      })
+      }),
     );
     console.log(`Fetch result: ${response.status} for ${contentMetaPath}`);
 

@@ -30,7 +30,10 @@ export const Route = createFileRoute("/privacy")({
 
 function PrivacyPage() {
   // Access the loaded content directly
-  const content = useLoaderData({ from: "/privacy", structuralSharing: false }) as PolicyContent;
+  const content = useLoaderData({
+    from: "/privacy",
+    structuralSharing: false,
+  }) as PolicyContent;
 
   return (
     <>
@@ -46,4 +49,3 @@ function PrivacyPage() {
     </>
   );
 }
-

@@ -1,7 +1,9 @@
 import { type ProductName } from "./content/spec";
 
 // Type guard to check if a string is a valid product name
-export function isValidProductName(productName: string): productName is ProductName {
+export function isValidProductName(
+  productName: string,
+): productName is ProductName {
   return productName === "mirascope" || productName === "lilypad";
 }
 

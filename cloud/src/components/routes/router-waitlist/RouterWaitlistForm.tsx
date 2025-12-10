@@ -25,11 +25,14 @@ export function RouterWaitlistForm() {
 
             startTransition(async () => {
               try {
-                const res = await fetch("https://mirascope.com/cf/join-router-waitlist", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(payload),
-                });
+                const res = await fetch(
+                  "https://mirascope.com/cf/join-router-waitlist",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                  },
+                );
 
                 if (res.ok) {
                   setSuccess(true);
@@ -67,7 +70,10 @@ export function RouterWaitlistForm() {
           />
           <Button
             type="submit"
-            className={cn("w-full cursor-pointer", success ? "bg-lilypad-green" : "")}
+            className={cn(
+              "w-full cursor-pointer",
+              success ? "bg-lilypad-green" : "",
+            )}
             disabled={isPending}
           >
             {success ? "You're on the list! ✅" : "Join the Waitlist"}

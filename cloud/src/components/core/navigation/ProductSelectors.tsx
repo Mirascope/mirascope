@@ -40,7 +40,7 @@ function getValidDocPaths(): Set<string> {
 function getSmartProductRoute(
   currentProduct: Product,
   targetProduct: Product,
-  currentPath: string
+  currentPath: string,
 ): string {
   // If not in docs section, use default product route
   if (!currentPath.startsWith("/docs/")) {
@@ -56,11 +56,16 @@ function getSmartProductRoute(
   }
 
   const paths = getValidDocPaths();
-  const fullTargetPath = currentPath.replace(`/docs/${currentKey}`, `/docs/${targetKey}`);
+  const fullTargetPath = currentPath.replace(
+    `/docs/${currentKey}`,
+    `/docs/${targetKey}`,
+  );
   if (paths.has(canonicalizePath(fullTargetPath))) {
     return fullTargetPath;
   }
-  const restOfPath = fullTargetPath.replace(`/docs/${targetKey}/`, "").split("/");
+  const restOfPath = fullTargetPath
+    .replace(`/docs/${targetKey}/`, "")
+    .split("/");
 
   // Try progressively shorter paths
   for (let i = restOfPath.length - 1; i > 0; i--) {
@@ -76,7 +81,8 @@ function getSmartProductRoute(
 
 function V2Badge() {
   const activeClass = "bg-secondary text-secondary-foreground border-secondary";
-  const baseClass = "absolute -top-1 -right-2 text-2xs font-semibold border rounded-lg px-1";
+  const baseClass =
+    "absolute -top-1 -right-2 text-2xs font-semibold border rounded-lg px-1";
 
   return <span className={`${baseClass} ${activeClass}`}>v2</span>;
 }
@@ -91,12 +97,18 @@ function MirascopeSelector({
   const isMirascope = currentProduct.name === "mirascope";
   const isV2 = currentProduct.version === "v2";
 
-  const v1Route = getSmartProductRoute(currentProduct, { name: "mirascope" }, currentPath);
+  const v1Route = getSmartProductRoute(
+    currentProduct,
+    { name: "mirascope" },
+    currentPath,
+  );
 
   return (
     <div className={`relative ${isV2 ? "pr-3" : ""}`}>
       {isMirascope ? (
-        <span className="text-mirascope-purple text-lg font-medium">Mirascope</span>
+        <span className="text-mirascope-purple text-lg font-medium">
+          Mirascope
+        </span>
       ) : (
         <Link
           to={v1Route}
@@ -124,12 +136,21 @@ function LilypadSelector({
   const isActive = currentProduct.name === "lilypad";
 
   if (isActive) {
-    return <span className="text-lilypad-green text-lg font-medium">Lilypad</span>;
+    return (
+      <span className="text-lilypad-green text-lg font-medium">Lilypad</span>
+    );
   }
 
-  const route = getSmartProductRoute(currentProduct, { name: "lilypad" }, currentPath);
+  const route = getSmartProductRoute(
+    currentProduct,
+    { name: "lilypad" },
+    currentPath,
+  );
   return (
-    <Link to={route} className="text-muted-foreground hover:text-lilypad-green text-lg font-medium">
+    <Link
+      to={route}
+      className="text-muted-foreground hover:text-lilypad-green text-lg font-medium"
+    >
       Lilypad
     </Link>
   );
@@ -145,8 +166,14 @@ export function DocsProductSelector() {
 
   return (
     <div className="flex space-x-4 px-1">
-      <MirascopeSelector currentProduct={currentProduct} currentPath={currentPath} />
-      <LilypadSelector currentProduct={currentProduct} currentPath={currentPath} />
+      <MirascopeSelector
+        currentProduct={currentProduct}
+        currentPath={currentPath}
+      />
+      <LilypadSelector
+        currentProduct={currentProduct}
+        currentPath={currentPath}
+      />
     </div>
   );
 }

@@ -16,7 +16,11 @@ export interface BlogPaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPaginationProps) {
+export function BlogPagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: BlogPaginationProps) {
   const isMobile = useIsMobile();
 
   // Logic to determine which page numbers to show
@@ -35,7 +39,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
         >
           1
         </PaginationLink>
-      </PaginationItem>
+      </PaginationItem>,
     );
 
     // Add ellipsis if needed between first page and delta range
@@ -43,7 +47,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
       items.push(
         <PaginationItem key="ellipsis-1">
           <PaginationEllipsis />
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -65,7 +69,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
           >
             {i}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -74,7 +78,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
       items.push(
         <PaginationItem key="ellipsis-2">
           <PaginationEllipsis />
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -89,7 +93,7 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
           >
             {totalPages}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -104,7 +108,9 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={`flex h-9 w-9 items-center justify-center rounded-md border ${
-            currentPage === 1 ? "pointer-events-none opacity-50" : "hover:bg-muted cursor-pointer"
+            currentPage === 1
+              ? "pointer-events-none opacity-50"
+              : "hover:bg-muted cursor-pointer"
           }`}
           aria-label="Go to previous page"
         >
@@ -117,7 +123,11 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
       <PaginationPrevious
         onClick={() => onPageChange(currentPage - 1)}
         tabIndex={currentPage === 1 ? -1 : 0}
-        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+        className={
+          currentPage === 1
+            ? "pointer-events-none opacity-50"
+            : "cursor-pointer"
+        }
       />
     );
   };
@@ -145,7 +155,11 @@ export function BlogPagination({ currentPage, totalPages, onPageChange }: BlogPa
       <PaginationNext
         onClick={() => onPageChange(currentPage + 1)}
         tabIndex={currentPage === totalPages ? -1 : 0}
-        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+        className={
+          currentPage === totalPages
+            ? "pointer-events-none opacity-50"
+            : "cursor-pointer"
+        }
       />
     );
   };

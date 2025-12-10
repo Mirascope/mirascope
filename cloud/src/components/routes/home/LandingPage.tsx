@@ -31,7 +31,8 @@ export function LandingPage() {
     if (mirascopeSectionRef.current) {
       const yOffset = -window.innerHeight * -0.02;
       const element = mirascopeSectionRef.current;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
       window.scrollTo({ top: y, behavior: "smooth" });
 
@@ -45,7 +46,8 @@ export function LandingPage() {
     if (lilypadSectionRef.current) {
       const yOffset = -window.innerHeight * 0.02;
       const element = lilypadSectionRef.current;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      const y =
+        element.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
       window.scrollTo({ top: y, behavior: "smooth" });
 
@@ -112,16 +114,24 @@ export function LandingPage() {
       }
 
       scrollTimeout = window.setTimeout(() => {
-        const mirascopePosition = mirascopeSectionRef.current?.getBoundingClientRect().top || 0;
-        const lilypadPosition = lilypadSectionRef.current?.getBoundingClientRect().top || 0;
+        const mirascopePosition =
+          mirascopeSectionRef.current?.getBoundingClientRect().top || 0;
+        const lilypadPosition =
+          lilypadSectionRef.current?.getBoundingClientRect().top || 0;
 
         // Determine which section is currently most visible
-        if (lilypadPosition < window.innerHeight / 2 && lilypadSectionRef.current) {
+        if (
+          lilypadPosition < window.innerHeight / 2 &&
+          lilypadSectionRef.current
+        ) {
           // We're in the lilypad section
           if (window.location.hash !== "#lilypad") {
             window.history.pushState(null, "", "#lilypad");
           }
-        } else if (mirascopePosition < window.innerHeight / 2 && mirascopeSectionRef.current) {
+        } else if (
+          mirascopePosition < window.innerHeight / 2 &&
+          mirascopeSectionRef.current
+        ) {
           // We're in the mirascope section
           if (window.location.hash !== "#mirascope") {
             window.history.pushState(null, "", "#mirascope");
@@ -158,12 +168,20 @@ export function LandingPage() {
           </div>
 
           {/* Mirascope section */}
-          <div data-gradient-fade={true} ref={mirascopeSectionRef} className="mb-24">
+          <div
+            data-gradient-fade={true}
+            ref={mirascopeSectionRef}
+            className="mb-24"
+          >
             <MirascopeBlock onScrollDown={scrollToLilypadSection} />
           </div>
 
           {/* Lilypad section */}
-          <div data-gradient-fade={true} ref={lilypadSectionRef} className="mt-24">
+          <div
+            data-gradient-fade={true}
+            ref={lilypadSectionRef}
+            className="mt-24"
+          >
             <LilypadBlock onScrollToTop={scrollToHeroSection} />
           </div>
         </div>

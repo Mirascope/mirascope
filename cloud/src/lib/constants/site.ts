@@ -16,7 +16,8 @@ export const BASE_URL = "https://mirascope.com";
 // Analytics constants
 export const GA_MEASUREMENT_ID = "G-DJHT1QG9GK";
 export const GTM_ID = "GTM-T8PZJDKM";
-export const POSTHOG_PUBLIC_KEY = "phc_tnTm56utLwHvtXvjyIwj0rF1AKc6wgfLlczRRZ2dthy";
+export const POSTHOG_PUBLIC_KEY =
+  "phc_tnTm56utLwHvtXvjyIwj0rF1AKc6wgfLlczRRZ2dthy";
 
 export interface GithubInfo {
   repo: string;

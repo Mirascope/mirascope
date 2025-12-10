@@ -28,7 +28,10 @@ const MainContent: React.FC<MainContentProps> = ({ document }) => {
               description={document.meta.description}
               section={section}
             >
-              <MDXRenderer code={document.mdx.code} frontmatter={document.mdx.frontmatter} />
+              <MDXRenderer
+                code={document.mdx.code}
+                frontmatter={document.mdx.frontmatter}
+              />
             </PagefindMeta>
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />

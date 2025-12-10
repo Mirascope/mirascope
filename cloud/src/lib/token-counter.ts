@@ -26,7 +26,10 @@ export function countTokens(text: string): number {
     const tokens = enc.encode(text);
     return tokens.length;
   } catch (error) {
-    console.warn("Token counting failed, falling back to approximation:", error);
+    console.warn(
+      "Token counting failed, falling back to approximation:",
+      error,
+    );
     // Fallback to rough approximation
     return Math.ceil(text.length / 4);
   }

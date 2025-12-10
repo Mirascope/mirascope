@@ -23,7 +23,10 @@ async function main() {
 
   // Check if the production build exists
   if (!fs.existsSync(prodTemplatePath)) {
-    coloredLog(`${icons.error} Production build not found! Run \`bun run build\` first.`, "red");
+    coloredLog(
+      `${icons.error} Production build not found! Run \`bun run build\` first.`,
+      "red",
+    );
     process.exit(1);
   }
 
@@ -53,7 +56,9 @@ async function main() {
     // Get all routes to prerender
     const routes = await getAllRoutes(true);
     printHeader("Pre-rendering Routes");
-    console.log(`${icons.info} Pre-rendering ${routes.length} routes to production-ready HTML...`);
+    console.log(
+      `${icons.info} Pre-rendering ${routes.length} routes to production-ready HTML...`,
+    );
 
     // Prerender each route directly to dist
     let successCount = 0;
@@ -75,7 +80,9 @@ async function main() {
     }
 
     if (failureCount > 0) {
-      throw new Error(`\n\n${icons.error} Pre-rendering failed for ${failureCount} routes.`);
+      throw new Error(
+        `\n\n${icons.error} Pre-rendering failed for ${failureCount} routes.`,
+      );
     } else {
       coloredLog(`\n\n${icons.success} Pre-rendering complete!`, "green");
       console.log(`   - Successfully pre-rendered: ${successCount} routes`);
@@ -85,7 +92,7 @@ async function main() {
         const validationResult = await validateLinksAndImages(distDir, verbose);
         if (!validationResult.valid) {
           throw new Error(
-            `\n${icons.error} Link and image validation failed. Fix broken links and images before deploying.`
+            `\n${icons.error} Link and image validation failed. Fix broken links and images before deploying.`,
           );
         }
       }

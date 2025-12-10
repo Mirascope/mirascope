@@ -150,7 +150,9 @@ export function updateDocumentHead(metadata: UnifiedMetadata) {
   document.title = metadata.title;
 
   // Remove existing managed meta tags
-  document.querySelectorAll('meta[data-managed="true"]').forEach((el) => el.remove());
+  document
+    .querySelectorAll('meta[data-managed="true"]')
+    .forEach((el) => el.remove());
 
   // Add new meta tags
   elements.meta.forEach((element) => {
@@ -159,7 +161,9 @@ export function updateDocumentHead(metadata: UnifiedMetadata) {
   });
 
   // Remove existing managed link tags
-  document.querySelectorAll('link[data-managed="true"]').forEach((el) => el.remove());
+  document
+    .querySelectorAll('link[data-managed="true"]')
+    .forEach((el) => el.remove());
 
   // Add new link tags
   elements.link.forEach((element) => {

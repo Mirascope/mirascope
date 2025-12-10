@@ -70,4 +70,3 @@ function DocsContentPage() {
   // Use the shared DocsPage component
   return <DocsPage document={document} />;
 }
-

@@ -24,13 +24,19 @@ export default function LLMHeader({
       onClick={onToggle}
       className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-1 transition-colors"
     >
-      {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      {isExpanded ? (
+        <ChevronDown className="h-4 w-4" />
+      ) : (
+        <ChevronRight className="h-4 w-4" />
+      )}
       <h3 className="text-foreground rounded-md px-2 py-1 text-left text-base font-bold">
         {content.title}
       </h3>
     </button>
   ) : (
-    <h2 className={`px-2 text-left font-bold ${level === 1 ? "text-2xl" : "text-xl"}`}>
+    <h2
+      className={`px-2 text-left font-bold ${level === 1 ? "text-2xl" : "text-xl"}`}
+    >
       {content.title}
     </h2>
   );
@@ -49,7 +55,9 @@ export default function LLMHeader({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className={tokenBadge}>{formatTokenCount(content.tokenCount)} tokens</span>
+          <span className={tokenBadge}>
+            {formatTokenCount(content.tokenCount)} tokens
+          </span>
           <Button
             onClick={() => navigator.clipboard.writeText(content.getContent())}
             variant="ghost"
@@ -62,7 +70,9 @@ export default function LLMHeader({
         </div>
       </div>
       {content.description && (
-        <p className={`text-muted-foreground mt-2 px-2 text-sm ${clickable ? "ml-5" : ""}`}>
+        <p
+          className={`text-muted-foreground mt-2 px-2 text-sm ${clickable ? "ml-5" : ""}`}
+        >
           {content.description}
         </p>
       )}

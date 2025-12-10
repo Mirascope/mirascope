@@ -1,6 +1,9 @@
 import { Resend } from "resend";
 
-export async function joinRouterWaitlistHandler(request: Request, env: any): Promise<Response> {
+export async function joinRouterWaitlistHandler(
+  request: Request,
+  env: any,
+): Promise<Response> {
   if (request.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }

@@ -1,7 +1,10 @@
 import { docRegistry } from "@/src/lib/content";
 import type { DocSpec } from "@/src/lib/content/doc-registry";
 import { type Provider } from "@/src/components/mdx/providers";
-import { type Product, productKey } from "@/src/components/core/providers/ProductContext";
+import {
+  type Product,
+  productKey,
+} from "@/src/components/core/providers/ProductContext";
 import { Sidebar } from "@/src/components";
 import type {
   SidebarConfig,
@@ -62,7 +65,10 @@ function createSidebarConfig(product: Product): SidebarConfig {
   // The rest of the sections remain in the order defined in the spec
 
   // Convert doc specs to sidebar items
-  function convertDocToSidebarItem(doc: DocSpec, parentPath: string = ""): SidebarItem {
+  function convertDocToSidebarItem(
+    doc: DocSpec,
+    parentPath: string = "",
+  ): SidebarItem {
     // Construct the logical path for this item (used to look up routePath)
     const itemPath = `${parentPath || productKey(product)}/${doc.slug}`;
 
@@ -103,14 +109,17 @@ function createSidebarConfig(product: Product): SidebarConfig {
   const sidebarSections: SidebarSection[] = allSections.map((section) => {
     // Create basePath - for index section, don't include the section slug
     const basePath =
-      section.slug === "index" ? `/docs/${productPath}` : `/docs/${productPath}/${section.slug}`;
+      section.slug === "index"
+        ? `/docs/${productPath}`
+        : `/docs/${productPath}/${section.slug}`;
 
     // Process direct items (those without children) and create groups for top-level folders
     const items: Record<string, SidebarItem> = {};
     const groups: Record<string, SidebarGroup> = {};
 
     // Get path prefix for section items (used for lookup)
-    const pathPrefix = section.slug === "index" ? productPath : `${productPath}/${section.slug}`;
+    const pathPrefix =
+      section.slug === "index" ? productPath : `${productPath}/${section.slug}`;
 
     section.children.forEach((child) => {
       const hasContent = child.hasContent ?? !child.children;
@@ -129,7 +138,10 @@ function createSidebarConfig(product: Product): SidebarConfig {
         if (child.children) {
           child.children.forEach((grandchild) => {
             // Convert the grandchild and its descendants to sidebar items
-            const sidebarItem = convertDocToSidebarItem(grandchild, groupPathPrefix);
+            const sidebarItem = convertDocToSidebarItem(
+              grandchild,
+              groupPathPrefix,
+            );
             groupItems[grandchild.slug] = sidebarItem;
           });
         }

@@ -74,7 +74,7 @@ const SidebarToggle = ({
         "z-80 rounded-full border-1 p-0 shadow-md",
         "h-6 w-6",
         isOpen ? "bg-muted" : "bg-background",
-        className
+        className,
       )}
       ref={buttonRef}
       aria-label={ariaLabel}
@@ -155,7 +155,13 @@ interface RightSidebarProps extends SidebarProps {
 /**
  * Shared backdrop component for mobile sidebar overlays
  */
-const SidebarBackdrop = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) => (
+const SidebarBackdrop = ({
+  isOpen,
+  onClick,
+}: {
+  isOpen: boolean;
+  onClick: () => void;
+}) => (
   <div
     className={`bg-background/30 fixed inset-0 backdrop-blur-sm transition-all duration-300 ${
       isOpen ? "z-40 opacity-100" : "pointer-events-none -z-10 opacity-0"
@@ -172,7 +178,11 @@ const SidebarBackdrop = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => 
  * Handles responsive collapsing on small screens with CSS media queries.
  * Sidebar content scrolls independently from main content.
  */
-AppLayout.LeftSidebar = ({ children, className, collapsible = true }: SidebarProps) => {
+AppLayout.LeftSidebar = ({
+  children,
+  className,
+  collapsible = true,
+}: SidebarProps) => {
   const { leftSidebar } = useContext(SidebarContext);
   const isOpen = leftSidebar.isOpen;
 
@@ -202,7 +212,10 @@ AppLayout.LeftSidebar = ({ children, className, collapsible = true }: SidebarPro
       <div className="w-0 flex-shrink-0 md:w-64">
         {/* Mobile backdrop - only visible when sidebar is open */}
         <div className="md:hidden">
-          <SidebarBackdrop isOpen={isOpen} onClick={() => leftSidebar.close()} />
+          <SidebarBackdrop
+            isOpen={isOpen}
+            onClick={() => leftSidebar.close()}
+          />
         </div>
 
         {/* Toggle button - only visible on mobile when collapsible */}
@@ -210,7 +223,7 @@ AppLayout.LeftSidebar = ({ children, className, collapsible = true }: SidebarPro
           <div
             className={cn(
               "fixed left-4 z-80 md:hidden",
-              rightSidebarIsOpen && "hidden" // Hide when right sidebar is open
+              rightSidebarIsOpen && "hidden", // Hide when right sidebar is open
             )}
             style={{ top: SIDEBAR_TOGGLE_POSITION }}
           >
@@ -225,7 +238,11 @@ AppLayout.LeftSidebar = ({ children, className, collapsible = true }: SidebarPro
                     : "Close sidebar"
                   : "Open sidebar"
               }
-              ariaControls={rightSidebarIsOpen ? "right-sidebar-content" : "left-sidebar-content"}
+              ariaControls={
+                rightSidebarIsOpen
+                  ? "right-sidebar-content"
+                  : "left-sidebar-content"
+              }
               buttonRef={leftSidebar.closeBtnRef}
             />
           </div>
@@ -250,17 +267,22 @@ AppLayout.LeftSidebar = ({ children, className, collapsible = true }: SidebarPro
             // Always display on desktop, unless non-collapsible on mobile
             !collapsible && "md:block",
             // Animation
-            "transition-transform duration-300 ease-in-out"
+            "transition-transform duration-300 ease-in-out",
           )}
           style={{
-            boxShadow: isOpen && isMobileView() ? "0 8px 16px rgba(0, 0, 0, 0.08)" : "none",
+            boxShadow:
+              isOpen && isMobileView()
+                ? "0 8px 16px rgba(0, 0, 0, 0.08)"
+                : "none",
           }}
           aria-hidden={!isOpen && isMobileView()}
           role="navigation"
         >
           {/* Padding is responsive via CSS - more padding on mobile to match right sidebar */}
           <div className="h-full overflow-y-auto p-5 md:px-4 md:py-0">
-            <div className={cn("h-full overflow-y-auto", className)}>{children}</div>
+            <div className={cn("h-full overflow-y-auto", className)}>
+              {children}
+            </div>
           </div>
         </div>
       </div>
@@ -305,7 +327,7 @@ AppLayout.RightSidebar = ({
               "fixed top-[var(--header-height)]",
               "h-[calc(100vh-var(--header-height)-var(--footer-height,40px))]",
               "w-56 max-w-[14rem] overflow-y-auto",
-              className
+              className,
             )}
           >
             {children}
@@ -318,14 +340,19 @@ AppLayout.RightSidebar = ({
         <>
           {/* Mobile toggle button - hidden when left sidebar is open or on large screens */}
           <div
-            className={cn("fixed right-4 z-80 lg:hidden", leftIsOpen && "hidden")}
+            className={cn(
+              "fixed right-4 z-80 lg:hidden",
+              leftIsOpen && "hidden",
+            )}
             style={{ top: SIDEBAR_TOGGLE_POSITION }}
           >
             <SidebarToggle
               isOpen={isOpen}
               onClick={rightSidebar.toggle}
               position="right"
-              ariaLabel={isOpen ? "Close table of contents" : "Open table of contents"}
+              ariaLabel={
+                isOpen ? "Close table of contents" : "Open table of contents"
+              }
               ariaControls="right-sidebar-content"
               buttonRef={rightSidebar.closeBtnRef}
             />
@@ -333,7 +360,10 @@ AppLayout.RightSidebar = ({
 
           {/* Mobile backdrop overlay */}
           <div className="lg:hidden">
-            <SidebarBackdrop isOpen={isOpen} onClick={() => rightSidebar.close()} />
+            <SidebarBackdrop
+              isOpen={isOpen}
+              onClick={() => rightSidebar.close()}
+            />
           </div>
 
           {/* Mobile slide-in panel */}
@@ -343,7 +373,7 @@ AppLayout.RightSidebar = ({
               "bg-background border-border fixed top-[var(--header-height)] right-0 z-40",
               "h-[calc(100vh-var(--header-height)-var(--footer-height,40px))] w-72 rounded-md border-l shadow-lg",
               "transition-transform duration-300 ease-in-out lg:hidden",
-              isOpen ? "translate-x-0" : "translate-x-full"
+              isOpen ? "translate-x-0" : "translate-x-full",
             )}
             aria-hidden={!isOpen}
             role="complementary"

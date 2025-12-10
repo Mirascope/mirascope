@@ -23,7 +23,9 @@ export default function LLMPage({
     <>
       <PageMeta title={title} description={description} />
       <AppLayout>
-        {leftSidebar && <AppLayout.LeftSidebar>{leftSidebar}</AppLayout.LeftSidebar>}
+        {leftSidebar && (
+          <AppLayout.LeftSidebar>{leftSidebar}</AppLayout.LeftSidebar>
+        )}
 
         <AppLayout.Content>
           <div className="bg-background container mx-auto min-h-screen px-4">

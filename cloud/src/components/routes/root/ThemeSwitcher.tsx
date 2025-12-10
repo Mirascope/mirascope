@@ -38,29 +38,43 @@ export default function ThemeSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className={THEME_SWITCHER_STYLES.trigger} aria-label="Select theme">
+        <button
+          className={THEME_SWITCHER_STYLES.trigger}
+          aria-label="Select theme"
+        >
           {theme === "light" && <Sun size={20} />}
           {theme === "dark" && <Moon size={20} />}
           {theme === "system" && <Monitor size={20} />}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className={THEME_SWITCHER_STYLES.content(isLandingPage || isRouterWaitlistPage)}
+        className={THEME_SWITCHER_STYLES.content(
+          isLandingPage || isRouterWaitlistPage,
+        )}
         align="end"
       >
         <DropdownMenuRadioGroup
           value={theme}
           onValueChange={(value) => handleThemeChange(value as Theme)}
         >
-          <DropdownMenuRadioItem value="light" className={THEME_SWITCHER_STYLES.radioItem}>
+          <DropdownMenuRadioItem
+            value="light"
+            className={THEME_SWITCHER_STYLES.radioItem}
+          >
             <Sun className="mr-2 h-4 w-4" />
             <span>Light</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark" className={THEME_SWITCHER_STYLES.radioItem}>
+          <DropdownMenuRadioItem
+            value="dark"
+            className={THEME_SWITCHER_STYLES.radioItem}
+          >
             <Moon className="mr-2 h-4 w-4" />
             <span>Dark</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="system" className={THEME_SWITCHER_STYLES.radioItem}>
+          <DropdownMenuRadioItem
+            value="system"
+            className={THEME_SWITCHER_STYLES.radioItem}
+          >
             <Monitor className="mr-2 h-4 w-4" />
             <span>System</span>
           </DropdownMenuRadioItem>

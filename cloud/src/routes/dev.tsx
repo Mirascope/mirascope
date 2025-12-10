@@ -35,8 +35,13 @@ export const Route = createFileRoute("/dev")({
     if (location.pathname.startsWith("/dev") && !search.product) {
       // ... but we have a stored preference, redirect to add it
       if (typeof sessionStorage !== "undefined") {
-        const storedProduct = sessionStorage.getItem(DEV_PRODUCT_STORAGE_KEY) as ProductName;
-        if (storedProduct && (storedProduct === "mirascope" || storedProduct === "lilypad")) {
+        const storedProduct = sessionStorage.getItem(
+          DEV_PRODUCT_STORAGE_KEY,
+        ) as ProductName;
+        if (
+          storedProduct &&
+          (storedProduct === "mirascope" || storedProduct === "lilypad")
+        ) {
           // Return the search params - TanStack will redirect with these params added
           return {
             search: {
@@ -67,4 +72,3 @@ function DevParentRoute() {
   // The Outlet component renders the child route component
   return <Outlet />;
 }
-

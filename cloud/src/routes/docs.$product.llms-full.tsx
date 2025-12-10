@@ -11,7 +11,11 @@ import { ButtonLink } from "@/mirascope-ui/ui/button-link";
  * Loader for product-specific LLM document viewer routes
  * Handles routes like /docs/mirascope/llms, /docs/lilypad/llms
  */
-async function productLlmDocLoader({ params }: { params: { product: ProductName } }) {
+async function productLlmDocLoader({
+  params,
+}: {
+  params: { product: ProductName };
+}) {
   const { product: productName } = params;
 
   // Validate product
@@ -89,4 +93,3 @@ function ProductLLMDocViewerPage() {
     />
   );
 }
-

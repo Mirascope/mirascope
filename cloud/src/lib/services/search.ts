@@ -1,6 +1,10 @@
 import { environment } from "../content/environment";
 import { type ContentMeta } from "../content/content";
-import { SearchScorer, type RawSearchResult, type SearchResultItem } from "./search-scoring";
+import {
+  SearchScorer,
+  type RawSearchResult,
+  type SearchResultItem,
+} from "./search-scoring";
 
 // Define Pagefind types
 interface PagefindResult {
@@ -21,7 +25,7 @@ interface PagefindAPI {
   }>;
   debouncedSearch: (
     query: string,
-    time?: number
+    time?: number,
   ) => Promise<{
     results: PagefindResult[];
   } | null>;
@@ -82,7 +86,7 @@ export class PagefindSearchService implements SearchService {
         console.error("🔍 [SearchService] Error during initialization:", error);
       }
       throw new Error(
-        "Search initialization failed. Try running 'bun run build' to regenerate content."
+        "Search initialization failed. Try running 'bun run build' to regenerate content.",
       );
     }
   }
@@ -120,7 +124,9 @@ export class PagefindSearchService implements SearchService {
       if (environment.isDev()) {
         console.error("🔍 [SearchService] Error loading Pagefind:", error);
       }
-      throw new Error("Search index not available. Run 'bun run build' to generate it.");
+      throw new Error(
+        "Search index not available. Run 'bun run build' to generate it.",
+      );
     }
   }
 
@@ -138,7 +144,7 @@ export class PagefindSearchService implements SearchService {
 
       if (!response.ok) {
         throw new Error(
-          `Failed to load content metadata: ${response.status} ${response.statusText}`
+          `Failed to load content metadata: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -152,14 +158,19 @@ export class PagefindSearchService implements SearchService {
       }
 
       if (environment.isDev()) {
-        console.log(`🔍 [SearchService] Loaded ${this.contentMeta.length} content metadata items`);
+        console.log(
+          `🔍 [SearchService] Loaded ${this.contentMeta.length} content metadata items`,
+        );
       }
     } catch (error) {
       if (environment.isDev()) {
-        console.error("🔍 [SearchService] Error loading content metadata:", error);
+        console.error(
+          "🔍 [SearchService] Error loading content metadata:",
+          error,
+        );
       }
       throw new Error(
-        "Content metadata not available. Try running 'bun run build' to regenerate content."
+        "Content metadata not available. Try running 'bun run build' to regenerate content.",
       );
     }
   }
@@ -227,7 +238,7 @@ export class PagefindSearchService implements SearchService {
         };
 
         return rawResult;
-      })
+      }),
     );
 
     // Apply custom scoring logic (will filter and transform raw results)
@@ -236,11 +247,11 @@ export class PagefindSearchService implements SearchService {
     // Log a summary of the top 5 results if in dev mode
     if (environment.isDev() && scoredItems.length > 0) {
       console.log(
-        `🔍 [SearchService] Top ${Math.min(5, scoredItems.length)} results after scoring:`
+        `🔍 [SearchService] Top ${Math.min(5, scoredItems.length)} results after scoring:`,
       );
       scoredItems.slice(0, 5).forEach((item, index) => {
         console.log(
-          `  ${index + 1}. ${item.title} (score: ${item.score.toFixed(3)}, raw: ${item.rawScore.toFixed(3)}, weight: ${item.weight}, type: ${item.meta.type})`
+          `  ${index + 1}. ${item.title} (score: ${item.score.toFixed(3)}, raw: ${item.rawScore.toFixed(3)}, weight: ${item.weight}, type: ${item.meta.type})`,
         );
       });
     }

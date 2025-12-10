@@ -19,7 +19,10 @@ function countTokens(text: string): number {
     const tokens = encoder.encode(text);
     return tokens.length;
   } catch (error) {
-    console.warn("Token counting failed, falling back to approximation:", error);
+    console.warn(
+      "Token counting failed, falling back to approximation:",
+      error,
+    );
     return Math.ceil(text.length / 4);
   }
 }
@@ -158,7 +161,9 @@ export class LLMContent {
    * Check if this is a leaf content item (has raw content, no children)
    */
   isLeaf(): boolean {
-    return Boolean(this.rawContent && (!this.children || this.children.length === 0));
+    return Boolean(
+      this.rawContent && (!this.children || this.children.length === 0),
+    );
   }
 
   /**
@@ -208,7 +213,9 @@ export class LLMContent {
       throw new Error("Invalid JSON data for LLMContent");
     }
 
-    const children = data.children?.map((childData: any) => LLMContent.fromJSON(childData));
+    const children = data.children?.map((childData: any) =>
+      LLMContent.fromJSON(childData),
+    );
 
     return new LLMContent({
       slug: data.slug,
@@ -230,7 +237,9 @@ export class LLMContent {
  * Generate a table of contents from an array of children
  * Recursively walks the content tree and builds a hierarchical ToC
  */
-export function generateTableOfContents(children: ReadonlyArray<LLMContent>): string {
+export function generateTableOfContents(
+  children: ReadonlyArray<LLMContent>,
+): string {
   let toc = "# Table of Contents\n\n";
 
   // Add sections for each child
@@ -266,7 +275,9 @@ function formatContainerContent(children: ReadonlyArray<LLMContent>): string {
     .map((child) => {
       // For child containers, use getChildrenContent() to avoid nested ToCs
       // For child leaves, use getContent() to get the wrapped content
-      return child.isContainer() ? child.getChildrenContent() : child.getContent();
+      return child.isContainer()
+        ? child.getChildrenContent()
+        : child.getContent();
     })
     .join("\n\n");
   return tocContent + "\n\n" + childrenContent;

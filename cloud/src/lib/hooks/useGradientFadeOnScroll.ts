@@ -38,10 +38,10 @@ export function useGradientFadeOnScroll({
       elements.forEach((element) => {
         // Get custom fade settings
         const elementFadeStartDistance = parseFloat(
-          element.dataset.fadeStartDistance || fadeStartDistance.toString()
+          element.dataset.fadeStartDistance || fadeStartDistance.toString(),
         );
         const elementFadeEndDistance = parseFloat(
-          element.dataset.fadeEndDistance || fadeEndDistance.toString()
+          element.dataset.fadeEndDistance || fadeEndDistance.toString(),
         );
 
         const rect = element.getBoundingClientRect();
@@ -59,9 +59,12 @@ export function useGradientFadeOnScroll({
           // Convert viewport positions to element-relative positions (0-100%)
           startFadePoint = Math.max(
             0,
-            Math.min(100, (viewportToStartDistance / elementHeight) * 100)
+            Math.min(100, (viewportToStartDistance / elementHeight) * 100),
           );
-          endFadePoint = Math.max(0, Math.min(100, (viewportToEndDistance / elementHeight) * 100));
+          endFadePoint = Math.max(
+            0,
+            Math.min(100, (viewportToEndDistance / elementHeight) * 100),
+          );
 
           // Create a CSS gradient that:
           // - Makes content at endFadePoint and above completely transparent (opacity 0)
@@ -138,7 +141,7 @@ export function useGradientFadeOnScroll({
  */
 export function applyTransparentFade(
   element: HTMLElement | null,
-  options: TransparentFadeOptions = {}
+  options: TransparentFadeOptions = {},
 ) {
   if (!element) return;
 

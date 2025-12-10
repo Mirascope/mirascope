@@ -90,11 +90,15 @@ export const withProductTheme =
   (
     product: Product = { name: "mirascope" },
     theme: "light" | "dark" = "light",
-    isLandingPage = false
+    isLandingPage = false,
   ) =>
   (Story: any) => {
     return (
-      <ProductThemeDecorator product={product} theme={theme} isLandingPage={isLandingPage}>
+      <ProductThemeDecorator
+        product={product}
+        theme={theme}
+        isLandingPage={isLandingPage}
+      >
         <Story />
       </ProductThemeDecorator>
     );

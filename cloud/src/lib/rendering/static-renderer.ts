@@ -9,12 +9,19 @@ import fs from "fs";
 import path from "path";
 import React from "react";
 import { renderToString } from "react-dom/server";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/react-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { routeTree } from "../../routeTree.gen";
 import { environment } from "../content/environment";
 
 // Import utilities for metadata extraction and rendering
-import { deserializeMetadata, unifyMetadata } from "@/src/components/core/meta/utils";
+import {
+  deserializeMetadata,
+  unifyMetadata,
+} from "@/src/components/core/meta/utils";
 import { generateMetadataHtml } from "@/src/components/core/meta/renderer";
 import type { PageMetadata, RenderResult } from "./types";
 import type { UnifiedMetadata } from "@/src/components/core/meta/types";
@@ -92,7 +99,7 @@ export function extractSerializedMetadata(html: string): UnifiedMetadata {
 
   if (coreMetaMatches.length > 1) {
     throw new Error(
-      `Found ${coreMetaMatches.length} instances of core metadata, expected exactly 1`
+      `Found ${coreMetaMatches.length} instances of core metadata, expected exactly 1`,
     );
   }
 
@@ -103,13 +110,17 @@ export function extractSerializedMetadata(html: string): UnifiedMetadata {
 
   if (routeMetaMatches.length > 1) {
     throw new Error(
-      `Found ${routeMetaMatches.length} instances of route metadata, expected exactly 1`
+      `Found ${routeMetaMatches.length} instances of route metadata, expected exactly 1`,
     );
   }
 
   // Extract the actual encoded strings
-  const coreMetaEncodedMatch = coreMetaMatches[0].match(/data-core-meta="([^"]*)"/);
-  const routeMetaEncodedMatch = routeMetaMatches[0].match(/data-route-meta="([^"]*)"/);
+  const coreMetaEncodedMatch = coreMetaMatches[0].match(
+    /data-core-meta="([^"]*)"/,
+  );
+  const routeMetaEncodedMatch = routeMetaMatches[0].match(
+    /data-route-meta="([^"]*)"/,
+  );
 
   if (!coreMetaEncodedMatch || !coreMetaEncodedMatch[1]) {
     throw new Error("Failed to extract core metadata encoded string");
@@ -137,7 +148,9 @@ export function extractSerializedMetadata(html: string): UnifiedMetadata {
  * @param verbose Whether to log detailed information
  * @returns The rendered HTML string and extracted metadata
  */
-export async function renderRouteToString(route: string): Promise<RenderResult> {
+export async function renderRouteToString(
+  route: string,
+): Promise<RenderResult> {
   // Configure environment
   const env = configureStaticEnvironment();
   let loadError: Error | null = null;
@@ -176,14 +189,20 @@ export async function renderRouteToString(route: string): Promise<RenderResult> 
     renderError = [...args];
   };
   // Render the app to a string
-  const appHtml = renderToString(React.createElement(RouterProvider, { router }));
+  const appHtml = renderToString(
+    React.createElement(RouterProvider, { router }),
+  );
   console.error = originalError;
 
   // Check for the React client rendering fallback error in the output
-  if (appHtml.includes("Switched to client rendering because the server rendering errored")) {
+  if (
+    appHtml.includes(
+      "Switched to client rendering because the server rendering errored",
+    )
+  ) {
     // Extract both the detailed error message and stack trace
     const templateElement = appHtml.match(
-      /<template data-msg="([^"]*)"(?:\s+data-stck="([^"]*)")?[^>]*>/
+      /<template data-msg="([^"]*)"(?:\s+data-stck="([^"]*)")?[^>]*>/,
     );
 
     let errorMessage =
@@ -244,7 +263,7 @@ export async function renderRouteToString(route: string): Promise<RenderResult> 
 export function createHtmlDocument(
   renderedApp: string,
   metadata: PageMetadata,
-  templatePath: string = path.join(process.cwd(), "index.html")
+  templatePath: string = path.join(process.cwd(), "index.html"),
 ): string {
   // Start with the original template
   let html = fs.readFileSync(templatePath, "utf-8");
@@ -257,11 +276,14 @@ export function createHtmlDocument(
     ${metadata.meta}
     ${metadata.link}
     ${metadata.jsonLdScripts}
-  </head>`
+  </head>`,
   );
 
   // Replace app div content with pre-rendered HTML
-  html = html.replace('<div id="app"></div>', `<div id="app">${renderedApp}</div>`);
+  html = html.replace(
+    '<div id="app"></div>',
+    `<div id="app">${renderedApp}</div>`,
+  );
 
   return html;
 }

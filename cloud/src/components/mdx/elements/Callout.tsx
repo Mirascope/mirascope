@@ -100,7 +100,7 @@ export function Callout({
   // Content styling changes based on whether we have a header
   const contentClassName = cn(
     showHeader ? "rounded-b-lg" : "rounded-lg",
-    customContentClassName ?? "px-3 py-2"
+    customContentClassName ?? "px-3 py-2",
   );
 
   return (
@@ -116,19 +116,27 @@ export function Callout({
             isOpen && "border-b",
             bgClass,
             isOpen ? containerClass.replace("border-", "border-b-") : "",
-            collapsible && "cursor-pointer"
+            collapsible && "cursor-pointer",
           )}
           onClick={collapsible ? () => setIsOpen(!isOpen) : undefined}
           aria-expanded={collapsible ? isOpen : undefined}
         >
-          <div className={cn("flex h-6 w-6 items-center justify-center rounded-full", iconClass)}>
+          <div
+            className={cn(
+              "flex h-6 w-6 items-center justify-center rounded-full",
+              iconClass,
+            )}
+          >
             {customIcon || <Icon className={cn("h-4 w-4")} />}
           </div>
           <div className="flex-1 text-base font-medium">{displayTitle}</div>
           {collapsible && (
             <div className="text-foreground">
               <ChevronDown
-                className={cn("h-4 w-4 transition-transform", !isOpen ? "" : "rotate-180")}
+                className={cn(
+                  "h-4 w-4 transition-transform",
+                  !isOpen ? "" : "rotate-180",
+                )}
               />
             </div>
           )}
@@ -137,7 +145,9 @@ export function Callout({
 
       {/* Content - only show if not collapsed */}
       {(!showHeader || isOpen) && (
-        <div className={cn(contentClassName, "callout-content bg-background")}>{children}</div>
+        <div className={cn(contentClassName, "callout-content bg-background")}>
+          {children}
+        </div>
       )}
     </div>
   );

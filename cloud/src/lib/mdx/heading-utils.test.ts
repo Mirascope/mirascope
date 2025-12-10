@@ -16,7 +16,8 @@ describe("extractHeadingText", () => {
   });
 
   test("replaces ApiType component with bracketed type value", () => {
-    const text = '<ApiType type="Function" path="core/call" symbolName="call" /> callFunction';
+    const text =
+      '<ApiType type="Function" path="core/call" symbolName="call" /> callFunction';
     expect(extractHeadingText(text)).toBe("[Function] callFunction");
   });
 
@@ -25,7 +26,7 @@ describe("extractHeadingText", () => {
       '<ApiType type="Class" path="x" symbolName="x" /> <ApiType type="Function" path="y" symbolName="y" />';
     // Note: Currently only handles the first match - this is a limitation
     expect(extractHeadingText(text)).toBe(
-      '[Class] <ApiType type="Function" path="y" symbolName="y" />'
+      '[Class] <ApiType type="Function" path="y" symbolName="y" />',
     );
   });
 });
@@ -33,12 +34,15 @@ describe("extractHeadingText", () => {
 describe("generateHeadingId", () => {
   test("converts text to kebab-case slug", () => {
     expect(generateHeadingId("Hello World")).toBe("hello-world");
-    expect(generateHeadingId("Function(param1, param2)")).toBe("function-param1-param2");
+    expect(generateHeadingId("Function(param1, param2)")).toBe(
+      "function-param1-param2",
+    );
     expect(generateHeadingId("Multiple   spaces")).toBe("multiple-spaces");
   });
 
   test("strips ApiType components for ID generation", () => {
-    const text = '<ApiType type="Function" path="x" symbolName="x" /> callFunction';
+    const text =
+      '<ApiType type="Function" path="x" symbolName="x" /> callFunction';
     expect(generateHeadingId(text)).toBe("callfunction");
   });
 });
@@ -58,9 +62,21 @@ More content
 `;
     const headings = extractHeadings(content);
     expect(headings).toHaveLength(3);
-    expect(headings[0]).toEqual({ id: "heading-1", content: "Heading 1", level: 1 });
-    expect(headings[1]).toEqual({ id: "heading-2", content: "Heading 2", level: 2 });
-    expect(headings[2]).toEqual({ id: "heading-3", content: "Heading 3", level: 3 });
+    expect(headings[0]).toEqual({
+      id: "heading-1",
+      content: "Heading 1",
+      level: 1,
+    });
+    expect(headings[1]).toEqual({
+      id: "heading-2",
+      content: "Heading 2",
+      level: 2,
+    });
+    expect(headings[2]).toEqual({
+      id: "heading-3",
+      content: "Heading 3",
+      level: 3,
+    });
   });
 
   test("respects explicit heading IDs", () => {
@@ -159,13 +175,20 @@ describe("extractTextFromReactChildren", () => {
   test("handles nested React elements", () => {
     // Mock nested React elements
     const inner = React.createElement("em", {}, "emphasized");
-    const outer = React.createElement("p", {}, ["Text with ", inner, " content"]);
-    expect(extractTextFromReactChildren(outer)).toBe("Text with emphasized content");
+    const outer = React.createElement("p", {}, [
+      "Text with ",
+      inner,
+      " content",
+    ]);
+    expect(extractTextFromReactChildren(outer)).toBe(
+      "Text with emphasized content",
+    );
   });
 
   test("skips ApiType components", () => {
     // Mock ApiType component
-    const ApiType = (props: any) => React.createElement("span", props, props.type);
+    const ApiType = (props: any) =>
+      React.createElement("span", props, props.type);
     ApiType.displayName = "ApiType";
 
     const apiTypeElement = React.createElement(ApiType, { type: "Function" });
@@ -195,7 +218,8 @@ describe("idSlugFromChildren", () => {
 
   test("skips ApiType components when generating slugs", () => {
     // Mock ApiType component
-    const ApiType = (props: any) => React.createElement("span", props, props.type);
+    const ApiType = (props: any) =>
+      React.createElement("span", props, props.type);
     ApiType.displayName = "ApiType";
 
     const apiTypeElement = React.createElement(ApiType, { type: "Function" });

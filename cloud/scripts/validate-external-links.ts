@@ -92,7 +92,7 @@ function isUrlAllowlisted(url: string, allowlist: Set<string>): boolean {
 async function checkUrl(
   url: string,
   timeout = DEFAULT_TIMEOUT,
-  retryCount = 0
+  retryCount = 0,
 ): Promise<Omit<LinkCheckResult, "pageFound">> {
   try {
     // Parse the URL to get the domain for rate limiting
@@ -111,7 +111,9 @@ async function checkUrl(
 
     if (timeSinceLastAccess < RATE_LIMIT_MS) {
       // Wait to respect rate limit
-      await new Promise((resolve) => setTimeout(resolve, RATE_LIMIT_MS - timeSinceLastAccess));
+      await new Promise((resolve) =>
+        setTimeout(resolve, RATE_LIMIT_MS - timeSinceLastAccess),
+      );
     }
 
     // Update last accessed time
@@ -164,7 +166,8 @@ async function checkUrl(
     }
   } catch (error: any) {
     // Implement retry logic for timeouts and certain temporary errors
-    const isTimeout = error.message === "Request timeout" || error.name === "AbortError";
+    const isTimeout =
+      error.message === "Request timeout" || error.name === "AbortError";
     const isNetworkError =
       error.message?.includes("fetch failed") ||
       error.message?.includes("network") ||
@@ -177,7 +180,7 @@ async function checkUrl(
 
       // Log retry attempt
       console.log(
-        `Retrying ${url} (attempt ${retryCount + 1}/${MAX_RETRIES}) after ${backoffDelay}ms delay...`
+        `Retrying ${url} (attempt ${retryCount + 1}/${MAX_RETRIES}) after ${backoffDelay}ms delay...`,
       );
 
       // Wait for backoff period
@@ -199,7 +202,7 @@ async function checkUrl(
 async function validateExternalLinks(
   distDir: string,
   verbose: boolean = false,
-  concurrentRequests: number = 5
+  concurrentRequests: number = 5,
 ): Promise<ValidationResult> {
   printHeader("Validating External Links");
 
@@ -258,7 +261,9 @@ async function validateExternalLinks(
   const incrementProcessed = () => {
     processed++;
     if (processed % 10 === 0 || processed === urlsToCheck.length) {
-      console.log(`[${processed}/${urlsToCheck.length}] Checked ${processed} links...`);
+      console.log(
+        `[${processed}/${urlsToCheck.length}] Checked ${processed} links...`,
+      );
     }
   };
 
@@ -281,9 +286,11 @@ async function validateExternalLinks(
       if (verbose || result.status === null || result.status >= 400) {
         const status = result.status ? result.status : "Error";
         const message = result.error ? `: ${result.error}` : "";
-        const retryInfo = result.retries ? ` (after ${result.retries} retries)` : "";
+        const retryInfo = result.retries
+          ? ` (after ${result.retries} retries)`
+          : "";
         console.log(
-          `[${processed}/${urlsToCheck.length}] ${url} - ${status}${message}${retryInfo}`
+          `[${processed}/${urlsToCheck.length}] ${url} - ${status}${message}${retryInfo}`,
         );
       }
 
@@ -340,23 +347,30 @@ async function validateExternalLinks(
   await Promise.all(workers);
 
   // Filter broken links (status >= 400 or errors)
-  const brokenLinks = results.filter((result) => result.status === null || result.status >= 400);
+  const brokenLinks = results.filter(
+    (result) => result.status === null || result.status >= 400,
+  );
 
   // Find redirected links
   const redirectedLinks = results.filter(
-    (result) => result.redirectUrl && result.status && result.status < 400
+    (result) => result.redirectUrl && result.status && result.status < 400,
   );
 
   // Console output for redirects
   if (redirectedLinks.length > 0) {
-    coloredLog(`\n${icons.info} Found ${redirectedLinks.length} redirected links:`, "blue");
+    coloredLog(
+      `\n${icons.info} Found ${redirectedLinks.length} redirected links:`,
+      "blue",
+    );
 
     redirectedLinks.forEach(({ url, redirectUrl, pageFound }) => {
       console.log(`${icons.arrow} ${url}`);
-      console.log(`  ${icons.success} Redirects to: ${colorize(redirectUrl || "", "green")}`);
+      console.log(
+        `  ${icons.success} Redirects to: ${colorize(redirectUrl || "", "green")}`,
+      );
       if (pageFound.length > 0) {
         console.log(
-          `  ${icons.dot} Found on: ${pageFound.length > 1 ? pageFound.length + " pages" : pageFound[0]}`
+          `  ${icons.dot} Found on: ${pageFound.length > 1 ? pageFound.length + " pages" : pageFound[0]}`,
         );
       }
     });
@@ -364,17 +378,22 @@ async function validateExternalLinks(
 
   // Console output for broken links
   if (brokenLinks.length > 0) {
-    coloredLog(`\n${icons.error} Found ${brokenLinks.length} broken external links:`, "red");
+    coloredLog(
+      `\n${icons.error} Found ${brokenLinks.length} broken external links:`,
+      "red",
+    );
 
     // Group by status code for easier readability
     const byStatus = brokenLinks.reduce(
       (acc, link) => {
-        const key = link.status ? `Status ${link.status}` : `Error: ${link.error}`;
+        const key = link.status
+          ? `Status ${link.status}`
+          : `Error: ${link.error}`;
         if (!acc[key]) acc[key] = [];
         acc[key].push(link);
         return acc;
       },
-      {} as Record<string, LinkCheckResult[]>
+      {} as Record<string, LinkCheckResult[]>,
     );
 
     Object.entries(byStatus).forEach(([status, links]) => {
@@ -400,14 +419,18 @@ async function validateExternalLinks(
         redirectedLinks,
       },
       null,
-      2
-    )
+      2,
+    ),
   );
   console.log(`\nDetailed JSON report saved to: ${jsonReportPath}`);
 
   // Create a combined markdown report
   const mdReportPath = path.join(process.cwd(), "links-report.md");
-  const mdReport = generateMarkdownReport(brokenLinks, redirectedLinks, results.length);
+  const mdReport = generateMarkdownReport(
+    brokenLinks,
+    redirectedLinks,
+    results.length,
+  );
   fs.writeFileSync(mdReportPath, mdReport);
   console.log(`Markdown report saved to: ${mdReportPath}`);
 
@@ -419,7 +442,10 @@ async function validateExternalLinks(
       redirectedLinks,
     };
   } else {
-    coloredLog(`\n${icons.success} All links validated, no broken links found!`, "green");
+    coloredLog(
+      `\n${icons.success} All links validated, no broken links found!`,
+      "green",
+    );
     return {
       valid: true,
       nLinksChecked: results.length,
@@ -435,7 +461,7 @@ async function validateExternalLinks(
 function generateMarkdownReport(
   brokenLinks: LinkCheckResult[],
   redirectedLinks: LinkCheckResult[],
-  totalChecked: number
+  totalChecked: number,
 ): string {
   const date = new Date().toISOString().split("T")[0];
   let report = `# Link Validation Report - ${date}\n\n`;
@@ -457,7 +483,10 @@ function generateMarkdownReport(
         let key;
         if (link.status) {
           key = `Status ${link.status}`;
-        } else if (link.error?.includes("timeout") || link.error?.includes("AbortError")) {
+        } else if (
+          link.error?.includes("timeout") ||
+          link.error?.includes("AbortError")
+        ) {
           key = "Error: Request Timeout";
         } else {
           key = `Error: ${link.error}`;
@@ -466,7 +495,7 @@ function generateMarkdownReport(
         acc[key].push(link);
         return acc;
       },
-      {} as Record<string, LinkCheckResult[]>
+      {} as Record<string, LinkCheckResult[]>,
     );
 
     Object.entries(byStatus).forEach(([status, links]) => {
@@ -496,7 +525,8 @@ function generateMarkdownReport(
     redirectedLinks.forEach(({ url, redirectUrl, pageFound }) => {
       const pages =
         pageFound.length > 3
-          ? pageFound.slice(0, 2).join(", ") + `, and ${pageFound.length - 2} more`
+          ? pageFound.slice(0, 2).join(", ") +
+            `, and ${pageFound.length - 2} more`
           : pageFound.join(", ");
 
       report += `| ${url} | ${redirectUrl} | ${pages} |\n`;
@@ -528,39 +558,46 @@ async function main() {
   const args = process.argv.slice(2);
   const verbose = args.includes("--verbose");
   const concurrentRequests = parseInt(
-    args.find((arg) => arg.startsWith("--concurrency="))?.split("=")[1] || "5"
+    args.find((arg) => arg.startsWith("--concurrency="))?.split("=")[1] || "5",
   );
   const distDir = path.join(process.cwd(), "dist");
 
   // Check if dist directory exists
   if (!fs.existsSync(distDir)) {
-    coloredLog(`${icons.error} Dist directory not found! Run \`bun run build\` first.`, "red");
+    coloredLog(
+      `${icons.error} Dist directory not found! Run \`bun run build\` first.`,
+      "red",
+    );
     process.exit(1);
   }
 
   try {
-    const result = await validateExternalLinks(distDir, verbose, concurrentRequests);
+    const result = await validateExternalLinks(
+      distDir,
+      verbose,
+      concurrentRequests,
+    );
 
     console.log(
       `\nExternal link check complete.\n` +
         `- Checked ${result.nLinksChecked} links\n` +
         `- Found ${result.brokenLinks.length} broken links\n` +
-        `- Found ${result.redirectedLinks.length} redirected links`
+        `- Found ${result.redirectedLinks.length} redirected links`,
     );
 
     // Set output for GitHub Actions
     if (process.env.GITHUB_OUTPUT) {
       fs.appendFileSync(
         process.env.GITHUB_OUTPUT,
-        `has_broken_links=${result.brokenLinks.length > 0}\n`
+        `has_broken_links=${result.brokenLinks.length > 0}\n`,
       );
       fs.appendFileSync(
         process.env.GITHUB_OUTPUT,
-        `broken_link_count=${result.brokenLinks.length}\n`
+        `broken_link_count=${result.brokenLinks.length}\n`,
       );
       fs.appendFileSync(
         process.env.GITHUB_OUTPUT,
-        `redirected_link_count=${result.redirectedLinks.length}\n`
+        `redirected_link_count=${result.redirectedLinks.length}\n`,
       );
     }
   } catch (error) {

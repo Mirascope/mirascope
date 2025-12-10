@@ -67,7 +67,7 @@ function createLLMContentFromDoc(doc: DocInfo, docsRoot?: string): LLMContent {
 function filterDocsByPattern(
   docs: DocInfo[],
   pattern: string,
-  type: "exact" | "directory" | "tree"
+  type: "exact" | "directory" | "tree",
 ): DocInfo[] {
   const normalizedPattern = pattern.replace(/^\/+|\/+$/g, "");
 

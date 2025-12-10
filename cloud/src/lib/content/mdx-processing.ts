@@ -105,7 +105,7 @@ export function parseFrontmatter(content: string): FrontmatterResult {
 export function mergeFrontmatter(
   target: Record<string, any>,
   source: Record<string, any>,
-  overwrite = false
+  overwrite = false,
 ): Record<string, any> {
   const result = { ...target };
 
@@ -132,7 +132,7 @@ export async function processMDXContent(
   rawContent: string,
   options?: {
     path?: string; // Optional path for better error reporting
-  }
+  },
 ): Promise<ProcessedContent> {
   if (!rawContent) {
     throw new ContentError("Empty content provided", options?.path);
@@ -165,7 +165,7 @@ export async function processMDXContent(
     throw new ContentError(
       `Error processing MDX content: ${error instanceof Error ? error.message : String(error)}`,
       options?.path,
-      error instanceof Error ? error : undefined
+      error instanceof Error ? error : undefined,
     );
   }
 }

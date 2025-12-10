@@ -20,7 +20,12 @@ export interface BaseMetaProps {
   testId: string;
 }
 
-export function BaseMeta({ children, metaType, dataAttribute, testId }: BaseMetaProps) {
+export function BaseMeta({
+  children,
+  metaType,
+  dataAttribute,
+  testId,
+}: BaseMetaProps) {
   // In prerendering mode, we only output a hidden div with serialized metadata
   if (environment.isPrerendering) {
     // Extract metadata

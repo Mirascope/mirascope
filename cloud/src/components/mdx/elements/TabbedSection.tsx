@@ -1,5 +1,10 @@
 import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/mirascope-ui/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/mirascope-ui/ui/tabs";
 import { ProductLogo } from "@/src/components/core/branding";
 import { cn } from "@/src/lib/utils";
 import { temporarilyEnableSyncHighlighting } from "@/mirascope-ui/lib/code-highlight";
@@ -46,7 +51,9 @@ export function TabbedSection({
       const childProps = child.props as any;
 
       if (
-        (childType === Tab || childType?.displayName === "Tab" || childType === "Tab") &&
+        (childType === Tab ||
+          childType?.displayName === "Tab" ||
+          childType === "Tab") &&
         childProps.value
       ) {
         tabs.push({
@@ -87,7 +94,7 @@ export function TabbedSection({
     <div
       className={cn(
         "bg-card overflow-hidden rounded-md border-1 px-2 pt-2 pb-0 shadow-md",
-        className
+        className,
       )}
     >
       {showLogo && (

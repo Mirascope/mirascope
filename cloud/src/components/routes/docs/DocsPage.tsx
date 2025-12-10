@@ -33,7 +33,11 @@ const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
 
   return (
     <>
-      <PageMeta title={title} description={description} product={product.name} />
+      <PageMeta
+        title={title}
+        description={description}
+        product={product.name}
+      />
 
       <ProviderContextProvider>
         <AppLayout>

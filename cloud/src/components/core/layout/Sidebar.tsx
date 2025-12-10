@@ -77,7 +77,7 @@ const SidebarLink = ({
       className={cn(
         "font-handwriting-descent block rounded-md py-1 text-base",
         className,
-        isActive ? activeClass : inactiveClass
+        isActive ? activeClass : inactiveClass,
       )}
     >
       {children}
@@ -111,7 +111,7 @@ const SectionTab = ({
       className={cn(
         "font-handwriting-descent w-full rounded-md px-3 py-1 text-base",
         className,
-        isActive ? activeClass : inactiveClass
+        isActive ? activeClass : inactiveClass,
       )}
     >
       {children}
@@ -125,7 +125,9 @@ const SectionTab = ({
 const GroupLabel = ({ label }: { label: string }) => {
   return (
     <div
-      className={cn("text-primary font-handwriting block cursor-default px-3 py-1 font-semibold")}
+      className={cn(
+        "text-primary font-handwriting block cursor-default px-3 py-1 font-semibold",
+      )}
     >
       {label}
     </div>
@@ -135,7 +137,13 @@ const GroupLabel = ({ label }: { label: string }) => {
 /**
  * Chevron button component for expand/collapse
  */
-const ChevronButton = ({ isExpanded, onClick }: { isExpanded: boolean; onClick: () => void }) => {
+const ChevronButton = ({
+  isExpanded,
+  onClick,
+}: {
+  isExpanded: boolean;
+  onClick: () => void;
+}) => {
   return (
     <button
       onClick={onClick}
@@ -248,7 +256,11 @@ const SidebarItemLink = ({
             className="flex flex-shrink-0 items-center justify-center"
             aria-label={isExpanded ? "Collapse" : "Expand"}
           >
-            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {isExpanded ? (
+              <ChevronDown size={16} />
+            ) : (
+              <ChevronRight size={16} />
+            )}
           </button>
         </SidebarLink>
       </div>
@@ -300,7 +312,7 @@ const NestedFolder = ({
       <div
         className={cn(
           "hover:bg-muted flex items-center rounded-md",
-          isActive ? "text-accent" : "text-muted-foreground"
+          isActive ? "text-accent" : "text-muted-foreground",
         )}
       >
         <ChevronButton isExpanded={isExpanded} onClick={toggleExpand} />
@@ -373,7 +385,12 @@ const NestedItem = ({
 /**
  * Container component for a group of nested items
  */
-const NestedItems = ({ items, basePath, isActivePath, indentLevel = 0 }: NestedItemsProps) => {
+const NestedItems = ({
+  items,
+  basePath,
+  isActivePath,
+  indentLevel = 0,
+}: NestedItemsProps) => {
   // Ensure we always have an object, even if items is undefined
   const safeItems = items || {};
 
@@ -448,7 +465,9 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
 
   // Store and restore scroll position
   const sidebarRef = React.useRef<HTMLDivElement>(null);
-  const sidebarId = config.label ? config.label.toLowerCase().replace(/\s+/g, "-") : "sidebar";
+  const sidebarId = config.label
+    ? config.label.toLowerCase().replace(/\s+/g, "-")
+    : "sidebar";
 
   // Use state to track the last path, to know when navigation happens
   const [lastPath, setLastPath] = React.useState(currentPath);
@@ -458,7 +477,10 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
     // Save the current scroll position before changing paths
     if (lastPath !== currentPath && sidebarRef.current) {
       const scrollKey = `sidebar-scroll-${sidebarId}`;
-      sessionStorage.setItem(scrollKey, sidebarRef.current.scrollTop.toString());
+      sessionStorage.setItem(
+        scrollKey,
+        sidebarRef.current.scrollTop.toString(),
+      );
     }
 
     setLastPath(currentPath);
@@ -508,7 +530,9 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
     // If it's not an index page, check parent/child relationship
     // Normalize paths by ensuring they end with a slash
     const normalizedPath = path.endsWith("/") ? path : `${path}/`;
-    const normalizedCurrentPath = currentPath.endsWith("/") ? currentPath : `${currentPath}/`;
+    const normalizedCurrentPath = currentPath.endsWith("/")
+      ? currentPath
+      : `${currentPath}/`;
 
     // Special case to avoid matching the root path with everything
     if (normalizedPath === "/") {
@@ -525,7 +549,8 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
     .sort((a, b) => b.basePath.length - a.basePath.length);
 
   // Use the most specific match (if any), otherwise undefined
-  const activeSection = matchingSections.length > 0 ? matchingSections[0].slug : undefined;
+  const activeSection =
+    matchingSections.length > 0 ? matchingSections[0].slug : undefined;
 
   return (
     <aside className="flex h-full flex-col overflow-hidden">
@@ -567,7 +592,10 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
             ) : (
               // If no active section, show first section as default
               config.sections.length > 0 && (
-                <SectionContent section={config.sections[0]} isActivePath={isActivePath} />
+                <SectionContent
+                  section={config.sections[0]}
+                  isActivePath={isActivePath}
+                />
               )
             )}
           </nav>

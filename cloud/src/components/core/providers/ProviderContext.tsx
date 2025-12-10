@@ -20,10 +20,15 @@ interface ProviderContextType {
   };
 }
 
-const ProviderContext = createContext<ProviderContextType | undefined>(undefined);
+const ProviderContext = createContext<ProviderContextType | undefined>(
+  undefined,
+);
 
 // Helper function to validate a provider string
-const validateProvider = (provider: string | null, defaultFallback: Provider): Provider => {
+const validateProvider = (
+  provider: string | null,
+  defaultFallback: Provider,
+): Provider => {
   if (!provider || !providers.includes(provider as Provider)) {
     return defaultFallback; // Default fallback if invalid
   }
@@ -93,7 +98,9 @@ export function useProvider() {
     return {
       provider: defaultProvider,
       setProvider: () => {
-        console.warn("Attempted to set provider outside of ProviderContextProvider");
+        console.warn(
+          "Attempted to set provider outside of ProviderContextProvider",
+        );
       },
       providerInfo: providerDefaults[defaultProvider],
     };

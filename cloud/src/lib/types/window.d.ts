@@ -6,7 +6,7 @@ interface Window {
     action: string,
     params?: {
       [key: string]: any;
-    }
+    },
   ) => void;
 
   // Google Analytics data layer
@@ -23,7 +23,7 @@ interface Window {
         capture_pageleave?: boolean;
         autocapture?: boolean;
         [key: string]: any;
-      }
+      },
     ) => void;
     capture: (eventName: string, properties?: Record<string, any>) => void;
     identify: (distinctId: string, properties?: Record<string, any>) => void;

@@ -1,6 +1,11 @@
 import { cn } from "@/mirascope-ui/lib/utils";
 import { ButtonLink } from "@/mirascope-ui/ui/button-link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/mirascope-ui/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/mirascope-ui/ui/tabs";
 import { Check, X } from "lucide-react";
 
 interface FeatureRowProps {
@@ -12,14 +17,17 @@ interface FeatureRowProps {
 // Feature row component for displaying features with the same value across tiers
 const FeatureRow = ({ feature, free, pro, team }: FeatureRowProps) => {
   // If all tiers have the exact same value (and it's not a boolean)
-  const allSameNonBoolean = free === pro && pro === team && typeof free === "string" && free !== "";
+  const allSameNonBoolean =
+    free === pro && pro === team && typeof free === "string" && free !== "";
 
   return (
     <div className="border-border grid min-h-[48px] grid-cols-4 items-center gap-4 border-b py-3">
       <div className="text-foreground text-lg font-medium">{feature}</div>
 
       {allSameNonBoolean ? (
-        <div className="col-span-3 text-center text-lg whitespace-pre-line">{free}</div>
+        <div className="col-span-3 text-center text-lg whitespace-pre-line">
+          {free}
+        </div>
       ) : (
         <>
           <div className="text-center">
@@ -36,7 +44,9 @@ const FeatureRow = ({ feature, free, pro, team }: FeatureRowProps) => {
                 )}
               </div>
             ) : (
-              <span className="text-foreground text-lg whitespace-pre-line">{free}</span>
+              <span className="text-foreground text-lg whitespace-pre-line">
+                {free}
+              </span>
             )}
           </div>
 
@@ -54,7 +64,9 @@ const FeatureRow = ({ feature, free, pro, team }: FeatureRowProps) => {
                 )}
               </div>
             ) : (
-              <span className="text-foreground text-lg whitespace-pre-line">{pro}</span>
+              <span className="text-foreground text-lg whitespace-pre-line">
+                {pro}
+              </span>
             )}
           </div>
 
@@ -72,7 +84,9 @@ const FeatureRow = ({ feature, free, pro, team }: FeatureRowProps) => {
                 )}
               </div>
             ) : (
-              <span className="text-foreground text-lg whitespace-pre-line">{team}</span>
+              <span className="text-foreground text-lg whitespace-pre-line">
+                {team}
+              </span>
             )}
           </div>
         </>
@@ -89,7 +103,13 @@ interface PricingTierProps {
   badge?: "Open Beta" | "Closed Beta";
 }
 // Pricing tier component
-const PricingTier = ({ name, price, description, button, badge }: PricingTierProps) => (
+const PricingTier = ({
+  name,
+  price,
+  description,
+  button,
+  badge,
+}: PricingTierProps) => (
   <div className="border-border bg-background overflow-hidden rounded-lg border shadow-sm">
     <div className={cn("bg-background px-6 py-8")}>
       <div className="mb-2 flex items-center gap-2">
@@ -100,7 +120,7 @@ const PricingTier = ({ name, price, description, button, badge }: PricingTierPro
               "rounded-md px-2 py-1 text-xs font-medium",
               badge === "Open Beta"
                 ? "bg-primary/20 text-primary"
-                : "bg-muted text-muted-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {badge}
@@ -120,18 +140,30 @@ const PricingTier = ({ name, price, description, button, badge }: PricingTierPro
 );
 
 // Feature comparison table component
-export const FeatureComparisonTable = ({ features }: { features: FeatureRowProps[] }) => (
+export const FeatureComparisonTable = ({
+  features,
+}: {
+  features: FeatureRowProps[];
+}) => (
   <div className="border-border bg-background overflow-hidden rounded-lg border shadow-sm">
     <div className="border-border bg-accent border-b px-4 py-5 sm:px-6">
-      <h3 className="text-accent-foreground text-lg font-medium">Feature Comparison</h3>
+      <h3 className="text-accent-foreground text-lg font-medium">
+        Feature Comparison
+      </h3>
     </div>
     <div className="bg-background overflow-x-auto px-4 py-5 sm:p-6">
       {/* Table header */}
       <div className="border-border grid grid-cols-4 gap-4 border-b pb-4">
         <div className="text-muted-foreground text-lg font-medium">Feature</div>
-        <div className="text-muted-foreground text-center text-lg font-medium">Free</div>
-        <div className="text-muted-foreground text-center text-lg font-medium">Pro</div>
-        <div className="text-muted-foreground text-center text-lg font-medium">Team</div>
+        <div className="text-muted-foreground text-center text-lg font-medium">
+          Free
+        </div>
+        <div className="text-muted-foreground text-center text-lg font-medium">
+          Pro
+        </div>
+        <div className="text-muted-foreground text-center text-lg font-medium">
+          Team
+        </div>
       </div>
 
       {/* Table rows */}
@@ -161,7 +193,12 @@ interface PricingActions {
 
 // Cloud hosted features
 export const cloudHostedFeatures = [
-  { feature: "Projects", free: "Unlimited", pro: "Unlimited", team: "Unlimited" },
+  {
+    feature: "Projects",
+    free: "Unlimited",
+    pro: "Unlimited",
+    team: "Unlimited",
+  },
   { feature: "Users", free: "2", pro: "10", team: "Unlimited" },
   {
     feature: "Tracing",
@@ -169,7 +206,12 @@ export const cloudHostedFeatures = [
     pro: "100k spans / month (thereafter $1 per 10k)",
     team: "1M spans / month (thereafter $1 per 10k)",
   },
-  { feature: "Data Retention", free: "30 days", pro: "90 days", team: "180 days" },
+  {
+    feature: "Data Retention",
+    free: "30 days",
+    pro: "90 days",
+    team: "180 days",
+  },
   { feature: "Versioned Functions", free: true, pro: true, team: true },
   { feature: "Playground", free: true, pro: true, team: true },
   { feature: "Comparisons", free: true, pro: true, team: true },
@@ -177,15 +219,40 @@ export const cloudHostedFeatures = [
   { feature: "Support (Community)", free: true, pro: true, team: true },
   { feature: "Support (Chat / Email)", free: false, pro: true, team: true },
   { feature: "Support (Private Slack)", free: false, pro: false, team: true },
-  { feature: "API Rate Limits", free: "10 / minute", pro: "100 / minute", team: "1000 / minute" },
+  {
+    feature: "API Rate Limits",
+    free: "10 / minute",
+    pro: "100 / minute",
+    team: "1000 / minute",
+  },
 ];
 
 // Self-hosted features
 export const selfHostedFeatures = [
-  { feature: "Projects", free: "Unlimited", pro: "Unlimited", team: "Unlimited" },
-  { feature: "Users", free: "Unlimited", pro: "As licensed", team: "As licensed" },
-  { feature: "Tracing", free: "No limits", pro: "No limits", team: "No limits" },
-  { feature: "Data Retention", free: "No limits", pro: "No limits", team: "No limits" },
+  {
+    feature: "Projects",
+    free: "Unlimited",
+    pro: "Unlimited",
+    team: "Unlimited",
+  },
+  {
+    feature: "Users",
+    free: "Unlimited",
+    pro: "As licensed",
+    team: "As licensed",
+  },
+  {
+    feature: "Tracing",
+    free: "No limits",
+    pro: "No limits",
+    team: "No limits",
+  },
+  {
+    feature: "Data Retention",
+    free: "No limits",
+    pro: "No limits",
+    team: "No limits",
+  },
   { feature: "Versioned Functions", free: true, pro: true, team: true },
   { feature: "Playground", free: false, pro: true, team: true },
   { feature: "Comparisons", free: false, pro: true, team: true },
@@ -193,7 +260,12 @@ export const selfHostedFeatures = [
   { feature: "Support (Community)", free: true, pro: true, team: true },
   { feature: "Support (Chat / Email)", free: false, pro: true, team: true },
   { feature: "Support (Private Slack)", free: false, pro: false, team: true },
-  { feature: "API Rate Limits", free: "No limits", pro: "No limits", team: "No limits" },
+  {
+    feature: "API Rate Limits",
+    free: "No limits",
+    pro: "No limits",
+    team: "No limits",
+  },
 ];
 interface LilypadPricingProps {
   actions: PricingActions;
@@ -204,7 +276,9 @@ export function LilypadPricing({ actions }: LilypadPricingProps) {
     <div className="px-4 py-4">
       <div className="mx-auto max-w-4xl">
         <div className="mb-4 text-center">
-          <h1 className="text-foreground mb-4 text-center text-4xl font-bold">Lilypad Pricing</h1>
+          <h1 className="text-foreground mb-4 text-center text-4xl font-bold">
+            Lilypad Pricing
+          </h1>
           <p className="text-foreground mx-auto mb-2 max-w-2xl text-xl">
             Get started with the Free plan today.
           </p>
@@ -271,8 +345,8 @@ export function LilypadPricing({ actions }: LilypadPricingProps) {
                 How long will the open beta last?
               </h3>
               <p className="text-muted-foreground">
-                The open beta period is ongoing, and we&apos;ll provide advance notice before moving
-                to paid plans.
+                The open beta period is ongoing, and we&apos;ll provide advance
+                notice before moving to paid plans.
               </p>
             </div>
             <div>
@@ -280,8 +354,8 @@ export function LilypadPricing({ actions }: LilypadPricingProps) {
                 What happens when the beta ends?
               </h3>
               <p className="text-muted-foreground">
-                All existing users will receive a grace period to evaluate which plan is right for
-                them before making any changes.
+                All existing users will receive a grace period to evaluate which
+                plan is right for them before making any changes.
               </p>
             </div>
           </div>

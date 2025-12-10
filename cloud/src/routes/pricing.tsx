@@ -32,7 +32,10 @@ function PricingPageWithMeta() {
     selfHosted: {
       free: {
         button: (
-          <ButtonLink href="/docs/lilypad/getting-started/self-hosting" variant="default">
+          <ButtonLink
+            href="/docs/lilypad/getting-started/self-hosting"
+            variant="default"
+          >
             Get Started
           </ButtonLink>
         ),
@@ -71,4 +74,3 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPageWithMeta,
   onError: (error: Error) => environment.onError(error),
 });
-
