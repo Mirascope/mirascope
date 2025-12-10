@@ -1,11 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Button } from "@/src/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
+import { Button } from "@/mirascope-ui/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/mirascope-ui/ui/card";
 import {
   useOrganizations,
   useCreateOrganization,
@@ -32,9 +27,7 @@ function CreateOrganizationForm({ onClose }: { onClose: () => void }) {
       await createOrganization.mutateAsync({ name: name.trim() });
       onClose();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create organization",
-      );
+      setError(err instanceof Error ? err.message : "Failed to create organization");
     }
   };
 
@@ -67,11 +60,7 @@ function CreateOrganizationForm({ onClose }: { onClose: () => void }) {
   );
 }
 
-function OrganizationCard({
-  organization,
-}: {
-  organization: PublicOrganizationWithMembership;
-}) {
+function OrganizationCard({ organization }: { organization: PublicOrganizationWithMembership }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const deleteOrganization = useDeleteOrganization();
 
@@ -84,14 +73,10 @@ function OrganizationCard({
   };
 
   const roleColors: Record<string, string> = {
-    OWNER:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    ADMIN:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-    DEVELOPER:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    ANNOTATOR:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    OWNER: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+    ADMIN: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+    DEVELOPER: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    ANNOTATOR: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
   };
 
   return (
@@ -108,9 +93,7 @@ function OrganizationCard({
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground font-mono">
-            {organization.id}
-          </p>
+          <p className="text-xs text-muted-foreground font-mono">{organization.id}</p>
           {organization.role === "OWNER" && (
             <div className="flex gap-2">
               {showDeleteConfirm ? (
@@ -151,7 +134,7 @@ function OrganizationCard({
   );
 }
 
-export function OrganizationsPage() {
+function OrganizationsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { data: organizations, isLoading, error } = useOrganizations();
 
@@ -176,17 +159,12 @@ export function OrganizationsPage() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link
-              to="/"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
               ← Back
             </Link>
             <h1 className="text-xl font-semibold">Organizations</h1>
           </div>
-          <Button onClick={() => setShowCreateForm(true)}>
-            New Organization
-          </Button>
+          <Button onClick={() => setShowCreateForm(true)}>New Organization</Button>
         </div>
       </header>
 
@@ -197,18 +175,14 @@ export function OrganizationsPage() {
               <CardTitle>Create Organization</CardTitle>
             </CardHeader>
             <CardContent>
-              <CreateOrganizationForm
-                onClose={() => setShowCreateForm(false)}
-              />
+              <CreateOrganizationForm onClose={() => setShowCreateForm(false)} />
             </CardContent>
           </Card>
         )}
 
         {!organizations || organizations.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-muted-foreground mb-4">
-              You don't have any organizations yet.
-            </p>
+            <p className="text-muted-foreground mb-4">You don't have any organizations yet.</p>
             {!showCreateForm && (
               <Button onClick={() => setShowCreateForm(true)}>
                 Create your first organization
@@ -226,3 +200,5 @@ export function OrganizationsPage() {
     </div>
   );
 }
+
+export default OrganizationsPage;

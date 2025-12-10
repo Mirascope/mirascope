@@ -1,6 +1,7 @@
-import { HomePage } from "@/src/components/home-page";
-import { Protected } from "@/src/components/protected";
+import { FrontPage } from "@/src/components/FrontPage";
+import { Protected } from "@/src/components/core";
 import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "../components/core";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -8,8 +9,10 @@ export const Route = createFileRoute("/")({
 
 function App() {
   return (
-    <Protected>
-      <HomePage />
-    </Protected>
+    <DashboardLayout>
+      <Protected>
+        <FrontPage />
+      </Protected>
+    </DashboardLayout>
   );
 }

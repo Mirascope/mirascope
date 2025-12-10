@@ -1,12 +1,7 @@
 /// <reference types="vite/client" />
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import {
-  Outlet,
-  createRootRoute,
-  HeadContent,
-  Scripts,
-} from "@tanstack/react-router";
-import { AuthProvider } from "@/src/contexts/auth";
+import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { AuthProvider } from "@/src/components/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/src/api/client";
 import globalsCss from "@/src/styles/globals.css?url";

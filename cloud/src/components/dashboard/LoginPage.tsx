@@ -1,11 +1,6 @@
-import { Button } from "@/src/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
-import { useAuth } from "@/src/contexts/auth";
+import { Button } from "@/mirascope-ui/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/mirascope-ui/ui/card";
+import { useAuth } from "@/src/components/core/providers/AuthContext";
 import type { ReactNode } from "react";
 
 interface GithubButtonProps {
@@ -15,6 +10,7 @@ interface GithubButtonProps {
   onClick?: () => void;
 }
 
+// todo(seb): move to a shared component
 function GitHubLoginButton({
   iconSize = 24,
   iconColor = "currentColor",
@@ -48,17 +44,10 @@ interface GoogleButtonProps {
   onClick?: () => void;
 }
 
-function GoogleLoginButton({
-  iconSize = 24,
-  children,
-  onClick,
-}: GoogleButtonProps) {
+// todo(seb): move to a shared component
+function GoogleLoginButton({ iconSize = 24, children, onClick }: GoogleButtonProps) {
   return (
-    <Button
-      variant="outline"
-      onClick={onClick}
-      className="hover:bg-[#EFF0EE] w-64 font-sans"
-    >
+    <Button variant="outline" onClick={onClick} className="hover:bg-[#EFF0EE] w-64 font-sans">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 64 64"
@@ -146,24 +135,22 @@ function GoogleLoginButton({
   );
 }
 
-export function LoginPage() {
+function LoginPage() {
   const { loginWithGitHub, loginWithGoogle } = useAuth();
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen">
+    <>
       <Card className="flex flex-col h-fit w-fit p-4">
         <CardHeader className="mb-2 text-center">
           <CardTitle className="text-2xl">Mirascope Cloud</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col justify-center items-center gap-y-2">
-          <GitHubLoginButton onClick={loginWithGitHub}>
-            Log in with GitHub
-          </GitHubLoginButton>
-          <GoogleLoginButton onClick={loginWithGoogle}>
-            Log in with Google
-          </GoogleLoginButton>
+          <GitHubLoginButton onClick={loginWithGitHub}>Log in with GitHub</GitHubLoginButton>
+          <GoogleLoginButton onClick={loginWithGoogle}>Log in with Google</GoogleLoginButton>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
+
+export default LoginPage;

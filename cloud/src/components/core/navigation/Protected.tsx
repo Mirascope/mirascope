@@ -1,9 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/src/contexts/auth";
+import { useAuth } from "@/src/components/core/providers/AuthContext";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 
-export function Protected({ children }: { children: ReactNode }) {
+function Protected({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -25,3 +25,5 @@ export function Protected({ children }: { children: ReactNode }) {
 
   return <>{children}</>;
 }
+
+export default Protected;

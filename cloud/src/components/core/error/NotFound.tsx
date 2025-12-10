@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function NotFound({ children }: { children?: any }) {
+function NotFound({ children }: { children?: any }) {
   return (
     <div className="space-y-2 p-2">
       <div className="text-gray-600 dark:text-gray-400">
@@ -24,3 +24,5 @@ export function NotFound({ children }: { children?: any }) {
     </div>
   );
 }
+
+export default NotFound;
