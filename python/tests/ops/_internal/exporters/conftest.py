@@ -64,6 +64,27 @@ def mirascope_base_url() -> str:
 
 
 @pytest.fixture
+def mirascope_organization_id() -> str:
+    """Get Mirascope organization ID from environment or return default."""
+    load_dotenv()
+    return os.getenv("MIRASCOPE_ORGANIZATION_ID", "test-org-id")
+
+
+@pytest.fixture
+def mirascope_project_id() -> str:
+    """Get Mirascope project ID from environment or return default."""
+    load_dotenv()
+    return os.getenv("MIRASCOPE_PROJECT_ID", "test-project-id")
+
+
+@pytest.fixture
+def mirascope_environment_id() -> str:
+    """Get Mirascope environment ID from environment or return default."""
+    load_dotenv()
+    return os.getenv("MIRASCOPE_ENVIRONMENT_ID", "test-env-id")
+
+
+@pytest.fixture
 def mirascope_client(mirascope_api_key: str, mirascope_base_url: str) -> Mirascope:
     """Create real Fern-generated client for VCR tests."""
     return get_sync_client(
@@ -73,10 +94,20 @@ def mirascope_client(mirascope_api_key: str, mirascope_base_url: str) -> Mirasco
 
 
 @pytest.fixture
-def otlp_exporter(mirascope_client: Mirascope) -> MirascopeOTLPExporter:
+def otlp_exporter(
+    mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
+) -> MirascopeOTLPExporter:
     """Create MirascopeOTLPExporter with transport."""
     return MirascopeOTLPExporter(
-        client=mirascope_client, timeout=30.0, max_retry_attempts=3
+        client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
+        timeout=30.0,
+        max_retry_attempts=3,
     )
 
 

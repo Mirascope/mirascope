@@ -15,10 +15,12 @@ from typing import ParamSpec, TypeAlias, TypeVar
 
 import httpx
 
+from ._generated.annotations.client import AnnotationsClient, AsyncAnnotationsClient
 from ._generated.client import (
     AsyncMirascope as _BaseAsyncMirascope,
     Mirascope as _BaseMirascope,
 )
+from ._generated.functions.client import AsyncFunctionsClient, FunctionsClient
 from .settings import get_settings
 
 ApiKey: TypeAlias = str
@@ -76,6 +78,10 @@ class Mirascope(_BaseMirascope):
                 httpx_client=httpx_client,
             )
 
+            # Add functions and annotations clients
+            self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
+            self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
+
         except Exception as e:
             logger.error("Failed to initialize Mirascope client: %s", e)
             raise RuntimeError(f"Client initialization failed: {e}") from e
@@ -132,6 +138,12 @@ class AsyncMirascope(_BaseAsyncMirascope):
                 timeout=timeout,
                 follow_redirects=follow_redirects,
                 httpx_client=httpx_client,
+            )
+
+            # Add functions and annotations clients
+            self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
+            self.annotations = AsyncAnnotationsClient(
+                client_wrapper=self._client_wrapper
             )
 
         except Exception as e:

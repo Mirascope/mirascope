@@ -31,6 +31,9 @@ class TracesClient:
 
     def create(
         self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
         *,
         resource_spans: typing.Sequence[TracesCreateRequestResourceSpansItem],
         request_options: typing.Optional[RequestOptions] = None,
@@ -38,6 +41,12 @@ class TracesClient:
         """
         Parameters
         ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
         resource_spans : typing.Sequence[TracesCreateRequestResourceSpansItem]
 
         request_options : typing.Optional[RequestOptions]
@@ -59,6 +68,9 @@ class TracesClient:
 
         client = Mirascope()
         client.traces.create(
+            organization_id="organizationId",
+            project_id="projectId",
+            environment_id="environmentId",
             resource_spans=[
                 TracesCreateRequestResourceSpansItem(
                     scope_spans=[
@@ -79,7 +91,11 @@ class TracesClient:
         )
         """
         _response = self._raw_client.create(
-            resource_spans=resource_spans, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            resource_spans=resource_spans,
+            request_options=request_options,
         )
         return _response.data
 
@@ -101,6 +117,9 @@ class AsyncTracesClient:
 
     async def create(
         self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
         *,
         resource_spans: typing.Sequence[TracesCreateRequestResourceSpansItem],
         request_options: typing.Optional[RequestOptions] = None,
@@ -108,6 +127,12 @@ class AsyncTracesClient:
         """
         Parameters
         ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
         resource_spans : typing.Sequence[TracesCreateRequestResourceSpansItem]
 
         request_options : typing.Optional[RequestOptions]
@@ -134,6 +159,9 @@ class AsyncTracesClient:
 
         async def main() -> None:
             await client.traces.create(
+                organization_id="organizationId",
+                project_id="projectId",
+                environment_id="environmentId",
                 resource_spans=[
                     TracesCreateRequestResourceSpansItem(
                         scope_spans=[
@@ -157,6 +185,10 @@ class AsyncTracesClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            resource_spans=resource_spans, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            resource_spans=resource_spans,
+            request_options=request_options,
         )
         return _response.data

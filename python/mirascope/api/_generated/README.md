@@ -43,6 +43,9 @@ from mirascope.api._generated.traces import (
 
 client = Mirascope()
 client.traces.create(
+    organization_id="organizationId",
+    project_id="projectId",
+    environment_id="environmentId",
     resource_spans=[
         TracesCreateRequestResourceSpansItem(
             scope_spans=[
@@ -82,6 +85,9 @@ client = AsyncMirascope()
 
 async def main() -> None:
     await client.traces.create(
+        organization_id="organizationId",
+        project_id="projectId",
+        environment_id="environmentId",
         resource_spans=[
             TracesCreateRequestResourceSpansItem(
                 scope_spans=[

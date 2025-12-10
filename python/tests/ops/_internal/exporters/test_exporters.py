@@ -38,7 +38,13 @@ ResourceAttributesDict = dict[str, AttributeValue]
 def test_retry_on_network_error(mock_sleep: Mock, span: Mock) -> None:
     """Test that export retries on network errors."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client, max_retry_attempts=3)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+        max_retry_attempts=3,
+    )
 
     success_response = Mock()
     success_response.partial_success = None
@@ -65,7 +71,13 @@ def test_retry_on_network_error(mock_sleep: Mock, span: Mock) -> None:
 def test_max_retries_exceeded(mock_sleep: Mock, span: Mock) -> None:
     """Test that export fails after max retries exceeded."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client, max_retry_attempts=3)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+        max_retry_attempts=3,
+    )
 
     client.traces.create = Mock(side_effect=Exception("Persistent connection error"))
 
@@ -78,7 +90,13 @@ def test_max_retries_exceeded(mock_sleep: Mock, span: Mock) -> None:
 def test_no_retry_on_partial_failure(span: Mock) -> None:
     """Test that export doesn't retry on partial failures (invalid data)."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client, max_retry_attempts=3)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+        max_retry_attempts=3,
+    )
 
     response = Mock()
     response.partial_success = Mock()
@@ -95,7 +113,13 @@ def test_no_retry_on_partial_failure(span: Mock) -> None:
 def test_immediate_success(span: Mock) -> None:
     """Test that successful export doesn't retry."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client, max_retry_attempts=3)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+        max_retry_attempts=3,
+    )
 
     success_response = Mock()
     success_response.partial_success = None
@@ -111,7 +135,13 @@ def test_immediate_success(span: Mock) -> None:
 def test_exponential_backoff_cap(mock_sleep: Mock, span: Mock) -> None:
     """Test that exponential backoff is capped at 5 seconds."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client, max_retry_attempts=5)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+        max_retry_attempts=5,
+    )
 
     success_response = Mock()
     success_response.partial_success = None
@@ -133,7 +163,13 @@ def test_missing_telemetry_endpoint_returns_failure(span: Mock) -> None:
     client = Mock()
     del client.telemetry
 
-    exporter = MirascopeOTLPExporter(client=client, max_retry_attempts=3)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+        max_retry_attempts=3,
+    )
 
     result = exporter.export([span])
 
@@ -147,7 +183,12 @@ def test_empty_spans_still_success() -> None:
 
     del client.telemetry
 
-    exporter = MirascopeOTLPExporter(client=client)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+    )
 
     result = exporter.export([])
 
@@ -203,6 +244,9 @@ def provider_with_memory_exporter(
 
 def test_transport_export_single_span(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
     provider_with_memory_exporter: tuple[TracerProvider, InMemorySpanExporter],
 ) -> None:
     """Test exporting a single span with real client."""
@@ -210,6 +254,9 @@ def test_transport_export_single_span(
 
     otlp_exporter = MirascopeOTLPExporter(
         client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
         timeout=30.0,
         max_retry_attempts=3,
     )
@@ -239,6 +286,9 @@ def test_transport_export_single_span(
 
 def test_transport_export_batch(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
     provider_with_memory_exporter: tuple[TracerProvider, InMemorySpanExporter],
 ) -> None:
     """Test exporting multiple spans in a batch."""
@@ -246,6 +296,9 @@ def test_transport_export_batch(
 
     otlp_exporter = MirascopeOTLPExporter(
         client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
         timeout=30.0,
         max_retry_attempts=3,
     )
@@ -273,13 +326,21 @@ def test_transport_export_batch(
 
 def test_immediate_start_exporter(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
     provider_with_memory_exporter: tuple[TracerProvider, InMemorySpanExporter],
 ) -> None:
     """Test ImmediateStartExporter with real client."""
     mirascope_client.traces.create = MagicMock(return_value=None)
 
     otlp_exporter = MirascopeOTLPExporter(
-        client=mirascope_client, timeout=30.0, max_retry_attempts=2
+        client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
+        timeout=30.0,
+        max_retry_attempts=2,
     )
 
     provider, memory_exporter = provider_with_memory_exporter
@@ -302,12 +363,21 @@ def test_immediate_start_exporter(
 
 def test_otlp_exporter(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
     provider_with_memory_exporter: tuple[TracerProvider, InMemorySpanExporter],
 ) -> None:
     """Test MirascopeOTLPExporter with real client."""
     mirascope_client.traces.create = MagicMock(return_value=None)
 
-    otlp_exporter = MirascopeOTLPExporter(client=mirascope_client, timeout=30.0)
+    otlp_exporter = MirascopeOTLPExporter(
+        client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
+        timeout=30.0,
+    )
 
     provider, memory_exporter = provider_with_memory_exporter
     tracer = provider.get_tracer("otlp-tracer", "2.0.0")
@@ -332,6 +402,9 @@ def test_otlp_exporter(
 
 def test_full_pipeline(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
     mock_span_ids: None,
 ) -> None:
     """Test complete pipeline with two-phase export."""
@@ -339,6 +412,9 @@ def test_full_pipeline(
 
     otlp_exporter = MirascopeOTLPExporter(
         client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
         timeout=30.0,
         max_retry_attempts=3,
     )
@@ -389,10 +465,18 @@ def test_full_pipeline(
 
 def test_spans_with_invalid_context_are_skipped(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
 ) -> None:
     """Tests that the exporter skips any spans that do not have a valid context."""
     mirascope_client.traces.create = MagicMock(return_value=None)
-    exporter = MirascopeOTLPExporter(client=mirascope_client)
+    exporter = MirascopeOTLPExporter(
+        client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
+    )
 
     invalid_span = ReadableSpan(name="invalid", context=INVALID_SPAN_CONTEXT)
 
@@ -403,6 +487,9 @@ def test_spans_with_invalid_context_are_skipped(
 
 def test_export_with_various_resource_attribute_types(
     mirascope_client: Mirascope,
+    mirascope_organization_id: str,
+    mirascope_project_id: str,
+    mirascope_environment_id: str,
     mock_span_ids: None,
 ) -> None:
     """Test exporting spans with various resource attribute types (bool, int, float, sequence)."""
@@ -423,7 +510,12 @@ def test_export_with_various_resource_attribute_types(
     processor = SimpleSpanProcessor(memory_exporter)
     provider.add_span_processor(processor)
 
-    otlp_exporter = MirascopeOTLPExporter(client=mirascope_client)
+    otlp_exporter = MirascopeOTLPExporter(
+        client=mirascope_client,
+        organization_id=mirascope_organization_id,
+        project_id=mirascope_project_id,
+        environment_id=mirascope_environment_id,
+    )
 
     tracer = provider.get_tracer("resource-test-tracer")
     with tracer.start_as_current_span("resource-test-span"):
@@ -466,7 +558,12 @@ def test_export_with_various_resource_attribute_types(
 def test_export_after_shutdown_returns_failure(span: Mock) -> None:
     """Test that export returns FAILURE after shutdown is called."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+    )
 
     exporter.shutdown()
 
@@ -478,7 +575,12 @@ def test_export_after_shutdown_returns_failure(span: Mock) -> None:
 def test_force_flush_returns_true() -> None:
     """Test that force_flush always returns True."""
     client = Mock()
-    exporter = MirascopeOTLPExporter(client=client)
+    exporter = MirascopeOTLPExporter(
+        client=client,
+        organization_id="test-org",
+        project_id="test-project",
+        environment_id="test-env",
+    )
 
     assert exporter.force_flush() is True
     assert exporter.force_flush(timeout_millis=1000) is True

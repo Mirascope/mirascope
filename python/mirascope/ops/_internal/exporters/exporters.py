@@ -49,6 +49,9 @@ class MirascopeOTLPExporter(SpanExporter):
     def __init__(
         self,
         client: Mirascope,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
         timeout: float = 30.0,
         max_retry_attempts: int = 3,
     ) -> None:
@@ -59,10 +62,16 @@ class MirascopeOTLPExporter(SpanExporter):
                 In the future, this will accept the enhanced client from
                 mirascope.api.client that provides error handling and caching
                 capabilities.
+            organization_id: The organization ID for API requests.
+            project_id: The project ID for API requests.
+            environment_id: The environment ID for API requests.
             timeout: Request timeout in seconds for telemetry operations.
             max_retry_attempts: Maximum number of retry attempts for failed exports.
         """
         self.client = client
+        self.organization_id = organization_id
+        self.project_id = project_id
+        self.environment_id = environment_id
         self.timeout = timeout
         self.max_retry_attempts = max_retry_attempts
         self._shutdown = False
@@ -94,7 +103,12 @@ class MirascopeOTLPExporter(SpanExporter):
 
             try:
                 otlp_data = self._convert_spans_to_otlp(spans)
-                response = self.client.traces.create(resource_spans=otlp_data)
+                response = self.client.traces.create(
+                    self.organization_id,
+                    self.project_id,
+                    self.environment_id,
+                    resource_spans=otlp_data,
+                )
 
                 if (
                     response

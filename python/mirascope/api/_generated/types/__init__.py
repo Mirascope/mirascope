@@ -12,6 +12,7 @@ from .issue import Issue
 from .issue_tag import IssueTag
 from .not_found_error_body import NotFoundErrorBody
 from .not_found_error_tag import NotFoundErrorTag
+from .number_from_string import NumberFromString
 from .permission_denied_error import PermissionDeniedError
 from .permission_denied_error_tag import PermissionDeniedErrorTag
 from .property_key import PropertyKey
@@ -29,6 +30,7 @@ __all__ = [
     "IssueTag",
     "NotFoundErrorBody",
     "NotFoundErrorTag",
+    "NumberFromString",
     "PermissionDeniedError",
     "PermissionDeniedErrorTag",
     "PropertyKey",
