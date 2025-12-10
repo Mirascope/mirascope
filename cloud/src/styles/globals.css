@@ -1,5 +1,14 @@
+/* Google Fonts Import */
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/* todo(seb): merge styles.css into this file once it is clear what stays */
+@import "./styles.css";
+@import "./nav.css";
+@import "./paper-texture.css";
+@import "./themes.css";
 
 @custom-variant dark (&:is(.dark *));
 
