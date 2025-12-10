@@ -1,18 +1,9 @@
-import { FrontPage } from "@/src/components/FrontPage";
-import { Protected } from "@/src/components/core";
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardLayout } from "../components/core";
+import { environment } from "@/src/lib/content/environment";
+import { LandingPage } from "@/src/components/routes/home";
 
 export const Route = createFileRoute("/")({
-  component: App,
+  ssr: false, // Client-side rendered
+  component: LandingPage,
+  onError: (error: Error) => environment.onError(error),
 });
-
-function App() {
-  return (
-    <DashboardLayout>
-      <Protected>
-        <FrontPage />
-      </Protected>
-    </DashboardLayout>
-  );
-}

@@ -1,0 +1,27 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.xai.call_response_chunk
+description: API documentation for mirascope.core.xai.call_response_chunk
+---
+
+# mirascope.core.xai.call_response_chunk
+
+This module contains the `XAICallResponseChunk` class.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams#handling-streamed-responses)
+
+</Info>
+
+## <ApiType type="Class" path="core/xai/call_response_chunk" symbolName="XAICallResponseChunk" /> XAICallResponseChunk
+
+A simpler wrapper around `OpenAICallResponse`.
+
+Everything is the same except the `cost` property, which has been updated to use
+xAI's cost calculations so that cost tracking works for non-OpenAI models.
+
+**Bases:** 
+<TypeLink type={{"type_str": "OpenAICallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#openaicallresponsechunk"}} />
+
+

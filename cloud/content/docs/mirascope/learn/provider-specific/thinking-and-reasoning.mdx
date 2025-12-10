@@ -1,0 +1,203 @@
+---
+title: Thinking & Reasoning
+description: Enabling models to think or reason in Mirascope V1.
+---
+
+# Thinking & Reasoning
+
+Recent LLM models have support for "extended thinking", or "reasoning" in which, prior to generating a final output, the model produces internal reasoning about the task it has been given.
+
+We're currently working on Mirascope v2, which will support thinking in a generic and cross-provider way.
+However, as of Mirascope v1, we have ad-hoc thinking support added for the following providers:
+
+| Provider      | Can Use Thinking | Can View Thinking Summaries | 
+|---------------|:------:|:-------:|
+| Anthropic     | ✓      | ✓     |
+| Google Gemini | ✓      | ✓     |
+
+
+## Provider Examples
+
+<TabbedSection>
+
+<Tab value="Anthropic">
+
+<Note>
+Anthropic thinking is supported for Claude Opus 4, Claude Sonnet 4, and Claude Sonnet 3.7. It may be invoked using
+the `@anthropic.call` provider-specific decorator, as in the example below. For more, read the [Anthropic reasoning docs](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking).
+</Note>
+
+<TabbedSection>
+<Tab value="Response">
+```py
+from mirascope.core import anthropic, prompt_template
+
+
+@anthropic.call(
+    model="claude-3-7-sonnet-latest",
+    call_params=anthropic.AnthropicCallParams(
+        max_tokens=2048,
+        thinking={"type": "enabled", "budget_tokens": 1024},  # [!code highlight]
+    ),
+)
+@prompt_template(
+    """
+    Suppose a rocket is launched from a surface, pointing straight up.
+    For the first ten seconds, the rocket engine is providing upwards thrust of
+    50m/s^2, after which it shuts off.
+    There is constant downwards acceleration of 10m/s^2 due to gravity.
+    What is the highest height it will achieve?
+
+    Your final response should be ONLY a number in meters, with no additional text.
+""")
+def answer(): ...
+
+
+response = answer()
+print("---- Thinking ----")
+print(response.thinking)  # [!code highlight]
+print("---- Response ----")
+print(response.content)  # [!code highlight]
+```
+</Tab>
+<Tab value="Stream">
+```py
+from mirascope.core import anthropic, prompt_template
+
+
+@anthropic.call(
+    model="claude-3-7-sonnet-latest",
+    call_params=anthropic.AnthropicCallParams(
+        max_tokens=2048,
+        thinking={"type": "enabled", "budget_tokens": 1024},  # [!code highlight]
+    ),
+    stream=True,
+)
+@prompt_template(
+    """
+    Suppose a rocket is launched from a surface, pointing straight up.
+    For the first ten seconds, the rocket engine is providing upwards thrust of
+    50m/s^2, after which it shuts off.
+    There is constant downwards acceleration of 10m/s^2 due to gravity.
+    What is the highest height it will achieve?
+
+    Your final response should be ONLY a number in meters, with no additional text.
+""")
+def answer(): ...
+
+
+stream = answer()
+print("---- Thinking ----")
+still_thinking = True
+for chunk, _ in stream:
+    if chunk.thinking:  # [!code highlight]
+        print(chunk.thinking, end="", flush=True)
+    if chunk.signature:  # [!code highlight]
+        print(f"\n\nSignature: {chunk.signature}", end="\n", flush=True)
+    if chunk.content:  # [!code highlight]
+        if still_thinking:
+            print("---- Response ----", end="\n", flush=True)
+            still_thinking = False
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+</TabbedSection>
+
+</Tab>
+
+<Tab value="Google">
+
+<Note>
+Google thinking is supported for the Gemini 2.5 series models. It is enabled by default, but may be configured specifically when using
+the `@google.call` provider-specific decorator. 
+
+The `include_thoughts` setting makes summaries of the thinking process available, as shown below. There is also a `thinking_budget` option, in Gemini 2.5 Flash,
+which allows fine tuning how many tokens are availble for thinking.
+
+For more, read the [Google documentation](https://ai.google.dev/gemini-api/docs/thinking).
+</Note>
+
+<TabbedSection>
+<Tab value="Response">
+```python
+from google.genai import types
+
+from mirascope.core import google, prompt_template
+
+
+@google.call(
+    model="gemini-2.5-flash-preview-05-20",
+    call_params={
+        "config": types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(include_thoughts=True) # [!code highlight]
+        ),
+    },
+)
+@prompt_template(
+    """
+    Suppose a rocket is launched from a surface, pointing straight up.
+    For the first ten seconds, the rocket engine is providing upwards thrust of
+    50m/s^2, after which it shuts off.
+    There is constant downwards acceleration of 10m/s^2 due to gravity.
+    What is the highest height it will achieve?
+
+    Your final response should be ONLY a number in meters, with no additional text.
+""")
+def answer(): ...
+
+
+response = answer()
+print("---- Thinking ----")
+print(response.thinking)  # [!code highlight]
+print("---- Response ----")
+print(response.content)  # [!code highlight]
+```
+</Tab>
+
+<Tab value="Stream">
+```python
+from google.genai import types
+
+from mirascope.core import google, prompt_template
+
+
+@google.call(
+    model="gemini-2.5-flash-preview-05-20",
+    call_params={
+        "config": types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(include_thoughts=True)  # [!code highlight]
+        ),
+    },
+    stream=True,
+)
+@prompt_template(
+    """
+    Suppose a rocket is launched from a surface, pointing straight up.
+    For the first ten seconds, the rocket engine is providing upwards thrust of
+    50m/s^2, after which it shuts off.
+    There is constant downwards acceleration of 10m/s^2 due to gravity.
+    What is the highest height it will achieve?
+
+    Your final response should be ONLY a number in meters, with no additional text.
+""")
+def answer(): ...
+
+
+stream = answer()
+print("---- Thinking ----")
+still_thinking = True
+for chunk, _ in stream:
+    if chunk.thinking:  # [!code highlight]
+        print(chunk.thinking, end="", flush=True)
+    if chunk.content:  # [!code highlight]
+        if still_thinking:
+            print("---- Response ----", end="\n", flush=True)
+            still_thinking = False
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+
+</TabbedSection>
+</Tab>
+
+</TabbedSection>

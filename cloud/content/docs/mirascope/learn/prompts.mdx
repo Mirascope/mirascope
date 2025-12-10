@@ -1,0 +1,798 @@
+---
+title: Prompts
+description: Master the art of creating effective prompts for LLMs using Mirascope. Learn about message roles, multi-modal inputs, and dynamic prompt configuration.
+---
+
+# Prompts
+
+<Callout type="api">
+
+[`mirascope.core.base.message_param.BaseMessageParam`](/docs/mirascope/api/core/base/message_param#basemessageparam)
+
+</Callout>
+
+
+When working with Large Language Model (LLM) APIs, the "prompt" is generally a list of messages where each message has a particular role. These prompts are the foundation of effectively working with LLMs, so Mirascope provides powerful tools to help you create, manage, and optimize your prompts for various LLM interactions.
+
+Let's look at how we can write prompts using Mirascope in a reusable, modular, and provider-agnostic way.
+
+<Info title="Calls will come later">
+For the following explanations we will be talking *only* about the messages aspect of prompt engineering and will discuss calling the API later in the [Calls](/docs/mirascope/learn/calls) documentation.
+    
+In that section we will show how to use these provider-agnostic prompts to actually call a provider's API as well as how to engineer and tie a prompt to a specific call.
+</Info>
+
+## Prompt Templates (Messages)
+
+First, let's look at a basic example:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template() # [!code highlight]
+def recommend_book_prompt(genre: str) -> str: # [!code highlight]
+    return f"Recommend a {genre} book" # [!code highlight]
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book')] # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template("Recommend a {genre} book") # [!code highlight]
+def recommend_book_prompt(genre: str): ... # [!code highlight]
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book')] # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+In this example:
+
+1. The `recommend_book_prompt` method's signature defines the prompt's template variables.
+2. Calling the method with `genre="fantasy"` returns a list with the corresponding `BaseMessageParam` instance with role `user` and content "Recommend a fantasy book".
+
+The core concept to understand here is `BaseMessageParam`. This class operates as the base class for message parameters that Mirascope can handle and use across all supported providers.
+
+In Mirascope, we use the `@prompt_template` decorator to write prompt templates as reusable methods that return the corresponding list of `BaseMessageParam` instances.
+
+There are two common ways of writing Mirascope prompt functions:
+
+1. *(Shorthand)* Returning the `str` or `list` content for a single user message, or returning `Messages.{Role}` (individually or a list) when specific roles are needed.
+2. *(String Template)* Passing a string template to `@prompt_template` that gets parsed and then formatted like a normal Python formatted string.
+
+Which method you use is mostly up to your preference, so feel free to select which one you prefer in the following sections.
+
+## Message Roles
+
+We can also define additional messages with different roles, such as a system message:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import Messages, prompt_template
+
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> Messages.Type:
+    return [
+        Messages.System("You are a librarian"), # [!code highlight]
+        Messages.User(f"Recommend a {genre} book"), # [!code highlight]
+    ]
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [
+#   BaseMessageParam(role='system', content='You are a librarian'), # [!code highlight]
+#   BaseMessageParam(role='user', content='Recommend a fantasy book'), # [!code highlight]
+# ]
+```
+</Tab>
+<Tab value="Template">
+```python{6,7}
+from mirascope import prompt_template
+
+
+@prompt_template(
+    """
+    SYSTEM: You are a librarian
+    USER: Recommend a {genre} book
+    """
+)
+def recommend_book_prompt(genre: str): ...
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [
+#   BaseMessageParam(role='system', content='You are a librarian'), # [!code highlight]
+#   BaseMessageParam(role='user', content='Recommend a fantasy book'), # [!code highlight]
+# ]
+```
+</Tab>
+</TabbedSection>
+
+<Note title="Messages.Type">
+The return type `Messages.Type` accepts all shorthand methods as well as `BaseMessageParam` types. Since the message methods (e.g. `Messages.User`) return `BaseMessageParam` instances, we generally recommend always typing your prompt templates with the `Messages.Type` return type since it covers all prompt template writing methods.
+</Note>
+
+<Info title="Supported Roles">
+Mirascope prompt templates currently support the `system`, `user`, and `assistant` roles. When using string templates, the roles are parsed by their corresponding all caps keyword (e.g. SYSTEM).
+
+For messages with the `tool` role, see how Mirascope automatically generates these messages for you in the [Tools](/docs/mirascope/learn/tools) and [Agents](/docs/mirascope/learn/agents) sections.
+</Info>
+
+## Multi-Line Prompts
+
+When writing prompts that span multiple lines, it's important to ensure you don't accidentally include additional, unnecessary tokens (namely `\t` tokens):
+
+<TabbedSection defaultTab="Shorthand">
+<Tab value="Shorthand">
+```python{9,10}
+import inspect
+from mirascope import prompt_template
+
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> str:
+    return inspect.cleandoc(
+        f"""
+        Recommend a {genre} book. 
+        Output in the format Title by Author. 
+        """
+    )
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book.\nOutput in the format Title by Author.')] # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python{6,7}
+from mirascope import prompt_template
+
+
+@prompt_template(
+    """
+    Recommend a {genre} book.
+    Output in the format Title by Author.
+    """
+)
+def recommend_book_prompt(genre: str): ...
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book.\nOutput in the format Title by Author.')] # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+In this example, we use `inspect.cleandoc` to remove unnecessary tokens while maintaining proper formatting in our codebase.
+
+<Warning title="Multi-Line String Templates" collapsible={true} defaultOpen={false}>
+When using string templates, the template is automatically cleaned for you, so there is no need to use `inspect.cleandoc` in that case. However, it's extremely important to note that you must start messages with the same indentation in order to properly remove the unnecessary tokens. For example:
+
+```python
+from mirascope import prompt_template
+
+# BAD
+@prompt_template(
+    """
+    USER: First line
+    Second line
+    """
+)
+def bad_template(params): ...
+
+# GOOD
+@prompt_template(
+    """
+    USER:
+    First line
+    Second line
+    """
+)
+def good_template(params): ...
+```
+</Warning>
+
+## Multi-Modal Inputs
+
+Recent advancements in Large Language Model architecture has enabled many model providers to support multi-modal inputs (text, images, audio, etc.) for a single endpoint. Mirascope treats these input types as first-class and supports them natively.
+
+While Mirascope provides a consistent interface, support varies among providers:
+
+| Type          | Anthropic   | Cohere   | Google          | Groq   | Mistral   | OpenAI   |
+|---------------|:-----------:|:--------:|:---------------:|:------:|:---------:|:--------:|
+| text          | ✓           | ✓        | ✓               | ✓      | ✓         | ✓        |
+| image         | ✓           | —        | ✓               | ✓      | ✓         | ✓        |
+| audio         | —           | —        | ✓               | —      | —         | ✓        |
+| video         | —           | —        | ✓               | —      | —         | —        |
+| document      | ✓           | —        | ✓               | —      | —         | —        |
+
+*Legend: ✓ (Supported), — (Not Supported)*
+
+### Image Inputs
+
+<TabbedSection defaultTab="Shorthand">
+<Tab value="Shorthand">
+```python
+from mirascope import prompt_template
+from PIL import Image
+
+
+@prompt_template()
+def recommend_book_prompt(previous_book: Image.Image) -> list:
+    return ["I just read this book:", previous_book, "What should I read next?"] # [!code highlight]
+
+
+with Image.open("path/to/image.jpg") as image:
+    print(recommend_book_prompt(image))
+# Output: [
+#   BaseMessageParam(
+#     role='user',
+#     content=[
+#       ContentPartParam(type='text', text='I just read this book:'), # [!code highlight]
+#       ContentPartParam(type='image', image=<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=1000x1000>), # [!code highlight]
+#       ContentPartParam(type='text', text='What should I read next?') # [!code highlight]
+#     ]
+#   )
+# ]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+from PIL import Image
+
+
+@prompt_template(
+    "I just read this book: {previous_book:image} What should I read next?" # [!code highlight]
+)
+def recommend_book_prompt(previous_book: Image.Image): ...
+
+
+with Image.open("path/to/image.jpg") as image:
+    print(recommend_book_prompt(image))
+# Output: [
+#   BaseMessageParam(
+#     role='user',
+#     content=[
+#       ContentPartParam(type='text', text='I just read this book:'), # [!code highlight]
+#       ContentPartParam(type='image', image=<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=1000x1000>), # [!code highlight]
+#       ContentPartParam(type='text', text='What should I read next?') # [!code highlight]
+#     ]
+#   )
+# ]
+```
+</Tab>
+</TabbedSection>
+
+<Info title="Additional String Template Image Functionality" collapsible={true} defaultOpen={false}>
+When using string templates, you can also specify `:images` to inject multiple image inputs through a single template variable.
+
+The `:image` and `:images` tags support the `bytes | str` and `list[bytes] | list[str]` types, respectively. When passing in a `str`, the string template assumes it indicates a url or local filepath and will attempt to load the bytes from the source.
+
+You can also specify additional options as arguments of the tags, e.g. `{url:image(detail=low)}`
+</Info>
+
+### Audio Inputs
+
+<TabbedSection>
+<Tab value="pydub">
+<TabbedSection defaultTab="Shorthand">
+<Tab value="Shorthand">
+```python
+from mirascope import Messages, prompt_template
+from pydub import AudioSegment
+
+
+@prompt_template()
+def identify_book_prompt(audio_wave: AudioSegment) -> Messages.Type:
+    return ["Here's an audio book snippet:", audio_wave, "What book is this?"] # [!code highlight]
+
+
+with open("....", "rb") as audio:
+    print(identify_book_prompt(AudioSegment.from_mp3(audio)))
+# Output: [
+#     BaseMessageParam(
+#         role="user",
+#         content=[
+#             TextPart(type="text", text="Here's an audio book snippet:"), # [!code highlight]
+#             AudioPart(type='audio', media_type='audio/wav', audio=b'...'), # [!code highlight]
+#             TextPart(type="text", text="What book is this?"), # [!code highlight]
+#         ],
+#     )
+# ]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template("Here's an audio book snippet: {audio_wave:audio} What book is this?") # [!code highlight]
+def identify_book_prompt(audio_wave: bytes): ...
+
+
+print(identify_book_prompt(b"..."))
+# Output: [
+#     BaseMessageParam(
+#         role="user",
+#         content=[
+#             TextPart(type="text", text="Here's an audio book snippet:"), # [!code highlight]
+#             AudioPart(type='audio', media_type='audio/wav', audio=b'...'), # [!code highlight]
+#             TextPart(type="text", text="What book is this?"), # [!code highlight]
+#         ],
+#     )
+# ]
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="wave">
+<TabbedSection defaultTab="Shorthand">
+<Tab value="Shorthand">
+```python
+import wave
+from mirascope import Messages, prompt_template
+
+
+@prompt_template()
+def identify_book_prompt(audio_wave: wave.Wave_read) -> Messages.Type:
+    return ["Here's an audio book snippet:", audio_wave, "What book is this?"] # [!code highlight]
+
+
+with open("....", "rb") as f, wave.open(f, "rb") as audio:
+    print(identify_book_prompt(audio))
+# Output: [
+#     BaseMessageParam(
+#         role="user",
+#         content=[
+#             TextPart(type="text", text="Here's an audio book snippet:"), # [!code highlight]
+#             AudioPart(type='audio', media_type='audio/wav', audio=b'...'), # [!code highlight]
+#             TextPart(type="text", text="What book is this?"), # [!code highlight]
+#         ],
+#     )
+# ]
+
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+@prompt_template("Here's an audio book snippet: {audio_wave:audio} What book is this?") # [!code highlight]
+def identify_book_prompt(audio_wave: bytes): ...
+
+
+print(identify_book_prompt(b"..."))
+# Output: [
+#     BaseMessageParam(
+#         role="user",
+#         content=[
+#             TextPart(type="text", text="Here's an audio book snippet:"), # [!code highlight]
+#             AudioPart(type='audio', media_type='audio/wav', audio=b'...'), # [!code highlight]
+#             TextPart(type="text", text="What book is this?"), # [!code highlight]
+#         ],
+#     )
+# ]
+
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+<Info title="Additional String Template Audio Functionality" collapsible={true} defaultOpen={false}>
+When using string templates, you can also specify `:audios` to inject multiple audio inputs through a single template variable.
+
+The `:audio` and `:audios` tags support the `bytes | str` and `list[bytes] | list[str]` types, respectively. When passing in a `str`, the string template assumes it indicates a url or local filepath and will attempt to load the bytes from the source.
+</Info>
+
+### Document Inputs
+
+<TabbedSection defaultTab="Shorthand">
+<Tab value="Shorthand">
+```python
+from mirascope import DocumentPart, Messages, prompt_template
+
+
+@prompt_template()
+def recommend_book_prompt(previous_book_pdf: bytes) -> Messages.Type:
+    return Messages.User(
+        [
+            "I just read this book:", # [!code highlight]
+            DocumentPart( # [!code highlight]
+                type="document", # [!code highlight]
+                media_type="application/pdf", # [!code highlight]
+                document=previous_book_pdf, # [!code highlight]
+            ), # [!code highlight]
+            "What should I read next?", # [!code highlight]
+        ]
+    )
+
+
+print(recommend_book_prompt(b"..."))
+# Output: [
+#     BaseMessageParam(
+#         role="user",
+#         content=[
+#             TextPart(type="text", text="I just read this book:"), # [!code highlight]
+#             DocumentPart(type='document', media_type='application/pdf', document=b'...'), # [!code highlight]
+#             TextPart(type="text", text="What should I read next?"), # [!code highlight]
+#         ],
+#     )
+# ]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template(
+    "I just read this book: {previous_book:document} What should I read next?" # [!code highlight]
+)
+def recommend_book_prompt(previous_book: bytes): ...
+
+
+print(recommend_book_prompt(b"..."))
+# Output: [
+#     BaseMessageParam(
+#         role="user",
+#         content=[
+#             TextPart(type="text", text="I just read this book:"), # [!code highlight]
+#             DocumentPart(type='document', media_type='application/pdf', document=b'...'), # [!code highlight]
+#             TextPart(type="text", text="What should I read next?"), # [!code highlight]
+#         ],
+#     )
+# ]
+```
+</Tab>
+</TabbedSection>
+
+<Note title="Supported Document Types" collapsible={true} defaultOpen={false}>
+Document support varies by provider, but generally includes:
+- PDF (.pdf)
+- Word (.doc, .docx)
+- PowerPoint (.ppt, .pptx)
+- Excel (.xls, .xlsx)
+- Text (.txt)
+- CSV (.csv)
+
+Currently, Anthropic is the only provider with explicit document support via their <a href="https://docs.anthropic.com/claude/docs/document-reading" target="_blank" rel="noopener noreferrer">Document Reading</a> feature. Other providers may require converting documents to text or using specialized tools.
+</Note>
+
+<Info title="Additional String Template Document Functionality" collapsible={true} defaultOpen={false}>
+When using string templates, you can also specify `:documents` to inject multiple document inputs through a single template variable.
+
+The `:document` and `:documents` tags support the `bytes | str` and `list[bytes] | list[str]` types, respectively. When passing in a `str`, the string template assumes it indicates a url or local filepath and will attempt to load the bytes from the source.
+</Info>
+
+## Chat History
+
+Often you'll want to inject messages (such as previous chat messages) into the prompt. Generally you can just unroll the messages into the return value of your prompt template. When using string templates, we provide a `MESSAGES` keyword for this injection, which you can add in whatever position and as many times as you'd like:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseMessageParam, Messages, prompt_template
+
+
+@prompt_template()
+def chatbot(query: str, history: list[BaseMessageParam]) -> list[BaseMessageParam]:
+    return [Messages.System("You are a librarian"), *history, Messages.User(query)] # [!code highlight]
+
+
+history = [
+    Messages.User("Recommend a book"),
+    Messages.Assistant("What genre do you like?"),
+]
+print(chatbot("fantasy", history))
+# Output: [
+#     BaseMessageParam(role="system", content="You are a librarian"), # [!code highlight]
+#     BaseMessageParam(role="user", content="Recommend a book"), # [!code highlight]
+#     BaseMessageParam(role="assistant", content="What genre do you like?"), # [!code highlight]
+#     BaseMessageParam(role="user", content="fantasy"), # [!code highlight]
+# ]
+```
+</Tab>
+<Tab value="Template">
+```python{6-8}
+from mirascope import BaseMessageParam, Messages, prompt_template
+
+
+@prompt_template(
+    """
+    SYSTEM: You are a librarian
+    MESSAGES: {history}
+    USER: {query}
+    """
+)
+def chatbot(query: str, history: list[BaseMessageParam]): ...
+
+
+history = [
+    Messages.User("Recommend a book"), # [!code highlight]
+    Messages.Assistant("What genre do you like?"), # [!code highlight]
+]
+print(chatbot("fantasy", history))
+# Output: [
+#     BaseMessageParam(role="system", content="You are a librarian"), # [!code highlight]
+#     BaseMessageParam(role="user", content="Recommend a book"), # [!code highlight]
+#     BaseMessageParam(role="assistant", content="What genre do you like?"), # [!code highlight]
+#     BaseMessageParam(role="user", content="fantasy"), # [!code highlight]
+# ]
+```
+</Tab>
+</TabbedSection>
+
+## Object Attribute Access
+
+When using template variables that have attributes, you can easily inject these attributes directly even when using string templates:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@prompt_template()
+def recommend_book_prompt(book: Book) -> str:
+    return f"I read {book.title} by {book.author}. What should I read next?" # [!code highlight]
+
+
+book = Book(title="The Name of the Wind", author="Patrick Rothfuss")
+print(recommend_book_prompt(book))
+# Output: [BaseMessageParam(role='user', content='I read The Name of the Wind by Patrick Rothfuss. What should I read next?')] # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@prompt_template("I read {book.title} by {book.author}. What should I read next?") # [!code highlight]
+def recommend_book_prompt(book: Book): ...
+
+
+book = Book(title="The Name of the Wind", author="Patrick Rothfuss")
+print(recommend_book_prompt(book))
+# Output: [BaseMessageParam(role='user', content='I read The Name of the Wind by Patrick Rothfuss. What should I read next?')] # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+It's worth noting that this also works with `self` when using prompt templates inside of a class, which is particularly important when building [Agents](/docs/mirascope/learn/agents).
+
+## Format Specifiers
+
+Since Mirascope prompt templates are just formatted strings, standard Python format specifiers work as expected:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template()
+def recommend_book(genre: str, price: float) -> str:
+    return f"Recommend a {genre} book under ${price:.2f}" # [!code highlight]
+
+
+print(recommend_book("fantasy", 12.3456))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book under $12.35')] # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template("Recommend a {genre} book under ${price:.2f}") # [!code highlight]
+def recommend_book(genre: str, price: float): ...
+
+
+print(recommend_book("fantasy", 12.3456))
+# Output: [BaseMessageParam(role='user', content='Recommend a fantasy book under $12.35')] # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+When writing string templates, we also offer additional format specifiers for convenience around formatting more dynamic content:
+
+### Lists
+
+String templates support the `:list` format specifier for formatting lists:
+
+<TabbedSection>
+<Tab value="List(s)">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template(
+    """
+    Book themes:
+    {themes:list} # [!code highlight]
+
+    Character analysis:
+    {characters:lists} # [!code highlight]
+    """
+)
+def analyze_book(themes: list[str], characters: list[list[str]]): ...
+
+
+prompt = analyze_book(
+    themes=["redemption", "power", "friendship"], # [!code highlight]
+    characters=[ # [!code highlight]
+        ["Name: Frodo", "Role: Protagonist"], # [!code highlight]
+        ["Name: Gandalf", "Role: Mentor"], # [!code highlight]
+    ], # [!code highlight]
+)
+
+print(prompt[0].content)
+# Output:
+# [!code highlight:12]
+# Book themes:
+# redemption
+# power
+# friendship
+
+# Character analysis:
+# Name: Frodo
+# Role: Protagonist
+
+# Name: Gandalf
+# Role: Mentor
+```
+</Tab>
+<Tab value="Text(s)">
+```python
+from mirascope import prompt_template
+
+
+@prompt_template(
+    """
+    Book themes:
+    {themes:text} # [!code highlight]
+
+    Character analysis:
+    {characters:texts} # [!code highlight]
+    """
+)
+def analyze_book(themes: str, characters: list[str]): ...
+
+
+prompt = analyze_book(
+    themes="redemption, power, friendship", # [!code highlight]
+    characters=[ # [!code highlight]
+        "Name: Frodo, Role: Protagonist", # [!code highlight]
+        "Name: Gandalf, Role: Mentor", # [!code highlight]
+    ], # [!code highlight]
+)
+
+print(prompt[0].content)
+# Output:
+# [!code highlight:8]
+# [
+#     TextPart(type="text", text="Book themes:"),
+#     TextPart(type="text", text="redemption, power, friendship"),
+#     TextPart(type="text", text="Character analysis:"),
+#     TextPart(type="text", text="Name: Frodo, Role: Protagonist"),
+#     TextPart(type="text", text="Name: Gandalf, Role: Mentor"),
+# ]
+```
+</Tab>
+<Tab value="Part(s)">
+```python
+from mirascope import TextPart, prompt_template
+
+
+@prompt_template(
+    """
+    Book themes:
+    {themes:text} # [!code highlight]
+
+    Character analysis:
+    {characters:texts} # [!code highlight]
+    """
+)
+def analyze_book(themes: TextPart, characters: list[TextPart]): ...
+
+
+prompt = analyze_book(
+    themes=TextPart(type="text", text="redemption, power, friendship"), # [!code highlight]
+    characters=[ # [!code highlight]
+        TextPart(type="text", text="Name: Frodo, Role: Protagonist"), # [!code highlight]
+        TextPart(type="text", text="Name: Gandalf, Role: Mentor"), # [!code highlight]
+    ], # [!code highlight]
+)
+
+print(prompt[0].content)
+# Output:
+# [!code highlight:8]
+# [
+#     TextPart(type="text", text="Book themes:"),
+#     TextPart(type="text", text="redemption, power, friendship"),
+#     TextPart(type="text", text="Character analysis:"),
+#     TextPart(type="text", text="Name: Frodo, Role: Protagonist"),
+#     TextPart(type="text", text="Name: Gandalf, Role: Mentor"),
+# ]
+```
+</Tab>
+</TabbedSection>
+
+## Computed Fields (Dynamic Configuration)
+
+In Mirascope, we write prompt templates as functions, which enables dynamically configuring our prompts at runtime depending on the values of the template variables. We use the term "computed fields" to talk about variables that are computed and formatted at runtime.
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseDynamicConfig, Messages, prompt_template
+
+
+@prompt_template()
+def recommend_book_prompt(genre: str) -> BaseDynamicConfig:
+    uppercase_genre = genre.upper() # [!code highlight]
+    messages = [Messages.User(f"Recommend a {uppercase_genre} book")] # [!code highlight]
+    return {
+        "messages": messages, # [!code highlight]
+        "computed_fields": {"uppercase_genre": uppercase_genre}, # [!code highlight]
+    }
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: {
+#     "messages": [BaseMessageParam(role="user", content="Recommend a FANTASY book")], # [!code highlight]
+#     "computed_fields": {"uppercase_genre": "FANTASY"}, # [!code highlight]
+# }
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseDynamicConfig, prompt_template
+
+
+@prompt_template("Recommend a {uppercase_genre} book") # [!code highlight]
+def recommend_book_prompt(genre: str) -> BaseDynamicConfig:
+    uppercase_genre = genre.upper() # [!code highlight]
+    return {
+        "computed_fields": {"uppercase_genre": uppercase_genre}, # [!code highlight]
+    }
+
+
+print(recommend_book_prompt("fantasy"))
+# Output: [BaseMessageParam(role='user', content='Recommend a FANTASY book')] # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+There are various other parts of an LLM API call that we may want to configure dynamically as well, such as call parameters, tools, and more. We cover such cases in each of their respective sections.
+
+## Next Steps
+
+By mastering prompts in Mirascope, you'll be well-equipped to build robust, flexible, and reusable LLM applications.
+
+Next, we recommend taking a look at the [Calls](/docs/mirascope/learn/calls) documentation, which shows you how to use your prompt templates to actually call LLM APIs and generate a response.

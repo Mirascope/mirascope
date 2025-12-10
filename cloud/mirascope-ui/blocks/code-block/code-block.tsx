@@ -26,7 +26,7 @@ export function CodeBlock({
   onCopy,
 }: CodeBlockProps) {
   const [highlightedCode, setHighlightedCode] = useState<HighlightResult>(
-    initialHighlight(code, language, meta),
+    initialHighlight(code, language, meta)
   );
   const codeRef = useRef<HTMLDivElement>(null);
   const [isSmallBlock, setIsSmallBlock] = useState<boolean>(false);
@@ -72,22 +72,14 @@ export function CodeBlock({
   return (
     <div
       ref={codeRef}
-      className={cn(
-        codeBlockBaseStyles,
-        `${showLineNumbers && "show-line-numbers"}`,
-        className,
-      )}
-      style={
-        { "--line-number-padding": lineNumberPadding } as React.CSSProperties
-      }
+      className={cn(codeBlockBaseStyles, `${showLineNumbers && "show-line-numbers"}`, className)}
+      style={{ "--line-number-padding": lineNumberPadding } as React.CSSProperties}
     >
       {/* Buttons - positioned based on block size */}
       <div
         className={cn(
           "absolute z-10 opacity-0 transition-opacity group-hover:opacity-100 max-sm:opacity-80 sm:opacity-0",
-          isSmallBlock
-            ? "top-1/2 right-3 flex -translate-y-1/2 space-x-1"
-            : "top-3 right-3",
+          isSmallBlock ? "top-1/2 right-3 flex -translate-y-1/2 space-x-1" : "top-3 right-3"
         )}
       >
         <CopyButton content={stripHighlightMarkers(code)} onCopy={onCopy} />

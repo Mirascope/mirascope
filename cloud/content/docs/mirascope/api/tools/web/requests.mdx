@@ -1,0 +1,182 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.tools.web._requests
+description: API documentation for mirascope.tools.web._requests
+---
+
+# mirascope.tools.web._requests
+
+## <ApiType type="Module" path="tools/web/requests" symbolName="_requests" /> _requests
+
+## <ApiType type="Class" path="tools/web/requests" symbolName="RequestsConfig" /> RequestsConfig
+
+Configuration for HTTP requests
+
+**Bases:** 
+<TypeLink type={{"type_str": "_ConfigurableToolConfig", "description": null, "kind": "simple", "doc_identifier": "_ConfigurableToolConfig"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "timeout",
+    "type_info": {
+      "type_str": "int",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#int"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="tools/web/requests" symbolName="Requests" /> Requests
+
+Tool for making HTTP requests with built-in requests library.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ConfigurableTool", "description": null, "kind": "simple", "doc_identifier": "ConfigurableTool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "url",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "method",
+    "type_info": {
+      "type_str": "Literal['GET', 'POST', 'PUT', 'DELETE']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Literal"
+      },
+      "parameters": [
+        {
+          "type_str": "'GET'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'GET'"
+        },
+        {
+          "type_str": "'POST'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'POST'"
+        },
+        {
+          "type_str": "'PUT'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'PUT'"
+        },
+        {
+          "type_str": "'DELETE'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'DELETE'"
+        }
+      ]
+    }
+  },
+  {
+    "name": "data",
+    "type_info": {
+      "type_str": "dict | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "headers",
+    "type_info": {
+      "type_str": "dict | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="tools/web/requests" symbolName="call" /> call
+
+Make an HTTP request to the given URL.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  },
+  "description": "Response text content if successful, error message if request fails"
+}}
+/>
+
+
+
+

@@ -1,0 +1,44 @@
+---
+title: Icon Component Test
+description: Testing the dynamic Lucide icon component
+---
+
+# Icon Component Test
+
+This page demonstrates how to use the Icon component to render any Lucide icon by name.
+
+## Basic Usage
+
+<Icon name="github" size={24} className="text-primary" />
+<Icon name="check" size={24} className="text-secondary" />
+<Icon name="info" size={24} className="text-accent" />
+
+## Icons with Text
+
+<div className="flex items-center gap-2">
+  <Icon name="lightbulb" size={20} className="text-secondary" />
+  <span>Here's a great idea!</span>
+</div>
+
+<div className="flex items-center gap-2">
+  <Icon name="alert-triangle" size={20} className="text-destructive" />
+  <span>Be careful with this feature.</span>
+</div>
+
+## Available Lucide Icons
+
+You can use any icon from the [Lucide icon library](https://lucide.dev/icons/). Just specify the icon name (in PascalCase) in the `name` prop.
+
+## Styling Options
+
+Icons accept common styling props:
+
+- `size`: Number (in pixels) for both width and height
+- `className`: String for applying Tailwind or other CSS classes
+- Any other props that Lucide icons accept
+
+<div className="grid grid-cols-3 gap-4">
+  <Icon name="heart" size={32} className="text-primary" />
+  <Icon name="star" size={32} className="text-accent" />
+  <Icon name="rocket" size={32} className="text-accent" />
+</div>

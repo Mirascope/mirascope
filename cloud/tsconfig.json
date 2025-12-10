@@ -5,7 +5,7 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["@cloudflare/workers-types", "bun-types", "vite/client"],
+    "types": ["@cloudflare/workers-types", "bun-types", "vite/client", "node"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -23,6 +23,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   }
 }

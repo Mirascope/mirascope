@@ -1,0 +1,277 @@
+---
+title: Lilypad Quickstart
+description: Start using Lilypad in one line of code
+---
+
+# Lilypad Quickstart
+
+## Create an account
+
+<Note>
+  You'll need a GitHub or Google account to sign up.
+</Note>
+
+First, navigate to [https://lilypad.mirascope.com](https://lilypad.mirascope.com/) and create an account.
+
+## Environment Variables
+
+Navigate to [Settings -> Organization](https://lilypad.mirascope.com/settings/org) and:
+
+1. Create a new project.
+2. Generate an API key for that project.
+
+The API key will only be shown once, so make sure to copy and save it.
+
+```bash
+LILYPAD_PROJECT_ID="YOUR_PROJECT_ID"
+LILYPAD_API_KEY="YOUR_API_KEY"
+```
+
+If using a `.env` file, remember to use something like [`load_dotenv()`](https://github.com/theskumar/python-dotenv) so they are properly loaded.
+
+### LLM API Key
+
+You'll need to set the API key for the provider you're using in your environment.
+
+We recommend creating one in [Google AI Studio](https://aistudio.google.com/apikey) if you don't have one yet.
+
+They have a very generous free tier.
+
+## Installation
+
+Install the `lilypad-sdk` with any additional dependencies you may need:
+
+<TabbedSection>
+<Tab value="uv">
+```bash
+# For spans / tracing
+uv add lilypad-sdk
+
+# For Google Gemini/Vertex support
+uv add "lilypad-sdk[google]"
+
+# For multiple providers
+uv add "lilypad-sdk[google,openai,anthropic]"
+```
+</Tab>
+<Tab value="pip">
+```bash
+# For spans / tracing
+pip install lilypad-sdk
+
+# For OpenAI support
+pip install "lilypad-sdk[openai]"
+
+# For multiple providers
+pip install "lilypad-sdk[openai,anthropic,google]"
+```
+</Tab>
+</TabbedSection>
+
+Available provider extras:
+
+- `google` - Google Gemini/Vertex models (genai SDK)
+- `openai` - OpenAI models
+- `anthropic` - Anthropic models
+- `bedrock` - AWS Bedrock models
+- `azure` - Azure AI models
+- `mistral` - Mistral models
+- `outlines` - Outlines framework
+
+## Automatically Trace & Version
+
+Run your first automatically [traced](/docs/lilypad/observability/traces) and [versioned](/docs/lilypad/observability/versioning) function:
+
+<TabbedSection>
+<Tab value="Google">
+```python
+import os
+
+from google.genai import Client
+import lilypad
+
+# [!code highlight:6]
+lilypad.configure(  
+    project_id=os.environ["LILYPAD_PROJECT_ID"],
+    api_key=os.environ["LILYPAD_API_KEY"],
+    auto_llm=True,
+)
+client = Client()
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-001",
+        contents=f"Answer this question: {question}",
+    )
+    return response.text
+    
+response = answer_question("What is the capital of France?")
+print(response)
+# > The capital of France is Paris.
+```
+</Tab>
+<Tab value="OpenAI">
+```python
+import os
+
+import lilypad
+from openai import OpenAI
+
+# [!code highlight:6]
+lilypad.configure(
+    project_id=os.environ["LILYPAD_PROJECT_ID"],
+    api_key=os.environ["LILYPAD_API_KEY"],
+    auto_llm=True,
+)
+client = OpenAI()
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": f"Answer this question: {question}"}],
+    )
+    return response.choices[0].message.content
+    
+response = answer_question("What is the capital of France?")
+print(response)
+# > The capital of France is Paris.
+```
+</Tab>
+<Tab value="Anthropic">
+```python
+import os
+
+from anthropic import Anthropic
+import lilypad
+
+# [!code highlight:6]
+lilypad.configure(
+    project_id=os.environ["LILYPAD_PROJECT_ID"],
+    api_key=os.environ["LILYPAD_API_KEY"],
+    auto_llm=True,
+)
+client = Anthropic()
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.messages.create(
+        model="claude-3-7-sonnet-latest",
+        messages=[{"role": "user", "content": f"Answer this question: {question}"}],
+        max_tokens=1024,
+    )
+    content = response.content[0]
+    return content.text if content.type == "text" else None
+    
+response = answer_question("What is the capital of France?")
+print(response)
+# > The capital of France is Paris.
+```
+</Tab>
+<Tab value="Mistral">
+```python
+import os
+
+import lilypad
+from mistralai import Mistral
+
+# [!code highlight:6]
+lilypad.configure(
+    project_id=os.environ["LILYPAD_PROJECT_ID"],
+    api_key=os.environ["LILYPAD_API_KEY"],
+    auto_llm=True,
+)
+client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.chat.complete(
+        model="mistral-small-latest",
+        messages=[{"role": "user", "content": f"Answer this question: {question}"}],
+    )
+    choices = response.choices
+    if not choices:
+        return None
+    content = choices[0].message.content
+    return str(content) if content is not None and content != "" else None
+    
+response = answer_question("What is the capital of France?")
+print(response)
+# > The capital of France is Paris.
+```
+</Tab>
+<Tab value="Bedrock">
+```python
+import os
+
+from boto3.session import Session
+import lilypad
+
+# [!code highlight:6]
+lilypad.configure(
+    project_id=os.environ["LILYPAD_PROJECT_ID"],
+    api_key=os.environ["LILYPAD_API_KEY"],
+    auto_llm=True,
+)
+session = Session()
+client = session.client("bedrock-runtime")
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.converse(
+        modelId="anthropic.claude-3-haiku-20240307-v1:0",
+        messages=[
+            {"role": "user", "content": [{"text": f"Answer this question: {question}"}]}
+        ],
+    )
+    return response["output"]["message"]["content"][0]["text"] # type: ignore[reportTypedDictNotRequiredAccess]
+
+response = answer_question("What is the capital of France?")
+print(response)
+# > The capital of France is Paris.
+```
+</Tab>
+<Tab value="Azure">
+```python
+import os
+
+from azure.ai.inference import ChatCompletionsClient
+from azure.core.credentials import AzureKeyCredential
+import lilypad
+
+# [!code highlight:6]
+lilypad.configure(
+    project_id=os.environ["LILYPAD_PROJECT_ID"],
+    api_key=os.environ["LILYPAD_API_KEY"],
+    auto_llm=True,
+)
+client = ChatCompletionsClient(
+    endpoint="https://your-endpoint.openai.azure.com/openai/deployments/gpt-4o-mini",
+    credential=AzureKeyCredential(key="..."),
+)
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.complete(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": f"Answer this question: {question}"}],
+    )
+    return response.choices[0].message.content
+    
+response = answer_question("What is the capital of France?")
+print(response)
+# > The capital of France is Paris.
+```
+</Tab>
+</TabbedSection>
+
+Follow the link output in your terminal to view the captured version and corresponding trace.
+
+See the [observability](/docs/lilypad/observability/opentelemetry) section to learn more.
+
+## Look At Your Data!
+
+Go build and run some LLM functions and inspect their results using Lilypad.
+
+While you're at it, try [annotating](/docs/lilypad/evaluation/annotations) some data too.

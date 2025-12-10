@@ -1,0 +1,30 @@
+---
+title: Cost & Latency
+description: Monitor the performance and cost of your LLM functions
+---
+
+# Cost & Latency
+
+Lilypad automatically captures the latency of every span. For spans containing LLM API calls, Lilypad also automatically captures the cost of that call.
+
+## Trace View
+
+When you select a trace to view more details, you'll find the latency of the span in the top right corner:
+
+![Trace Cost & Latency](/assets/docs/lilypad/evaluation/cost-and-latency/trace.webp)
+
+If the span is or contains an LLM call, there will also be a pill for cost.
+
+## Project Dashboard
+
+The home page for each project acts as a dashboard overview of the project.
+
+You can see cost and latency charts amongst other stats:
+
+![Project Cost & Latency](/assets/docs/lilypad/evaluation/cost-and-latency/dashboard.webp)
+
+## Versioned Function Dashboard
+
+The main page for a versioned function will show you cost and latency charts, which you can toggle to show by day, week, or month:
+
+![Versioned Function Cost & Latency](/assets/docs/lilypad/evaluation/cost-and-latency/function.webp)

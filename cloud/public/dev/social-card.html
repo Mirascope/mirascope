@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Card</title>
+    <script>
+      // Font size configuration - single source of truth
+      window.SOCIAL_CARD_CONFIG = {
+        fontSizes: [
+          { maxChars: 13, fontSize: "152px", label: "XS" },
+          { maxChars: 27, fontSize: "128px", label: "S" },
+          { maxChars: 42, fontSize: "100px", label: "SM" },
+          { maxChars: 59, fontSize: "95px", label: "M" },
+          { maxChars: 80, fontSize: "75px", label: "L" },
+          { maxChars: Infinity, fontSize: "60px", label: "XL" },
+        ],
+      };
+
+      // Function to calculate title font size based on length
+      function calculateTitleFontSize(titleLength) {
+        const config = window.SOCIAL_CARD_CONFIG.fontSizes;
+        for (const rule of config) {
+          if (titleLength <= rule.maxChars) {
+            return rule.fontSize;
+          }
+        }
+        return config[config.length - 1].fontSize; // Default to the last rule
+      }
+
+      // Function to update the social card
+      function updateSocialCard(title, product = "mirascope") {
+        // Update the content
+        document.getElementById("title-element").textContent = title;
+
+        // Calculate and update font sizes
+        const titleFontSize = calculateTitleFontSize(title.length);
+        const lineHeight = title.length > 40 ? "1.3" : "1.2";
+
+        document.getElementById("title-element").style.fontSize = titleFontSize;
+        document.getElementById("title-element").style.lineHeight = lineHeight;
+
+        // Update product branding
+        updateProductBranding(product);
+      }
+
+      // Function to update product branding (logo and text)
+      function updateProductBranding(product) {
+        const logoImg = document.getElementById("logo-img");
+        const logoText = document.getElementById("logo-text");
+
+        if (product === "lilypad") {
+          // Use data URL if available (for Puppeteer), otherwise use regular path (for browser)
+          const lilypadLogoUrl =
+            window.LOGO_DATA_URLS?.["/assets/branding/lilypad-logo.svg"] ||
+            "/assets/branding/lilypad-logo.svg";
+          logoImg.src = lilypadLogoUrl;
+          logoImg.alt = "Lilypad Logo";
+          logoText.textContent = "Lilypad";
+          logoText.style.color = "#409b45"; // Lilypad green
+        } else {
+          // Use data URL if available (for Puppeteer), otherwise use regular path (for browser)
+          const mirascopeLogoUrl =
+            window.LOGO_DATA_URLS?.["/assets/branding/mirascope-logo.svg"] ||
+            "/assets/branding/mirascope-logo.svg";
+          logoImg.src = mirascopeLogoUrl;
+          logoImg.alt = "Mirascope Logo";
+          logoText.textContent = "Mirascope";
+          logoText.style.color = "#6366f1"; // Mirascope purple
+        }
+      }
+
+      // Expose the update function globally for iframe and Puppeteer communication
+      window.updateSocialCard = updateSocialCard;
+
+      // Check for URL parameters that might be passed to this template
+      const urlParams = new URLSearchParams(window.location.search);
+      const titleParam = urlParams.get("title");
+      const productParam = urlParams.get("product");
+
+      if (titleParam && productParam) {
+        updateSocialCard(titleParam, productParam);
+      }
+    </script>
+    <style>
+      @font-face {
+        font-family: "Williams Handwriting";
+        src: url("/fonts/Williams-Handwriting-Regular-v1.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: sans-serif;
+      }
+
+      .card-container {
+        width: 1200px;
+        height: 630px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-image: url("/assets/backgrounds/light.webp");
+        background-size: cover;
+        background-position: center bottom;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .torn-paper-effect {
+        clip-path: polygon(
+          0% 4%,
+          10% 0%,
+          20% 2%,
+          30% 0%,
+          40% 3%,
+          50% 0%,
+          60% 2%,
+          70% 0%,
+          80% 3%,
+          90% 0%,
+          100% 4%,
+          99% 20%,
+          100% 35%,
+          98% 50%,
+          100% 65%,
+          99% 80%,
+          100% 96%,
+          90% 100%,
+          80% 97%,
+          70% 100%,
+          60% 98%,
+          50% 100%,
+          40% 97%,
+          30% 100%,
+          20% 98%,
+          10% 100%,
+          0% 96%,
+          1% 80%,
+          0% 65%,
+          2% 50%,
+          0% 35%,
+          1% 20%
+        );
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .combined-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        max-width: 1000px;
+        text-align: center;
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .logo-banner {
+        position: relative;
+        margin-bottom: 40px;
+      }
+
+      .logo-inner {
+        position: relative;
+        padding: 15px 42px;
+      }
+
+      .logo-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        /* Add a subtle shadow to the logo banner */
+        box-shadow:
+          0px 2px 4px rgba(0, 0, 0, 0.2),
+          0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo-content {
+        display: flex;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .logo-img {
+        height: 44px;
+        margin-right: 12px;
+        margin-bottom: 6px;
+      }
+
+      .logo-text {
+        font-family: "Williams Handwriting", cursive;
+        font-size: 52px;
+        color: #6366f1;
+        margin-bottom: -6px;
+      }
+
+      .content {
+        width: 100%;
+      }
+
+      .title {
+        font-family: "Williams Handwriting", cursive;
+        color: #ffffff;
+        margin: 0 0 20px 0;
+        max-width: 100%;
+        text-align: center;
+        display: inline-block;
+        /* Gentle drop shadow with multiple layers for a softer effect */
+        text-shadow:
+          0 2px 6px rgba(0, 0, 0, 0.3),
+          0 4px 14px rgba(0, 0, 0, 0.2);
+
+        /* Advanced text wrapping for better balance */
+        text-wrap: balance;
+        overflow-wrap: break-word;
+        hyphens: auto;
+      }
+
+      .description {
+        font-family: "Williams Handwriting", cursive;
+        color: #ffffff;
+        margin: 0;
+        line-height: 1.4;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        text-shadow:
+          1px 1px 3px rgba(0, 0, 0, 0.5),
+          -1px -1px 3px rgba(0, 0, 0, 0.5),
+          1px -1px 3px rgba(0, 0, 0, 0.5),
+          -1px 1px 3px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card-container">
+      <div class="combined-container">
+        <div class="logo-banner">
+          <div class="logo-inner">
+            <div class="logo-bg torn-paper-effect"></div>
+            <div class="logo-content">
+              <img
+                id="logo-img"
+                src="/assets/branding/mirascope-logo.svg"
+                alt="Mirascope Logo"
+                class="logo-img"
+              />
+              <span id="logo-text" class="logo-text">Mirascope</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <h1 id="title-element" class="title" style="font-size: 128px; line-height: 1.2">
+            Your Title Goes Here
+          </h1>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

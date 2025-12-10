@@ -1,0 +1,189 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.anthropic.tool
+description: API documentation for mirascope.core.anthropic.tool
+---
+
+# mirascope.core.anthropic.tool
+
+## <ApiType type="Module" path="core/anthropic/tool" symbolName="tool" /> tool
+
+The `OpenAITool` class for easy tool usage with OpenAI LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/mirascope/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/anthropic/tool" symbolName="AnthropicToolConfig" /> AnthropicToolConfig
+
+A tool configuration for Anthropic-specific features.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/tool#toolconfig"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cache_control",
+    "type_info": {
+      "type_str": "_CacheControl",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "_CacheControl"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/anthropic/tool" symbolName="AnthropicTool" /> AnthropicTool
+
+A class for defining tools for Anthropic LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.anthropic import anthropic_call
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+@anthropic_call("claude-3-5-sonnet-20240620", tools=[format_book])
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+if tool := response.tool:  # returns an `AnthropicTool` instance
+    print(tool.call())
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/tool#basetool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "SkipJsonSchema[ToolUseBlock]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipJsonSchema",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+      },
+      "parameters": [
+        {
+          "type_str": "ToolUseBlock",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ToolUseBlock"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/anthropic/tool" symbolName="tool_schema" /> tool_schema
+
+Constructs a `ToolParam` tool schema from the `BaseModel` schema defined.
+
+Example:
+```python
+from mirascope.core.anthropic import AnthropicTool
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+tool_type = AnthropicTool.type_from_fn(format_book)
+print(tool_type.tool_schema())  # prints the Anthropic-specific tool schema
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ToolParam",
+    "description": null,
+    "kind": "simple",
+    "doc_identifier": "ToolParam"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/anthropic/tool" symbolName="from_tool_call" /> from_tool_call
+
+Constructs an `AnthropicTool` instance from a `tool_call`.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "ToolUseBlock",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ToolUseBlock"
+    },
+    "description": "The Anthropic tool call from which to construct this tool\ninstance."
+  },
+  {
+    "name": "allow_partial",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "default": "False"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AnthropicTool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/anthropic/tool#anthropictool"
+  }
+}}
+/>
+
+
+
+

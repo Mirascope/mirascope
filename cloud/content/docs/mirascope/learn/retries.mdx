@@ -1,0 +1,500 @@
+---
+title: Retries
+description: Learn how to implement robust retry mechanisms for LLM API calls using Mirascope and Tenacity to handle rate limits, validation errors, and other failures.
+---
+
+# Retries
+
+Making an API call to a provider can fail due to various reasons, such as rate limits, internal server errors, validation errors, and more. This makes retrying calls extremely important when building robust systems.
+
+Mirascope combined with [Tenacity](https://tenacity.readthedocs.io/en/latest/) increases the chance for these requests to succeed while maintaining end user transparency.
+
+You can install the necessary packages directly or use the `tenacity` extras flag:
+
+```bash
+pip install "mirascope[tenacity]"
+```
+
+## Tenacity `retry` Decorator
+
+### Calls
+
+Let's take a look at a basic Mirascope call that retries with exponential back-off:
+
+<TabbedSection>
+<Tab value="Shorthand">
+
+```python
+from mirascope import llm
+from tenacity import retry, stop_after_attempt, wait_exponential # [!code highlight]
+
+
+@retry( # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+print(recommend_book("fantasy"))
+```
+
+</Tab>
+<Tab value="Template">
+
+```python
+from mirascope import llm, prompt_template
+from tenacity import retry, stop_after_attempt, wait_exponential # [!code highlight]
+
+
+@retry( # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+@llm.call(provider="$PROVIDER", model="$MODEL")
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+print(recommend_book("fantasy"))
+```
+
+</Tab>
+</TabbedSection>
+
+Ideally the call to `recommend_book` will succeed on the first attempt, but now the API call will be made again after waiting should it fail.
+
+The call will then throw a `RetryError` after 3 attempts if unsuccessful. This error should be caught and handled.
+
+### Streams
+
+When streaming, the generator is not actually run until you start iterating. This means the initial API call may be successful but fail during the actual iteration through the stream.
+
+Instead, you need to wrap your call and add retries to this wrapper:
+
+<TabbedSection>
+<Tab value="Shorthand">
+
+```python
+from mirascope import llm
+from tenacity import retry, stop_after_attempt, wait_exponential # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+@retry( # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+def stream():
+    for chunk, _ in recommend_book("fantasy"):
+        print(chunk.content, end="", flush=True)
+
+
+stream()
+```
+
+</Tab>
+<Tab value="Template">
+
+```python
+from mirascope import llm, prompt_template
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+@retry( # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+def stream():
+    for chunk, _ in recommend_book("fantasy"):
+        print(chunk.content, end="", flush=True)
+
+
+stream()
+```
+
+</Tab>
+</TabbedSection>
+
+### Tools
+
+When using tools, `ValidationError` errors won't happen until you attempt to construct the tool (either when calling `response.tools` or iterating through a stream with tools).
+
+You need to handle retries in this case the same way as streams:
+
+<TabbedSection>
+<Tab value="Shorthand">
+
+```python
+from mirascope import llm
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+
+def get_book_author(title: str) -> str:
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+@retry( # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+def run():
+    response = identify_author("The Name of the Wind")
+    if tool := response.tool:
+        print(tool.call())
+        print(f"Original tool call: {tool.tool_call}")
+    else:
+        print(response.content)
+
+
+run()
+```
+
+</Tab>
+<Tab value="Template">
+
+```python
+from mirascope import llm, prompt_template
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+
+def get_book_author(title: str) -> str:
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+@retry( # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+def run():
+    response = identify_author("The Name of the Wind")
+    if tool := response.tool:
+        print(tool.call())
+        print(f"Original tool call: {tool.tool_call}")
+    else:
+        print(response.content)
+
+
+run()
+```
+
+</Tab>
+</TabbedSection>
+
+### Error Reinsertion
+
+Every example above simply retries after a failed attempt without making any updates to the call. This approach can be sufficient for some use-cases where we can safely expect the call to succeed on subsequent attempts (e.g. rate limits).
+
+However, there are some cases where the LLM is likely to make the same mistake over and over again. For example, when using tools or response models, the LLM may return incorrect or missing arguments where it's highly likely the LLM will continuously make the same mistake on subsequent calls. In these cases, it's important that we update subsequent calls based on resulting errors to improve the chance of success on the next call.
+
+To make it easier to make such updates, Mirascope provides a `collect_errors` handler that can collect any errors of your choice and insert them into subsequent calls through an `errors` keyword argument.
+
+<TabbedSection>
+<Tab value="Shorthand">
+
+```python
+from typing import Annotated
+
+from mirascope import llm
+from mirascope.retries.tenacity import collect_errors # [!code highlight]
+from pydantic import AfterValidator, ValidationError
+from tenacity import retry, stop_after_attempt
+
+
+def is_upper(v: str) -> str:
+    assert v.isupper(), "Must be uppercase"
+    return v
+
+
+@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError)) # [!code highlight]
+@llm.call(
+    provider="$PROVIDER",
+    model="$MODEL",
+    response_model=Annotated[str, AfterValidator(is_upper)],  # pyright: ignore [reportArgumentType, reportCallIssue]
+)
+def identify_author(book: str, *, errors: list[ValidationError] | None = None) -> str: # [!code highlight]
+    previous_errors = None
+    if errors:
+        print(previous_errors)
+        return f"Previous Error: {errors}\n\nWho wrote {book}?"
+    return f"Who wrote {book}?"
+
+
+author = identify_author("The Name of the Wind")
+print(author)
+# Previous Errors: [1 validation error for str
+# value
+#   Assertion failed, Must be uppercase [type=assertion_error, input_value='Patrick Rothfuss', input_type=str]
+#     For further information visit https://errors.pydantic.dev/2.7/v/assertion_error]
+# PATRICK ROTHFUSS
+```
+
+</Tab>
+<Tab value="Template">
+
+```python
+from typing import Annotated
+
+from mirascope import BaseDynamicConfig, llm, prompt_template
+from mirascope.retries.tenacity import collect_errors # [!code highlight]
+from pydantic import AfterValidator, ValidationError
+from tenacity import retry, stop_after_attempt
+
+
+def is_upper(v: str) -> str:
+    assert v.isupper(), "Must be uppercase"
+    return v
+
+
+@retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError)) # [!code highlight]
+@llm.call(
+    provider="$PROVIDER",
+    model="$MODEL",
+    response_model=Annotated[str, AfterValidator(is_upper)],  # pyright: ignore [reportArgumentType, reportCallIssue]
+)
+@prompt_template(
+    """
+    {previous_errors}
+
+    Who wrote {book}?
+    """
+)
+def identify_author(
+    book: str, *, errors: list[ValidationError] | None = None # [!code highlight]
+) -> BaseDynamicConfig:
+    previous_errors = None
+    if errors:
+        previous_errors = f"Previous Errors: {errors}"
+        print(previous_errors)
+    return {"computed_fields": {"previous_errors": previous_errors}}
+
+
+author = identify_author("The Name of the Wind")
+print(author)
+# Previous Errors: [1 validation error for str
+# value
+#   Assertion failed, Must be uppercase [type=assertion_error, input_value='Patrick Rothfuss', input_type=str]
+#     For further information visit https://errors.pydantic.dev/2.7/v/assertion_error]
+# PATRICK ROTHFUSS
+```
+
+</Tab>
+</TabbedSection>
+
+In this example the first attempt fails because the identified author is not all uppercase. The `ValidationError` is then reinserted into the subsequent call, which enables the model to learn from it's mistake and correct its error.
+
+Of course, we could always engineer a better prompt (i.e. ask for all caps), but even prompt engineering does not guarantee perfect results. The purpose of this example is to demonstrate the power of a feedback loop by reinserting errors to build more robust systems.
+
+## Fallback
+
+When using the provider-agnostic `llm.call` decorator, you can use the `fallback` decorator to automatically catch certain errors and use a backup provider/model to attempt the call again.
+
+For example, we may want to attempt the call with Anthropic in the event that we get a `RateLimitError` from OpenAI:
+
+<TabbedSection>
+<Tab value="Shorthand">
+
+```python
+from anthropic import RateLimitError as AnthropicRateLimitError
+from mirascope import llm
+from mirascope.retries import FallbackError, fallback
+from openai import RateLimitError as OpenAIRateLimitError
+
+
+@fallback( # [!code highlight]
+    OpenAIRateLimitError, # [!code highlight]
+    [ # [!code highlight]
+        { # [!code highlight]
+            "catch": AnthropicRateLimitError, # [!code highlight]
+            "provider": "anthropic", # [!code highlight]
+            "model": "claude-3-5-sonnet-latest", # [!code highlight]
+        } # [!code highlight]
+    ], # [!code highlight]
+) # [!code highlight]
+@llm.call("openai", "gpt-4o-mini")
+def answer_question(question: str) -> str:
+    return f"Answer this question: {question}"
+
+
+try:
+    response = answer_question("What is the meaning of life?")
+    if caught := getattr(response, "_caught", None): # [!code highlight]
+        print(f"Exception caught: {caught}")
+    print("### Response ###")
+    print(response.content)
+except FallbackError as e: # [!code highlight]
+    print(e)
+```
+
+</Tab>
+<Tab value="Template">
+
+```python
+from anthropic import RateLimitError as AnthropicRateLimitError
+from mirascope import llm, prompt_template
+from mirascope.retries import FallbackError, fallback
+from $PROVIDER import RateLimitError as OpenAIRateLimitError
+
+
+@fallback( # [!code highlight]
+    OpenAIRateLimitError, # [!code highlight]
+    [ # [!code highlight]
+        { # [!code highlight]
+            "catch": AnthropicRateLimitError, # [!code highlight]
+            "provider": "anthropic", # [!code highlight]
+            "model": "claude-3-5-sonnet-latest", # [!code highlight]
+        } # [!code highlight]
+    ], # [!code highlight]
+) # [!code highlight]
+@llm.call("openai", "gpt-4o-mini")
+@prompt_template("Answer this question: {question}")
+def answer_question(question: str): ...
+
+
+try:
+    response = answer_question("What is the meaning of life?")
+    if caught := getattr(response, "_caught", None): # [!code highlight]
+        print(f"Exception caught: {caught}")
+    print("### Response ###")
+    print(response.content)
+except FallbackError as e: # [!code highlight]
+    print(e)
+```
+
+</Tab>
+</TabbedSection>
+
+Here, we first attempt to call OpenAI (the default setting). If we catch the `OpenAIRateLimitError`, then we'll attempt to call Anthropic. If we catch the `AnthropicRateLimitError`, then we'll receive a `FallbackError` since all attempts failed.
+
+You can provide an `Exception` or tuple of multiple to catch, and you can stack the `fallback` decorator to handle different errors differently if desired.
+
+### Fallback With Retries
+
+The decorator also works well with Tenacity's `retry` decorator. For example, we may want to first attempt to call OpenAI multiple times with exponential backoff, but if we fail 3 times fall back to Anthropic, which we'll also attempt to call 3 times:
+
+<TabbedSection>
+<Tab value="Shorthand">
+
+```python
+from anthropic import RateLimitError as AnthropicRateLimitError
+from mirascope import llm
+from mirascope.retries import FallbackError, fallback
+from $PROVIDER import RateLimitError as OpenAIRateLimitError
+from tenacity import (
+    RetryError,
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+
+
+@fallback( # [!code highlight]
+    RetryError, # [!code highlight]
+    [ # [!code highlight]
+        { # [!code highlight]
+            "catch": RetryError, # [!code highlight]
+            "provider": "anthropic", # [!code highlight]
+            "model": "claude-3-5-sonnet-latest", # [!code highlight]
+        } # [!code highlight]
+    ], # [!code highlight]
+) # [!code highlight]
+@retry( # [!code highlight]
+    retry=retry_if_exception_type((OpenAIRateLimitError, AnthropicRateLimitError)), # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+@llm.call(provider="openai", model="gpt-4o-mini")
+def answer_question(question: str) -> str:
+    return f"Answer this question: {question}"
+
+
+try:
+    response = answer_question("What is the meaning of life?")
+    if caught := getattr(response, "_caught", None):
+        print(f"Exception caught: {caught}")
+    print("### Response ###")
+    print(response.content)
+except FallbackError as e:
+    print(e)
+```
+
+</Tab>
+<Tab value="Template">
+
+```python
+from anthropic import RateLimitError as AnthropicRateLimitError
+from mirascope import llm, prompt_template
+from mirascope.retries import FallbackError, fallback
+from $PROVIDER import RateLimitError as OpenAIRateLimitError
+from tenacity import (
+    RetryError,
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+
+
+@fallback( # [!code highlight]
+    RetryError, # [!code highlight]
+    [ # [!code highlight]
+        { # [!code highlight]
+            "catch": RetryError, # [!code highlight]
+            "provider": "anthropic", # [!code highlight]
+            "model": "claude-3-5-sonnet-latest", # [!code highlight]
+        } # [!code highlight]
+    ], # [!code highlight]
+) # [!code highlight]
+@retry( # [!code highlight]
+    retry=retry_if_exception_type((OpenAIRateLimitError, AnthropicRateLimitError)), # [!code highlight]
+    stop=stop_after_attempt(3), # [!code highlight]
+    wait=wait_exponential(multiplier=1, min=4, max=10), # [!code highlight]
+) # [!code highlight]
+@llm.call(provider="openai", model="gpt-4o-mini")
+@prompt_template("Answer this question: {question}")
+def answer_question(question: str): ...
+
+
+try:
+    response = answer_question("What is the meaning of life?")
+    if caught := getattr(response, "_caught", None):
+        print(f"Exception caught: {caught}")
+    print("### Response ###")
+    print(response.content)
+except FallbackError as e:
+    print(e)
+```
+</Tab>
+</TabbedSection>

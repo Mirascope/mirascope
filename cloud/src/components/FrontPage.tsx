@@ -1,5 +1,6 @@
 import { Button } from "@/mirascope-ui/ui/button";
-import { useAuth } from "@/src/components/core";
+// Import directly to avoid circular dependency through barrel exports
+import { useAuth } from "@/src/components/core/providers/AuthContext";
 import { Link } from "@tanstack/react-router";
 
 export function FrontPage() {
@@ -22,7 +23,7 @@ export function FrontPage() {
         <div className="text-muted-foreground">{user.email}</div>
       </div>
       <div className="flex gap-3 justify-center mt-6">
-        <Link to="/organizations">
+        <Link to="/app/organizations">
           <Button>Organizations</Button>
         </Link>
         <Button variant="outline" onClick={() => void logout()}>

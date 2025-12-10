@@ -1,0 +1,199 @@
+---
+title: Welcome
+description: An open-source prompt engineering framework
+---
+
+# Welcome to Lilypad
+
+Welcome to the Lilypad documentation! We're excited you're here.
+
+## Why Lilypad (we think you should read this)
+
+When building with LLMs, a typical development flow might look like this:
+
+1. [Prototype](#1-prototype) — make sure everything is functional
+2. [Vibe Check](#2-vibe-check) — gut feeling should be "good enough"
+3. [Annotate](#3-annotate) — systematically label the data you look at
+4. [Analyze](#4-analyze) — understand where and why the system is failing
+5. [Optimize](#5-optimize) — apply your learnings to improve the system (e.g. your prompt)
+6. [Iterate](#6-iterate) — repeat steps 3-5 (forever, or at least until it's "good enough")
+
+Let's break each of these steps down further.
+
+## 1. Prototype
+
+The first and most important step is simply getting started.
+
+We recommend taking a look at our open-source LLM library `mirascope`, which we've purpose built to make both prototyping and the steps that follow simple, easy, and elegant.
+
+For the remaining sections, let's use a simple LLM call as an example:
+
+```python
+from mirascope import llm
+
+@llm.call(provider="$PROVIDER", model="$MODEL")  # [!code highlight]
+def answer_question(question: str) -> str:
+    return f"Answer this question: {question}"  # [!code highlight]
+
+response = answer_question("What is the capital of France?")
+print(response.content)
+# > The capital of France is Paris.
+```
+
+We're using the `@llm.call()` decorator to turn the `answer_question` function into an LLM API call.
+
+## 2. Vibe Check
+
+How do we feel about "The capital of France is Paris." as the answer to our question?
+
+Let's say our gut feeling is "not good enough" because we want a single word answer, so we update our prompt to make this more clear:
+
+```python
+from mirascope import llm
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def answer_question(question: str) -> str:
+    return f"Answer this question in one word: {question}"  # [!code highlight]
+
+response = answer_question("What is the capital of France?")
+print(response.content)
+# > Paris
+```
+
+Oops, we forgot to commit our previous prompt. Not good.
+
+For a simple example this might not seems like a big deal, but LLMs are fickle. What if the prompt we just lost happened to be the one that would've performed the best, and now you can't replicate it. How do you decide when to commit what? And how do you properly keep track of all of the different versions?
+
+This is the point at which most people reach for observability tooling. This is *almost* the right choice. The issue is that today's observability tooling was not built for the LLM era. It was built for deterministic software, but LLMs are non-deterministic.
+
+You need more than just observability — you need to build a data flywheel.
+
+This requires:
+
+1. Some place to put your data
+2. Some place to see / query / etc. that data
+3. Some way to annotate that data
+4. Some way to track / version artifacts (so you can compare performance over time)
+
+Current observability tools provide 1 and 2 but not 3 or 4, which are critical.
+
+Lilypad provides all four — in just one line of code.
+
+```python {6}
+import lilypad
+from mirascope import llm
+
+lilypad.configure(auto_llm=True)
+
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def answer_question(question: str) -> str:
+    return f"Answer this question in one word: {question}"
+
+response = answer_question("What is the capital of France?")
+print(response.content)
+# > Paris
+```
+
+Check out the [Versioning](/docs/lilypad/observability/versioning) section for more information.
+
+## 3. Annotate
+
+The next step is to look at real (or synthetic) data and systematically label it.
+
+With Lilypad, you annotate the data right where you look at it. This makes it seamless.
+
+![Lilypad Annotation Queue](/assets/docs/lilypad/welcome/annotation-queue.webp)
+
+It's also extremely important that we annotate not just the inputs/outputs but also everything about the trace. This includes the code, the prompt, the call parameters, the cost, the latency — everything you might need to know if you'd consider it "good enough" or not.
+
+## 4. Analyze
+
+Once you've annotated enough data, it's time to look for trends — common failure points. Compare outputs from different versions on the same input. Did the changes help?
+
+![Lilypad Trace Annotation](/assets/docs/lilypad/welcome/trace-annotation.webp)
+
+Distilling your annotations into action items makes for much easier optimization.
+
+## 5. Optimize
+
+Now we can apply our analysis and update the system to improve it.
+
+For example, we can identify the most common points of failure and work to resolve those first. Consider our earlier example. We identify that there are a lot of longer answers and we really want single word answers, so we add "in one word" to the prompt and run the process again.
+
+![Lilypad Versioned Function Comparison](/assets/docs/lilypad/welcome/optimization-comparison.webp)
+
+This step is just the systematic version of our earlier "vibe check" process that results in real data and actionable insights.
+
+## 6. Iterate
+
+Part of the optimization process involves making changes — a new version.
+
+All we have to do is repeat steps 3 through 5 until we deem the system "good enough".
+
+## Getting Started
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="rocket" className="inline mr-2" /> Quickstart</h3>
+    <p className="mb-3">Get started with Lilypad in just a few minutes</p>
+    <a href="/docs/lilypad/getting-started/quickstart" className="text-primary hover:underline">Read more →</a>
+  </div>
+  
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="check-circle" className="inline mr-2" /> Open Source</h3>
+    <p className="mb-3">Learn about Lilypad's open-source initiative</p>
+    <a href="/docs/lilypad/open-source" className="text-primary hover:underline">Read more →</a>
+  </div>
+
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="globe" className="inline mr-2" /> Self-Hosting</h3>
+    <p className="mb-3">Run Lilypad in your own infrastructure</p>
+    <a href="/docs/lilypad/getting-started/self-hosting" className="text-primary hover:underline">Read more →</a>
+  </div>
+</div>
+
+## Observability
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="bolt" className="inline mr-2" /> Spans</h3>
+    <p className="mb-3">Instrument arbitrary blocks of code</p>
+    <a href="/docs/lilypad/observability/spans" className="text-primary hover:underline">Read more →</a>
+  </div>
+  
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="search" className="inline mr-2" /> Traces</h3>
+    <p className="mb-3">Structured collections of spans</p>
+    <a href="/docs/lilypad/observability/traces" className="text-primary hover:underline">Read more →</a>
+  </div>
+  
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="book-open" className="inline mr-2" /> Versioning</h3>
+    <p className="mb-3">Track versions of your LLM functions</p>
+    <a href="/docs/lilypad/observability/versioning" className="text-primary hover:underline">Read more →</a>
+  </div>
+</div>
+
+## Evaluation
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-6">
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="dollar-sign" className="inline mr-2" /> Cost & Latency</h3>
+    <p className="mb-3">Monitor performance and cost</p>
+    <a href="/docs/lilypad/evaluation/cost-and-latency" className="text-primary hover:underline">Read more →</a>
+  </div>
+  
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="bar-chart" className="inline mr-2" /> Comparisons</h3>
+    <p className="mb-3">Compare different LLM function implementations</p>
+    <a href="/docs/lilypad/evaluation/comparisons" className="text-primary hover:underline">Read more →</a>
+  </div>
+  
+  <div className="border rounded-lg p-4 shadow-sm">
+    <h3 className="text-lg font-medium mb-2"><Icon name="edit" className="inline mr-2" /> Annotations</h3>
+    <p className="mb-3">Add labels and feedback to your LLM outputs</p>
+    <a href="/docs/lilypad/evaluation/annotations" className="text-primary hover:underline">Read more →</a>
+  </div>
+</div>
+

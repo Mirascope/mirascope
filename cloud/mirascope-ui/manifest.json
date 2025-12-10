@@ -1,0 +1,46 @@
+{
+  "registryUrl": "https://ui.mirascope.com",
+  "components": {
+    "code-block": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:54.118Z",
+      "files": [
+        "mirascope-ui/blocks/code-block/code-block.tsx",
+        "mirascope-ui/blocks/code-block/code-block.css",
+        "mirascope-ui/lib/code-highlight.ts",
+        "mirascope-ui/blocks/copy-button.tsx"
+      ]
+    },
+    "card": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:54.396Z",
+      "files": ["mirascope-ui/ui/card.tsx"]
+    },
+    "lilypad-pricing": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:54.525Z",
+      "files": ["mirascope-ui/blocks/lilypad-pricing.tsx"]
+    },
+    "tabs": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:55.034Z",
+      "files": ["mirascope-ui/ui/tabs.tsx"]
+    },
+    "button-link": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:55.063Z",
+      "files": ["mirascope-ui/ui/button-link.tsx"]
+    },
+    "utils": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:55.008Z",
+      "files": ["mirascope-ui/lib/utils.ts"]
+    },
+    "button": {
+      "version": "main",
+      "lastSync": "2025-06-06T01:55:55.090Z",
+      "files": ["mirascope-ui/ui/button.tsx"]
+    }
+  },
+  "lastFullSync": "2025-06-06T01:55:56.034Z"
+}

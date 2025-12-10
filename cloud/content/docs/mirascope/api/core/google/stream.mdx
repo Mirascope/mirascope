@@ -1,0 +1,84 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.google.stream
+description: API documentation for mirascope.core.google.stream
+---
+
+# mirascope.core.google.stream
+
+The `GoogleStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams)
+
+</Info>
+
+## <ApiType type="Class" path="core/google/stream" symbolName="GoogleStream" /> GoogleStream
+
+A class for convenience around streaming Google LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.google import google_call
+
+
+@google_call("google-1.5-flash", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+stream = recommend_book("fantasy")  # returns `GoogleStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[GoogleCallResponse, GoogleCallResponseChunk, ContentDict, ContentDict, ContentDict, ContentListUnion | ContentListUnionDict, GoogleTool, Tool, GoogleDynamicConfig, GoogleCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "GoogleCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/call_response#googlecallresponse"}, {"type_str": "GoogleCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/call_response_chunk#googlecallresponsechunk"}, {"type_str": "ContentDict", "description": null, "kind": "simple", "doc_identifier": "ContentDict"}, {"type_str": "ContentDict", "description": null, "kind": "simple", "doc_identifier": "ContentDict"}, {"type_str": "ContentDict", "description": null, "kind": "simple", "doc_identifier": "ContentDict"}, {"type_str": "ContentListUnion | ContentListUnionDict", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ContentListUnion", "description": null, "kind": "simple", "doc_identifier": "ContentListUnion"}, {"type_str": "ContentListUnionDict", "description": null, "kind": "simple", "doc_identifier": "ContentListUnionDict"}]}, {"type_str": "GoogleTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/tool#googletool"}, {"type_str": "Tool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/llm/tool#tool"}, {"type_str": "GoogleDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/dynamic_config#googledynamicconfig"}, {"type_str": "GoogleCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/call_params#googlecallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/google/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed GoogleStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "GoogleCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/google/call_response#googlecallresponse"
+  }
+}}
+/>
+
+
+

@@ -1,0 +1,637 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mcp
+description: API documentation for mcp
+---
+
+# mcp
+
+## <ApiType type="Class" slug="m-c-p-client" symbolName="MCPClient" /> MCPClient
+
+Mirascope wrapper around a MCP ClientSession.
+
+It provides a way to get MCP results that are pre-converted into Mirascope-friendly
+types.
+
+The underlying MCP ClientSession may be accessed by .session if needed.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "session",
+    "type_info": {
+      "type_str": "ClientSession",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "ClientSession",
+      "doc_url": null
+    },
+    "description": "Access the underlying MCP ClientSession if needed."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-mcp-client--m-c-p-client-list_tools" symbolName="list_tools" /> list_tools
+
+List all tools available on the MCP server.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[AsyncTool]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "list",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "AsyncTool",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "AsyncTool",
+        "doc_url": "/docs/mirascope/v2/api/tools#async-tool"
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A list of dynamically created `llm.Tool`s."
+}}
+/>
+
+
+
+## <ApiType type="Function" slug="sse_client" symbolName="sse_client" /> sse_client
+
+Create a Mirascope MCPClient using sse.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "url",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "list_roots_callback",
+    "type_info": {
+      "type_str": "ListRootsFnT | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ListRootsFnT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ListRootsFnT",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "read_timeout_seconds",
+    "type_info": {
+      "type_str": "timedelta | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "timedelta",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "timedelta",
+          "doc_url": "https://docs.python.org/3/library/datetime.html#datetime.timedelta"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "sampling_callback",
+    "type_info": {
+      "type_str": "SamplingFnT | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "SamplingFnT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "SamplingFnT",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "session",
+    "type_info": {
+      "type_str": "ClientSession | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ClientSession",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ClientSession",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncIterator[MCPClient]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncIterator",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncIterator",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "MCPClient",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "MCPClient",
+        "doc_url": "/docs/mirascope/v2/api/mcp#m-c-p-client"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="stdio_client" symbolName="stdio_client" /> stdio_client
+
+Create a Mirascope MCPClient using stdio.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "server_parameters",
+    "type_info": {
+      "type_str": "StdioServerParameters",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "StdioServerParameters",
+      "doc_url": null
+    }
+  },
+  {
+    "name": "read_stream_exception_handler",
+    "type_info": {
+      "type_str": "Callable[[Exception], None] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Callable[[Exception], None]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Callable",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "[Exception]",
+              "description": null,
+              "kind": "tuple",
+              "base_type": {
+                "type_str": "tuple",
+                "description": null,
+                "kind": "simple",
+                "symbol_name": "tuple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+              },
+              "parameters": [
+                {
+                  "type_str": "Exception",
+                  "description": null,
+                  "kind": "simple",
+                  "symbol_name": "Exception",
+                  "doc_url": "https://docs.python.org/3/library/exceptions.html#Exception"
+                }
+              ],
+              "doc_url": null
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "None",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncIterator[MCPClient]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncIterator",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncIterator",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "MCPClient",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "MCPClient",
+        "doc_url": "/docs/mirascope/v2/api/mcp#m-c-p-client"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+
+## <ApiType type="Function" slug="streamablehttp_client" symbolName="streamablehttp_client" /> streamablehttp_client
+
+Create a Mirascope MCPClient using StreamableHTTP.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "url",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "headers",
+    "type_info": {
+      "type_str": "dict[str, str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "dict",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "str",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "timeout",
+    "type_info": {
+      "type_str": "float | timedelta | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "float",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "timedelta",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "timedelta",
+          "doc_url": "https://docs.python.org/3/library/datetime.html#datetime.timedelta"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "sse_read_timeout",
+    "type_info": {
+      "type_str": "float | timedelta | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "float",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "timedelta",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "timedelta",
+          "doc_url": "https://docs.python.org/3/library/datetime.html#datetime.timedelta"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "terminate_on_close",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "bool",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "default": "True"
+  },
+  {
+    "name": "httpx_client_factory",
+    "type_info": {
+      "type_str": "McpHttpClientFactory | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "McpHttpClientFactory",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "McpHttpClientFactory",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "auth",
+    "type_info": {
+      "type_str": "httpx.Auth | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "httpx.Auth",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "httpx.Auth",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncIterator[MCPClient]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncIterator",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AsyncIterator",
+      "doc_url": null
+    },
+    "parameters": [
+      {
+        "type_str": "MCPClient",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "MCPClient",
+        "doc_url": "/docs/mirascope/v2/api/mcp#m-c-p-client"
+      }
+    ],
+    "doc_url": null
+  }
+}}
+/>
+
+

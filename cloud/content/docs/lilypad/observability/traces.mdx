@@ -1,0 +1,152 @@
+---
+title: Traces
+description: Structured collections of spans
+---
+
+# Traces
+
+> If you haven't already, we recommend reading [Spans](/docs/lilypad/observability/spans) first.
+
+<Success>
+None of the tooling below requires LLMs. It is, however, very handy when working with them.
+</Success>
+
+As mentioned in the section on [nested spans](/docs/lilypad/observability/spans#nested-spans), traces are really just collections of spans.
+
+In the context of observability, a "trace" often refers to a record of events in a system's execution. Generally this means capturing the inputs, outputs, and additional metadata for each function or module in your system's execution flow.
+
+Lilypad makes this simple and easy with the `trace` decorator:
+
+```python
+import lilypad
+
+lilypad.configure()
+
+@lilypad.trace()  # [!code highlight]
+def child(text: str) -> str:
+    return "Child Finished!"
+
+@lilypad.trace()  # [!code highlight]
+def parent(text: str) -> str:
+    output = child("I'm the child!")
+    print(output)
+    return "Parent Finished!"
+    
+output = parent("I'm' the parent!")
+print(output)
+# > Child Finished!
+# > Parent Finished!
+```
+
+![Basic Trace](/assets/docs/lilypad/observability/traces/basic-trace.webp)
+
+<Info title="What this might look like using span instead of trace" collapsible={true} defaultOpen={false}>
+```python
+import lilypad
+
+lilypad.configure()
+
+def child(text: str) -> str:
+    return "Child Finished!"
+
+def parent(text: str) -> str:
+    with lilypad.span("child") as child_span:
+        child_input = "I'm the child!"
+        child_span.metadata({"input": child_input})
+        child_output = child(child_input)
+        child_span.metadata({"output": child_output})
+        print(child_output)
+    return "Parent Finished!"
+
+with lilypad.span("parent") as parent_span:
+    parent_input = "I'm the parent!"
+    parent_span.metadata({"input": parent_input})
+    parent_output = parent(parent_input)
+    parent_span.metadata({"output": parent_output})
+    print(parent_output)
+```
+
+As you can see, the `trace` decorator above cleans things up significantly and reduces the cognitive overhead involved in instrumenting your code.
+
+Of course, everything works well together, and sometimes `span` makes more sense and will work better for certain use-cases where you want to instrument code that is not structured (or does not make sense to structure) as a function.
+</Info>
+
+## Custom Name
+
+By default, the `trace` decorator will use the decorated function's name for the trace. Sometimes it makes more sense to use a custom (more readable) name:
+
+```python
+import lilypad
+
+lilypad.configure()
+
+@lilypad.trace(name="Answer Question")  # [!code highlight]
+def answer_question(question: str) -> str:
+    return "The capital of France is Paris."
+    
+answer = answer_question("What is the capital of France?")
+print(answer)
+# > The capital of France is Paris.
+```
+
+![Custom Trace Name](/assets/docs/lilypad/observability/traces/custom-name.webp)
+
+## Updating Trace Metadata
+
+The `trace` decorator captures information such as inputs/outputs by default, but often you'll want to log additional information or metadata as part of that function's span (and not a sub-span).
+
+_We've made this possible in a type-safe way with a special `trace_ctx` reserved argument name._
+
+```python
+import lilypad
+
+lilypad.configure()
+
+@lilypad.trace(name="Answer Question")
+def answer_question(trace_ctx: lilypad.Span, question: str) -> str:  # [!code highlight]
+    trace_ctx.log("I'm the span for Answer Question.")  # [!code highlight]
+    return "The capital of France is Paris."
+    
+answer = answer_question("What is the capital of France?")
+print(answer)
+# > The capital of France is Paris.
+```
+
+If a `trace`-decorated functions has `trace_ctx: lilypad.Span` as it's first argument, the decorator will inject the span into the argument so that you can access it directly inside the function.
+
+The resulting decorated function's call signature will then be updated such that `trace_ctx` is excluded (since `trace_ctx` will be supplied by the decorator, not the user).
+
+Above, `answer_question` only expects `question` as an input — and your editor knows this.
+
+![Trace With A Log](/assets/docs/lilypad/observability/traces/trace-log.webp)
+
+## Tracing LLM Calls
+
+<Warning>
+Since LLMs are non-deterministic, we recommend [versioning](/docs/lilypad/observability/versioning) any functions that use them.
+</Warning>
+
+Since Lilypad can create spans for LLM API calls automatically, simple calling the API inside of a `trace`-decorated function will nest that span inside of the parent function:
+
+```python
+from google.genai import Client
+import lilypad
+
+lilypad.configure(auto_llm=True)  # [!code highlight]
+client = Client()
+
+
+@lilypad.trace(name="Answer Question")
+def answer_question(question: str) -> str | None:
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-001",
+        contents=f"Answer this question: {question}",
+    )
+    return response.text
+
+
+response = answer_question("What is the capital of France?")
+print(response)
+```
+
+![Trace With Auto LLM Span](/assets/docs/lilypad/observability/traces/auto-llm-trace.webp)

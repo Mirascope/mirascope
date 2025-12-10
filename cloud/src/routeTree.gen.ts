@@ -8,338 +8,805 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as RouterWaitlistRouteImport } from './routes/router-waitlist'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as LlmsFullRouteImport } from './routes/llms-full'
+import { Route as DevRouteImport } from './routes/dev'
+import { Route as R404RouteImport } from './routes/404'
+import { Route as CatchallRouteImport } from './routes/$catchall'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as TermsIndexRouteImport } from './routes/terms/index'
+import { Route as DocsIndexRouteImport } from './routes/docs.index'
+import { Route as DevIndexRouteImport } from './routes/dev/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as TermsUseRouteImport } from './routes/terms/use'
+import { Route as TermsServiceRouteImport } from './routes/terms/service'
+import { Route as DocsSplatRouteImport } from './routes/docs.$'
+import { Route as DevSocialCardRouteImport } from './routes/dev/social-card'
+import { Route as DevLayoutTestRouteImport } from './routes/dev/layout-test'
+import { Route as DevAuditMetadataRouteImport } from './routes/dev/audit-metadata'
+import { Route as DevSlugRouteImport } from './routes/dev.$slug'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthMeRouteImport } from './routes/auth/me'
+import { Route as AuthGoogleRouteImport } from './routes/auth/google'
+import { Route as AuthGithubRouteImport } from './routes/auth/github'
+import { Route as AppOrganizationsRouteImport } from './routes/app/organizations'
+import { Route as AppLoginRouteImport } from './routes/app/login'
+import { Route as DocsProductLlmsFullRouteImport } from './routes/docs.$product.llms-full'
+import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
+import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
+import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
+import { Route as AuthGithubCallbackRouteImport } from './routes/auth/github.callback'
+import { Route as ApiV0HealthRouteImport } from './routes/api.v0.health'
+import { Route as ApiV0DocsRouteImport } from './routes/api.v0.docs'
+import { Route as ApiV0SplatRouteImport } from './routes/api.v0.$'
+import { Route as DocsMirascopeV2LlmsFullRouteImport } from './routes/docs.mirascope.v2.llms-full'
 
-import { Route as OrganizationsRouteImport } from "./routes/organizations";
-import { Route as LoginRouteImport } from "./routes/login";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as AuthMeRouteImport } from "./routes/auth/me";
-import { Route as AuthGoogleRouteImport } from "./routes/auth/google";
-import { Route as AuthGithubRouteImport } from "./routes/auth/github";
-import { Route as AuthGoogleProxyCallbackRouteImport } from "./routes/auth/google.proxy-callback";
-import { Route as AuthGoogleCallbackRouteImport } from "./routes/auth/google.callback";
-import { Route as AuthGithubProxyCallbackRouteImport } from "./routes/auth/github.proxy-callback";
-import { Route as AuthGithubCallbackRouteImport } from "./routes/auth/github.callback";
-import { Route as ApiV0HealthRouteImport } from "./routes/api.v0.health";
-import { Route as ApiV0DocsRouteImport } from "./routes/api.v0.docs";
-import { Route as ApiV0SplatRouteImport } from "./routes/api.v0.$";
-
-const OrganizationsRoute = OrganizationsRouteImport.update({
-  id: "/organizations",
-  path: "/organizations",
+const RouterWaitlistRoute = RouterWaitlistRouteImport.update({
+  id: '/router-waitlist',
+  path: '/router-waitlist',
   getParentRoute: () => rootRouteImport,
-} as any);
-const LoginRoute = LoginRouteImport.update({
-  id: "/login",
-  path: "/login",
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsFullRoute = LlmsFullRouteImport.update({
+  id: '/llms-full',
+  path: '/llms-full',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevRoute = DevRouteImport.update({
+  id: '/dev',
+  path: '/dev',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatchallRoute = CatchallRouteImport.update({
+  id: '/$catchall',
+  path: '/$catchall',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const TermsIndexRoute = TermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevIndexRoute = DevIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DevRoute,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/app/',
+  path: '/app/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsUseRoute = TermsUseRouteImport.update({
+  id: '/terms/use',
+  path: '/terms/use',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsServiceRoute = TermsServiceRouteImport.update({
+  id: '/terms/service',
+  path: '/terms/service',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsSplatRoute = DocsSplatRouteImport.update({
+  id: '/docs/$',
+  path: '/docs/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevSocialCardRoute = DevSocialCardRouteImport.update({
+  id: '/social-card',
+  path: '/social-card',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevLayoutTestRoute = DevLayoutTestRouteImport.update({
+  id: '/layout-test',
+  path: '/layout-test',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevAuditMetadataRoute = DevAuditMetadataRouteImport.update({
+  id: '/audit-metadata',
+  path: '/audit-metadata',
+  getParentRoute: () => DevRoute,
+} as any)
+const DevSlugRoute = DevSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => DevRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthMeRoute = AuthMeRouteImport.update({
-  id: "/auth/me",
-  path: "/auth/me",
+  id: '/auth/me',
+  path: '/auth/me',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AuthGoogleRoute = AuthGoogleRouteImport.update({
-  id: "/auth/google",
-  path: "/auth/google",
+  id: '/auth/google',
+  path: '/auth/google',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AuthGithubRoute = AuthGithubRouteImport.update({
-  id: "/auth/github",
-  path: "/auth/github",
+  id: '/auth/github',
+  path: '/auth/github',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const AppOrganizationsRoute = AppOrganizationsRouteImport.update({
+  id: '/app/organizations',
+  path: '/app/organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppLoginRoute = AppLoginRouteImport.update({
+  id: '/app/login',
+  path: '/app/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsProductLlmsFullRoute = DocsProductLlmsFullRouteImport.update({
+  id: '/docs/$product/llms-full',
+  path: '/docs/$product/llms-full',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
-  id: "/proxy-callback",
-  path: "/proxy-callback",
+  id: '/proxy-callback',
+  path: '/proxy-callback',
   getParentRoute: () => AuthGoogleRoute,
-} as any);
+} as any)
 const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
-  id: "/callback",
-  path: "/callback",
+  id: '/callback',
+  path: '/callback',
   getParentRoute: () => AuthGoogleRoute,
-} as any);
+} as any)
 const AuthGithubProxyCallbackRoute = AuthGithubProxyCallbackRouteImport.update({
-  id: "/proxy-callback",
-  path: "/proxy-callback",
+  id: '/proxy-callback',
+  path: '/proxy-callback',
   getParentRoute: () => AuthGithubRoute,
-} as any);
+} as any)
 const AuthGithubCallbackRoute = AuthGithubCallbackRouteImport.update({
-  id: "/callback",
-  path: "/callback",
+  id: '/callback',
+  path: '/callback',
   getParentRoute: () => AuthGithubRoute,
-} as any);
+} as any)
 const ApiV0HealthRoute = ApiV0HealthRouteImport.update({
-  id: "/api/v0/health",
-  path: "/api/v0/health",
+  id: '/api/v0/health',
+  path: '/api/v0/health',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ApiV0DocsRoute = ApiV0DocsRouteImport.update({
-  id: "/api/v0/docs",
-  path: "/api/v0/docs",
+  id: '/api/v0/docs',
+  path: '/api/v0/docs',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ApiV0SplatRoute = ApiV0SplatRouteImport.update({
-  id: "/api/v0/$",
-  path: "/api/v0/$",
+  id: '/api/v0/$',
+  path: '/api/v0/$',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const DocsMirascopeV2LlmsFullRoute = DocsMirascopeV2LlmsFullRouteImport.update({
+  id: '/docs/mirascope/v2/llms-full',
+  path: '/docs/mirascope/v2/llms-full',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/login": typeof LoginRoute;
-  "/organizations": typeof OrganizationsRoute;
-  "/auth/github": typeof AuthGithubRouteWithChildren;
-  "/auth/google": typeof AuthGoogleRouteWithChildren;
-  "/auth/me": typeof AuthMeRoute;
-  "/api/v0/$": typeof ApiV0SplatRoute;
-  "/api/v0/docs": typeof ApiV0DocsRoute;
-  "/api/v0/health": typeof ApiV0HealthRoute;
-  "/auth/github/callback": typeof AuthGithubCallbackRoute;
-  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
-  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
-  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
+  '/': typeof IndexRoute
+  '/$catchall': typeof CatchallRoute
+  '/404': typeof R404Route
+  '/dev': typeof DevRouteWithChildren
+  '/llms-full': typeof LlmsFullRoute
+  '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
+  '/router-waitlist': typeof RouterWaitlistRoute
+  '/app/login': typeof AppLoginRoute
+  '/app/organizations': typeof AppOrganizationsRoute
+  '/auth/github': typeof AuthGithubRouteWithChildren
+  '/auth/google': typeof AuthGoogleRouteWithChildren
+  '/auth/me': typeof AuthMeRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/dev/$slug': typeof DevSlugRoute
+  '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/layout-test': typeof DevLayoutTestRoute
+  '/dev/social-card': typeof DevSocialCardRoute
+  '/docs/$': typeof DocsSplatRoute
+  '/terms/service': typeof TermsServiceRoute
+  '/terms/use': typeof TermsUseRoute
+  '/app': typeof AppIndexRoute
+  '/blog': typeof BlogIndexRoute
+  '/dev/': typeof DevIndexRoute
+  '/docs': typeof DocsIndexRoute
+  '/terms': typeof TermsIndexRoute
+  '/api/v0/$': typeof ApiV0SplatRoute
+  '/api/v0/docs': typeof ApiV0DocsRoute
+  '/api/v0/health': typeof ApiV0HealthRoute
+  '/auth/github/callback': typeof AuthGithubCallbackRoute
+  '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/docs/$product/llms-full': typeof DocsProductLlmsFullRoute
+  '/docs/mirascope/v2/llms-full': typeof DocsMirascopeV2LlmsFullRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/login": typeof LoginRoute;
-  "/organizations": typeof OrganizationsRoute;
-  "/auth/github": typeof AuthGithubRouteWithChildren;
-  "/auth/google": typeof AuthGoogleRouteWithChildren;
-  "/auth/me": typeof AuthMeRoute;
-  "/api/v0/$": typeof ApiV0SplatRoute;
-  "/api/v0/docs": typeof ApiV0DocsRoute;
-  "/api/v0/health": typeof ApiV0HealthRoute;
-  "/auth/github/callback": typeof AuthGithubCallbackRoute;
-  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
-  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
-  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
+  '/': typeof IndexRoute
+  '/$catchall': typeof CatchallRoute
+  '/404': typeof R404Route
+  '/llms-full': typeof LlmsFullRoute
+  '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
+  '/router-waitlist': typeof RouterWaitlistRoute
+  '/app/login': typeof AppLoginRoute
+  '/app/organizations': typeof AppOrganizationsRoute
+  '/auth/github': typeof AuthGithubRouteWithChildren
+  '/auth/google': typeof AuthGoogleRouteWithChildren
+  '/auth/me': typeof AuthMeRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/dev/$slug': typeof DevSlugRoute
+  '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/layout-test': typeof DevLayoutTestRoute
+  '/dev/social-card': typeof DevSocialCardRoute
+  '/docs/$': typeof DocsSplatRoute
+  '/terms/service': typeof TermsServiceRoute
+  '/terms/use': typeof TermsUseRoute
+  '/app': typeof AppIndexRoute
+  '/blog': typeof BlogIndexRoute
+  '/dev': typeof DevIndexRoute
+  '/docs': typeof DocsIndexRoute
+  '/terms': typeof TermsIndexRoute
+  '/api/v0/$': typeof ApiV0SplatRoute
+  '/api/v0/docs': typeof ApiV0DocsRoute
+  '/api/v0/health': typeof ApiV0HealthRoute
+  '/auth/github/callback': typeof AuthGithubCallbackRoute
+  '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/docs/$product/llms-full': typeof DocsProductLlmsFullRoute
+  '/docs/mirascope/v2/llms-full': typeof DocsMirascopeV2LlmsFullRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/login": typeof LoginRoute;
-  "/organizations": typeof OrganizationsRoute;
-  "/auth/github": typeof AuthGithubRouteWithChildren;
-  "/auth/google": typeof AuthGoogleRouteWithChildren;
-  "/auth/me": typeof AuthMeRoute;
-  "/api/v0/$": typeof ApiV0SplatRoute;
-  "/api/v0/docs": typeof ApiV0DocsRoute;
-  "/api/v0/health": typeof ApiV0HealthRoute;
-  "/auth/github/callback": typeof AuthGithubCallbackRoute;
-  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
-  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
-  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/$catchall': typeof CatchallRoute
+  '/404': typeof R404Route
+  '/dev': typeof DevRouteWithChildren
+  '/llms-full': typeof LlmsFullRoute
+  '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
+  '/router-waitlist': typeof RouterWaitlistRoute
+  '/app/login': typeof AppLoginRoute
+  '/app/organizations': typeof AppOrganizationsRoute
+  '/auth/github': typeof AuthGithubRouteWithChildren
+  '/auth/google': typeof AuthGoogleRouteWithChildren
+  '/auth/me': typeof AuthMeRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/dev/$slug': typeof DevSlugRoute
+  '/dev/audit-metadata': typeof DevAuditMetadataRoute
+  '/dev/layout-test': typeof DevLayoutTestRoute
+  '/dev/social-card': typeof DevSocialCardRoute
+  '/docs/$': typeof DocsSplatRoute
+  '/terms/service': typeof TermsServiceRoute
+  '/terms/use': typeof TermsUseRoute
+  '/app/': typeof AppIndexRoute
+  '/blog/': typeof BlogIndexRoute
+  '/dev/': typeof DevIndexRoute
+  '/docs/': typeof DocsIndexRoute
+  '/terms/': typeof TermsIndexRoute
+  '/api/v0/$': typeof ApiV0SplatRoute
+  '/api/v0/docs': typeof ApiV0DocsRoute
+  '/api/v0/health': typeof ApiV0HealthRoute
+  '/auth/github/callback': typeof AuthGithubCallbackRoute
+  '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/docs/$product/llms-full': typeof DocsProductLlmsFullRoute
+  '/docs/mirascope/v2/llms-full': typeof DocsMirascopeV2LlmsFullRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/login"
-    | "/organizations"
-    | "/auth/github"
-    | "/auth/google"
-    | "/auth/me"
-    | "/api/v0/$"
-    | "/api/v0/docs"
-    | "/api/v0/health"
-    | "/auth/github/callback"
-    | "/auth/github/proxy-callback"
-    | "/auth/google/callback"
-    | "/auth/google/proxy-callback";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/$catchall'
+    | '/404'
+    | '/dev'
+    | '/llms-full'
+    | '/pricing'
+    | '/privacy'
+    | '/router-waitlist'
+    | '/app/login'
+    | '/app/organizations'
+    | '/auth/github'
+    | '/auth/google'
+    | '/auth/me'
+    | '/blog/$slug'
+    | '/dev/$slug'
+    | '/dev/audit-metadata'
+    | '/dev/layout-test'
+    | '/dev/social-card'
+    | '/docs/$'
+    | '/terms/service'
+    | '/terms/use'
+    | '/app'
+    | '/blog'
+    | '/dev/'
+    | '/docs'
+    | '/terms'
+    | '/api/v0/$'
+    | '/api/v0/docs'
+    | '/api/v0/health'
+    | '/auth/github/callback'
+    | '/auth/github/proxy-callback'
+    | '/auth/google/callback'
+    | '/auth/google/proxy-callback'
+    | '/docs/$product/llms-full'
+    | '/docs/mirascope/v2/llms-full'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/login"
-    | "/organizations"
-    | "/auth/github"
-    | "/auth/google"
-    | "/auth/me"
-    | "/api/v0/$"
-    | "/api/v0/docs"
-    | "/api/v0/health"
-    | "/auth/github/callback"
-    | "/auth/github/proxy-callback"
-    | "/auth/google/callback"
-    | "/auth/google/proxy-callback";
+    | '/'
+    | '/$catchall'
+    | '/404'
+    | '/llms-full'
+    | '/pricing'
+    | '/privacy'
+    | '/router-waitlist'
+    | '/app/login'
+    | '/app/organizations'
+    | '/auth/github'
+    | '/auth/google'
+    | '/auth/me'
+    | '/blog/$slug'
+    | '/dev/$slug'
+    | '/dev/audit-metadata'
+    | '/dev/layout-test'
+    | '/dev/social-card'
+    | '/docs/$'
+    | '/terms/service'
+    | '/terms/use'
+    | '/app'
+    | '/blog'
+    | '/dev'
+    | '/docs'
+    | '/terms'
+    | '/api/v0/$'
+    | '/api/v0/docs'
+    | '/api/v0/health'
+    | '/auth/github/callback'
+    | '/auth/github/proxy-callback'
+    | '/auth/google/callback'
+    | '/auth/google/proxy-callback'
+    | '/docs/$product/llms-full'
+    | '/docs/mirascope/v2/llms-full'
   id:
-    | "__root__"
-    | "/"
-    | "/login"
-    | "/organizations"
-    | "/auth/github"
-    | "/auth/google"
-    | "/auth/me"
-    | "/api/v0/$"
-    | "/api/v0/docs"
-    | "/api/v0/health"
-    | "/auth/github/callback"
-    | "/auth/github/proxy-callback"
-    | "/auth/google/callback"
-    | "/auth/google/proxy-callback";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/$catchall'
+    | '/404'
+    | '/dev'
+    | '/llms-full'
+    | '/pricing'
+    | '/privacy'
+    | '/router-waitlist'
+    | '/app/login'
+    | '/app/organizations'
+    | '/auth/github'
+    | '/auth/google'
+    | '/auth/me'
+    | '/blog/$slug'
+    | '/dev/$slug'
+    | '/dev/audit-metadata'
+    | '/dev/layout-test'
+    | '/dev/social-card'
+    | '/docs/$'
+    | '/terms/service'
+    | '/terms/use'
+    | '/app/'
+    | '/blog/'
+    | '/dev/'
+    | '/docs/'
+    | '/terms/'
+    | '/api/v0/$'
+    | '/api/v0/docs'
+    | '/api/v0/health'
+    | '/auth/github/callback'
+    | '/auth/github/proxy-callback'
+    | '/auth/google/callback'
+    | '/auth/google/proxy-callback'
+    | '/docs/$product/llms-full'
+    | '/docs/mirascope/v2/llms-full'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  LoginRoute: typeof LoginRoute;
-  OrganizationsRoute: typeof OrganizationsRoute;
-  AuthGithubRoute: typeof AuthGithubRouteWithChildren;
-  AuthGoogleRoute: typeof AuthGoogleRouteWithChildren;
-  AuthMeRoute: typeof AuthMeRoute;
-  ApiV0SplatRoute: typeof ApiV0SplatRoute;
-  ApiV0DocsRoute: typeof ApiV0DocsRoute;
-  ApiV0HealthRoute: typeof ApiV0HealthRoute;
+  IndexRoute: typeof IndexRoute
+  CatchallRoute: typeof CatchallRoute
+  R404Route: typeof R404Route
+  DevRoute: typeof DevRouteWithChildren
+  LlmsFullRoute: typeof LlmsFullRoute
+  PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RouterWaitlistRoute: typeof RouterWaitlistRoute
+  AppLoginRoute: typeof AppLoginRoute
+  AppOrganizationsRoute: typeof AppOrganizationsRoute
+  AuthGithubRoute: typeof AuthGithubRouteWithChildren
+  AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
+  AuthMeRoute: typeof AuthMeRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  DocsSplatRoute: typeof DocsSplatRoute
+  TermsServiceRoute: typeof TermsServiceRoute
+  TermsUseRoute: typeof TermsUseRoute
+  AppIndexRoute: typeof AppIndexRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+  TermsIndexRoute: typeof TermsIndexRoute
+  ApiV0SplatRoute: typeof ApiV0SplatRoute
+  ApiV0DocsRoute: typeof ApiV0DocsRoute
+  ApiV0HealthRoute: typeof ApiV0HealthRoute
+  DocsProductLlmsFullRoute: typeof DocsProductLlmsFullRoute
+  DocsMirascopeV2LlmsFullRoute: typeof DocsMirascopeV2LlmsFullRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/organizations": {
-      id: "/organizations";
-      path: "/organizations";
-      fullPath: "/organizations";
-      preLoaderRoute: typeof OrganizationsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/login": {
-      id: "/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof LoginRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/auth/me": {
-      id: "/auth/me";
-      path: "/auth/me";
-      fullPath: "/auth/me";
-      preLoaderRoute: typeof AuthMeRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/auth/google": {
-      id: "/auth/google";
-      path: "/auth/google";
-      fullPath: "/auth/google";
-      preLoaderRoute: typeof AuthGoogleRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/auth/github": {
-      id: "/auth/github";
-      path: "/auth/github";
-      fullPath: "/auth/github";
-      preLoaderRoute: typeof AuthGithubRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/auth/google/proxy-callback": {
-      id: "/auth/google/proxy-callback";
-      path: "/proxy-callback";
-      fullPath: "/auth/google/proxy-callback";
-      preLoaderRoute: typeof AuthGoogleProxyCallbackRouteImport;
-      parentRoute: typeof AuthGoogleRoute;
-    };
-    "/auth/google/callback": {
-      id: "/auth/google/callback";
-      path: "/callback";
-      fullPath: "/auth/google/callback";
-      preLoaderRoute: typeof AuthGoogleCallbackRouteImport;
-      parentRoute: typeof AuthGoogleRoute;
-    };
-    "/auth/github/proxy-callback": {
-      id: "/auth/github/proxy-callback";
-      path: "/proxy-callback";
-      fullPath: "/auth/github/proxy-callback";
-      preLoaderRoute: typeof AuthGithubProxyCallbackRouteImport;
-      parentRoute: typeof AuthGithubRoute;
-    };
-    "/auth/github/callback": {
-      id: "/auth/github/callback";
-      path: "/callback";
-      fullPath: "/auth/github/callback";
-      preLoaderRoute: typeof AuthGithubCallbackRouteImport;
-      parentRoute: typeof AuthGithubRoute;
-    };
-    "/api/v0/health": {
-      id: "/api/v0/health";
-      path: "/api/v0/health";
-      fullPath: "/api/v0/health";
-      preLoaderRoute: typeof ApiV0HealthRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/api/v0/docs": {
-      id: "/api/v0/docs";
-      path: "/api/v0/docs";
-      fullPath: "/api/v0/docs";
-      preLoaderRoute: typeof ApiV0DocsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/api/v0/$": {
-      id: "/api/v0/$";
-      path: "/api/v0/$";
-      fullPath: "/api/v0/$";
-      preLoaderRoute: typeof ApiV0SplatRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/router-waitlist': {
+      id: '/router-waitlist'
+      path: '/router-waitlist'
+      fullPath: '/router-waitlist'
+      preLoaderRoute: typeof RouterWaitlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms-full': {
+      id: '/llms-full'
+      path: '/llms-full'
+      fullPath: '/llms-full'
+      preLoaderRoute: typeof LlmsFullRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev': {
+      id: '/dev'
+      path: '/dev'
+      fullPath: '/dev'
+      preLoaderRoute: typeof DevRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$catchall': {
+      id: '/$catchall'
+      path: '/$catchall'
+      fullPath: '/$catchall'
+      preLoaderRoute: typeof CatchallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms/': {
+      id: '/terms/'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/': {
+      id: '/dev/'
+      path: '/'
+      fullPath: '/dev/'
+      preLoaderRoute: typeof DevIndexRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms/use': {
+      id: '/terms/use'
+      path: '/terms/use'
+      fullPath: '/terms/use'
+      preLoaderRoute: typeof TermsUseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms/service': {
+      id: '/terms/service'
+      path: '/terms/service'
+      fullPath: '/terms/service'
+      preLoaderRoute: typeof TermsServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/$': {
+      id: '/docs/$'
+      path: '/docs/$'
+      fullPath: '/docs/$'
+      preLoaderRoute: typeof DocsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/social-card': {
+      id: '/dev/social-card'
+      path: '/social-card'
+      fullPath: '/dev/social-card'
+      preLoaderRoute: typeof DevSocialCardRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/layout-test': {
+      id: '/dev/layout-test'
+      path: '/layout-test'
+      fullPath: '/dev/layout-test'
+      preLoaderRoute: typeof DevLayoutTestRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/audit-metadata': {
+      id: '/dev/audit-metadata'
+      path: '/audit-metadata'
+      fullPath: '/dev/audit-metadata'
+      preLoaderRoute: typeof DevAuditMetadataRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/dev/$slug': {
+      id: '/dev/$slug'
+      path: '/$slug'
+      fullPath: '/dev/$slug'
+      preLoaderRoute: typeof DevSlugRouteImport
+      parentRoute: typeof DevRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/me': {
+      id: '/auth/me'
+      path: '/auth/me'
+      fullPath: '/auth/me'
+      preLoaderRoute: typeof AuthMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/google': {
+      id: '/auth/google'
+      path: '/auth/google'
+      fullPath: '/auth/google'
+      preLoaderRoute: typeof AuthGoogleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/github': {
+      id: '/auth/github'
+      path: '/auth/github'
+      fullPath: '/auth/github'
+      preLoaderRoute: typeof AuthGithubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/organizations': {
+      id: '/app/organizations'
+      path: '/app/organizations'
+      fullPath: '/app/organizations'
+      preLoaderRoute: typeof AppOrganizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/login': {
+      id: '/app/login'
+      path: '/app/login'
+      fullPath: '/app/login'
+      preLoaderRoute: typeof AppLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/$product/llms-full': {
+      id: '/docs/$product/llms-full'
+      path: '/docs/$product/llms-full'
+      fullPath: '/docs/$product/llms-full'
+      preLoaderRoute: typeof DocsProductLlmsFullRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/google/proxy-callback': {
+      id: '/auth/google/proxy-callback'
+      path: '/proxy-callback'
+      fullPath: '/auth/google/proxy-callback'
+      preLoaderRoute: typeof AuthGoogleProxyCallbackRouteImport
+      parentRoute: typeof AuthGoogleRoute
+    }
+    '/auth/google/callback': {
+      id: '/auth/google/callback'
+      path: '/callback'
+      fullPath: '/auth/google/callback'
+      preLoaderRoute: typeof AuthGoogleCallbackRouteImport
+      parentRoute: typeof AuthGoogleRoute
+    }
+    '/auth/github/proxy-callback': {
+      id: '/auth/github/proxy-callback'
+      path: '/proxy-callback'
+      fullPath: '/auth/github/proxy-callback'
+      preLoaderRoute: typeof AuthGithubProxyCallbackRouteImport
+      parentRoute: typeof AuthGithubRoute
+    }
+    '/auth/github/callback': {
+      id: '/auth/github/callback'
+      path: '/callback'
+      fullPath: '/auth/github/callback'
+      preLoaderRoute: typeof AuthGithubCallbackRouteImport
+      parentRoute: typeof AuthGithubRoute
+    }
+    '/api/v0/health': {
+      id: '/api/v0/health'
+      path: '/api/v0/health'
+      fullPath: '/api/v0/health'
+      preLoaderRoute: typeof ApiV0HealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v0/docs': {
+      id: '/api/v0/docs'
+      path: '/api/v0/docs'
+      fullPath: '/api/v0/docs'
+      preLoaderRoute: typeof ApiV0DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v0/$': {
+      id: '/api/v0/$'
+      path: '/api/v0/$'
+      fullPath: '/api/v0/$'
+      preLoaderRoute: typeof ApiV0SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/mirascope/v2/llms-full': {
+      id: '/docs/mirascope/v2/llms-full'
+      path: '/docs/mirascope/v2/llms-full'
+      fullPath: '/docs/mirascope/v2/llms-full'
+      preLoaderRoute: typeof DocsMirascopeV2LlmsFullRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface DevRouteChildren {
+  DevSlugRoute: typeof DevSlugRoute
+  DevAuditMetadataRoute: typeof DevAuditMetadataRoute
+  DevLayoutTestRoute: typeof DevLayoutTestRoute
+  DevSocialCardRoute: typeof DevSocialCardRoute
+  DevIndexRoute: typeof DevIndexRoute
+}
+
+const DevRouteChildren: DevRouteChildren = {
+  DevSlugRoute: DevSlugRoute,
+  DevAuditMetadataRoute: DevAuditMetadataRoute,
+  DevLayoutTestRoute: DevLayoutTestRoute,
+  DevSocialCardRoute: DevSocialCardRoute,
+  DevIndexRoute: DevIndexRoute,
+}
+
+const DevRouteWithChildren = DevRoute._addFileChildren(DevRouteChildren)
+
 interface AuthGithubRouteChildren {
-  AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute;
-  AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute;
+  AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute
+  AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute
 }
 
 const AuthGithubRouteChildren: AuthGithubRouteChildren = {
   AuthGithubCallbackRoute: AuthGithubCallbackRoute,
   AuthGithubProxyCallbackRoute: AuthGithubProxyCallbackRoute,
-};
+}
 
 const AuthGithubRouteWithChildren = AuthGithubRoute._addFileChildren(
   AuthGithubRouteChildren,
-);
+)
 
 interface AuthGoogleRouteChildren {
-  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute;
-  AuthGoogleProxyCallbackRoute: typeof AuthGoogleProxyCallbackRoute;
+  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute
+  AuthGoogleProxyCallbackRoute: typeof AuthGoogleProxyCallbackRoute
 }
 
 const AuthGoogleRouteChildren: AuthGoogleRouteChildren = {
   AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
   AuthGoogleProxyCallbackRoute: AuthGoogleProxyCallbackRoute,
-};
+}
 
 const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
   AuthGoogleRouteChildren,
-);
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
-  OrganizationsRoute: OrganizationsRoute,
+  CatchallRoute: CatchallRoute,
+  R404Route: R404Route,
+  DevRoute: DevRouteWithChildren,
+  LlmsFullRoute: LlmsFullRoute,
+  PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
+  RouterWaitlistRoute: RouterWaitlistRoute,
+  AppLoginRoute: AppLoginRoute,
+  AppOrganizationsRoute: AppOrganizationsRoute,
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  DocsSplatRoute: DocsSplatRoute,
+  TermsServiceRoute: TermsServiceRoute,
+  TermsUseRoute: TermsUseRoute,
+  AppIndexRoute: AppIndexRoute,
+  BlogIndexRoute: BlogIndexRoute,
+  DocsIndexRoute: DocsIndexRoute,
+  TermsIndexRoute: TermsIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
   ApiV0HealthRoute: ApiV0HealthRoute,
-};
+  DocsProductLlmsFullRoute: DocsProductLlmsFullRoute,
+  DocsMirascopeV2LlmsFullRoute: DocsMirascopeV2LlmsFullRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx";
-import type { createStart } from "@tanstack/react-start";
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }
