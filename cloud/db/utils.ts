@@ -1,31 +1,37 @@
-// PostgreSQL error code for unique constraint violation
+// PostgreSQL error codes
 const PG_UNIQUE_VIOLATION = "23505";
+// const PG_FOREIGN_KEY_VIOLATION = "23503";
 
 /**
- * Check if an error is a PostgreSQL unique constraint violation.
- * Drizzle wraps PostgreSQL errors, so we check both the error itself
- * and its cause for the unique violation code.
+ * Helper to extract PostgreSQL error code from Drizzle-wrapped errors.
  */
-export function isUniqueConstraintError(error: unknown): boolean {
+function getPostgresErrorCode(error: unknown): string | undefined {
   if (typeof error !== "object" || error === null) {
-    return false;
+    return undefined;
   }
 
-  // Check if error.code matches (direct postgres error)
-  if ("code" in error && error.code === PG_UNIQUE_VIOLATION) {
-    return true;
+  // Check direct error.code
+  if ("code" in error && typeof error.code === "string") {
+    return error.code;
   }
 
-  // Check if error.cause.code matches (Drizzle-wrapped error)
+  // Check error.cause.code (Drizzle-wrapped error)
   if (
     "cause" in error &&
     typeof error.cause === "object" &&
     error.cause !== null &&
     "code" in error.cause &&
-    error.cause.code === PG_UNIQUE_VIOLATION
+    typeof error.cause.code === "string"
   ) {
-    return true;
+    return error.cause.code;
   }
 
-  return false;
+  return undefined;
+}
+
+/**
+ * Check if an error is a PostgreSQL unique constraint violation.
+ */
+export function isUniqueConstraintError(error: unknown): boolean {
+  return getPostgresErrorCode(error) === PG_UNIQUE_VIOLATION;
 }
