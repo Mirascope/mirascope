@@ -49,6 +49,7 @@ import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
 import { Traces } from "@/db/traces";
+import { Functions } from "@/db/functions";
 import { Payments, type StripeConfig } from "@/payments";
 
 /**
@@ -56,10 +57,12 @@ import { Payments, type StripeConfig } from "@/payments";
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
  * Traces: `db.organizations.projects.environments.traces.create(...)`
+ * Functions: `db.organizations.projects.environments.functions.create(...)`
  */
 export interface EnvironmentsService extends Ready<Environments> {
   readonly apiKeys: Ready<ApiKeys>;
   readonly traces: Ready<Traces>;
+  readonly functions: Ready<Functions>;
 }
 
 /**
@@ -147,6 +150,7 @@ export class Database extends Context.Tag("Database")<
       const environmentsService = new Environments(projectMemberships);
       const apiKeysService = new ApiKeys(projectMemberships);
       const tracesService = new Traces(projectMemberships);
+      const functionsService = new Functions(projectMemberships);
 
       return {
         users: provideDependencies(new Users()),
@@ -161,6 +165,7 @@ export class Database extends Context.Tag("Database")<
               ...provideDependencies(environmentsService),
               apiKeys: provideDependencies(apiKeysService),
               traces: provideDependencies(tracesService),
+              functions: provideDependencies(functionsService),
             },
           },
         },

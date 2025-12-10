@@ -107,6 +107,23 @@ export class PermissionDeniedError extends Schema.TaggedError<PermissionDeniedEr
   static readonly status = 403 as const;
 }
 
+/**
+ * Error for attempting to update an immutable resource.
+ *
+ * Used when a resource cannot be modified after creation, regardless of
+ * the user's permissions. This is distinct from PermissionDeniedError
+ * which indicates insufficient permissions.
+ */
+export class ImmutableResourceError extends Schema.TaggedError<ImmutableResourceError>()(
+  "ImmutableResourceError",
+  {
+    message: Schema.String,
+    resource: Schema.optional(Schema.String),
+  },
+) {
+  static readonly status = 400 as const;
+}
+
 // =============================================================================
 // Payment Errors
 // =============================================================================

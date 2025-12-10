@@ -5,3 +5,4 @@ export type {
   ProjectsService,
   EnvironmentsService,
 } from "@/db/database";
+export type { FunctionCreateInput, PublicFunction } from "@/db/functions";

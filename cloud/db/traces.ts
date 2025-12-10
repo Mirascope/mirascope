@@ -72,6 +72,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  ImmutableResourceError,
 } from "@/errors";
 import {
   traces,
@@ -602,7 +603,10 @@ export class Traces extends BaseAuthenticatedEffectService<
     data: never;
   }): Effect.Effect<
     PublicTrace,
-    NotFoundError | PermissionDeniedError | DatabaseError,
+    | NotFoundError
+    | PermissionDeniedError
+    | ImmutableResourceError
+    | DatabaseError,
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
@@ -616,9 +620,9 @@ export class Traces extends BaseAuthenticatedEffectService<
       });
 
       return yield* Effect.fail(
-        new PermissionDeniedError({
+        new ImmutableResourceError({
           message: "Traces are immutable and cannot be updated.",
-          resource: "trace",
+          resource: "traces",
         }),
       );
     });

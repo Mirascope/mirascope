@@ -7,7 +7,12 @@ import {
 } from "@/tests/db";
 import { Effect } from "effect";
 import { Database } from "@/db";
-import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
+import {
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+  ImmutableResourceError,
+} from "@/errors";
 
 describe("Traces", () => {
   describe("create", () => {
@@ -994,7 +999,7 @@ describe("Traces", () => {
           })
           .pipe(Effect.flip);
 
-        expect(result).toBeInstanceOf(PermissionDeniedError);
+        expect(result).toBeInstanceOf(ImmutableResourceError);
         expect(result.message).toContain("immutable");
       }),
     );
