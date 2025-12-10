@@ -30,7 +30,7 @@
  * const db = yield* Database;
  *
  * // Create an annotation for a span
- * const annotation = yield* db.organizations.projects.environments.annotations.create({
+ * const annotation = yield* db.organizations.projects.environments.traces.annotations.create({
  *   userId: "user-123",
  *   organizationId: "org-456",
  *   projectId: "proj-789",
@@ -44,7 +44,7 @@
  * });
  *
  * // List annotations in an environment
- * const annotations = yield* db.organizations.projects.environments.annotations.findAll({
+ * const annotations = yield* db.organizations.projects.environments.traces.annotations.findAll({
  *   userId: "user-123",
  *   organizationId: "org-456",
  *   projectId: "proj-789",
