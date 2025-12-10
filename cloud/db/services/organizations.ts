@@ -44,10 +44,13 @@ export class OrganizationService extends BaseAuthenticatedService<
    * Get the user's role in an organization.
    * Returns NotFoundError if user is not a member (hides org existence from non-members).
    */
-  getRole(
-    userId: string,
-    organizationId: string,
-  ): Effect.Effect<Role, NotFoundError | DatabaseError> {
+  getRole({
+    organizationId,
+    userId,
+  }: {
+    organizationId: string;
+    userId: string;
+  }): Effect.Effect<Role, NotFoundError | DatabaseError> {
     const fetchMembership = Effect.tryPromise({
       try: async () => {
         const [membership] = await this.db
@@ -86,10 +89,13 @@ export class OrganizationService extends BaseAuthenticatedService<
     return fetchMembership.pipe(Effect.flatMap(rejectIfNotMember));
   }
 
-  create(
-    data: NewOrganization,
-    userId: string,
-  ): Effect.Effect<
+  create({
+    data,
+    userId,
+  }: {
+    data: NewOrganization;
+    userId: string;
+  }): Effect.Effect<
     PublicOrganizationWithMembership,
     AlreadyExistsError | DatabaseError
   > {
@@ -129,9 +135,11 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
-  findAll(
-    userId: string,
-  ): Effect.Effect<PublicOrganizationWithMembership[], DatabaseError> {
+  findAll({
+    userId,
+  }: {
+    userId: string;
+  }): Effect.Effect<PublicOrganizationWithMembership[], DatabaseError> {
     const fetchUserOrganizationsWithRoles = Effect.tryPromise({
       try: async () => {
         return await this.db
@@ -157,10 +165,13 @@ export class OrganizationService extends BaseAuthenticatedService<
     return fetchUserOrganizationsWithRoles;
   }
 
-  findById(
-    organizationId: string,
-    userId: string,
-  ): Effect.Effect<
+  findById({
+    id,
+    userId,
+  }: {
+    id: string;
+    userId: string;
+  }): Effect.Effect<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
@@ -172,7 +183,7 @@ export class OrganizationService extends BaseAuthenticatedService<
             name: organizations.name,
           })
           .from(organizations)
-          .where(eq(organizations.id, organizationId))
+          .where(eq(organizations.id, id))
           .limit(1);
         return result as PublicOrganization | undefined;
       },
@@ -189,7 +200,7 @@ export class OrganizationService extends BaseAuthenticatedService<
       if (!org) {
         return Effect.fail(
           new NotFoundError({
-            message: `Organization with id ${organizationId} not found`,
+            message: `Organization with id ${id} not found`,
             resource: this.resourceName,
           }),
         );
@@ -197,7 +208,7 @@ export class OrganizationService extends BaseAuthenticatedService<
       return Effect.succeed(org);
     };
 
-    return this.getRole(userId, organizationId).pipe(
+    return this.getRole({ organizationId: id, userId }).pipe(
       Effect.flatMap((role) =>
         this.verifyPermission(role, "read").pipe(
           Effect.andThen(fetchOrganization),
@@ -208,11 +219,15 @@ export class OrganizationService extends BaseAuthenticatedService<
     );
   }
 
-  update(
-    organizationId: string,
-    data: Partial<NewOrganization>,
-    userId: string,
-  ): Effect.Effect<
+  update({
+    id,
+    data,
+    userId,
+  }: {
+    id: string;
+    data: Partial<NewOrganization>;
+    userId: string;
+  }): Effect.Effect<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
@@ -221,7 +236,7 @@ export class OrganizationService extends BaseAuthenticatedService<
         const [updated] = await this.db
           .update(organizations)
           .set({ name: data.name })
-          .where(eq(organizations.id, organizationId))
+          .where(eq(organizations.id, id))
           .returning({ id: organizations.id, name: organizations.name });
         return updated as PublicOrganization | undefined;
       },
@@ -238,7 +253,7 @@ export class OrganizationService extends BaseAuthenticatedService<
       if (!org) {
         return Effect.fail(
           new NotFoundError({
-            message: `Organization with id ${organizationId} not found`,
+            message: `Organization with id ${id} not found`,
             resource: this.resourceName,
           }),
         );
@@ -246,7 +261,7 @@ export class OrganizationService extends BaseAuthenticatedService<
       return Effect.succeed(org);
     };
 
-    return this.getRole(userId, organizationId).pipe(
+    return this.getRole({ organizationId: id, userId }).pipe(
       Effect.flatMap((role) =>
         this.verifyPermission(role, "update").pipe(
           Effect.andThen(updateOrganization),
@@ -257,10 +272,13 @@ export class OrganizationService extends BaseAuthenticatedService<
     );
   }
 
-  delete(
-    organizationId: string,
-    userId: string,
-  ): Effect.Effect<
+  delete({
+    id,
+    userId,
+  }: {
+    id: string;
+    userId: string;
+  }): Effect.Effect<
     void,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
@@ -269,11 +287,9 @@ export class OrganizationService extends BaseAuthenticatedService<
         await this.db.transaction(async (tx) => {
           await tx
             .delete(organizationMemberships)
-            .where(eq(organizationMemberships.organizationId, organizationId));
+            .where(eq(organizationMemberships.organizationId, id));
 
-          await tx
-            .delete(organizations)
-            .where(eq(organizations.id, organizationId));
+          await tx.delete(organizations).where(eq(organizations.id, id));
         });
       },
       catch: (error) =>
@@ -283,7 +299,7 @@ export class OrganizationService extends BaseAuthenticatedService<
         }),
     });
 
-    return this.getRole(userId, organizationId).pipe(
+    return this.getRole({ organizationId: id, userId }).pipe(
       Effect.flatMap((role) => this.verifyPermission(role, "delete")),
       Effect.andThen(deleteOrganizationWithMemberships),
     );
