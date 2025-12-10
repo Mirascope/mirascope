@@ -1,265 +1,396 @@
-import { describe, it, expect } from "vitest";
-import { withTestDatabase, createPartialMockDatabase } from "@/tests/db";
+import { describe, it, expect } from "@effect/vitest";
+import { MockDatabase, TestDatabase } from "@/tests/db";
 import { Effect } from "effect";
-import { DatabaseError } from "@/db/errors";
-import { UserService } from "@/db/services/users";
+import { type PublicUser } from "@/db/schema";
+import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/db/errors";
+import { DatabaseService } from "@/db/services";
 
 describe("UserService", () => {
-  it(
-    "should support basic CRUD",
-    withTestDatabase((db) =>
+  describe("create", () => {
+    it.effect("creates a user", () =>
       Effect.gen(function* () {
-        const created = yield* db.users.create({
-          email: "test@example.com",
-          name: "Test User",
-        });
-        expect(created).toBeDefined();
-        expect(created.id).toBeDefined();
-        expect(created.email).toBe("test@example.com");
-        expect(created.name).toBe("Test User");
-        expect(created).not.toHaveProperty("createdAt");
-        expect(created).not.toHaveProperty("updatedAt");
+        const db = yield* DatabaseService;
 
-        const userId = created.id;
+        const email = "test@example.com";
+        const name = "Test User";
+        const user = yield* db.users.create({ email, name });
 
-        const found = yield* db.users.findById(userId);
-        expect(found).toBeDefined();
-        expect(found.id).toBe(userId);
-        expect(found.email).toBe("test@example.com");
-        expect(found.name).toBe("Test User");
+        expect(user).toEqual({
+          id: user.id,
+          email,
+          name,
+        } satisfies PublicUser);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-        const all = yield* db.users.findAll();
-        expect(Array.isArray(all)).toBe(true);
-        expect(all.find((u) => u.id === userId)).toBeDefined();
+    it.effect("returns `AlreadyExistsError` when email is taken", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
 
-        const updated = yield* db.users.update(userId, {
-          name: "Updated User",
-          email: "updated@example.com",
-        });
-        expect(updated).toBeDefined();
-        expect(updated.id).toBe(userId);
-        expect(updated.name).toBe("Updated User");
-        expect(updated.email).toBe("updated@example.com");
+        const email = "duplicate@example.com";
+        yield* db.users.create({ email, name: "First User" });
 
-        const afterUpdate = yield* db.users.findById(userId);
-        expect(afterUpdate).toBeDefined();
-        expect(afterUpdate.name).toBe("Updated User");
-        expect(afterUpdate.email).toBe("updated@example.com");
+        const result = yield* db.users
+          .create({ email, name: "Second User" })
+          .pipe(Effect.flip);
 
-        yield* db.users.delete(userId);
+        expect(result).toBeInstanceOf(AlreadyExistsError);
+        expect(result.message).toBe("user already exists");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-        const afterDeleteResult = yield* Effect.either(
-          db.users.findById(userId),
-        );
-        expect(afterDeleteResult._tag).toBe("Left");
-        if (afterDeleteResult._tag === "Left") {
-          expect(afterDeleteResult.left._tag).toBe("NotFoundError");
-        }
+    it.effect("returns `DatabaseError` when insert fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .insert(new Error("Database connection failed"))
+          .build();
 
-        const afterDeleteAll = yield* db.users.findAll();
-        expect(afterDeleteAll.find((u) => u.id === userId)).toBeUndefined();
+        const result = yield* db.users
+          .create({ email: "test@example.com", name: "Test" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create user");
       }),
-    ),
-  );
-
-  describe("createOrUpdate", () => {
-    it(
-      "should create a new user",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.createOrUpdate({
-            email: "newuser@example.com",
-            name: "New User",
-          });
-
-          expect(user).toBeDefined();
-          expect(user.id).toBeDefined();
-          expect(user.email).toBe("newuser@example.com");
-          expect(user.name).toBe("New User");
-        }),
-      ),
-    );
-
-    it(
-      "should update existing user",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const created = yield* db.users.create({
-            email: "existing@example.com",
-            name: "Original Name",
-          });
-
-          const updated = yield* db.users.createOrUpdate({
-            email: "existing@example.com",
-            name: "Updated Name",
-          });
-
-          expect(updated).toBeDefined();
-          expect(updated.id).toBe(created.id);
-          expect(updated.email).toBe("existing@example.com");
-          expect(updated.name).toBe("Updated Name");
-        }),
-      ),
-    );
-
-    it(
-      "should not update if name is the same",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const created = yield* db.users.create({
-            email: "samename@example.com",
-            name: "Same Name",
-          });
-
-          const result = yield* db.users.createOrUpdate({
-            email: "samename@example.com",
-            name: "Same Name",
-          });
-
-          expect(result).toBeDefined();
-          expect(result.id).toBe(created.id);
-          expect(result.email).toBe("samename@example.com");
-          expect(result.name).toBe("Same Name");
-        }),
-      ),
-    );
-
-    it(
-      "should handle null name",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.createOrUpdate({
-            email: "noname@example.com",
-            name: null,
-          });
-
-          expect(user).toBeDefined();
-          expect(user.id).toBeDefined();
-          expect(user.email).toBe("noname@example.com");
-          expect(user.name).toBeNull();
-
-          const updated = yield* db.users.createOrUpdate({
-            email: "noname@example.com",
-            name: null,
-          });
-
-          expect(updated.id).toBe(user.id);
-          expect(updated.name).toBeNull();
-        }),
-      ),
-    );
-
-    it(
-      "should handle undefined name",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.createOrUpdate({
-            email: "noname2@example.com",
-          });
-
-          expect(user).toBeDefined();
-          expect(user.id).toBeDefined();
-          expect(user.email).toBe("noname2@example.com");
-          expect(user.name).toBeNull();
-        }),
-      ),
     );
   });
 
-  describe("Error handling", () => {
-    it("createOrUpdate returns DatabaseError when upsert fails", () => {
-      return Effect.gen(function* () {
-        const mockDb = createPartialMockDatabase({
-          insert: () => ({
-            values: () => ({
-              onConflictDoUpdate: () =>
-                Promise.reject(new Error("Database connection failed")),
-            }),
-          }),
+  describe("findById", () => {
+    it.effect("finds a user by id", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "find@example.com",
+          name: "Find User",
+        });
+        const found = yield* db.users.findById(user.id);
+
+        expect(found).toEqual(user);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when user does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.users.findById(badId).pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`user with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.users.findById("user-id").pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find user");
+      }),
+    );
+  });
+
+  describe("findAll", () => {
+    it.effect("finds all users", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user1 = yield* db.users.create({
+          email: "user1@example.com",
+          name: "User 1",
+        });
+        const user2 = yield* db.users.create({
+          email: "user2@example.com",
+          name: "User 2",
         });
 
-        const service = new UserService(mockDb);
+        const all = yield* db.users.findAll();
 
-        const result = yield* Effect.either(
-          service.createOrUpdate({
-            email: "test@example.com",
-            name: "Test User",
-          }),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to create or update user",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
+        expect(all).toEqual([user1, user2] satisfies PublicUser[]);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-    it("createOrUpdate returns DatabaseError when fetch fails after successful upsert", () => {
-      return Effect.gen(function* () {
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            throw new Error("Database connection failed");
-          },
-          insert: () => ({
-            values: () => ({
-              onConflictDoUpdate: () => Promise.resolve(undefined),
-            }),
-          }),
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.users.findAll().pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find all users");
+      }),
+    );
+  });
+
+  describe("update", () => {
+    it.effect("updates a user", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const created = yield* db.users.create({
+          name: "Original Name",
+          email: "original@example.com",
         });
 
-        const service = new UserService(mockDb);
-
-        const result = yield* Effect.either(
-          service.createOrUpdate({
-            email: "test@example.com",
-            name: "Test User",
-          }),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to create or update user",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("createOrUpdate returns DatabaseError when select finds nothing after upsert", () => {
-      return Effect.gen(function* () {
-        const mockDb = createPartialMockDatabase({
-          select: () => ({
-            from: () => ({
-              where: () => ({
-                limit: () => Promise.resolve([]),
-              }),
-            }),
-          }),
-          insert: () => ({
-            values: () => ({
-              onConflictDoUpdate: () => Promise.resolve(undefined),
-            }),
-          }),
+        const updatedName = "Updated Name";
+        const updatedEmail = "updated@example.com";
+        const updated = yield* db.users.update(created.id, {
+          name: updatedName,
+          email: updatedEmail,
         });
 
-        const service = new UserService(mockDb);
+        expect(updated).toEqual({
+          id: created.id,
+          name: updatedName,
+          email: updatedEmail,
+        } satisfies PublicUser);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-        const result = yield* Effect.either(
-          service.createOrUpdate({
-            email: "test@example.com",
-            name: "Test User",
-          }),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to create or update user",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
+    it.effect("persists updates correctly", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const created = yield* db.users.create({
+          email: "persist@example.com",
+          name: "Original",
+        });
+
+        yield* db.users.update(created.id, { name: "Persisted" });
+
+        const found = yield* db.users.findById(created.id);
+
+        expect(found.name).toBe("Persisted");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when user does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.users
+          .update(badId, { name: "Should Fail" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`user with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .update(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.users
+          .update("user-id", { name: "Test" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to update user");
+      }),
+    );
+
+    it.effect("returns `DatabaseError` when updating to existing email", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user1 = yield* db.users.create({
+          email: "user1@example.com",
+          name: "User 1",
+        });
+        yield* db.users.create({
+          email: "user2@example.com",
+          name: "User 2",
+        });
+
+        const result = yield* db.users
+          .update(user1.id, { email: "user2@example.com" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to update user");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+  });
+
+  describe("delete", () => {
+    it.effect("deletes a user", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const created = yield* db.users.create({
+          email: "delete@example.com",
+          name: "Delete User",
+        });
+
+        yield* db.users.delete(created.id);
+
+        const result = yield* db.users.findById(created.id).pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("removes user from findAll results", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const created = yield* db.users.create({
+          email: "deleteall@example.com",
+          name: "Delete All User",
+        });
+
+        yield* db.users.delete(created.id);
+
+        const all = yield* db.users.findAll();
+
+        expect(all.find((u) => u.id === created.id)).toBeUndefined();
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when user does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.users.delete(badId).pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`user with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .delete(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.users.delete("user-id").pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to delete user");
+      }),
+    );
+  });
+
+  describe("createOrUpdate", () => {
+    it.effect("creates a new user", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const email = "newuser@example.com";
+        const name = "New User";
+        const user = yield* db.users.createOrUpdate({ email, name });
+
+        expect(user).toEqual({
+          id: user.id,
+          email,
+          name,
+        } satisfies PublicUser);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("updates existing user by email", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const email = "existing@example.com";
+        const name = "Original Name";
+        const created = yield* db.users.create({
+          email,
+          name,
+        });
+
+        const updatedName = "Updated Name";
+        const updated = yield* db.users.createOrUpdate({
+          email,
+          name: updatedName,
+        });
+
+        expect(updated).toEqual({
+          id: created.id,
+          email,
+          name: updatedName,
+        } satisfies PublicUser);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("handles undefined name", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.createOrUpdate({
+          email: "undefinedname@example.com",
+        });
+
+        expect(user).toBeDefined();
+        expect(user.id).toBeDefined();
+        expect(user.email).toBe("undefinedname@example.com");
+        expect(user.name).toBeNull();
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when upsert fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .insert(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.users
+          .createOrUpdate({ email: "test@example.com", name: "Test" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create or update user");
+      }),
+    );
+
+    it.effect("returns `DatabaseError` when fetch after upsert fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // upsert succeeds
+          .insert([])
+          // fetch fails
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.users
+          .createOrUpdate({ email: "test@example.com", name: "Test" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create or update user");
+      }),
+    );
+
+    it.effect("returns `DatabaseError` when user not found after upsert", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // upsert succeeds
+          .insert([])
+          // fetch returns empty
+          .select([])
+          .build();
+
+        const result = yield* db.users
+          .createOrUpdate({ email: "test@example.com", name: "Test" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create or update user");
+      }),
+    );
   });
 });
