@@ -1,7 +1,7 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
 import { ApiLive } from "@/api/router";
-import { EnvironmentService } from "@/environment";
+import { SettingsService } from "@/settings";
 import { DatabaseService, type Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser } from "@/db/schema";
@@ -20,7 +20,7 @@ export type HandleRequestOptions = {
 function createWebHandler(options: HandleRequestOptions) {
   const app = options.app;
   const services = Layer.mergeAll(
-    Layer.succeed(EnvironmentService, { env: app.environment }),
+    Layer.succeed(SettingsService, { env: app.environment }),
     Layer.succeed(DatabaseService, app.database),
     Layer.succeed(AuthenticatedUser, app.authenticatedUser),
   );

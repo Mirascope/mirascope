@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { DatabaseService, DEFAULT_SESSION_DURATION } from "@/db";
 import { AlreadyExistsError, DatabaseError } from "@/db/errors";
-import { EnvironmentService } from "@/environment";
+import { SettingsService } from "@/settings";
 import {
   OAuthError,
   InvalidStateError,
@@ -70,12 +70,12 @@ function mapGoogleUserData(apiResponse: GoogleUser): AuthenticatedUserInfo {
 }
 
 export const createGitHubProvider = Effect.gen(function* () {
-  const env = yield* EnvironmentService;
+  const settings = yield* SettingsService;
 
   if (
-    !env.GITHUB_CLIENT_ID ||
-    !env.GITHUB_CLIENT_SECRET ||
-    !env.GITHUB_CALLBACK_URL
+    !settings.GITHUB_CLIENT_ID ||
+    !settings.GITHUB_CLIENT_SECRET ||
+    !settings.GITHUB_CALLBACK_URL
   ) {
     return yield* Effect.fail(
       new MissingCredentialsError({
@@ -91,19 +91,19 @@ export const createGitHubProvider = Effect.gen(function* () {
     tokenUrl: "https://github.com/login/oauth/access_token",
     userUrl: "https://api.github.com/user",
     scopes: ["user:email"],
-    clientId: env.GITHUB_CLIENT_ID,
-    clientSecret: env.GITHUB_CLIENT_SECRET,
-    callbackUrl: env.GITHUB_CALLBACK_URL,
+    clientId: settings.GITHUB_CLIENT_ID,
+    clientSecret: settings.GITHUB_CLIENT_SECRET,
+    callbackUrl: settings.GITHUB_CALLBACK_URL,
   };
 });
 
 export const createGoogleProvider = Effect.gen(function* () {
-  const env = yield* EnvironmentService;
+  const settings = yield* SettingsService;
 
   if (
-    !env.GOOGLE_CLIENT_ID ||
-    !env.GOOGLE_CLIENT_SECRET ||
-    !env.GOOGLE_CALLBACK_URL
+    !settings.GOOGLE_CLIENT_ID ||
+    !settings.GOOGLE_CLIENT_SECRET ||
+    !settings.GOOGLE_CALLBACK_URL
   ) {
     return yield* Effect.fail(
       new MissingCredentialsError({
@@ -119,9 +119,9 @@ export const createGoogleProvider = Effect.gen(function* () {
     tokenUrl: "https://oauth2.googleapis.com/token",
     userUrl: "https://www.googleapis.com/oauth2/v1/userinfo",
     scopes: ["openid", "email", "profile"],
-    clientId: env.GOOGLE_CLIENT_ID,
-    clientSecret: env.GOOGLE_CLIENT_SECRET,
-    callbackUrl: env.GOOGLE_CALLBACK_URL,
+    clientId: settings.GOOGLE_CLIENT_ID,
+    clientSecret: settings.GOOGLE_CLIENT_SECRET,
+    callbackUrl: settings.GOOGLE_CALLBACK_URL,
   };
 });
 
@@ -317,11 +317,11 @@ export function handleOAuthCallback(
         Effect.flatMap((accessToken) => fetchUserInfo(provider, accessToken)),
         Effect.flatMap((userInfo) =>
           Effect.gen(function* () {
-            const env = yield* EnvironmentService;
+            const settings = yield* SettingsService;
             const response = yield* processAuthenticatedUser(
               userInfo,
               returnUrl,
-              env.SITE_URL || "http://localhost:3000",
+              settings.SITE_URL || "http://localhost:3000",
             );
             response.headers.append("Set-Cookie", clearOAuthStateCookie());
             return response;

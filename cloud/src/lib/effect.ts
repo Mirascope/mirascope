@@ -1,11 +1,11 @@
 import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
 import { DatabaseService, getDatabase } from "@/db";
-import { EnvironmentService, getEnvironment } from "@/environment";
+import { SettingsService, getSettings } from "@/settings";
 import type { Result } from "./types";
 export type { Result } from "./types";
 
-export type AppServices = EnvironmentService | DatabaseService | AuthService;
+export type AppServices = SettingsService | DatabaseService | AuthService;
 
 /**
  * Runs an Effect that returns a Response object.
@@ -14,7 +14,7 @@ export type AppServices = EnvironmentService | DatabaseService | AuthService;
 export async function runEffectResponse<E>(
   effect: Effect.Effect<Response, E, AppServices>,
 ): Promise<Response> {
-  const environmentLayer = Layer.succeed(EnvironmentService, getEnvironment());
+  const settingsLayer = Layer.succeed(SettingsService, getSettings());
 
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
@@ -26,7 +26,7 @@ export async function runEffectResponse<E>(
   const authLayer = Layer.succeed(AuthService, createAuthService());
 
   const appServicesLayer = Layer.mergeAll(
-    environmentLayer,
+    settingsLayer,
     databaseLayer,
     authLayer,
   );
@@ -44,7 +44,7 @@ export async function runEffectResponse<E>(
 export async function runEffect<A, E extends { message: string }>(
   effect: Effect.Effect<A, E, AppServices>,
 ): Promise<Result<A>> {
-  const environmentLayer = Layer.succeed(EnvironmentService, getEnvironment());
+  const settingsLayer = Layer.succeed(SettingsService, getSettings());
 
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
@@ -56,7 +56,7 @@ export async function runEffect<A, E extends { message: string }>(
   const authLayer = Layer.succeed(AuthService, createAuthService());
 
   const appServicesLayer = Layer.mergeAll(
-    environmentLayer,
+    settingsLayer,
     databaseLayer,
     authLayer,
   );
