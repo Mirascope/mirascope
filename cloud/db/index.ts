@@ -6,3 +6,4 @@ export type {
   EnvironmentsService,
 } from "@/db/database";
 export type { IngestResult } from "@/db/traces";
+export type { RegisterFunctionInput, FunctionResponse } from "@/db/functions";
