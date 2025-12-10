@@ -20,8 +20,8 @@ export const projects = pgTable(
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
-    uniqueOrgId: unique().on(table.organizationId, table.id),
     uniqueOrgSlug: unique().on(table.organizationId, table.slug),
+    uniqueOrgProjectId: unique().on(table.organizationId, table.id),
   }),
 );
 

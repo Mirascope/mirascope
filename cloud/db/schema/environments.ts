@@ -15,8 +15,8 @@ export const environments = pgTable(
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
-    uniqueProjectId: unique().on(table.projectId, table.id),
     uniqueProjectSlug: unique().on(table.projectId, table.slug),
+    uniqueProjectEnvironmentId: unique().on(table.projectId, table.id),
   }),
 );
 

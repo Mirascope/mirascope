@@ -1,2 +1,0 @@
-ALTER TABLE "functions" ADD CONSTRAINT "functions_env_project_fk" FOREIGN KEY ("project_id","environment_id") REFERENCES "public"."environments"("project_id","id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "functions" ADD CONSTRAINT "functions_project_org_fk" FOREIGN KEY ("organization_id","project_id") REFERENCES "public"."projects"("organization_id","id") ON DELETE cascade ON UPDATE no action;

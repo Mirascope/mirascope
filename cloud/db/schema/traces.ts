@@ -16,7 +16,7 @@ export const traces = pgTable(
   "traces",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    traceId: text("trace_id").notNull(),
+    otelTraceId: text("otel_trace_id").notNull(),
     environmentId: uuid("environment_id")
       .references(() => environments.id, { onDelete: "cascade" })
       .notNull(),
@@ -32,22 +32,28 @@ export const traces = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => ({
-    traceEnvUnique: unique().on(table.traceId, table.environmentId),
-    // Composite unique constraint for spans foreign key reference
-    idTraceIdEnvUnique: unique("traces_id_trace_id_environment_id_unique").on(
-      table.id,
-      table.traceId,
+    uniqueOtelTraceEnvironment: unique().on(
+      table.otelTraceId,
       table.environmentId,
     ),
+    // Composite unique constraint for spans foreign key reference
+    uniqueOtelTraceIdEnvironmentId: unique(
+      "traces_id_trace_id_environment_id_unique",
+    ).on(table.id, table.otelTraceId, table.environmentId),
     // Composite unique constraint for spans org consistency foreign key
-    idProjectOrgUnique: unique(
+    uniqueOrgProjectTraceId: unique(
       "traces_id_project_id_organization_id_unique",
-    ).on(table.id, table.projectId, table.organizationId),
-    envCreatedAtIdx: index("traces_env_created_at_idx").on(
+    ).on(table.organizationId, table.projectId, table.id),
+    // Composite unique constraint for annotations otel consistency foreign key
+    uniqueOtelTraceId: unique("traces_id_trace_id_unique").on(
+      table.id,
+      table.otelTraceId,
+    ),
+    environmentCreatedAtIndex: index("traces_env_created_at_idx").on(
       table.environmentId,
       table.createdAt,
     ),
-    envServiceNameIdx: index("traces_env_service_name_idx").on(
+    environmentServiceNameIndex: index("traces_env_service_name_idx").on(
       table.environmentId,
       table.serviceName,
     ),
@@ -77,7 +83,7 @@ export type NewTrace = typeof traces.$inferInsert;
 export type PublicTrace = Pick<
   Trace,
   | "id"
-  | "traceId"
+  | "otelTraceId"
   | "environmentId"
   | "projectId"
   | "organizationId"

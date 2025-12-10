@@ -58,7 +58,7 @@ describe("Traces", () => {
 
         expect(result.acceptedSpans).toBe(1);
         expect(result.rejectedSpans).toBe(0);
-        expect(result.traceId).toBe("abc123");
+        expect(result.otelTraceId).toBe("abc123");
         expect(result.serviceName).toBe("test-service");
       }),
     );
@@ -112,7 +112,7 @@ describe("Traces", () => {
 
         expect(result.acceptedSpans).toBe(2);
         expect(result.rejectedSpans).toBe(0);
-        expect(result.traceId).toBe("trace001");
+        expect(result.otelTraceId).toBe("trace001");
         expect(result.serviceName).toBe("test-service");
       }),
     );
@@ -726,7 +726,7 @@ describe("Traces", () => {
           });
 
         expect(traces).toHaveLength(2);
-        expect(traces.map((t) => t.traceId).sort()).toEqual([
+        expect(traces.map((t) => t.otelTraceId).sort()).toEqual([
           "trace-list-1",
           "trace-list-2",
         ]);
@@ -862,7 +862,7 @@ describe("Traces", () => {
             traceId: "trace-get-123",
           });
 
-        expect(trace.traceId).toBe("trace-get-123");
+        expect(trace.otelTraceId).toBe("trace-get-123");
         expect(trace.serviceName).toBe("test-svc");
       }),
     );
