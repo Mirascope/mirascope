@@ -50,6 +50,7 @@ import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
 import { Traces } from "@/db/traces";
 import { Functions } from "@/db/functions";
+import { Annotations } from "@/db/annotations";
 
 /**
  * Type definition for the environments service with nested API keys.
@@ -115,6 +116,7 @@ export class Database extends Context.Tag("Database")<
     readonly organizations: OrganizationsService;
     readonly traces: Ready<Traces>;
     readonly functions: Ready<Functions>;
+    readonly annotations: Ready<Annotations>;
   }
 >() {
   /**
@@ -158,6 +160,7 @@ export class Database extends Context.Tag("Database")<
         },
         traces: makeReady(client, new Traces(projectMemberships)),
         functions: makeReady(client, new Functions(projectMemberships)),
+        annotations: makeReady(client, new Annotations(projectMemberships)),
       };
     }),
   );
