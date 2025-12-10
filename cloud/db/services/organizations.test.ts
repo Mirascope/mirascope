@@ -15,6 +15,48 @@ import {
 import { DatabaseService } from "@/db/services";
 
 describe("OrganizationService", () => {
+  describe("getRole", () => {
+    it.effect("returns the user's role in an organization", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const role = yield* db.organizations.getRole(owner.id, org.id);
+
+        expect(role).toBe("OWNER");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when user is not a member", () =>
+      Effect.gen(function* () {
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const result = yield* db.organizations
+          .getRole(nonMember.id, org.id)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .getRole("user-id", "org-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get membership");
+      }),
+    );
+  });
+
   describe("create", () => {
     it.effect("creates an organization with owner membership", () =>
       Effect.gen(function* () {
@@ -128,7 +170,7 @@ describe("OrganizationService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it.effect("returns `DatabaseError` when membership check fails", () =>
+    it.effect("returns `DatabaseError` when getRole fails", () =>
       Effect.gen(function* () {
         const db = new MockDatabase()
           .select(new Error("Database connection failed"))
@@ -139,7 +181,7 @@ describe("OrganizationService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to check membership");
+        expect(result.message).toBe("Failed to get membership");
       }),
     );
 
@@ -215,7 +257,7 @@ describe("OrganizationService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it.effect("returns `DatabaseError` when membership check fails", () =>
+    it.effect("returns `DatabaseError` when getRole fails", () =>
       Effect.gen(function* () {
         const db = new MockDatabase()
           // checkPermission: fails
@@ -227,7 +269,7 @@ describe("OrganizationService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to check membership");
+        expect(result.message).toBe("Failed to get membership");
       }),
     );
 
@@ -323,7 +365,7 @@ describe("OrganizationService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it.effect("returns `DatabaseError` when membership check fails", () =>
+    it.effect("returns `DatabaseError` when getRole fails", () =>
       Effect.gen(function* () {
         const db = new MockDatabase()
           // checkPermission: fails
@@ -335,7 +377,7 @@ describe("OrganizationService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to check membership");
+        expect(result.message).toBe("Failed to get membership");
       }),
     );
 

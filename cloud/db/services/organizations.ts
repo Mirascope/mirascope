@@ -1,11 +1,8 @@
 import { Effect } from "effect";
 import { and, eq } from "drizzle-orm";
-import type { PgColumn } from "drizzle-orm/pg-core";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import {
-  BaseService,
   BaseAuthenticatedService,
-  type PermissionAction,
+  type PermissionTable,
 } from "@/db/services/base";
 import {
   AlreadyExistsError,
@@ -22,68 +19,35 @@ import {
   type PublicOrganizationWithMembership,
   type Role,
 } from "@/db/schema";
-import type * as schema from "@/db/schema";
-
-/**
- * Minimum role required for each action.
- * Role hierarchy: OWNER > ADMIN > DEVELOPER > ANNOTATOR
- */
-const ROLE_HIERARCHY: Record<Role, number> = {
-  OWNER: 4,
-  ADMIN: 3,
-  DEVELOPER: 2,
-  ANNOTATOR: 1,
-};
-
-const REQUIRED_ROLE_FOR_ACTION: Record<PermissionAction, Role> = {
-  read: "ANNOTATOR",
-  update: "ADMIN",
-  delete: "OWNER",
-};
-
-class BaseOrganizationService extends BaseService<
-  PublicOrganization,
-  string,
-  typeof organizations
-> {
-  /* v8 ignore next 3 */
-  protected getTable() {
-    return organizations;
-  }
-
-  protected getResourceName() {
-    return "organization";
-  }
-
-  /* v8 ignore next 6 */
-  protected getPublicFields(): Record<string, PgColumn> {
-    return {
-      id: organizations.id,
-      name: organizations.name,
-    };
-  }
-}
 
 export class OrganizationService extends BaseAuthenticatedService<
   PublicOrganization,
   string,
-  typeof organizations
+  typeof organizations,
+  NewOrganization,
+  Role
 > {
-  protected readonly baseService: BaseOrganizationService;
-
-  constructor(db: PostgresJsDatabase<typeof schema>) {
-    super(db);
-    this.baseService = new BaseOrganizationService(db);
+  getResourceName(): string {
+    return "organization";
   }
 
-  protected checkPermission(
+  protected getPermissionTable(): PermissionTable<Role> {
+    return {
+      create: ["OWNER"], // Handled separately (no org exists yet)
+      read: ["OWNER", "ADMIN", "DEVELOPER", "ANNOTATOR"], // All members can read
+      update: ["OWNER", "ADMIN"],
+      delete: ["OWNER"],
+    };
+  }
+
+  /**
+   * Get the user's role in an organization.
+   * Returns NotFoundError if user is not a member (hides org existence from non-members).
+   */
+  getRole(
     userId: string,
-    action: PermissionAction,
     organizationId: string,
-  ): Effect.Effect<
-    Role,
-    NotFoundError | PermissionDeniedError | DatabaseError
-  > {
+  ): Effect.Effect<Role, NotFoundError | DatabaseError> {
     const fetchMembership = Effect.tryPromise({
       try: async () => {
         const [membership] = await this.db
@@ -100,42 +64,26 @@ export class OrganizationService extends BaseAuthenticatedService<
       },
       catch: (error) =>
         new DatabaseError({
-          message: "Failed to check membership",
+          message: "Failed to get membership",
           cause: error,
         }),
     });
 
-    const verifyMembershipAndRole = (
+    const rejectIfNotMember = (
       membership: { role: Role } | undefined,
-    ): Effect.Effect<Role, NotFoundError | PermissionDeniedError> => {
-      // No membership = user is not a member, return NotFoundError to hide existence
+    ): Effect.Effect<Role, NotFoundError> => {
       if (!membership) {
         return Effect.fail(
           new NotFoundError({
             message: "Organization not found",
-            resource: this.baseService.resourceName,
+            resource: this.resourceName,
           }),
         );
       }
-
-      const requiredRole = REQUIRED_ROLE_FOR_ACTION[action];
-      const userRoleLevel = ROLE_HIERARCHY[membership.role];
-      const requiredRoleLevel = ROLE_HIERARCHY[requiredRole];
-
-      // User is a member but lacks required role
-      if (userRoleLevel < requiredRoleLevel) {
-        return Effect.fail(
-          new PermissionDeniedError({
-            message: `You do not have permission to ${action} this organization`,
-            resource: this.baseService.resourceName,
-          }),
-        );
-      }
-
       return Effect.succeed(membership.role);
     };
 
-    return fetchMembership.pipe(Effect.flatMap(verifyMembershipAndRole));
+    return fetchMembership.pipe(Effect.flatMap(rejectIfNotMember));
   }
 
   create(
@@ -170,7 +118,7 @@ export class OrganizationService extends BaseAuthenticatedService<
         if (isUniqueConstraintError(error)) {
           return new AlreadyExistsError({
             message: "An organization with this name already exists",
-            resource: this.baseService.resourceName,
+            resource: this.resourceName,
           });
         }
         return new DatabaseError({
@@ -209,7 +157,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     return fetchUserOrganizationsWithRoles;
   }
 
-  override findById(
+  findById(
     organizationId: string,
     userId: string,
   ): Effect.Effect<
@@ -242,16 +190,17 @@ export class OrganizationService extends BaseAuthenticatedService<
         return Effect.fail(
           new NotFoundError({
             message: `Organization with id ${organizationId} not found`,
-            resource: this.baseService.resourceName,
+            resource: this.resourceName,
           }),
         );
       }
       return Effect.succeed(org);
     };
 
-    return this.checkPermission(userId, "read", organizationId).pipe(
+    return this.getRole(userId, organizationId).pipe(
       Effect.flatMap((role) =>
-        fetchOrganization.pipe(
+        this.verifyPermission(role, "read").pipe(
+          Effect.andThen(fetchOrganization),
           Effect.flatMap(rejectIfNotFound),
           Effect.map((org) => ({ ...org, role })),
         ),
@@ -290,16 +239,17 @@ export class OrganizationService extends BaseAuthenticatedService<
         return Effect.fail(
           new NotFoundError({
             message: `Organization with id ${organizationId} not found`,
-            resource: this.baseService.resourceName,
+            resource: this.resourceName,
           }),
         );
       }
       return Effect.succeed(org);
     };
 
-    return this.checkPermission(userId, "update", organizationId).pipe(
+    return this.getRole(userId, organizationId).pipe(
       Effect.flatMap((role) =>
-        updateOrganization.pipe(
+        this.verifyPermission(role, "update").pipe(
+          Effect.andThen(updateOrganization),
           Effect.flatMap(rejectIfNotFound),
           Effect.map((org) => ({ ...org, role })),
         ),
@@ -307,7 +257,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     );
   }
 
-  override delete(
+  delete(
     organizationId: string,
     userId: string,
   ): Effect.Effect<
@@ -333,7 +283,8 @@ export class OrganizationService extends BaseAuthenticatedService<
         }),
     });
 
-    return this.checkPermission(userId, "delete", organizationId).pipe(
+    return this.getRole(userId, organizationId).pipe(
+      Effect.flatMap((role) => this.verifyPermission(role, "delete")),
       Effect.andThen(deleteOrganizationWithMemberships),
     );
   }
