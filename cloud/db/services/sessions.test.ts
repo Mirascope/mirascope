@@ -62,7 +62,7 @@ describe("SessionService", () => {
           expiresAt,
         });
 
-        const found = yield* db.sessions.findById(session.id);
+        const found = yield* db.sessions.findById({ id: session.id });
 
         expect(found).toEqual(session);
       }).pipe(Effect.provide(TestDatabase)),
@@ -73,7 +73,9 @@ describe("SessionService", () => {
         const db = yield* DatabaseService;
 
         const badId = "00000000-0000-0000-0000-000000000000";
-        const result = yield* db.sessions.findById(badId).pipe(Effect.flip);
+        const result = yield* db.sessions
+          .findById({ id: badId })
+          .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe(`session with id ${badId} not found`);
@@ -87,7 +89,7 @@ describe("SessionService", () => {
           .build();
 
         const result = yield* db.sessions
-          .findById("session-id")
+          .findById({ id: "session-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -155,8 +157,9 @@ describe("SessionService", () => {
         });
 
         const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48);
-        const updated = yield* db.sessions.update(session.id, {
-          expiresAt: newExpiresAt,
+        const updated = yield* db.sessions.update({
+          id: session.id,
+          data: { expiresAt: newExpiresAt },
         });
 
         expect(updated).toEqual({
@@ -182,9 +185,12 @@ describe("SessionService", () => {
         });
 
         const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48);
-        yield* db.sessions.update(session.id, { expiresAt: newExpiresAt });
+        yield* db.sessions.update({
+          id: session.id,
+          data: { expiresAt: newExpiresAt },
+        });
 
-        const found = yield* db.sessions.findById(session.id);
+        const found = yield* db.sessions.findById({ id: session.id });
 
         expect(found.expiresAt.getTime()).toBe(newExpiresAt.getTime());
       }).pipe(Effect.provide(TestDatabase)),
@@ -196,7 +202,7 @@ describe("SessionService", () => {
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.sessions
-          .update(badId, { expiresAt: new Date() })
+          .update({ id: badId, data: { expiresAt: new Date() } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -211,7 +217,7 @@ describe("SessionService", () => {
           .build();
 
         const result = yield* db.sessions
-          .update("session-id", { expiresAt: new Date() })
+          .update({ id: "session-id", data: { expiresAt: new Date() } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -235,10 +241,10 @@ describe("SessionService", () => {
           expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
         });
 
-        yield* db.sessions.delete(session.id);
+        yield* db.sessions.delete({ id: session.id });
 
         const result = yield* db.sessions
-          .findById(session.id)
+          .findById({ id: session.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -259,7 +265,7 @@ describe("SessionService", () => {
           expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
         });
 
-        yield* db.sessions.delete(session.id);
+        yield* db.sessions.delete({ id: session.id });
 
         const all = yield* db.sessions.findAll();
 
@@ -272,7 +278,9 @@ describe("SessionService", () => {
         const db = yield* DatabaseService;
 
         const badId = "00000000-0000-0000-0000-000000000000";
-        const result = yield* db.sessions.delete(badId).pipe(Effect.flip);
+        const result = yield* db.sessions
+          .delete({ id: badId })
+          .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe(`session with id ${badId} not found`);
@@ -286,7 +294,7 @@ describe("SessionService", () => {
           .build();
 
         const result = yield* db.sessions
-          .delete("session-id")
+          .delete({ id: "session-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -400,7 +408,7 @@ describe("SessionService", () => {
 
         // Verify the session was deleted
         const findResult = yield* db.sessions
-          .findById(session.id)
+          .findById({ id: session.id })
           .pipe(Effect.flip);
 
         expect(findResult).toBeInstanceOf(NotFoundError);

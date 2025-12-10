@@ -72,7 +72,11 @@ export abstract class BaseService<
     });
   }
 
-  findById(id: TId): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
+  findById({
+    id,
+  }: {
+    id: TId;
+  }): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
         const [result] = await this.db
@@ -107,10 +111,13 @@ export abstract class BaseService<
     );
   }
 
-  update(
-    id: TId,
-    data: Partial<TTable["$inferInsert"]>,
-  ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
+  update({
+    id,
+    data,
+  }: {
+    id: TId;
+    data: Partial<TTable["$inferInsert"]>;
+  }): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
         // Type safety: TTable is constrained to DatabaseTable, so updatedAt is guaranteed to exist
@@ -149,7 +156,11 @@ export abstract class BaseService<
     );
   }
 
-  delete(id: TId): Effect.Effect<void, NotFoundError | DatabaseError> {
+  delete({
+    id,
+  }: {
+    id: TId;
+  }): Effect.Effect<void, NotFoundError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
         const table = this.getTable();
