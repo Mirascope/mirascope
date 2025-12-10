@@ -50,18 +50,21 @@ import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
 import { Traces } from "@/db/traces";
 import { Functions } from "@/db/functions";
+import { Annotations } from "@/db/annotations";
 
 /**
- * Type definition for the environments service with nested API keys, traces, and functions.
+ * Type definition for the environments service with nested API keys, traces, functions, and annotations.
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
  * Traces: `db.organizations.projects.environments.traces.create(...)`
  * Functions: `db.organizations.projects.environments.functions.create(...)`
+ * Annotations: `db.organizations.projects.environments.annotations.create(...)`
  */
 export interface EnvironmentsService extends Ready<Environments> {
   readonly apiKeys: Ready<ApiKeys>;
   readonly traces: Ready<Traces>;
   readonly functions: Ready<Functions>;
+  readonly annotations: Ready<Annotations>;
 }
 
 /**
@@ -145,9 +148,11 @@ export class Database extends Context.Tag("Database")<
 
       const tracesService = new Traces(projectMemberships);
       const functionsService = new Functions(projectMemberships);
+      const annotationsService = new Annotations(projectMemberships);
 
       const readyTraces = makeReady(client, tracesService);
       const readyFunctions = makeReady(client, functionsService);
+      const readyAnnotations = makeReady(client, annotationsService);
 
       return {
         users: makeReady(client, new Users()),
@@ -163,6 +168,7 @@ export class Database extends Context.Tag("Database")<
               apiKeys: makeReady(client, apiKeysService),
               traces: readyTraces,
               functions: readyFunctions,
+              annotations: readyAnnotations,
             },
           },
         },
