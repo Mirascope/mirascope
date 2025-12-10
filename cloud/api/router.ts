@@ -36,13 +36,6 @@ import {
   getFunctionByHashHandler,
   listFunctionsHandler,
 } from "@/api/functions.handlers";
-import {
-  createAnnotationHandler,
-  getAnnotationHandler,
-  updateAnnotationHandler,
-  deleteAnnotationHandler,
-  listAnnotationsHandler,
-} from "@/api/annotations.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -184,20 +177,6 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
       .handle("list", ({ urlParams }) => listFunctionsHandler(urlParams)),
 );
 
-const AnnotationsHandlersLive = HttpApiBuilder.group(
-  MirascopeCloudApi,
-  "annotations",
-  (handlers) =>
-    handlers
-      .handle("create", ({ payload }) => createAnnotationHandler(payload))
-      .handle("get", ({ path }) => getAnnotationHandler(path.id))
-      .handle("update", ({ path, payload }) =>
-        updateAnnotationHandler(path.id, payload),
-      )
-      .handle("delete", ({ path }) => deleteAnnotationHandler(path.id))
-      .handle("list", ({ urlParams }) => listAnnotationsHandler(urlParams)),
-);
-
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -207,5 +186,4 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
-  Layer.provide(AnnotationsHandlersLive),
 );
