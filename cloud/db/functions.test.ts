@@ -192,6 +192,78 @@ describe("Functions", () => {
         });
       }),
     );
+
+    describe("authorization", () => {
+      it.effect("returns PermissionDeniedError for VIEWER role", () =>
+        Effect.gen(function* () {
+          const { environment, project, org, projectViewer } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          const input = createFunctionInput({ name: "viewer_func" });
+
+          const result = yield* db.functions
+            .create({
+              userId: projectViewer.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: input,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toContain("permission to create");
+        }),
+      );
+
+      it.effect("returns PermissionDeniedError for ANNOTATOR role", () =>
+        Effect.gen(function* () {
+          const { environment, project, org, projectAnnotator } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          const input = createFunctionInput({ name: "annotator_func" });
+
+          const result = yield* db.functions
+            .create({
+              userId: projectAnnotator.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: input,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toContain("permission to create");
+        }),
+      );
+
+      it.effect("allows DEVELOPER role", () =>
+        Effect.gen(function* () {
+          const { environment, project, org, projectDeveloper } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          const input = createFunctionInput({
+            name: "developer_func",
+            hash: "developer-hash-123",
+          });
+
+          const result = yield* db.functions.create({
+            userId: projectDeveloper.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: input,
+          });
+
+          expect(result.isNew).toBe(true);
+          expect(result.name).toBe("developer_func");
+        }),
+      );
+    });
   });
 
   describe("getByHash", () => {
