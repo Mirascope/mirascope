@@ -31,6 +31,13 @@ import {
   getApiKeyHandler,
   deleteApiKeyHandler,
 } from "@/api/api-keys.handlers";
+import {
+  listFunctionsHandler,
+  createFunctionHandler,
+  getFunctionHandler,
+  findByHashHandler,
+  deleteFunctionHandler,
+} from "@/api/functions.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -162,6 +169,18 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const FunctionsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "functions",
+  (handlers) =>
+    handlers
+      .handle("list", () => listFunctionsHandler())
+      .handle("create", ({ payload }) => createFunctionHandler(payload))
+      .handle("get", ({ path }) => getFunctionHandler(path.id))
+      .handle("delete", ({ path }) => deleteFunctionHandler(path.id))
+      .handle("findByHash", ({ path }) => findByHashHandler(path.hash)),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -170,4 +189,5 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ProjectsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),
+  Layer.provide(FunctionsHandlersLive),
 );
