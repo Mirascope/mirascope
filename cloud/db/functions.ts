@@ -91,21 +91,18 @@ import type { ProjectRole } from "@/db/schema";
 
 export type { PublicFunction, DependencyInfo };
 
-/** Input type for function creation. */
-export type FunctionCreateInput = {
-  code: string;
-  hash: string;
-  signature: string;
-  signatureHash: string;
-  name: string;
-  description?: string | null;
-  tags?: string[] | null;
-  metadata?: Record<string, string> | null;
-  dependencies?: Record<string, DependencyInfo> | null;
-};
-
-type FunctionPath =
-  "organizations/:organizationId/projects/:projectId/environments/:environmentId/functions/:functionId";
+export type FunctionCreateData = Pick<
+  NewFunction,
+  | "code"
+  | "hash"
+  | "signature"
+  | "signatureHash"
+  | "name"
+  | "description"
+  | "tags"
+  | "metadata"
+  | "dependencies"
+>;
 
 /**
  * Effect-native Functions service.
@@ -132,8 +129,8 @@ type FunctionPath =
  */
 export class Functions extends BaseAuthenticatedEffectService<
   PublicFunction,
-  FunctionPath,
-  FunctionCreateInput,
+  "organizations/:organizationId/projects/:projectId/environments/:environmentId/functions/:functionId",
+  FunctionCreateData,
   never,
   ProjectRole
 > {
@@ -235,7 +232,7 @@ export class Functions extends BaseAuthenticatedEffectService<
     organizationId: string;
     projectId: string;
     environmentId: string;
-    data: FunctionCreateInput;
+    data: FunctionCreateData;
   }): Effect.Effect<
     PublicFunction,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,

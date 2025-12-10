@@ -7,7 +7,6 @@ import {
 } from "@/tests/db";
 import { Effect } from "effect";
 import { Database } from "@/db";
-import type { FunctionCreateInput } from "@/db/functions";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -15,11 +14,12 @@ import {
   PermissionDeniedError,
   ImmutableResourceError,
 } from "@/errors";
+import type { FunctionCreateData } from "@/db/functions";
 
 describe("Functions", () => {
   const createFunctionInput = (
-    overrides: Partial<FunctionCreateInput> = {},
-  ): FunctionCreateInput => ({
+    overrides: Partial<FunctionCreateData> = {},
+  ): FunctionCreateData => ({
     code: 'def my_func(): return "hello"',
     hash: `hash-${Math.random().toString(36).slice(2)}`,
     signature: "def my_func() -> str",
