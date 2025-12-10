@@ -10,12 +10,15 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
+from ..errors.conflict_error import ConflictError
+from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..errors.unauthorized_error import UnauthorizedError
+from ..types.already_exists_error import AlreadyExistsError
+from ..types.database_error import DatabaseError
 from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
-from ..types.unauthorized_error_body import UnauthorizedErrorBody
+from ..types.permission_denied_error import PermissionDeniedError
 from .types.traces_create_request_resource_spans_item import (
     TracesCreateRequestResourceSpansItem,
 )
@@ -85,13 +88,13 @@ class RawTracesClient:
                         ),
                     ),
                 )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        UnauthorizedErrorBody,
+                        PermissionDeniedError,
                         parse_obj_as(
-                            type_=UnauthorizedErrorBody,  # type: ignore
+                            type_=PermissionDeniedError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -107,13 +110,24 @@ class RawTracesClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        AlreadyExistsError,
+                        parse_obj_as(
+                            type_=AlreadyExistsError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -192,13 +206,13 @@ class AsyncRawTracesClient:
                         ),
                     ),
                 )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
+            if _response.status_code == 403:
+                raise ForbiddenError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        UnauthorizedErrorBody,
+                        PermissionDeniedError,
                         parse_obj_as(
-                            type_=UnauthorizedErrorBody,  # type: ignore
+                            type_=PermissionDeniedError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -214,13 +228,24 @@ class AsyncRawTracesClient:
                         ),
                     ),
                 )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        AlreadyExistsError,
+                        parse_obj_as(
+                            type_=AlreadyExistsError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

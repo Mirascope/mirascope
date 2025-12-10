@@ -3,11 +3,13 @@
 import typing
 
 import httpx
+from .annotations.client import AnnotationsClient, AsyncAnnotationsClient
 from .api_keys.client import ApiKeysClient, AsyncApiKeysClient
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .docs.client import AsyncDocsClient, DocsClient
 from .environment import MirascopeEnvironment
 from .environments.client import AsyncEnvironmentsClient, EnvironmentsClient
+from .functions.client import AsyncFunctionsClient, FunctionsClient
 from .health.client import AsyncHealthClient, HealthClient
 from .organizations.client import AsyncOrganizationsClient, OrganizationsClient
 from .projects.client import AsyncProjectsClient, ProjectsClient
@@ -82,6 +84,8 @@ class Mirascope:
         self.projects = ProjectsClient(client_wrapper=self._client_wrapper)
         self.environments = EnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = ApiKeysClient(client_wrapper=self._client_wrapper)
+        self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
+        self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -154,6 +158,8 @@ class AsyncMirascope:
         self.projects = AsyncProjectsClient(client_wrapper=self._client_wrapper)
         self.environments = AsyncEnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = AsyncApiKeysClient(client_wrapper=self._client_wrapper)
+        self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
+        self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(

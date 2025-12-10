@@ -9,6 +9,7 @@ from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
 from ..errors.forbidden_error import ForbiddenError
@@ -18,50 +19,69 @@ from ..types.already_exists_error import AlreadyExistsError
 from ..types.database_error import DatabaseError
 from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
+from ..types.number_from_string import NumberFromString
 from ..types.permission_denied_error import PermissionDeniedError
-from .types.projects_create_response import ProjectsCreateResponse
-from .types.projects_get_response import ProjectsGetResponse
-from .types.projects_list_response_item import ProjectsListResponseItem
-from .types.projects_update_response import ProjectsUpdateResponse
+from .types.functions_get_by_hash_response import FunctionsGetByHashResponse
+from .types.functions_get_response import FunctionsGetResponse
+from .types.functions_list_response import FunctionsListResponse
+from .types.functions_register_request_dependencies_value import (
+    FunctionsRegisterRequestDependenciesValue,
+)
+from .types.functions_register_response import FunctionsRegisterResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawProjectsClient:
+class RawFunctionsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def list(
         self,
-        organization_id: str,
         *,
+        name: typing.Optional[str] = None,
+        tags: typing.Optional[str] = None,
+        limit: typing.Optional[NumberFromString] = None,
+        offset: typing.Optional[NumberFromString] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[ProjectsListResponseItem]]:
+    ) -> HttpResponse[FunctionsListResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        name : typing.Optional[str]
+
+        tags : typing.Optional[str]
+
+        limit : typing.Optional[NumberFromString]
+
+        offset : typing.Optional[NumberFromString]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[typing.List[ProjectsListResponseItem]]
+        HttpResponse[FunctionsListResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "functions",
             method="GET",
+            params={
+                "name": name,
+                "tags": tags,
+                "limit": limit,
+                "offset": offset,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ProjectsListResponseItem],
+                    FunctionsListResponse,
                     parse_obj_as(
-                        type_=typing.List[ProjectsListResponseItem],  # type: ignore
+                        type_=FunctionsListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -123,39 +143,73 @@ class RawProjectsClient:
             body=_response_json,
         )
 
-    def create(
+    def register(
         self,
-        organization_id: str,
         *,
+        code: str,
+        hash: str,
+        signature: str,
+        signature_hash: str,
         name: str,
-        slug: str,
+        description: typing.Optional[str] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
+        dependencies: typing.Optional[
+            typing.Dict[str, typing.Optional[FunctionsRegisterRequestDependenciesValue]]
+        ] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProjectsCreateResponse]:
+    ) -> HttpResponse[FunctionsRegisterResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        code : str
+
+        hash : str
+
+        signature : str
+
+        signature_hash : str
 
         name : str
-            a string at most 100 character(s) long
 
-        slug : str
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+        description : typing.Optional[str]
+
+        tags : typing.Optional[typing.Sequence[str]]
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[str]]]
+
+        dependencies : typing.Optional[typing.Dict[str, typing.Optional[FunctionsRegisterRequestDependenciesValue]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ProjectsCreateResponse]
+        HttpResponse[FunctionsRegisterResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "functions",
             method="POST",
             json={
+                "code": code,
+                "hash": hash,
+                "signature": signature,
+                "signatureHash": signature_hash,
                 "name": name,
-                "slug": slug,
+                "description": description,
+                "tags": tags,
+                "metadata": metadata,
+                "dependencies": convert_and_respect_annotation_metadata(
+                    object_=dependencies,
+                    annotation=typing.Optional[
+                        typing.Dict[
+                            str,
+                            typing.Optional[FunctionsRegisterRequestDependenciesValue],
+                        ]
+                    ],
+                    direction="write",
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -166,9 +220,9 @@ class RawProjectsClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsCreateResponse,
+                    FunctionsRegisterResponse,
                     parse_obj_as(
-                        type_=ProjectsCreateResponse,  # type: ignore
+                        type_=FunctionsRegisterResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -213,6 +267,94 @@ class RawProjectsClient:
                         AlreadyExistsError,
                         parse_obj_as(
                             type_=AlreadyExistsError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        DatabaseError,
+                        parse_obj_as(
+                            type_=DatabaseError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def getbyhash(
+        self, hash: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[FunctionsGetByHashResponse]:
+        """
+        Parameters
+        ----------
+        hash : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[FunctionsGetByHashResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"functions/by-hash/{jsonable_encoder(hash)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    FunctionsGetByHashResponse,
+                    parse_obj_as(
+                        type_=FunctionsGetByHashResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -242,38 +384,32 @@ class RawProjectsClient:
         )
 
     def get(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProjectsGetResponse]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[FunctionsGetResponse]:
         """
         Parameters
         ----------
-        organization_id : str
-
-        project_id : str
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ProjectsGetResponse]
+        HttpResponse[FunctionsGetResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"functions/{jsonable_encoder(id)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsGetResponse,
+                    FunctionsGetResponse,
                     parse_obj_as(
-                        type_=ProjectsGetResponse,  # type: ignore
+                        type_=FunctionsGetResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -335,248 +471,56 @@ class RawProjectsClient:
             body=_response_json,
         )
 
-    def update(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        name: typing.Optional[str] = OMIT,
-        slug: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProjectsUpdateResponse]:
-        """
-        Parameters
-        ----------
-        organization_id : str
 
-        project_id : str
-
-        name : typing.Optional[str]
-            a string at most 100 character(s) long
-
-        slug : typing.Optional[str]
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ProjectsUpdateResponse]
-            Success
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
-            method="PUT",
-            json={
-                "name": name,
-                "slug": slug,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ProjectsUpdateResponse,
-                    parse_obj_as(
-                        type_=ProjectsUpdateResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        HttpApiDecodeError,
-                        parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        PermissionDeniedError,
-                        parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        NotFoundErrorBody,
-                        parse_obj_as(
-                            type_=NotFoundErrorBody,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        AlreadyExistsError,
-                        parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        DatabaseError,
-                        parse_obj_as(
-                            type_=DatabaseError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
-
-    def delete(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[None]:
-        """
-        Parameters
-        ----------
-        organization_id : str
-
-        project_id : str
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[None]
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
-            method="DELETE",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return HttpResponse(response=_response, data=None)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        HttpApiDecodeError,
-                        parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        PermissionDeniedError,
-                        parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        NotFoundErrorBody,
-                        parse_obj_as(
-                            type_=NotFoundErrorBody,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        DatabaseError,
-                        parse_obj_as(
-                            type_=DatabaseError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
-
-
-class AsyncRawProjectsClient:
+class AsyncRawFunctionsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def list(
         self,
-        organization_id: str,
         *,
+        name: typing.Optional[str] = None,
+        tags: typing.Optional[str] = None,
+        limit: typing.Optional[NumberFromString] = None,
+        offset: typing.Optional[NumberFromString] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[ProjectsListResponseItem]]:
+    ) -> AsyncHttpResponse[FunctionsListResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        name : typing.Optional[str]
+
+        tags : typing.Optional[str]
+
+        limit : typing.Optional[NumberFromString]
+
+        offset : typing.Optional[NumberFromString]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[ProjectsListResponseItem]]
+        AsyncHttpResponse[FunctionsListResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "functions",
             method="GET",
+            params={
+                "name": name,
+                "tags": tags,
+                "limit": limit,
+                "offset": offset,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ProjectsListResponseItem],
+                    FunctionsListResponse,
                     parse_obj_as(
-                        type_=typing.List[ProjectsListResponseItem],  # type: ignore
+                        type_=FunctionsListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -638,39 +582,73 @@ class AsyncRawProjectsClient:
             body=_response_json,
         )
 
-    async def create(
+    async def register(
         self,
-        organization_id: str,
         *,
+        code: str,
+        hash: str,
+        signature: str,
+        signature_hash: str,
         name: str,
-        slug: str,
+        description: typing.Optional[str] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
+        metadata: typing.Optional[typing.Dict[str, typing.Optional[str]]] = OMIT,
+        dependencies: typing.Optional[
+            typing.Dict[str, typing.Optional[FunctionsRegisterRequestDependenciesValue]]
+        ] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProjectsCreateResponse]:
+    ) -> AsyncHttpResponse[FunctionsRegisterResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        code : str
+
+        hash : str
+
+        signature : str
+
+        signature_hash : str
 
         name : str
-            a string at most 100 character(s) long
 
-        slug : str
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+        description : typing.Optional[str]
+
+        tags : typing.Optional[typing.Sequence[str]]
+
+        metadata : typing.Optional[typing.Dict[str, typing.Optional[str]]]
+
+        dependencies : typing.Optional[typing.Dict[str, typing.Optional[FunctionsRegisterRequestDependenciesValue]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ProjectsCreateResponse]
+        AsyncHttpResponse[FunctionsRegisterResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "functions",
             method="POST",
             json={
+                "code": code,
+                "hash": hash,
+                "signature": signature,
+                "signatureHash": signature_hash,
                 "name": name,
-                "slug": slug,
+                "description": description,
+                "tags": tags,
+                "metadata": metadata,
+                "dependencies": convert_and_respect_annotation_metadata(
+                    object_=dependencies,
+                    annotation=typing.Optional[
+                        typing.Dict[
+                            str,
+                            typing.Optional[FunctionsRegisterRequestDependenciesValue],
+                        ]
+                    ],
+                    direction="write",
+                ),
             },
             headers={
                 "content-type": "application/json",
@@ -681,9 +659,9 @@ class AsyncRawProjectsClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsCreateResponse,
+                    FunctionsRegisterResponse,
                     parse_obj_as(
-                        type_=ProjectsCreateResponse,  # type: ignore
+                        type_=FunctionsRegisterResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -728,6 +706,94 @@ class AsyncRawProjectsClient:
                         AlreadyExistsError,
                         parse_obj_as(
                             type_=AlreadyExistsError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        DatabaseError,
+                        parse_obj_as(
+                            type_=DatabaseError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def getbyhash(
+        self, hash: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[FunctionsGetByHashResponse]:
+        """
+        Parameters
+        ----------
+        hash : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[FunctionsGetByHashResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"functions/by-hash/{jsonable_encoder(hash)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    FunctionsGetByHashResponse,
+                    parse_obj_as(
+                        type_=FunctionsGetByHashResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -757,249 +823,36 @@ class AsyncRawProjectsClient:
         )
 
     async def get(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProjectsGetResponse]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[FunctionsGetResponse]:
         """
         Parameters
         ----------
-        organization_id : str
-
-        project_id : str
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ProjectsGetResponse]
+        AsyncHttpResponse[FunctionsGetResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"functions/{jsonable_encoder(id)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsGetResponse,
+                    FunctionsGetResponse,
                     parse_obj_as(
-                        type_=ProjectsGetResponse,  # type: ignore
+                        type_=FunctionsGetResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        HttpApiDecodeError,
-                        parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        PermissionDeniedError,
-                        parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        NotFoundErrorBody,
-                        parse_obj_as(
-                            type_=NotFoundErrorBody,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        DatabaseError,
-                        parse_obj_as(
-                            type_=DatabaseError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
-
-    async def update(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        name: typing.Optional[str] = OMIT,
-        slug: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProjectsUpdateResponse]:
-        """
-        Parameters
-        ----------
-        organization_id : str
-
-        project_id : str
-
-        name : typing.Optional[str]
-            a string at most 100 character(s) long
-
-        slug : typing.Optional[str]
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ProjectsUpdateResponse]
-            Success
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
-            method="PUT",
-            json={
-                "name": name,
-                "slug": slug,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ProjectsUpdateResponse,
-                    parse_obj_as(
-                        type_=ProjectsUpdateResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        HttpApiDecodeError,
-                        parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        PermissionDeniedError,
-                        parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        NotFoundErrorBody,
-                        parse_obj_as(
-                            type_=NotFoundErrorBody,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        AlreadyExistsError,
-                        parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        DatabaseError,
-                        parse_obj_as(
-                            type_=DatabaseError,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
-
-    async def delete(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[None]:
-        """
-        Parameters
-        ----------
-        organization_id : str
-
-        project_id : str
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[None]
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
-            method="DELETE",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return AsyncHttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
