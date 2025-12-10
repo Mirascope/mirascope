@@ -8,9 +8,7 @@
   "paths": {
     "/health": {
       "get": {
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "operationId": "health.check",
         "parameters": [],
         "security": [],
@@ -21,17 +19,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status",
-                    "timestamp",
-                    "environment"
-                  ],
+                  "required": ["status", "timestamp", "environment"],
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "ok"
-                      ]
+                      "enum": ["ok"]
                     },
                     "timestamp": {
                       "type": "string"
@@ -60,9 +52,7 @@
     },
     "/traces": {
       "post": {
-        "tags": [
-          "traces"
-        ],
+        "tags": ["traces"],
         "operationId": "traces.create",
         "parameters": [],
         "security": [],
@@ -160,17 +150,13 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "resourceSpans"
-                ],
+                "required": ["resourceSpans"],
                 "properties": {
                   "resourceSpans": {
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": [
-                        "scopeSpans"
-                      ],
+                      "required": ["scopeSpans"],
                       "properties": {
                         "resource": {
                           "type": "object",
@@ -180,10 +166,7 @@
                               "type": "array",
                               "items": {
                                 "type": "object",
-                                "required": [
-                                  "key",
-                                  "value"
-                                ],
+                                "required": ["key", "value"],
                                 "properties": {
                                   "key": {
                                     "type": "string"
@@ -206,9 +189,7 @@
                                       },
                                       "arrayValue": {
                                         "type": "object",
-                                        "required": [
-                                          "values"
-                                        ],
+                                        "required": ["values"],
                                         "properties": {
                                           "values": {
                                             "type": "array",
@@ -222,18 +203,13 @@
                                       },
                                       "kvlistValue": {
                                         "type": "object",
-                                        "required": [
-                                          "values"
-                                        ],
+                                        "required": ["values"],
                                         "properties": {
                                           "values": {
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": [
-                                                "key",
-                                                "value"
-                                              ],
+                                              "required": ["key", "value"],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -266,15 +242,11 @@
                           "type": "array",
                           "items": {
                             "type": "object",
-                            "required": [
-                              "spans"
-                            ],
+                            "required": ["spans"],
                             "properties": {
                               "scope": {
                                 "type": "object",
-                                "required": [
-                                  "name"
-                                ],
+                                "required": ["name"],
                                 "properties": {
                                   "name": {
                                     "type": "string"
@@ -286,10 +258,7 @@
                                     "type": "array",
                                     "items": {
                                       "type": "object",
-                                      "required": [
-                                        "key",
-                                        "value"
-                                      ],
+                                      "required": ["key", "value"],
                                       "properties": {
                                         "key": {
                                           "type": "string"
@@ -312,9 +281,7 @@
                                             },
                                             "arrayValue": {
                                               "type": "object",
-                                              "required": [
-                                                "values"
-                                              ],
+                                              "required": ["values"],
                                               "properties": {
                                                 "values": {
                                                   "type": "array",
@@ -328,9 +295,7 @@
                                             },
                                             "kvlistValue": {
                                               "type": "object",
-                                              "required": [
-                                                "values"
-                                              ],
+                                              "required": ["values"],
                                               "properties": {
                                                 "values": {
                                                   "type": "array",
@@ -412,10 +377,7 @@
                                       "type": "array",
                                       "items": {
                                         "type": "object",
-                                        "required": [
-                                          "key",
-                                          "value"
-                                        ],
+                                        "required": ["key", "value"],
                                         "properties": {
                                           "key": {
                                             "type": "string"
@@ -438,9 +400,7 @@
                                               },
                                               "arrayValue": {
                                                 "type": "object",
-                                                "required": [
-                                                  "values"
-                                                ],
+                                                "required": ["values"],
                                                 "properties": {
                                                   "values": {
                                                     "type": "array",
@@ -454,9 +414,7 @@
                                               },
                                               "kvlistValue": {
                                                 "type": "object",
-                                                "required": [
-                                                  "values"
-                                                ],
+                                                "required": ["values"],
                                                 "properties": {
                                                   "values": {
                                                     "type": "array",
@@ -553,9 +511,7 @@
     },
     "/docs/openapi.json": {
       "get": {
-        "tags": [
-          "docs"
-        ],
+        "tags": ["docs"],
         "operationId": "docs.openapi",
         "parameters": [],
         "security": [],
@@ -586,9 +542,7 @@
     },
     "/organizations": {
       "get": {
-        "tags": [
-          "organizations"
-        ],
+        "tags": ["organizations"],
         "operationId": "organizations.list",
         "parameters": [],
         "security": [],
@@ -601,12 +555,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "required": [
-                      "id",
-                      "name",
-                      "slug",
-                      "role"
-                    ],
+                    "required": ["id", "name", "slug", "role"],
                     "properties": {
                       "id": {
                         "type": "string"
@@ -619,11 +568,7 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": [
-                          "OWNER",
-                          "ADMIN",
-                          "MEMBER"
-                        ]
+                        "enum": ["OWNER", "ADMIN", "MEMBER"]
                       }
                     },
                     "additionalProperties": false
@@ -655,9 +600,7 @@
         }
       },
       "post": {
-        "tags": [
-          "organizations"
-        ],
+        "tags": ["organizations"],
         "operationId": "organizations.create",
         "parameters": [],
         "security": [],
@@ -668,12 +611,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "slug",
-                    "role"
-                  ],
+                  "required": ["id", "name", "slug", "role"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -686,11 +624,7 @@
                     },
                     "role": {
                       "type": "string",
-                      "enum": [
-                        "OWNER",
-                        "ADMIN",
-                        "MEMBER"
-                      ]
+                      "enum": ["OWNER", "ADMIN", "MEMBER"]
                     }
                   },
                   "additionalProperties": false
@@ -734,10 +668,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name",
-                  "slug"
-                ],
+                "required": ["name", "slug"],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -765,9 +696,7 @@
     },
     "/organizations/{id}": {
       "get": {
-        "tags": [
-          "organizations"
-        ],
+        "tags": ["organizations"],
         "operationId": "organizations.get",
         "parameters": [
           {
@@ -787,12 +716,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "slug",
-                    "role"
-                  ],
+                  "required": ["id", "name", "slug", "role"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -805,11 +729,7 @@
                     },
                     "role": {
                       "type": "string",
-                      "enum": [
-                        "OWNER",
-                        "ADMIN",
-                        "MEMBER"
-                      ]
+                      "enum": ["OWNER", "ADMIN", "MEMBER"]
                     }
                   },
                   "additionalProperties": false
@@ -860,9 +780,7 @@
         }
       },
       "put": {
-        "tags": [
-          "organizations"
-        ],
+        "tags": ["organizations"],
         "operationId": "organizations.update",
         "parameters": [
           {
@@ -882,12 +800,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "slug",
-                    "role"
-                  ],
+                  "required": ["id", "name", "slug", "role"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -900,11 +813,7 @@
                     },
                     "role": {
                       "type": "string",
-                      "enum": [
-                        "OWNER",
-                        "ADMIN",
-                        "MEMBER"
-                      ]
+                      "enum": ["OWNER", "ADMIN", "MEMBER"]
                     }
                   },
                   "additionalProperties": false
@@ -984,9 +893,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "organizations"
-        ],
+        "tags": ["organizations"],
         "operationId": "organizations.delete",
         "parameters": [
           {
@@ -1048,9 +955,7 @@
     },
     "/organizations/{organizationId}/projects": {
       "get": {
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "operationId": "projects.list",
         "parameters": [
           {
@@ -1145,9 +1050,7 @@
         }
       },
       "post": {
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "operationId": "projects.create",
         "parameters": [
           {
@@ -1252,10 +1155,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name",
-                  "slug"
-                ],
+                "required": ["name", "slug"],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -1283,9 +1183,7 @@
     },
     "/organizations/{organizationId}/projects/{projectId}": {
       "get": {
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "operationId": "projects.get",
         "parameters": [
           {
@@ -1385,9 +1283,7 @@
         }
       },
       "put": {
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "operationId": "projects.update",
         "parameters": [
           {
@@ -1526,9 +1422,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "projects"
-        ],
+        "tags": ["projects"],
         "operationId": "projects.delete",
         "parameters": [
           {
@@ -1598,9 +1492,7 @@
     },
     "/organizations/{organizationId}/projects/{projectId}/environments": {
       "get": {
-        "tags": [
-          "environments"
-        ],
+        "tags": ["environments"],
         "operationId": "environments.list",
         "parameters": [
           {
@@ -1630,12 +1522,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "required": [
-                      "id",
-                      "name",
-                      "slug",
-                      "projectId"
-                    ],
+                    "required": ["id", "name", "slug", "projectId"],
                     "properties": {
                       "id": {
                         "type": "string"
@@ -1699,9 +1586,7 @@
         }
       },
       "post": {
-        "tags": [
-          "environments"
-        ],
+        "tags": ["environments"],
         "operationId": "environments.create",
         "parameters": [
           {
@@ -1729,12 +1614,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "slug",
-                    "projectId"
-                  ],
+                  "required": ["id", "name", "slug", "projectId"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -1810,10 +1690,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name",
-                  "slug"
-                ],
+                "required": ["name", "slug"],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -1841,9 +1718,7 @@
     },
     "/organizations/{organizationId}/projects/{projectId}/environments/{environmentId}": {
       "get": {
-        "tags": [
-          "environments"
-        ],
+        "tags": ["environments"],
         "operationId": "environments.get",
         "parameters": [
           {
@@ -1879,12 +1754,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "slug",
-                    "projectId"
-                  ],
+                  "required": ["id", "name", "slug", "projectId"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -1947,9 +1817,7 @@
         }
       },
       "put": {
-        "tags": [
-          "environments"
-        ],
+        "tags": ["environments"],
         "operationId": "environments.update",
         "parameters": [
           {
@@ -1985,12 +1853,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "name",
-                    "slug",
-                    "projectId"
-                  ],
+                  "required": ["id", "name", "slug", "projectId"],
                   "properties": {
                     "id": {
                       "type": "string"
@@ -2092,9 +1955,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "environments"
-        ],
+        "tags": ["environments"],
         "operationId": "environments.delete",
         "parameters": [
           {
@@ -2172,9 +2033,7 @@
     },
     "/organizations/{organizationId}/projects/{projectId}/environments/{environmentId}/api-keys": {
       "get": {
-        "tags": [
-          "apiKeys"
-        ],
+        "tags": ["apiKeys"],
         "operationId": "apiKeys.list",
         "parameters": [
           {
@@ -2307,9 +2166,7 @@
         }
       },
       "post": {
-        "tags": [
-          "apiKeys"
-        ],
+        "tags": ["apiKeys"],
         "operationId": "apiKeys.create",
         "parameters": [
           {
@@ -2456,9 +2313,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name"
-                ],
+                "required": ["name"],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -2478,9 +2333,7 @@
     },
     "/organizations/{organizationId}/projects/{projectId}/environments/{environmentId}/api-keys/{apiKeyId}": {
       "get": {
-        "tags": [
-          "apiKeys"
-        ],
+        "tags": ["apiKeys"],
         "operationId": "apiKeys.get",
         "parameters": [
           {
@@ -2618,9 +2471,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "apiKeys"
-        ],
+        "tags": ["apiKeys"],
         "operationId": "apiKeys.delete",
         "parameters": [
           {
@@ -2706,9 +2557,7 @@
     },
     "/functions": {
       "post": {
-        "tags": [
-          "functions"
-        ],
+        "tags": ["functions"],
         "operationId": "functions.register",
         "parameters": [],
         "security": [],
@@ -2806,10 +2655,7 @@
                           "properties": {},
                           "additionalProperties": {
                             "type": "object",
-                            "required": [
-                              "version",
-                              "extras"
-                            ],
+                            "required": ["version", "extras"],
                             "properties": {
                               "version": {
                                 "type": "string"
@@ -3009,10 +2855,7 @@
                         "properties": {},
                         "additionalProperties": {
                           "type": "object",
-                          "required": [
-                            "version",
-                            "extras"
-                          ],
+                          "required": ["version", "extras"],
                           "properties": {
                             "version": {
                               "type": "string"
@@ -3048,9 +2891,7 @@
         }
       },
       "get": {
-        "tags": [
-          "functions"
-        ],
+        "tags": ["functions"],
         "operationId": "functions.list",
         "parameters": [
           {
@@ -3094,10 +2935,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "functions",
-                    "total"
-                  ],
+                  "required": ["functions", "total"],
                   "properties": {
                     "functions": {
                       "type": "array",
@@ -3189,10 +3027,7 @@
                                 "properties": {},
                                 "additionalProperties": {
                                   "type": "object",
-                                  "required": [
-                                    "version",
-                                    "extras"
-                                  ],
+                                  "required": ["version", "extras"],
                                   "properties": {
                                     "version": {
                                       "type": "string"
@@ -3316,9 +3151,7 @@
     },
     "/functions/by-hash/{hash}": {
       "get": {
-        "tags": [
-          "functions"
-        ],
+        "tags": ["functions"],
         "operationId": "functions.getByHash",
         "parameters": [
           {
@@ -3424,10 +3257,7 @@
                           "properties": {},
                           "additionalProperties": {
                             "type": "object",
-                            "required": [
-                              "version",
-                              "extras"
-                            ],
+                            "required": ["version", "extras"],
                             "properties": {
                               "version": {
                                 "type": "string"
@@ -3544,9 +3374,7 @@
     },
     "/functions/{id}": {
       "get": {
-        "tags": [
-          "functions"
-        ],
+        "tags": ["functions"],
         "operationId": "functions.get",
         "parameters": [
           {
@@ -3652,10 +3480,7 @@
                           "properties": {},
                           "additionalProperties": {
                             "type": "object",
-                            "required": [
-                              "version",
-                              "extras"
-                            ],
+                            "required": ["version", "extras"],
                             "properties": {
                               "version": {
                                 "type": "string"
@@ -3775,11 +3600,7 @@
     "schemas": {
       "HttpApiDecodeError": {
         "type": "object",
-        "required": [
-          "issues",
-          "message",
-          "tag"
-        ],
+        "required": ["issues", "message", "tag"],
         "properties": {
           "issues": {
             "type": "array",
@@ -3792,9 +3613,7 @@
           },
           "tag": {
             "type": "string",
-            "enum": [
-              "HttpApiDecodeError"
-            ]
+            "enum": ["HttpApiDecodeError"]
           }
         },
         "additionalProperties": false,
@@ -3802,11 +3621,7 @@
       },
       "Issue": {
         "type": "object",
-        "required": [
-          "tag",
-          "path",
-          "message"
-        ],
+        "required": ["tag", "path", "message"],
         "properties": {
           "tag": {
             "type": "string",
@@ -3847,16 +3662,11 @@
           },
           {
             "type": "object",
-            "required": [
-              "tag",
-              "key"
-            ],
+            "required": ["tag", "key"],
             "properties": {
               "tag": {
                 "type": "string",
-                "enum": [
-                  "symbol"
-                ]
+                "enum": ["symbol"]
               },
               "key": {
                 "type": "string"
@@ -3869,29 +3679,21 @@
       },
       "UnauthorizedError": {
         "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
+        "required": ["message", "tag"],
         "properties": {
           "message": {
             "type": "string"
           },
           "tag": {
             "type": "string",
-            "enum": [
-              "UnauthorizedError"
-            ]
+            "enum": ["UnauthorizedError"]
           }
         },
         "additionalProperties": false
       },
       "NotFoundError": {
         "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
+        "required": ["message", "tag"],
         "properties": {
           "message": {
             "type": "string"
@@ -3901,19 +3703,14 @@
           },
           "tag": {
             "type": "string",
-            "enum": [
-              "NotFoundError"
-            ]
+            "enum": ["NotFoundError"]
           }
         },
         "additionalProperties": false
       },
       "PermissionDeniedError": {
         "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
+        "required": ["message", "tag"],
         "properties": {
           "message": {
             "type": "string"
@@ -3923,19 +3720,14 @@
           },
           "tag": {
             "type": "string",
-            "enum": [
-              "PermissionDeniedError"
-            ]
+            "enum": ["PermissionDeniedError"]
           }
         },
         "additionalProperties": false
       },
       "DatabaseError": {
         "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
+        "required": ["message", "tag"],
         "properties": {
           "message": {
             "type": "string"
@@ -3946,19 +3738,14 @@
           },
           "tag": {
             "type": "string",
-            "enum": [
-              "DatabaseError"
-            ]
+            "enum": ["DatabaseError"]
           }
         },
         "additionalProperties": false
       },
       "AlreadyExistsError": {
         "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
+        "required": ["message", "tag"],
         "properties": {
           "message": {
             "type": "string"
@@ -3968,9 +3755,7 @@
           },
           "tag": {
             "type": "string",
-            "enum": [
-              "AlreadyExistsError"
-            ]
+            "enum": ["AlreadyExistsError"]
           }
         },
         "additionalProperties": false

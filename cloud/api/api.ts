@@ -6,6 +6,7 @@ import { OrganizationsApi } from "@/api/organizations.schemas";
 import { ProjectsApi } from "@/api/projects.schemas";
 import { EnvironmentsApi } from "@/api/environments.schemas";
 import { ApiKeysApi } from "@/api/api-keys.schemas";
+import { FunctionsApi } from "@/api/functions.schemas";
 
 export * from "@/errors";
 export * from "@/api/health.schemas";
@@ -15,6 +16,7 @@ export * from "@/api/organizations.schemas";
 export * from "@/api/projects.schemas";
 export * from "@/api/environments.schemas";
 export * from "@/api/api-keys.schemas";
+export * from "@/api/functions.schemas";
 
 export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(HealthApi)
@@ -23,4 +25,5 @@ export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(OrganizationsApi)
   .add(ProjectsApi)
   .add(EnvironmentsApi)
-  .add(ApiKeysApi) {}
+  .add(ApiKeysApi)
+  .add(FunctionsApi) {}
