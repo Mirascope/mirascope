@@ -1,814 +1,397 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "@effect/vitest";
 import {
-  withTestDatabase,
-  withErroringService,
-  createPartialMockDatabase,
+  MockDatabase,
+  TestDatabase,
+  TestOrganizationFixture,
 } from "@/tests/db";
 import { Effect } from "effect";
+import { type PublicOrganizationWithMembership } from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
 } from "@/db/errors";
-import { OrganizationService } from "@/db/services/organizations";
+import { DatabaseService } from "@/db/services";
 
 describe("OrganizationService", () => {
   describe("create", () => {
-    it(
-      "should create an organization and membership",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("creates an organization with owner membership", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
 
-          const created = yield* db.organizations.create(
-            { name: "Test Organization" },
-            user.id,
-          );
+        const user = yield* db.users.create({
+          email: "test@example.com",
+          name: "Test User",
+        });
 
-          expect(created).toBeDefined();
-          expect(created.id).toBeDefined();
-          expect(created.name).toBe("Test Organization");
-          expect(created.role).toBe("OWNER");
-        }),
-      ),
+        const name = "Test Organization";
+        const org = yield* db.organizations.create({ name }, user.id);
+
+        expect(org).toEqual({
+          id: org.id,
+          name,
+          role: "OWNER",
+        } satisfies PublicOrganizationWithMembership);
+      }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it(
-      "should return AlreadyExistsError when name is taken",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("returns `AlreadyExistsError` when name is taken", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
 
-          yield* db.organizations.create({ name: "Duplicate Org" }, user.id);
+        const result = yield* db.organizations
+          .create({ name: org.name }, owner.id)
+          .pipe(Effect.flip);
 
-          const result = yield* Effect.either(
-            db.organizations.create({ name: "Duplicate Org" }, user.id),
-          );
+        expect(result).toBeInstanceOf(AlreadyExistsError);
+        expect(result.message).toBe(
+          "An organization with this name already exists",
+        );
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(AlreadyExistsError);
-            expect(result.left.message).toBe(
-              "An organization with this name already exists",
-            );
-          }
-        }),
-      ),
+    it.effect("returns `DatabaseError` when transaction fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .insert(new Error("Transaction failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .create({ name: "Test Org" }, "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create organization");
+      }),
+    );
+  });
+
+  describe("findAll", () => {
+    it.effect("retrieves all organizations for a user", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const org2 = yield* db.organizations.create(
+          { name: "Org 2" },
+          owner.id,
+        );
+
+        const orgs = yield* db.organizations.findAll(owner.id);
+
+        expect(orgs).toEqual([org, org2]);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns empty array for user with no organizations", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "test@example.com",
+          name: "Test User",
+        });
+
+        const orgs = yield* db.organizations.findAll(user.id);
+
+        expect(orgs).toEqual([]);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .findAll("user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get user organizations");
+      }),
     );
   });
 
   describe("findById", () => {
-    it(
-      "should retrieve organization when user is a member",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("retrieves organization when user is a member", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
 
-          const created = yield* db.organizations.create(
-            { name: "Find By Id Org" },
-            user.id,
-          );
+        const found = yield* db.organizations.findById(org.id, owner.id);
 
-          const result = yield* db.organizations.findById(created.id, user.id);
-          expect(result).toBeDefined();
-          expect(result.id).toBe(created.id);
-          expect(result.name).toBe("Find By Id Org");
-        }),
-      ),
+        expect(found).toEqual(org);
+      }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it(
-      "should return PermissionDeniedError when user is not a member",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("returns `DatabaseError` when membership check fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
 
-          const otherUser = yield* db.users.create({
-            email: "other@example.com",
-            name: "Other User",
-          });
+        const result = yield* db.organizations
+          .findById("org-id", "user-id")
+          .pipe(Effect.flip);
 
-          const created = yield* db.organizations.create(
-            { name: "Non Member Read Org" },
-            user.id,
-          );
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to check membership");
+      }),
+    );
 
-          const result = yield* Effect.either(
-            db.organizations.findById(created.id, otherUser.id),
-          );
+    it.effect("returns `NotFoundError` when user is not a member", () =>
+      Effect.gen(function* () {
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
 
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(PermissionDeniedError);
-            expect(result.left.message).toBe(
-              "You do not have permission to read this organization",
-            );
-          }
-        }),
-      ),
+        const result = yield* db.organizations
+          .findById(org.id, nonMember.id)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when fetching organization fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: membership found
+          .select([{ role: "OWNER" }])
+          // fetch organization: fails
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .findById("org-id", "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find organization");
+      }),
+    );
+
+    it.effect("returns `NotFoundError` when organization not found", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: membership found
+          .select([{ role: "OWNER" }])
+          // fetch organization: not found
+          .select([])
+          .build();
+
+        const result = yield* db.organizations
+          .findById("org-id", "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization with id org-id not found");
+      }),
     );
   });
 
   describe("update", () => {
-    it(
-      "should update organization when user is admin or owner",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("updates organization when user is admin or owner", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
 
-          const created = yield* db.organizations.create(
-            { name: "Update Org" },
-            user.id,
-          );
+        const newName = "Updated Name";
+        const updated = yield* db.organizations.update(
+          org.id,
+          { name: newName },
+          owner.id,
+        );
 
-          const updated = yield* db.organizations.update(
-            created.id,
-            { name: "Updated Org Name" },
-            user.id,
-          );
-          expect(updated).toBeDefined();
-          expect(updated.id).toBe(created.id);
-          expect(updated.name).toBe("Updated Org Name");
-        }),
-      ),
+        expect(updated).toEqual({
+          id: org.id,
+          name: newName,
+          role: "OWNER",
+        } satisfies PublicOrganizationWithMembership);
+      }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it(
-      "should return PermissionDeniedError when user lacks permission",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("returns `DatabaseError` when membership check fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: fails
+          .select(new Error("Database connection failed"))
+          .build();
 
-          const otherUser = yield* db.users.create({
-            email: "other@example.com",
-            name: "Other User",
-          });
+        const result = yield* db.organizations
+          .update("org-id", { name: "New Name" }, "user-id")
+          .pipe(Effect.flip);
 
-          const created = yield* db.organizations.create(
-            { name: "Non Member Update Org" },
-            user.id,
-          );
-
-          const result = yield* Effect.either(
-            db.organizations.update(
-              created.id,
-              { name: "Should Fail" },
-              otherUser.id,
-            ),
-          );
-
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(PermissionDeniedError);
-            expect(result.left.message).toBe(
-              "You do not have permission to update this organization",
-            );
-          }
-        }),
-      ),
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to check membership");
+      }),
     );
 
-    it(
-      "should return NotFoundError when organization does not exist",
-      withTestDatabase((db) =>
+    it.effect("returns `NotFoundError` when user is not a member", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "test@example.com",
+          name: "Test User",
+        });
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.organizations
+          .update(badId, { name: "Should Fail" }, user.id)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when update query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: has ADMIN role
+          .select([{ role: "ADMIN" }])
+          // updateOrganization: fails
+          .update(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .update("org-id", { name: "New Name" }, "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to update organization");
+      }),
+    );
+
+    it.effect("returns `NotFoundError` when organization does not exist", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: has ADMIN role
+          .select([{ role: "ADMIN" }])
+          // updateOrganization: no rows updated
+          .update([])
+          .build();
+
+        const result = yield* db.organizations
+          .update("org-id", { name: "New Name" }, "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization with id org-id not found");
+      }),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when user lacks permission",
+      () =>
         Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+          const db = new MockDatabase()
+            // checkPermission: has DEVELOPER role (not ADMIN)
+            .select([{ role: "DEVELOPER" }])
+            .build();
 
-          const result = yield* Effect.either(
-            db.organizations.update(
-              "00000000-0000-0000-0000-000000000000",
-              { name: "Should Fail" },
-              user.id,
-            ),
+          const result = yield* db.organizations
+            .update("org-id", { name: "New Name" }, "user-id")
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toBe(
+            "You do not have permission to update this organization",
           );
-
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(NotFoundError);
-            expect(result.left.message).toContain("not found");
-          }
         }),
-      ),
     );
   });
 
   describe("delete", () => {
-    it(
-      "should delete an organization and its memberships",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("deletes an organization and its memberships", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
 
-          const created = yield* db.organizations.create(
-            { name: "Delete Test Org" },
-            user.id,
-          );
+        yield* db.organizations.delete(org.id, owner.id);
 
-          yield* db.organizations.delete(created.id, user.id);
+        const result = yield* db.organizations
+          .findById(org.id, owner.id)
+          .pipe(Effect.flip);
 
-          // Organization should be deleted - trying to find it should fail
-          const result = yield* Effect.either(
-            db.organizations.findById(created.id, user.id),
-          );
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            // Could be NotFoundError (not found) or PermissionDeniedError (can't check membership)
-            // Since org is deleted, membership is also deleted, so permission check fails
-            expect(
-              result.left instanceof NotFoundError ||
-                result.left instanceof PermissionDeniedError,
-            ).toBe(true);
-          }
-        }),
-      ),
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it(
-      "should return NotFoundError when organization does not exist",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("returns `DatabaseError` when membership check fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: fails
+          .select(new Error("Database connection failed"))
+          .build();
 
-          const result = yield* Effect.either(
-            db.organizations.delete(
-              "00000000-0000-0000-0000-000000000000",
-              user.id,
-            ),
-          );
+        const result = yield* db.organizations
+          .delete("org-id", "user-id")
+          .pipe(Effect.flip);
 
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(NotFoundError);
-            expect(result.left.message).toContain("not found");
-          }
-        }),
-      ),
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to check membership");
+      }),
     );
 
-    it(
-      "should return PermissionDeniedError when user is not a member",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("returns `NotFoundError` when user is not a member", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
 
-          const otherUser = yield* db.users.create({
-            email: "other@example.com",
-            name: "Other User",
-          });
-
-          const created = yield* db.organizations.create(
-            { name: "Non Member Delete Org" },
-            user.id,
-          );
-
-          const result = yield* Effect.either(
-            db.organizations.delete(created.id, otherUser.id),
-          );
-
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(PermissionDeniedError);
-            expect(result.left.message).toBe(
-              "You do not have permission to delete this organization",
-            );
-          }
-        }),
-      ),
-    );
-
-    it("should return PermissionDeniedError when user is not an owner", () => {
-      return Effect.gen(function* () {
-        // Mock the database to simulate a user who is a member but not an owner
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: organization check - return existing org
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
-                  }),
-                }),
-              };
-            }
-            // Second call: membership check - return DEVELOPER membership
-            return {
-              from: () => ({
-                where: () => ({
-                  limit: () => Promise.resolve([{ role: "DEVELOPER" }]),
-                }),
-              }),
-            };
-          },
+        const user = yield* db.users.create({
+          email: "test@example.com",
+          name: "Test User",
         });
 
-        const service = new OrganizationService(mockDb);
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.organizations
+          .delete(badId, user.id)
+          .pipe(Effect.flip);
 
-        const result = yield* Effect.either(
-          service.delete("test-org-id", "test-user-id"),
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `PermissionDeniedError` when user is not an owner", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: has DEVELOPER role (not OWNER)
+          .select([{ role: "DEVELOPER" }])
+          .build();
+
+        const result = yield* db.organizations
+          .delete("org-id", "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(PermissionDeniedError);
+        expect(result.message).toBe(
+          "You do not have permission to delete this organization",
         );
-
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(PermissionDeniedError);
-          expect(result.left.message).toBe(
-            "You do not have permission to delete this organization",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
-  });
-
-  describe("findAll", () => {
-    it(
-      "should retrieve all organizations for a user",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
-
-          yield* db.organizations.create({ name: "Org 1" }, user.id);
-          yield* db.organizations.create({ name: "Org 2" }, user.id);
-
-          const organizations = yield* db.organizations.findAll(user.id);
-          expect(organizations).toHaveLength(2);
-          expect(organizations[0].role).toBe("OWNER");
-          expect(organizations[1].role).toBe("OWNER");
-        }),
-      ),
+      }),
     );
 
-    it(
-      "should return empty array for user with no organizations",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
+    it.effect("returns `DatabaseError` when delete transaction fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // checkPermission: has OWNER role
+          .select([{ role: "OWNER" }])
+          // deleteOrganizationWithMemberships: fails
+          .delete(new Error("Transaction failed"))
+          .build();
 
-          const organizations = yield* db.organizations.findAll(user.id);
-          expect(organizations).toHaveLength(0);
-        }),
-      ),
+        const result = yield* db.organizations
+          .delete("org-id", "user-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to delete organization");
+      }),
     );
-  });
-
-  describe("findAll", () => {
-    it(
-      "should return all organizations the user is a member of",
-      withTestDatabase((db) =>
-        Effect.gen(function* () {
-          const user = yield* db.users.create({
-            email: "test@example.com",
-            name: "Test User",
-          });
-
-          yield* db.organizations.create({ name: "Org A" }, user.id);
-          yield* db.organizations.create({ name: "Org B" }, user.id);
-
-          const all = yield* db.organizations.findAll(user.id);
-          expect(Array.isArray(all)).toBe(true);
-          expect(all.length).toBe(2);
-          expect(all.find((o) => o.name === "Org A")).toBeDefined();
-          expect(all.find((o) => o.name === "Org B")).toBeDefined();
-        }),
-      ),
-    );
-  });
-
-  describe("Error handling", () => {
-    it(
-      "create returns DatabaseError when check for existing fails",
-      withErroringService(OrganizationService, (service) =>
-        Effect.gen(function* () {
-          const result = yield* Effect.either(
-            service.create({ name: "Test Org" }, "test-user-id"),
-          );
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(DatabaseError);
-            expect(result.left.message).toContain(
-              "Failed to check for existing organization",
-            );
-          }
-        }),
-      ),
-    );
-
-    it("findById returns DatabaseError when database query fails", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: membership check - pass
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ role: "OWNER" }]),
-                  }),
-                }),
-              };
-            }
-            // Second call: organization fetch - fail
-            return {
-              from: () => ({
-                innerJoin: () => ({
-                  where: () => ({
-                    limit: () =>
-                      Promise.reject(new Error("Database connection failed")),
-                  }),
-                }),
-              }),
-            };
-          },
-        });
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.findById("test-org-id", "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain("Failed to find organization");
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("findById returns NotFoundError when organization not found", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: membership check - pass
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ role: "OWNER" }]),
-                  }),
-                }),
-              };
-            }
-            // Second call: organization fetch - return empty
-            return {
-              from: () => ({
-                innerJoin: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([]),
-                  }),
-                }),
-              }),
-            };
-          },
-        });
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.findById("test-org-id", "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(NotFoundError);
-          expect(result.left.message).toContain("not found");
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("findAll returns DatabaseError on database query failure", () => {
-      return Effect.gen(function* () {
-        const mockDb = createPartialMockDatabase({
-          select: () => ({
-            from: () => ({
-              innerJoin: () => ({
-                where: () =>
-                  Promise.reject(new Error("Database connection failed")),
-              }),
-            }),
-          }),
-        });
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(service.findAll("test-user-id"));
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to get user organizations",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it(
-      "delete returns DatabaseError on database query failure",
-      withErroringService(OrganizationService, (service) =>
-        Effect.gen(function* () {
-          const result = yield* Effect.either(
-            service.delete("test-org-id", "test-user-id"),
-          );
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(DatabaseError);
-            expect(result.left.message).toContain(
-              "Failed to find organization",
-            );
-          }
-        }),
-      ),
-    );
-
-    it("create returns DatabaseError when transaction fails", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            // First call returns empty (no existing org)
-            if (selectCallCount === 1) {
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([]),
-                  }),
-                }),
-              };
-            }
-            throw new Error("Database connection failed");
-          },
-          insert: () => {
-            throw new Error("Transaction failed");
-          },
-        });
-
-        // Add transaction mock
-        (
-          mockDb as unknown as { transaction: () => Promise<unknown> }
-        ).transaction = () => Promise.reject(new Error("Transaction failed"));
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.create({ name: "Test Org" }, "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to create organization",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("delete returns DatabaseError when membership check fails", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: organization check - return existing org
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
-                  }),
-                }),
-              };
-            }
-            // Second call: membership check - fail
-            throw new Error("Database connection failed");
-          },
-        });
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.delete("test-org-id", "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain("Failed to check membership");
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("delete returns DatabaseError when delete transaction fails", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: organization check - return existing org
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
-                  }),
-                }),
-              };
-            }
-            // Second call: membership check - return OWNER membership
-            return {
-              from: () => ({
-                where: () => ({
-                  limit: () => Promise.resolve([{ role: "OWNER" }]),
-                }),
-              }),
-            };
-          },
-        });
-
-        // Add transaction mock that fails
-        (
-          mockDb as unknown as { transaction: () => Promise<unknown> }
-        ).transaction = () => Promise.reject(new Error("Transaction failed"));
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.delete("test-org-id", "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to delete organization",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("update returns DatabaseError when update query fails", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: organization check - return existing org
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
-                  }),
-                }),
-              };
-            }
-            // Second call: membership check - return ADMIN membership
-            return {
-              from: () => ({
-                where: () => ({
-                  limit: () => Promise.resolve([{ role: "ADMIN" }]),
-                }),
-              }),
-            };
-          },
-          update: () => ({
-            set: () => ({
-              where: () => ({
-                returning: () =>
-                  Promise.reject(new Error("Database connection failed")),
-              }),
-            }),
-          }),
-        });
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.update("test-org-id", { name: "New Name" }, "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain(
-            "Failed to update organization",
-          );
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it(
-      "update returns DatabaseError when initial organization fetch fails",
-      withErroringService(OrganizationService, (service) =>
-        Effect.gen(function* () {
-          const result = yield* Effect.either(
-            service.update("test-org-id", { name: "New Name" }, "test-user-id"),
-          );
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(DatabaseError);
-            expect(result.left.message).toContain(
-              "Failed to find organization",
-            );
-          }
-        }),
-      ),
-    );
-
-    it("update returns DatabaseError when fetching membership fails", () => {
-      return Effect.gen(function* () {
-        let selectCallCount = 0;
-        const mockDb = createPartialMockDatabase({
-          select: () => {
-            selectCallCount++;
-            if (selectCallCount === 1) {
-              // First call: organization check - return existing org
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
-                  }),
-                }),
-              };
-            }
-            if (selectCallCount === 2) {
-              // Second call: permission check membership - return ADMIN
-              return {
-                from: () => ({
-                  where: () => ({
-                    limit: () => Promise.resolve([{ role: "ADMIN" }]),
-                  }),
-                }),
-              };
-            }
-            // Third call: fetching membership after update - fail
-            return {
-              from: () => ({
-                where: () => ({
-                  limit: () =>
-                    Promise.reject(new Error("Database connection failed")),
-                }),
-              }),
-            };
-          },
-          update: () => ({
-            set: () => ({
-              where: () => ({
-                returning: () =>
-                  Promise.resolve([{ id: "test-org-id", name: "New Name" }]),
-              }),
-            }),
-          }),
-        });
-
-        const service = new OrganizationService(mockDb);
-
-        const result = yield* Effect.either(
-          service.update("test-org-id", { name: "New Name" }, "test-user-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain("Failed to fetch membership");
-        }
-      }).pipe(Effect.runPromise);
-    });
   });
 });

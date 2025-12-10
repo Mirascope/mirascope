@@ -13,6 +13,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/db/errors";
+import { isUniqueConstraintError } from "@/db/utils";
 import {
   organizations,
   organizationMemberships,
@@ -79,7 +80,10 @@ export class OrganizationService extends BaseAuthenticatedService<
     userId: string,
     action: PermissionAction,
     organizationId: string,
-  ): Effect.Effect<void, PermissionDeniedError | DatabaseError> {
+  ): Effect.Effect<
+    Role,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
     const fetchMembership = Effect.tryPromise({
       try: async () => {
         const [membership] = await this.db
@@ -103,11 +107,12 @@ export class OrganizationService extends BaseAuthenticatedService<
 
     const verifyMembershipAndRole = (
       membership: { role: Role } | undefined,
-    ): Effect.Effect<void, PermissionDeniedError> => {
+    ): Effect.Effect<Role, NotFoundError | PermissionDeniedError> => {
+      // No membership = user is not a member, return NotFoundError to hide existence
       if (!membership) {
         return Effect.fail(
-          new PermissionDeniedError({
-            message: `You do not have permission to ${action} this organization`,
+          new NotFoundError({
+            message: "Organization not found",
             resource: this.baseService.resourceName,
           }),
         );
@@ -117,6 +122,7 @@ export class OrganizationService extends BaseAuthenticatedService<
       const userRoleLevel = ROLE_HIERARCHY[membership.role];
       const requiredRoleLevel = ROLE_HIERARCHY[requiredRole];
 
+      // User is a member but lacks required role
       if (userRoleLevel < requiredRoleLevel) {
         return Effect.fail(
           new PermissionDeniedError({
@@ -126,7 +132,7 @@ export class OrganizationService extends BaseAuthenticatedService<
         );
       }
 
-      return Effect.succeed(undefined);
+      return Effect.succeed(membership.role);
     };
 
     return fetchMembership.pipe(Effect.flatMap(verifyMembershipAndRole));
@@ -139,37 +145,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     PublicOrganizationWithMembership,
     AlreadyExistsError | DatabaseError
   > {
-    const fetchExistingOrganization = Effect.tryPromise({
-      try: async () => {
-        const [existing] = await this.db
-          .select({ name: organizations.name })
-          .from(organizations)
-          .where(eq(organizations.name, data.name))
-          .limit(1);
-        return existing;
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to check for existing organization",
-          cause: error,
-        }),
-    });
-
-    const rejectIfExists = (
-      existing: { name: string } | undefined,
-    ): Effect.Effect<void, AlreadyExistsError> => {
-      if (existing) {
-        return Effect.fail(
-          new AlreadyExistsError({
-            message: "An organization with this name already exists",
-            resource: this.baseService.resourceName,
-          }),
-        );
-      }
-      return Effect.succeed(undefined);
-    };
-
-    const createOrganizationWithOwner = Effect.tryPromise({
+    return Effect.tryPromise({
       try: async () => {
         return await this.db.transaction(async (tx) => {
           const [organization] = await tx
@@ -190,17 +166,19 @@ export class OrganizationService extends BaseAuthenticatedService<
           };
         });
       },
-      catch: (error) =>
-        new DatabaseError({
+      catch: (error) => {
+        if (isUniqueConstraintError(error)) {
+          return new AlreadyExistsError({
+            message: "An organization with this name already exists",
+            resource: this.baseService.resourceName,
+          });
+        }
+        return new DatabaseError({
           message: "Failed to create organization",
           cause: error,
-        }),
+        });
+      },
     });
-
-    return fetchExistingOrganization.pipe(
-      Effect.flatMap(rejectIfExists),
-      Effect.andThen(createOrganizationWithOwner),
-    );
   }
 
   findAll(
@@ -232,58 +210,7 @@ export class OrganizationService extends BaseAuthenticatedService<
   }
 
   override findById(
-    id: string,
-    userId: string,
-  ): Effect.Effect<
-    PublicOrganizationWithMembership,
-    NotFoundError | PermissionDeniedError | DatabaseError
-  > {
-    return this.checkPermission(userId, "read", id).pipe(
-      Effect.andThen(
-        Effect.tryPromise({
-          try: async () => {
-            const [result] = await this.db
-              .select({
-                id: organizations.id,
-                name: organizations.name,
-                role: organizationMemberships.role,
-              })
-              .from(organizations)
-              .innerJoin(
-                organizationMemberships,
-                and(
-                  eq(organizationMemberships.organizationId, organizations.id),
-                  eq(organizationMemberships.userId, userId),
-                ),
-              )
-              .where(eq(organizations.id, id))
-              .limit(1);
-            return result;
-          },
-          catch: (error) =>
-            new DatabaseError({
-              message: "Failed to find organization",
-              cause: error,
-            }),
-        }),
-      ),
-      Effect.flatMap((result) => {
-        if (!result) {
-          return Effect.fail(
-            new NotFoundError({
-              message: `Organization with id ${id} not found`,
-              resource: this.baseService.resourceName,
-            }),
-          );
-        }
-        return Effect.succeed(result);
-      }),
-    );
-  }
-
-  update(
-    id: string,
-    data: Partial<NewOrganization>,
+    organizationId: string,
     userId: string,
   ): Effect.Effect<
     PublicOrganizationWithMembership,
@@ -291,12 +218,15 @@ export class OrganizationService extends BaseAuthenticatedService<
   > {
     const fetchOrganization = Effect.tryPromise({
       try: async () => {
-        const [org] = await this.db
-          .select({ id: organizations.id })
+        const [result] = await this.db
+          .select({
+            id: organizations.id,
+            name: organizations.name,
+          })
           .from(organizations)
-          .where(eq(organizations.id, id))
+          .where(eq(organizations.id, organizationId))
           .limit(1);
-        return org;
+        return result as PublicOrganization | undefined;
       },
       catch: (error) =>
         new DatabaseError({
@@ -306,12 +236,12 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
 
     const rejectIfNotFound = (
-      org: { id: string } | undefined,
-    ): Effect.Effect<{ id: string }, NotFoundError> => {
+      org: PublicOrganization | undefined,
+    ): Effect.Effect<PublicOrganization, NotFoundError> => {
       if (!org) {
         return Effect.fail(
           new NotFoundError({
-            message: `Organization with id ${id} not found`,
+            message: `Organization with id ${organizationId} not found`,
             resource: this.baseService.resourceName,
           }),
         );
@@ -319,14 +249,32 @@ export class OrganizationService extends BaseAuthenticatedService<
       return Effect.succeed(org);
     };
 
+    return this.checkPermission(userId, "read", organizationId).pipe(
+      Effect.flatMap((role) =>
+        fetchOrganization.pipe(
+          Effect.flatMap(rejectIfNotFound),
+          Effect.map((org) => ({ ...org, role })),
+        ),
+      ),
+    );
+  }
+
+  update(
+    organizationId: string,
+    data: Partial<NewOrganization>,
+    userId: string,
+  ): Effect.Effect<
+    PublicOrganizationWithMembership,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
     const updateOrganization = Effect.tryPromise({
       try: async () => {
         const [updated] = await this.db
           .update(organizations)
           .set({ name: data.name })
-          .where(eq(organizations.id, id))
+          .where(eq(organizations.id, organizationId))
           .returning({ id: organizations.id, name: organizations.name });
-        return updated;
+        return updated as PublicOrganization | undefined;
       },
       catch: (error) =>
         new DatabaseError({
@@ -335,74 +283,13 @@ export class OrganizationService extends BaseAuthenticatedService<
         }),
     });
 
-    const fetchMembershipRole = Effect.tryPromise({
-      try: async () => {
-        const [membership] = await this.db
-          .select({ role: organizationMemberships.role })
-          .from(organizationMemberships)
-          .where(
-            and(
-              eq(organizationMemberships.organizationId, id),
-              eq(organizationMemberships.userId, userId),
-            ),
-          )
-          .limit(1);
-        /* v8 ignore next */
-        return membership?.role ?? ("ANNOTATOR" as Role);
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to fetch membership",
-          cause: error,
-        }),
-    });
-
-    return fetchOrganization.pipe(
-      Effect.flatMap(rejectIfNotFound),
-      Effect.andThen(this.checkPermission(userId, "update", id)),
-      Effect.andThen(updateOrganization),
-      Effect.flatMap((updated) =>
-        fetchMembershipRole.pipe(
-          Effect.map((role) => ({
-            id: updated.id,
-            name: updated.name,
-            role,
-          })),
-        ),
-      ),
-    );
-  }
-
-  override delete(
-    id: string,
-    userId: string,
-  ): Effect.Effect<
-    void,
-    NotFoundError | PermissionDeniedError | DatabaseError
-  > {
-    const fetchOrganization = Effect.tryPromise({
-      try: async () => {
-        const [org] = await this.db
-          .select({ id: organizations.id })
-          .from(organizations)
-          .where(eq(organizations.id, id))
-          .limit(1);
-        return org;
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to find organization",
-          cause: error,
-        }),
-    });
-
     const rejectIfNotFound = (
-      org: { id: string } | undefined,
-    ): Effect.Effect<{ id: string }, NotFoundError> => {
+      org: PublicOrganization | undefined,
+    ): Effect.Effect<PublicOrganization, NotFoundError> => {
       if (!org) {
         return Effect.fail(
           new NotFoundError({
-            message: `Organization with id ${id} not found`,
+            message: `Organization with id ${organizationId} not found`,
             resource: this.baseService.resourceName,
           }),
         );
@@ -410,14 +297,33 @@ export class OrganizationService extends BaseAuthenticatedService<
       return Effect.succeed(org);
     };
 
+    return this.checkPermission(userId, "update", organizationId).pipe(
+      Effect.flatMap((role) =>
+        updateOrganization.pipe(
+          Effect.flatMap(rejectIfNotFound),
+          Effect.map((org) => ({ ...org, role })),
+        ),
+      ),
+    );
+  }
+
+  override delete(
+    organizationId: string,
+    userId: string,
+  ): Effect.Effect<
+    void,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
     const deleteOrganizationWithMemberships = Effect.tryPromise({
       try: async () => {
         await this.db.transaction(async (tx) => {
           await tx
             .delete(organizationMemberships)
-            .where(eq(organizationMemberships.organizationId, id));
+            .where(eq(organizationMemberships.organizationId, organizationId));
 
-          await tx.delete(organizations).where(eq(organizations.id, id));
+          await tx
+            .delete(organizations)
+            .where(eq(organizations.id, organizationId));
         });
       },
       catch: (error) =>
@@ -427,9 +333,7 @@ export class OrganizationService extends BaseAuthenticatedService<
         }),
     });
 
-    return fetchOrganization.pipe(
-      Effect.flatMap(rejectIfNotFound),
-      Effect.andThen(this.checkPermission(userId, "delete", id)),
+    return this.checkPermission(userId, "delete", organizationId).pipe(
       Effect.andThen(deleteOrganizationWithMemberships),
     );
   }

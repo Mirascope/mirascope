@@ -258,7 +258,7 @@ export abstract class BaseAuthenticatedService<
     userId: string,
     action: PermissionAction,
     resourceId: TId,
-  ): Effect.Effect<void, PermissionDeniedError | DatabaseError>;
+  ): Effect.Effect<void, NotFoundError | PermissionDeniedError | DatabaseError>;
 
   abstract create(
     data: TInsert,
