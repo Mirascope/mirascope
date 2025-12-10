@@ -35,6 +35,10 @@ export abstract class BaseService<
   protected abstract getResourceName(): string;
   protected abstract getPublicFields(): Record<string, PgColumn>;
 
+  get resourceName(): string {
+    return this.getResourceName();
+  }
+
   protected getIdColumn(): PgColumn {
     const table = this.getTable();
     return table.id;
@@ -244,16 +248,14 @@ export abstract class BaseAuthenticatedService<
   TRole extends string = string,
 > {
   protected readonly db: PostgresJsDatabase<typeof schema>;
+  protected readonly baseService: BaseService<TPublic, TId, TTable>;
 
   constructor(db: PostgresJsDatabase<typeof schema>) {
     this.db = db;
+    this.baseService = this.initializeBaseService();
   }
 
-  protected abstract getResourceName(): string;
-
-  get resourceName(): string {
-    return this.getResourceName();
-  }
+  protected abstract initializeBaseService(): BaseService<TPublic, TId, TTable>;
 
   /**
    * Returns the permission table mapping actions to allowed roles.
@@ -273,8 +275,8 @@ export abstract class BaseAuthenticatedService<
     if (!allowedRoles.includes(role)) {
       return Effect.fail(
         new PermissionDeniedError({
-          message: `You do not have permission to ${action} this ${this.resourceName}`,
-          resource: this.resourceName,
+          message: `You do not have permission to ${action} this ${this.baseService.resourceName}`,
+          resource: this.baseService.resourceName,
         }),
       );
     }
