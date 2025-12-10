@@ -106,6 +106,13 @@
       "when": 1766650000000,
       "tag": "0014_dark_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1766650000001,
+      "tag": "0015_annotations",
+      "breakpoints": true
     }
   ]
 }
