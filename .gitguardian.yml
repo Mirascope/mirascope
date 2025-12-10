@@ -1,0 +1,10 @@
+# GitGuardian configuration file
+# This file configures GitGuardian scanning behavior
+
+version: 2
+
+# Specific patterns to ignore
+ignored-matches:
+  # Ignore the specific mock database URL used in test_security.py
+  - name: "Mock PostgreSQL credentials for testing"
+    match: "postgresql://user:pass@host"
