@@ -353,16 +353,14 @@ describe("OrganizationService", () => {
       "returns `PermissionDeniedError` when user lacks permission",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // checkPermission: has DEVELOPER role (not ADMIN)
-            .select([{ role: "DEVELOPER" }])
-            .build();
+          const { org, developer } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
 
           const result = yield* db.organizations
             .update({
-              id: "org-id",
+              id: org.id,
               data: { name: "New Name" },
-              userId: "user-id",
+              userId: developer.id,
             })
             .pipe(Effect.flip);
 
@@ -370,7 +368,7 @@ describe("OrganizationService", () => {
           expect(result.message).toBe(
             "You do not have permission to update this organization",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
   });
 
@@ -427,20 +425,18 @@ describe("OrganizationService", () => {
 
     it.effect("returns `PermissionDeniedError` when user is not an owner", () =>
       Effect.gen(function* () {
-        const db = new MockDatabase()
-          // checkPermission: has DEVELOPER role (not OWNER)
-          .select([{ role: "DEVELOPER" }])
-          .build();
+        const { org, developer } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
 
         const result = yield* db.organizations
-          .delete({ id: "org-id", userId: "user-id" })
+          .delete({ id: org.id, userId: developer.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(PermissionDeniedError);
         expect(result.message).toBe(
           "You do not have permission to delete this organization",
         );
-      }),
+      }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect("returns `DatabaseError` when delete transaction fails", () =>
@@ -559,17 +555,15 @@ describe("OrganizationService", () => {
       "returns `PermissionDeniedError` when caller has insufficient role",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // getRole: DEVELOPER role (too low for update/add member)
-            .select([{ role: "DEVELOPER" }])
-            .build();
+          const { org, developer, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
 
           const result = yield* db.organizations
             .addMember({
-              id: "org-id",
-              memberUserId: "new-user-id",
+              id: org.id,
+              memberUserId: nonMember.id,
               role: "ANNOTATOR",
-              userId: "caller-id",
+              userId: developer.id,
             })
             .pipe(Effect.flip);
 
@@ -577,7 +571,7 @@ describe("OrganizationService", () => {
           expect(result.message).toBe(
             "You do not have permission to update this organization",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect(
@@ -704,16 +698,15 @@ describe("OrganizationService", () => {
       "returns `PermissionDeniedError` when caller has insufficient role",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // getRole: DEVELOPER role (too low for update)
-            .select([{ role: "DEVELOPER" }])
-            .build();
+          const { org, developer, annotator } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
 
+          // Developer tries to remove annotator (should fail - needs ADMIN or OWNER)
           const result = yield* db.organizations
             .terminateMember({
-              id: "org-id",
-              memberUserId: "member-id",
-              userId: "caller-id",
+              id: org.id,
+              memberUserId: annotator.id,
+              userId: developer.id,
             })
             .pipe(Effect.flip);
 
@@ -721,7 +714,7 @@ describe("OrganizationService", () => {
           expect(result.message).toBe(
             "You do not have permission to update this organization",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect(

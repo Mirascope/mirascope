@@ -381,10 +381,14 @@ export class MockDatabase {
 // ============================================================================
 
 /**
- * Creates a test organization with an owner and a non-member user.
+ * Creates a test organization with members of various roles.
  *
- * Returns { org, owner, nonMember } where:
- * - owner: a user who owns the organization
+ * Returns { org, owner, admin, developer, annotator, nonMember } where:
+ * - org: the organization
+ * - owner: a user who owns the organization (OWNER role)
+ * - admin: a user with ADMIN role
+ * - developer: a user with DEVELOPER role
+ * - annotator: a user with ANNOTATOR role
  * - nonMember: a user who is NOT a member (useful for permission tests)
  *
  * Requires DatabaseService - call `yield* DatabaseService` in your test
@@ -403,12 +407,46 @@ export const TestOrganizationFixture = Effect.gen(function* () {
     userId: owner.id,
   });
 
+  // Add members with different roles
+  const admin = yield* db.users.create({
+    email: "admin@example.com",
+    name: "Admin",
+  });
+  yield* db.organizations.addMember({
+    id: org.id,
+    memberUserId: admin.id,
+    role: "ADMIN",
+    userId: owner.id,
+  });
+
+  const developer = yield* db.users.create({
+    email: "developer@example.com",
+    name: "Developer",
+  });
+  yield* db.organizations.addMember({
+    id: org.id,
+    memberUserId: developer.id,
+    role: "DEVELOPER",
+    userId: owner.id,
+  });
+
+  const annotator = yield* db.users.create({
+    email: "annotator@example.com",
+    name: "Annotator",
+  });
+  yield* db.organizations.addMember({
+    id: org.id,
+    memberUserId: annotator.id,
+    role: "ANNOTATOR",
+    userId: owner.id,
+  });
+
   const nonMember = yield* db.users.create({
     email: "nonmember@example.com",
     name: "Non Member",
   });
 
-  return { org, owner, nonMember };
+  return { org, owner, admin, developer, annotator, nonMember };
 });
 
 /**
