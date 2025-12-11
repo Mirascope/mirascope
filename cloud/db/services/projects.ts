@@ -11,11 +11,13 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/db/errors";
+import { isUniqueConstraintError } from "@/db/utils";
 import {
   projects,
   projectMemberships,
   type NewProject,
   type PublicProject,
+  type PublicProjectMembership,
   type Role,
 } from "@/db/schema";
 
@@ -294,6 +296,62 @@ export class ProjectService extends BaseAuthenticatedService<
           message: "Failed to get organization projects",
           cause: error,
         }),
+    });
+  }
+
+  /**
+   * Add a member to a project with a specified role.
+   * Requires OWNER or ADMIN permission on the project.
+   */
+  addMember({
+    id,
+    memberUserId,
+    role,
+    userId,
+  }: {
+    id: string;
+    memberUserId: string;
+    role: Role;
+    userId: string;
+  }): Effect.Effect<
+    PublicProjectMembership,
+    NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      yield* this.authorize({ id, userId, action: "update" });
+
+      const membership = yield* Effect.tryPromise({
+        try: async () => {
+          const [membership] = await this.db
+            .insert(projectMemberships)
+            .values({
+              projectId: id,
+              userId: memberUserId,
+              role,
+            })
+            .returning({
+              id: projectMemberships.id,
+              projectId: projectMemberships.projectId,
+              userId: projectMemberships.userId,
+              role: projectMemberships.role,
+              createdAt: projectMemberships.createdAt,
+            });
+          return membership;
+        },
+        catch: (error) => {
+          if (isUniqueConstraintError(error)) {
+            return new AlreadyExistsError({
+              message: "User is already a member of this project",
+            });
+          }
+          return new DatabaseError({
+            message: "Failed to add project member",
+            cause: error,
+          });
+        },
+      });
+
+      return membership;
     });
   }
 }
