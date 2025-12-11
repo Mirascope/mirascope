@@ -17,6 +17,7 @@ import {
   organizationMemberships,
   type NewOrganization,
   type PublicOrganization,
+  type PublicOrganizationMembership,
   type PublicOrganizationWithMembership,
   type Role,
 } from "@/db/schema";
@@ -244,6 +245,62 @@ export class OrganizationService extends BaseAuthenticatedService<
             cause: error,
           }),
       });
+    });
+  }
+
+  /**
+   * Add a member to an organization with a specified role.
+   * Requires OWNER or ADMIN permission on the organization.
+   */
+  addMember({
+    id,
+    memberUserId,
+    role,
+    userId,
+  }: {
+    id: string;
+    memberUserId: string;
+    role: Role;
+    userId: string;
+  }): Effect.Effect<
+    PublicOrganizationMembership,
+    NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      yield* this.authorize({ id, userId, action: "update" });
+
+      const membership = yield* Effect.tryPromise({
+        try: async () => {
+          const [membership] = await this.db
+            .insert(organizationMemberships)
+            .values({
+              organizationId: id,
+              userId: memberUserId,
+              role,
+            })
+            .returning({
+              id: organizationMemberships.id,
+              organizationId: organizationMemberships.organizationId,
+              userId: organizationMemberships.userId,
+              role: organizationMemberships.role,
+              createdAt: organizationMemberships.createdAt,
+            });
+          return membership;
+        },
+        catch: (error) => {
+          if (isUniqueConstraintError(error)) {
+            return new AlreadyExistsError({
+              message: "User is already a member of this organization",
+            });
+          }
+          return new DatabaseError({
+            message: "Failed to add organization member",
+            cause: error,
+          });
+        },
+      });
+
+      return membership;
     });
   }
 }

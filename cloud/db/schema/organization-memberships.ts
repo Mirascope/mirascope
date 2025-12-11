@@ -54,7 +54,7 @@ export type Role = (typeof roleEnum.enumValues)[number];
 // Public types
 export type PublicOrganizationMembership = Pick<
   OrganizationMembership,
-  "id" | "role" | "createdAt"
+  "id" | "organizationId" | "userId" | "role" | "createdAt"
 >;
 
 // Public organization with user's membership role
