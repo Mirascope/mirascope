@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Sequence
-from contextlib import contextmanager
-from contextvars import ContextVar
+from collections.abc import Sequence
+from contextvars import ContextVar, Token
+from types import TracebackType
 from typing import TYPE_CHECKING, overload
 from typing_extensions import Unpack
 
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
 
 
-def get_model_from_context() -> Model | None:
+def model_from_context() -> Model | None:
     """Get the LLM currently set via context, if any."""
     return MODEL_CONTEXT.get()
 
@@ -111,6 +111,24 @@ class Model:
         self.provider = model_id_to_provider(model_id)
         self.model_id = model_id
         self.params = params
+        self._token_stack: list[Token[Model | None]] = []
+
+    def __enter__(self) -> Model:
+        """Enter the context manager, setting this model in context."""
+        token = MODEL_CONTEXT.set(self)
+        self._token_stack.append(token)
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        """Exit the context manager, resetting the model context."""
+        if self._token_stack:
+            token = self._token_stack.pop()
+            MODEL_CONTEXT.reset(token)
 
     @overload
     def call(
@@ -1147,53 +1165,40 @@ class Model:
         )
 
 
-@overload
-@contextmanager
 def model(
-    model: ModelId,
+    model_id: ModelId,
     **params: Unpack[Params],
-) -> Iterator[Model]:
-    """Set a model in context for the duration of the context manager.
+) -> Model:
+    """Helper for creating a `Model` instance (which may be used as a context manager).
 
-    This overload accepts a model ID string and allows additional params.
-    """
-    ...
+    This is just an alias for the `Model` constructor, added for convenience.
 
+    This function returns a `Model` instance that implements the context manager protocol.
+    When used with a `with` statement, the model will be set in context and used by both
+    `llm.use_model()` and `llm.call()` within that context. This allows you to override
+    the default model at runtime without modifying function definitions.
 
-@overload
-@contextmanager
-def model(
-    model: Model,
-) -> Iterator[Model]:
-    """Set a model in context for the duration of the context manager.
+    The returned `Model` instance can also be stored and reused:
 
-    This overload accepts a `Model` instance and does not allow additional params.
-    """
-    ...
-
-
-@contextmanager
-def model(
-    model: Model | ModelId,
-    **params: Unpack[Params],
-) -> Iterator[Model]:
-    """Set a model in context for the duration of the context manager.
-
-    This context manager sets a model that will be used by both `llm.use_model()` and
-    `llm.call()` within the context. This allows you to override the default model at
-    runtime without modifying function definitions.
+    ```python
+    m = llm.model("openai/gpt-4o")
+    # Use directly
+    response = m.call(messages=[...])
+    # Or use as context manager
+    with m:
+        response = recommend_book("fantasy")
+    ```
 
     When a model is set in context, it completely overrides any model ID or parameters
     specified in `llm.use_model()` or `llm.call()`. The context model's parameters take
     precedence, and any unset parameters use default values.
 
     Args:
-        model: A model ID string (e.g., "openai/gpt-4") or a `Model` instance
+        model_id: A model ID string (e.g., "openai/gpt-4").
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
-                  Only available when passing a model ID string
 
-    Yields:
-        The Model instance that was set in context.
+    Returns:
+        A Model instance that can be used as a context manager.
 
     Raises:
         ValueError: If the specified provider is not supported.
@@ -1210,7 +1215,7 @@ def model(
             return model.call(messages=[message])
 
         # Override the default model at runtime
-        with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
+        with llm.model("anthropic/claude-sonnet-4-5"):
            response = recommend_book("fantasy")  # Uses Claude instead of GPT
         ```
 
@@ -1228,15 +1233,25 @@ def model(
         with llm.model("anthropic/claude-sonnet-4-0"):
             response = recommend_book("fantasy")  # Uses Claude instead of GPT
         ```
-    """
-    if isinstance(model, str):
-        model = Model(model, **params)
 
-    token = MODEL_CONTEXT.set(model)
-    try:
-        yield model
-    finally:
-        MODEL_CONTEXT.reset(token)
+    Example:
+        Storing and reusing Model instances
+
+        ```python
+        import mirascope.llm as llm
+
+        # Create and store a model
+        m = llm.model("openai/gpt-4o")
+
+        # Use it directly
+        response = m.call(messages=[llm.messages.user("Hello!")])
+
+        # Or use it as a context manager
+        with m:
+            response = recommend_book("fantasy")
+        ```
+    """
+    return Model(model_id, **params)
 
 
 @overload
@@ -1305,7 +1320,7 @@ def use_model(
             response = recommend_book("fantasy")  # Uses Claude instead
         ```
     """
-    context_model = get_model_from_context()
+    context_model = model_from_context()
     if context_model is not None:
         return context_model
     if isinstance(model, str):
