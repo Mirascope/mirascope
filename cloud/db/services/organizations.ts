@@ -2,6 +2,7 @@ import { Effect } from "effect";
 import { and, eq } from "drizzle-orm";
 import {
   BaseAuthenticatedService,
+  BaseService,
   type PermissionTable,
 } from "@/db/services/base";
 import {
@@ -20,6 +21,27 @@ import {
   type Role,
 } from "@/db/schema";
 
+class OrganizationBaseService extends BaseService<
+  PublicOrganization,
+  string,
+  typeof organizations
+> {
+  protected getTable() {
+    return organizations;
+  }
+
+  protected getResourceName() {
+    return "organization";
+  }
+
+  protected getPublicFields() {
+    return {
+      id: organizations.id,
+      name: organizations.name,
+    };
+  }
+}
+
 export class OrganizationService extends BaseAuthenticatedService<
   PublicOrganization,
   string,
@@ -27,8 +49,8 @@ export class OrganizationService extends BaseAuthenticatedService<
   NewOrganization,
   Role
 > {
-  getResourceName(): string {
-    return "organization";
+  protected initializeBaseService() {
+    return new OrganizationBaseService(this.db);
   }
 
   protected getPermissionTable(): PermissionTable<Role> {
@@ -51,42 +73,38 @@ export class OrganizationService extends BaseAuthenticatedService<
     organizationId: string;
     userId: string;
   }): Effect.Effect<Role, NotFoundError | DatabaseError> {
-    const fetchMembership = Effect.tryPromise({
-      try: async () => {
-        const [membership] = await this.db
-          .select({ role: organizationMemberships.role })
-          .from(organizationMemberships)
-          .where(
-            and(
-              eq(organizationMemberships.userId, userId),
-              eq(organizationMemberships.organizationId, organizationId),
-            ),
-          )
-          .limit(1);
-        return membership;
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to get membership",
-          cause: error,
-        }),
-    });
+    return Effect.gen(this, function* () {
+      const membership = yield* Effect.tryPromise({
+        try: async () => {
+          const [membership] = await this.db
+            .select({ role: organizationMemberships.role })
+            .from(organizationMemberships)
+            .where(
+              and(
+                eq(organizationMemberships.userId, userId),
+                eq(organizationMemberships.organizationId, organizationId),
+              ),
+            )
+            .limit(1);
+          return membership;
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to get membership",
+            cause: error,
+          }),
+      });
 
-    const rejectIfNotMember = (
-      membership: { role: Role } | undefined,
-    ): Effect.Effect<Role, NotFoundError> => {
       if (!membership) {
-        return Effect.fail(
+        return yield* Effect.fail(
           new NotFoundError({
             message: "Organization not found",
-            resource: this.resourceName,
+            resource: this.baseService.resourceName,
           }),
         );
       }
-      return Effect.succeed(membership.role);
-    };
-
-    return fetchMembership.pipe(Effect.flatMap(rejectIfNotMember));
+      return membership.role;
+    });
   }
 
   create({
@@ -124,7 +142,7 @@ export class OrganizationService extends BaseAuthenticatedService<
         if (isUniqueConstraintError(error)) {
           return new AlreadyExistsError({
             message: "An organization with this name already exists",
-            resource: this.resourceName,
+            resource: this.baseService.resourceName,
           });
         }
         return new DatabaseError({
@@ -140,7 +158,7 @@ export class OrganizationService extends BaseAuthenticatedService<
   }: {
     userId: string;
   }): Effect.Effect<PublicOrganizationWithMembership[], DatabaseError> {
-    const fetchUserOrganizationsWithRoles = Effect.tryPromise({
+    return Effect.tryPromise({
       try: async () => {
         return await this.db
           .select({
@@ -161,8 +179,6 @@ export class OrganizationService extends BaseAuthenticatedService<
           cause: error,
         }),
     });
-
-    return fetchUserOrganizationsWithRoles;
   }
 
   findById({
@@ -175,48 +191,12 @@ export class OrganizationService extends BaseAuthenticatedService<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
-    const fetchOrganization = Effect.tryPromise({
-      try: async () => {
-        const [result] = await this.db
-          .select({
-            id: organizations.id,
-            name: organizations.name,
-          })
-          .from(organizations)
-          .where(eq(organizations.id, id))
-          .limit(1);
-        return result as PublicOrganization | undefined;
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to find organization",
-          cause: error,
-        }),
+    return Effect.gen(this, function* () {
+      const role = yield* this.getRole({ organizationId: id, userId });
+      yield* this.verifyPermission(role, "read");
+      const organization = yield* this.baseService.findById({ id });
+      return { ...organization, role };
     });
-
-    const rejectIfNotFound = (
-      org: PublicOrganization | undefined,
-    ): Effect.Effect<PublicOrganization, NotFoundError> => {
-      if (!org) {
-        return Effect.fail(
-          new NotFoundError({
-            message: `Organization with id ${id} not found`,
-            resource: this.resourceName,
-          }),
-        );
-      }
-      return Effect.succeed(org);
-    };
-
-    return this.getRole({ organizationId: id, userId }).pipe(
-      Effect.flatMap((role) =>
-        this.verifyPermission(role, "read").pipe(
-          Effect.andThen(fetchOrganization),
-          Effect.flatMap(rejectIfNotFound),
-          Effect.map((org) => ({ ...org, role })),
-        ),
-      ),
-    );
   }
 
   update({
@@ -231,45 +211,12 @@ export class OrganizationService extends BaseAuthenticatedService<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
-    const updateOrganization = Effect.tryPromise({
-      try: async () => {
-        const [updated] = await this.db
-          .update(organizations)
-          .set({ name: data.name })
-          .where(eq(organizations.id, id))
-          .returning({ id: organizations.id, name: organizations.name });
-        return updated as PublicOrganization | undefined;
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to update organization",
-          cause: error,
-        }),
+    return Effect.gen(this, function* () {
+      const role = yield* this.getRole({ organizationId: id, userId });
+      yield* this.verifyPermission(role, "update");
+      const organization = yield* this.baseService.update({ id, data });
+      return { ...organization, role };
     });
-
-    const rejectIfNotFound = (
-      org: PublicOrganization | undefined,
-    ): Effect.Effect<PublicOrganization, NotFoundError> => {
-      if (!org) {
-        return Effect.fail(
-          new NotFoundError({
-            message: `Organization with id ${id} not found`,
-            resource: this.resourceName,
-          }),
-        );
-      }
-      return Effect.succeed(org);
-    };
-
-    return this.getRole({ organizationId: id, userId }).pipe(
-      Effect.flatMap((role) =>
-        this.verifyPermission(role, "update").pipe(
-          Effect.andThen(updateOrganization),
-          Effect.flatMap(rejectIfNotFound),
-          Effect.map((org) => ({ ...org, role })),
-        ),
-      ),
-    );
   }
 
   delete({
@@ -282,26 +229,24 @@ export class OrganizationService extends BaseAuthenticatedService<
     void,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
-    const deleteOrganizationWithMemberships = Effect.tryPromise({
-      try: async () => {
-        await this.db.transaction(async (tx) => {
-          await tx
-            .delete(organizationMemberships)
-            .where(eq(organizationMemberships.organizationId, id));
-
-          await tx.delete(organizations).where(eq(organizations.id, id));
-        });
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to delete organization",
-          cause: error,
-        }),
+    return Effect.gen(this, function* () {
+      const role = yield* this.getRole({ organizationId: id, userId });
+      yield* this.verifyPermission(role, "delete");
+      yield* Effect.tryPromise({
+        try: async () => {
+          await this.db.transaction(async (tx) => {
+            await tx
+              .delete(organizationMemberships)
+              .where(eq(organizationMemberships.organizationId, id));
+            await tx.delete(organizations).where(eq(organizations.id, id));
+          });
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to delete organization",
+            cause: error,
+          }),
+      });
     });
-
-    return this.getRole({ organizationId: id, userId }).pipe(
-      Effect.flatMap((role) => this.verifyPermission(role, "delete")),
-      Effect.andThen(deleteOrganizationWithMemberships),
-    );
   }
 }

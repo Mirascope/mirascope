@@ -240,7 +240,7 @@ describe("OrganizationService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Organization with id org-id not found");
+        expect(result.message).toBe("organization with id org-id not found");
       }),
     );
   });
@@ -345,7 +345,7 @@ describe("OrganizationService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Organization with id org-id not found");
+        expect(result.message).toBe("organization with id org-id not found");
       }),
     );
 
