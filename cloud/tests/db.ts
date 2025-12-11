@@ -398,10 +398,10 @@ export const TestOrganizationFixture = Effect.gen(function* () {
     name: "Owner",
   });
 
-  const org = yield* db.organizations.create(
-    { name: "Test Organization" },
-    owner.id,
-  );
+  const org = yield* db.organizations.create({
+    data: { name: "Test Organization" },
+    userId: owner.id,
+  });
 
   const nonMember = yield* db.users.create({
     email: "nonmember@example.com",

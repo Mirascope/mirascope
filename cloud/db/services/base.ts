@@ -272,37 +272,40 @@ export abstract class BaseAuthenticatedService<
     return Effect.succeed(undefined);
   }
 
-  abstract create(
-    data: TInsert,
-    userId: string,
-  ): Effect.Effect<
+  abstract create(args: {
+    data: TInsert;
+    userId: string;
+  }): Effect.Effect<
     TPublic,
     AlreadyExistsError | PermissionDeniedError | DatabaseError
   >;
 
-  abstract findAll(
-    userId: string,
-  ): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
+  abstract findAll(args: {
+    userId: string;
+  }): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
 
-  abstract findById(
-    id: TId,
-    userId: string,
-  ): Effect.Effect<
+  abstract findById(args: {
+    id: TId;
+    userId: string;
+  }): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
-  abstract update(
-    id: TId,
-    data: Partial<TInsert>,
-    userId: string,
-  ): Effect.Effect<
+  abstract update(args: {
+    id: TId;
+    data: Partial<TInsert>;
+    userId: string;
+  }): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
-  abstract delete(
-    id: TId,
-    userId: string,
-  ): Effect.Effect<void, NotFoundError | PermissionDeniedError | DatabaseError>;
+  abstract delete(args: {
+    id: TId;
+    userId: string;
+  }): Effect.Effect<
+    void,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  >;
 }
