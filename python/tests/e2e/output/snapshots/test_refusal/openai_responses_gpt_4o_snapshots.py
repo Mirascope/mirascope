@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {},
             "finish_reason": FinishReason.REFUSAL,
             "messages": [
@@ -28,6 +29,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0e0644cfe502d3570068f966c91284819592a8b09a8e1b3597",
@@ -67,6 +69,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {},
             "finish_reason": FinishReason.REFUSAL,
             "messages": [
@@ -83,6 +86,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0d0a107ddd23ca6d0068f966cb28348195b8b7026a912c3dd1",
@@ -135,6 +139,7 @@ stream_snapshot = snapshot(
                     content=[Text(text="I'm sorry, I can't assist with that.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_05f46fd4032c869b0068f966cbd974819784490218d2264e0d",
@@ -188,6 +193,7 @@ async_stream_snapshot = snapshot(
                     content=[Text(text="I'm sorry, I can't assist with that.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0ee665a65cc07abb0068f966cda44081979cdaf15f5f42b101",

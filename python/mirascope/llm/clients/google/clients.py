@@ -172,6 +172,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             raw=google_response,
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -271,6 +272,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             raw=google_response,
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -357,6 +359,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             raw=google_response,
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -456,6 +459,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             raw=google_response,
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -539,6 +543,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         return StreamResponse(
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -634,6 +639,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         return ContextStreamResponse(
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -716,6 +722,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         return AsyncStreamResponse(
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -817,6 +824,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         return AsyncContextStreamResponse(
             provider="google",
             model_id=model_id,
+            provider_model_id=_utils.get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,

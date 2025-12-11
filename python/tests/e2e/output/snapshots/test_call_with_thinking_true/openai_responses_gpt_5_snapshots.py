@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-5",
+            "provider_model_id": "gpt-5:responses",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -65,6 +66,7 @@ I’m confirming if there are any primes under 400 that have "79" as non-consecu
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_0d53aa13846e03a60068f9676daff881959d7f269101ba6689",
@@ -141,6 +143,7 @@ I’m confirming if there are any primes under 400 that have "79" as non-consecu
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_0d53aa13846e03a60068f96782110c819595e243559c4243eb",
@@ -174,6 +177,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-5",
+            "provider_model_id": "gpt-5:responses",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -230,6 +234,7 @@ The final answer is simply "3." Great, let's go with that!\
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_0ab4ebd2bc7242170068f96799c350819580541603dcce2ade",
@@ -308,6 +313,7 @@ The final answer is simply "3." Great, let's go with that!\
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_0ab4ebd2bc7242170068f967b2afc08195ad15d0afaf6cec91",
@@ -390,6 +396,7 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_0322c5b1ca9ff7880068f967837b6c8197a69ef0a078c97a0e",
@@ -462,6 +469,7 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_0322c5b1ca9ff7880068f9679857988197b0db6ead99086fd3",
@@ -562,6 +570,7 @@ I’ll double-check for any primes like 197, but it doesn't have "79." And 297 i
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_00b850169f72b9300068f967b4c96481948d13a53c8867e8d8",
@@ -652,6 +661,7 @@ I’ll double-check for any primes like 197, but it doesn't have "79." And 297 i
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-5",
+                    provider_model_id="gpt-5:responses",
                     raw_message=[
                         {
                             "id": "rs_00b850169f72b9300068f967cc559c8194a05a106b3f51420e",

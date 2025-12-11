@@ -12,6 +12,7 @@ test_snapshot = snapshot(
             {
                 "provider": "anthropic",
                 "model_id": "anthropic/claude-sonnet-4-0",
+                "provider_model_id": "claude-sonnet-4-0",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -29,6 +30,7 @@ test_snapshot = snapshot(
                         content=[Text(text="4200 + 42 = ")],
                         provider="anthropic",
                         model_id="anthropic/claude-sonnet-4-0",
+                        provider_model_id="claude-sonnet-4-0",
                         raw_message={
                             "role": "assistant",
                             "content": [

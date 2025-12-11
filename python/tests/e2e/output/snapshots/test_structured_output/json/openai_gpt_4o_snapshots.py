@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o",
+            "provider_model_id": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -91,6 +92,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "content": """\
 {
@@ -196,6 +198,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o",
+            "provider_model_id": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -275,6 +278,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "content": """\
 {
@@ -458,6 +462,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -629,6 +634,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],

@@ -30,7 +30,7 @@ from ....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ..model_ids import GoogleModelId
+from ..model_ids import GoogleModelId, get_provider_model_id
 from .encode import UNKNOWN_TOOL_ID
 
 GOOGLE_FINISH_REASON_MAP = {
@@ -98,7 +98,8 @@ def _decode_candidate_content(
 
 
 def decode_response(
-    response: genai_types.GenerateContentResponse, model_id: GoogleModelId
+    response: genai_types.GenerateContentResponse,
+    model_id: GoogleModelId,
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Returns an `AssistantMessage` and `FinishReason` extracted from a `GenerateContentResponse`"""
     content: Sequence[AssistantContentPart] = []
@@ -117,6 +118,7 @@ def decode_response(
         content=content,
         provider="google",
         model_id=model_id,
+        provider_model_id=get_provider_model_id(model_id),
         raw_message=candidate_content.model_dump(),
     )
 

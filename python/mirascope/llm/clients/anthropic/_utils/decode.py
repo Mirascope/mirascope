@@ -38,6 +38,18 @@ ANTHROPIC_FINISH_REASON_MAP = {
 }
 
 
+def get_provider_model_id(model_id: AnthropicModelId) -> str:
+    """Extract the provider-specific model ID from a full model ID.
+
+    Args:
+        model_id: Full model ID (e.g. "anthropic/claude-sonnet-4-5")
+
+    Returns:
+        Provider-specific model ID (e.g. "claude-sonnet-4-5")
+    """
+    return model_id.removeprefix("anthropic/")
+
+
 def _decode_assistant_content(
     content: anthropic_types.ContentBlock,
 ) -> AssistantContentPart:
@@ -67,6 +79,7 @@ def decode_response(
         content=[_decode_assistant_content(part) for part in response.content],
         provider="anthropic",
         model_id=model_id,
+        provider_model_id=model_id.removeprefix("anthropic/"),
         raw_message={
             "role": response.role,
             "content": [part.model_dump() for part in response.content],

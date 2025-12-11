@@ -66,7 +66,7 @@ def _get_mlx(model_id: MLXModelId) -> MLX:
     if not model_id.startswith("mlx/"):  # pragma: no cover
         raise ValueError(f"Model ID must start with 'mlx/' prefix, got: {model_id}")
 
-    model_name = model_id.removeprefix("mlx/")
+    model_name = _get_provider_model_id(model_id)
     model, tokenizer = cast(tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_name))
     encoder = TransformersEncoder(tokenizer)
     return MLX(
@@ -75,6 +75,18 @@ def _get_mlx(model_id: MLXModelId) -> MLX:
         tokenizer,
         encoder,
     )
+
+
+def _get_provider_model_id(model_id: MLXModelId) -> str:
+    """Extract the provider-specific model ID from a full model ID.
+
+    Args:
+        model_id: Full model ID (e.g. "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
+
+    Returns:
+        Provider-specific model ID (e.g. "mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
+    """
+    return model_id.removeprefix("mlx/")
 
 
 class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
@@ -159,6 +171,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
             raw=response,
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -250,6 +263,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
             raw=response,
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -332,6 +346,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
             raw=response,
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -427,6 +442,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
             raw=response,
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -504,6 +520,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
         return StreamResponse(
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -593,6 +610,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
         return ContextStreamResponse(
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -669,6 +687,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
         return AsyncStreamResponse(
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -764,6 +783,7 @@ class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
         return AsyncContextStreamResponse(
             provider="mlx",
             model_id=model_id,
+            provider_model_id=_get_provider_model_id(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,

@@ -20,7 +20,7 @@ from ....formatting import (
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ...base import Params, _utils as _base_utils
-from ..model_ids import GoogleModelId
+from ..model_ids import GoogleModelId, get_provider_model_id
 
 UNKNOWN_TOOL_ID = "google_unknown_tool_id"
 
@@ -277,7 +277,7 @@ def encode_request(
         google_config["system_instruction"] = system_message_content
 
     kwargs = GoogleKwargs(
-        model=model_id.removeprefix("google/"),
+        model=get_provider_model_id(model_id),
         contents=_encode_messages(remaining_messages, model_id, encode_thoughts),
         config=google_config,
     )

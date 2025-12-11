@@ -11,6 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -21,19 +22,20 @@ test_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "I am a large language model, trained by Google.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -56,6 +58,7 @@ I can double-check that. My answer is correct. If you have any other questions, 
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    provider_model_id=None,
                     raw_message=None,
                 ),
             ],

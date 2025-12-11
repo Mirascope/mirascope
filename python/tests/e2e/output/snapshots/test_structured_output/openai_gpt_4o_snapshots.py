@@ -11,6 +11,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o",
+            "provider_model_id": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -29,6 +30,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                         "role": "assistant",
@@ -79,6 +81,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o",
+            "provider_model_id": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -97,6 +100,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                         "role": "assistant",
@@ -164,6 +168,7 @@ stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -228,6 +233,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],

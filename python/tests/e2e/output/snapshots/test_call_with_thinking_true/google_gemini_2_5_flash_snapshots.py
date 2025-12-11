@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_id": "gemini-2.5-flash",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -89,18 +90,16 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": True,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 **Problem Decomposition and Prime Number Generation**
 
@@ -130,17 +129,17 @@ Let me confirm the prime generation. I'll go through and check the primes. So th
 Now, I'm confident in my answer.
 The total number of primes below 400 with the substring "79" is 3.
 """,
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 To find the number of primes below 400 that contain "79" as a substring, we follow these steps:
 
@@ -170,6 +169,9 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
 
 3\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",
@@ -186,19 +188,20 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                     content=[Text(text="The primes were 79, 179, and 379.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "The primes were 79, 179, and 379.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -215,6 +218,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_id": "gemini-2.5-flash",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -240,18 +244,16 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": True,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 **Finding Primes Containing the Substring "79"**
 
@@ -259,18 +261,21 @@ Okay, so the task at hand is to find all prime numbers less than 400 that contai
 
 I've carefully listed all the primes up to 400. Now, I systematically check each one. I started with two-digit primes, quickly identifying 79 as a match. Moving on to three-digit primes, I systematically checked the numbers from 100 to 399, taking note of which ones include "79". I corrected a previous oversight, ensuring that I was checking for the *substring* "79", not just numbers starting or ending with 79. After double-checking the list and the substring check, I arrived at three primes: 79, 179, and 379.  The answer to the original question is simply the *count*, which is 3.
 """,
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "3",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",
@@ -287,19 +292,20 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                     content=[Text(text="I don't remember.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "I don't remember.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -376,6 +382,7 @@ Therefore, there are 3 such primes.
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -536,16 +543,16 @@ Therefore, there are 3 such primes.
                                 "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "3",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",
@@ -562,31 +569,32 @@ Therefore, there are 3 such primes.
                     content=[Text(text="The primes were 79, 179, and 379.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "The primes were ",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "79, 179, and 379.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",
@@ -643,6 +651,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -744,6 +753,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                     content=[Text(text="I don't remember.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
