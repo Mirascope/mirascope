@@ -21,10 +21,9 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
-from ...model_info import OpenAIModelId
+from ...model_info import MODELS_WITHOUT_AUDIO_SUPPORT, OpenAIModelId
 from ...shared import _utils as _shared_utils
 from .decode import get_provider_model_id
-from .model_features import MODEL_FEATURES
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):
@@ -99,10 +98,8 @@ def _encode_user_message(
             )
             current_content.append(content)
         elif part.type == "audio":
-            model_status = MODEL_FEATURES.get(
-                model_id.removeprefix("openai/").removesuffix(":completions")
-            )
-            if model_status == "no_audio_support":
+            model_name = model_id.removeprefix("openai/").removesuffix(":completions")
+            if model_name in MODELS_WITHOUT_AUDIO_SUPPORT:
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
                     provider="openai",

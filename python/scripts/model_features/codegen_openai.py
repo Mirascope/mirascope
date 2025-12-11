@@ -1,8 +1,10 @@
 """Code generation for OpenAI model info from test results.
 
 This script reads the openai.yaml feature test results and generates
-python/mirascope/llm/clients/openai/model_info.py with OpenAIModelId
-type alias containing all valid model IDs.
+python/mirascope/llm/clients/openai/model_info.py with:
+- OpenAIModelId type alias containing all valid model IDs
+- Model feature categorization for audio input support
+- Model feature categorization for reasoning support
 
 Logic:
 - Skip models with neither completions_api nor responses_api support
@@ -10,6 +12,8 @@ Logic:
   - Add "openai/MODEL_NAME" to the list
   - If completions_api is supported: add "openai/MODEL_NAME:completions"
   - If responses_api is supported: add "openai/MODEL_NAME:responses"
+- Categorize models by audio_input support (for completions API)
+- Categorize models by reasoning support (for responses API)
 
 Usage:
     uv run python -m scripts.model_features.codegen_openai
@@ -31,6 +35,8 @@ def load_yaml(path: Path) -> dict[str, Any]:
 def generate_model_info(data: dict[str, Any]) -> str:
     """Generate the model_info.py file content."""
     model_ids: list[str] = []
+    models_without_audio_support: set[str] = set()
+    non_reasoning_models: set[str] = set()
 
     for model_id, model_data in sorted(data.get("models", {}).items()):
         features = model_data.get("features", {})
@@ -38,6 +44,8 @@ def generate_model_info(data: dict[str, Any]) -> str:
         # Check API support
         completions_result = features.get("completions_api", {})
         responses_result = features.get("responses_api", {})
+        audio_result = features.get("audio_input", {})
+        reasoning_result = features.get("reasoning", {})
 
         completions_supported = completions_result.get("status") == "supported"
         responses_supported = responses_result.get("status") == "supported"
@@ -55,6 +63,18 @@ def generate_model_info(data: dict[str, Any]) -> str:
             model_ids.append(f"{base_id}:completions")
         if responses_supported:
             model_ids.append(f"{base_id}:responses")
+
+        # Categorize audio support (for completions API)
+        audio_status = audio_result.get("status")
+        if audio_status in ("not_supported", "unavailable"):
+            models_without_audio_support.add(model_id)
+        # If supported, skipped, or not tested, optimistic default (not in set)
+
+        # Categorize reasoning support (for responses API)
+        reasoning_status = reasoning_result.get("status")
+        if reasoning_status == "not_supported":
+            non_reasoning_models.add(model_id)
+        # If supported, skipped, or error, optimistic default (not in set)
 
     # Generate the file content
     lines = [
@@ -75,6 +95,41 @@ def generate_model_info(data: dict[str, Any]) -> str:
 
     lines.append("] | str")
     lines.append('"""Valid OpenAI model IDs including API-specific variants."""')
+    lines.append("")
+
+    # Add models without audio support set
+    lines.extend(
+        [
+            "",
+            "MODELS_WITHOUT_AUDIO_SUPPORT: set[str] = {",
+        ]
+    )
+    for model_id in sorted(models_without_audio_support):
+        lines.append(f'    "{model_id}",')
+    lines.append("}")
+    lines.append('"""Models that do not support audio inputs.')
+    lines.append("")
+    lines.append(
+        "Models not in this set are assumed to support audio (optimistic default)."
+    )
+    lines.append('"""')
+
+    # Add non-reasoning model set
+    lines.extend(
+        [
+            "",
+            "NON_REASONING_MODELS: set[str] = {",
+        ]
+    )
+    for model_id in sorted(non_reasoning_models):
+        lines.append(f'    "{model_id}",')
+    lines.append("}")
+    lines.append('"""Models that do not support the reasoning parameter.')
+    lines.append("")
+    lines.append(
+        "Models not in this set are assumed to support reasoning (optimistic default)."
+    )
+    lines.append('"""')
     lines.append("")
 
     return "\n".join(lines)
