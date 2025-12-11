@@ -3,18 +3,16 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
-from .property_key_tag_tag import PropertyKeyTagTag
+from .property_key_key_tag import PropertyKeyKeyTag
 
 
-class PropertyKeyTag(UniversalBaseModel):
+class PropertyKeyKey(UniversalBaseModel):
     """
     an object to be decoded into a globally shared symbol
     """
 
-    tag: typing_extensions.Annotated[PropertyKeyTagTag, FieldMetadata(alias="_tag")]
+    tag: PropertyKeyKeyTag
     key: str
 
     if IS_PYDANTIC_V2:

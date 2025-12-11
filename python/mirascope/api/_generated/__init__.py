@@ -3,19 +3,49 @@
 # isort: skip_file
 
 from .types import (
+    AlreadyExistsError,
+    AlreadyExistsErrorTag,
+    DatabaseError,
+    DatabaseErrorTag,
     HttpApiDecodeError,
     HttpApiDecodeErrorTag,
     Issue,
     IssueTag,
+    NotFoundErrorBody,
+    NotFoundErrorTag,
+    PermissionDeniedError,
+    PermissionDeniedErrorTag,
     PropertyKey,
-    PropertyKeyTag,
-    PropertyKeyTagTag,
+    PropertyKeyKey,
+    PropertyKeyKeyTag,
 )
-from .errors import BadRequestError
-from . import docs, health, traces
+from .errors import (
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
+    InternalServerError,
+    NotFoundError,
+)
+from . import docs, health, organizations, projects, traces
 from .client import AsyncMirascope, Mirascope
 from .environment import MirascopeEnvironment
 from .health import HealthCheckResponse, HealthCheckResponseStatus
+from .organizations import (
+    OrganizationsCreateResponse,
+    OrganizationsCreateResponseRole,
+    OrganizationsGetResponse,
+    OrganizationsGetResponseRole,
+    OrganizationsListResponseItem,
+    OrganizationsListResponseItemRole,
+    OrganizationsUpdateResponse,
+    OrganizationsUpdateResponseRole,
+)
+from .projects import (
+    ProjectsCreateResponse,
+    ProjectsGetResponse,
+    ProjectsListResponseItem,
+    ProjectsUpdateResponse,
+)
 from .traces import (
     TracesCreateRequestResourceSpansItem,
     TracesCreateRequestResourceSpansItemResource,
@@ -43,19 +73,43 @@ from .traces import (
 )
 
 __all__ = [
+    "AlreadyExistsError",
+    "AlreadyExistsErrorTag",
     "AsyncMirascope",
     "BadRequestError",
+    "ConflictError",
+    "DatabaseError",
+    "DatabaseErrorTag",
+    "ForbiddenError",
     "HealthCheckResponse",
     "HealthCheckResponseStatus",
     "HttpApiDecodeError",
     "HttpApiDecodeErrorTag",
+    "InternalServerError",
     "Issue",
     "IssueTag",
     "Mirascope",
     "MirascopeEnvironment",
+    "NotFoundError",
+    "NotFoundErrorBody",
+    "NotFoundErrorTag",
+    "OrganizationsCreateResponse",
+    "OrganizationsCreateResponseRole",
+    "OrganizationsGetResponse",
+    "OrganizationsGetResponseRole",
+    "OrganizationsListResponseItem",
+    "OrganizationsListResponseItemRole",
+    "OrganizationsUpdateResponse",
+    "OrganizationsUpdateResponseRole",
+    "PermissionDeniedError",
+    "PermissionDeniedErrorTag",
+    "ProjectsCreateResponse",
+    "ProjectsGetResponse",
+    "ProjectsListResponseItem",
+    "ProjectsUpdateResponse",
     "PropertyKey",
-    "PropertyKeyTag",
-    "PropertyKeyTagTag",
+    "PropertyKeyKey",
+    "PropertyKeyKeyTag",
     "TracesCreateRequestResourceSpansItem",
     "TracesCreateRequestResourceSpansItemResource",
     "TracesCreateRequestResourceSpansItemResourceAttributesItem",
@@ -81,5 +135,7 @@ __all__ = [
     "TracesCreateResponsePartialSuccess",
     "docs",
     "health",
+    "organizations",
+    "projects",
     "traces",
 ]

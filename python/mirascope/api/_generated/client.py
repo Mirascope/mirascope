@@ -7,6 +7,8 @@ from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .docs.client import AsyncDocsClient, DocsClient
 from .environment import MirascopeEnvironment
 from .health.client import AsyncHealthClient, HealthClient
+from .organizations.client import AsyncOrganizationsClient, OrganizationsClient
+from .projects.client import AsyncProjectsClient, ProjectsClient
 from .traces.client import AsyncTracesClient, TracesClient
 
 
@@ -74,6 +76,8 @@ class Mirascope:
         self.health = HealthClient(client_wrapper=self._client_wrapper)
         self.traces = TracesClient(client_wrapper=self._client_wrapper)
         self.docs = DocsClient(client_wrapper=self._client_wrapper)
+        self.organizations = OrganizationsClient(client_wrapper=self._client_wrapper)
+        self.projects = ProjectsClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -140,6 +144,10 @@ class AsyncMirascope:
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
         self.docs = AsyncDocsClient(client_wrapper=self._client_wrapper)
+        self.organizations = AsyncOrganizationsClient(
+            client_wrapper=self._client_wrapper
+        )
+        self.projects = AsyncProjectsClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(
