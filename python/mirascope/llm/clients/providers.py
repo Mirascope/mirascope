@@ -10,8 +10,7 @@ from .mlx import (
     MLXModelId,
 )
 from .openai import (
-    OpenAICompletionsModelId,
-    OpenAIResponsesModelId,
+    OpenAIModelId,
 )
 
 Provider: TypeAlias = Literal[
@@ -23,14 +22,7 @@ Provider: TypeAlias = Literal[
 ]
 PROVIDERS = get_args(Provider)
 
-ModelId: TypeAlias = (
-    AnthropicModelId
-    | GoogleModelId
-    | OpenAIResponsesModelId
-    | OpenAICompletionsModelId
-    | MLXModelId
-    | str
-)
+ModelId: TypeAlias = AnthropicModelId | GoogleModelId | OpenAIModelId | MLXModelId | str
 
 
 def model_id_to_provider(model_id: ModelId) -> Provider:

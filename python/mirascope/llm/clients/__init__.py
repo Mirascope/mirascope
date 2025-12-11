@@ -9,10 +9,8 @@ from .get_client import client
 from .google import GoogleClient, GoogleModelId
 from .mlx import MLXClient, MLXModelId
 from .openai import (
-    OpenAICompletionsClient,
-    OpenAICompletionsModelId,
-    OpenAIResponsesClient,
-    OpenAIResponsesModelId,
+    OpenAIClient,
+    OpenAIModelId,
 )
 from .providers import PROVIDERS, ModelId, Provider, model_id_to_provider
 
@@ -26,10 +24,8 @@ __all__ = [
     "MLXClient",
     "MLXModelId",
     "ModelId",
-    "OpenAICompletionsClient",
-    "OpenAICompletionsModelId",
-    "OpenAIResponsesClient",
-    "OpenAIResponsesModelId",
+    "OpenAIClient",
+    "OpenAIModelId",
     "Params",
     "Provider",
     "client",
