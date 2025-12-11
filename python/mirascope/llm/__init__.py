@@ -78,7 +78,7 @@ from .messages import (
     UserContent,
     UserMessage,
 )
-from .models import Model, model, use_model
+from .models import Model, model, model_from_context, use_model
 from .prompts import (
     AsyncContextPrompt,
     AsyncPrompt,
@@ -223,6 +223,7 @@ __all__ = [
     "mcp",
     "messages",
     "model",
+    "model_from_context",
     "models",
     "prompt",
     "prompts",

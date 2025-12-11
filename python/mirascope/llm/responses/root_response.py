@@ -167,12 +167,6 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     @property
     def model(self) -> "Model":
         """A `Model` with parameters matching this response."""
-        from ..models import Model, get_model_from_context
+        from ..models import use_model  # Dynamic import to avoid circular dependency
 
-        if context_model := get_model_from_context():
-            return context_model
-
-        return Model(
-            model_id=self.model_id,
-            **self.params,
-        )
+        return use_model(self.model_id, **self.params)

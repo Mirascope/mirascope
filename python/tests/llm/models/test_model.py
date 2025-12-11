@@ -22,6 +22,15 @@ def test_use_model_with_context() -> None:
         assert model.model_id == "anthropic/claude-sonnet-4-0"
 
 
+def test_use_model_as_context_manager() -> None:
+    """Test that model can be used as a context manager directly."""
+    with llm.Model("anthropic/claude-sonnet-4-0"):
+        model = llm.use_model("openai/gpt-4o")
+
+        assert model.provider == "anthropic"
+        assert model.model_id == "anthropic/claude-sonnet-4-0"
+
+
 def test_direct_model_instantiation_ignores_context() -> None:
     """Test that direct Model instantiation ignores context (hardcoding behavior)."""
     with llm.model("openai/claude-sonnet-4-0"):
@@ -50,11 +59,24 @@ def test_use_model_accepts_model_instance() -> None:
     assert model.params.get("temperature") == 0.7
 
 
-def test_model_context_accepts_model_instance() -> None:
-    """Test that llm.model() accepts a Model instance."""
-    model_instance = llm.Model("anthropic/claude-sonnet-4-0", temperature=0.8)
+def test_nested_context_manager_with_same_instance() -> None:
+    """Test that the same Model instance can be used in nested contexts.
 
-    with llm.model(model_instance) as model:
-        assert model.provider == "anthropic"
-        assert model.model_id == "anthropic/claude-sonnet-4-0"
-        assert model.params.get("temperature") == 0.8
+    Expected behavior: Each nested context should properly manage its own token
+    and restore the previous state when exiting.
+    """
+    model = llm.Model("openai/gpt-4o")
+
+    assert llm.model_from_context() is None
+
+    with model:
+        assert llm.model_from_context() is model
+
+        with model:  # Inner context with SAME instance
+            assert llm.model_from_context() is model
+
+        assert llm.model_from_context() is model, (
+            "Context should still be active after nested exit, but token was lost"
+        )
+
+    assert llm.model_from_context() is None

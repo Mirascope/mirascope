@@ -6,11 +6,11 @@ the model at runtime, and `llm.use_model()` retrieves the model from context or
 creates a default one.
 """
 
-from .models import Model, get_model_from_context, model, use_model
+from .models import Model, model, model_from_context, use_model
 
 __all__ = [
     "Model",
-    "get_model_from_context",
     "model",
+    "model_from_context",
     "use_model",
 ]
