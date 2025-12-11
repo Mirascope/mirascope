@@ -747,7 +747,7 @@ def test_model_call_with_format_tool_finish_reason(
                 raw={"responseId": "resp_format_tool_finish"},
                 provider=self.provider,  # pyright: ignore [reportArgumentType]
                 model_id=model_id,
-                provider_model_id="gpt-4o-mini",
+                provider_model_name="gpt-4o-mini",
                 params=params,  # pyright: ignore [reportArgumentType]
                 tools=tools,
                 format=format,

@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:responses",
-            "provider_model_id": "gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -24,7 +24,7 @@ test_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_02aecbd82c76cb54006931df309ef08197a1a028224b73014e",

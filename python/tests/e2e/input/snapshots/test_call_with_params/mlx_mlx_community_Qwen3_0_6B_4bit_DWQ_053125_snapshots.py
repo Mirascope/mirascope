@@ -13,7 +13,7 @@ test_snapshot = snapshot(
             {
                 "provider": "mlx",
                 "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
-                "provider_model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -55,7 +55,7 @@ Wait, maybe I made a mistake in the first\
                         ],
                         provider="mlx",
                         model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
-                        provider_model_id=None,
+                        provider_model_name=None,
                         raw_message=None,
                     ),
                 ],

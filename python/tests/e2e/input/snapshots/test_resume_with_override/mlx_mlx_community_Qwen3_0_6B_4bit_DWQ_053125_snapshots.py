@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
-            "provider_model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -22,7 +22,7 @@ test_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -58,7 +58,7 @@ I can double-check that. My answer is correct. If you have any other questions, 
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
-                    provider_model_id=None,
+                    provider_model_name=None,
                     raw_message=None,
                 ),
             ],

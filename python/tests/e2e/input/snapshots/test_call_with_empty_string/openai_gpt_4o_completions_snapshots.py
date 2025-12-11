@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -24,7 +24,7 @@ test_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "content": "Hello! It looks like your message might be incomplete. How can I assist you today?",
                         "role": "assistant",

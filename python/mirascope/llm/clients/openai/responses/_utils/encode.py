@@ -180,7 +180,7 @@ def _encode_message(
     if (
         message.role == "assistant"
         and message.provider == "openai"
-        and message.provider_model_id
+        and message.provider_model_name
         == model_name(model_id=model_id, api_mode="responses")
         and message.raw_message
         and not encode_thoughts

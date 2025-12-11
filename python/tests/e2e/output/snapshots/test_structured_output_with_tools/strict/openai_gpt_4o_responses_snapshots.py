@@ -13,7 +13,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:responses",
-            "provider_model_id": "gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -34,7 +34,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -66,7 +66,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0c13bc8721cd88030068f966f553088195bddd767eb493daa8",
@@ -149,7 +149,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:responses",
-            "provider_model_id": "gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -170,7 +170,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -199,7 +199,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0f268704e49f9e100068f96706d6dc8196bc4a4005e8401f2b",
@@ -287,7 +287,7 @@ stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -319,7 +319,7 @@ stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0b0d1528ca873fd80068f9671943208195b33ccddef86b60ad",
@@ -422,7 +422,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -451,7 +451,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0568f6e6bd681de70068f96728689881949f30b2eac2de51a8",

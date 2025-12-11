@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
-            "provider_model_id": "claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -22,7 +22,7 @@ test_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -50,7 +50,7 @@ test_snapshot = snapshot(
                     ],
                     provider="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_id="claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

@@ -12,7 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
-            "provider_model_id": "gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -90,7 +90,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -188,7 +188,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                     content=[Text(text="The primes were 79, 179, and 379.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -218,7 +218,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
-            "provider_model_id": "gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -244,7 +244,7 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -292,7 +292,7 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                     content=[Text(text="I don't remember.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -382,7 +382,7 @@ Therefore, there are 3 such primes.
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -569,7 +569,7 @@ Therefore, there are 3 such primes.
                     content=[Text(text="The primes were 79, 179, and 379.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -651,7 +651,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -753,7 +753,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                     content=[Text(text="I don't remember.")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {

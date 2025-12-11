@@ -14,7 +14,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:responses",
-            "provider_model_id": "gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -36,7 +36,7 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -92,7 +92,7 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_06593a9ea7951926006916133437908193afc85e5604f85aaf",
