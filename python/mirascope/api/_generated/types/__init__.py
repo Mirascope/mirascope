@@ -2,20 +2,36 @@
 
 # isort: skip_file
 
+from .already_exists_error import AlreadyExistsError
+from .already_exists_error_tag import AlreadyExistsErrorTag
+from .database_error import DatabaseError
+from .database_error_tag import DatabaseErrorTag
 from .http_api_decode_error import HttpApiDecodeError
 from .http_api_decode_error_tag import HttpApiDecodeErrorTag
 from .issue import Issue
 from .issue_tag import IssueTag
+from .not_found_error_body import NotFoundErrorBody
+from .not_found_error_tag import NotFoundErrorTag
+from .permission_denied_error import PermissionDeniedError
+from .permission_denied_error_tag import PermissionDeniedErrorTag
 from .property_key import PropertyKey
-from .property_key_tag import PropertyKeyTag
-from .property_key_tag_tag import PropertyKeyTagTag
+from .property_key_key import PropertyKeyKey
+from .property_key_key_tag import PropertyKeyKeyTag
 
 __all__ = [
+    "AlreadyExistsError",
+    "AlreadyExistsErrorTag",
+    "DatabaseError",
+    "DatabaseErrorTag",
     "HttpApiDecodeError",
     "HttpApiDecodeErrorTag",
     "Issue",
     "IssueTag",
+    "NotFoundErrorBody",
+    "NotFoundErrorTag",
+    "PermissionDeniedError",
+    "PermissionDeniedErrorTag",
     "PropertyKey",
-    "PropertyKeyTag",
-    "PropertyKeyTagTag",
+    "PropertyKeyKey",
+    "PropertyKeyKeyTag",
 ]

@@ -2,6 +2,6 @@
 
 import typing
 
-from .property_key_tag import PropertyKeyTag
+from .property_key_key import PropertyKeyKey
 
-PropertyKey = typing.Union[str, float, PropertyKeyTag]
+PropertyKey = typing.Union[str, float, PropertyKeyKey]

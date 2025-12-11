@@ -4,18 +4,19 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
-from .property_key_tag_tag import PropertyKeyTagTag
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
 
 
-class PropertyKeyTag(UniversalBaseModel):
-    """
-    an object to be decoded into a globally shared symbol
-    """
-
-    tag: typing_extensions.Annotated[PropertyKeyTagTag, FieldMetadata(alias="_tag")]
-    key: str
+class ProjectsListResponseItem(UniversalBaseModel):
+    id: str
+    name: str
+    organization_id: typing_extensions.Annotated[
+        str, FieldMetadata(alias="organizationId")
+    ]
+    created_by_user_id: typing_extensions.Annotated[
+        str, FieldMetadata(alias="createdByUserId")
+    ]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

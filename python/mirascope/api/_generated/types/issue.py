@@ -3,9 +3,7 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
 from .issue_tag import IssueTag
 from .property_key import PropertyKey
 
@@ -15,9 +13,7 @@ class Issue(UniversalBaseModel):
     Represents an error encountered while parsing a value to match the schema
     """
 
-    tag: typing_extensions.Annotated[IssueTag, FieldMetadata(alias="_tag")] = (
-        pydantic.Field()
-    )
+    tag: IssueTag = pydantic.Field()
     """
     The tag identifying the type of parse issue
     """
