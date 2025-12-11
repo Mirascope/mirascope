@@ -30,24 +30,12 @@ from ....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ..model_ids import AnthropicModelId
+from ..model_id import AnthropicModelId, model_name
 
 ANTHROPIC_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
     "refusal": FinishReason.REFUSAL,
 }
-
-
-def get_provider_model_id(model_id: AnthropicModelId) -> str:
-    """Extract the provider-specific model ID from a full model ID.
-
-    Args:
-        model_id: Full model ID (e.g. "anthropic/claude-sonnet-4-5")
-
-    Returns:
-        Provider-specific model ID (e.g. "claude-sonnet-4-5")
-    """
-    return model_id.removeprefix("anthropic/")
 
 
 def _decode_assistant_content(
@@ -79,7 +67,7 @@ def decode_response(
         content=[_decode_assistant_content(part) for part in response.content],
         provider="anthropic",
         model_id=model_id,
-        provider_model_id=model_id.removeprefix("anthropic/"),
+        provider_model_id=model_name(model_id),
         raw_message={
             "role": response.role,
             "content": [part.model_dump() for part in response.content],

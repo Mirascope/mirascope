@@ -21,9 +21,9 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
-from ...model_info import MODELS_WITHOUT_AUDIO_SUPPORT, OpenAIModelId
+from ...model_id import OpenAIModelId, model_name
+from ...model_info import MODELS_WITHOUT_AUDIO_SUPPORT
 from ...shared import _utils as _shared_utils
-from .decode import get_provider_model_id
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):
@@ -98,8 +98,8 @@ def _encode_user_message(
             )
             current_content.append(content)
         elif part.type == "audio":
-            model_name = model_id.removeprefix("openai/").removesuffix(":completions")
-            if model_name in MODELS_WITHOUT_AUDIO_SUPPORT:
+            base_model_name = model_name(model_id, None)
+            if base_model_name in MODELS_WITHOUT_AUDIO_SUPPORT:
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
                     provider="openai",
@@ -147,7 +147,8 @@ def _encode_assistant_message(
 
     if (
         message.provider == "openai"
-        and message.provider_model_id == get_provider_model_id(model_id=model_id)
+        and message.provider_model_id
+        == model_name(model_id=model_id, api_mode="completions")
         and message.raw_message
         and not encode_thoughts
     ):
@@ -287,11 +288,11 @@ def encode_request(
         raise ValueError(
             f"Can't use completions client for responses model: {model_id}"
         )
-    model_name = model_id.removeprefix("openai/").removesuffix(":completions")
+    base_model_name = model_name(model_id, None)
 
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
         {
-            "model": model_name,
+            "model": base_model_name,
         }
     )
     encode_thoughts = False
@@ -320,7 +321,7 @@ def encode_request(
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
 
     model_supports_strict = (
-        model_name not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+        base_model_name not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     )
     default_mode = "strict" if model_supports_strict else "tool"
     format = resolve_format(format, default_mode=default_mode)
@@ -346,7 +347,7 @@ def encode_request(
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
             format.mode == "json"
-            and model_name not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            and base_model_name not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["response_format"] = {"type": "json_object"}
 

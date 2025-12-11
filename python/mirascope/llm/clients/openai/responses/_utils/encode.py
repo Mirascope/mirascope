@@ -39,9 +39,9 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
-from ...model_info import NON_REASONING_MODELS, OpenAIModelId
+from ...model_id import OpenAIModelId, model_name
+from ...model_info import NON_REASONING_MODELS
 from ...shared import _utils as _shared_utils
-from .decode import get_provider_model_id
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -180,7 +180,8 @@ def _encode_message(
     if (
         message.role == "assistant"
         and message.provider == "openai"
-        and message.provider_model_id == get_provider_model_id(model_id=model_id)
+        and message.provider_model_id
+        == model_name(model_id=model_id, api_mode="responses")
         and message.raw_message
         and not encode_thoughts
     ):
@@ -252,13 +253,14 @@ def encode_request(
     """Prepares a request for the `OpenAI.responses.create` method."""
     if not model_id.startswith("openai/"):  # pragma: no cover
         raise ValueError(f"Model ID must start with 'openai/' prefix, got: {model_id}")
-    model_name = model_id.removeprefix("openai/").removesuffix(":responses")
-    if model_name.endswith(":completions"):  # pragma: no cover
+    if model_id.endswith(":completions"):  # pragma: no cover
         raise ValueError("Cannot use :completions model with responses client")
+
+    base_model_name = model_name(model_id, None)
 
     kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
         {
-            "model": model_name,
+            "model": base_model_name,
         }
     )
     encode_thoughts = False
@@ -275,7 +277,7 @@ def encode_request(
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
-            if model_name in NON_REASONING_MODELS:
+            if base_model_name in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
                     "thinking", param_accessor.thinking, "openai", model_id
                 )

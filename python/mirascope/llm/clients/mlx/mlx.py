@@ -17,7 +17,7 @@ from ...tools import AnyToolSchema, BaseToolkit
 from ..base import Params
 from . import _utils
 from .encoding import BaseEncoder, TokenIds
-from .model_ids import MLXModelId
+from .model_id import MLXModelId
 
 
 def _consume_sync_stream_into_queue(

@@ -34,7 +34,7 @@ from ..base import BaseClient, Params
 from . import _utils
 from .encoding import TransformersEncoder
 from .mlx import MLX
-from .model_ids import MLXModelId
+from .model_id import MLXModelId, model_name
 
 
 @cache
@@ -48,25 +48,15 @@ def client() -> "MLXClient":
     return _mlx_client_singleton()
 
 
-def _get_provider_model_id(model_id: MLXModelId) -> str:
-    """Extract the provider-specific model ID from a full model ID.
-
-    Args:
-        model_id: Full model ID (e.g. "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
-
-    Returns:
-        Provider-specific model ID (e.g. "mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
-    """
-    return model_id.removeprefix("mlx/")
-
-
 @lru_cache(maxsize=16)
 def _get_mlx(model_id: MLXModelId) -> MLX:
     if not model_id.startswith("mlx/"):  # pragma: no cover
         raise ValueError(f"Model ID must start with 'mlx/' prefix, got: {model_id}")
 
-    model_name = _get_provider_model_id(model_id)
-    model, tokenizer = cast(tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_name))
+    mlx_model_name = model_name(model_id)
+    model, tokenizer = cast(
+        tuple[nn.Module, PreTrainedTokenizer], mlx_load(mlx_model_name)
+    )
     encoder = TransformersEncoder(tokenizer)
     return MLX(
         model_id,
@@ -154,7 +144,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
             raw=response,
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -246,7 +236,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
             raw=response,
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -329,7 +319,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
             raw=response,
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -425,7 +415,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
             raw=response,
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -503,7 +493,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         return StreamResponse(
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -593,7 +583,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         return ContextStreamResponse(
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -670,7 +660,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         return AsyncStreamResponse(
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -766,7 +756,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         return AsyncContextStreamResponse(
             provider="mlx",
             model_id=model_id,
-            provider_model_id=_get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,

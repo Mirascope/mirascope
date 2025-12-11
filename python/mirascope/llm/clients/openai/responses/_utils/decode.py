@@ -30,25 +30,12 @@ from .....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ...model_info import OpenAIModelId
+from ...model_id import OpenAIModelId, model_name
 
 INCOMPLETE_DETAILS_TO_FINISH_REASON = {
     "max_output_tokens": FinishReason.MAX_TOKENS,
     "content_filter": FinishReason.REFUSAL,
 }
-
-
-def get_provider_model_id(model_id: OpenAIModelId) -> str:
-    """Extract the provider-specific model ID from a full model ID.
-
-    Args:
-        model_id: Full model ID (e.g. "openai/gpt-4o")
-
-    Returns:
-        Provider-specific model ID with API suffix (e.g. "gpt-4o:responses")
-    """
-    model_name = model_id.removeprefix("openai/").removesuffix(":responses")
-    return f"{model_name}:responses"
 
 
 def _serialize_output_item(
@@ -106,7 +93,7 @@ def decode_response(
         content=parts,
         provider="openai",
         model_id=model_id,
-        provider_model_id=get_provider_model_id(model_id),
+        provider_model_id=model_name(model_id, "responses"),
         raw_message=[
             _serialize_output_item(output_item) for output_item in response.output
         ],

@@ -33,7 +33,7 @@ from ...tools import (
 )
 from ..base import BaseClient, Params
 from . import _utils
-from .model_ids import AnthropicModelId
+from .model_id import AnthropicModelId, model_name
 
 
 @lru_cache(maxsize=256)
@@ -152,7 +152,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
             raw=anthropic_response,
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -252,7 +252,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
             raw=anthropic_response,
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -339,7 +339,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
             raw=anthropic_response,
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -439,7 +439,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
             raw=anthropic_response,
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -523,7 +523,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         return StreamResponse(
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -619,7 +619,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         return ContextStreamResponse(
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -702,7 +702,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         return AsyncStreamResponse(
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -804,7 +804,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         return AsyncContextStreamResponse(
             provider="anthropic",
             model_id=model_id,
-            provider_model_id=_utils.get_provider_model_id(model_id),
+            provider_model_id=model_name(model_id),
             params=params,
             tools=tools,
             input_messages=input_messages,

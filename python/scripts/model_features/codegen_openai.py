@@ -85,7 +85,7 @@ def generate_model_info(data: dict[str, Any]) -> str:
         "",
         "from typing import Literal",
         "",
-        "OpenAIModelId = Literal[",
+        "OpenAIKnownModels = Literal[",
     ]
 
     # Add model IDs as literal strings
@@ -93,8 +93,9 @@ def generate_model_info(data: dict[str, Any]) -> str:
         comma = "," if i < len(model_ids) - 1 else ""
         lines.append(f'    "{model_id}"{comma}')
 
-    lines.append("] | str")
+    lines.append("]")
     lines.append('"""Valid OpenAI model IDs including API-specific variants."""')
+    lines.append("")
     lines.append("")
 
     # Add models without audio support set
