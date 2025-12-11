@@ -11,7 +11,32 @@ import { Schema } from "effect";
  *   .addError(NotFoundError, { status: NotFoundError.status })
  */
 
-export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
+/**
+ * Factory function to create a TaggedError class that serializes with `tag` instead of `_tag`.
+ * This is needed because Fern SDK expects `tag` but Effect uses `_tag`.
+ */
+function TaggedHttpError<Self>() {
+  return <Tag extends string, Fields extends Schema.Struct.Fields>(
+    tag: Tag,
+    fields: Fields,
+  ) => {
+    const Base = Schema.TaggedError<Self>()(tag, fields);
+    const fieldKeys = Object.keys(fields) as (keyof Fields)[];
+    return class extends Base {
+      toJSON() {
+        const result: Record<string, unknown> = { tag: this._tag };
+        for (const key of fieldKeys) {
+          result[key as string] = (this as unknown as Record<string, unknown>)[
+            key as string
+          ];
+        }
+        return result;
+      }
+    };
+  };
+}
+
+export class NotFoundError extends TaggedHttpError<NotFoundError>()(
   "NotFoundError",
   {
     message: Schema.String,
@@ -21,7 +46,7 @@ export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
   static readonly status = 404 as const;
 }
 
-export class DatabaseError extends Schema.TaggedError<DatabaseError>()(
+export class DatabaseError extends TaggedHttpError<DatabaseError>()(
   "DatabaseError",
   {
     message: Schema.String,
@@ -31,7 +56,7 @@ export class DatabaseError extends Schema.TaggedError<DatabaseError>()(
   static readonly status = 500 as const;
 }
 
-export class InvalidSessionError extends Schema.TaggedError<InvalidSessionError>()(
+export class InvalidSessionError extends TaggedHttpError<InvalidSessionError>()(
   "InvalidSessionError",
   {
     message: Schema.String,
@@ -41,7 +66,7 @@ export class InvalidSessionError extends Schema.TaggedError<InvalidSessionError>
   static readonly status = 401 as const;
 }
 
-export class AlreadyExistsError extends Schema.TaggedError<AlreadyExistsError>()(
+export class AlreadyExistsError extends TaggedHttpError<AlreadyExistsError>()(
   "AlreadyExistsError",
   {
     message: Schema.String,
@@ -51,7 +76,7 @@ export class AlreadyExistsError extends Schema.TaggedError<AlreadyExistsError>()
   static readonly status = 409 as const;
 }
 
-export class PermissionDeniedError extends Schema.TaggedError<PermissionDeniedError>()(
+export class PermissionDeniedError extends TaggedHttpError<PermissionDeniedError>()(
   "PermissionDeniedError",
   {
     message: Schema.String,
@@ -61,7 +86,7 @@ export class PermissionDeniedError extends Schema.TaggedError<PermissionDeniedEr
   static readonly status = 403 as const;
 }
 
-export class UnauthorizedError extends Schema.TaggedError<UnauthorizedError>()(
+export class UnauthorizedError extends TaggedHttpError<UnauthorizedError>()(
   "UnauthorizedError",
   {
     message: Schema.String,
