@@ -20,6 +20,7 @@ export class DatabaseError extends Schema.TaggedError<DatabaseError>()(
 ) {
   static readonly status = 500 as const;
 }
+
 export class DeletedUserError extends Schema.TaggedError<DeletedUserError>()(
   "DeletedUserError",
   {
