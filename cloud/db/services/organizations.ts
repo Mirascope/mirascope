@@ -17,6 +17,7 @@ import {
   organizationMemberships,
   type NewOrganization,
   type PublicOrganization,
+  type PublicOrganizationMembership,
   type PublicOrganizationWithMembership,
   type Role,
 } from "@/db/schema";
@@ -258,6 +259,63 @@ export class OrganizationService extends BaseAuthenticatedService<
             cause: error,
           }),
       });
+    });
+  }
+
+  /**
+   * Add a member to an organization with a specified role.
+   * Requires OWNER or ADMIN permission on the organization.
+   */
+  addMember({
+    userId,
+    organizationId,
+    memberUserId,
+    role,
+  }: {
+    userId: string;
+    organizationId: string;
+    memberUserId: string;
+    role: Role;
+  }): Effect.Effect<
+    PublicOrganizationMembership,
+    NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      const callerRole = yield* this.getRole({ organizationId, userId });
+      yield* this.verifyPermission(callerRole, "update");
+
+      const membership = yield* Effect.tryPromise({
+        try: async () => {
+          const [membership] = await this.db
+            .insert(organizationMemberships)
+            .values({
+              organizationId,
+              userId: memberUserId,
+              role,
+            })
+            .returning({
+              id: organizationMemberships.id,
+              organizationId: organizationMemberships.organizationId,
+              userId: organizationMemberships.userId,
+              role: organizationMemberships.role,
+              createdAt: organizationMemberships.createdAt,
+            });
+          return membership;
+        },
+        catch: (error) => {
+          if (isUniqueConstraintError(error)) {
+            return new AlreadyExistsError({
+              message: "User is already a member of this organization",
+            });
+          }
+          return new DatabaseError({
+            message: "Failed to add organization member",
+            cause: error,
+          });
+        },
+      });
+
+      return membership;
     });
   }
 }

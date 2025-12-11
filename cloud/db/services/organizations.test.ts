@@ -468,4 +468,168 @@ describe("OrganizationService", () => {
       }),
     );
   });
+
+  describe("addMember", () => {
+    it.effect("adds a member to an organization", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        // Create a new user to add as member
+        const newMember = yield* db.users.create({
+          data: { email: "newmember@example.com", name: "New Member" },
+        });
+
+        const membership = yield* db.organizations.addMember({
+          userId: owner.id,
+          organizationId: org.id,
+          memberUserId: newMember.id,
+          role: "DEVELOPER",
+        });
+
+        expect(membership).toBeDefined();
+        expect(membership.organizationId).toBe(org.id);
+        expect(membership.userId).toBe(newMember.id);
+        expect(membership.role).toBe("DEVELOPER");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("allows added member to access organization", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const newMember = yield* db.users.create({
+          data: { email: "newmember@example.com", name: "New Member" },
+        });
+
+        yield* db.organizations.addMember({
+          userId: owner.id,
+          organizationId: org.id,
+          memberUserId: newMember.id,
+          role: "ANNOTATOR",
+        });
+
+        // Verify the new member can access the organization
+        const foundOrg = yield* db.organizations.findById({
+          userId: newMember.id,
+          organizationId: org.id,
+        });
+
+        expect(foundOrg.id).toBe(org.id);
+        expect(foundOrg.role).toBe("ANNOTATOR");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when organization not found", () =>
+      Effect.gen(function* () {
+        const { owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.organizations
+          .addMember({
+            userId: owner.id,
+            organizationId: badId,
+            memberUserId: owner.id,
+            role: "DEVELOPER",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when caller is not a member", () =>
+      Effect.gen(function* () {
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const result = yield* db.organizations
+          .addMember({
+            userId: nonMember.id,
+            organizationId: org.id,
+            memberUserId: nonMember.id,
+            role: "DEVELOPER",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when caller has insufficient role",
+      () =>
+        Effect.gen(function* () {
+          const db = new MockDatabase()
+            // getRole: DEVELOPER role (too low for update/add member)
+            .select([{ role: "DEVELOPER" }])
+            .build();
+
+          const result = yield* db.organizations
+            .addMember({
+              userId: "caller-id",
+              organizationId: "org-id",
+              memberUserId: "new-user-id",
+              role: "ANNOTATOR",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toBe(
+            "You do not have permission to update this organization",
+          );
+        }),
+    );
+
+    it.effect(
+      "returns `AlreadyExistsError` when user is already a member",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
+
+          // Try to add the owner again (they're already a member)
+          const result = yield* db.organizations
+            .addMember({
+              userId: owner.id,
+              organizationId: org.id,
+              memberUserId: owner.id,
+              role: "ADMIN",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(AlreadyExistsError);
+          expect(result.message).toBe(
+            "User is already a member of this organization",
+          );
+        }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when insert fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // getRole: OWNER role (has permission)
+          .select([{ role: "OWNER" }])
+          // insert: fails
+          .insert(new Error("Insert failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .addMember({
+            userId: "caller-id",
+            organizationId: "org-id",
+            memberUserId: "new-user-id",
+            role: "DEVELOPER",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to add organization member");
+      }),
+    );
+  });
 });
