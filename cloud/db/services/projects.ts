@@ -354,4 +354,54 @@ export class ProjectService extends BaseAuthenticatedService<
       return membership;
     });
   }
+
+  /**
+   * Remove a member from a project.
+   * Requires OWNER or ADMIN permission on the project.
+   */
+  terminateMember({
+    id,
+    memberUserId,
+    userId,
+  }: {
+    id: string;
+    memberUserId: string;
+    userId: string;
+  }): Effect.Effect<
+    void,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      yield* this.authorize({ id, userId, action: "update" });
+
+      const deleted = yield* Effect.tryPromise({
+        try: async () => {
+          const result = await this.db
+            .delete(projectMemberships)
+            .where(
+              and(
+                eq(projectMemberships.projectId, id),
+                eq(projectMemberships.userId, memberUserId),
+              ),
+            )
+            .returning({ id: projectMemberships.id });
+          return result.length > 0;
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to remove project member",
+            cause: error,
+          }),
+      });
+
+      if (!deleted) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "User is not a member of this project",
+            resource: "project_membership",
+          }),
+        );
+      }
+    });
+  }
 }

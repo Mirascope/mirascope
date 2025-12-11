@@ -733,4 +733,144 @@ describe("ProjectService", () => {
       }),
     );
   });
+
+  describe("terminateMember", () => {
+    it.effect("removes a member from a project", () =>
+      Effect.gen(function* () {
+        const { project, owner } = yield* TestProjectFixture;
+        const db = yield* DatabaseService;
+
+        // Add a member first
+        const member = yield* db.users.create({
+          email: "member@example.com",
+          name: "Member",
+        });
+
+        yield* db.projects.addMember({
+          id: project.id,
+          memberUserId: member.id,
+          role: "DEVELOPER",
+          userId: owner.id,
+        });
+
+        // Now remove them
+        yield* db.projects.terminateMember({
+          id: project.id,
+          memberUserId: member.id,
+          userId: owner.id,
+        });
+
+        // Verify they can no longer access the project
+        const result = yield* db.projects
+          .findById({ id: project.id, userId: member.id })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when project not found", () =>
+      Effect.gen(function* () {
+        const { owner } = yield* TestProjectFixture;
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.projects
+          .terminateMember({
+            id: badId,
+            memberUserId: owner.id,
+            userId: owner.id,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Project not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when caller is not a member", () =>
+      Effect.gen(function* () {
+        const { project, nonMember } = yield* TestProjectFixture;
+        const db = yield* DatabaseService;
+
+        const result = yield* db.projects
+          .terminateMember({
+            id: project.id,
+            memberUserId: nonMember.id,
+            userId: nonMember.id,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Project not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when caller has insufficient role",
+      () =>
+        Effect.gen(function* () {
+          const db = new MockDatabase()
+            // getRole: DEVELOPER role (too low for update)
+            .select([{ role: "DEVELOPER" }])
+            .build();
+
+          const result = yield* db.projects
+            .terminateMember({
+              id: "project-id",
+              memberUserId: "member-id",
+              userId: "caller-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toBe(
+            "You do not have permission to update this project",
+          );
+        }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when user is not a member of the project",
+      () =>
+        Effect.gen(function* () {
+          const { project, owner, nonMember } = yield* TestProjectFixture;
+          const db = yield* DatabaseService;
+
+          // Try to remove someone who isn't a member
+          const result = yield* db.projects
+            .terminateMember({
+              id: project.id,
+              memberUserId: nonMember.id,
+              userId: owner.id,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe("User is not a member of this project");
+        }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when delete fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // getRole: OWNER role (has permission)
+          .select([{ role: "OWNER" }])
+          // delete: fails
+          .delete(new Error("Delete failed"))
+          .build();
+
+        const result = yield* db.projects
+          .terminateMember({
+            id: "project-id",
+            memberUserId: "member-id",
+            userId: "caller-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to remove project member");
+      }),
+    );
+  });
 });
