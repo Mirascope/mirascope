@@ -12,17 +12,88 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type * as schema from "@/db/schema";
 import type { DatabaseTable } from "@/db/schema";
 
+// =============================================================================
+// Path Parameter Utility Types
+// =============================================================================
+
+/**
+ * Extracts parameter names from a path string.
+ * @example
+ * ParsePathParams<"users/:userId/sessions/:sessionId"> // "userId" | "sessionId"
+ */
+export type ParsePathParams<T extends string> =
+  T extends `${string}:${infer Param}/${infer Rest}`
+    ? Param | ParsePathParams<Rest>
+    : T extends `${string}:${infer Param}`
+      ? Param
+      : never;
+
+/**
+ * Converts path parameter names to an object type.
+ * @example
+ * PathParams<"users/:userId"> // { userId: string }
+ * PathParams<"users/:userId/sessions/:sessionId"> // { userId: string; sessionId: string }
+ */
+export type PathParams<T extends string> = {
+  [K in ParsePathParams<T>]: string;
+};
+
+/**
+ * Extracts the last parameter name from a path (the resource's own ID).
+ * @example
+ * LastPathParam<"users/:userId/sessions/:sessionId"> // "sessionId"
+ * LastPathParam<"users/:userId"> // "userId"
+ */
+export type LastPathParam<T extends string> =
+  T extends `${string}/${infer Rest}`
+    ? LastPathParam<Rest>
+    : T extends `${string}:${infer Param}`
+      ? Param
+      : never;
+
+/**
+ * Parent path params (all except the resource's own ID).
+ * Used for create operations where the resource ID doesn't exist yet.
+ * @example
+ * ParentParams<"users/:userId/sessions/:sessionId"> // { userId: string }
+ * ParentParams<"users/:userId"> // {}
+ */
+export type ParentParams<T extends string> = Omit<
+  PathParams<T>,
+  LastPathParam<T>
+>;
+
+/**
+ * Helper type to check if ParentParams is empty (i.e., top-level resource).
+ */
+export type HasParentParams<T extends string> =
+  keyof ParentParams<T> extends never ? false : true;
+
+/**
+ * Create params type - includes parent params and data.
+ * For top-level resources, this is just { data }.
+ * For nested resources, this includes parent path params.
+ */
+export type CreateParams<T extends string, TData> =
+  HasParentParams<T> extends true
+    ? ParentParams<T> & { data: TData }
+    : { data: TData };
+
+// =============================================================================
+// Base Service
+// =============================================================================
+
 /**
  * Base service class for CRUD operations on database entities.
- * Provides common database access and transaction support.
- * @template TEntity - The full entity type from the database (unused but kept for documentation)
+ * Provides common database access and transaction support with REST-style path parameters.
+ *
  * @template TPublic - The public-facing type (what gets returned)
- * @template TId - The type of the entity ID
+ * @template TPath - The REST path pattern (e.g., "users/:userId" or "users/:userId/sessions/:sessionId")
  * @template TTable - The Drizzle table type (constrained to actual database tables)
  */
 export abstract class BaseService<
   TPublic,
-  TId,
+  TPath extends string,
   TTable extends DatabaseTable = DatabaseTable,
 > {
   protected readonly db: PostgresJsDatabase<typeof schema>;
@@ -35,6 +106,12 @@ export abstract class BaseService<
   protected abstract getResourceName(): string;
   protected abstract getPublicFields(): Record<string, PgColumn>;
 
+  /**
+   * Returns the name of the ID parameter for this resource.
+   * @example "userId" for users, "sessionId" for sessions
+   */
+  protected abstract getIdParamName(): LastPathParam<TPath>;
+
   get resourceName(): string {
     return this.getResourceName();
   }
@@ -44,8 +121,19 @@ export abstract class BaseService<
     return table.id;
   }
 
+  /**
+   * Extracts the resource's own ID from path params.
+   */
+  protected getIdFromParams(params: PathParams<TPath>): string {
+    const idParamName = this.getIdParamName();
+    // Type assertion needed: LastPathParam<TPath> is always a key of PathParams<TPath>
+    // but TypeScript can't prove this at the type level due to the recursive nature
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    return (params as any)[idParamName] as string;
+  }
+
   create(
-    data: TTable["$inferInsert"],
+    params: CreateParams<TPath, TTable["$inferInsert"]>,
   ): Effect.Effect<TPublic, AlreadyExistsError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
@@ -56,7 +144,7 @@ export abstract class BaseService<
           // Type assertion needed: When TTable is a union type, Drizzle's .values()
           // can't narrow the type, but runtime behavior is correct
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-          .values(data as any)
+          .values(params.data as any)
           .returning(publicFields);
 
         return result as TPublic;
@@ -76,12 +164,13 @@ export abstract class BaseService<
     });
   }
 
-  findById({
-    id,
-  }: {
-    id: TId;
-  }): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
+  findById(
+    params: PathParams<TPath>,
+  ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
+      const id = this.getIdFromParams(params);
+      const idParamName = this.getIdParamName();
+
       const result = yield* Effect.tryPromise({
         try: async () => {
           const [result] = await this.db
@@ -105,7 +194,7 @@ export abstract class BaseService<
       if (!result) {
         return yield* Effect.fail(
           new NotFoundError({
-            message: `${this.getResourceName()} with id ${String(id)} not found`,
+            message: `${this.getResourceName()} with ${idParamName} ${id} not found`,
             resource: this.getResourceName(),
           }),
         );
@@ -114,19 +203,18 @@ export abstract class BaseService<
     });
   }
 
-  update({
-    id,
-    data,
-  }: {
-    id: TId;
-    data: Partial<TTable["$inferInsert"]>;
-  }): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
+  update(
+    params: PathParams<TPath> & { data: Partial<TTable["$inferInsert"]> },
+  ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
+      const id = this.getIdFromParams(params);
+      const idParamName = this.getIdParamName();
+
       const updated = yield* Effect.tryPromise({
         try: async () => {
           // Type safety: TTable is constrained to DatabaseTable, so updatedAt is guaranteed to exist
           const updateData = {
-            ...data,
+            ...params.data,
             updatedAt: new Date(),
           };
           const [result] = await this.db
@@ -150,7 +238,7 @@ export abstract class BaseService<
       if (!updated) {
         return yield* Effect.fail(
           new NotFoundError({
-            message: `${this.getResourceName()} with id ${String(id)} not found`,
+            message: `${this.getResourceName()} with ${idParamName} ${id} not found`,
             resource: this.getResourceName(),
           }),
         );
@@ -159,12 +247,13 @@ export abstract class BaseService<
     });
   }
 
-  delete({
-    id,
-  }: {
-    id: TId;
-  }): Effect.Effect<void, NotFoundError | DatabaseError> {
+  delete(
+    params: PathParams<TPath>,
+  ): Effect.Effect<void, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
+      const id = this.getIdFromParams(params);
+      const idParamName = this.getIdParamName();
+
       const deleted = yield* Effect.tryPromise({
         try: async () => {
           const table = this.getTable();
@@ -186,7 +275,7 @@ export abstract class BaseService<
       if (!deleted) {
         return yield* Effect.fail(
           new NotFoundError({
-            message: `${this.getResourceName()} with id ${String(id)} not found`,
+            message: `${this.getResourceName()} with ${idParamName} ${id} not found`,
             resource: this.getResourceName(),
           }),
         );
@@ -235,27 +324,31 @@ export type PermissionTable<TRole extends string> = Record<
  * Uses composition with an internal base service for raw CRUD operations.
  *
  * @template TPublic - The public-facing type (what gets returned)
- * @template TId - The type of the entity ID
+ * @template TPath - The REST path pattern (e.g., "organizations/:organizationId")
  * @template TTable - The Drizzle table type
  * @template TInsert - The insert type for the table
  * @template TRole - The role type for permission checking
  */
 export abstract class BaseAuthenticatedService<
   TPublic,
-  TId,
+  TPath extends string,
   TTable extends DatabaseTable,
   TInsert = TTable["$inferInsert"],
   TRole extends string = string,
 > {
   protected readonly db: PostgresJsDatabase<typeof schema>;
-  protected readonly baseService: BaseService<TPublic, TId, TTable>;
+  protected readonly baseService: BaseService<TPublic, TPath, TTable>;
 
   constructor(db: PostgresJsDatabase<typeof schema>) {
     this.db = db;
     this.baseService = this.initializeBaseService();
   }
 
-  protected abstract initializeBaseService(): BaseService<TPublic, TId, TTable>;
+  protected abstract initializeBaseService(): BaseService<
+    TPublic,
+    TPath,
+    TTable
+  >;
 
   /**
    * Returns the permission table mapping actions to allowed roles.
@@ -284,8 +377,8 @@ export abstract class BaseAuthenticatedService<
   }
 
   abstract create(args: {
-    data: TInsert;
     userId: string;
+    data: TInsert;
   }): Effect.Effect<
     TPublic,
     AlreadyExistsError | PermissionDeniedError | DatabaseError
@@ -295,28 +388,21 @@ export abstract class BaseAuthenticatedService<
     userId: string;
   }): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
 
-  abstract findById(args: {
-    id: TId;
-    userId: string;
-  }): Effect.Effect<
+  abstract findById(
+    args: { userId: string } & PathParams<TPath>,
+  ): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
-  abstract update(args: {
-    id: TId;
-    data: Partial<TInsert>;
-    userId: string;
-  }): Effect.Effect<
+  abstract update(
+    args: { userId: string } & PathParams<TPath> & { data: Partial<TInsert> },
+  ): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
-  abstract delete(args: {
-    id: TId;
-    userId: string;
-  }): Effect.Effect<
-    void,
-    NotFoundError | PermissionDeniedError | DatabaseError
-  >;
+  abstract delete(
+    args: { userId: string } & PathParams<TPath>,
+  ): Effect.Effect<void, NotFoundError | PermissionDeniedError | DatabaseError>;
 }

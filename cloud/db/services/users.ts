@@ -4,13 +4,21 @@ import { BaseService } from "@/db/services/base";
 import { DatabaseError } from "@/db/errors";
 import { users, type PublicUser } from "@/db/schema/users";
 
-export class UserService extends BaseService<PublicUser, string, typeof users> {
+export class UserService extends BaseService<
+  PublicUser,
+  "users/:userId",
+  typeof users
+> {
   protected getTable() {
     return users;
   }
 
   protected getResourceName() {
     return "user";
+  }
+
+  protected getIdParamName() {
+    return "userId" as const;
   }
 
   protected getPublicFields() {
@@ -21,6 +29,12 @@ export class UserService extends BaseService<PublicUser, string, typeof users> {
     };
   }
 
+  /**
+   * Creates or updates a user.
+   * @param data - The data to create or update the user with.
+   * @returns The created or updated user.
+   * @throws DatabaseError if the database operation fails.
+   */
   createOrUpdate(data: {
     email: string;
     name?: string | null;

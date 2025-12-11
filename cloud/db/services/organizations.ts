@@ -23,7 +23,7 @@ import {
 
 class OrganizationBaseService extends BaseService<
   PublicOrganization,
-  string,
+  "organizations/:organizationId",
   typeof organizations
 > {
   protected getTable() {
@@ -32,6 +32,10 @@ class OrganizationBaseService extends BaseService<
 
   protected getResourceName() {
     return "organization";
+  }
+
+  protected getIdParamName() {
+    return "organizationId" as const;
   }
 
   protected getPublicFields() {
@@ -44,7 +48,7 @@ class OrganizationBaseService extends BaseService<
 
 export class OrganizationService extends BaseAuthenticatedService<
   PublicOrganization,
-  string,
+  "organizations/:organizationId",
   typeof organizations,
   NewOrganization,
   Role
@@ -108,11 +112,11 @@ export class OrganizationService extends BaseAuthenticatedService<
   }
 
   create({
-    data,
     userId,
+    data,
   }: {
-    data: NewOrganization;
     userId: string;
+    data: NewOrganization;
   }): Effect.Effect<
     PublicOrganizationWithMembership,
     AlreadyExistsError | DatabaseError
@@ -182,63 +186,70 @@ export class OrganizationService extends BaseAuthenticatedService<
   }
 
   findById({
-    id,
     userId,
+    organizationId,
   }: {
-    id: string;
     userId: string;
+    organizationId: string;
   }): Effect.Effect<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId: id, userId });
+      const role = yield* this.getRole({ organizationId, userId });
       yield* this.verifyPermission(role, "read");
-      const organization = yield* this.baseService.findById({ id });
+      const organization = yield* this.baseService.findById({ organizationId });
       return { ...organization, role };
     });
   }
 
   update({
-    id,
-    data,
     userId,
+    organizationId,
+    data,
   }: {
-    id: string;
-    data: Partial<NewOrganization>;
     userId: string;
+    organizationId: string;
+    data: Partial<NewOrganization>;
   }): Effect.Effect<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId: id, userId });
+      const role = yield* this.getRole({ organizationId, userId });
       yield* this.verifyPermission(role, "update");
-      const organization = yield* this.baseService.update({ id, data });
+      const organization = yield* this.baseService.update({
+        organizationId,
+        data,
+      });
       return { ...organization, role };
     });
   }
 
   delete({
-    id,
     userId,
+    organizationId,
   }: {
-    id: string;
     userId: string;
+    organizationId: string;
   }): Effect.Effect<
     void,
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId: id, userId });
+      const role = yield* this.getRole({ organizationId, userId });
       yield* this.verifyPermission(role, "delete");
       yield* Effect.tryPromise({
         try: async () => {
           await this.db.transaction(async (tx) => {
             await tx
               .delete(organizationMemberships)
-              .where(eq(organizationMemberships.organizationId, id));
-            await tx.delete(organizations).where(eq(organizations.id, id));
+              .where(
+                eq(organizationMemberships.organizationId, organizationId),
+              );
+            await tx
+              .delete(organizations)
+              .where(eq(organizations.id, organizationId));
           });
         },
         catch: (error) =>

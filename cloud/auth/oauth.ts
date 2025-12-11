@@ -472,7 +472,7 @@ function processAuthenticatedUser(
       const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
       const session = yield* db.sessions.create({
         userId: user.id,
-        expiresAt: expiresAt,
+        data: { userId: user.id, expiresAt },
       });
 
       return session.id;
