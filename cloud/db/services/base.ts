@@ -35,34 +35,10 @@ export abstract class BaseService<
   protected abstract getResourceName(): string;
   protected abstract getPublicFields(): Record<string, PgColumn>;
 
-  get resourceName(): string {
-    return this.getResourceName();
-  }
   protected getIdColumn(): PgColumn {
     const table = this.getTable();
     return table.id;
   }
-
-  /**
-   * Execute operations within a transaction
-   */
-  // transaction<A, E>(
-  //   effect: (tx: PostgresJsDatabase<typeof schema>) => Effect.Effect<A, E>,
-  // ): Effect.Effect<A, E | DatabaseError> {
-  //   return Effect.tryPromise({
-  //     try: async () => {
-  //       return await this.db.transaction(async (tx) => {
-  //         // tx is already a PostgresJsDatabase instance, use it directly
-  //         return await Effect.runPromise(effect(tx));
-  //       });
-  //     },
-  //     catch: (error) =>
-  //       new DatabaseError({
-  //         message: "Transaction failed",
-  //         cause: error,
-  //       }),
-  //   });
-  // }
 
   create(
     data: TTable["$inferInsert"],
@@ -230,7 +206,16 @@ export abstract class BaseService<
 /**
  * Action types for permission checking
  */
-export type PermissionAction = "read" | "update" | "delete";
+export type PermissionAction = "create" | "read" | "update" | "delete";
+
+/**
+ * Permission table mapping actions to allowed roles.
+ * Each action maps to an array of roles that can perform that action.
+ */
+export type PermissionTable<TRole extends string> = Record<
+  PermissionAction,
+  readonly TRole[]
+>;
 
 /**
  * Abstract base class for services that require authentication.
@@ -240,25 +225,52 @@ export type PermissionAction = "read" | "update" | "delete";
  * @template TId - The type of the entity ID
  * @template TTable - The Drizzle table type
  * @template TInsert - The insert type for the table
+ * @template TRole - The role type for permission checking
  */
 export abstract class BaseAuthenticatedService<
   TPublic,
   TId,
   TTable extends DatabaseTable,
   TInsert = TTable["$inferInsert"],
+  TRole extends string = string,
 > {
   protected readonly db: PostgresJsDatabase<typeof schema>;
-  protected abstract readonly baseService: BaseService<TPublic, TId, TTable>;
 
   constructor(db: PostgresJsDatabase<typeof schema>) {
     this.db = db;
   }
 
-  protected abstract checkPermission(
-    userId: string,
+  protected abstract getResourceName(): string;
+
+  get resourceName(): string {
+    return this.getResourceName();
+  }
+
+  /**
+   * Returns the permission table mapping actions to allowed roles.
+   */
+  protected abstract getPermissionTable(): PermissionTable<TRole>;
+
+  /**
+   * Verify that a role has permission to perform an action.
+   */
+  protected verifyPermission(
+    role: TRole,
     action: PermissionAction,
-    resourceId: TId,
-  ): Effect.Effect<void, NotFoundError | PermissionDeniedError | DatabaseError>;
+  ): Effect.Effect<void, PermissionDeniedError> {
+    const permissionTable = this.getPermissionTable();
+    const allowedRoles = permissionTable[action];
+
+    if (!allowedRoles.includes(role)) {
+      return Effect.fail(
+        new PermissionDeniedError({
+          message: `You do not have permission to ${action} this ${this.resourceName}`,
+          resource: this.resourceName,
+        }),
+      );
+    }
+    return Effect.succeed(undefined);
+  }
 
   abstract create(
     data: TInsert,
@@ -272,47 +284,25 @@ export abstract class BaseAuthenticatedService<
     userId: string,
   ): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
 
-  // TODO: include in coverage once we have a service that doesn't override this
-  /* v8 ignore start */
-  findById(
+  abstract findById(
     id: TId,
     userId: string,
   ): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError
-  > {
-    return this.checkPermission(userId, "read", id).pipe(
-      Effect.andThen(this.baseService.findById(id)),
-    );
-  }
-  /* v8 ignore end */
+  >;
 
-  update(
+  abstract update(
     id: TId,
     data: Partial<TInsert>,
     userId: string,
   ): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError
-  > {
-    return this.checkPermission(userId, "update", id).pipe(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      Effect.andThen(this.baseService.update(id, data as any)),
-    );
-  }
+  >;
 
-  // TODO: include in coverage once we have a service that doesn't override this
-  /* v8 ignore start */
-  delete(
+  abstract delete(
     id: TId,
     userId: string,
-  ): Effect.Effect<
-    void,
-    NotFoundError | PermissionDeniedError | DatabaseError
-  > {
-    return this.checkPermission(userId, "delete", id).pipe(
-      Effect.andThen(this.baseService.delete(id)),
-    );
-  }
-  /* v8 ignore end */
+  ): Effect.Effect<void, NotFoundError | PermissionDeniedError | DatabaseError>;
 }
