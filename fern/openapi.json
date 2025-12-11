@@ -1459,7 +1459,7 @@
         "required": [
           "issues",
           "message",
-          "_tag"
+          "tag"
         ],
         "properties": {
           "issues": {
@@ -1471,7 +1471,7 @@
           "message": {
             "type": "string"
           },
-          "_tag": {
+          "tag": {
             "type": "string",
             "enum": [
               "HttpApiDecodeError"
@@ -1484,12 +1484,12 @@
       "Issue": {
         "type": "object",
         "required": [
-          "_tag",
+          "tag",
           "path",
           "message"
         ],
         "properties": {
-          "_tag": {
+          "tag": {
             "type": "string",
             "enum": [
               "Pointer",
@@ -1529,11 +1529,11 @@
           {
             "type": "object",
             "required": [
-              "_tag",
+              "tag",
               "key"
             ],
             "properties": {
-              "_tag": {
+              "tag": {
                 "type": "string",
                 "enum": [
                   "symbol"
@@ -1552,7 +1552,7 @@
         "type": "object",
         "required": [
           "message",
-          "_tag"
+          "tag"
         ],
         "properties": {
           "message": {
@@ -1562,7 +1562,7 @@
             "$id": "/schemas/unknown",
             "title": "unknown"
           },
-          "_tag": {
+          "tag": {
             "type": "string",
             "enum": [
               "DatabaseError"
@@ -1575,7 +1575,7 @@
         "type": "object",
         "required": [
           "message",
-          "_tag"
+          "tag"
         ],
         "properties": {
           "message": {
@@ -1584,7 +1584,7 @@
           "resource": {
             "type": "string"
           },
-          "_tag": {
+          "tag": {
             "type": "string",
             "enum": [
               "AlreadyExistsError"
@@ -1597,7 +1597,7 @@
         "type": "object",
         "required": [
           "message",
-          "_tag"
+          "tag"
         ],
         "properties": {
           "message": {
@@ -1606,7 +1606,7 @@
           "resource": {
             "type": "string"
           },
-          "_tag": {
+          "tag": {
             "type": "string",
             "enum": [
               "NotFoundError"
@@ -1619,7 +1619,7 @@
         "type": "object",
         "required": [
           "message",
-          "_tag"
+          "tag"
         ],
         "properties": {
           "message": {
@@ -1628,7 +1628,7 @@
           "resource": {
             "type": "string"
           },
-          "_tag": {
+          "tag": {
             "type": "string",
             "enum": [
               "PermissionDeniedError"
