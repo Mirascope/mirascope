@@ -632,4 +632,145 @@ describe("OrganizationService", () => {
       }),
     );
   });
+
+  describe("terminateMember", () => {
+    it.effect("removes a member from an organization", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        // Add a member first
+        const member = yield* db.users.create({
+          data: { email: "member@example.com", name: "Member" },
+        });
+
+        yield* db.organizations.addMember({
+          userId: owner.id,
+          organizationId: org.id,
+          memberUserId: member.id,
+          role: "DEVELOPER",
+        });
+
+        // Now remove them
+        yield* db.organizations.terminateMember({
+          userId: owner.id,
+          organizationId: org.id,
+          memberUserId: member.id,
+        });
+
+        // Verify they can no longer access the organization
+        const result = yield* db.organizations
+          .findById({ userId: member.id, organizationId: org.id })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when organization not found", () =>
+      Effect.gen(function* () {
+        const { owner } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.organizations
+          .terminateMember({
+            userId: owner.id,
+            organizationId: badId,
+            memberUserId: owner.id,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when caller is not a member", () =>
+      Effect.gen(function* () {
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* DatabaseService;
+
+        const result = yield* db.organizations
+          .terminateMember({
+            userId: nonMember.id,
+            organizationId: org.id,
+            memberUserId: nonMember.id,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when caller has insufficient role",
+      () =>
+        Effect.gen(function* () {
+          const db = new MockDatabase()
+            // getRole: DEVELOPER role (too low for update)
+            .select([{ role: "DEVELOPER" }])
+            .build();
+
+          const result = yield* db.organizations
+            .terminateMember({
+              userId: "caller-id",
+              organizationId: "org-id",
+              memberUserId: "member-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toBe(
+            "You do not have permission to update this organization",
+          );
+        }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when user is not a member of the organization",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
+
+          // Try to remove someone who isn't a member
+          const result = yield* db.organizations
+            .terminateMember({
+              userId: owner.id,
+              organizationId: org.id,
+              memberUserId: nonMember.id,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe(
+            "User is not a member of this organization",
+          );
+        }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when delete fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          // getRole: OWNER role (has permission)
+          .select([{ role: "OWNER" }])
+          // delete: fails
+          .delete(new Error("Delete failed"))
+          .build();
+
+        const result = yield* db.organizations
+          .terminateMember({
+            userId: "caller-id",
+            organizationId: "org-id",
+            memberUserId: "member-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to remove organization member");
+      }),
+    );
+  });
 });
