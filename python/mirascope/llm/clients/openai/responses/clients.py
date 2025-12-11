@@ -136,13 +136,13 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return Response(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -224,13 +224,13 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return AsyncResponse(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -315,12 +315,12 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         chunk_iterator = _utils.decode_stream(
             openai_stream,
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return StreamResponse(
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -404,12 +404,12 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         chunk_iterator = _utils.decode_async_stream(
             openai_stream,
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return AsyncStreamResponse(
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -503,13 +503,13 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return ContextResponse(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -604,13 +604,13 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return AsyncContextResponse(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -708,12 +708,12 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         chunk_iterator = _utils.decode_stream(
             openai_stream,
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return ContextStreamResponse(
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,
@@ -816,12 +816,12 @@ class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
         chunk_iterator = _utils.decode_async_stream(
             openai_stream,
         )
-        provider_model_id = model_name(model_id, "responses")
+        provider_model_name = model_name(model_id, "responses")
 
         return AsyncContextStreamResponse(
             provider="openai",
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             params=params,
             tools=tools,
             input_messages=messages,

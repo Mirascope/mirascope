@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
-            "provider_model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -54,7 +54,7 @@ Both types are fundamental to programming, with integers typically used for whol
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
-                    provider_model_id=None,
+                    provider_model_name=None,
                     raw_message=None,
                 ),
             ],

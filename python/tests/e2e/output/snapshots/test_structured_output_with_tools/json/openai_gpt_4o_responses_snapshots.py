@@ -14,7 +14,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:responses",
-            "provider_model_id": "gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -70,7 +70,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -106,7 +106,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_099b2074297131ee0068f966f961e88195b52bc39cd2c63caf",
@@ -212,7 +212,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:responses",
-            "provider_model_id": "gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -268,7 +268,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -304,7 +304,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_001734ab3b50b4140068f9670b55e88194a0e018fd79284d50",
@@ -464,7 +464,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -500,7 +500,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0f1f1f1012662e2a0068f9671dde588194a49f52a567767f75",
@@ -661,7 +661,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
@@ -697,7 +697,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:responses",
-                    provider_model_id="gpt-4o:responses",
+                    provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0075d4e9136cabd30068f9672c86288193a65c26fdd8affb48",

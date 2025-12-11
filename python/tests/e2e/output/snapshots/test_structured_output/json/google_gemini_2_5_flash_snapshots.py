@@ -12,7 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
-            "provider_model_id": "gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -92,7 +92,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -210,7 +210,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
-            "provider_model_id": "gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -290,7 +290,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -486,7 +486,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -697,7 +697,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {

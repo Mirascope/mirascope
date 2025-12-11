@@ -147,7 +147,7 @@ def _encode_assistant_message(
 
     if (
         message.provider == "openai"
-        and message.provider_model_id
+        and message.provider_model_name
         == model_name(model_id=model_id, api_mode="completions")
         and message.raw_message
         and not encode_thoughts

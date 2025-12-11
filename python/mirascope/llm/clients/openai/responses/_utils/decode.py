@@ -93,7 +93,7 @@ def decode_response(
         content=parts,
         provider="openai",
         model_id=model_id,
-        provider_model_id=model_name(model_id, "responses"),
+        provider_model_name=model_name(model_id, "responses"),
         raw_message=[
             _serialize_output_item(output_item) for output_item in response.output
         ],

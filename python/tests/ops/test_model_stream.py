@@ -393,7 +393,7 @@ def test_model_stream_iterator_error_records_exception(
     mock_client.stream.return_value = StreamResponse(
         provider="openai",
         model_id="openai/gpt-4o",
-        provider_model_id="gpt-4o:responses",
+        provider_model_name="gpt-4o:responses",
         params={},
         tools=None,
         format=None,

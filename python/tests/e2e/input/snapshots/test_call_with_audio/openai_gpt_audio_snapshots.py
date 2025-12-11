@@ -13,7 +13,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-audio",
-            "provider_model_id": "gpt-audio:completions",
+            "provider_model_name": "gpt-audio:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -33,7 +33,7 @@ test_snapshot = snapshot(
                     content=[Text(text='"LLM abstractions that aren\'t obstructions"')],
                     provider="openai",
                     model_id="openai/gpt-audio",
-                    provider_model_id="gpt-audio:completions",
+                    provider_model_name="gpt-audio:completions",
                     raw_message={
                         "content": '"LLM abstractions that aren\'t obstructions"',
                         "role": "assistant",

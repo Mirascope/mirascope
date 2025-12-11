@@ -12,7 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -36,7 +36,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -95,7 +95,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -119,7 +119,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -200,7 +200,7 @@ stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -269,7 +269,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],

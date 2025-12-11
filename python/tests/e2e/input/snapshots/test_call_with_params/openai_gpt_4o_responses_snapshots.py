@@ -12,7 +12,7 @@ test_snapshot = snapshot(
             {
                 "provider": "openai",
                 "model_id": "openai/gpt-4o:responses",
-                "provider_model_id": "gpt-4o:responses",
+                "provider_model_name": "gpt-4o:responses",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -30,7 +30,7 @@ test_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai",
                         model_id="openai/gpt-4o:responses",
-                        provider_model_id="gpt-4o:responses",
+                        provider_model_name="gpt-4o:responses",
                         raw_message=[
                             {
                                 "id": "msg_0d902d0e83de5d560068f96689f0b8819698f9c3a097db17f1",

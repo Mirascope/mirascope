@@ -71,7 +71,7 @@ def decode_response(
         content=parts,
         provider="openai",
         model_id=model_id,
-        provider_model_id=model_name(model_id, "completions"),
+        provider_model_name=model_name(model_id, "completions"),
         raw_message=message.model_dump(exclude_none=True),
     )
 

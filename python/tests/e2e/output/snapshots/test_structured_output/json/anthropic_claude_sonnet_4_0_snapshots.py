@@ -12,7 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
-            "provider_model_id": "claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -94,7 +94,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_id="claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -207,7 +207,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
-            "provider_model_id": "claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -287,7 +287,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_id="claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -478,7 +478,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_id="claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -669,7 +669,7 @@ Respond only with valid JSON that matches this exact schema:
                     ],
                     provider="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_id="claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

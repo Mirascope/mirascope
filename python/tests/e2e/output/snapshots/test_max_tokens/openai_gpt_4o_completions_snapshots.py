@@ -12,7 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -37,7 +37,7 @@ Certainly! Here is a list of all 50 U.S. states:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "content": """\
 Certainly! Here is a list of all 50 U.S. states:
@@ -67,7 +67,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -92,7 +92,7 @@ Sure! Here is a list of all 50 U.S. states:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "content": """\
 Sure! Here is a list of all 50 U.S. states:
@@ -145,7 +145,7 @@ Certainly! Here is a list of all 50 U.S. states:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -183,7 +183,7 @@ Sure! Here is a list of all 50 U.S. states:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],

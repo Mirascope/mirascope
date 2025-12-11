@@ -12,7 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": FinishReason.REFUSAL,
             "messages": [
@@ -31,7 +31,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "refusal": "I'm very sorry, but I can't assist with that request.",
                         "role": "assistant",
@@ -62,7 +62,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": FinishReason.REFUSAL,
             "messages": [
@@ -79,7 +79,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "refusal": "I'm very sorry, but I can't assist with that.",
                         "role": "assistant",
@@ -123,7 +123,7 @@ stream_snapshot = snapshot(
                     content=[Text(text="I'm sorry, I can't assist with that request.")],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -168,7 +168,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],

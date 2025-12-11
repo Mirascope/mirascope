@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
-            "provider_model_id": "gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -30,7 +30,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -103,7 +103,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
-            "provider_model_id": "gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -131,7 +131,7 @@ async_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -230,7 +230,7 @@ stream_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -321,7 +321,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
-                    provider_model_id="gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {

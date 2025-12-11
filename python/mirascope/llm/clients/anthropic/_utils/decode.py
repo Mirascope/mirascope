@@ -67,7 +67,7 @@ def decode_response(
         content=[_decode_assistant_content(part) for part in response.content],
         provider="anthropic",
         model_id=model_id,
-        provider_model_id=model_name(model_id),
+        provider_model_name=model_name(model_id),
         raw_message={
             "role": response.role,
             "content": [part.model_dump() for part in response.content],

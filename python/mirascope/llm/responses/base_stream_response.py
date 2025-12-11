@@ -159,7 +159,7 @@ class BaseStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
-        provider_model_id: str,
+        provider_model_name: str,
         params: "Params",
         toolkit: ToolkitT,
         format: Format[FormattableT] | None = None,
@@ -171,7 +171,8 @@ class BaseStreamResponse(
         Args:
             provider: The provider name (e.g. "anthropic", "openai").
             model_id: The model identifier that generated the response.
-            provider_model_id: The provider-specific model identifier (e.g. "gpt-5:responses").
+            provider_model_name: Optional provider-specific model name. May include
+                provider-specific additional info (like api mode in "gpt-5:responses").
             params: The params used to generate the response (or None).
             toolkit: Toolkit containing all the tools used to generate the response.
             format: The `Format` for the expected structured output format (or None).
@@ -183,7 +184,7 @@ class BaseStreamResponse(
 
         self.provider = provider
         self.model_id = model_id
-        self.provider_model_id = provider_model_id
+        self.provider_model_name = provider_model_name
         self.params = params
         self.toolkit = toolkit
         self.format = format
@@ -211,7 +212,7 @@ class BaseStreamResponse(
             content=self._content,
             provider=provider,
             model_id=model_id,
-            provider_model_id=provider_model_id,
+            provider_model_name=provider_model_name,
             raw_message=None,
         )
 

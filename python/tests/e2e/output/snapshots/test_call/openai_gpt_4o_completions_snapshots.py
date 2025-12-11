@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -20,7 +20,7 @@ sync_snapshot = snapshot(
                     content=[Text(text="\\(4200 + 42 = 4242\\).")],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "content": "\\(4200 + 42 = 4242\\).",
                         "role": "assistant",
@@ -38,7 +38,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o:completions",
-            "provider_model_id": "gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -47,7 +47,7 @@ async_snapshot = snapshot(
                     content=[Text(text="4200 + 42 is 4242.")],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message={
                         "content": "4200 + 42 is 4242.",
                         "role": "assistant",
@@ -72,7 +72,7 @@ stream_snapshot = snapshot(
                     content=[Text(text="4200 + 42 equals 4242.")],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -94,7 +94,7 @@ async_stream_snapshot = snapshot(
                     content=[Text(text="The sum of 4200 and 42 is 4242.")],
                     provider="openai",
                     model_id="openai/gpt-4o:completions",
-                    provider_model_id="gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
