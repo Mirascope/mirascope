@@ -13,7 +13,7 @@ from . import _utils
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, Provider
+    from ..clients import ModelId, Params, ProviderId
     from ..models import Model
 
 
@@ -23,7 +23,7 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     raw: Any
     """The raw response from the LLM."""
 
-    provider: "Provider"
+    provider: "ProviderId"
     """The provider that generated this response."""
 
     model_id: "ModelId"

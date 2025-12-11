@@ -108,11 +108,11 @@ def vcr_config() -> VCRConfig:
 class ProviderRequest(pytest.FixtureRequest):
     """Request for the `provider` fixture parameter."""
 
-    param: llm.Provider
+    param: llm.ProviderId
 
 
 @pytest.fixture
-def provider(request: ProviderRequest) -> llm.Provider:
+def provider(request: ProviderRequest) -> llm.ProviderId:
     """Get provider from test parameters."""
     return request.param
 

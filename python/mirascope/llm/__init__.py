@@ -27,7 +27,7 @@ from . import (
 with suppress(ImportError):
     from . import mcp
 from .calls import AsyncCall, AsyncContextCall, Call, CallDecorator, ContextCall, call
-from .clients import ModelId, Params, Provider, client
+from .clients import ModelId, Params, client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,
@@ -87,6 +87,7 @@ from .prompts import (
     PromptDecorator,
     prompt,
 )
+from .providers import ProviderId
 from .responses import (
     AsyncChunkIterator,
     AsyncContextResponse,
@@ -178,7 +179,7 @@ __all__ = [
     "PermissionError",
     "Prompt",
     "PromptDecorator",
-    "Provider",
+    "ProviderId",
     "RateLimitError",
     "RawMessageChunk",
     "Response",

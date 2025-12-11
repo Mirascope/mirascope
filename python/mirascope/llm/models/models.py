@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from ..clients import (
         ModelId,
         Params,
-        Provider,
+        ProviderId,
     )
 
 
@@ -93,7 +93,7 @@ class Model:
         ```
     """
 
-    provider: Provider
+    provider: ProviderId
     """The provider being used (e.g. `openai`)."""
 
     model_id: ModelId

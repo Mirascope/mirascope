@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .clients import ModelId, Provider
+    from .clients import ModelId, ProviderId
     from .formatting import FormattingMode
 
 
@@ -49,14 +49,14 @@ class FeatureNotSupportedError(MirascopeLLMError):
     If compatibility is model-specific, then `model_id` should be specified.
     If the feature is not supported by the provider at all, then it may be `None`."""
 
-    provider: "Provider"
+    provider: "ProviderId"
     model_id: "ModelId | None"
     feature: str
 
     def __init__(
         self,
         feature: str,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId | None" = None,
         message: str | None = None,
     ) -> None:
@@ -77,7 +77,7 @@ class FormattingModeNotSupportedError(FeatureNotSupportedError):
     def __init__(
         self,
         formatting_mode: "FormattingMode",
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId | None" = None,
         message: str | None = None,
     ) -> None:
