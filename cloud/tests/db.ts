@@ -450,16 +450,22 @@ export const TestOrganizationFixture = Effect.gen(function* () {
 });
 
 /**
- * Creates a test organization with a project owned by it.
+ * Creates a test organization with a project owned by it, including members with various roles.
  *
- * Returns { project, org, owner, nonMember } where:
- * - project: a project owned by the organization, with the owner as a project member
+ * Returns { project, org, owner, admin, developer, annotator, nonMember } where:
+ * - project: a project owned by the organization
  * - org: the organization that owns the project
- * - owner: the user who created both and is a member of the project
+ * - owner: the user who created both (OWNER role in both org and project)
+ * - admin: a user with ADMIN role in the project
+ * - developer: a user with DEVELOPER role in the project
+ * - annotator: a user with ANNOTATOR role in the project
  * - nonMember: a user who is NOT a member of the project
+ *
+ * Note: admin, developer, annotator are also members of the organization from TestOrganizationFixture.
  */
 export const TestOrganizationProjectFixture = Effect.gen(function* () {
-  const { org, owner, nonMember } = yield* TestOrganizationFixture;
+  const { org, owner, admin, developer, annotator, nonMember } =
+    yield* TestOrganizationFixture;
 
   const db = yield* DatabaseService;
   const project = yield* db.projects.create({
@@ -467,15 +473,40 @@ export const TestOrganizationProjectFixture = Effect.gen(function* () {
     userId: owner.id,
   });
 
-  return { project, org, owner, nonMember };
+  // Add org members to the project with the same roles
+  yield* db.projects.addMember({
+    id: project.id,
+    memberUserId: admin.id,
+    role: "ADMIN",
+    userId: owner.id,
+  });
+
+  yield* db.projects.addMember({
+    id: project.id,
+    memberUserId: developer.id,
+    role: "DEVELOPER",
+    userId: owner.id,
+  });
+
+  yield* db.projects.addMember({
+    id: project.id,
+    memberUserId: annotator.id,
+    role: "ANNOTATOR",
+    userId: owner.id,
+  });
+
+  return { project, org, owner, admin, developer, annotator, nonMember };
 });
 
 /**
- * Creates a test project owned by a user.
+ * Creates a test project owned by a user with members of various roles.
  *
- * Returns { project, owner, nonMember } where:
+ * Returns { project, owner, admin, developer, annotator, nonMember } where:
  * - project: a project owned by the user
- * - owner: the user who owns the project and is a member with OWNER role
+ * - owner: the user who owns the project (OWNER role)
+ * - admin: a user with ADMIN role
+ * - developer: a user with DEVELOPER role
+ * - annotator: a user with ANNOTATOR role
  * - nonMember: a user who is NOT a member of the project
  */
 export const TestProjectFixture = Effect.gen(function* () {
@@ -491,10 +522,44 @@ export const TestProjectFixture = Effect.gen(function* () {
     userId: owner.id,
   });
 
+  // Add members with different roles
+  const admin = yield* db.users.create({
+    email: "projectadmin@example.com",
+    name: "Project Admin",
+  });
+  yield* db.projects.addMember({
+    id: project.id,
+    memberUserId: admin.id,
+    role: "ADMIN",
+    userId: owner.id,
+  });
+
+  const developer = yield* db.users.create({
+    email: "projectdev@example.com",
+    name: "Project Developer",
+  });
+  yield* db.projects.addMember({
+    id: project.id,
+    memberUserId: developer.id,
+    role: "DEVELOPER",
+    userId: owner.id,
+  });
+
+  const annotator = yield* db.users.create({
+    email: "projectannotator@example.com",
+    name: "Project Annotator",
+  });
+  yield* db.projects.addMember({
+    id: project.id,
+    memberUserId: annotator.id,
+    role: "ANNOTATOR",
+    userId: owner.id,
+  });
+
   const nonMember = yield* db.users.create({
     email: "nonmember@example.com",
     name: "Non Member",
   });
 
-  return { project, owner, nonMember };
+  return { project, owner, admin, developer, annotator, nonMember };
 });

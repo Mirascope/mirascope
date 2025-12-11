@@ -275,28 +275,17 @@ describe("ProjectService", () => {
 
     it.effect("allows read with ANNOTATOR role", () =>
       Effect.gen(function* () {
-        const db = new MockDatabase()
-          // getRole: ANNOTATOR role
-          .select([{ role: "ANNOTATOR" }])
-          // baseService.findById: found
-          .select([
-            {
-              id: "project-id",
-              name: "Test",
-              userOwnerId: "owner-id",
-              orgOwnerId: null,
-            },
-          ])
-          .build();
+        const { project, annotator } = yield* TestProjectFixture;
+        const db = yield* DatabaseService;
 
         const result = yield* db.projects.findById({
-          id: "project-id",
-          userId: "user-id",
+          id: project.id,
+          userId: annotator.id,
         });
 
         expect(result).toBeDefined();
-        expect(result.id).toBe("project-id");
-      }),
+        expect(result.id).toBe(project.id);
+      }).pipe(Effect.provide(TestDatabase)),
     );
   });
 
@@ -354,16 +343,14 @@ describe("ProjectService", () => {
       "returns `PermissionDeniedError` when user has insufficient role",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // getRole: ANNOTATOR role (too low for update)
-            .select([{ role: "ANNOTATOR" }])
-            .build();
+          const { project, annotator } = yield* TestProjectFixture;
+          const db = yield* DatabaseService;
 
           const result = yield* db.projects
             .update({
-              id: "project-id",
+              id: project.id,
               data: { name: "New Name" },
-              userId: "user-id",
+              userId: annotator.id,
             })
             .pipe(Effect.flip);
 
@@ -371,7 +358,7 @@ describe("ProjectService", () => {
           expect(result.message).toBe(
             "You do not have permission to update this project",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
   });
 
@@ -425,20 +412,19 @@ describe("ProjectService", () => {
       "returns `PermissionDeniedError` when user has insufficient role",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // getRole: ADMIN role (only OWNER can delete)
-            .select([{ role: "ADMIN" }])
-            .build();
+          const { project, admin } = yield* TestProjectFixture;
+          const db = yield* DatabaseService;
 
+          // Admin can't delete - only OWNER can
           const result = yield* db.projects
-            .delete({ id: "project-id", userId: "user-id" })
+            .delete({ id: project.id, userId: admin.id })
             .pipe(Effect.flip);
 
           expect(result).toBeInstanceOf(PermissionDeniedError);
           expect(result.message).toBe(
             "You do not have permission to delete this project",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect("returns `DatabaseError` when delete operation fails", () =>
@@ -665,17 +651,16 @@ describe("ProjectService", () => {
       "returns `PermissionDeniedError` when caller has insufficient role",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // getRole: DEVELOPER role (too low for update/add member)
-            .select([{ role: "DEVELOPER" }])
-            .build();
+          const { project, developer, nonMember } = yield* TestProjectFixture;
+          const db = yield* DatabaseService;
 
+          // Developer tries to add a member (needs ADMIN or OWNER)
           const result = yield* db.projects
             .addMember({
-              id: "project-id",
-              memberUserId: "new-user-id",
+              id: project.id,
+              memberUserId: nonMember.id,
               role: "ANNOTATOR",
-              userId: "caller-id",
+              userId: developer.id,
             })
             .pipe(Effect.flip);
 
@@ -683,7 +668,7 @@ describe("ProjectService", () => {
           expect(result.message).toBe(
             "You do not have permission to update this project",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect(
@@ -810,16 +795,15 @@ describe("ProjectService", () => {
       "returns `PermissionDeniedError` when caller has insufficient role",
       () =>
         Effect.gen(function* () {
-          const db = new MockDatabase()
-            // getRole: DEVELOPER role (too low for update)
-            .select([{ role: "DEVELOPER" }])
-            .build();
+          const { project, developer, annotator } = yield* TestProjectFixture;
+          const db = yield* DatabaseService;
 
+          // Developer tries to remove annotator (needs ADMIN or OWNER)
           const result = yield* db.projects
             .terminateMember({
-              id: "project-id",
-              memberUserId: "member-id",
-              userId: "caller-id",
+              id: project.id,
+              memberUserId: annotator.id,
+              userId: developer.id,
             })
             .pipe(Effect.flip);
 
@@ -827,7 +811,7 @@ describe("ProjectService", () => {
           expect(result.message).toBe(
             "You do not have permission to update this project",
           );
-        }),
+        }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect(
