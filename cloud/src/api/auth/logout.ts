@@ -33,7 +33,7 @@ export const logout = createServerFn({ method: "POST" }).handler(async () => {
       }
 
       const db = yield* DatabaseService;
-      yield* db.sessions.delete(sessionId).pipe(
+      yield* db.sessions.delete({ id: sessionId }).pipe(
         Effect.catchAll(() => Effect.succeed(undefined)), // Ignore deletion errors
       );
 

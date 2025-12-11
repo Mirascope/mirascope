@@ -69,7 +69,7 @@ export class SessionService extends BaseService<
     const handleExpiredSession = (userSession: UserSession) => {
       if (new Date() > userSession.expiresAt) {
         // Delete expired session before returning error
-        return this.delete(sessionId).pipe(
+        return this.delete({ id: sessionId }).pipe(
           Effect.flatMap(() =>
             Effect.fail(
               new InvalidSessionError({
