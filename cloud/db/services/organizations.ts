@@ -303,4 +303,54 @@ export class OrganizationService extends BaseAuthenticatedService<
       return membership;
     });
   }
+
+  /**
+   * Remove a member from an organization.
+   * Requires OWNER or ADMIN permission on the organization.
+   */
+  terminateMember({
+    id,
+    memberUserId,
+    userId,
+  }: {
+    id: string;
+    memberUserId: string;
+    userId: string;
+  }): Effect.Effect<
+    void,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      yield* this.authorize({ id, userId, action: "update" });
+
+      const deleted = yield* Effect.tryPromise({
+        try: async () => {
+          const result = await this.db
+            .delete(organizationMemberships)
+            .where(
+              and(
+                eq(organizationMemberships.organizationId, id),
+                eq(organizationMemberships.userId, memberUserId),
+              ),
+            )
+            .returning({ id: organizationMemberships.id });
+          return result.length > 0;
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to remove organization member",
+            cause: error,
+          }),
+      });
+
+      if (!deleted) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "User is not a member of this organization",
+            resource: "organization_membership",
+          }),
+        );
+      }
+    });
+  }
 }
