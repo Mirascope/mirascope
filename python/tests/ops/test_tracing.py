@@ -350,7 +350,7 @@ def test_traced_call_sync(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.trace on @llm.call creates TracedCall and returns Response directly."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -391,7 +391,7 @@ def test_traced_call_wrapped_method(span_exporter: InMemorySpanExporter) -> None
     """Test TracedCall.wrapped() returns Trace."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -431,7 +431,7 @@ def test_traced_call_wrapped_call_method(span_exporter: InMemorySpanExporter) ->
     """Test TracedCall.wrapped.call() returns Response directly (bypassing Trace)."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -472,7 +472,7 @@ def test_traced_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> None
     """Test TracedCall.wrapped_stream() returns Trace[StreamResponse]."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -513,7 +513,7 @@ def test_traced_call_call_method(span_exporter: InMemorySpanExporter) -> None:
     """Test TracedCall.call() returns Response directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -552,7 +552,7 @@ def test_traced_call_stream_method(span_exporter: InMemorySpanExporter) -> None:
     """Test TracedCall.stream() returns StreamResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -595,7 +595,7 @@ async def test_traced_async_call_call_method(
     """Test TracedAsyncCall.call() returns AsyncResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -637,7 +637,7 @@ async def test_traced_async_call_wrapped_method(
     """Test TracedAsyncCall.wrapped() returns AsyncTrace[AsyncResponse] and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -679,7 +679,7 @@ async def test_traced_async_call_stream_method(
     """Test TracedAsyncCall.stream() returns AsyncStreamResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -719,7 +719,7 @@ def test_traced_context_call_call_method(span_exporter: InMemorySpanExporter) ->
     """Test TracedContextCall.call() returns ContextResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -761,7 +761,7 @@ def test_traced_context_call_wrapped_returns_trace(
     """Test TracedContextCall.wrapped() returns Trace[ContextResponse] (not just result)."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -778,7 +778,7 @@ def test_traced_context_call_stream_method(
     """Test TracedContextCall.stream() returns ContextStreamResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -822,7 +822,7 @@ async def test_traced_async_context_call_call_method(
     """Test TracedAsyncContextCall.call() returns AsyncContextResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -865,7 +865,7 @@ async def test_traced_async_context_call_wrapped_returns_trace(
     """Test TracedAsyncContextCall.wrapped() returns AsyncTrace[AsyncContextResponse] (not just result)."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -883,7 +883,7 @@ async def test_traced_async_context_call_stream_method(
     """Test TracedAsyncContextCall.stream() returns AsyncContextStreamResponse directly and creates span."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -925,7 +925,7 @@ async def test_traced_async_call(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.trace on async @llm.call creates TracedAsyncCall and returns AsyncResponse directly."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -966,7 +966,7 @@ def test_traced_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.trace(tags=[...]) passes tags to TracedCall."""
 
     @ops.trace(tags=["production", "recommendations"])
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -1006,7 +1006,7 @@ def test_traced_context_call(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.trace on @llm.call with context creates TracedContextCall and returns ContextResponse directly."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1049,7 +1049,7 @@ async def test_traced_async_context_call(span_exporter: InMemorySpanExporter) ->
     """Test @ops.trace on async @llm.call with context creates TracedAsyncContextCall and returns AsyncContextResponse directly."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1093,7 +1093,7 @@ def test_traced_context_call_wrapped_call_method(
     """Test TracedContextCall.wrapped.call() returns ContextResponse directly."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1138,7 +1138,7 @@ async def test_traced_async_context_call_wrapped_call_method(
     """Test TracedAsyncContextCall.wrapped.call() returns AsyncContextResponse directly."""
 
     @ops.trace
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1180,7 +1180,7 @@ def test_traced_context_call_with_tags(span_exporter: InMemorySpanExporter) -> N
     """Test @ops.trace(tags=[...]) on @llm.call with context creates TracedContextCall with tags."""
 
     @ops.trace(tags=["context-tag"])
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1226,7 +1226,7 @@ async def test_traced_async_context_call_with_tags(
     """Test @ops.trace(tags=[...]) on async @llm.call with context creates TracedAsyncContextCall with tags."""
 
     @ops.trace(tags=["async-context-tag"])
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1269,7 +1269,7 @@ def test_traced_context_call_with_metadata(span_exporter: InMemorySpanExporter) 
     """Test @ops.trace(metadata={...}) on @llm.call with context exports metadata."""
 
     @ops.trace(metadata={"env": "test", "version": "1.0"})
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 

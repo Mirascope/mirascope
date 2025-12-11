@@ -16,8 +16,7 @@ from .openai import (
 Provider: TypeAlias = Literal[
     "anthropic",  # AnthropicClient
     "google",  # GoogleClient
-    "openai:responses",  # OpenAIResponsesClient
-    "openai",  # OpenAICompletionsClient
+    "openai",  # OpenAIClient
     "mlx",  # Local inference powered by `mlx-lm`
 ]
 PROVIDERS = get_args(Provider)

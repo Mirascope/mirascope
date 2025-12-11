@@ -39,8 +39,9 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
+from ...model_info import OpenAIModelId
 from ...shared import _utils as _shared_utils
-from ..model_ids import OpenAIResponsesModelId
+from .decode import get_provider_model_id
 from .model_features import NON_REASONING_MODELS
 
 
@@ -107,8 +108,8 @@ def _encode_user_message(
         elif part.type == "audio":
             raise FeatureNotSupportedError(
                 "audio input",
-                "openai:responses",
-                message='provider "openai:responses" does not support audio inputs. Try using "openai" instead',
+                "openai",
+                message='provider "openai" does not support audio inputs when using :responses api. Try appending :completions to your model instead.',
             )
         else:
             raise NotImplementedError(
@@ -163,7 +164,7 @@ def _encode_assistant_message(
 
 
 def _encode_message(
-    message: Message, model_id: OpenAIResponsesModelId, encode_thoughts: bool
+    message: Message, model_id: OpenAIModelId, encode_thoughts: bool
 ) -> ResponseInputParam:
     """Convert a Mirascope Message to OpenAI Responses input items.
 
@@ -179,8 +180,8 @@ def _encode_message(
 
     if (
         message.role == "assistant"
-        and message.provider == "openai:responses"
-        and message.model_id == model_id
+        and message.provider == "openai"
+        and message.provider_model_id == get_provider_model_id(model_id=model_id)
         and message.raw_message
         and not encode_thoughts
     ):
@@ -243,18 +244,18 @@ def _compute_reasoning(thinking: bool) -> Reasoning:
 
 def encode_request(
     *,
-    model_id: OpenAIResponsesModelId,
+    model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
-    if not model_id.startswith("openai:responses/"):  # pragma: no cover
-        raise ValueError(
-            f"Model ID must start with 'openai:responses/' prefix, got: {model_id}"
-        )
-    model_name = model_id.removeprefix("openai:responses/")
+    if not model_id.startswith("openai/"):  # pragma: no cover
+        raise ValueError(f"Model ID must start with 'openai/' prefix, got: {model_id}")
+    model_name = model_id.removeprefix("openai/").removesuffix(":responses")
+    if model_name.endswith(":completions"):  # pragma: no cover
+        raise ValueError("Cannot use :completions model with responses client")
 
     kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
         {
@@ -265,7 +266,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai:responses",
+        provider="openai",
         unsupported_params=["top_k", "seed", "stop_sequences"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
@@ -277,7 +278,7 @@ def encode_request(
         if param_accessor.thinking is not None:
             if model_name in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
-                    "thinking", param_accessor.thinking, "openai:responses", model_id
+                    "thinking", param_accessor.thinking, "openai", model_id
                 )
             else:
                 # Assume model supports reasoning unless explicitly listed as non-reasoning

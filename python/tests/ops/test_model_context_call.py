@@ -28,7 +28,7 @@ def test_model_context_call_exports_genai_span(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Ensure context_call emits a GenAI span with expected attributes."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     ctx = llm.Context(deps={"tenant": "kai"})
     messages = [
         llm.messages.system("You are a concise assistant."),
@@ -43,15 +43,15 @@ def test_model_context_call_exports_genai_span(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_0232fb1fc58d743a00691ae4934c6c8197a687889ce65332e6",
                 "gen_ai.system_instructions": '[{"type":"text","content":"You are a concise assistant."}]',
