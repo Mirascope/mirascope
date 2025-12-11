@@ -4,8 +4,8 @@ from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
 )
-from .base import BaseClient, ClientT, Params
-from .get_client import client, get_client
+from .base import BaseClient, Params
+from .get_client import client
 from .google import GoogleClient, GoogleModelId
 from .mlx import MLXClient, MLXModelId
 from .openai import (
@@ -21,7 +21,6 @@ __all__ = [
     "AnthropicClient",
     "AnthropicModelId",
     "BaseClient",
-    "ClientT",
     "GoogleClient",
     "GoogleModelId",
     "MLXClient",
@@ -34,6 +33,5 @@ __all__ = [
     "Params",
     "Provider",
     "client",
-    "get_client",
     "model_id_to_provider",
 ]

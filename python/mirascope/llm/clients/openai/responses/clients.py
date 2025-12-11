@@ -2,7 +2,6 @@
 
 import os
 from collections.abc import Sequence
-from contextvars import ContextVar
 from functools import lru_cache
 from typing import overload
 from typing_extensions import Unpack
@@ -36,10 +35,6 @@ from ...base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAIResponsesModelId
 
-OPENAI_RESPONSES_CLIENT_CONTEXT: ContextVar["OpenAIResponsesClient"] = ContextVar(
-    "OPENAI_RESPONSES_CLIENT_CONTEXT"
-)
-
 
 @lru_cache(maxsize=256)
 def _openai_responses_singleton(
@@ -58,23 +53,8 @@ def client(
     return _openai_responses_singleton(api_key, base_url)
 
 
-def get_client() -> "OpenAIResponsesClient":
-    """Get the current `OpenAIResponsesClient` from context."""
-    current_client = OPENAI_RESPONSES_CLIENT_CONTEXT.get(None)
-    if current_client is None:
-        current_client = client()
-        OPENAI_RESPONSES_CLIENT_CONTEXT.set(current_client)
-    return current_client
-
-
-class OpenAIResponsesClient(
-    BaseClient[OpenAIResponsesModelId, OpenAI, "OpenAIResponsesClient"]
-):
+class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     """The client for the OpenAI Responses API."""
-
-    @property
-    def _context_var(self) -> ContextVar["OpenAIResponsesClient"]:
-        return OPENAI_RESPONSES_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None

@@ -351,7 +351,7 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
         body=None,
     )
 
-    with patch("mirascope.llm.models.models.get_client", return_value=mock_client):
+    with patch("mirascope.llm.models.models.client", return_value=mock_client):
         model = llm.Model(model_id="openai:responses/gpt-4o")
         with pytest.raises(openai.APIError):
             model.stream(messages=_math_messages())
@@ -401,7 +401,7 @@ def test_model_stream_iterator_error_records_exception(
         chunk_iterator=_chunk_iterator(),
     )
 
-    with patch("mirascope.llm.models.models.get_client", return_value=mock_client):
+    with patch("mirascope.llm.models.models.client", return_value=mock_client):
         model = llm.Model(model_id="openai:responses/gpt-4o")
         response = model.stream(messages=_math_messages())
         with pytest.raises(RuntimeError):

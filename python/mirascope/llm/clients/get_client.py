@@ -1,165 +1,25 @@
-from typing import Literal, overload
+from typing import Any
 
 from .anthropic import (
-    AnthropicClient,
     client as anthropic_client,
-    get_client as get_anthropic_client,
 )
+from .base import BaseClient
 from .google import (
-    GoogleClient,
     client as google_client,
-    get_client as get_google_client,
 )
 from .mlx import (
-    MLXClient,
     client as mlx_client,
-    get_client as get_mlx_client,
 )
 from .openai import (
-    OpenAICompletionsClient,
-    OpenAIResponsesClient,
     completions_client as openai_completions_client,
-    get_completions_client as get_openai_completions_client,
-    get_responses_client as get_openai_responses_client,
     responses_client as openai_responses_client,
 )
 from .providers import Provider
 
 
-@overload
-def get_client(provider: Literal["anthropic"]) -> AnthropicClient:
-    """Get an Anthropic client instance."""
-    ...
-
-
-@overload
-def get_client(provider: Literal["google"]) -> GoogleClient:
-    """Get a Google client instance."""
-    ...
-
-
-@overload
-def get_client(provider: Literal["openai"]) -> OpenAICompletionsClient:
-    """Get an OpenAI client instance."""
-    ...
-
-
-@overload
-def get_client(
-    provider: Literal["openai:responses"],
-) -> OpenAIResponsesClient:
-    """Get an OpenAI responses client instance."""
-    ...
-
-
-@overload
-def get_client(provider: Literal["mlx"]) -> MLXClient:
-    """Get an MLX client instance."""
-    ...
-
-
-def get_client(
-    provider: Provider,
-) -> (
-    AnthropicClient
-    | GoogleClient
-    | OpenAICompletionsClient
-    | OpenAIResponsesClient
-    | MLXClient
-):
-    """Get a client instance for the specified provider.
-
-    Args:
-        provider: The provider name ("openai", "anthropic", or "google").
-
-    Returns:
-        A client instance for the specified provider. The specific client type
-        depends on the provider:
-        - "openai" returns `OpenAICompletionsClient` (ChatCompletion API)
-        - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
-        - "anthropic" returns `AnthropicClient`
-        - "google" returns `GoogleClient`
-
-    Multiple calls to get_client will return the same Client rather than constructing
-    new ones.
-
-    Raises:
-        ValueError: If the provider is not supported.
-    """
-    match provider:
-        case "anthropic":
-            return get_anthropic_client()
-        case "google":
-            return get_google_client()
-        case "openai":
-            return get_openai_completions_client()
-        case "openai:responses":
-            return get_openai_responses_client()
-        case "mlx":  # pragma: no cover (MLX is only available on macOS)
-            return get_mlx_client()
-        case _:
-            raise ValueError(f"Unknown provider: {provider}")
-
-
-@overload
-def client(
-    provider: Literal["openai"],
-    *,
-    api_key: str | None = None,
-    base_url: str | None = None,
-) -> OpenAICompletionsClient:
-    """Create a cached OpenAI chat completions client with the given parameters."""
-    ...
-
-
-@overload
-def client(
-    provider: Literal["openai:responses"],
-    *,
-    api_key: str | None = None,
-    base_url: str | None = None,
-) -> OpenAIResponsesClient:
-    """Create a cached OpenAI responses client with the given parameters."""
-    ...
-
-
-@overload
-def client(
-    provider: Literal["anthropic"],
-    *,
-    api_key: str | None = None,
-    base_url: str | None = None,
-) -> AnthropicClient:
-    """Create a cached Anthropic client with the given parameters."""
-    ...
-
-
-@overload
-def client(
-    provider: Literal["google"],
-    *,
-    api_key: str | None = None,
-    base_url: str | None = None,
-) -> GoogleClient:
-    """Create a cached Google client with the given parameters."""
-    ...
-
-
-@overload
-def client(provider: Literal["mlx"]) -> MLXClient:
-    """Create a cached MLX client."""
-    ...
-
-
 def client(
     provider: Provider, *, api_key: str | None = None, base_url: str | None = None
-) -> (
-    AnthropicClient
-    | GoogleClient
-    | OpenAICompletionsClient
-    | OpenAIResponsesClient
-    | MLXClient
-):
+) -> BaseClient[str, Any]:
     """Create a cached client instance for the specified provider.
 
     Args:
