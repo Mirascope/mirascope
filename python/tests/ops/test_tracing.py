@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Generator
 from typing import Any, TypeVar
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from inline_snapshot import snapshot
@@ -1291,3 +1292,92 @@ def test_traced_context_call_with_metadata(span_exporter: InMemorySpanExporter) 
     assert span_data["attributes"]["mirascope.trace.metadata"] == snapshot(
         '{"env":"test","version":"1.0"}'
     )
+
+
+def test_sync_trace_annotate(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test Trace.annotate sends annotation to API."""
+    mock_client = MagicMock()
+
+    with patch(
+        "mirascope.ops._internal.traced_functions.get_sync_client",
+        return_value=mock_client,
+    ):
+
+        @ops.trace
+        def process(x: int) -> int:
+            return x * 2
+
+        trace = process.wrapped(5)
+        trace.annotate(label="pass", reasoning="correct output", data={"score": 100})
+
+        mock_client.annotations.create.assert_called_once_with(
+            span_id=trace.span_id,
+            trace_id=trace.trace_id,
+            label="pass",
+            reasoning="correct output",
+            data={"score": 100},
+        )
+
+
+@pytest.mark.asyncio
+async def test_async_trace_annotate(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test AsyncTrace.annotate sends annotation to API."""
+    mock_client = MagicMock()
+    mock_client.annotations.create = AsyncMock()
+
+    with patch(
+        "mirascope.ops._internal.traced_functions.get_async_client",
+        return_value=mock_client,
+    ):
+
+        @ops.trace
+        async def process(x: int) -> int:
+            return x * 2
+
+        trace = await process.wrapped(5)
+        await trace.annotate(
+            label="fail", reasoning="wrong output", data={"expected": 10}
+        )
+
+        mock_client.annotations.create.assert_called_once_with(
+            span_id=trace.span_id,
+            trace_id=trace.trace_id,
+            label="fail",
+            reasoning="wrong output",
+            data={"expected": 10},
+        )
+
+
+def test_sync_trace_annotate_noop_span() -> None:
+    """Test Trace.annotate does nothing for no-op spans."""
+    with patch(
+        "mirascope.ops._internal.traced_functions.get_sync_client",
+    ) as mock_get_client:
+        from mirascope.ops._internal.spans import Span
+        from mirascope.ops._internal.traced_functions import Trace
+
+        noop_span = Span("test")  # Not entered, so span_id is None
+        trace = Trace(result=42, span=noop_span)
+        trace.annotate(label="pass")
+
+        mock_get_client.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_async_trace_annotate_noop_span() -> None:
+    """Test AsyncTrace.annotate does nothing for no-op spans."""
+    with patch(
+        "mirascope.ops._internal.traced_functions.get_async_client",
+    ) as mock_get_client:
+        from mirascope.ops._internal.spans import Span
+        from mirascope.ops._internal.traced_functions import AsyncTrace
+
+        noop_span = Span("test")  # Not entered, so span_id is None
+        trace = AsyncTrace(result=42, span=noop_span)
+        await trace.annotate(label="pass")
+
+        mock_get_client.assert_not_called()

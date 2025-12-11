@@ -1,4 +1,4 @@
-"""Example: function versioning against local Mirascope Cloud server.
+"""Example: function versioning and annotation against local Mirascope Cloud server.
 
 Prerequisites:
 1. Start cloud server: `bun run cloud:dev` (from repo root)
@@ -55,14 +55,35 @@ def recommend_book(genre: str):
     ]
 
 
-print("\n=== Testing versioned LLM call ===")
-try:
-    response = recommend_book("fantasy")
-    print(f"Response: {response.content[:100]}...")
-    print(f"\nVersion info: {recommend_book.version_info}")
-    print("\nVersioned trace sent successfully! Check your Mirascope Cloud dashboard.")
-except Exception as e:
-    print(f"Error: {e}")
+@ops.trace
+def judge_recommendation(recommendation: str) -> str:
+    """Judge if a book recommendation is appropriate."""
+    keywords = ["kid", "child", "young", "family", "adventure", "magic"]
+    return (
+        "appropriate"
+        if any(kw in recommendation.lower() for kw in keywords)
+        else "needs_review"
+    )
 
-# Shutdown to flush spans
+
+# Test versioned LLM call
+response = recommend_book("fantasy")
+print(f"Response: {response.content[:100]}...")
+if recommend_book.version_info:
+    print(f"Version: {recommend_book.version_info.version}")
+else:
+    print("Version: (not available)")
+
+# Test trace annotation
+trace = judge_recommendation.wrapped("The Hobbit - a magical adventure")
+print(f"Judgment: {trace.result}")
+
+provider.force_flush()  # Ensure span is sent before annotating
+trace.annotate(
+    label="good",
+    reasoning="Includes kid-friendly adventure themes",
+    data={"confidence": 0.95, "reviewer": "automated"},
+)
+print("Annotation sent!")
+
 provider.shutdown()

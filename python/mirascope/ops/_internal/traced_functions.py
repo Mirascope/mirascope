@@ -9,12 +9,12 @@ from dataclasses import dataclass, field
 from typing import (
     Any,
     Generic,
-    Literal,
     TypeVar,
 )
 
 from opentelemetry.util.types import AttributeValue
 
+from ...api.client import get_async_client, get_sync_client
 from ...llm.context import Context, DepsT
 from ...llm.responses.root_response import RootResponse
 from .protocols import (
@@ -86,12 +86,22 @@ class Trace(_BaseTrace[R]):
     def annotate(
         self,
         *,
-        label: Literal["pass", "fail"],
+        label: str | None = None,
         reasoning: str | None = None,
-        metadata: dict[str, Jsonable] | None = None,
+        data: dict[str, Jsonable] | None = None,
     ) -> None:
         """Annotates the current trace span."""
-        raise NotImplementedError("Trace.annotate not yet implemented")
+        span_id = self.span.span_id
+        trace_id = self.span.trace_id
+        if span_id is None or trace_id is None:
+            return
+        get_sync_client().annotations.create(
+            span_id=span_id,
+            trace_id=trace_id,
+            label=label,
+            reasoning=reasoning,
+            data=data,
+        )
 
     def tag(self, *tags: str) -> None:
         """Adds given tags to the current trace span."""
@@ -114,11 +124,21 @@ class AsyncTrace(_BaseTrace[R]):
         self,
         *,
         label: str | None = None,
-        data: dict[str, Jsonable] | None = None,
         reasoning: str | None = None,
+        data: dict[str, Jsonable] | None = None,
     ) -> None:
         """Annotates the current trace span."""
-        raise NotImplementedError("AsyncTrace.annotate not yet implemented")
+        span_id = self.span.span_id
+        trace_id = self.span.trace_id
+        if span_id is None or trace_id is None:
+            return
+        await get_async_client().annotations.create(
+            span_id=span_id,
+            trace_id=trace_id,
+            label=label,
+            reasoning=reasoning,
+            data=data,
+        )
 
     async def tag(self, *tags: str) -> None:
         """Adds given tags to the current trace span."""
