@@ -38,7 +38,7 @@ from .streams import (
 )
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, ProviderId
+    from ..providers import ModelId, Params, ProviderId
 
 
 @dataclass(kw_only=True)

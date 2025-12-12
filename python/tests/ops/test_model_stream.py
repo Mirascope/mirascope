@@ -16,7 +16,6 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
 from pydantic import BaseModel, Field
 
 from mirascope import llm, ops
-from mirascope.llm.clients import Params
 from mirascope.llm.content.text import TextChunk, TextStartChunk
 from mirascope.llm.responses import StreamResponseChunk
 from mirascope.llm.responses.stream_response import StreamResponse
@@ -185,7 +184,7 @@ def test_model_stream_records_untracked_params_event(
 
         trace: _TraceMetadata
 
-    class _ExtraParams(Params, total=False):
+    class _ExtraParams(llm.Params, total=False):
         """Params with unsupported and serializable extras for testing."""
 
         metadata: _Metadata
@@ -351,7 +350,7 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
         body=None,
     )
 
-    with patch("mirascope.llm.models.models.client", return_value=mock_client):
+    with patch("mirascope.llm.models.models.load_provider", return_value=mock_client):
         model = llm.Model(model_id="openai/gpt-4o")
         with pytest.raises(openai.APIError):
             model.stream(messages=_math_messages())
@@ -401,7 +400,7 @@ def test_model_stream_iterator_error_records_exception(
         chunk_iterator=_chunk_iterator(),
     )
 
-    with patch("mirascope.llm.models.models.client", return_value=mock_client):
+    with patch("mirascope.llm.models.models.load_provider", return_value=mock_client):
         model = llm.Model(model_id="openai/gpt-4o")
         response = model.stream(messages=_math_messages())
         with pytest.raises(RuntimeError):

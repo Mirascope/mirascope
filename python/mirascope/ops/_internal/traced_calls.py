@@ -113,7 +113,7 @@ class TracedCall(_BaseTracedCall[Call[P, FormattableT]]):
     Example:
         ```python
         @ops.trace
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         def recommend_book(genre: str):
             return f"Recommend a {genre} book"
 
@@ -182,7 +182,7 @@ class TracedAsyncCall(_BaseTracedCall[AsyncCall[P, FormattableT]]):
     Example:
         ```python
         @ops.trace
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         async def recommend_book(genre: str):
             return f"Recommend a {genre} book"
 
@@ -242,7 +242,7 @@ class TracedContextCall(_BaseTracedCall[ContextCall[P, DepsT, FormattableT]]):
     Example:
         ```python
         @ops.trace
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         def recommend_book(ctx: llm.Context[str], genre: str):
             return f"{ctx.deps} Recommend a {genre} book"
 
@@ -307,7 +307,7 @@ class TracedAsyncContextCall(_BaseTracedCall[AsyncContextCall[P, DepsT, Formatta
     Example:
         ```python
         @ops.trace
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         async def recommend_book(ctx: llm.Context[str], genre: str):
             return f"{ctx.deps} Recommend a {genre} book"
 

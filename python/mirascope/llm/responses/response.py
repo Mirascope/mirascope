@@ -23,7 +23,7 @@ from .base_response import BaseResponse
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, ProviderId
+    from ..providers import ModelId, Params, ProviderId
 
 
 class Response(BaseResponse[Toolkit, FormattableT]):

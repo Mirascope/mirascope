@@ -3,8 +3,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .clients import ModelId, ProviderId
     from .formatting import FormattingMode
+    from .providers import ModelId, ProviderId
 
 
 class MirascopeLLMError(Exception):

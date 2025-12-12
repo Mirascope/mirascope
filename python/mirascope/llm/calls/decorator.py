@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import Generic, cast, overload
 from typing_extensions import Unpack
 
-from ..clients import ModelId, Params
 from ..context import DepsT
 from ..formatting import Format, FormattableT
 from ..models import Model
@@ -22,6 +21,7 @@ from ..prompts import (
     Prompt,
     _utils,
 )
+from ..providers import ModelId, Params
 from ..tools import (
     AsyncContextTool,
     AsyncContextToolkit,

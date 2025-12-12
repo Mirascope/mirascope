@@ -249,7 +249,7 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
     Example:
         ```python
         @ops.trace
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         def recommend_book(genre: str):
             return f"Recommend a {genre} book"
 
