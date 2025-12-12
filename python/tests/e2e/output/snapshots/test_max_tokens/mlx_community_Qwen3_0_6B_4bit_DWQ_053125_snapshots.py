@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider_id": "mlx",
-            "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
@@ -22,12 +22,12 @@ sync_snapshot = snapshot(
                         Text(
                             text="""\
 <think>
-Okay, the user is asking to list all U.S. states. Let me start by recalling the main states. I know the capital cities are Washington, D.C., and also some other states like Florida, Texas, California, New York\
+Okay, the user is asking me to list all U.S. states. Let me start by recalling the main states. I know that the United States has 50 states, so I should list them all. First, I'll start\
 """
                         )
                     ],
                     provider_id="mlx",
-                    model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,
                 ),
@@ -41,7 +41,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider_id": "mlx",
-            "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
@@ -52,12 +52,12 @@ async_snapshot = snapshot(
                         Text(
                             text="""\
 <think>
-Okay, the user is asking to list all U.S. states. Let me start by recalling the main states. I know the capital cities are Washington, D.C., and also some other states like Florida, Texas, California, New York\
+Okay, the user is asking me to list all U.S. states. Let me start by recalling the main states. I know that the United States has 50 states, so I should list them all. First, I'll start\
 """
                         )
                     ],
                     provider_id="mlx",
-                    model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,
                 ),
@@ -71,7 +71,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "mlx",
-            "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -80,12 +80,12 @@ stream_snapshot = snapshot(
                         Text(
                             text="""\
 <think>
-Okay, the user is asking to list all U.S. states. Let me start by recalling the main states. I know the capital cities are Washington, D.C., and also some other states like Florida, Texas, California, New York\
+Okay, the user is asking me to list all U.S. states. Let me start by recalling the main states. I know that the United States has 50 states, so I should list them all. First, I'll start\
 """
                         )
                     ],
                     provider_id="mlx",
-                    model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     raw_message=None,
                 ),
@@ -100,7 +100,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "mlx",
-            "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -109,12 +109,12 @@ async_stream_snapshot = snapshot(
                         Text(
                             text="""\
 <think>
-Okay, the user is asking to list all U.S. states. Let me start by recalling the main states. I know the capital cities are Washington, D.C., and also some other states like Florida, Texas, California, New York\
+Okay, the user is asking me to list all U.S. states. Let me start by recalling the main states. I know that the United States has 50 states, so I should list them all. First, I'll start\
 """
                         )
                     ],
                     provider_id="mlx",
-                    model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     raw_message=None,
                 ),

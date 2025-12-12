@@ -12,7 +12,7 @@ test_snapshot = snapshot(
         "response": (
             {
                 "provider_id": "mlx",
-                "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                 "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                 "params": {
                     "temperature": 0.7,
@@ -38,23 +38,21 @@ First, 4200 is like 4000 plus 200. And 42 is 40 plus 2. So if I add 4000 + 40 an
 
 4000 + 40 is 4040, and 200 + 2 is 202. Adding those together: 4040 + 202. Let me do that addition. 4040 plus 200 is 4240, and then adding 2 more makes it 4242. So the total is 4242?
 
-Wait, but maybe there's another way to do it. Let me try adding the numbers digit by digit. 4200 + 42. Starting from the rightmost digit: 0 + 2 = 2. Then 0 + 4 = 4. Then 2 + 4 = 6. Then 4 + 2 = 6. Wait, that gives me 426? But that can't be right because 4200 + 42 is 4242. There must be a mistake here. \n\
+Wait, but maybe there's another way to do it. Let me try adding the numbers digit by digit. 4200 + 42. Starting from the rightmost digit: 0 + 2 = 2. Then 0 + 4 = 4. Then 4 + 2 = 6. Then 2 + 4 = 6. Wait, that gives me 426? But that can't be right because 4200 + 42 is 4242. There must be a mistake here. \n\
 
 Oh, right! When adding, you have to align the digits properly. So 4200 is 4 2 0 0, and 42 is 4 2. So adding them:
 
 First digit: 0 + 2 = 2
 Second digit: 0 + 4 = 4
-Third digit: 2 + 4 = 6
-Fourth digit: 4 + 2 = 6
+Third digit: 2 + 2 = 4
+Fourth digit: 4 + 4 = 8
 
-So putting it together, it's 4 2 6 6, which is 4266. Wait, but earlier when I broke it down, I got 4242. Now I'm getting 4266. There's a discrepancy here. Which one is correct?
-
-Wait, maybe I made a mistake in the first\
+So the result is 4242. That matches my previous calculation. So maybe I confused the digits when I thought of it as 4000 + 40 + 200 + 2. Let me check again. 4000 + 40 is 4040, plus 200 is\
 """
                             )
                         ],
                         provider_id="mlx",
-                        model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                        model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                         provider_model_name=None,
                         raw_message=None,
                     ),
