@@ -13,7 +13,7 @@ describe("UserService", () => {
 
         const email = "test@example.com";
         const name = "Test User";
-        const user = yield* db.users.create({ email, name });
+        const user = yield* db.users.create({ data: { email, name } });
 
         expect(user).toEqual({
           id: user.id,
@@ -28,10 +28,10 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const email = "duplicate@example.com";
-        yield* db.users.create({ email, name: "First User" });
+        yield* db.users.create({ data: { email, name: "First User" } });
 
         const result = yield* db.users
-          .create({ email, name: "Second User" })
+          .create({ data: { email, name: "Second User" } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(AlreadyExistsError);
@@ -46,7 +46,7 @@ describe("UserService", () => {
           .build();
 
         const result = yield* db.users
-          .create({ email: "test@example.com", name: "Test" })
+          .create({ data: { email: "test@example.com", name: "Test" } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -61,10 +61,9 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const user = yield* db.users.create({
-          email: "find@example.com",
-          name: "Find User",
+          data: { email: "find@example.com", name: "Find User" },
         });
-        const found = yield* db.users.findById({ id: user.id });
+        const found = yield* db.users.findById({ userId: user.id });
 
         expect(found).toEqual(user);
       }).pipe(Effect.provide(TestDatabase)),
@@ -76,11 +75,11 @@ describe("UserService", () => {
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.users
-          .findById({ id: badId })
+          .findById({ userId: badId })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(`user with id ${badId} not found`);
+        expect(result.message).toBe(`user with userId ${badId} not found`);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -91,7 +90,7 @@ describe("UserService", () => {
           .build();
 
         const result = yield* db.users
-          .findById({ id: "user-id" })
+          .findById({ userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -106,12 +105,10 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const user1 = yield* db.users.create({
-          email: "user1@example.com",
-          name: "User 1",
+          data: { email: "user1@example.com", name: "User 1" },
         });
         const user2 = yield* db.users.create({
-          email: "user2@example.com",
-          name: "User 2",
+          data: { email: "user2@example.com", name: "User 2" },
         });
 
         const all = yield* db.users.findAll();
@@ -140,14 +137,13 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const created = yield* db.users.create({
-          name: "Original Name",
-          email: "original@example.com",
+          data: { name: "Original Name", email: "original@example.com" },
         });
 
         const updatedName = "Updated Name";
         const updatedEmail = "updated@example.com";
         const updated = yield* db.users.update({
-          id: created.id,
+          userId: created.id,
           data: { name: updatedName, email: updatedEmail },
         });
 
@@ -164,13 +160,15 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const created = yield* db.users.create({
-          email: "persist@example.com",
-          name: "Original",
+          data: { email: "persist@example.com", name: "Original" },
         });
 
-        yield* db.users.update({ id: created.id, data: { name: "Persisted" } });
+        yield* db.users.update({
+          userId: created.id,
+          data: { name: "Persisted" },
+        });
 
-        const found = yield* db.users.findById({ id: created.id });
+        const found = yield* db.users.findById({ userId: created.id });
 
         expect(found.name).toBe("Persisted");
       }).pipe(Effect.provide(TestDatabase)),
@@ -182,11 +180,11 @@ describe("UserService", () => {
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.users
-          .update({ id: badId, data: { name: "Should Fail" } })
+          .update({ userId: badId, data: { name: "Should Fail" } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(`user with id ${badId} not found`);
+        expect(result.message).toBe(`user with userId ${badId} not found`);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -197,7 +195,7 @@ describe("UserService", () => {
           .build();
 
         const result = yield* db.users
-          .update({ id: "user-id", data: { name: "Test" } })
+          .update({ userId: "user-id", data: { name: "Test" } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -210,16 +208,14 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const user1 = yield* db.users.create({
-          email: "user1@example.com",
-          name: "User 1",
+          data: { email: "user1@example.com", name: "User 1" },
         });
         yield* db.users.create({
-          email: "user2@example.com",
-          name: "User 2",
+          data: { email: "user2@example.com", name: "User 2" },
         });
 
         const result = yield* db.users
-          .update({ id: user1.id, data: { email: "user2@example.com" } })
+          .update({ userId: user1.id, data: { email: "user2@example.com" } })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -234,14 +230,13 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const created = yield* db.users.create({
-          email: "delete@example.com",
-          name: "Delete User",
+          data: { email: "delete@example.com", name: "Delete User" },
         });
 
-        yield* db.users.delete({ id: created.id });
+        yield* db.users.delete({ userId: created.id });
 
         const result = yield* db.users
-          .findById({ id: created.id })
+          .findById({ userId: created.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -253,11 +248,10 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const created = yield* db.users.create({
-          email: "deleteall@example.com",
-          name: "Delete All User",
+          data: { email: "deleteall@example.com", name: "Delete All User" },
         });
 
-        yield* db.users.delete({ id: created.id });
+        yield* db.users.delete({ userId: created.id });
 
         const all = yield* db.users.findAll();
 
@@ -270,10 +264,12 @@ describe("UserService", () => {
         const db = yield* DatabaseService;
 
         const badId = "00000000-0000-0000-0000-000000000000";
-        const result = yield* db.users.delete({ id: badId }).pipe(Effect.flip);
+        const result = yield* db.users
+          .delete({ userId: badId })
+          .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(`user with id ${badId} not found`);
+        expect(result.message).toBe(`user with userId ${badId} not found`);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -284,7 +280,7 @@ describe("UserService", () => {
           .build();
 
         const result = yield* db.users
-          .delete({ id: "user-id" })
+          .delete({ userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -316,7 +312,7 @@ describe("UserService", () => {
 
         const email = "existing@example.com";
         const name = "Original Name";
-        const created = yield* db.users.create({ email, name });
+        const created = yield* db.users.create({ data: { email, name } });
 
         const updatedName = "Updated Name";
         const updated = yield* db.users.createOrUpdate({

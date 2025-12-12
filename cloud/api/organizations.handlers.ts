@@ -24,30 +24,33 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
     });
   });
 
-export const getOrganizationHandler = (id: string) =>
+export const getOrganizationHandler = (organizationId: string) =>
   Effect.gen(function* () {
     const db = yield* DatabaseService;
     const user = yield* AuthenticatedUser;
-    return yield* db.organizations.findById({ id, userId: user.id });
+    return yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
   });
 
 export const updateOrganizationHandler = (
-  id: string,
+  organizationId: string,
   payload: UpdateOrganizationRequest,
 ) =>
   Effect.gen(function* () {
     const db = yield* DatabaseService;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.update({
-      id,
+      organizationId,
       data: { name: payload.name },
       userId: user.id,
     });
   });
 
-export const deleteOrganizationHandler = (id: string) =>
+export const deleteOrganizationHandler = (organizationId: string) =>
   Effect.gen(function* () {
     const db = yield* DatabaseService;
     const user = yield* AuthenticatedUser;
-    yield* db.organizations.delete({ id, userId: user.id });
+    yield* db.organizations.delete({ organizationId, userId: user.id });
   });

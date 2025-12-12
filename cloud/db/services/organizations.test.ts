@@ -66,8 +66,7 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const user = yield* db.users.create({
-          email: "test@example.com",
-          name: "Test User",
+          data: { email: "test@example.com", name: "Test User" },
         });
 
         const name = "Test Organization";
@@ -138,8 +137,7 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const user = yield* db.users.create({
-          email: "test@example.com",
-          name: "Test User",
+          data: { email: "test@example.com", name: "Test User" },
         });
 
         const orgs = yield* db.organizations.findAll({ userId: user.id });
@@ -171,7 +169,7 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const found = yield* db.organizations.findById({
-          id: org.id,
+          organizationId: org.id,
           userId: owner.id,
         });
 
@@ -186,7 +184,7 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .findById({ id: "org-id", userId: "user-id" })
+          .findById({ organizationId: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -200,7 +198,7 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const result = yield* db.organizations
-          .findById({ id: org.id, userId: nonMember.id })
+          .findById({ organizationId: org.id, userId: nonMember.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -218,7 +216,7 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .findById({ id: "org-id", userId: "user-id" })
+          .findById({ organizationId: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -236,11 +234,13 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .findById({ id: "org-id", userId: "user-id" })
+          .findById({ organizationId: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("organization with id org-id not found");
+        expect(result.message).toBe(
+          "organization with organizationId org-id not found",
+        );
       }),
     );
   });
@@ -253,7 +253,7 @@ describe("OrganizationService", () => {
 
         const newName = "Updated Name";
         const updated = yield* db.organizations.update({
-          id: org.id,
+          organizationId: org.id,
           data: { name: newName },
           userId: owner.id,
         });
@@ -275,7 +275,7 @@ describe("OrganizationService", () => {
 
         const result = yield* db.organizations
           .update({
-            id: "org-id",
+            organizationId: "org-id",
             data: { name: "New Name" },
             userId: "user-id",
           })
@@ -291,13 +291,16 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const user = yield* db.users.create({
-          email: "test@example.com",
-          name: "Test User",
+          data: { email: "test@example.com", name: "Test User" },
         });
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.organizations
-          .update({ id: badId, data: { name: "Should Fail" }, userId: user.id })
+          .update({
+            organizationId: badId,
+            data: { name: "Should Fail" },
+            userId: user.id,
+          })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -316,7 +319,7 @@ describe("OrganizationService", () => {
 
         const result = yield* db.organizations
           .update({
-            id: "org-id",
+            organizationId: "org-id",
             data: { name: "New Name" },
             userId: "user-id",
           })
@@ -338,14 +341,16 @@ describe("OrganizationService", () => {
 
         const result = yield* db.organizations
           .update({
-            id: "org-id",
+            organizationId: "org-id",
             data: { name: "New Name" },
             userId: "user-id",
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("organization with id org-id not found");
+        expect(result.message).toBe(
+          "organization with organizationId org-id not found",
+        );
       }),
     );
 
@@ -360,7 +365,7 @@ describe("OrganizationService", () => {
 
           const result = yield* db.organizations
             .update({
-              id: "org-id",
+              organizationId: "org-id",
               data: { name: "New Name" },
               userId: "user-id",
             })
@@ -380,10 +385,13 @@ describe("OrganizationService", () => {
         const { org, owner } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
-        yield* db.organizations.delete({ id: org.id, userId: owner.id });
+        yield* db.organizations.delete({
+          organizationId: org.id,
+          userId: owner.id,
+        });
 
         const result = yield* db.organizations
-          .findById({ id: org.id, userId: owner.id })
+          .findById({ organizationId: org.id, userId: owner.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -398,7 +406,7 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .delete({ id: "org-id", userId: "user-id" })
+          .delete({ organizationId: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -411,13 +419,12 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const user = yield* db.users.create({
-          email: "test@example.com",
-          name: "Test User",
+          data: { email: "test@example.com", name: "Test User" },
         });
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.organizations
-          .delete({ id: badId, userId: user.id })
+          .delete({ organizationId: badId, userId: user.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -433,7 +440,7 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .delete({ id: "org-id", userId: "user-id" })
+          .delete({ organizationId: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(PermissionDeniedError);
@@ -453,7 +460,7 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .delete({ id: "org-id", userId: "user-id" })
+          .delete({ organizationId: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
