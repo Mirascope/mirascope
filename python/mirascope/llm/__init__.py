@@ -87,7 +87,14 @@ from .prompts import (
     PromptDecorator,
     prompt,
 )
-from .providers import ModelId, Params, ProviderId, load_provider, register_provider
+from .providers import (
+    ModelId,
+    Params,
+    Provider,
+    ProviderId,
+    load_provider,
+    register_provider,
+)
 from .responses import (
     AsyncChunkIterator,
     AsyncContextResponse,
@@ -180,6 +187,7 @@ __all__ = [
     "PermissionError",
     "Prompt",
     "PromptDecorator",
+    "Provider",
     "ProviderId",
     "RateLimitError",
     "RawMessageChunk",

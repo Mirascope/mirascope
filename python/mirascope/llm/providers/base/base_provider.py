@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, ClassVar, Generic, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, overload
 from typing_extensions import TypeVar, Unpack
 
 from ...context import Context, DepsT
@@ -36,6 +36,9 @@ if TYPE_CHECKING:
     from ..provider_id import ProviderId
 
 ProviderClientT = TypeVar("ProviderClientT")
+
+Provider: TypeAlias = "BaseProvider[Any]"
+"""Type alias for `BaseProvider` with any client type."""
 
 
 class BaseProvider(Generic[ProviderClientT], ABC):

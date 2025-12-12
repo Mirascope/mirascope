@@ -1,8 +1,7 @@
 from functools import lru_cache
-from typing import Any
 
 from .anthropic import AnthropicProvider
-from .base import BaseProvider
+from .base import Provider
 from .google import GoogleProvider
 from .mlx import MLXProvider
 from .openai import OpenAIProvider
@@ -12,7 +11,7 @@ from .provider_id import ProviderId
 @lru_cache(maxsize=256)
 def load_provider(
     provider_id: ProviderId, *, api_key: str | None = None, base_url: str | None = None
-) -> BaseProvider[Any]:
+) -> Provider:
     """Create a cached provider instance for the specified provider id.
 
     Args:

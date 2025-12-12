@@ -1,19 +1,19 @@
 """Provider registry for managing provider instances and scopes."""
 
-from typing import Any, overload
+from typing import overload
 
 from ..exceptions import NoRegisteredProviderError
-from .base import BaseProvider
+from .base import Provider
 from .load_provider import load_provider
 from .provider_id import ProviderId
 
 # Global registry mapping scopes to providers
 # Scopes are matched by prefix (longest match wins)
-PROVIDER_REGISTRY: dict[str, "BaseProvider[Any]"] = {}
+PROVIDER_REGISTRY: dict[str, Provider] = {}
 
 # Default auto-registration mapping for built-in providers
 # These providers will be automatically registered on first use
-DEFAULT_AUTO_REGISTER_SCOPES: dict[str, "ProviderId"] = {
+DEFAULT_AUTO_REGISTER_SCOPES: dict[str, ProviderId] = {
     "anthropic/": "anthropic",
     "google/": "google",
     "openai/": "openai",
@@ -23,9 +23,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, "ProviderId"] = {
 
 @overload
 def register_provider(
-    provider: "BaseProvider[Any]",
+    provider: Provider,
     scope: str | list[str] | None = None,
-) -> BaseProvider[Any]:
+) -> Provider:
     """Register a provider instance with scope(s).
 
     Args:
@@ -38,12 +38,12 @@ def register_provider(
 
 @overload
 def register_provider(
-    provider: "ProviderId",
+    provider: ProviderId,
     scope: str | list[str] | None = None,
     *,
     api_key: str | None = None,
     base_url: str | None = None,
-) -> BaseProvider[Any]:
+) -> Provider:
     """Register a provider by ID with scope(s).
 
     Args:
@@ -57,12 +57,12 @@ def register_provider(
 
 
 def register_provider(
-    provider: "ProviderId | BaseProvider[Any]",
+    provider: ProviderId | Provider,
     scope: str | list[str] | None = None,
     *,
     api_key: str | None = None,
     base_url: str | None = None,
-) -> BaseProvider[Any]:
+) -> Provider:
     """Register a provider with scope(s) in the global registry.
 
     Scopes use prefix matching on model IDs:
@@ -110,7 +110,7 @@ def register_provider(
     return provider
 
 
-def get_provider_for_model(model_id: str) -> "BaseProvider[Any]":
+def get_provider_for_model(model_id: str) -> Provider:
     """Get the provider for a model_id based on the registry.
 
     Uses longest prefix matching to find the most specific provider for the model.
