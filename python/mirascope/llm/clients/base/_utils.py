@@ -8,7 +8,7 @@ from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .params import Params
 
 if TYPE_CHECKING:
-    from ..providers import ModelId, Provider
+    from ..providers import ModelId, ProviderId
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +138,7 @@ class SafeParamsAccessor:
         self,
         param_name: str,
         param_value: object,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId | None" = None,
     ) -> None:
         unsupported_by = f"provider: {provider}"
@@ -159,7 +159,7 @@ class SafeParamsAccessor:
 def ensure_all_params_accessed(
     *,
     params: Params,
-    provider: "Provider",
+    provider: "ProviderId",
     unsupported_params: list[str] | None = None,
 ) -> Generator[SafeParamsAccessor, None, None]:
     """Context manager that ensures all parameters are accessed.

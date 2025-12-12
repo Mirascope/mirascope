@@ -20,7 +20,7 @@ from opentelemetry.semconv.attributes import (
 )
 
 from .....llm.clients import Params
-from .....llm.clients.providers import ModelId, Provider
+from .....llm.clients.providers import ModelId, ProviderId
 from .....llm.context import Context, DepsT
 from .....llm.formatting import Format, FormattableT
 from .....llm.formatting._utils import create_tool_schema
@@ -250,7 +250,7 @@ def _serialize_tool_definitions(
 def _build_request_attributes(
     *,
     operation: str,
-    provider: Provider,
+    provider: ProviderId,
     model_id: ModelId,
     messages: Sequence[Message],
     tools: ToolsParam,

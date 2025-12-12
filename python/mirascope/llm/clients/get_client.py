@@ -1,5 +1,6 @@
 from typing import Any
 
+from ..providers import ProviderId
 from .anthropic import (
     client as anthropic_client,
 )
@@ -13,11 +14,10 @@ from .mlx import (
 from .openai import (
     client as openai_client,
 )
-from .providers import Provider
 
 
 def client(
-    provider: Provider, *, api_key: str | None = None, base_url: str | None = None
+    provider: ProviderId, *, api_key: str | None = None, base_url: str | None = None
 ) -> BaseClient[str, Any]:
     """Create a cached client instance for the specified provider.
 

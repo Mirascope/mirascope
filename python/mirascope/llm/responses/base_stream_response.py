@@ -38,7 +38,7 @@ from .streams import (
 )
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, Provider
+    from ..clients import ModelId, Params, ProviderId
 
 
 @dataclass(kw_only=True)
@@ -157,7 +157,7 @@ class BaseStreamResponse(
     def __init__(
         self,
         *,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",

@@ -1,5 +1,6 @@
 """Client interfaces for LLM providers."""
 
+from ..providers import KNOWN_PROVIDER_IDS, ProviderId
 from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
@@ -12,10 +13,10 @@ from .openai import (
     OpenAIClient,
     OpenAIModelId,
 )
-from .providers import PROVIDERS, ModelId, Provider, model_id_to_provider
+from .providers import ModelId, model_id_to_provider
 
 __all__ = [
-    "PROVIDERS",
+    "KNOWN_PROVIDER_IDS",
     "AnthropicClient",
     "AnthropicModelId",
     "BaseClient",
@@ -27,7 +28,7 @@ __all__ = [
     "OpenAIClient",
     "OpenAIModelId",
     "Params",
-    "Provider",
+    "ProviderId",
     "client",
     "model_id_to_provider",
 ]

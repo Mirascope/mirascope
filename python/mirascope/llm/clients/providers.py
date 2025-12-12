@@ -1,5 +1,6 @@
-from typing import Literal, TypeAlias, cast, get_args
+from typing import TypeAlias, cast
 
+from ..providers import KNOWN_PROVIDER_IDS, ProviderId
 from .anthropic import (
     AnthropicModelId,
 )
@@ -13,18 +14,10 @@ from .openai import (
     OpenAIModelId,
 )
 
-Provider: TypeAlias = Literal[
-    "anthropic",  # AnthropicClient
-    "google",  # GoogleClient
-    "openai",  # OpenAIClient
-    "mlx",  # Local inference powered by `mlx-lm`
-]
-PROVIDERS = get_args(Provider)
-
 ModelId: TypeAlias = AnthropicModelId | GoogleModelId | OpenAIModelId | MLXModelId | str
 
 
-def model_id_to_provider(model_id: ModelId) -> Provider:
+def model_id_to_provider(model_id: ModelId) -> ProviderId:
     """Extract the provider from a model ID.
 
     Args:
@@ -45,10 +38,10 @@ def model_id_to_provider(model_id: ModelId) -> Provider:
 
     provider = model_id.split("/", 1)[0]
 
-    if provider not in PROVIDERS:
+    if provider not in KNOWN_PROVIDER_IDS:
         raise ValueError(
             f"Unknown provider: '{provider}'. "
-            f"Supported providers are: {', '.join(PROVIDERS)}"
+            f"Supported providers are: {', '.join(KNOWN_PROVIDER_IDS)}"
         )
 
-    return cast(Provider, provider)
+    return cast(ProviderId, provider)

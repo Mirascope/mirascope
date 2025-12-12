@@ -27,7 +27,7 @@ from .base_stream_response import (
 )
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, Provider
+    from ..clients import ModelId, Params, ProviderId
 
 
 class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
@@ -94,7 +94,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
     def __init__(
         self,
         *,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -221,7 +221,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
     def __init__(
         self,
         *,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -357,7 +357,7 @@ class ContextStreamResponse(
     def __init__(
         self,
         *,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -501,7 +501,7 @@ class AsyncContextStreamResponse(
     def __init__(
         self,
         *,
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",

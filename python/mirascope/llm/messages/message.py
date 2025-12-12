@@ -10,7 +10,7 @@ from ..content import AssistantContentPart, Text, UserContentPart
 from ..types import Jsonable
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Provider
+    from ..clients import ModelId, ProviderId
 
 
 @dataclass(kw_only=True)
@@ -51,7 +51,7 @@ class AssistantMessage:
     name: str | None = None
     """A name identifying the creator of this message."""
 
-    provider: Provider | None
+    provider: ProviderId | None
     """The LLM provider that generated this assistant message, if available."""
 
     model_id: ModelId | None

@@ -23,7 +23,7 @@ from .base_response import BaseResponse
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, Provider
+    from ..clients import ModelId, Params, ProviderId
 
 
 class Response(BaseResponse[Toolkit, FormattableT]):
@@ -33,7 +33,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -104,7 +104,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -184,7 +184,7 @@ class ContextResponse(
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -272,7 +272,7 @@ class AsyncContextResponse(
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "Provider",
+        provider: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
