@@ -14,6 +14,7 @@ from .openai import (
     OpenAIProvider,
 )
 from .provider_id import KNOWN_PROVIDER_IDS, ProviderId
+from .provider_registry import get_provider_for_model, register_provider
 
 __all__ = [
     "KNOWN_PROVIDER_IDS",
@@ -29,6 +30,8 @@ __all__ = [
     "OpenAIProvider",
     "Params",
     "ProviderId",
+    "get_provider_for_model",
     "load",
     "load_provider",
+    "register_provider",
 ]

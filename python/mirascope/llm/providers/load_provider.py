@@ -33,7 +33,7 @@ def load_provider(
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "openai":
             return OpenAIProvider(api_key=api_key, base_url=base_url)
-        case "mlx-community":  # pragma: no cover (MLX is only available on macOS)
+        case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return MLXProvider()
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: '{provider_id}'")

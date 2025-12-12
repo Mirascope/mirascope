@@ -36,6 +36,9 @@ from .model_id import AnthropicModelId, model_name
 class AnthropicProvider(BaseProvider[Anthropic]):
     """The client for the Anthropic LLM model."""
 
+    id = "anthropic"
+    default_scope = "anthropic/"
+
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
     ) -> None:

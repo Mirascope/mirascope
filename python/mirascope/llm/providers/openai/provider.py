@@ -88,6 +88,9 @@ def choose_api_mode(model_id: OpenAIModelId, messages: Sequence[Message]) -> str
 class OpenAIProvider(BaseProvider[OpenAI]):
     """Unified provider for OpenAI that routes to Completions or Responses API based on model_id."""
 
+    id = "openai"
+    default_scope = "openai/"
+
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
     ) -> None:

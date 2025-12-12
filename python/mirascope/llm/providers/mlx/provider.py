@@ -68,6 +68,9 @@ class MLXProvider(BaseProvider[None]):
     streaming responses.
     """
 
+    id = "mlx"
+    default_scope = "mlx-community/"
+
     def _call(
         self,
         *,

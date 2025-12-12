@@ -37,6 +37,9 @@ from .model_id import GoogleModelId, model_name
 class GoogleProvider(BaseProvider[Client]):
     """The client for the Google LLM model."""
 
+    id = "google"
+    default_scope = "google/"
+
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
     ) -> None:

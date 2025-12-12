@@ -11,7 +11,13 @@ from typing_extensions import Unpack
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
-from ..providers import BaseProvider, ModelId, Params, ProviderId, load_provider
+from ..providers import (
+    BaseProvider,
+    ModelId,
+    Params,
+    ProviderId,
+    get_provider_for_model,
+)
 from ..responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -85,14 +91,8 @@ class Model:
         ```
     """
 
-    provider_id: ProviderId
-    """The string id of the provider being used (e.g. `"openai"`)"""
-
-    provider: BaseProvider[Any]
-    """The provider being used (e.g. an `OpenAIProvider`)."""
-
     model_id: ModelId
-    """The model being used (e.g. `"gpt-4o-mini"`)."""
+    """The model being used (e.g. `"openai/gpt-4o-mini"`)."""
 
     params: Params
     """The default parameters for the model (temperature, max_tokens, etc.)."""
@@ -102,17 +102,39 @@ class Model:
         model_id: ModelId,
         **params: Unpack[Params],
     ) -> None:
-        """Initialize the Model with provider, model_id, and optional params."""
-
-        # TODO(dandelion): Replace this as part of provider refactor.
-        # Model will get provider dynamically from context manager.
+        """Initialize the Model with model_id and optional params."""
         if "/" not in model_id:
-            raise ValueError("Invalid model_id format")
-        self.provider_id = model_id.split("/")[0]
-        self.provider = load_provider(self.provider_id)
+            raise ValueError(
+                "Invalid model_id format. Expected format: 'provider/model-name' "
+                f"(e.g., 'openai/gpt-4'). Got: '{model_id}'"
+            )
         self.model_id = model_id
         self.params = params
         self._token_stack: list[Token[Model | None]] = []
+
+    @property
+    def provider(self) -> BaseProvider[Any]:
+        """The provider being used (e.g. an `OpenAIProvider`).
+
+        This property dynamically looks up the provider from the registry based on
+        the current model_id. This allows provider overrides via `llm.register_provider()`
+        to take effect even after the model instance is created.
+
+        Raises:
+            NoRegisteredProviderError: If no provider is available for the model_id
+        """
+        return get_provider_for_model(self.model_id)
+
+    @property
+    def provider_id(self) -> ProviderId:
+        """The string id of the provider being used (e.g. `"openai"`).
+
+        This property returns the `id` field of the dynamically resolved provider.
+
+        Raises:
+            NoRegisteredProviderError: If no provider is available for the model_id
+        """
+        return self.provider.id
 
     def __enter__(self) -> Model:
         """Enter the context manager, setting this model in context."""
