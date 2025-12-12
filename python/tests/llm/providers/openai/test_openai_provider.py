@@ -52,5 +52,8 @@ def test_choose_api_mode_unknown_model() -> None:
     messages = [llm.messages.user("Hello")]
     # When we don't have info on either api variant, we go with responses
     # (good fit for new models that we haven't tested yet)
-    result = choose_api_mode("openai/new-mystery-model", messages)
-    assert result == "responses"
+    openai_result = choose_api_mode("openai/new-mystery-model", messages)
+    assert openai_result == "responses"
+
+    third_party_result = choose_api_mode("anthropic/claude-sonnet-4-5", messages)
+    assert third_party_result == "completions"

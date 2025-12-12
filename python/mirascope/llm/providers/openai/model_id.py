@@ -24,9 +24,7 @@ def model_name(model_id: OpenAIModelId, api_mode: ApiMode | None) -> str:
         Provider-specific model ID with API suffix (e.g. "gpt-4o:responses")
     """
     base_name = (
-        model_id.removeprefix("openai/")
-        .removesuffix(":responses")
-        .removesuffix(":completions")
+        model_id.split("/")[1].removesuffix(":responses").removesuffix(":completions")
     )
     if api_mode is None:
         return base_name

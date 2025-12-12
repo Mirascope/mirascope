@@ -1,0 +1,87 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"claude-sonnet-4-5"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '89'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.anthropic.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//RM7BSsNAFEbhVwn/1omkY2LMQLdSXImICCJhnLltpyZzQ+4NCCXvLl1o
+        t9/icM5IEQ6jHPpq83pK8W0S2cvpcdlNu/en5SU/wyAcOQUSuI8z9iknOfYzeeEMB1GeYJBypB+4
+        ymAkEX8guDNmHggOXiSJ+qyXFGelrHCobVUVN0Vti21R29piXT8NwkxeKcJt2vumaR/qrjMYOdIA
+        hzD4JVIpnDNpWZdNaSvbVJ3tYMBfJwqXcDh6vQ08TgNp4gyD5W/oqr3yN2WB2zQG08zjpFdqDZTV
+        D/9yZ9f1FwAA//8DALfJIXwrAQAA
+    headers:
+      CF-RAY:
+      - 9ad0a7671abca3c6-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 12 Dec 2025 22:28:20 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      cf-cache-status:
+      - DYNAMIC
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '2817'
+      x-ratelimit-remaining-requests:
+      - '3999'
+      x-ratelimit-remaining-tokens:
+      - '2400000'
+      x-ratelimit-requests:
+      - '4000'
+      x-ratelimit-reset-requests:
+      - 0s
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-ratelimit-tokens:
+      - '2400000'
+      x-request-id:
+      - req_011CW3ah7R53hgLc1q7i6qhf
+    status:
+      code: 200
+      message: OK
+version: 1
