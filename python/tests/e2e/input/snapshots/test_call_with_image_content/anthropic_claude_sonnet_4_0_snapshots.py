@@ -11,7 +11,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -35,7 +35,7 @@ test_snapshot = snapshot(
                             text="This is the iconic Wikipedia logo, featuring a spherical globe made up of puzzle pieces with text in various languages and scripts from different Wikipedia editions."
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

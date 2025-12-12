@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -90,7 +90,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -208,7 +208,7 @@ Respond only with valid JSON that matches this exact schema:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -288,7 +288,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -484,7 +484,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -695,7 +695,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

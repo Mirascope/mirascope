@@ -57,6 +57,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.assistant(
             ["General ", "Kenobi"],
             model_id="openai/gpt-4o",
+            provider_id="openai",
         ),
     ]
     assert encode_request(
@@ -67,7 +68,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
                 llm.UserMessage(content=[llm.Text(text="Hello there")]),
                 llm.AssistantMessage(
                     content=[llm.Text(text="General "), llm.Text(text="Kenobi")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o",
                     provider_model_name=None,
                     raw_message=None,

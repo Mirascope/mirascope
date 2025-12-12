@@ -11,7 +11,9 @@ def test_encode_messages_with_system_first() -> None:
     messages = [
         llm.messages.system("You are a helpful assistant"),
         llm.messages.user("Hello"),
-        llm.messages.assistant("Hi there", model_id="openai/gpt-5"),
+        llm.messages.assistant(
+            "Hi there", model_id="openai/gpt-5", provider_id="openai"
+        ),
         llm.messages.user("How are you?"),
     ]
 
@@ -25,7 +27,9 @@ def test_encode_messages_no_system() -> None:
     """Test encoding messages when no system message is present."""
     messages = [
         llm.messages.user("Hello"),
-        llm.messages.assistant("Hi there", model_id="openai/gpt-5"),
+        llm.messages.assistant(
+            "Hi there", model_id="openai/gpt-5", provider_id="openai"
+        ),
         llm.messages.user("How are you?"),
     ]
     system_message, remaining_messages = _utils.extract_system_message(messages)
@@ -39,7 +43,9 @@ def test_encode_messages_system_not_first_warns() -> None:
     messages = [
         llm.messages.user("Hello"),
         llm.messages.system("You are a helpful assistant"),
-        llm.messages.assistant("Hi there", model_id="openai/gpt-5"),
+        llm.messages.assistant(
+            "Hi there", model_id="openai/gpt-5", provider_id="openai"
+        ),
     ]
 
     with patch("logging.warning") as mock_warning:
@@ -94,7 +100,9 @@ def test_add_system_instructions_no_existing_system() -> None:
     """Test adding system instructions when no system message exists."""
     messages = [
         llm.messages.user("Hello"),
-        llm.messages.assistant("Hi there", model_id="openai/gpt-5"),
+        llm.messages.assistant(
+            "Hi there", model_id="openai/gpt-5", provider_id="openai"
+        ),
     ]
     additional_instructions = "Be helpful and concise."
 
@@ -113,7 +121,9 @@ def test_add_system_instructions_with_existing_system() -> None:
     messages = [
         llm.messages.system(prior_system_message),
         llm.messages.user("Hello"),
-        llm.messages.assistant("Hi there", model_id="openai/gpt-5"),
+        llm.messages.assistant(
+            "Hi there", model_id="openai/gpt-5", provider_id="openai"
+        ),
     ]
     additional_instructions = "Be helpful and concise."
 

@@ -206,6 +206,7 @@ class MLX:
         assistant_message = assistant(
             content=assistant_content,
             model_id=self.model_id,
+            provider_id="mlx",
             raw_message=None,
             name=None,
         )

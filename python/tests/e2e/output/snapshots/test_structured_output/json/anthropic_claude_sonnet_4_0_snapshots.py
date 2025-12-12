@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -92,7 +92,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -205,7 +205,7 @@ Respond only with valid JSON that matches this exact schema:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -285,7 +285,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -476,7 +476,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -667,7 +667,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

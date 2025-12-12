@@ -11,7 +11,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -35,7 +35,7 @@ test_snapshot = snapshot(
                             text="The image displays a three-dimensional jigsaw puzzle globe, composed of white pieces featuring characters from various writing systems, with a few pieces missing to reveal a dark gray interior."
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

@@ -11,7 +11,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -31,7 +31,7 @@ test_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[Text(text="LLM abstractions that aren't abstractions")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

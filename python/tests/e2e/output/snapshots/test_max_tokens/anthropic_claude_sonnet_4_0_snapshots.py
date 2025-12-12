@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"max_tokens": 50},
@@ -35,7 +35,7 @@ Here are all 50 U.S. states listed alphabetically:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -70,7 +70,7 @@ Here are all 50 U.S. states listed alphabetically:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"max_tokens": 50},
@@ -95,7 +95,7 @@ Here are all 50 U.S. states in alphabetical order:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -153,7 +153,7 @@ Here are all 50 U.S. states in alphabetical order:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -211,7 +211,7 @@ Here are all 50 U.S. states in alphabetical order:
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

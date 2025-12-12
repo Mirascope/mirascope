@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-5:responses",
             "provider_model_name": "gpt-5:responses",
             "params": {"thinking": False},
@@ -64,7 +64,7 @@ I’m confirming if there are any primes under 400 that have "79" as non-consecu
                         ),
                         Text(text="3"),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -141,7 +141,7 @@ I’m confirming if there are any primes under 400 that have "79" as non-consecu
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -175,7 +175,7 @@ I’m confirming if there are any primes under 400 that have "79" as non-consecu
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-5:responses",
             "provider_model_name": "gpt-5:responses",
             "params": {"thinking": False},
@@ -232,7 +232,7 @@ The final answer is simply "3." Great, let's go with that!\
                         ),
                         Text(text="3"),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -311,7 +311,7 @@ The final answer is simply "3." Great, let's go with that!\
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -394,7 +394,7 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
                         ),
                         Text(text="3"),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -467,7 +467,7 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -568,7 +568,7 @@ I’ll double-check for any primes like 197, but it doesn't have "79." And 297 i
                         ),
                         Text(text="3"),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
@@ -659,7 +659,7 @@ I’ll double-check for any primes like 197, but it doesn't have "79." And 297 i
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[

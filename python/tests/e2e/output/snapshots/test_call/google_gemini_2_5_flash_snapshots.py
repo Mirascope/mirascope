@@ -9,7 +9,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -35,7 +35,7 @@ So, 4200 + 42 = **4242**.\
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -78,7 +78,7 @@ So, 4200 + 42 = **4242**.\
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -100,7 +100,7 @@ So, 4200 + 42 = **4242**.\
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -159,7 +159,7 @@ So, 4200 + 42 = **4242**.\
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -218,7 +218,7 @@ async_stream_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = **4242**")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {},
@@ -20,7 +20,7 @@ test_snapshot = snapshot(
                     content=[
                         Text(text="I am a large language model, trained by Google.")
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -48,7 +48,7 @@ test_snapshot = snapshot(
                             text="I apologize for the mistake. I am actually based on OpenAI's GPT-3 model. OpenAI developed and trained me."
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={

@@ -142,7 +142,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
 
         return Response(
             raw=response,
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -234,7 +234,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
 
         return ContextResponse(
             raw=response,
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -317,7 +317,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
 
         return AsyncResponse(
             raw=response,
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -413,7 +413,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
 
         return AsyncContextResponse(
             raw=response,
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -491,7 +491,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         )
 
         return StreamResponse(
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -581,7 +581,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         )
 
         return ContextStreamResponse(
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -658,7 +658,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         )
 
         return AsyncStreamResponse(
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -754,7 +754,7 @@ class MLXClient(BaseClient[MLXModelId, None]):
         )
 
         return AsyncContextStreamResponse(
-            provider="mlx",
+            provider_id="mlx",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,

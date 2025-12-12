@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -34,7 +34,7 @@ sync_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -89,7 +89,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -113,7 +113,7 @@ async_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -190,7 +190,7 @@ stream_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -268,7 +268,7 @@ async_stream_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[

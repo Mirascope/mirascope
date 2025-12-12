@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -90,7 +90,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -207,7 +207,7 @@ Respond only with valid JSON that matches this exact schema:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -287,7 +287,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -482,7 +482,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -678,7 +678,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[

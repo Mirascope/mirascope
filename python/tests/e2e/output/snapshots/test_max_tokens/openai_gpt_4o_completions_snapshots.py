@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {"max_tokens": 50},
@@ -35,7 +35,7 @@ Certainly! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
@@ -65,7 +65,7 @@ Certainly! Here is a list of all 50 U.S. states:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {"max_tokens": 50},
@@ -90,7 +90,7 @@ Sure! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
@@ -143,7 +143,7 @@ Certainly! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message=None,
@@ -181,7 +181,7 @@ Sure! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message=None,

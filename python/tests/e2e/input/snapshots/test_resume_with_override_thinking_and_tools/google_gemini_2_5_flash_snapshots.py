@@ -12,7 +12,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
@@ -30,7 +30,7 @@ test_snapshot = snapshot(
                             args='{"n": 100}',
                         ),
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -65,7 +65,7 @@ test_snapshot = snapshot(
                             text="The 100th Fibonacci number is 218,922,995,834,555,169,026."
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

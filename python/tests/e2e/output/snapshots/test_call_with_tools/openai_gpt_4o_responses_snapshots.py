@@ -12,7 +12,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -39,7 +39,7 @@ sync_snapshot = snapshot(
                             args='{"password":"radiance"}',
                         ),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -86,7 +86,7 @@ Here are the secrets:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -141,7 +141,7 @@ Here are the secrets:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -168,7 +168,7 @@ async_snapshot = snapshot(
                             args='{"password":"radiance"}',
                         ),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -215,7 +215,7 @@ The secrets for the passwords are:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -295,7 +295,7 @@ stream_snapshot = snapshot(
                             args='{"password":"radiance"}',
                         ),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -342,7 +342,7 @@ Here are the secrets associated with each password:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -423,7 +423,7 @@ async_stream_snapshot = snapshot(
                             args='{"password":"radiance"}',
                         ),
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -470,7 +470,7 @@ Here are the secrets:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[

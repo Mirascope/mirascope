@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "mlx",
+            "provider_id": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {"max_tokens": 50},
@@ -26,7 +26,7 @@ Okay, the user is asking to list all U.S. states. Let me start by recalling the 
 """
                         )
                     ],
-                    provider="mlx",
+                    provider_id="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,
@@ -40,7 +40,7 @@ Okay, the user is asking to list all U.S. states. Let me start by recalling the 
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "mlx",
+            "provider_id": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {"max_tokens": 50},
@@ -56,7 +56,7 @@ Okay, the user is asking to list all U.S. states. Let me start by recalling the 
 """
                         )
                     ],
-                    provider="mlx",
+                    provider_id="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,
@@ -84,7 +84,7 @@ Okay, the user is asking to list all U.S. states. Let me start by recalling the 
 """
                         )
                     ],
-                    provider="mlx",
+                    provider_id="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     raw_message=None,
@@ -113,7 +113,7 @@ Okay, the user is asking to list all U.S. states. Let me start by recalling the 
 """
                         )
                     ],
-                    provider="mlx",
+                    provider_id="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     raw_message=None,

@@ -12,7 +12,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -38,7 +38,7 @@ sync_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -68,7 +68,7 @@ sync_snapshot = snapshot(
                             text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -137,7 +137,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -163,7 +163,7 @@ async_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -193,7 +193,7 @@ async_snapshot = snapshot(
                             text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -286,7 +286,7 @@ stream_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -316,7 +316,7 @@ stream_snapshot = snapshot(
                             text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -410,7 +410,7 @@ async_stream_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -440,7 +440,7 @@ async_stream_snapshot = snapshot(
                             text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

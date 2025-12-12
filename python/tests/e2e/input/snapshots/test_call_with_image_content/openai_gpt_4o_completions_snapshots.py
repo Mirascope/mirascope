@@ -11,7 +11,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {},
@@ -35,7 +35,7 @@ test_snapshot = snapshot(
                             text="The image is the Wikipedia globe logo, made of puzzle pieces with various letters and symbols on them."
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={

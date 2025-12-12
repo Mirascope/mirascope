@@ -51,7 +51,7 @@ class AssistantMessage:
     name: str | None = None
     """A name identifying the creator of this message."""
 
-    provider: ProviderId | None
+    provider_id: ProviderId | None
     """The LLM provider that generated this assistant message, if available."""
 
     model_id: ModelId | None
@@ -153,6 +153,7 @@ def assistant(
     content: AssistantContent,
     *,
     model_id: ModelId | None,
+    provider_id: ProviderId | None,
     provider_model_name: str | None = None,
     raw_message: Jsonable | None = None,
     name: str | None = None,
@@ -162,8 +163,8 @@ def assistant(
     Args:
         content: The content of the message, which can be `str` or any `AssistantContent`,
             or a sequence of assistant content pieces.
-        provider: Optional identifier of the provider that produced this message.
         model_id: Optional id of the model that produced this message.
+        provider_id: Optional identifier of the provider that produced this message.
         provider_model_name: Optional provider-specific model name. May include
             provider-specific additional info (like api mode in "gpt-5:responses").
         raw_message: Optional Jsonable object that contains the provider-specific
@@ -173,17 +174,15 @@ def assistant(
     Returns:
         An `AssistantMessage`.
     """
-    from ..clients import model_id_to_provider  # avoid circular import issues
 
     if isinstance(content, str) or not isinstance(content, Sequence):
         content = [content]
     promoted_content = [
         Text(text=part) if isinstance(part, str) else part for part in content
     ]
-    provider = model_id_to_provider(model_id) if model_id else None
     return AssistantMessage(
         content=promoted_content,
-        provider=provider,
+        provider_id=provider_id,
         model_id=model_id,
         provider_model_name=provider_model_name,
         raw_message=raw_message,

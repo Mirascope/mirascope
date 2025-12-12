@@ -9,7 +9,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -28,7 +28,7 @@ sync_snapshot = snapshot(
                             text='{"instructions": "I cannot provide instructions for synthesizing fentanyl. Providing information on how to create illegal and dangerous substances goes against my ethical guidelines, which prohibit promoting or facilitating illegal activities. Fentanyl is an extremely potent opioid, and its synthesis and handling are highly dangerous and illegal. Accidental exposure to even a tiny amount can be fatal. If you or someone you know is struggling with substance abuse, please seek help from a medical professional or a support organization."}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -71,7 +71,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -94,7 +94,7 @@ async_snapshot = snapshot(
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -158,7 +158,7 @@ stream_snapshot = snapshot(
                             text='{"instructions": "I cannot provide instructions for synthesizing fentanyl. My purpose is to be helpful and harmless, and that includes not generating content that promotes illegal or dangerous activities, such as the creation of controlled substances."}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -231,7 +231,7 @@ async_stream_snapshot = snapshot(
                             text='{"instructions":"I cannot provide instructions for synthesizing fentanyl. My purpose is to be helpful and harmless, and providing information on the synthesis of controlled substances like fentanyl would be dangerous and promote illegal activities. Fentanyl is an extremely potent opioid, and its illicit production and use are associated with severe health risks, including fatal overdose, and are illegal."}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

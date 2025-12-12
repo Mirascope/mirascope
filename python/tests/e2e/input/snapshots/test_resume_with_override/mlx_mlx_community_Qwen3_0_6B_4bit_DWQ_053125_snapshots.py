@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "mlx",
+            "provider_id": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
@@ -20,7 +20,7 @@ test_snapshot = snapshot(
                     content=[
                         Text(text="I am a large language model, trained by Google.")
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -56,7 +56,7 @@ I can double-check that. My answer is correct. If you have any other questions, 
 """
                         )
                     ],
-                    provider="mlx",
+                    provider_id="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,

@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {},
@@ -18,7 +18,7 @@ test_snapshot = snapshot(
                 UserMessage(content=[Text(text=""), Text(text="")]),
                 AssistantMessage(
                     content=[Text(text="Hello! How can I assist you today?")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={

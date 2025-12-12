@@ -7,7 +7,7 @@ test_snapshot = snapshot(
             "args": "('Google does not support URL-referenced images. Try `llm.Image.download(...) or `llm.Image.download_async(...)`',)",
             "feature": "url_image_source",
             "model_id": "None",
-            "provider": "google",
+            "provider_id": "google",
         }
     }
 )

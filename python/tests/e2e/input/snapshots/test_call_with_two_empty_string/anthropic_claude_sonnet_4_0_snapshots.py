@@ -7,7 +7,7 @@ test_snapshot = snapshot(
             "args": "('Anthropic does not support empty message content.',)",
             "feature": "empty message content",
             "model_id": "None",
-            "provider": "anthropic",
+            "provider_id": "anthropic",
         }
     }
 )

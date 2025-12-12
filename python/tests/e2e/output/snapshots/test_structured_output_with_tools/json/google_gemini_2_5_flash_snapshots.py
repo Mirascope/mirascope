@@ -7,7 +7,7 @@ sync_snapshot = snapshot(
             "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
             "model_id": "None",
-            "provider": "google",
+            "provider_id": "google",
         }
     }
 )
@@ -18,7 +18,7 @@ async_snapshot = snapshot(
             "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
             "model_id": "None",
-            "provider": "google",
+            "provider_id": "google",
         }
     }
 )
@@ -29,7 +29,7 @@ stream_snapshot = snapshot(
             "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
             "model_id": "None",
-            "provider": "google",
+            "provider_id": "google",
         }
     }
 )
@@ -40,7 +40,7 @@ async_stream_snapshot = snapshot(
             "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
             "model_id": "None",
-            "provider": "google",
+            "provider_id": "google",
         }
     }
 )

@@ -74,7 +74,7 @@ def stream_response_snapshot_dict(
     and raw data that's provider-specific and not useful for snapshots.
     """
     return {
-        "provider": response.provider,
+        "provider": response.provider_id,
         "model_id": response.model_id,
         "finish_reason": response.finish_reason,
         "messages": list(response.messages),

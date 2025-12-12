@@ -170,7 +170,7 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
         format: object | None = None,
     ) -> AsyncContextStreamResponse[Any, None]:
         return AsyncContextStreamResponse(
-            provider="openai",
+            provider_id="openai",
             model_id="openai/gpt-4o-mini",
             provider_model_name="gpt-4o-mini:responses",
             params={},

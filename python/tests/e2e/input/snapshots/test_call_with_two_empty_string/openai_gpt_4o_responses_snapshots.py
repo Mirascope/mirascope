@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -22,7 +22,7 @@ test_snapshot = snapshot(
                             text="It looks like your message was incomplete. Could you please provide more details or clarify your request?"
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[

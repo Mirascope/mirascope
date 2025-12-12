@@ -9,7 +9,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -18,7 +18,7 @@ sync_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -41,7 +41,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -50,7 +50,7 @@ async_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -80,7 +80,7 @@ stream_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -105,7 +105,7 @@ async_stream_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

@@ -15,7 +15,7 @@ def default_model(
     Used to ensure that we can test having the provider under test resume
     from a response that was created by a different provider.
     """
-    if llm.clients.model_id_to_provider(model_id) == "google":
+    if model_id.startswith("google/"):
         return "anthropic/claude-sonnet-4-0"
     else:
         return "google/gemini-2.5-flash"

@@ -61,6 +61,7 @@ def messages(model_id: llm.ModelId) -> list[llm.Message]:
                 llm.Text(text="Yes."),
             ],
             model_id=model_id,
+            provider_id="openai",
             raw_message={"is_dummy_for_testing_purposes": True},
         ),
         llm.messages.user("Please tell me what the number is."),

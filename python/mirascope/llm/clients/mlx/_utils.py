@@ -68,7 +68,7 @@ def encode_params(params: Params) -> tuple[int | None, StreamGenerateKwargs]:
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="mlx",
+        provider_id="mlx",
         unsupported_params=["stop_sequences", "thinking", "encode_thoughts_as_text"],
     ) as param_accessor:
         if param_accessor.max_tokens is not None:

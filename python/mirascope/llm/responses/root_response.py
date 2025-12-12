@@ -23,7 +23,7 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     raw: Any
     """The raw response from the LLM."""
 
-    provider: "ProviderId"
+    provider_id: "ProviderId"
     """The provider that generated this response."""
 
     model_id: "ModelId"

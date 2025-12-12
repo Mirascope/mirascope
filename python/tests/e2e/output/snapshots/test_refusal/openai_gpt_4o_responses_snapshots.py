@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -27,7 +27,7 @@ sync_snapshot = snapshot(
                     content=[
                         Text(text="I'm very sorry, but I can't assist with that.")
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -67,7 +67,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {},
@@ -84,7 +84,7 @@ async_snapshot = snapshot(
                     content=[
                         Text(text="I'm very sorry, but I can't assist with that.")
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -137,7 +137,7 @@ stream_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[Text(text="I'm sorry, I can't assist with that.")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
@@ -191,7 +191,7 @@ async_stream_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[Text(text="I'm sorry, I can't assist with that.")],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[

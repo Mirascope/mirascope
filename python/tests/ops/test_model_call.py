@@ -727,7 +727,7 @@ def test_model_call_with_format_tool_finish_reason(
     assert book_format is not None
 
     class _FormatToolClient:
-        provider = "openai"
+        provider_id: llm.ProviderId = "openai"
 
         def call(
             self,
@@ -741,11 +741,12 @@ def test_model_call_with_format_tool_finish_reason(
             assistant_message = llm.messages.assistant(
                 "Here is your book.",
                 model_id=model_id,
+                provider_id=self.provider_id,
                 name="assistant-1",
             )
             return llm.Response(
                 raw={"responseId": "resp_format_tool_finish"},
-                provider=self.provider,  # pyright: ignore [reportArgumentType]
+                provider_id=self.provider_id,
                 model_id=model_id,
                 provider_model_name="gpt-4o-mini",
                 params=params,  # pyright: ignore [reportArgumentType]

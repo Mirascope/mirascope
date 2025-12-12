@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "mlx",
+            "provider_id": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
@@ -52,7 +52,7 @@ Both types are fundamental to programming, with integers typically used for whol
 """
                         )
                     ],
-                    provider="mlx",
+                    provider_id="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,

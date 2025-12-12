@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING, TypeAlias, get_type_hints
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
+from ...providers import ProviderId
 from .params import Params
 
 if TYPE_CHECKING:
-    from ..providers import ModelId, ProviderId
+    from ..providers import ModelId
 
 logger = logging.getLogger(__name__)
 
@@ -138,10 +139,10 @@ class SafeParamsAccessor:
         self,
         param_name: str,
         param_value: object,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId | None" = None,
     ) -> None:
-        unsupported_by = f"provider: {provider}"
+        unsupported_by = f"provider: {provider_id}"
         if model_id:
             unsupported_by += f" with model_id: {model_id}"
         logger.warning(
@@ -159,7 +160,7 @@ class SafeParamsAccessor:
 def ensure_all_params_accessed(
     *,
     params: Params,
-    provider: "ProviderId",
+    provider_id: "ProviderId",
     unsupported_params: list[str] | None = None,
 ) -> Generator[SafeParamsAccessor, None, None]:
     """Context manager that ensures all parameters are accessed.
@@ -185,7 +186,9 @@ def ensure_all_params_accessed(
     unsupported_params = unsupported_params or []
     for unsupported in unsupported_params:
         if (val := params.get(unsupported)) is not None:
-            accessor.emit_warning_for_unused_param(unsupported, val, provider=provider)
+            accessor.emit_warning_for_unused_param(
+                unsupported, val, provider_id=provider_id
+            )
     try:
         yield accessor
     finally:
