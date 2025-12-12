@@ -381,10 +381,13 @@ export class MockDatabase {
 // ============================================================================
 
 /**
- * Creates a test organization with an owner and a non-member user.
+ * Creates a test organization with members of all roles and a non-member user.
  *
- * Returns { org, owner, nonMember } where:
- * - owner: a user who owns the organization
+ * Returns { org, owner, admin, developer, viewer, nonMember } where:
+ * - owner: a user who owns the organization (OWNER role)
+ * - admin: a user with ADMIN role
+ * - developer: a user with DEVELOPER role
+ * - viewer: a user with VIEWER role
  * - nonMember: a user who is NOT a member (useful for permission tests)
  *
  * Requires DatabaseService - call `yield* DatabaseService` in your test
@@ -393,18 +396,58 @@ export class MockDatabase {
 export const TestOrganizationFixture = Effect.gen(function* () {
   const db = yield* DatabaseService;
 
+  // Create users
   const owner = yield* db.users.create({
     data: { email: "owner@example.com", name: "Owner" },
   });
 
-  const org = yield* db.organizations.create({
-    data: { name: "Test Organization" },
-    userId: owner.id,
+  const adminUser = yield* db.users.create({
+    data: { email: "admin@example.com", name: "Admin" },
+  });
+
+  const developerUser = yield* db.users.create({
+    data: { email: "developer@example.com", name: "Developer" },
+  });
+
+  const viewerUser = yield* db.users.create({
+    data: { email: "viewer@example.com", name: "Viewer" },
   });
 
   const nonMember = yield* db.users.create({
     data: { email: "nonmember@example.com", name: "Non Member" },
   });
 
-  return { org, owner, nonMember };
+  // Create organization (owner becomes OWNER automatically)
+  const org = yield* db.organizations.create({
+    data: { name: "Test Organization" },
+    userId: owner.id,
+  });
+
+  // Add members with different roles using the memberships service
+  yield* db.organizations.memberships.create({
+    userId: owner.id,
+    organizationId: org.id,
+    data: { userId: adminUser.id, role: "ADMIN" },
+  });
+
+  yield* db.organizations.memberships.create({
+    userId: owner.id,
+    organizationId: org.id,
+    data: { userId: developerUser.id, role: "DEVELOPER" },
+  });
+
+  yield* db.organizations.memberships.create({
+    userId: owner.id,
+    organizationId: org.id,
+    data: { userId: viewerUser.id, role: "VIEWER" },
+  });
+
+  return {
+    org,
+    owner,
+    admin: adminUser,
+    developer: developerUser,
+    viewer: viewerUser,
+    nonMember,
+  };
 });

@@ -141,6 +141,27 @@ export type HasParentParams<T extends string> =
   keyof ParentParams<T> extends never ? false : true;
 
 /**
+ * Parameter type for authorization operations.
+ *
+ * - Top-level resources: Uses full PathParams (e.g., { organizationId: string })
+ * - Nested resources: Uses ParentParams (e.g., { organizationId: string })
+ *
+ * This ensures authorization always has access to the "scope" identifier needed
+ * to determine the user's role, regardless of resource nesting level.
+ *
+ * @example
+ * ```ts
+ * // OrganizationService: path = "organizations/:organizationId"
+ * // AuthorizationParams = { organizationId: string }
+ *
+ * // OrganizationMembershipService: path = "organizations/:organizationId/users/:targetUserId"
+ * // AuthorizationParams = { organizationId: string }
+ * ```
+ */
+export type AuthorizationParams<T extends string> =
+  HasParentParams<T> extends true ? ParentParams<T> : PathParams<T>;
+
+/**
  * Parameter type for create operations.
  *
  * - Top-level resources: `{ data: TData }`
@@ -681,12 +702,12 @@ export abstract class BaseAuthenticatedService<
    * Determines the authenticated user's role for the given resource.
    *
    * @param args.userId - The authenticated user's ID
-   * @param args.[pathParams] - Path parameters identifying the resource
+   * @param args.[pathParams] - Path parameters identifying the authorization scope
    * @returns The user's role
    * @throws NotFoundError - If the user has no role (not a member)
    */
   protected abstract getRole(
-    args: { userId: string } & PathParams<TPath>,
+    args: { userId: string } & AuthorizationParams<TPath>,
   ): Effect.Effect<TRole, NotFoundError | DatabaseError>;
 
   // ---------------------------------------------------------------------------
@@ -742,7 +763,7 @@ export abstract class BaseAuthenticatedService<
    * ```
    */
   protected authorize(
-    args: { userId: string; action: PermissionAction } & PathParams<TPath>,
+    args: { userId: string; action: PermissionAction } & AuthorizationParams<TPath>,
   ): Effect.Effect<
     TRole,
     NotFoundError | PermissionDeniedError | DatabaseError
@@ -763,14 +784,19 @@ export abstract class BaseAuthenticatedService<
   /**
    * Creates a new resource (with authorization).
    *
+   * For nested resources, parent path params are required and are authoritative.
+   * Implementations should overwrite any conflicting values in `data` with path params
+   * to prevent injection attacks.
+   *
    * Subclasses should call `authorize({ userId, action, ...pathParams })` before delegating to `baseService.create()`.
    */
-  abstract create(args: {
-    userId: string;
-    data: TInsert;
-  }): Effect.Effect<
+  abstract create(
+    args: { userId: string; } & (HasParentParams<TPath> extends true
+      ? ParentParams<TPath>
+      : unknown) & { data: TInsert },
+  ): Effect.Effect<
     TPublic,
-    AlreadyExistsError | PermissionDeniedError | DatabaseError
+    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
   /**
@@ -778,9 +804,11 @@ export abstract class BaseAuthenticatedService<
    *
    * Subclasses typically filter by membership or ownership.
    */
-  abstract findAll(args: {
-    userId: string;
-  }): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
+  abstract findAll(
+    args: { userId: string } & (HasParentParams<TPath> extends true
+      ? ParentParams<TPath>
+      : unknown),
+  ): Effect.Effect<TPublic[], NotFoundError | PermissionDeniedError | DatabaseError>;
 
   /**
    * Retrieves a single resource by ID (with authorization).

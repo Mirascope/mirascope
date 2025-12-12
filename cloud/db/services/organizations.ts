@@ -17,13 +17,11 @@
  *
  * ```
  * OrganizationService (authenticated)
- *   └── baseService: OrganizationBaseService
- *         └── CRUD on `organizations` table (raw, no auth)
+ *   ├── baseService: OrganizationBaseService
+ *   │     └── CRUD on `organizations` table (raw, no auth)
+ *   └── memberships: OrganizationMembershipService
+ *         └── CRUD on `organization_memberships` table (with auth)
  * ```
- *
- * All authentication, authorization, and membership logic is handled in
- * `OrganizationService`. There is a single base service for core organization
- * persistence logic. Memberships are managed as part of the organization operations.
  *
  * ## Usage
  *
@@ -45,16 +43,23 @@
  *   organizationId: org.id,
  *   data: { name: "New Name" },
  * });
+ *
+ * // Access memberships via nested service
+ * const members = yield* orgService.memberships.findAll({
+ *   userId: "user-123",
+ *   organizationId: org.id,
+ * });
  * ```
  */
 
 import { Effect } from "effect";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import {
   BaseAuthenticatedService,
   BaseService,
   type PermissionTable,
 } from "@/db/services/base";
+import { OrganizationMembershipService } from "@/db/services/organization-memberships";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -139,6 +144,36 @@ export class OrganizationService extends BaseAuthenticatedService<
   NewOrganization,
   Role
 > {
+  /**
+   * Nested service for managing organization memberships.
+   *
+   * Provides CRUD operations for adding, updating, and removing members
+   * from an organization.
+   *
+   * @example
+   * ```ts
+   * // Add a member
+   * yield* orgService.memberships.create({
+   *   userId: owner.id,
+   *   organizationId: org.id,
+   *   targetUserId: newUser.id,
+   *   role: "DEVELOPER",
+   * });
+   *
+   * // List all members
+   * yield* orgService.memberships.findAll({
+   *   userId: owner.id,
+   *   organizationId: org.id,
+   * });
+   * ```
+   */
+  public readonly memberships: OrganizationMembershipService;
+
+  constructor(db: ConstructorParameters<typeof BaseAuthenticatedService>[0]) {
+    super(db);
+    this.memberships = new OrganizationMembershipService(db);
+  }
+
   // ---------------------------------------------------------------------------
   // Base Service Implementation
   // ---------------------------------------------------------------------------
@@ -163,9 +198,8 @@ export class OrganizationService extends BaseAuthenticatedService<
   /**
    * Determines the user's role in an organization.
    *
-   * This method is called by `authorize()` to check permissions before
-   * performing operations. It intentionally returns `NotFoundError` for
-   * non-members to hide organization existence from unauthorized users.
+   * Delegates to the memberships service since the role is stored in the
+   * organization_memberships table.
    *
    * @param args.organizationId - The organization to check membership in
    * @param args.userId - The user to check
@@ -174,44 +208,13 @@ export class OrganizationService extends BaseAuthenticatedService<
    * @throws DatabaseError - If the database query fails
    */
   getRole({
-    organizationId,
     userId,
+    organizationId,
   }: {
     organizationId: string;
     userId: string;
   }): Effect.Effect<Role, NotFoundError | DatabaseError> {
-    return Effect.gen(this, function* () {
-      const membership = yield* Effect.tryPromise({
-        try: async () => {
-          const [membership] = await this.db
-            .select({ role: organizationMemberships.role })
-            .from(organizationMemberships)
-            .where(
-              and(
-                eq(organizationMemberships.userId, userId),
-                eq(organizationMemberships.organizationId, organizationId),
-              ),
-            )
-            .limit(1);
-          return membership;
-        },
-        catch: (error) =>
-          new DatabaseError({
-            message: "Failed to get membership",
-            cause: error,
-          }),
-      });
-
-      if (!membership) {
-        return yield* Effect.fail(
-          new NotFoundError({
-            message: "Organization not found",
-            resource: this.baseService.resourceName,
-          }),
-        );
-      }
-      return membership.role;
-    });
+    return this.memberships.getRole({ userId, organizationId });
   }
 
   // ---------------------------------------------------------------------------
@@ -345,8 +348,8 @@ export class OrganizationService extends BaseAuthenticatedService<
     return Effect.gen(this, function* () {
       const role = yield* this.authorize({
         userId,
-        organizationId,
         action: "read",
+        organizationId,
       });
       const organization = yield* this.baseService.findById({ organizationId });
       return { ...organization, role };
@@ -381,8 +384,8 @@ export class OrganizationService extends BaseAuthenticatedService<
     return Effect.gen(this, function* () {
       const role = yield* this.authorize({
         userId,
-        organizationId,
         action: "update",
+        organizationId,
       });
       const organization = yield* this.baseService.update({
         organizationId,
@@ -418,7 +421,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      yield* this.authorize({ userId, organizationId, action: "delete" });
+      yield* this.authorize({ userId, action: "delete", organizationId });
       yield* Effect.tryPromise({
         try: async () => {
           await this.db.transaction(async (tx) => {
