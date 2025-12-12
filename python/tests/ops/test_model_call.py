@@ -6,7 +6,7 @@ import json
 from collections.abc import Generator, Mapping, Sequence
 from pathlib import Path
 from typing import Any, cast
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import httpx
 import openai
@@ -25,6 +25,7 @@ from mirascope.llm.content import (
     Base64ImageSource,
     Image,
 )
+from mirascope.llm.providers.provider_registry import PROVIDER_REGISTRY
 from mirascope.llm.responses.finish_reason import FinishReason
 from mirascope.ops._internal import configuration as ops_configuration
 from mirascope.ops._internal.configuration import set_tracer
@@ -36,6 +37,14 @@ class Book(BaseModel):
 
     title: str
     author: str
+
+
+@pytest.fixture(autouse=True, scope="function")
+def reset_provider_registry() -> Generator[None, None, None]:
+    """Reset the provider registry before and after each test."""
+    PROVIDER_REGISTRY.clear()
+    yield
+    PROVIDER_REGISTRY.clear()
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -248,19 +257,23 @@ def test_model_call_with_image(span_exporter: InMemorySpanExporter) -> None:
 
 def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
     """Test OpenTelemetry instrumentation when an error occurs."""
-    mock_client = Mock()
-    mock_client.call.side_effect = openai.APIError(
+    # Create a mock provider that raises an error
+    mock_provider = Mock()
+    mock_provider.id = "openai"
+    mock_provider.call.side_effect = openai.APIError(
         "Server error occurred",
         request=httpx.Request("POST", "https://example.com"),
         body=None,
     )
 
-    with patch("mirascope.llm.models.models.load_provider", return_value=mock_client):
-        model = llm.Model(model_id="openai/gpt-4o-mini")
-        messages = [llm.messages.user("Hello")]
+    # Register the broken provider
+    llm.register_provider(mock_provider, scope="openai/")
 
-        with pytest.raises(openai.APIError):
-            model.call(messages=messages)
+    model = llm.Model(model_id="openai/gpt-4o-mini")
+    messages = [llm.messages.user("Hello")]
+
+    with pytest.raises(openai.APIError):
+        model.call(messages=messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -726,8 +739,8 @@ def test_model_call_with_format_tool_finish_reason(
     book_format = llm.format(Book, mode="tool")
     assert book_format is not None
 
-    class _FormatToolClient:
-        provider_id: llm.ProviderId = "openai"
+    class _FormatToolProvider:
+        id: llm.ProviderId = "openai"
 
         def call(
             self,
@@ -741,12 +754,12 @@ def test_model_call_with_format_tool_finish_reason(
             assistant_message = llm.messages.assistant(
                 "Here is your book.",
                 model_id=model_id,
-                provider_id=self.provider_id,
+                provider_id=self.id,
                 name="assistant-1",
             )
             return llm.Response(
                 raw={"responseId": "resp_format_tool_finish"},
-                provider_id=self.provider_id,
+                provider_id=self.id,
                 model_id=model_id,
                 provider_model_name="gpt-4o-mini",
                 params=params,  # pyright: ignore [reportArgumentType]
@@ -757,17 +770,17 @@ def test_model_call_with_format_tool_finish_reason(
                 finish_reason=FinishReason.MAX_TOKENS,
             )
 
-    with patch(
-        "mirascope.llm.models.models.load_provider", return_value=_FormatToolClient()
-    ):
-        model = llm.Model(
-            model_id="openai/gpt-4o-mini",
-            max_tokens=5,
-        )
-        messages = [llm.messages.user("Return a book recommendation.")]
+    # Register the mock provider
+    llm.register_provider(_FormatToolProvider(), scope="openai/")  # pyright: ignore[reportCallIssue, reportArgumentType]
 
-        response = model.call(messages=messages, format=book_format)
-        assert response.finish_reason == FinishReason.MAX_TOKENS
+    model = llm.Model(
+        model_id="openai/gpt-4o-mini",
+        max_tokens=5,
+    )
+    messages = [llm.messages.user("Return a book recommendation.")]
+
+    response = model.call(messages=messages, format=book_format)
+    assert response.finish_reason == FinishReason.MAX_TOKENS
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1

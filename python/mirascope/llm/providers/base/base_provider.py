@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Generic, overload
+from typing import TYPE_CHECKING, ClassVar, Generic, overload
 from typing_extensions import TypeVar, Unpack
 
 from ...context import Context, DepsT
@@ -32,6 +32,9 @@ from ...tools import (
 )
 from .params import Params
 
+if TYPE_CHECKING:
+    from ..provider_id import ProviderId
+
 ProviderClientT = TypeVar("ProviderClientT")
 
 
@@ -40,6 +43,17 @@ class BaseProvider(Generic[ProviderClientT], ABC):
 
     This class defines explicit methods for each type of call, eliminating
     the need for complex overloads in provider implementations.
+    """
+
+    id: ClassVar[ProviderId]
+    """Provider identifier (e.g., "anthropic", "openai")."""
+
+    default_scope: ClassVar[str | list[str]]
+    """Default scope(s) for this provider when explicitly registered.
+
+    Can be a single scope string or a list of scopes. For example:
+    - "anthropic/" - Single scope
+    - ["anthropic/", "openai/"] - Multiple scopes (e.g., for AWS Bedrock)
     """
 
     client: ProviderClientT

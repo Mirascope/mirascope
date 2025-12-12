@@ -103,3 +103,17 @@ class ServerError(APIError):
 
 class TimeoutError(MirascopeLLMError):
     """Raised when requests timeout or deadline exceeded."""
+
+
+class NoRegisteredProviderError(MirascopeLLMError):
+    """Raised when no provider is registered for a given model_id."""
+
+    model_id: str
+
+    def __init__(self, model_id: str) -> None:
+        message = (
+            f"No provider registered for model '{model_id}'. "
+            f"Use llm.register_provider() to register a provider for this model."
+        )
+        super().__init__(message)
+        self.model_id = model_id

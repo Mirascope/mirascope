@@ -60,6 +60,7 @@ from .exceptions import (
     FeatureNotSupportedError,
     FormattingModeNotSupportedError,
     MirascopeLLMError,
+    NoRegisteredProviderError,
     NotFoundError,
     PermissionError,
     RateLimitError,
@@ -86,7 +87,7 @@ from .prompts import (
     PromptDecorator,
     prompt,
 )
-from .providers import ModelId, Params, ProviderId, load_provider
+from .providers import ModelId, Params, ProviderId, load_provider, register_provider
 from .responses import (
     AsyncChunkIterator,
     AsyncContextResponse,
@@ -172,6 +173,7 @@ __all__ = [
     "MirascopeLLMError",
     "Model",
     "ModelId",
+    "NoRegisteredProviderError",
     "NotFoundError",
     "Params",
     "Partial",
@@ -227,6 +229,7 @@ __all__ = [
     "prompt",
     "prompts",
     "providers",
+    "register_provider",
     "responses",
     "tool",
     "tools",

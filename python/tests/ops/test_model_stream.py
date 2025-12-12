@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Generator, Iterator, Mapping
 from typing import TypedDict
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import httpx
 import openai
@@ -17,10 +17,19 @@ from pydantic import BaseModel, Field
 
 from mirascope import llm, ops
 from mirascope.llm.content.text import TextChunk, TextStartChunk
+from mirascope.llm.providers.provider_registry import PROVIDER_REGISTRY
 from mirascope.llm.responses import StreamResponseChunk
 from mirascope.llm.responses.stream_response import StreamResponse
 from mirascope.ops._internal.configuration import set_tracer
 from tests.ops.utils import span_snapshot
+
+
+@pytest.fixture(autouse=True, scope="function")
+def reset_provider_registry() -> Generator[None, None, None]:
+    """Reset the provider registry before and after each test."""
+    PROVIDER_REGISTRY.clear()
+    yield
+    PROVIDER_REGISTRY.clear()
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -343,17 +352,21 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
 
-    mock_client = Mock()
-    mock_client.stream.side_effect = openai.APIError(
+    # Create a mock provider that raises an error
+    mock_provider = Mock()
+    mock_provider.id = "openai"
+    mock_provider.stream.side_effect = openai.APIError(
         "Server error occurred",
         request=httpx.Request("POST", "https://example.com"),
         body=None,
     )
 
-    with patch("mirascope.llm.models.models.load_provider", return_value=mock_client):
-        model = llm.Model(model_id="openai/gpt-4o")
-        with pytest.raises(openai.APIError):
-            model.stream(messages=_math_messages())
+    # Register the broken provider
+    llm.register_provider(mock_provider, scope="openai/")
+
+    model = llm.Model(model_id="openai/gpt-4o")
+    with pytest.raises(openai.APIError):
+        model.stream(messages=_math_messages())
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -388,8 +401,10 @@ def test_model_stream_iterator_error_records_exception(
         yield TextChunk(delta="partial")
         raise RuntimeError("chunk boom")
 
-    mock_client = Mock()
-    mock_client.stream.return_value = StreamResponse(
+    # Create a mock provider that returns a failing stream
+    mock_provider = Mock()
+    mock_provider.id = "openai"
+    mock_provider.stream.return_value = StreamResponse(
         provider_id="openai",
         model_id="openai/gpt-4o",
         provider_model_name="gpt-4o:responses",
@@ -400,11 +415,13 @@ def test_model_stream_iterator_error_records_exception(
         chunk_iterator=_chunk_iterator(),
     )
 
-    with patch("mirascope.llm.models.models.load_provider", return_value=mock_client):
-        model = llm.Model(model_id="openai/gpt-4o")
-        response = model.stream(messages=_math_messages())
-        with pytest.raises(RuntimeError):
-            response.finish()
+    # Register the mock provider
+    llm.register_provider(mock_provider, scope="openai/")
+
+    model = llm.Model(model_id="openai/gpt-4o")
+    response = model.stream(messages=_math_messages())
+    with pytest.raises(RuntimeError):
+        response.finish()
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
