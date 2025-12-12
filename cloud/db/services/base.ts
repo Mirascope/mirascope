@@ -356,6 +356,13 @@ export abstract class BaseAuthenticatedService<
   protected abstract getPermissionTable(): PermissionTable<TRole>;
 
   /**
+   * Returns the role of the authenticated user for the given resource.
+   */
+  protected abstract getRole(
+    args: { userId: string } & PathParams<TPath>,
+  ): Effect.Effect<TRole, NotFoundError | DatabaseError>;
+
+  /**
    * Verify that a role has permission to perform an action.
    */
   protected verifyPermission(
@@ -374,6 +381,25 @@ export abstract class BaseAuthenticatedService<
       );
     }
     return Effect.succeed(undefined);
+  }
+
+  /**
+   * Authorizes an action for the authenticated user against the given resource.
+   * Combines getRole() + verifyPermission().
+   */
+  protected authorize(
+    args: { userId: string; action: PermissionAction } & PathParams<TPath>,
+  ): Effect.Effect<
+    TRole,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      const { userId, action, ...pathParams } = args;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+      const role = yield* this.getRole({ userId, ...(pathParams as any) });
+      yield* this.verifyPermission(role, action);
+      return role;
+    });
   }
 
   abstract create(args: {
