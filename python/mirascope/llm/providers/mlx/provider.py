@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from functools import cache, lru_cache
-from typing import cast, overload
+from typing import cast
 from typing_extensions import Unpack
 
 import mlx.nn as nn
@@ -74,46 +74,7 @@ class MLXProvider(BaseProvider[None]):
     streaming responses.
     """
 
-    @overload
-    def call(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> Response:
-        """Generate an `llm.Response` without a response format."""
-        ...
-
-    @overload
-    def call(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> Response[FormattableT]:
-        """Generate an `llm.Response` with a response format."""
-        ...
-
-    @overload
-    def call(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> Response | Response[FormattableT]:
-        """Generate an `llm.Response` with an optional response format."""
-        ...
-
-    def call(
+    def _call(
         self,
         *,
         model_id: MLXModelId,
@@ -153,55 +114,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> ContextResponse[DepsT, None]:
-        """Generate an `llm.ContextResponse` without a response format."""
-        ...
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> ContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.ContextResponse` with a response format."""
-        ...
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.ContextResponse` with an optional response format."""
-        ...
-
-    def context_call(
+    def _context_call(
         self,
         *,
         ctx: Context[DepsT],
@@ -245,46 +158,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    async def call_async(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncResponse:
-        """Generate an `llm.AsyncResponse` without a response format."""
-        ...
-
-    @overload
-    async def call_async(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncResponse[FormattableT]:
-        """Generate an `llm.AsyncResponse` with a response format."""
-        ...
-
-    @overload
-    async def call_async(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Generate an `llm.AsyncResponse` with an optional response format."""
-        ...
-
-    async def call_async(
+    async def _call_async(
         self,
         *,
         model_id: MLXModelId,
@@ -328,55 +202,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncContextResponse[DepsT, None]:
-        """Generate an `llm.AsyncContextResponse` without a response format."""
-        ...
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.AsyncContextResponse` with a response format."""
-        ...
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.AsyncContextResponse` with an optional response format."""
-        ...
-
-    async def context_call_async(
+    async def _context_call_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -424,46 +250,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    def stream(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> StreamResponse:
-        """Stream an `llm.StreamResponse` without a response format."""
-        ...
-
-    @overload
-    def stream(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> StreamResponse[FormattableT]:
-        """Stream an `llm.StreamResponse` with a response format."""
-        ...
-
-    @overload
-    def stream(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Stream an `llm.StreamResponse` with an optional response format."""
-        ...
-
-    def stream(
+    def _stream(
         self,
         *,
         model_id: MLXModelId,
@@ -501,55 +288,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> ContextStreamResponse[DepsT]:
-        """Stream an `llm.ContextStreamResponse` without a response format."""
-        ...
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> ContextStreamResponse[DepsT, FormattableT]:
-        """Stream an `llm.ContextStreamResponse` with a response format."""
-        ...
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
-        """Stream an `llm.ContextStreamResponse` with an optional response format."""
-        ...
-
-    def context_stream(
+    def _context_stream(
         self,
         *,
         ctx: Context[DepsT],
@@ -591,46 +330,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    async def stream_async(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncStreamResponse:
-        """Stream an `llm.AsyncStreamResponse` without a response format."""
-        ...
-
-    @overload
-    async def stream_async(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncStreamResponse[FormattableT]:
-        """Stream an `llm.AsyncStreamResponse` with a response format."""
-        ...
-
-    @overload
-    async def stream_async(
-        self,
-        *,
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Stream an `llm.AsyncStreamResponse` with an optional response format."""
-        ...
-
-    async def stream_async(
+    async def _stream_async(
         self,
         *,
         model_id: MLXModelId,
@@ -668,58 +368,7 @@ class MLXProvider(BaseProvider[None]):
             format=format,
         )
 
-    @overload
-    async def context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse[DepsT]:
-        """Stream an `llm.AsyncContextStreamResponse` without a response format."""
-        ...
-
-    @overload
-    async def context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
-        """Stream an `llm.AsyncContextStreamResponse` with a response format."""
-        ...
-
-    @overload
-    async def context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: MLXModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
-        **params: Unpack[Params],
-    ) -> (
-        AsyncContextStreamResponse[DepsT]
-        | AsyncContextStreamResponse[DepsT, FormattableT]
-    ):
-        """Stream an `llm.AsyncContextStreamResponse` with an optional response format."""
-        ...
-
-    async def context_stream_async(
+    async def _context_stream_async(
         self,
         *,
         ctx: Context[DepsT],

@@ -1,7 +1,6 @@
 """OpenAI Responses API client implementation."""
 
 from collections.abc import Sequence
-from typing import overload
 from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, OpenAI
@@ -44,46 +43,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.async_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
-    @overload
-    def call(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> Response:
-        """Generate an `llm.Response` without a response format."""
-        ...
-
-    @overload
-    def call(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> Response[FormattableT]:
-        """Generate an `llm.Response` with a response format."""
-        ...
-
-    @overload
-    def call(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> Response | Response[FormattableT]:
-        """Generate an `llm.Response` with optional response format."""
-        ...
-
-    def call(
+    def _call(
         self,
         *,
         model_id: OpenAIModelId,
@@ -132,46 +92,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    async def call_async(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncResponse:
-        """Generate an `llm.AsyncResponse` without a response format."""
-        ...
-
-    @overload
-    async def call_async(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncResponse[FormattableT]:
-        """Generate an `llm.AsyncResponse` with a response format."""
-        ...
-
-    @overload
-    async def call_async(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Generate an `llm.AsyncResponse` with optional response format."""
-        ...
-
-    async def call_async(
+    async def _call_async(
         self,
         *,
         model_id: OpenAIModelId,
@@ -220,46 +141,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    def stream(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> StreamResponse:
-        """Generate a `llm.StreamResponse` without a response format."""
-        ...
-
-    @overload
-    def stream(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> StreamResponse[FormattableT]:
-        """Generate a `llm.StreamResponse` with a response format."""
-        ...
-
-    @overload
-    def stream(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Generate a `llm.StreamResponse` with optional response format."""
-        ...
-
-    def stream(
+    def _stream(
         self,
         *,
         model_id: OpenAIModelId,
@@ -309,46 +191,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    async def stream_async(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncStreamResponse:
-        """Generate a `llm.AsyncStreamResponse` without a response format."""
-        ...
-
-    @overload
-    async def stream_async(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncStreamResponse[FormattableT]:
-        """Generate a `llm.AsyncStreamResponse` with a response format."""
-        ...
-
-    @overload
-    async def stream_async(
-        self,
-        *,
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Generate a `llm.AsyncStreamResponse` with optional response format."""
-        ...
-
-    async def stream_async(
+    async def _stream_async(
         self,
         *,
         model_id: OpenAIModelId,
@@ -398,55 +241,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> ContextResponse[DepsT]:
-        """Generate a `llm.ContextResponse` without a response format."""
-        ...
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> ContextResponse[DepsT, FormattableT]:
-        """Generate a `llm.ContextResponse` with a response format."""
-        ...
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> ContextResponse[DepsT] | ContextResponse[DepsT, FormattableT]:
-        """Generate a `llm.ContextResponse` with optional response format."""
-        ...
-
-    def context_call(
+    def _context_call(
         self,
         *,
         ctx: Context[DepsT],
@@ -499,55 +294,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncContextResponse[DepsT]:
-        """Generate a `llm.AsyncContextResponse` without a response format."""
-        ...
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncContextResponse[DepsT, FormattableT]:
-        """Generate a `llm.AsyncContextResponse` with a response format."""
-        ...
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> AsyncContextResponse[DepsT] | AsyncContextResponse[DepsT, FormattableT]:
-        """Generate a `llm.AsyncContextResponse` with optional response format."""
-        ...
-
-    async def context_call_async(
+    async def _context_call_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -600,55 +347,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> ContextStreamResponse[DepsT]:
-        """Generate a `llm.ContextStreamResponse` without a response format."""
-        ...
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> ContextStreamResponse[DepsT, FormattableT]:
-        """Generate a `llm.ContextStreamResponse` with a response format."""
-        ...
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]]
-        | ContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
-        """Generate a `llm.ContextStreamResponse` with optional response format."""
-        ...
-
-    def context_stream(
+    def _context_stream(
         self,
         *,
         ctx: Context[DepsT],
@@ -702,58 +401,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
         )
 
-    @overload
-    async def context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: None = None,
-        **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse[DepsT]:
-        """Generate a `llm.AsyncContextStreamResponse` without a response format."""
-        ...
-
-    @overload
-    async def context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT],
-        **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
-        """Generate a `llm.AsyncContextStreamResponse` with a response format."""
-        ...
-
-    @overload
-    async def context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model_id: OpenAIModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
-        | AsyncContextToolkit[DepsT]
-        | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
-        **params: Unpack[Params],
-    ) -> (
-        AsyncContextStreamResponse[DepsT]
-        | AsyncContextStreamResponse[DepsT, FormattableT]
-    ):
-        """Generate a `llm.AsyncContextStreamResponse` with optional response format."""
-        ...
-
-    async def context_stream_async(
+    async def _context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
