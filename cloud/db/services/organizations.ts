@@ -60,7 +60,7 @@ export class OrganizationService extends BaseAuthenticatedService<
   protected getPermissionTable(): PermissionTable<Role> {
     return {
       create: ["OWNER"], // Handled separately (no org exists yet)
-      read: ["OWNER", "ADMIN", "DEVELOPER", "ANNOTATOR"], // All members can read
+      read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"], // All members can read
       update: ["OWNER", "ADMIN"],
       delete: ["OWNER"],
     };

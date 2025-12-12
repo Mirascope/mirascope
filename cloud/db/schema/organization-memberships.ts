@@ -7,7 +7,7 @@ export const roleEnum = pgEnum("role", [
   "OWNER",
   "ADMIN",
   "DEVELOPER",
-  "ANNOTATOR",
+  "VIEWER",
 ]);
 export const ROLE_VALUES = roleEnum.enumValues;
 
