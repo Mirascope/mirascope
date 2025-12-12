@@ -1,10 +1,11 @@
 import * as dotenv from "dotenv";
 import { Effect, Layer } from "effect";
 import { getDatabase, DatabaseService, type Database } from "@/db/services";
+import { ProjectMembershipService } from "@/db/services/project-memberships";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 dotenv.config({ path: ".env.local", override: true });
 
@@ -292,5 +293,122 @@ export const TestOrganizationFixture = Effect.gen(function* () {
     admin,
     member,
     nonMember,
+  };
+});
+
+/**
+ * Creates a test project within an organization with explicit project members.
+ *
+ * Returns { org, project, owner, admin, member, nonMember, projectAdmin, projectDeveloper, projectViewer, projectAnnotator } where:
+ * - org: the organization containing the project
+ * - project: the created project
+ * - owner: org owner (implicit project ADMIN access)
+ * - admin: org admin (implicit project ADMIN access)
+ * - member: org member without explicit project membership
+ * - nonMember: not an org member
+ * - projectAdmin: org member with explicit project ADMIN membership
+ * - projectDeveloper: org member with explicit project DEVELOPER membership
+ * - projectViewer: org member with explicit project VIEWER membership
+ * - projectAnnotator: org member with explicit project ANNOTATOR membership
+ *
+ * Note: Project members must already be org members (TODO: external collaborators).
+ *
+ * TODO: Refactor to use db.projects.create() and db.projects.memberships once ProjectService is implemented.
+ */
+export const TestProjectFixture = Effect.gen(function* () {
+  const orgFixture = yield* TestOrganizationFixture;
+  const db = yield* DatabaseService;
+
+  // TODO: Replace with db.projects.create() when ProjectService is implemented
+  const [project] = yield* Effect.tryPromise({
+    try: () =>
+      db.client
+        .insert(schema.projects)
+        .values({
+          name: "Test Project",
+          organizationId: orgFixture.org.id,
+          createdByUserId: orgFixture.owner.id,
+        })
+        .returning({
+          id: schema.projects.id,
+          name: schema.projects.name,
+          organizationId: schema.projects.organizationId,
+        }),
+    catch: (error) => new Error(`Failed to create project: ${String(error)}`),
+  });
+
+  // ProjectMembershipService isn't mounted under db.projects yet, so create a local instance.
+  const projectMemberships = new ProjectMembershipService(
+    db.client,
+    db.organizations,
+  );
+
+  const projectAdmin = yield* db.users.create({
+    data: { email: "project-admin@example.com", name: "Project Admin" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectAdmin.id, role: "MEMBER" },
+  });
+  yield* projectMemberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectAdmin.id, role: "ADMIN" },
+  });
+
+  const projectDeveloper = yield* db.users.create({
+    data: { email: "project-developer@example.com", name: "Project Developer" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectDeveloper.id, role: "MEMBER" },
+  });
+  yield* projectMemberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectDeveloper.id, role: "DEVELOPER" },
+  });
+
+  const projectViewer = yield* db.users.create({
+    data: { email: "project-viewer@example.com", name: "Project Viewer" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectViewer.id, role: "MEMBER" },
+  });
+  yield* projectMemberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectViewer.id, role: "VIEWER" },
+  });
+
+  const projectAnnotator = yield* db.users.create({
+    data: { email: "project-annotator@example.com", name: "Project Annotator" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectAnnotator.id, role: "MEMBER" },
+  });
+  yield* projectMemberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectAnnotator.id, role: "ANNOTATOR" },
+  });
+
+  return {
+    ...orgFixture,
+    project,
+    projectAdmin,
+    projectDeveloper,
+    projectViewer,
+    projectAnnotator,
   };
 });

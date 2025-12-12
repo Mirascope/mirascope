@@ -1,6 +1,6 @@
 {
-  "id": "7383ccb1-f7e1-4b75-971c-8500f6c97574",
-  "prevId": "d091a28d-0f70-4b1e-a6b8-bb0fd48a17cb",
+  "id": "adc10818-ddb2-4580-8259-92833ebd0a30",
+  "prevId": "a3526a51-7623-4199-b89b-140d6676f0f0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -651,7 +651,7 @@
       "values": [
         "ADMIN",
         "DEVELOPER",
-        "READER",
+        "VIEWER",
         "ANNOTATOR"
       ]
     }

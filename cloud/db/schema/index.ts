@@ -20,7 +20,10 @@ export type {
   AuditAction,
 } from "@/db/schema/organization-membership-audit";
 export type { PublicProject } from "@/db/schema/projects";
-export type { PublicProjectMembership } from "@/db/schema/project-memberships";
+export type {
+  PublicProjectMembership,
+  ProjectRole,
+} from "@/db/schema/project-memberships";
 export type { PublicProjectMembershipAudit } from "@/db/schema/project-membership-audit";
 
 import { users } from "@/db/schema/users";

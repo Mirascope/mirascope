@@ -294,7 +294,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    * @returns The membership with role, or null if not found
    * @throws DatabaseError - If the database query fails
    */
-  protected getMembership({
+  getMembership({
     userId,
     organizationId,
   }: {
