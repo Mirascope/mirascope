@@ -196,8 +196,11 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId, userId });
-      yield* this.verifyPermission(role, "read");
+      const role = yield* this.authorize({
+        userId,
+        organizationId,
+        action: "read",
+      });
       const organization = yield* this.baseService.findById({ organizationId });
       return { ...organization, role };
     });
@@ -216,8 +219,11 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId, userId });
-      yield* this.verifyPermission(role, "update");
+      const role = yield* this.authorize({
+        userId,
+        organizationId,
+        action: "update",
+      });
       const organization = yield* this.baseService.update({
         organizationId,
         data,
@@ -237,8 +243,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId, userId });
-      yield* this.verifyPermission(role, "delete");
+      yield* this.authorize({ userId, organizationId, action: "delete" });
       yield* Effect.tryPromise({
         try: async () => {
           await this.db.transaction(async (tx) => {
