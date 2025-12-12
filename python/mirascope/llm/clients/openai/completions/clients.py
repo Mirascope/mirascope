@@ -64,7 +64,7 @@ def client(
     return _openai_singleton(api_key, base_url)
 
 
-class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
+class OpenAICompletionsClient(BaseClient[OpenAI]):
     """The client for the OpenAI LLM model."""
 
     def __init__(
