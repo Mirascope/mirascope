@@ -29,6 +29,7 @@
   ],
   "search.exclude": {
     "**/cassettes": true,
+    "**/mlx_lm_cassettes": true,
     "**/snapshots": true
   }
 }

@@ -25,7 +25,7 @@ if sys.platform == "darwin":
         mlx_cassette_fixture,  # noqa: F401 # pyright: ignore[reportUnusedImport]
     )
 
-    E2E_MODEL_IDS.append("mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
+    E2E_MODEL_IDS.append("mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (

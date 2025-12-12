@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider_id": "mlx",
-            "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
@@ -47,17 +47,17 @@ test_snapshot = snapshot(
                         Text(
                             text="""\
 <think>
-Okay, the user is asking if I can double-check the previous question. Let me think. The user first asked "Who created you?" and I responded by stating I am a large language model trained by Google. Then they asked "Can you double-check that?" so I need to confirm that my answer is correct.
+Okay, the user is asking if I can double-check the previous question. Let me think. The user first asked "Who created you?" and I responded by stating I am a large language model trained by Google. Then they asked "Can you double-check that?" which seems like they want to confirm my answer.
 
-I should make sure that my response is accurate. The user might be testing if I understand the question correctly. Since I'm trained by Google, my answer is correct. I should acknowledge that and maybe offer to help with anything else. Let me check if there's any other information I need to confirm. No, the answer seems correct. I'll respond clearly and offer further assistance.
+I need to make sure my response is accurate. The original answer was correct, so I should acknowledge that. Maybe say something like "Yes, I can double-check that. Your answer is correct." That way, the user feels confident in my response. Also, I should keep the tone friendly and open for further questions. Let me put that into a concise reply.
 </think>
 
-I can double-check that. My answer is correct. If you have any other questions, feel free to ask!\
+Yes, I can double-check that. Your answer is correct.\
 """
                         )
                     ],
                     provider_id="mlx",
-                    model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     provider_model_name=None,
                     raw_message=None,
                 ),
