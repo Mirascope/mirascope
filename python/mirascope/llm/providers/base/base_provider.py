@@ -45,7 +45,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
     client: ProviderClientT
 
     @overload
-    @abstractmethod
     def call(
         self,
         *,
@@ -59,7 +58,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def call(
         self,
         *,
@@ -73,7 +71,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def call(
         self,
         *,
@@ -86,7 +83,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Generate an `llm.Response` with an optional response format."""
         ...
 
-    @abstractmethod
     def call(
         self,
         *,
@@ -108,10 +104,28 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
+        return self._call(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    def _call(
+        self,
+        *,
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | Toolkit | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> Response | Response[FormattableT]:
+        """Implementation for call(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     def context_call(
         self,
         *,
@@ -128,7 +142,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def context_call(
         self,
         *,
@@ -145,7 +158,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def context_call(
         self,
         *,
@@ -161,7 +173,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Generate an `llm.ContextResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     def context_call(
         self,
         *,
@@ -187,10 +198,32 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
+        return self._context_call(
+            ctx=ctx,
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    def _context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
+        """Implementation for context_call(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     async def call_async(
         self,
         *,
@@ -204,7 +237,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def call_async(
         self,
         *,
@@ -218,7 +250,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def call_async(
         self,
         *,
@@ -231,7 +262,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Generate an `llm.AsyncResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     async def call_async(
         self,
         *,
@@ -253,10 +283,28 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
+        return await self._call_async(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    async def _call_async(
+        self,
+        *,
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
+        """Implementation for call_async(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     async def context_call_async(
         self,
         *,
@@ -273,7 +321,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def context_call_async(
         self,
         *,
@@ -290,7 +337,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def context_call_async(
         self,
         *,
@@ -306,7 +352,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Generate an `llm.AsyncContextResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     async def context_call_async(
         self,
         *,
@@ -332,10 +377,32 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
+        return await self._context_call_async(
+            ctx=ctx,
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    async def _context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
+        """Implementation for context_call_async(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     def stream(
         self,
         *,
@@ -349,7 +416,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def stream(
         self,
         *,
@@ -363,7 +429,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def stream(
         self,
         *,
@@ -376,7 +441,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Stream an `llm.StreamResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     def stream(
         self,
         *,
@@ -398,10 +462,28 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
+        return self._stream(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    def _stream(
+        self,
+        *,
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | Toolkit | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> StreamResponse | StreamResponse[FormattableT]:
+        """Implementation for stream(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     def context_stream(
         self,
         *,
@@ -418,7 +500,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def context_stream(
         self,
         *,
@@ -435,7 +516,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     def context_stream(
         self,
         *,
@@ -453,7 +533,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Stream an `llm.ContextStreamResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     def context_stream(
         self,
         *,
@@ -481,10 +560,34 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
+        return self._context_stream(
+            ctx=ctx,
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    def _context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> (
+        ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
+    ):
+        """Implementation for context_stream(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     async def stream_async(
         self,
         *,
@@ -498,7 +601,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def stream_async(
         self,
         *,
@@ -512,7 +614,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def stream_async(
         self,
         *,
@@ -525,7 +626,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Stream an `llm.AsyncStreamResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     async def stream_async(
         self,
         *,
@@ -547,10 +647,28 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+        return await self._stream_async(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    async def _stream_async(
+        self,
+        *,
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
+        """Implementation for stream_async(). Subclasses override this method."""
         ...
 
     @overload
-    @abstractmethod
     async def context_stream_async(
         self,
         *,
@@ -567,7 +685,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def context_stream_async(
         self,
         *,
@@ -584,7 +701,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         ...
 
     @overload
-    @abstractmethod
     async def context_stream_async(
         self,
         *,
@@ -603,7 +719,6 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         """Stream an `llm.AsyncContextStreamResponse` with an optional response format."""
         ...
 
-    @abstractmethod
     async def context_stream_async(
         self,
         *,
@@ -632,6 +747,32 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+        return await self._context_stream_async(
+            ctx=ctx,
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **params,
+        )
+
+    @abstractmethod
+    async def _context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: str,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
+        **params: Unpack[Params],
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ):
+        """Implementation for context_stream_async(). Subclasses override this method."""
         ...
 
     @overload
