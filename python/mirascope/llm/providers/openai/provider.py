@@ -81,8 +81,13 @@ def choose_api_mode(model_id: OpenAIModelId, messages: Sequence[Message]) -> str
 
     # If we don't have either :responses or :completions in the known_models, it's
     # likely that this is a new model we haven't tested. We default to responses api for
-    # new models
-    return "responses"
+    # openai/ models (on the assumption that they are new models and OpenAI prefers
+    # the responses API) but completions for other models (on the assumption that they
+    # are other models routing through the OpenAI completions API)
+    if model_id.startswith("openai/"):
+        return "responses"
+    else:
+        return "completions"
 
 
 class OpenAIProvider(BaseProvider[OpenAI]):

@@ -282,8 +282,6 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
-    if not model_id.startswith("openai/"):  # pragma: no cover
-        raise ValueError(f"Model ID must start with 'openai/' prefix, got: {model_id}")
     if model_id.endswith(":responses"):  # pragma: no cover
         raise ValueError(
             f"Can't use completions client for responses model: {model_id}"

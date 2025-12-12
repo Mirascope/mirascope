@@ -251,8 +251,6 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
-    if not model_id.startswith("openai/"):  # pragma: no cover
-        raise ValueError(f"Model ID must start with 'openai/' prefix, got: {model_id}")
     if model_id.endswith(":completions"):  # pragma: no cover
         raise ValueError("Cannot use :completions model with responses client")
 
