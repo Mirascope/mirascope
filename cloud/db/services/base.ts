@@ -1,3 +1,39 @@
+/**
+ * @fileoverview Base service classes for database operations.
+ *
+ * This module provides two abstract base classes:
+ *
+ * 1. `BaseService` - Low-level CRUD operations with REST-style path parameter support.
+ *    Handles database queries, error mapping, and parent/child resource scoping.
+ *
+ * 2. `BaseAuthenticatedService` - Wraps BaseService(s) with authentication and
+ *    role-based permission checking. Composes one or more BaseServices internally.
+ *
+ * ## Path Parameter System
+ *
+ * Services use REST-style path patterns to define resource hierarchies:
+ * - `"users/:userId"` - Top-level resource
+ * - `"users/:userId/sessions/:sessionId"` - Nested resource
+ *
+ * The path pattern determines:
+ * - Which parameters are required for each operation
+ * - How queries are scoped (nested resources filter by parent ID)
+ * - Type-safe parameter requirements at compile time
+ *
+ * @example
+ * ```ts
+ * // Top-level resource
+ * class UserService extends BaseService<User, "users/:userId", typeof users> { ... }
+ * userService.findAll();  // No params needed
+ * userService.findById({ userId: "123" });
+ *
+ * // Nested resource
+ * class SessionService extends BaseService<Session, "users/:userId/sessions/:sessionId", typeof sessions> { ... }
+ * sessionService.findAll({ userId: "123" });  // Parent param required
+ * sessionService.findById({ userId: "123", sessionId: "456" });
+ * ```
+ */
+
 import { Effect } from "effect";
 import { and, eq } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
@@ -16,11 +52,21 @@ import type { DatabaseTable } from "@/db/schema";
 // =============================================================================
 // Path Parameter Utility Types
 // =============================================================================
+//
+// These types extract and transform REST-style path patterns into TypeScript
+// types for compile-time safety. The path pattern "users/:userId/sessions/:sessionId"
+// becomes the type { userId: string; sessionId: string }.
 
 /**
- * Extracts parameter names from a path string.
+ * Extracts parameter names from a REST-style path pattern.
+ *
+ * Recursively parses path segments to find all `:paramName` patterns.
+ *
  * @example
- * ParsePathParams<"users/:userId/sessions/:sessionId"> // "userId" | "sessionId"
+ * ```ts
+ * type Params = ParsePathParams<"users/:userId/sessions/:sessionId">;
+ * // Result: "userId" | "sessionId"
+ * ```
  */
 export type ParsePathParams<T extends string> =
   T extends `${string}:${infer Param}/${infer Rest}`
@@ -30,20 +76,31 @@ export type ParsePathParams<T extends string> =
       : never;
 
 /**
- * Converts path parameter names to an object type.
+ * Converts a path pattern to an object type with string values.
+ *
  * @example
- * PathParams<"users/:userId"> // { userId: string }
- * PathParams<"users/:userId/sessions/:sessionId"> // { userId: string; sessionId: string }
+ * ```ts
+ * type Params = PathParams<"users/:userId/sessions/:sessionId">;
+ * // Result: { userId: string; sessionId: string }
+ * ```
  */
 export type PathParams<T extends string> = {
   [K in ParsePathParams<T>]: string;
 };
 
 /**
- * Extracts the last parameter name from a path (the resource's own ID).
+ * Extracts the last (rightmost) parameter name from a path.
+ *
+ * This represents the resource's own ID in nested paths.
+ *
  * @example
- * LastPathParam<"users/:userId/sessions/:sessionId"> // "sessionId"
- * LastPathParam<"users/:userId"> // "userId"
+ * ```ts
+ * type Id = LastPathParam<"users/:userId/sessions/:sessionId">;
+ * // Result: "sessionId"
+ *
+ * type Id = LastPathParam<"users/:userId">;
+ * // Result: "userId"
+ * ```
  */
 export type LastPathParam<T extends string> =
   T extends `${string}/${infer Rest}`
@@ -53,11 +110,19 @@ export type LastPathParam<T extends string> =
       : never;
 
 /**
- * Parent path params (all except the resource's own ID).
- * Used for create operations where the resource ID doesn't exist yet.
+ * Extracts parent path parameters (excludes the resource's own ID).
+ *
+ * Used for operations that scope by parent but don't reference the resource ID,
+ * such as `findAll` on nested resources or `create` before an ID exists.
+ *
  * @example
- * ParentParams<"users/:userId/sessions/:sessionId"> // { userId: string }
- * ParentParams<"users/:userId"> // {}
+ * ```ts
+ * type Parents = ParentParams<"users/:userId/sessions/:sessionId">;
+ * // Result: { userId: string }
+ *
+ * type Parents = ParentParams<"users/:userId">;
+ * // Result: {} (empty - no parent)
+ * ```
  */
 export type ParentParams<T extends string> = Omit<
   PathParams<T>,
@@ -65,15 +130,23 @@ export type ParentParams<T extends string> = Omit<
 >;
 
 /**
- * Helper type to check if ParentParams is empty (i.e., top-level resource).
+ * Boolean type indicating whether a path has parent parameters.
+ *
+ * - `true` for nested resources (e.g., sessions under users)
+ * - `false` for top-level resources (e.g., users)
+ *
+ * Used to conditionally require parent params in method signatures.
  */
 export type HasParentParams<T extends string> =
   keyof ParentParams<T> extends never ? false : true;
 
 /**
- * Create params type - includes parent params and data.
- * For top-level resources, this is just { data }.
- * For nested resources, this includes parent path params.
+ * Parameter type for create operations.
+ *
+ * - Top-level resources: `{ data: TData }`
+ * - Nested resources: `{ parentId: string, ..., data: TData }`
+ *
+ * Note: Parent params should also be included in `data` for database insertion.
  */
 export type CreateParams<T extends string, TData> =
   HasParentParams<T> extends true
@@ -85,12 +158,46 @@ export type CreateParams<T extends string, TData> =
 // =============================================================================
 
 /**
- * Base service class for CRUD operations on database entities.
- * Provides common database access and transaction support with REST-style path parameters.
+ * Abstract base class for low-level CRUD operations on database entities.
  *
- * @template TPublic - The public-facing type (what gets returned)
- * @template TPath - The REST path pattern (e.g., "users/:userId" or "users/:userId/sessions/:sessionId")
- * @template TTable - The Drizzle table type (constrained to actual database tables)
+ * Provides type-safe database operations with automatic:
+ * - Parent/child resource scoping via path parameters
+ * - Error mapping to domain-specific error types
+ * - Public field projection (only returns specified columns)
+ *
+ * ## Implementing a BaseService
+ *
+ * Subclasses must implement four abstract methods:
+ * - `getTable()` - Returns the Drizzle table object
+ * - `getResourceName()` - Human-readable name for error messages
+ * - `getPublicFields()` - Columns to include in query results
+ * - `getIdParamName()` - The path parameter name for this resource's ID
+ *
+ * ## Path Parameter Convention
+ *
+ * Parent path parameters (e.g., `userId` in `users/:userId/sessions/:sessionId`)
+ * must correspond to columns of the same name on the table. This enables
+ * automatic query scoping for nested resources.
+ *
+ * @template TPublic - The public-facing return type
+ * @template TPath - REST path pattern (e.g., `"users/:userId"`)
+ * @template TTable - Drizzle table type (must extend DatabaseTable)
+ *
+ * @example
+ * ```ts
+ * class SessionBaseService extends BaseService<
+ *   PublicSession,
+ *   "users/:userId/sessions/:sessionId",
+ *   typeof sessions
+ * > {
+ *   protected getTable() { return sessions; }
+ *   protected getResourceName() { return "session"; }
+ *   protected getIdParamName() { return "sessionId" as const; }
+ *   protected getPublicFields() {
+ *     return { id: sessions.id, createdAt: sessions.createdAt };
+ *   }
+ * }
+ * ```
  */
 export abstract class BaseService<
   TPublic,
@@ -103,76 +210,121 @@ export abstract class BaseService<
     this.db = db;
   }
 
+  // ---------------------------------------------------------------------------
+  // Abstract Methods (must be implemented by subclasses)
+  // ---------------------------------------------------------------------------
+
+  /** Returns the Drizzle table object for this resource. */
   protected abstract getTable(): TTable;
+
+  /** Returns a human-readable resource name for error messages (e.g., "session"). */
   protected abstract getResourceName(): string;
+
+  /** Returns the columns to include in query results. */
   protected abstract getPublicFields(): Record<string, PgColumn>;
 
-  /**
-   * Returns the name of the ID parameter for this resource.
-   * @example "userId" for users, "sessionId" for sessions
-   */
+  /** Returns the path parameter name for this resource's ID (e.g., "sessionId"). */
   protected abstract getIdParamName(): LastPathParam<TPath>;
 
+  // ---------------------------------------------------------------------------
+  // Public Accessors
+  // ---------------------------------------------------------------------------
+
+  /** Public accessor for the resource name (used by authenticated services). */
   get resourceName(): string {
     return this.getResourceName();
   }
 
+  // ---------------------------------------------------------------------------
+  // Protected Helpers
+  // ---------------------------------------------------------------------------
+
+  /** Returns the primary key column (assumes column is named `id`). */
   protected getIdColumn(): PgColumn {
     const table = this.getTable();
     return table.id;
   }
 
-  /**
-   * Extracts the resource's own ID from path params.
-   */
+  /** Extracts the resource's own ID value from path params. */
   protected getIdFromParams(params: PathParams<TPath>): string {
     const idParamName = this.getIdParamName();
-    // Type assertion needed: LastPathParam<TPath> is always a key of PathParams<TPath>
-    // but TypeScript can't prove this at the type level due to the recursive nature
+    // Type assertion: LastPathParam<TPath> is always a key of PathParams<TPath>,
+    // but TypeScript can't prove this due to the recursive type definition.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     return (params as any)[idParamName] as string;
   }
 
   /**
-   * Builds a scoped where clause based on path params.
+   * Builds a WHERE clause from parent path params only.
    *
-   * Convention: any *parent* path params (everything except the id param) must map
-   * to columns of the same name on the table.
+   * Used by `findAll` to scope queries to a parent resource without
+   * filtering by the resource's own ID.
    *
-   * Example:
-   * - TPath = "users/:userId/sessions/:sessionId" => scopes by sessions.userId
-   * - TPath = "organizations/:organizationId/projects/:projectId" => scopes by projects.organizationId
+   * @returns SQL condition, or `undefined` if no parent params exist
    */
-  protected getScopedWhere(params: PathParams<TPath>): SQL {
+  protected getParentScopedWhere(params: ParentParams<TPath>): SQL | undefined {
     const table = this.getTable() as unknown as Record<string, PgColumn>;
-    const idParamName = this.getIdParamName() as unknown as string;
-
     const conditions: SQL[] = [];
 
-    // Always scope by the resource id column.
-    const id = this.getIdFromParams(params);
-    conditions.push(eq(this.getIdColumn(), id));
-
-    // Scope by all other path params (parent params).
     for (const [key, value] of Object.entries(params)) {
-      if (key === idParamName) continue;
-      // Ignore non-path keys (e.g. accidental extra props like `data` from update calls).
       if (typeof value !== "string") continue;
 
       const column = table[key];
       if (!column) {
-        // Fail fast: service/table is misconfigured (path param doesn't map to a column).
         throw new Error(
-          `BaseService misconfiguration: table is missing column '${key}' for path param scoping`,
+          `BaseService misconfiguration: table '${this.getResourceName()}' is missing column '${key}' for path param scoping. ` +
+            `Ensure the column name matches the path parameter name.`,
         );
       }
 
       conditions.push(eq(column, value));
     }
 
+    if (conditions.length === 0) return undefined;
     return conditions.length > 1 ? and(...conditions)! : conditions[0];
   }
 
+  /**
+   * Builds a WHERE clause from all path params (resource ID + parent params).
+   *
+   * Used by `findById`, `update`, and `delete` to uniquely identify a resource
+   * while also verifying parent ownership.
+   *
+   * @example
+   * ```ts
+   * // Path: "users/:userId/sessions/:sessionId"
+   * // Params: { userId: "u1", sessionId: "s1" }
+   * // Result: WHERE sessions.id = 's1' AND sessions.userId = 'u1'
+   * ```
+   */
+  protected getScopedWhere(params: PathParams<TPath>): SQL {
+    const idParamName = this.getIdParamName() as unknown as string;
+
+    // Build condition for the resource's own ID
+    const id = this.getIdFromParams(params);
+    const idCondition = eq(this.getIdColumn(), id);
+
+    // Build conditions for parent params
+    const parentParams = Object.fromEntries(
+      Object.entries(params).filter(([key]) => key !== idParamName),
+    ) as ParentParams<TPath>;
+    const parentWhere = this.getParentScopedWhere(parentParams);
+
+    return parentWhere ? and(idCondition, parentWhere)! : idCondition;
+  }
+
+  // ---------------------------------------------------------------------------
+  // CRUD Operations
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Creates a new resource in the database.
+   *
+   * @param params.data - The data to insert (must include parent foreign keys for nested resources)
+   * @returns The created resource with public fields only
+   * @throws AlreadyExistsError - If a unique constraint is violated
+   * @throws DatabaseError - If the database operation fails
+   */
   create(
     params: CreateParams<TPath, TTable["$inferInsert"]>,
   ): Effect.Effect<TPublic, AlreadyExistsError | DatabaseError> {
@@ -182,8 +334,7 @@ export abstract class BaseService<
         const publicFields = this.getPublicFields();
         const [result] = await this.db
           .insert(table)
-          // Type assertion needed: When TTable is a union type, Drizzle's .values()
-          // can't narrow the type, but runtime behavior is correct
+          // Type assertion: Drizzle's .values() can't narrow union table types
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
           .values(params.data as any)
           .returning(publicFields);
@@ -205,6 +356,69 @@ export abstract class BaseService<
     });
   }
 
+  /**
+   * Retrieves all resources, scoped by parent params for nested resources.
+   *
+   * The method signature adapts based on the path pattern:
+   * - Top-level resources (e.g., `users/:userId`): No params required
+   * - Nested resources (e.g., `users/:userId/sessions/:sessionId`): Parent params required
+   *
+   * @param params - Parent path params (required for nested resources)
+   * @returns Array of resources with public fields only
+   * @throws DatabaseError - If the database operation fails
+   *
+   * @example
+   * ```ts
+   * // Top-level: no params
+   * userService.findAll();
+   *
+   * // Nested: parent params required
+   * sessionService.findAll({ userId: "123" });
+   * ```
+   */
+  findAll(
+    ...args: HasParentParams<TPath> extends true
+      ? [params: ParentParams<TPath>]
+      : [params?: undefined]
+  ): Effect.Effect<TPublic[], DatabaseError> {
+    const params = args[0];
+
+    return Effect.tryPromise({
+      try: async () => {
+        const table = this.getTable();
+        const publicFields = this.getPublicFields();
+        // Type assertion: Drizzle's .from() has complex conditional types that
+        // don't work well with generic table types
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const query = this.db.select(publicFields).from(table as any);
+
+        const whereClause = params
+          ? this.getParentScopedWhere(params)
+          : undefined;
+        const results = whereClause
+          ? await query.where(whereClause)
+          : await query;
+
+        return results as TPublic[];
+      },
+      catch: (error) =>
+        new DatabaseError({
+          message: `Failed to find all ${this.getResourceName()}s`,
+          cause: error,
+        }),
+    });
+  }
+
+  /**
+   * Retrieves a single resource by its ID.
+   *
+   * For nested resources, also verifies parent ownership via path params.
+   *
+   * @param params - All path params (resource ID + parent IDs)
+   * @returns The resource with public fields only
+   * @throws NotFoundError - If the resource doesn't exist or parent mismatch
+   * @throws DatabaseError - If the database operation fails
+   */
   findById(
     params: PathParams<TPath>,
   ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
@@ -217,9 +431,7 @@ export abstract class BaseService<
         try: async () => {
           const [result] = await this.db
             .select(this.getPublicFields())
-            // Type assertion needed: Drizzle's .from() has complex conditional types
-            // (TableLikeHasEmptySelection) that don't work well with generic table types.
-            // Runtime behavior is correct - this is purely a TypeScript limitation.
+            // Type assertion: Drizzle's .from() complex conditional types
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .from(this.getTable() as any)
             .where(scopedWhere)
@@ -245,6 +457,17 @@ export abstract class BaseService<
     });
   }
 
+  /**
+   * Updates a resource by its ID.
+   *
+   * Automatically sets `updatedAt` to the current timestamp.
+   * For nested resources, also verifies parent ownership via path params.
+   *
+   * @param params - Path params + data to update
+   * @returns The updated resource with public fields only
+   * @throws NotFoundError - If the resource doesn't exist or parent mismatch
+   * @throws DatabaseError - If the database operation fails
+   */
   update(
     params: PathParams<TPath> & { data: Partial<TTable["$inferInsert"]> },
   ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
@@ -256,15 +479,13 @@ export abstract class BaseService<
 
       const updated = yield* Effect.tryPromise({
         try: async () => {
-          // Type safety: TTable is constrained to DatabaseTable, so updatedAt is guaranteed to exist
           const updateData = {
             ...params.data,
             updatedAt: new Date(),
           };
           const [result] = await this.db
             .update(this.getTable())
-            // Type assertion needed: When TTable is a union type, Drizzle's .set()
-            // can't narrow the type, but runtime behavior is correct
+            // Type assertion: Drizzle's .set() can't narrow union table types
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             .set(updateData as any)
             .where(scopedWhere)
@@ -291,6 +512,15 @@ export abstract class BaseService<
     });
   }
 
+  /**
+   * Deletes a resource by its ID.
+   *
+   * For nested resources, also verifies parent ownership via path params.
+   *
+   * @param params - All path params (resource ID + parent IDs)
+   * @throws NotFoundError - If the resource doesn't exist or parent mismatch
+   * @throws DatabaseError - If the database operation fails
+   */
   delete(
     params: PathParams<TPath>,
   ): Effect.Effect<void, NotFoundError | DatabaseError> {
@@ -327,37 +557,27 @@ export abstract class BaseService<
       }
     });
   }
-
-  findAll(): Effect.Effect<TPublic[], DatabaseError> {
-    return Effect.tryPromise({
-      try: async () => {
-        const table = this.getTable();
-        const publicFields = this.getPublicFields();
-        // Type assertion needed: Drizzle's .from() has complex conditional types
-        // (TableLikeHasEmptySelection) that don't work well with generic table types.
-        // Runtime behavior is correct - this is purely a TypeScript limitation.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const results = await this.db.select(publicFields).from(table as any);
-
-        return results as TPublic[];
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: `Failed to find all ${this.getResourceName()}s`,
-          cause: error,
-        }),
-    });
-  }
 }
 
-/**
- * Action types for permission checking
- */
+// =============================================================================
+// Authenticated Service
+// =============================================================================
+
+/** CRUD action types used for permission checking. */
 export type PermissionAction = "create" | "read" | "update" | "delete";
 
 /**
- * Permission table mapping actions to allowed roles.
- * Each action maps to an array of roles that can perform that action.
+ * Maps each CRUD action to the roles that can perform it.
+ *
+ * @example
+ * ```ts
+ * const permissions: PermissionTable<"OWNER" | "ADMIN" | "DEVELOPER" | "VIEWER"> = {
+ *   create: ["OWNER", "ADMIN"],
+ *   read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"],
+ *   update: ["OWNER", "ADMIN"],
+ *   delete: ["OWNER"],
+ * };
+ * ```
  */
 export type PermissionTable<TRole extends string> = Record<
   PermissionAction,
@@ -365,14 +585,64 @@ export type PermissionTable<TRole extends string> = Record<
 >;
 
 /**
- * Abstract base class for services that require authentication.
- * Uses composition with an internal base service for raw CRUD operations.
+ * Abstract base class for services requiring authentication and authorization.
+ *
+ * This class wraps a single `BaseService` instance and adds:
+ * - Role-based permission checking before operations
+ * - Automatic authorization via the `authorize({ userId, action, ...pathParams })` helper
+ *
+ * ## Architecture
+ *
+ * ```
+ * ┌────────────────────────────────────────────────────────┐
+ * │              BaseAuthenticatedService                  │
+ * │  ┌──────────────────────────────────────────────────┐  │
+ * │  │   baseService: BaseService<...>                  │  │
+ * │  └──────────────────────────────────────────────────┘  │
+ * │                                                        │
+ * │  + getRole({ userId, ...pathParams })                  │
+ * │  + getPermissionTable()                                │
+ * │  + authorize({ userId, action, ...pathParams })        │
+ * └────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Implementing an Authenticated Service
+ *
+ * Subclasses must implement:
+ * - `initializeBaseService()` - Create and return the BaseService instance
+ * - `getPermissionTable()` - Define which roles can perform which actions
+ * - `getRole({ userId, ...pathParams })` - Determine the authenticated user's role for a resource
+ * - All abstract CRUD methods (create, findAll, findById, update, delete)
  *
  * @template TPublic - The public-facing type (what gets returned)
  * @template TPath - The REST path pattern (e.g., "organizations/:organizationId")
  * @template TTable - The Drizzle table type
  * @template TInsert - The insert type for the table
  * @template TRole - The role type for permission checking
+ *
+ * @example
+ * ```ts
+ * class OrganizationService extends BaseAuthenticatedService<
+ *   PublicOrg, "orgs/:orgId", typeof orgs, NewOrg, Role
+ * > {
+ *   protected initializeBaseService() {
+ *     return new OrganizationBaseService(this.db);
+ *   }
+ *
+ *   protected getPermissionTable() {
+ *     return {
+ *       create: ["OWNER"],
+ *       read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"],
+ *       update: ["OWNER", "ADMIN"],
+ *       delete: ["OWNER"],
+ *     };
+ *   }
+ *
+ *   getRole({ userId, orgId }) {
+ *     // Query membership table to get user's role
+ *   }
+ * }
+ * ```
  */
 export abstract class BaseAuthenticatedService<
   TPublic,
@@ -389,6 +659,13 @@ export abstract class BaseAuthenticatedService<
     this.baseService = this.initializeBaseService();
   }
 
+  // ---------------------------------------------------------------------------
+  // Abstract Methods (must be implemented by subclasses)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Creates and returns the base BaseService instance used by this service.
+   */
   protected abstract initializeBaseService(): BaseService<
     TPublic,
     TPath,
@@ -396,19 +673,32 @@ export abstract class BaseAuthenticatedService<
   >;
 
   /**
-   * Returns the permission table mapping actions to allowed roles.
+   * Returns the permission table defining which roles can perform which actions.
    */
   protected abstract getPermissionTable(): PermissionTable<TRole>;
 
   /**
-   * Returns the role of the authenticated user for the given resource.
+   * Determines the authenticated user's role for the given resource.
+   *
+   * @param args.userId - The authenticated user's ID
+   * @param args.[pathParams] - Path parameters identifying the resource
+   * @returns The user's role
+   * @throws NotFoundError - If the user has no role (not a member)
    */
   protected abstract getRole(
     args: { userId: string } & PathParams<TPath>,
   ): Effect.Effect<TRole, NotFoundError | DatabaseError>;
 
+  // ---------------------------------------------------------------------------
+  // Authorization Helpers
+  // ---------------------------------------------------------------------------
+
   /**
-   * Verify that a role has permission to perform an action.
+   * Verifies that a role has permission to perform an action.
+   *
+   * @param role - The user's role
+   * @param action - The action to perform
+   * @throws PermissionDeniedError - If the role cannot perform the action
    */
   protected verifyPermission(
     role: TRole,
@@ -429,8 +719,27 @@ export abstract class BaseAuthenticatedService<
   }
 
   /**
-   * Authorizes an action for the authenticated user against the given resource.
-   * Combines getRole() + verifyPermission().
+   * Authorizes an action by checking the user's role and permissions.
+   *
+   * Combines `getRole({ userId, ...pathParams })` and `verifyPermission(role, action)` into a single call.
+   * Returns the user's role on success (useful for conditional logic).
+   *
+   * @param args.userId - The authenticated user's ID
+   * @param args.action - The action to authorize
+   * @param args.[pathParams] - Path parameters identifying the resource
+   * @returns The user's role (if authorized)
+   * @throws NotFoundError - If the user has no role for this resource
+   * @throws PermissionDeniedError - If the role cannot perform the action
+   *
+   * @example
+   * ```ts
+   * const role = yield* this.authorize({
+   *   userId,
+   *   organizationId,
+   *   action: "update",
+   * });
+   * // User is authorized - role contains their actual role
+   * ```
    */
   protected authorize(
     args: { userId: string; action: PermissionAction } & PathParams<TPath>,
@@ -447,6 +756,15 @@ export abstract class BaseAuthenticatedService<
     });
   }
 
+  // ---------------------------------------------------------------------------
+  // Abstract CRUD Methods (must be implemented by subclasses)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Creates a new resource (with authorization).
+   *
+   * Subclasses should call `authorize({ userId, action, ...pathParams })` before delegating to `baseService.create()`.
+   */
   abstract create(args: {
     userId: string;
     data: TInsert;
@@ -455,10 +773,20 @@ export abstract class BaseAuthenticatedService<
     AlreadyExistsError | PermissionDeniedError | DatabaseError
   >;
 
+  /**
+   * Retrieves all resources accessible to the user (with authorization).
+   *
+   * Subclasses typically filter by membership or ownership.
+   */
   abstract findAll(args: {
     userId: string;
   }): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
 
+  /**
+   * Retrieves a single resource by ID (with authorization).
+   *
+   * Subclasses should call `authorize({ userId, action, ...pathParams })` before delegating to `baseService.findById()`.
+   */
   abstract findById(
     args: { userId: string } & PathParams<TPath>,
   ): Effect.Effect<
@@ -466,6 +794,11 @@ export abstract class BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
+  /**
+   * Updates a resource by ID (with authorization).
+   *
+   * Subclasses should call `authorize({ userId, action, ...pathParams })` before delegating to `baseService.update()`.
+   */
   abstract update(
     args: { userId: string } & PathParams<TPath> & { data: Partial<TInsert> },
   ): Effect.Effect<
@@ -473,6 +806,11 @@ export abstract class BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
+  /**
+   * Deletes a resource by ID (with authorization).
+   *
+   * Subclasses should call `authorize({ userId, action, ...pathParams })` before delegating to `baseService.delete()`.
+   */
   abstract delete(
     args: { userId: string } & PathParams<TPath>,
   ): Effect.Effect<void, NotFoundError | PermissionDeniedError | DatabaseError>;
