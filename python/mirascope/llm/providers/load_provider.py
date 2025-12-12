@@ -5,6 +5,8 @@ from .base import Provider
 from .google import GoogleProvider
 from .mlx import MLXProvider
 from .openai import OpenAIProvider
+from .openai.completions.provider import OpenAICompletionsProvider
+from .openai.responses.provider import OpenAIResponsesProvider
 from .provider_id import ProviderId
 
 
@@ -32,6 +34,10 @@ def load_provider(
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "openai":
             return OpenAIProvider(api_key=api_key, base_url=base_url)
+        case "openai:completions":
+            return OpenAICompletionsProvider(api_key=api_key, base_url=base_url)
+        case "openai:responses":
+            return OpenAIResponsesProvider(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return MLXProvider()
         case _:  # pragma: no cover

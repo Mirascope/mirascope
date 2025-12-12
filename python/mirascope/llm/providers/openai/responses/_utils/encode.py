@@ -179,7 +179,7 @@ def _encode_message(
 
     if (
         message.role == "assistant"
-        and message.provider_id == "openai"
+        and message.provider_id in ("openai", "openai:responses")
         and message.provider_model_name
         == model_name(model_id=model_id, api_mode="responses")
         and message.raw_message
@@ -251,8 +251,13 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
-    if model_id.endswith(":completions"):  # pragma: no cover
-        raise ValueError("Cannot use :completions model with responses client")
+    if model_id.endswith(":completions"):
+        raise FeatureNotSupportedError(
+            feature="completions API",
+            provider_id="openai:responses",
+            model_id=model_id,
+            message=f"Cannot use completions model with responses client: {model_id}",
+        )
 
     base_model_name = model_name(model_id, None)
 

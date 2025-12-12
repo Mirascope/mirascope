@@ -146,7 +146,7 @@ def _encode_assistant_message(
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
     if (
-        message.provider_id == "openai"
+        message.provider_id in ("openai", "openai:completions")
         and message.provider_model_name
         == model_name(model_id=model_id, api_mode="completions")
         and message.raw_message
@@ -282,9 +282,12 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
-    if model_id.endswith(":responses"):  # pragma: no cover
-        raise ValueError(
-            f"Can't use completions client for responses model: {model_id}"
+    if model_id.endswith(":responses"):
+        raise FeatureNotSupportedError(
+            feature="responses API",
+            provider_id="openai:completions",
+            model_id=model_id,
+            message=f"Can't use completions client for responses model: {model_id}",
         )
     base_model_name = model_name(model_id, None)
 
