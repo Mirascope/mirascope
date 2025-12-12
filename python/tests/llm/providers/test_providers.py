@@ -38,6 +38,18 @@ def test_load_provider_openai() -> None:
     assert provider.client.api_key == os.getenv("OPENAI_API_KEY")
 
 
+def test_load_provider_together(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that load_provider('together') returns same instance on multiple calls."""
+    monkeypatch.setenv("TOGETHER_API_KEY", "test-together-key")
+    llm.load_provider.cache_clear()
+    provider = llm.load_provider("together")
+    provider2 = llm.load_provider("together")
+
+    assert isinstance(provider, llm.providers.TogetherProvider)
+    assert provider is provider2
+    assert provider.client.client.api_key == "test-together-key"
+
+
 @pytest.mark.skipif(sys.platform != "darwin", reason="MLX is only available on macOS")
 def test_get_load_provider_mlx() -> None:
     """Test that load_provider('mlx') returns same instance on multiple calls."""

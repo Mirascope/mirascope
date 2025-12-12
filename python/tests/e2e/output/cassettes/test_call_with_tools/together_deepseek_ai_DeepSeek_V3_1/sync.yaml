@@ -1,0 +1,214 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Use parallel tool calling."},
+      {"role": "user", "content": "Please retrieve the secrets associated with each
+      of these passwords: mellon,radiance"}], "model": "deepseek-ai/DeepSeek-V3.1",
+      "stream": false, "tools": [{"type": "function", "function": {"description":
+      "A tool that requires a password to retrieve a secret.", "name": "secret_retrieval_tool",
+      "parameters": {"properties": {"password": {"title": "Password", "type": "string"}},
+      "required": ["password"], "additionalProperties": false, "type": "object"},
+      "strict": false}}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '576'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNv3R8c-6z2FuN-9acd5345af0680d7\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765543594,\n  \"model\": \"deepseek-ai/DeepSeek-V3.1\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"I'll help you retrieve
+        the secrets using the provided passwords. Let me call the tool for each password:\",\n
+        \       \"tool_calls\": [\n          {\n            \"id\": \"call_55eda4ef64954c0cad66c9b2\",\n
+        \           \"index\": -1,\n            \"type\": \"function\",\n            \"function\":
+        {\n              \"name\": \"secret_retrieval_tool\",\n              \"arguments\":
+        \"{\\\"password\\\": \\\"mellon\\\"}\"\n            }\n          },\n          {\n
+        \           \"id\": \"call_9132280957c1433db7820c60\",\n            \"index\":
+        -1,\n            \"type\": \"function\",\n            \"function\": {\n              \"name\":
+        \"secret_retrieval_tool\",\n              \"arguments\": \"{\\\"password\\\":
+        \\\"radiance\\\"}\"\n            }\n          }\n        ],\n        \"reasoning\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"tool_calls\",\n
+        \     \"seed\": null\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        191,\n    \"total_tokens\": 250,\n    \"completion_tokens\": 59\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd5345af0680d7-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:46:35 GMT
+      ETag:
+      - W/"4d3-iSuULm18kXKm9KX4glMFhWXkm/w"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 13ccffdb-438b-4288-804f-fb61fc5a4ec6-noamzn
+      x-api-call-end:
+      - '2025-12-12T12:46:35.676Z'
+      x-api-call-start:
+      - '2025-12-12T12:46:34.848Z'
+      x-api-received:
+      - '2025-12-12T12:46:34.841Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv3R8c-6z2FuN-9acd5345af0680d7
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "system", "content": "Use parallel tool calling."},
+      {"role": "user", "content": "Please retrieve the secrets associated with each
+      of these passwords: mellon,radiance"}, {"role": "assistant", "content": "I''ll
+      help you retrieve the secrets using the provided passwords. Let me call the
+      tool for each password:", "tool_calls": [{"id": "call_55eda4ef64954c0cad66c9b2",
+      "type": "function", "function": {"name": "secret_retrieval_tool", "arguments":
+      "{\"password\": \"mellon\"}"}, "index": -1}, {"id": "call_9132280957c1433db7820c60",
+      "type": "function", "function": {"name": "secret_retrieval_tool", "arguments":
+      "{\"password\": \"radiance\"}"}, "index": -1}]}, {"role": "tool", "content":
+      "Welcome to Moria!", "tool_call_id": "call_55eda4ef64954c0cad66c9b2", "name":
+      "secret_retrieval_tool"}, {"role": "tool", "content": "Life before Death", "tool_call_id":
+      "call_9132280957c1433db7820c60", "name": "secret_retrieval_tool"}], "model":
+      "deepseek-ai/DeepSeek-V3.1", "stream": false, "tools": [{"type": "function",
+      "function": {"description": "A tool that requires a password to retrieve a secret.",
+      "name": "secret_retrieval_tool", "parameters": {"properties": {"password": {"title":
+      "Password", "type": "string"}}, "required": ["password"], "additionalProperties":
+      false, "type": "object"}, "strict": false}}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1328'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNv3RWM-28Eivz-9acd53519b5c35c9\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765543597,\n  \"model\": \"deepseek-ai/DeepSeek-V3.1\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"Here are the secrets
+        retrieved for each password:\\n\\n- Password: \\\"mellon\\\" \u2192 Secret:
+        \\\"Welcome to Moria!\\\"\\n- Password: \\\"radiance\\\" \u2192 Secret: \\\"Life
+        before Death\\\"\\n\\nBoth passwords successfully retrieved their associated
+        secrets!\",\n        \"tool_calls\": [],\n        \"reasoning\": null\n      },\n
+        \     \"logprobs\": null,\n      \"finish_reason\": \"stop\",\n      \"seed\":
+        null\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 264,\n    \"total_tokens\":
+        314,\n    \"completion_tokens\": 50\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd53519b5c35c9-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:46:37 GMT
+      ETag:
+      - W/"31f-id652XQZBt+nbE7340mKdEV8XI8"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 8b635e88-392c-4ad2-ba0c-d45d7b1ebb06-noamzn
+      x-api-call-end:
+      - '2025-12-12T12:46:37.662Z'
+      x-api-call-start:
+      - '2025-12-12T12:46:36.114Z'
+      x-api-received:
+      - '2025-12-12T12:46:36.103Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv3RWM-28Eivz-9acd53519b5c35c9
+    status:
+      code: 200
+      message: OK
+version: 1

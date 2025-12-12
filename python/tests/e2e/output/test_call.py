@@ -3,7 +3,7 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS
+from tests.e2e.conftest import E2E_ASYNC_STREAM_MODEL_IDS, E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -130,7 +130,7 @@ def test_call_stream_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", E2E_ASYNC_STREAM_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
@@ -149,7 +149,7 @@ async def test_call_async_stream(model_id: llm.ModelId, snapshot: Snapshot) -> N
         )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", E2E_ASYNC_STREAM_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_stream_context(

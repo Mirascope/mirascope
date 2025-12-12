@@ -8,6 +8,7 @@ from .openai import OpenAIProvider
 from .openai.completions.provider import OpenAICompletionsProvider
 from .openai.responses.provider import OpenAIResponsesProvider
 from .provider_id import ProviderId
+from .together import TogetherProvider
 
 
 @lru_cache(maxsize=256)
@@ -40,6 +41,8 @@ def load_provider(
             return OpenAIResponsesProvider(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return MLXProvider()
+        case "together":
+            return TogetherProvider(api_key=api_key, base_url=base_url)
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: '{provider_id}'")
 

@@ -1,0 +1,107 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Respond only with valid JSON
+      that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\": {\n      \"description\":
+      \"The author of a book.\",\n      \"properties\": {\n        \"first_name\":
+      {\n          \"title\": \"First Name\",\n          \"type\": \"string\"\n        },\n        \"last_name\":
+      {\n          \"title\": \"Last Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"}, {"role": "user", "content": "Please
+      recommend the most popular book by Patrick Rothfuss"}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "stream": false, "response_format": {"type": "json_object"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1351'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNv3Bky-zqrih-9acd522e093b4991\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765543550,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"{\\n  \\\"title\\\":
+        \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": {\\n    \\\"first_name\\\":
+        \\\"Patrick\\\",\\n    \\\"last_name\\\": \\\"Rothfuss\\\"\\n  },\\n  \\\"rating\\\":
+        7\\n}\",\n        \"tool_calls\": [],\n        \"reasoning\": null\n      },\n
+        \     \"logprobs\": null,\n      \"finish_reason\": \"stop\",\n      \"seed\":
+        null\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 283,\n    \"total_tokens\":
+        331,\n    \"completion_tokens\": 48\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd522e093b4991-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:45:50 GMT
+      ETag:
+      - W/"2e1-gPDsime3pGbGvJm/dyYjST5MUVI"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 2600fd91-316b-466a-bb66-ae9617583953-noamzn
+      x-api-call-end:
+      - '2025-12-12T12:45:50.815Z'
+      x-api-call-start:
+      - '2025-12-12T12:45:49.866Z'
+      x-api-received:
+      - '2025-12-12T12:45:49.855Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv3Bky-zqrih-9acd522e093b4991
+    status:
+      code: 200
+      message: OK
+version: 1

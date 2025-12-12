@@ -1,0 +1,94 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": [{"type": "text", "text": ""},
+      {"type": "text", "text": ""}]}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "stream": false}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '184'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNvAqoL-zqrih-9acd76a769e9d518\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765545043,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"It seems like you
+        haven't asked a question yet. Please go ahead and ask your question, and I'll
+        be happy to help!\",\n        \"tool_calls\": [],\n        \"reasoning\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\",\n
+        \     \"seed\": null\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        11,\n    \"total_tokens\": 37,\n    \"completion_tokens\": 26\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd76a769e9d518-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:10:43 GMT
+      ETag:
+      - W/"2b9-4AWk9BQ/jRJbSMfvi4e4Haqvqd8"
+      Retry-After:
+      - '1'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 10ba7acb-986f-4449-8ccf-6968280662d3-noamzn
+      x-api-call-end:
+      - '2025-12-12T13:10:43.908Z'
+      x-api-call-start:
+      - '2025-12-12T13:10:43.619Z'
+      x-api-received:
+      - '2025-12-12T13:10:43.607Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '18'
+      x-ratelimit-remaining-tokens:
+      - '2962'
+      x-ratelimit-reset:
+      - '1'
+      x-request-id:
+      - oNvAqoL-zqrih-9acd76a769e9d518
+    status:
+      code: 200
+      message: OK
+version: 1

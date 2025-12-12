@@ -1,0 +1,213 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Use parallel tool calling."},
+      {"role": "user", "content": "Please retrieve the secrets associated with each
+      of these passwords: mellon,radiance"}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "stream": false, "tools": [{"type": "function", "function": {"description":
+      "A tool that requires a password to retrieve a secret.", "name": "secret_retrieval_tool",
+      "parameters": {"properties": {"password": {"title": "Password", "type": "string"}},
+      "required": ["password"], "additionalProperties": false, "type": "object"},
+      "strict": false}}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '600'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNvRdAd-28Eivz-9acdbd12aff0db13\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765547929,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"tool_calls\",\n      \"seed\": null,\n      \"message\":
+        {\n        \"role\": \"assistant\",\n        \"content\": null,\n        \"tool_calls\":
+        [\n          {\n            \"index\": 0,\n            \"id\": \"call_0k8nii7b2y2js5vfdqzwy1rd\",\n
+        \           \"type\": \"function\",\n            \"function\": {\n              \"arguments\":
+        \"{\\\"password\\\":\\\"mellon\\\"}\",\n              \"name\": \"secret_retrieval_tool\"\n
+        \           }\n          },\n          {\n            \"index\": 1,\n            \"id\":
+        \"call_pl7zqpac33v0tij59j4wcuwz\",\n            \"type\": \"function\",\n
+        \           \"function\": {\n              \"arguments\": \"{\\\"password\\\":\\\"radiance\\\"}\",\n
+        \             \"name\": \"secret_retrieval_tool\"\n            }\n          }\n
+        \       ]\n      }\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 187,\n
+        \   \"total_tokens\": 210,\n    \"completion_tokens\": 23\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acdbd12aff0db13-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:58:49 GMT
+      ETag:
+      - W/"466-yz4vYdgolsbskGaagYQt3Sdj92Q"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 8428456f-22fa-41ae-887c-c80d9c9256b2-noamzn
+      x-api-call-end:
+      - '2025-12-12T13:58:49.091Z'
+      x-api-call-start:
+      - '2025-12-12T13:58:47.805Z'
+      x-api-received:
+      - '2025-12-12T13:58:47.790Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNvRdAd-28Eivz-9acdbd12aff0db13
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "system", "content": "Use parallel tool calling."},
+      {"role": "user", "content": "Please retrieve the secrets associated with each
+      of these passwords: mellon,radiance"}, {"role": "assistant", "tool_calls": [{"id":
+      "call_0k8nii7b2y2js5vfdqzwy1rd", "type": "function", "function": {"name": "secret_retrieval_tool",
+      "arguments": "{\"password\":\"mellon\"}"}, "index": 0}, {"id": "call_pl7zqpac33v0tij59j4wcuwz",
+      "type": "function", "function": {"name": "secret_retrieval_tool", "arguments":
+      "{\"password\":\"radiance\"}"}, "index": 1}]}, {"role": "tool", "content": "Welcome
+      to Moria!", "tool_call_id": "call_0k8nii7b2y2js5vfdqzwy1rd", "name": "secret_retrieval_tool"},
+      {"role": "tool", "content": "Life before Death", "tool_call_id": "call_pl7zqpac33v0tij59j4wcuwz",
+      "name": "secret_retrieval_tool"}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "stream": false, "tools": [{"type": "function", "function": {"description":
+      "A tool that requires a password to retrieve a secret.", "name": "secret_retrieval_tool",
+      "parameters": {"properties": {"password": {"title": "Password", "type": "string"}},
+      "required": ["password"], "additionalProperties": false, "type": "object"},
+      "strict": false}}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1229'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNvRdk6-28Eivz-9acdbd1d8a07e36e\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765547930,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"tool_calls\",\n      \"seed\": null,\n      \"message\":
+        {\n        \"role\": \"assistant\",\n        \"content\": null,\n        \"tool_calls\":
+        [\n          {\n            \"index\": 0,\n            \"id\": \"call_1a3bi8cna3w7tuvwemuozej9\",\n
+        \           \"type\": \"function\",\n            \"function\": {\n              \"arguments\":
+        \"{\\\"password\\\":\\\"mellon\\\"}\",\n              \"name\": \"secret_retrieval_tool\"\n
+        \           }\n          },\n          {\n            \"index\": 1,\n            \"id\":
+        \"call_i2635d5mwl36051526qdhpg4\",\n            \"type\": \"function\",\n
+        \           \"function\": {\n              \"arguments\": \"{\\\"password\\\":\\\"radiance\\\"}\",\n
+        \             \"name\": \"secret_retrieval_tool\"\n            }\n          }\n
+        \       ]\n      }\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 237,\n
+        \   \"total_tokens\": 262,\n    \"completion_tokens\": 25\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acdbd1d8a07e36e-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:58:50 GMT
+      ETag:
+      - W/"466-Ol0MNdY5kqMdqdGOHGM099qt4pQ"
+      Retry-After:
+      - '0'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - f259097d-ad48-4e9b-b587-c5918103385b-noamzn
+      x-api-call-end:
+      - '2025-12-12T13:58:50.200Z'
+      x-api-call-start:
+      - '2025-12-12T13:58:49.744Z'
+      x-api-received:
+      - '2025-12-12T13:58:49.732Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '18'
+      x-ratelimit-remaining-tokens:
+      - '2790'
+      x-ratelimit-reset:
+      - '0'
+      x-request-id:
+      - oNvRdk6-28Eivz-9acdbd1d8a07e36e
+    status:
+      code: 200
+      message: OK
+version: 1

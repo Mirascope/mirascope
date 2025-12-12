@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS
+from tests.e2e.conftest import E2E_IMAGE_URL_MODEL_IDS, E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -38,7 +38,7 @@ def test_call_with_image_content(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", E2E_IMAGE_URL_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_image_url(
     model_id: llm.ModelId,
