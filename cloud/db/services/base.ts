@@ -1,5 +1,6 @@
 import { Effect } from "effect";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 import {
   AlreadyExistsError,
@@ -132,6 +133,46 @@ export abstract class BaseService<
     return (params as any)[idParamName] as string;
   }
 
+  /**
+   * Builds a scoped where clause based on path params.
+   *
+   * Convention: any *parent* path params (everything except the id param) must map
+   * to columns of the same name on the table.
+   *
+   * Example:
+   * - TPath = "users/:userId/sessions/:sessionId" => scopes by sessions.userId
+   * - TPath = "organizations/:organizationId/projects/:projectId" => scopes by projects.organizationId
+   */
+  protected getScopedWhere(params: PathParams<TPath>): SQL {
+    const table = this.getTable() as unknown as Record<string, PgColumn>;
+    const idParamName = this.getIdParamName() as unknown as string;
+
+    const conditions: SQL[] = [];
+
+    // Always scope by the resource id column.
+    const id = this.getIdFromParams(params);
+    conditions.push(eq(this.getIdColumn(), id));
+
+    // Scope by all other path params (parent params).
+    for (const [key, value] of Object.entries(params)) {
+      if (key === idParamName) continue;
+      // Ignore non-path keys (e.g. accidental extra props like `data` from update calls).
+      if (typeof value !== "string") continue;
+
+      const column = table[key];
+      if (!column) {
+        // Fail fast: service/table is misconfigured (path param doesn't map to a column).
+        throw new Error(
+          `BaseService misconfiguration: table is missing column '${key}' for path param scoping`,
+        );
+      }
+
+      conditions.push(eq(column, value));
+    }
+
+    return conditions.length > 1 ? and(...conditions)! : conditions[0];
+  }
+
   create(
     params: CreateParams<TPath, TTable["$inferInsert"]>,
   ): Effect.Effect<TPublic, AlreadyExistsError | DatabaseError> {
@@ -170,6 +211,7 @@ export abstract class BaseService<
     return Effect.gen(this, function* () {
       const id = this.getIdFromParams(params);
       const idParamName = this.getIdParamName();
+      const scopedWhere = this.getScopedWhere(params);
 
       const result = yield* Effect.tryPromise({
         try: async () => {
@@ -180,7 +222,7 @@ export abstract class BaseService<
             // Runtime behavior is correct - this is purely a TypeScript limitation.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .from(this.getTable() as any)
-            .where(eq(this.getIdColumn(), id))
+            .where(scopedWhere)
             .limit(1);
           return result as TPublic | undefined;
         },
@@ -207,8 +249,10 @@ export abstract class BaseService<
     params: PathParams<TPath> & { data: Partial<TTable["$inferInsert"]> },
   ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
-      const id = this.getIdFromParams(params);
+      const pathParams = params as unknown as PathParams<TPath>;
+      const id = this.getIdFromParams(pathParams);
       const idParamName = this.getIdParamName();
+      const scopedWhere = this.getScopedWhere(pathParams);
 
       const updated = yield* Effect.tryPromise({
         try: async () => {
@@ -223,7 +267,7 @@ export abstract class BaseService<
             // can't narrow the type, but runtime behavior is correct
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             .set(updateData as any)
-            .where(eq(this.getIdColumn(), id))
+            .where(scopedWhere)
             .returning(this.getPublicFields());
 
           return result as TPublic | undefined;
@@ -253,6 +297,7 @@ export abstract class BaseService<
     return Effect.gen(this, function* () {
       const id = this.getIdFromParams(params);
       const idParamName = this.getIdParamName();
+      const scopedWhere = this.getScopedWhere(params);
 
       const deleted = yield* Effect.tryPromise({
         try: async () => {
@@ -260,7 +305,7 @@ export abstract class BaseService<
           const idColumn = this.getIdColumn();
           const [deleted] = await this.db
             .delete(table)
-            .where(eq(idColumn, id))
+            .where(scopedWhere)
             .returning({ id: idColumn });
 
           return deleted;

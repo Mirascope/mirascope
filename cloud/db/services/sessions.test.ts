@@ -76,9 +76,10 @@ describe("SessionService", () => {
       Effect.gen(function* () {
         const db = yield* DatabaseService;
 
+        const badUserId = "00000000-0000-0000-0000-000000000001";
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.sessions
-          .findById({ userId: "user-id", sessionId: badId })
+          .findById({ userId: badUserId, sessionId: badId })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -208,10 +209,11 @@ describe("SessionService", () => {
       Effect.gen(function* () {
         const db = yield* DatabaseService;
 
+        const badUserId = "00000000-0000-0000-0000-000000000001";
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.sessions
           .update({
-            userId: "user-id",
+            userId: badUserId,
             sessionId: badId,
             data: { expiresAt: new Date() },
           })
@@ -299,9 +301,10 @@ describe("SessionService", () => {
       Effect.gen(function* () {
         const db = yield* DatabaseService;
 
+        const badUserId = "00000000-0000-0000-0000-000000000001";
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.sessions
-          .delete({ userId: "user-id", sessionId: badId })
+          .delete({ userId: badUserId, sessionId: badId })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
