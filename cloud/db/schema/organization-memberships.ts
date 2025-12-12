@@ -1,5 +1,11 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import {
+  pgEnum,
+  pgTable,
+  primaryKey,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { organizations, type PublicOrganization } from "./organizations";
 import { users } from "./users";
 
@@ -14,8 +20,7 @@ export const ROLE_VALUES = roleEnum.enumValues;
 export const organizationMemberships = pgTable(
   "organization_memberships",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
+    memberId: uuid("member_id")
       .references(() => users.id)
       .notNull(),
     organizationId: uuid("organization_id")
@@ -26,15 +31,15 @@ export const organizationMemberships = pgTable(
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
-    userOrgUnique: unique().on(table.userId, table.organizationId),
+    pk: primaryKey({ columns: [table.memberId, table.organizationId] }),
   }),
 );
 
 export const organizationMembershipsRelations = relations(
   organizationMemberships,
   ({ one }) => ({
-    user: one(users, {
-      fields: [organizationMemberships.userId],
+    member: one(users, {
+      fields: [organizationMemberships.memberId],
       references: [users.id],
     }),
     organization: one(organizations, {
@@ -54,7 +59,7 @@ export type Role = (typeof roleEnum.enumValues)[number];
 // Public types
 export type PublicOrganizationMembership = Pick<
   OrganizationMembership,
-  "id" | "role" | "createdAt"
+  "memberId" | "role" | "createdAt"
 >;
 
 // Public organization with user's membership role

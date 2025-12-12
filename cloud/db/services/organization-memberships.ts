@@ -34,7 +34,7 @@
  * const membership = yield* membershipService.create({
  *   userId: "admin-123",
  *   organizationId: "org-456",
- *   data: { userId: "new-user-789", role: "DEVELOPER" },
+ *   data: { memberId: "new-user-789", role: "DEVELOPER" },
  * });
  *
  * // List all members
@@ -75,13 +75,13 @@ import {
  * This is an internal service used by `OrganizationMembershipService` for managing
  * the relationship between users and organizations, including their roles.
  *
- * Path pattern: `organizations/:organizationId/memberships/:targetUserId`
+ * Path pattern: `organizations/:organizationId/members/:memberId`
  * - Parent param: `organizationId` (scopes to organization)
- * - Resource ID: `targetUserId` (identifies the membership by the target user)
+ * - Resource ID: `memberId` (the user's ID who is a member, maps to `id` column)
  */
 class OrganizationMembershipBaseService extends BaseService<
   PublicOrganizationMembership,
-  "organizations/:organizationId/users/:targetUserId",
+  "organizations/:organizationId/members/:memberId",
   typeof organizationMemberships
 > {
   protected getTable() {
@@ -93,23 +93,19 @@ class OrganizationMembershipBaseService extends BaseService<
   }
 
   protected getIdParamName() {
-    return "targetUserId" as const;
+    return "memberId" as const;
   }
 
   /**
-   * Override to use `userId` column instead of `id` for lookups.
-   *
-   * Memberships are uniquely identified by (organizationId, userId),
-   * so we use `targetUserId` as the resource identifier in the path pattern,
-   * which maps to the `userId` column in the database.
+   * Override since this table uses `memberId` instead of the default `id` column.
    */
   protected getIdColumn() {
-    return organizationMemberships.userId;
+    return organizationMemberships.memberId;
   }
 
   protected getPublicFields() {
     return {
-      id: organizationMemberships.id,
+      memberId: organizationMemberships.memberId,
       role: organizationMemberships.role,
       createdAt: organizationMemberships.createdAt,
     };
@@ -148,9 +144,9 @@ class OrganizationMembershipBaseService extends BaseService<
  */
 export class OrganizationMembershipService extends BaseAuthenticatedService<
   PublicOrganizationMembership,
-  "organizations/:organizationId/users/:targetUserId",
+  "organizations/:organizationId/members/:memberId",
   typeof organizationMemberships,
-  Pick<NewOrganizationMembership, "userId" | "role">,
+  { memberId: string; role: Role },
   Role
 > {
   // ---------------------------------------------------------------------------
@@ -238,7 +234,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
           .from(organizationMemberships)
           .where(
             and(
-              eq(organizationMemberships.userId, userId),
+              eq(organizationMemberships.memberId, userId),
               eq(organizationMemberships.organizationId, organizationId),
             ),
           )
@@ -306,7 +302,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    *
    * @param args.userId - The authenticated user performing the action
    * @param args.organizationId - The organization to add the member to (path param)
-   * @param args.data.userId - The user to add as a member
+   * @param args.data.memberId - The user ID to add as a member
    * @param args.data.role - The role to assign (must be below actor's role level)
    * @returns The created membership
    * @throws PermissionDeniedError - If role hierarchy violation or self-invite
@@ -321,7 +317,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   }: {
     userId: string;
     organizationId: string;
-    data: Pick<NewOrganizationMembership, "userId" | "role">;
+    data: { memberId: string; role: Role };
   }): Effect.Effect<
     PublicOrganizationMembership,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError
@@ -333,7 +329,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         organizationId,
       });
 
-      if (data.userId === userId) {
+      if (data.memberId === userId) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: "Cannot add yourself to an organization",
@@ -355,8 +351,9 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       return yield* this.baseService.create({
         organizationId,
         data: {
-          ...data,
+          memberId: data.memberId,
           organizationId,
+          role: data.role,
         },
       });
     });
@@ -391,13 +388,13 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   }
 
   /**
-   * Retrieves a specific membership by target user ID.
+   * Retrieves a specific membership by member ID.
    *
    * Requires membership in the organization (any role).
    *
    * @param args.userId - The authenticated user
    * @param args.organizationId - The organization
-   * @param args.targetUserId - The user whose membership to retrieve
+   * @param args.memberId - The user ID of the member to retrieve
    * @returns The membership with role and creation date
    * @throws NotFoundError - If the membership doesn't exist
    * @throws PermissionDeniedError - If the user lacks read permission
@@ -406,11 +403,11 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   findById({
     userId,
     organizationId,
-    targetUserId,
+    memberId,
   }: {
     userId: string;
     organizationId: string;
-    targetUserId: string;
+    memberId: string;
   }): Effect.Effect<
     PublicOrganizationMembership,
     NotFoundError | PermissionDeniedError | DatabaseError
@@ -419,7 +416,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       yield* this.authorize({ userId, action: "read", organizationId });
       return yield* this.baseService.findById({
         organizationId,
-        targetUserId,
+        memberId,
       });
     });
   }
@@ -434,12 +431,12 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    * - Cannot change an OWNER's role
    * - Cannot change your own role
    *
-   * Security: Path params (`organizationId`, `targetUserId`) are authoritative.
+   * Security: Path params (`organizationId`, `memberId`) are authoritative.
    * The `data` type excludes these fields to prevent injection attacks.
    *
    * @param args.userId - The authenticated user performing the action
    * @param args.organizationId - The organization (path param)
-   * @param args.targetUserId - The user whose membership to update (path param)
+   * @param args.memberId - The user ID of the member to update (path param)
    * @param args.data - Fields to update (only `role` allowed, must be below actor's level)
    * @returns The updated membership
    * @throws PermissionDeniedError - If role hierarchy violation or self-modification
@@ -449,12 +446,12 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   update({
     userId,
     organizationId,
-    targetUserId,
+    memberId,
     data,
   }: {
     userId: string;
     organizationId: string;
-    targetUserId: string;
+    memberId: string;
     data: Pick<NewOrganizationMembership, "role">;
   }): Effect.Effect<
     PublicOrganizationMembership,
@@ -467,7 +464,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         organizationId,
       });
 
-      if (targetUserId === userId) {
+      if (memberId === userId) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: "Cannot modify your own membership",
@@ -477,7 +474,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       }
 
       const targetMembership = yield* this.getMembership({
-        userId: targetUserId,
+        userId: memberId,
         organizationId,
       });
 
@@ -512,7 +509,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
 
       return yield* this.baseService.update({
         organizationId,
-        targetUserId,
+        memberId,
         data: { role: data.role },
       });
     });
@@ -529,7 +526,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    *
    * @param args.userId - The authenticated user performing the action
    * @param args.organizationId - The organization
-   * @param args.targetUserId - The user to remove
+   * @param args.memberId - The user ID of the member to remove
    * @throws PermissionDeniedError - If role hierarchy violation or self-removal
    * @throws NotFoundError - If the membership doesn't exist
    * @throws DatabaseError - If the database operation fails
@@ -537,11 +534,11 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   delete({
     userId,
     organizationId,
-    targetUserId,
+    memberId,
   }: {
     userId: string;
     organizationId: string;
-    targetUserId: string;
+    memberId: string;
   }): Effect.Effect<
     void,
     NotFoundError | PermissionDeniedError | DatabaseError
@@ -553,7 +550,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         organizationId,
       });
 
-      if (targetUserId === userId) {
+      if (memberId === userId) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: "Cannot remove yourself from an organization",
@@ -563,7 +560,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       }
 
       const targetMembership = yield* this.getMembership({
-        userId: targetUserId,
+        userId: memberId,
         organizationId,
       });
 
@@ -588,7 +585,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
 
       return yield* this.baseService.delete({
         organizationId,
-        targetUserId,
+        memberId,
       });
     });
   }

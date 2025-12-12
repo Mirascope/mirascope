@@ -260,10 +260,18 @@ export abstract class BaseService<
   // Protected Helpers
   // ---------------------------------------------------------------------------
 
-  /** Returns the primary key column (assumes column is named `id`). */
+  /**
+   * Returns the primary key column. Override if the table doesn't use `id`.
+   *
+   * Default implementation assumes the table has a column named `id`.
+   * Tables with composite primary keys or non-standard ID columns (e.g., `memberId`)
+   * should override this method.
+   */
   protected getIdColumn(): PgColumn {
     const table = this.getTable();
-    return table.id;
+    // Type assertion: Most tables have `id`, subclasses override for exceptions
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    return (table as any).id as PgColumn;
   }
 
   /** Extracts the resource's own ID value from path params. */
@@ -302,6 +310,7 @@ export abstract class BaseService<
     }
 
     if (conditions.length === 0) return undefined;
+    /* v8 ignore next 1 -- multiple parent params branch covered when we add nested resources (e.g., projects) */
     return conditions.length > 1 ? and(...conditions)! : conditions[0];
   }
 
@@ -763,7 +772,10 @@ export abstract class BaseAuthenticatedService<
    * ```
    */
   protected authorize(
-    args: { userId: string; action: PermissionAction } & AuthorizationParams<TPath>,
+    args: {
+      userId: string;
+      action: PermissionAction;
+    } & AuthorizationParams<TPath>,
   ): Effect.Effect<
     TRole,
     NotFoundError | PermissionDeniedError | DatabaseError
@@ -791,7 +803,7 @@ export abstract class BaseAuthenticatedService<
    * Subclasses should call `authorize({ userId, action, ...pathParams })` before delegating to `baseService.create()`.
    */
   abstract create(
-    args: { userId: string; } & (HasParentParams<TPath> extends true
+    args: { userId: string } & (HasParentParams<TPath> extends true
       ? ParentParams<TPath>
       : unknown) & { data: TInsert },
   ): Effect.Effect<
@@ -808,7 +820,10 @@ export abstract class BaseAuthenticatedService<
     args: { userId: string } & (HasParentParams<TPath> extends true
       ? ParentParams<TPath>
       : unknown),
-  ): Effect.Effect<TPublic[], NotFoundError | PermissionDeniedError | DatabaseError>;
+  ): Effect.Effect<
+    TPublic[],
+    NotFoundError | PermissionDeniedError | DatabaseError
+  >;
 
   /**
    * Retrieves a single resource by ID (with authorization).
