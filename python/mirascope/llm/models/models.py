@@ -112,7 +112,7 @@ class Model:
         # Model will get provider dynamically from context manager.
         if "/" not in model_id:
             raise ValueError("Invalid model_id format")
-        self.provider = model_id.split("/")[0]  # pyright: ignore[reportAttributeAccessIssue]
+        self.provider = model_id.split("/")[0]
         if self.provider not in KNOWN_PROVIDER_IDS:
             raise ValueError(f"Unknown provider: '{self.provider}'")
         self.model_id = model_id

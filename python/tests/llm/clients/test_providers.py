@@ -50,4 +50,4 @@ def test_get_client_mlx() -> None:
 def test_client_unknown_provider() -> None:
     """Test that client raises ValueError for unknown providers."""
     with pytest.raises(ValueError, match="Unknown provider: unknown"):
-        llm.client("unknown")  # pyright: ignore[reportArgumentType]
+        llm.client("unknown")
