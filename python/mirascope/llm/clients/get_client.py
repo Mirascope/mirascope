@@ -18,7 +18,7 @@ from .openai import (
 
 def client(
     provider: ProviderId, *, api_key: str | None = None, base_url: str | None = None
-) -> BaseClient[str, Any]:
+) -> BaseClient[Any]:
     """Create a cached client instance for the specified provider.
 
     Args:

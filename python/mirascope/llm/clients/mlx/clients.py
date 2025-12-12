@@ -66,7 +66,7 @@ def _get_mlx(model_id: MLXModelId) -> MLX:
     )
 
 
-class MLXClient(BaseClient[MLXModelId, None]):
+class MLXClient(BaseClient[None]):
     """Client for interacting with MLX language models.
 
     This client provides methods for generating responses from MLX models,

@@ -64,7 +64,7 @@ def client(
     return _anthropic_singleton(api_key, base_url)
 
 
-class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
+class AnthropicClient(BaseClient[Anthropic]):
     """The client for the Anthropic LLM model."""
 
     def __init__(

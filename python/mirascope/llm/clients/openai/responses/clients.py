@@ -53,7 +53,7 @@ def client(
     return _openai_responses_singleton(api_key, base_url)
 
 
-class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
+class OpenAIResponsesClient(BaseClient[OpenAI]):
     """The client for the OpenAI Responses API."""
 
     def __init__(

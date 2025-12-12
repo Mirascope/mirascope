@@ -32,11 +32,10 @@ from ...tools import (
 )
 from .params import Params
 
-ModelIdT = TypeVar("ModelIdT", bound=str)
 ProviderClientT = TypeVar("ProviderClientT")
 
 
-class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
+class BaseClient(Generic[ProviderClientT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -50,7 +49,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def call(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -64,7 +63,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def call(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -78,7 +77,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def call(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -91,7 +90,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def call(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -117,7 +116,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -134,7 +133,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -151,7 +150,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -167,7 +166,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -195,7 +194,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def call_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -209,7 +208,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def call_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -223,7 +222,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def call_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -236,7 +235,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def call_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -262,7 +261,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -279,7 +278,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -296,7 +295,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -312,7 +311,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -340,7 +339,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -354,7 +353,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -368,7 +367,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -381,7 +380,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -407,7 +406,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -424,7 +423,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -441,7 +440,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -459,7 +458,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -489,7 +488,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -503,7 +502,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -517,7 +516,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -530,7 +529,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -556,7 +555,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -573,7 +572,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -590,7 +589,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -609,7 +608,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -639,7 +638,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: Response,
         content: UserContent,
         **params: Unpack[Params],
@@ -651,7 +650,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: Response[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -663,7 +662,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: Response | Response[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -674,7 +673,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: Response | Response[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -708,7 +707,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncResponse,
         content: UserContent,
         **params: Unpack[Params],
@@ -720,7 +719,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -732,7 +731,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncResponse | AsyncResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -743,7 +742,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncResponse | AsyncResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -778,7 +777,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextResponse[DepsT, None],
         content: UserContent,
         **params: Unpack[Params],
@@ -791,7 +790,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextResponse[DepsT, FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -804,7 +803,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -816,7 +815,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -853,7 +852,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextResponse[DepsT, None],
         content: UserContent,
         **params: Unpack[Params],
@@ -866,7 +865,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextResponse[DepsT, FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -879,7 +878,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextResponse[DepsT, None]
         | AsyncContextResponse[DepsT, FormattableT],
         content: UserContent,
@@ -892,7 +891,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextResponse[DepsT, None]
         | AsyncContextResponse[DepsT, FormattableT],
         content: UserContent,
@@ -929,7 +928,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume_stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: StreamResponse,
         content: UserContent,
         **params: Unpack[Params],
@@ -941,7 +940,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume_stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: StreamResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -953,7 +952,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume_stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: StreamResponse | StreamResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -964,7 +963,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     def resume_stream(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: StreamResponse | StreamResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -998,7 +997,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncStreamResponse,
         content: UserContent,
         **params: Unpack[Params],
@@ -1010,7 +1009,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncStreamResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -1022,7 +1021,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -1033,7 +1032,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     async def resume_stream_async(
         self,
         *,
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -1068,7 +1067,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextStreamResponse[DepsT, None],
         content: UserContent,
         **params: Unpack[Params],
@@ -1081,7 +1080,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -1094,7 +1093,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextStreamResponse[DepsT, None]
         | ContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
@@ -1109,7 +1108,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: ContextStreamResponse[DepsT, None]
         | ContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
@@ -1149,7 +1148,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextStreamResponse[DepsT, None],
         content: UserContent,
         **params: Unpack[Params],
@@ -1162,7 +1161,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
         **params: Unpack[Params],
@@ -1175,7 +1174,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
@@ -1191,7 +1190,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: ModelIdT,
+        model_id: str,
         response: AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT],
         content: UserContent,

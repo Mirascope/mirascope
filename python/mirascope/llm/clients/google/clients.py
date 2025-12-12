@@ -63,7 +63,7 @@ def client(
     return _google_singleton(api_key, base_url)
 
 
-class GoogleClient(BaseClient[GoogleModelId, Client]):
+class GoogleClient(BaseClient[Client]):
     """The client for the Google LLM model."""
 
     def __init__(

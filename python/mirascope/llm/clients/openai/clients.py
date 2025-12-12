@@ -114,7 +114,7 @@ def client(
     return _openai_singleton(api_key, base_url)
 
 
-class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
+class OpenAIClient(BaseClient[OpenAI]):
     """Unified client for OpenAI that routes to Completions or Responses API based on model_id."""
 
     def __init__(
