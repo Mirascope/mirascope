@@ -10,7 +10,7 @@ from ..content import AssistantContentPart, Text, UserContentPart
 from ..types import Jsonable
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, ProviderId
+    from ..providers import ModelId, ProviderId
 
 
 @dataclass(kw_only=True)

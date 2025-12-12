@@ -181,7 +181,7 @@ class VersionedCall(_BaseVersionedCall, Generic[P, FormattableT]):
     Example:
         ```python
         @ops.version
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         def recommend_book(genre: str):
             return f"Recommend a {genre} book"
 
@@ -264,7 +264,7 @@ class VersionedAsyncCall(_BaseVersionedCall, Generic[P, FormattableT]):
     Example:
         ```python
         @ops.version
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         async def recommend_book(genre: str):
             return f"Recommend a {genre} book"
 
@@ -334,7 +334,7 @@ class VersionedContextCall(_BaseVersionedCall, Generic[P, DepsT, FormattableT]):
     Example:
         ```python
         @ops.version
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         def recommend_book(ctx: llm.Context[str], genre: str):
             return f"{ctx.deps} Recommend a {genre} book"
 
@@ -425,7 +425,7 @@ class VersionedAsyncContextCall(_BaseVersionedCall, Generic[P, DepsT, Formattabl
     Example:
         ```python
         @ops.version
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call("gpt-4o-mini")
         async def recommend_book(ctx: llm.Context[str], genre: str):
             return f"{ctx.deps} Recommend a {genre} book"
 

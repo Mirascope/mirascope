@@ -13,8 +13,8 @@ from . import _utils
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, ProviderId
     from ..models import Model
+    from ..providers import ModelId, Params, ProviderId
 
 
 class RootResponse(Generic[ToolkitT, FormattableT], ABC):

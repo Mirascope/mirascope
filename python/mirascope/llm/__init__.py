@@ -12,13 +12,13 @@ from contextlib import suppress
 
 from . import (
     calls,
-    clients,
     content,
     exceptions,
     formatting,
     messages,
     models,
     prompts,
+    providers,
     responses,
     tools,
     types,
@@ -27,7 +27,6 @@ from . import (
 with suppress(ImportError):
     from . import mcp
 from .calls import AsyncCall, AsyncContextCall, Call, CallDecorator, ContextCall, call
-from .clients import ModelId, Params, client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,
@@ -87,7 +86,7 @@ from .prompts import (
     PromptDecorator,
     prompt,
 )
-from .providers import ProviderId
+from .providers import ModelId, Params, ProviderId, load_provider
 from .responses import (
     AsyncChunkIterator,
     AsyncContextResponse,
@@ -215,12 +214,11 @@ __all__ = [
     "UserMessage",
     "call",
     "calls",
-    "client",
-    "clients",
     "content",
     "exceptions",
     "format",
     "formatting",
+    "load_provider",
     "mcp",
     "messages",
     "model",
@@ -228,6 +226,7 @@ __all__ = [
     "models",
     "prompt",
     "prompts",
+    "providers",
     "responses",
     "tool",
     "tools",

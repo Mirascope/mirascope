@@ -11,7 +11,7 @@ from .finish_reason import FinishReason
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
-    from ..clients import ModelId, Params, ProviderId
+    from ..providers import ModelId, Params, ProviderId
 
 
 class BaseResponse(RootResponse[ToolkitT, FormattableT]):

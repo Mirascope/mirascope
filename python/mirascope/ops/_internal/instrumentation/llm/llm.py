@@ -19,14 +19,13 @@ from opentelemetry.semconv.attributes import (
     error_attributes as ErrorAttributes,
 )
 
-from .....llm.clients import Params
-from .....llm.clients.providers import ModelId
 from .....llm.context import Context, DepsT
 from .....llm.formatting import Format, FormattableT
 from .....llm.formatting._utils import create_tool_schema
 from .....llm.messages import Message
 from .....llm.models import Model
-from .....llm.providers import ProviderId
+from .....llm.providers import Params, ProviderId
+from .....llm.providers.model_id import ModelId
 from .....llm.responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -432,7 +431,7 @@ def _start_model_span(
     operation = GenAIAttributes.GenAiOperationNameValues.CHAT.value
     attrs = _build_request_attributes(
         operation=operation,
-        provider=model.provider,
+        provider=model.provider_id,
         model_id=model.model_id,
         messages=messages,
         tools=tools,

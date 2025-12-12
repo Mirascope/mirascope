@@ -255,7 +255,7 @@ def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
         body=None,
     )
 
-    with patch("mirascope.llm.models.models.client", return_value=mock_client):
+    with patch("mirascope.llm.models.models.load_provider", return_value=mock_client):
         model = llm.Model(model_id="openai/gpt-4o-mini")
         messages = [llm.messages.user("Hello")]
 
@@ -757,7 +757,9 @@ def test_model_call_with_format_tool_finish_reason(
                 finish_reason=FinishReason.MAX_TOKENS,
             )
 
-    with patch("mirascope.llm.models.models.client", return_value=_FormatToolClient()):
+    with patch(
+        "mirascope.llm.models.models.load_provider", return_value=_FormatToolClient()
+    ):
         model = llm.Model(
             model_id="openai/gpt-4o-mini",
             max_tokens=5,

@@ -236,14 +236,14 @@ def record_mlx_lm(cassette_path: Path, mode: RecordMode) -> Generator[None, None
         if cassette.record_mode == "none":
             stack.enter_context(
                 patch(
-                    "mirascope.llm.clients.mlx.clients.mlx_load",
+                    "mirascope.llm.providers.mlx.provider.mlx_load",
                     new=_patched_mlx_lm_load,
                 )
             )
 
         stack.enter_context(
             patch(
-                "mirascope.llm.clients.mlx.mlx.stream_generate",
+                "mirascope.llm.providers.mlx.mlx.stream_generate",
                 new=lambda *args, **kwargs: _patched_stream_generate(
                     cassette, *args, **kwargs
                 ),
