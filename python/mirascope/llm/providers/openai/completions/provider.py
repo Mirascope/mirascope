@@ -1,6 +1,7 @@
 """OpenAI client implementation."""
 
 from collections.abc import Sequence
+from typing import Literal
 from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, OpenAI
@@ -36,12 +37,22 @@ from . import _utils
 class OpenAICompletionsProvider(BaseProvider[OpenAI]):
     """The client for the OpenAI LLM model."""
 
+    id = "openai:completions"
+    default_scope = "openai/"
+
     def __init__(
-        self, *, api_key: str | None = None, base_url: str | None = None
+        self,
+        *,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        wrapped_by_openai_provider: bool = False,
     ) -> None:
         """Initialize the OpenAI client."""
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.async_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+        self.active_provider_id: Literal["openai", "openai:completions"] = (
+            "openai" if wrapped_by_openai_provider else "openai:completions"
+        )
 
     def _call(
         self,
@@ -75,12 +86,12 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            openai_response, model_id
+            openai_response, model_id, self.active_provider_id
         )
 
         return Response(
             raw=openai_response,
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -127,12 +138,12 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            openai_response, model_id
+            openai_response, model_id, self.active_provider_id
         )
 
         return ContextResponse(
             raw=openai_response,
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -176,12 +187,12 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            openai_response, model_id
+            openai_response, model_id, self.active_provider_id
         )
 
         return AsyncResponse(
             raw=openai_response,
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -228,12 +239,12 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            openai_response, model_id
+            openai_response, model_id, self.active_provider_id
         )
 
         return AsyncContextResponse(
             raw=openai_response,
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -281,7 +292,7 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         chunk_iterator = _utils.decode_stream(openai_stream)
 
         return StreamResponse(
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -332,7 +343,7 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         chunk_iterator = _utils.decode_stream(openai_stream)
 
         return ContextStreamResponse(
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -380,7 +391,7 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         chunk_iterator = _utils.decode_async_stream(openai_stream)
 
         return AsyncStreamResponse(
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,
@@ -434,7 +445,7 @@ class OpenAICompletionsProvider(BaseProvider[OpenAI]):
         chunk_iterator = _utils.decode_async_stream(openai_stream)
 
         return AsyncContextStreamResponse(
-            provider_id="openai",
+            provider_id=self.active_provider_id,
             model_id=model_id,
             provider_model_name=model_name(model_id, "completions"),
             params=params,

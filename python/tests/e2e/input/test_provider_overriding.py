@@ -47,3 +47,46 @@ def test_call_non_openai_models_through_openai(
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
+
+
+OPENAI_MODEL_IDS = [
+    "openai/gpt-4o-mini",
+    "openai/gpt-4o-mini:completions",
+    "openai/gpt-4o-mini:responses",
+]
+
+
+@pytest.mark.parametrize("model_id", OPENAI_MODEL_IDS)
+@pytest.mark.vcr
+def test_openai_completions_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
+    """Test that registering openai:completions enforces completions API usage."""
+
+    @llm.call(model_id)
+    def simple_call() -> str:
+        return "Say hello"
+
+    llm.register_provider("openai:completions")
+
+    with snapshot_test(snapshot) as snap:
+        response = simple_call()
+        assert response.provider_id == "openai:completions"
+        assert response.provider_model_name.endswith(":completions")
+        snap.set_response(response)
+
+
+@pytest.mark.parametrize("model_id", OPENAI_MODEL_IDS)
+@pytest.mark.vcr
+def test_openai_responses_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
+    """Test that registering openai:responses enforces responses API usage."""
+
+    @llm.call(model_id)
+    def simple_call() -> str:
+        return "Say hello"
+
+    llm.register_provider("openai:responses")
+
+    with snapshot_test(snapshot) as snap:
+        response = simple_call()
+        assert response.provider_id == "openai:responses"
+        assert response.provider_model_name.endswith(":responses")
+        snap.set_response(response)

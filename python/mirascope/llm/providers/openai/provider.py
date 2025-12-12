@@ -101,10 +101,10 @@ class OpenAIProvider(BaseProvider[OpenAI]):
     ) -> None:
         """Initialize the OpenAI provider with both subclients."""
         self._completions_provider = OpenAICompletionsProvider(
-            api_key=api_key, base_url=base_url
+            api_key=api_key, base_url=base_url, wrapped_by_openai_provider=True
         )
         self._responses_provider = OpenAIResponsesProvider(
-            api_key=api_key, base_url=base_url
+            api_key=api_key, base_url=base_url, wrapped_by_openai_provider=True
         )
         # Use completions client's underlying OpenAI client as the main one
         self.client = self._completions_provider.client
