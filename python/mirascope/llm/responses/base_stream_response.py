@@ -157,7 +157,7 @@ class BaseStreamResponse(
     def __init__(
         self,
         *,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -182,7 +182,7 @@ class BaseStreamResponse(
         as the stream is consumed.
         """
 
-        self.provider = provider
+        self.provider_id = provider_id
         self.model_id = model_id
         self.provider_model_name = provider_model_name
         self.params = params
@@ -210,7 +210,7 @@ class BaseStreamResponse(
 
         self._assistant_message = AssistantMessage(
             content=self._content,
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             raw_message=None,

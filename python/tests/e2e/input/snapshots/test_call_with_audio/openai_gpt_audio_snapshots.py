@@ -11,7 +11,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-audio",
             "provider_model_name": "gpt-audio:completions",
             "params": {},
@@ -31,7 +31,7 @@ test_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[Text(text='"LLM abstractions that aren\'t obstructions"')],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-audio",
                     provider_model_name="gpt-audio:completions",
                     raw_message={

@@ -65,7 +65,7 @@ def decode_response(
     """Convert Anthropic message to mirascope AssistantMessage."""
     assistant_message = AssistantMessage(
         content=[_decode_assistant_content(part) for part in response.content],
-        provider="anthropic",
+        provider_id="anthropic",
         model_id=model_id,
         provider_model_name=model_name(model_id),
         raw_message={

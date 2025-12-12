@@ -12,7 +12,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -38,7 +38,7 @@ sync_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -78,7 +78,7 @@ sync_snapshot = snapshot(
                             text='{"pages": 544, "title": "Mistborn: The Final Empire", "publication_year": 2006, "author": "Brandon Sanderson"}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -157,7 +157,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -183,7 +183,7 @@ async_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -223,7 +223,7 @@ async_snapshot = snapshot(
                             text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006, "pages": 544}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -326,7 +326,7 @@ stream_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -366,7 +366,7 @@ stream_snapshot = snapshot(
                             text='{"author": "Brandon Sanderson", "pages": 544, "publication_year": 2006, "title": "Mistborn: The Final Empire"}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -470,7 +470,7 @@ async_stream_snapshot = snapshot(
                             args='{"isbn": "0-7653-1178-X"}',
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -510,7 +510,7 @@ async_stream_snapshot = snapshot(
                             text='{"title": "Mistborn: The Final Empire", "pages": 544, "publication_year": 2006, "author": "Brandon Sanderson"}'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

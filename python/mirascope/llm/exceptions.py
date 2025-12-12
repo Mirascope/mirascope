@@ -49,23 +49,23 @@ class FeatureNotSupportedError(MirascopeLLMError):
     If compatibility is model-specific, then `model_id` should be specified.
     If the feature is not supported by the provider at all, then it may be `None`."""
 
-    provider: "ProviderId"
+    provider_id: "ProviderId"
     model_id: "ModelId | None"
     feature: str
 
     def __init__(
         self,
         feature: str,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId | None" = None,
         message: str | None = None,
     ) -> None:
         if message is None:
             model_msg = f" for model '{model_id}'" if model_id is not None else ""
-            message = f"Feature '{feature}' is not supported by provider '{provider}'{model_msg}"
+            message = f"Feature '{feature}' is not supported by provider '{provider_id}'{model_msg}"
         super().__init__(message)
         self.feature = feature
-        self.provider = provider
+        self.provider_id = provider_id
         self.model_id = model_id
 
 
@@ -77,16 +77,16 @@ class FormattingModeNotSupportedError(FeatureNotSupportedError):
     def __init__(
         self,
         formatting_mode: "FormattingMode",
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId | None" = None,
         message: str | None = None,
     ) -> None:
         if message is None:
             model_msg = f" for model '{model_id}'" if model_id is not None else ""
-            message = f"Formatting mode '{formatting_mode}' is not supported by provider '{provider}'{model_msg}"
+            message = f"Formatting mode '{formatting_mode}' is not supported by provider '{provider_id}'{model_msg}"
         super().__init__(
             feature=f"formatting_mode:{formatting_mode}",
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             message=message,
         )

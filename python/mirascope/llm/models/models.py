@@ -8,10 +8,11 @@ from types import TracebackType
 from typing import TYPE_CHECKING, overload
 from typing_extensions import Unpack
 
-from ..clients import client, model_id_to_provider
+from ..clients import client
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
+from ..providers import KNOWN_PROVIDER_IDS, ProviderId
 from ..responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -37,7 +38,6 @@ if TYPE_CHECKING:
     from ..clients import (
         ModelId,
         Params,
-        ProviderId,
     )
 
 
@@ -108,7 +108,13 @@ class Model:
         **params: Unpack[Params],
     ) -> None:
         """Initialize the Model with provider, model_id, and optional params."""
-        self.provider = model_id_to_provider(model_id)
+        # TODO(dandelion): Replace this as part of provider refactor.
+        # Model will get provider dynamically from context manager.
+        if "/" not in model_id:
+            raise ValueError("Invalid model_id format")
+        self.provider = model_id.split("/")[0]  # pyright: ignore[reportAttributeAccessIssue]
+        if self.provider not in KNOWN_PROVIDER_IDS:
+            raise ValueError(f"Unknown provider: '{self.provider}'")
         self.model_id = model_id
         self.params = params
         self._token_stack: list[Token[Model | None]] = []

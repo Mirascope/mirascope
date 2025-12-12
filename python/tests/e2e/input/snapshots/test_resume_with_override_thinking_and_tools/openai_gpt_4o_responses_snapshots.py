@@ -12,7 +12,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
             "params": {"thinking": False},
@@ -34,7 +34,7 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                             args='{"n": 100}',
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -90,7 +90,7 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                             text="The 100th Fibonacci number is 218,922,995,834,555,169,026."
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[

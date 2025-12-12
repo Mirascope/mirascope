@@ -126,7 +126,7 @@ def _encode_message(
     """Returns a Google `ContentDict` converted from a Mirascope `Message`"""
     if (
         message.role == "assistant"
-        and message.provider == "google"
+        and message.provider_id == "google"
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -189,7 +189,7 @@ def encode_request(
     encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
-        params=params, provider="google"
+        params=params, provider_id="google"
     ) as param_accessor:
         if param_accessor.temperature is not None:
             google_config["temperature"] = param_accessor.temperature
@@ -229,7 +229,7 @@ def encode_request(
         if format.mode in ("strict", "json") and tools:
             raise FeatureNotSupportedError(
                 feature=f"formatting_mode:{format.mode} with tools",
-                provider="google",
+                provider_id="google",
             )
 
         if format.mode == "strict":

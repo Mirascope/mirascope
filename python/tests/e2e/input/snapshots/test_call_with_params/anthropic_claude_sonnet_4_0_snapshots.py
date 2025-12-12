@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "anthropic",
+                "provider_id": "anthropic",
                 "model_id": "anthropic/claude-sonnet-4-0",
                 "provider_model_name": "claude-sonnet-4-0",
                 "params": {
@@ -28,7 +28,7 @@ test_snapshot = snapshot(
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(
                         content=[Text(text="4200 + 42 = ")],
-                        provider="anthropic",
+                        provider_id="anthropic",
                         model_id="anthropic/claude-sonnet-4-0",
                         provider_model_name="claude-sonnet-4-0",
                         raw_message={

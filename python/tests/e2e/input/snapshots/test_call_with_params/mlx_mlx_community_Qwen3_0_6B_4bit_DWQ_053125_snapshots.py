@@ -11,7 +11,7 @@ test_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "mlx",
+                "provider_id": "mlx",
                 "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                 "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                 "params": {
@@ -53,7 +53,7 @@ Wait, maybe I made a mistake in the first\
 """
                             )
                         ],
-                        provider="mlx",
+                        provider_id="mlx",
                         model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                         provider_model_name=None,
                         raw_message=None,

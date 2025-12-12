@@ -20,12 +20,13 @@ from opentelemetry.semconv.attributes import (
 )
 
 from .....llm.clients import Params
-from .....llm.clients.providers import ModelId, ProviderId
+from .....llm.clients.providers import ModelId
 from .....llm.context import Context, DepsT
 from .....llm.formatting import Format, FormattableT
 from .....llm.formatting._utils import create_tool_schema
 from .....llm.messages import Message
 from .....llm.models import Model
+from .....llm.providers import ProviderId
 from .....llm.responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,

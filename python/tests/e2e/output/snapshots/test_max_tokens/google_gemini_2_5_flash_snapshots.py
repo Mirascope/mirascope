@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {"max_tokens": 50},
@@ -19,7 +19,7 @@ sync_snapshot = snapshot(
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
                     content=[Text(text="Here is a list of all 50 U")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -49,7 +49,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {"max_tokens": 50},
@@ -66,7 +66,7 @@ Here are all U.S. states, listed alphabetically:
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -107,7 +107,7 @@ stream_snapshot = snapshot(
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
                     content=[Text(text="Here are all 50 U.S.")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -152,7 +152,7 @@ Here are all 50 U.S. states, listed alphabetically:
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

@@ -8,7 +8,7 @@ test_snapshot = snapshot(
             "feature": "formatting_mode:strict",
             "formatting_mode": "strict",
             "model_id": "None",
-            "provider": "anthropic",
+            "provider_id": "anthropic",
         }
     }
 )

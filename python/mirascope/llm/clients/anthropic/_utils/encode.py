@@ -33,7 +33,7 @@ def encode_image_mime_type(
     if mime_type in ("image/jpeg", "image/png", "image/gif", "image/webp"):
         return mime_type
     raise FeatureNotSupportedError(
-        feature=f"Image with mime_type: {mime_type}", provider="anthropic"
+        feature=f"Image with mime_type: {mime_type}", provider_id="anthropic"
     )  # pragma: no cover
 
 
@@ -152,7 +152,7 @@ def _encode_message(
 
     if (
         message.role == "assistant"
-        and message.provider == "anthropic"
+        and message.provider_id == "anthropic"
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -199,7 +199,7 @@ def encode_request(
     encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
-        params=params, provider="anthropic", unsupported_params=["seed"]
+        params=params, provider_id="anthropic", unsupported_params=["seed"]
     ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
@@ -227,7 +227,7 @@ def encode_request(
     if format is not None:
         if format.mode == "strict":
             raise FormattingModeNotSupportedError(
-                formatting_mode="strict", provider="anthropic"
+                formatting_mode="strict", provider_id="anthropic"
             )
         elif format.mode == "tool":
             format_tool_schema = _formatting_utils.create_tool_schema(format)

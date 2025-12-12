@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"thinking": False},
@@ -97,7 +97,7 @@ Now checking which are prime:
 """
                         ),
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -190,7 +190,7 @@ Now checking which are prime:
                 ),
                 AssistantMessage(
                     content=[Text(text="I remember them: 79, 179, and 379.")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -213,7 +213,7 @@ Now checking which are prime:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"thinking": False},
@@ -280,7 +280,7 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
                         ),
                         Text(text="3"),
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -351,7 +351,7 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -442,7 +442,7 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
                         ),
                         Text(text="3"),
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -516,7 +516,7 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
                 ),
                 AssistantMessage(
                     content=[Text(text="I remember them: 79, 179, and 379.")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -615,7 +615,7 @@ I've identified 179 and 379 as prime numbers containing "79".\
                         ),
                         Text(text="3"),
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={
@@ -697,7 +697,7 @@ I've identified 179 and 379 as prime numbers containing "79".\
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

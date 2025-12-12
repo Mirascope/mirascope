@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
@@ -20,7 +20,7 @@ test_snapshot = snapshot(
                     content=[
                         Text(text="I am a large language model, trained by Google.")
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -48,7 +48,7 @@ test_snapshot = snapshot(
                             text="You're absolutely right - I apologize for the error. I am Claude, an AI assistant created by Anthropic. Thank you for prompting me to correct that mistake."
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

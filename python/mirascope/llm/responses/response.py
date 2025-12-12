@@ -33,7 +33,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -47,7 +47,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         toolkit = tools if isinstance(tools, Toolkit) else Toolkit(tools=tools)
         super().__init__(
             raw=raw,
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,
@@ -104,7 +104,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -120,7 +120,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         )
         super().__init__(
             raw=raw,
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,
@@ -184,7 +184,7 @@ class ContextResponse(
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -202,7 +202,7 @@ class ContextResponse(
         )
         super().__init__(
             raw=raw,
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,
@@ -272,7 +272,7 @@ class AsyncContextResponse(
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -292,7 +292,7 @@ class AsyncContextResponse(
         )
         super().__init__(
             raw=raw,
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,

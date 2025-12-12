@@ -150,7 +150,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         return Response(
             raw=anthropic_response,
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -250,7 +250,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         return ContextResponse(
             raw=anthropic_response,
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -337,7 +337,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         return AsyncResponse(
             raw=anthropic_response,
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -437,7 +437,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         return AsyncContextResponse(
             raw=anthropic_response,
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -521,7 +521,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         chunk_iterator = _utils.decode_stream(anthropic_stream)
 
         return StreamResponse(
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -617,7 +617,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         chunk_iterator = _utils.decode_stream(anthropic_stream)
 
         return ContextStreamResponse(
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -700,7 +700,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         chunk_iterator = _utils.decode_async_stream(anthropic_stream)
 
         return AsyncStreamResponse(
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -802,7 +802,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         chunk_iterator = _utils.decode_async_stream(anthropic_stream)
 
         return AsyncContextStreamResponse(
-            provider="anthropic",
+            provider_id="anthropic",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,

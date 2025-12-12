@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "google",
+                "provider_id": "google",
                 "model_id": "google/gemini-2.5-flash",
                 "provider_model_name": "gemini-2.5-flash",
                 "params": {
@@ -38,7 +38,7 @@ To calculate 4200 + 42, you can add the numbers together:
 """
                             )
                         ],
-                        provider="google",
+                        provider_id="google",
                         model_id="google/gemini-2.5-flash",
                         provider_model_name="gemini-2.5-flash",
                         raw_message={

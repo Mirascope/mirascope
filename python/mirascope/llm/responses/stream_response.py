@@ -77,7 +77,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider_id="openai",
             model_id="openai/gpt-5-mini",
         )
         def answer_question(question: str) -> str:
@@ -94,7 +94,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
     def __init__(
         self,
         *,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -106,7 +106,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         """Initialize a `StreamResponse`."""
         toolkit = tools if isinstance(tools, Toolkit) else Toolkit(tools=tools)
         super().__init__(
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,
@@ -204,7 +204,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider_id="openai",
             model_id="openai/gpt-5-mini",
         )
         async def answer_question(question: str) -> str:
@@ -221,7 +221,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
     def __init__(
         self,
         *,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -235,7 +235,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
             tools if isinstance(tools, AsyncToolkit) else AsyncToolkit(tools=tools)
         )
         super().__init__(
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,
@@ -339,7 +339,7 @@ class ContextStreamResponse(
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider_id="openai",
             model_id="openai/gpt-5-mini",
         )
         def answer_question(ctx: llm.Context, question: str) -> str:
@@ -357,7 +357,7 @@ class ContextStreamResponse(
     def __init__(
         self,
         *,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -373,7 +373,7 @@ class ContextStreamResponse(
             tools if isinstance(tools, ContextToolkit) else ContextToolkit(tools=tools)
         )
         super().__init__(
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,
@@ -483,7 +483,7 @@ class AsyncContextStreamResponse(
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider_id="openai",
             model_id="openai/gpt-5-mini",
         )
         async def answer_question(ctx: llm.Context, question: str) -> str:
@@ -501,7 +501,7 @@ class AsyncContextStreamResponse(
     def __init__(
         self,
         *,
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -519,7 +519,7 @@ class AsyncContextStreamResponse(
             else AsyncContextToolkit(tools=tools)
         )
         super().__init__(
-            provider=provider,
+            provider_id=provider_id,
             model_id=model_id,
             provider_model_name=provider_model_name,
             params=params,

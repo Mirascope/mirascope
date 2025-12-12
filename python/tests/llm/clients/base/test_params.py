@@ -24,7 +24,7 @@ def test_ensure_all_params_accessed() -> None:
                 match="Mismatch between unsupported and unaccessed params",
             ),
             llm.clients.base._utils.ensure_all_params_accessed(  # pyright: ignore[reportPrivateUsage]
-                params={}, provider="google", unsupported_params=["temperature"]
+                params={}, provider_id="google", unsupported_params=["temperature"]
             ) as param_accessor,
         ):
             for param in params_keys:
@@ -33,7 +33,7 @@ def test_ensure_all_params_accessed() -> None:
 
     # Confirm success if we access every param
     with llm.clients.base._utils.ensure_all_params_accessed(  # pyright: ignore[reportPrivateUsage]
-        params={}, provider="google", unsupported_params=["temperature"]
+        params={}, provider_id="google", unsupported_params=["temperature"]
     ) as param_accessor:
         for param in params_keys:
             getattr(param_accessor, param)
@@ -48,7 +48,7 @@ def test_error_if_checking_unsupported_param() -> None:
             AssertionError, match="Mismatch between unsupported and unaccessed params"
         ),
         llm.clients.base._utils.ensure_all_params_accessed(  # pyright: ignore[reportPrivateUsage]
-            params={}, provider="google", unsupported_params=["temperature"]
+            params={}, provider_id="google", unsupported_params=["temperature"]
         ) as param_accessor,
     ):
         for param in params_keys:

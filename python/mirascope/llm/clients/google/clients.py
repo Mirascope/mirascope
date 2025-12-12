@@ -152,7 +152,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
 
         return Response(
             raw=google_response,
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -252,7 +252,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
 
         return ContextResponse(
             raw=google_response,
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -339,7 +339,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
 
         return AsyncResponse(
             raw=google_response,
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -439,7 +439,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
 
         return AsyncContextResponse(
             raw=google_response,
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -523,7 +523,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         chunk_iterator = _utils.decode_stream(google_stream)
 
         return StreamResponse(
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -619,7 +619,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         chunk_iterator = _utils.decode_stream(google_stream)
 
         return ContextStreamResponse(
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -702,7 +702,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         chunk_iterator = _utils.decode_async_stream(google_stream)
 
         return AsyncStreamResponse(
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,
@@ -804,7 +804,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         chunk_iterator = _utils.decode_async_stream(google_stream)
 
         return AsyncContextStreamResponse(
-            provider="google",
+            provider_id="google",
             model_id=model_id,
             provider_model_name=model_name(model_id),
             params=params,

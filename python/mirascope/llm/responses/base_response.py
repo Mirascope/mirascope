@@ -21,7 +21,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         self,
         *,
         raw: Any,  # noqa: ANN401
-        provider: "ProviderId",
+        provider_id: "ProviderId",
         model_id: "ModelId",
         provider_model_name: str,
         params: "Params",
@@ -47,7 +47,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
             finish_reason: The reason why the LLM finished generating a response.
         """
         self.raw = raw
-        self.provider = provider
+        self.provider_id = provider_id
         self.model_id = model_id
         self.provider_model_name = provider_model_name
         self.params = params
@@ -88,7 +88,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
             assistant_message = AssistantMessage(
                 content=self.content,
                 name=assistant_message.name,
-                provider=assistant_message.provider,
+                provider_id=assistant_message.provider_id,
                 model_id=assistant_message.model_id,
                 provider_model_name=assistant_message.provider_model_name,
                 raw_message=assistant_message.raw_message,

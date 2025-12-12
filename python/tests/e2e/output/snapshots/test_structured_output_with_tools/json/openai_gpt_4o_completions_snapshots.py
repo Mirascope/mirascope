@@ -12,7 +12,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {},
@@ -68,7 +68,7 @@ Respond only with valid JSON that matches this exact schema:
                             args='{"isbn":"0-7653-1178-X"}',
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
@@ -108,7 +108,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
@@ -203,7 +203,7 @@ Respond only with valid JSON that matches this exact schema:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
             "params": {},
@@ -259,7 +259,7 @@ Respond only with valid JSON that matches this exact schema:
                             args='{"isbn":"0-7653-1178-X"}',
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
@@ -292,7 +292,7 @@ Respond only with valid JSON that matches this exact schema:
                             text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
@@ -434,7 +434,7 @@ Respond only with valid JSON that matches this exact schema:
                             args='{"isbn":"0-7653-1178-X"}',
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message=None,
@@ -461,7 +461,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message=None,
@@ -600,7 +600,7 @@ Respond only with valid JSON that matches this exact schema:
                             args='{"isbn":"0-7653-1178-X"}',
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message=None,
@@ -620,7 +620,7 @@ Respond only with valid JSON that matches this exact schema:
                             text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                         )
                     ],
-                    provider="openai",
+                    provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message=None,

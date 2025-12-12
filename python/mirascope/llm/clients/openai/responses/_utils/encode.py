@@ -179,7 +179,7 @@ def _encode_message(
 
     if (
         message.role == "assistant"
-        and message.provider == "openai"
+        and message.provider_id == "openai"
         and message.provider_model_name
         == model_name(model_id=model_id, api_mode="responses")
         and message.raw_message
@@ -267,7 +267,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai",
+        provider_id="openai",
         unsupported_params=["top_k", "seed", "stop_sequences"],
     ) as param_accessor:
         if param_accessor.temperature is not None:

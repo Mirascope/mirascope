@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
@@ -88,7 +88,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
 """
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -186,7 +186,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                 ),
                 AssistantMessage(
                     content=[Text(text="The primes were 79, 179, and 379.")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -216,7 +216,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
@@ -242,7 +242,7 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                         ),
                         Text(text="3"),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -290,7 +290,7 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -380,7 +380,7 @@ Therefore, there are 3 such primes.
 """
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -567,7 +567,7 @@ Therefore, there are 3 such primes.
                 ),
                 AssistantMessage(
                     content=[Text(text="The primes were 79, 179, and 379.")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -649,7 +649,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                         ),
                         Text(text="3"),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -751,7 +751,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                 ),
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={

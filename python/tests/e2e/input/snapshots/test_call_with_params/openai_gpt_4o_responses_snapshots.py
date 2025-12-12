@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider_id": "openai",
                 "model_id": "openai/gpt-4o:responses",
                 "provider_model_name": "gpt-4o:responses",
                 "params": {
@@ -28,7 +28,7 @@ test_snapshot = snapshot(
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(
                         content=[Text(text="4200 + 42 equals 4242.")],
-                        provider="openai",
+                        provider_id="openai",
                         model_id="openai/gpt-4o:responses",
                         provider_model_name="gpt-4o:responses",
                         raw_message=[

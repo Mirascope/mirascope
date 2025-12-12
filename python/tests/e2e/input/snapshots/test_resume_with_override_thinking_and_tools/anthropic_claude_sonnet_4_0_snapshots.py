@@ -12,7 +12,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"thinking": False},
@@ -34,7 +34,7 @@ Okay, so I see the user wants the 100th Fibonacci number.  No problem. I immedia
                             args='{"n": 100}',
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -94,7 +94,7 @@ This is quite a large number! The Fibonacci sequence grows exponentially, so by 
 """
                         )
                     ],
-                    provider="anthropic",
+                    provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
                     raw_message={

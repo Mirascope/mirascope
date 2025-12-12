@@ -7,7 +7,7 @@ test_snapshot = snapshot(
             "args": "('provider \"openai\" does not support audio inputs when using :responses api. Try appending :completions to your model instead.',)",
             "feature": "audio input",
             "model_id": "None",
-            "provider": "openai",
+            "provider_id": "openai",
         }
     }
 )

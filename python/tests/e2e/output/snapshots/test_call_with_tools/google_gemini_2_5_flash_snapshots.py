@@ -12,7 +12,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -39,7 +39,7 @@ sync_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -100,7 +100,7 @@ sync_snapshot = snapshot(
                             text='The secrets have been retrieved. For the password "mellon", the secret is "Welcome to Moria!". For the password "radiance", the secret is "Life before Death".'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -151,7 +151,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
@@ -178,7 +178,7 @@ async_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -239,7 +239,7 @@ async_snapshot = snapshot(
                             text='The secrets have been retrieved. For the password "mellon", the secret is "Welcome to Moria!". For the password "radiance", the secret is "Life before Death".\n'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -315,7 +315,7 @@ stream_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -376,7 +376,7 @@ stream_snapshot = snapshot(
                             text='The secrets associated with the passwords "mellon" and "radiance" are "Welcome to Moria!" and "Life before Death" respectively.'
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -477,7 +477,7 @@ async_stream_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
@@ -542,7 +542,7 @@ For the password "radiance", the secret is: "Life before Death"\
 """
                         )
                     ],
-                    provider="google",
+                    provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
