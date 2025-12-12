@@ -5,16 +5,16 @@ from __future__ import annotations
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import Any, overload
+from typing import overload
 from typing_extensions import Unpack
 
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
 from ..providers import (
-    BaseProvider,
     ModelId,
     Params,
+    Provider,
     ProviderId,
     get_provider_for_model,
 )
@@ -113,7 +113,7 @@ class Model:
         self._token_stack: list[Token[Model | None]] = []
 
     @property
-    def provider(self) -> BaseProvider[Any]:
+    def provider(self) -> Provider:
         """The provider being used (e.g. an `OpenAIProvider`).
 
         This property dynamically looks up the provider from the registry based on

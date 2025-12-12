@@ -4,7 +4,7 @@ from .anthropic import (
     AnthropicModelId,
     AnthropicProvider,
 )
-from .base import BaseProvider, Params
+from .base import BaseProvider, Params, Provider
 from .google import GoogleModelId, GoogleProvider
 from .load_provider import load, load_provider
 from .mlx import MLXModelId, MLXProvider
@@ -29,6 +29,7 @@ __all__ = [
     "OpenAIModelId",
     "OpenAIProvider",
     "Params",
+    "Provider",
     "ProviderId",
     "get_provider_for_model",
     "load",
