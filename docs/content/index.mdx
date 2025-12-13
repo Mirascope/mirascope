@@ -21,12 +21,12 @@ To install the Mirascope v2 alpha, use the following command:
 <TabbedSection>
 <Tab value="uv">
 ```bash
-uv add "mirascope[all]==2.0.0-alpha.1"
+uv add "mirascope[all]==2.0.0-alpha.3"
 ```
 </Tab>
 <Tab value="pip">
 ```bash
-pip install "mirascope[all]==2.0.0-alpha.1"
+pip install "mirascope[all]==2.0.0-alpha.3"
 ```
 </Tab>
 </TabbedSection>
@@ -261,6 +261,42 @@ You can assume direct control over the formatting instructions by adding a `form
 
 </Info>
 
+## Provider Registration
+
+You can use `llm.register_provider` to modify what provider is used for a given model. This allows you to do things like customize the provider's base url or API key. You can also use this to extend the scope of models that are routed to a given provider. Since many model developers have OpenAI client compatibility, you can route their models through the OpenAI provider, as in the example below:
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/register_provider/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/register_provider/model.py" />
+</Tab>
+</TabbedSection>
+
+## Using Local Models 
+
+You can use the provider registration system to use local models, e.g. ollama in the below example:
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/local_model/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/local_model/model.py" />
+</Tab>
+</TabbedSection>
+
+If you're working on a Macbook, you can also use MLX models directly on Apple Silicon:
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/mlx/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/mlx/model.py" />
+</Tab>
+</TabbedSection>
 
 ## Context Prompts & Context Tools 
 
