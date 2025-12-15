@@ -50,6 +50,13 @@
       "when": 1766010298903,
       "tag": "0006_loose_cerebro",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1765864761341,
+      "tag": "0007_premium_big_bertha",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,7 @@
 import { Effect } from "effect";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { BaseService } from "@/db/services/base";
-import { DatabaseError } from "@/db/errors";
+import { DatabaseError, NotFoundError } from "@/db/errors";
 import { users, type PublicUser } from "@/db/schema/users";
 
 export class UserService extends BaseService<
@@ -28,6 +28,127 @@ export class UserService extends BaseService<
       name: users.name,
     };
   }
+
+  // ---------------------------------------------------------------------------
+  // CRUD Overrides (filter out soft-deleted users)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Retrieves all non-deleted users.
+   *
+   * Overrides base implementation to filter out soft-deleted users.
+   */
+  override findAll(): Effect.Effect<PublicUser[], DatabaseError> {
+    return Effect.tryPromise({
+      try: async () => {
+        const results = await this.db
+          .select(this.getPublicFields())
+          .from(users)
+          .where(isNull(users.deletedAt));
+        return results as PublicUser[];
+      },
+      catch: (error) =>
+        new DatabaseError({
+          message: "Failed to get users",
+          cause: error,
+        }),
+    });
+  }
+
+  /**
+   * Retrieves a non-deleted user by ID.
+   *
+   * Overrides base implementation to filter out soft-deleted users.
+   *
+   * @throws NotFoundError - If the user doesn't exist or is deleted
+   */
+  override findById({
+    userId,
+  }: {
+    userId: string;
+  }): Effect.Effect<PublicUser, NotFoundError | DatabaseError> {
+    return Effect.gen(this, function* () {
+      const result = yield* Effect.tryPromise({
+        try: async () => {
+          const [user] = await this.db
+            .select(this.getPublicFields())
+            .from(users)
+            .where(and(eq(users.id, userId), isNull(users.deletedAt)))
+            .limit(1);
+          return user as PublicUser | undefined;
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to get user",
+            cause: error,
+          }),
+      });
+
+      if (!result) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "User not found",
+            resource: "user",
+          }),
+        );
+      }
+      return result;
+    });
+  }
+
+  /**
+   * Soft-deletes a user by removing PII and setting deletedAt timestamp.
+   *
+   * The user's UUID is preserved, but:
+   * - email is replaced with `deleted-{userId}@deleted.local`
+   * - name is set to null
+   * - deletedAt is set to the current timestamp
+   *
+   * @param args.userId - The ID of the user to delete
+   * @throws NotFoundError - If the user doesn't exist or is already deleted
+   * @throws DatabaseError - If the database operation fails
+   */
+  override delete({
+    userId,
+  }: {
+    userId: string;
+  }): Effect.Effect<void, NotFoundError | DatabaseError> {
+    return Effect.gen(this, function* () {
+      const result = yield* Effect.tryPromise({
+        try: async () => {
+          const [updated] = await this.db
+            .update(users)
+            .set({
+              email: `deleted-${userId}@deleted.local`,
+              name: null,
+              deletedAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .where(and(eq(users.id, userId), isNull(users.deletedAt)))
+            .returning({ id: users.id });
+          return updated;
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to delete user",
+            cause: error,
+          }),
+      });
+
+      if (!result) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "User not found",
+            resource: "user",
+          }),
+        );
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Custom Methods
+  // ---------------------------------------------------------------------------
 
   /**
    * Creates or updates a user.

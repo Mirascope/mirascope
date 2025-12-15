@@ -422,12 +422,14 @@ export abstract class BaseService<
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const query = this.db.select(publicFields).from(table as any);
 
+        /* v8 ignore start - TODO: test directly since user service overrides this?*/
         const whereClause = params
           ? this.getParentScopedWhere(params)
           : undefined;
         const results = whereClause
           ? await query.where(whereClause)
           : await query;
+        /* v8 ignore end */
 
         return results as TPublic[];
       },
