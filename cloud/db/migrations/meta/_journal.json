@@ -15,6 +15,13 @@
       "when": 1765183454327,
       "tag": "0001_violet_maddog",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765523984627,
+      "tag": "0002_normal_xavin",
+      "breakpoints": true
     }
   ]
 }

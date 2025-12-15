@@ -562,7 +562,7 @@
                           "OWNER",
                           "ADMIN",
                           "DEVELOPER",
-                          "ANNOTATOR"
+                          "VIEWER"
                         ]
                       }
                     },
@@ -626,7 +626,7 @@
                         "OWNER",
                         "ADMIN",
                         "DEVELOPER",
-                        "ANNOTATOR"
+                        "VIEWER"
                       ]
                     }
                   },
@@ -733,7 +733,7 @@
                         "OWNER",
                         "ADMIN",
                         "DEVELOPER",
-                        "ANNOTATOR"
+                        "VIEWER"
                       ]
                     }
                   },
@@ -825,7 +825,7 @@
                         "OWNER",
                         "ADMIN",
                         "DEVELOPER",
-                        "ANNOTATOR"
+                        "VIEWER"
                       ]
                     }
                   },
