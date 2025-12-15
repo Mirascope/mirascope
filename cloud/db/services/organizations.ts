@@ -1,3 +1,53 @@
+/**
+ * @fileoverview Organization service for multi-tenant organization management.
+ *
+ * This module provides authenticated CRUD operations for organizations with
+ * role-based access control. Organizations are the top-level tenant resource
+ * that users can be members of with different roles.
+ *
+ * ## Role Hierarchy
+ *
+ * Organizations support four roles with descending permissions:
+ * - `OWNER` - Full control (create, read, update, delete)
+ * - `ADMIN` - Administrative access (read, update)
+ * - `DEVELOPER` - Read-only access (read)
+ * - `VIEWER` - Read-only access (read)
+ *
+ * ## Architecture
+ *
+ * ```
+ * OrganizationService (authenticated)
+ *   └── baseService: OrganizationBaseService
+ *         └── CRUD on `organizations` table (raw, no auth)
+ * ```
+ *
+ * All authentication, authorization, and membership logic is handled in
+ * `OrganizationService`. There is a single base service for core organization
+ * persistence logic. Memberships are managed as part of the organization operations.
+ *
+ * ## Usage
+ *
+ * ```ts
+ * const orgService = new OrganizationService(db);
+ *
+ * // Create organization (user becomes OWNER)
+ * const org = yield* orgService.create({
+ *   userId: "user-123",
+ *   data: { name: "My Organization" },
+ * });
+ *
+ * // List user's organizations
+ * const orgs = yield* orgService.findAll({ userId: "user-123" });
+ *
+ * // Update organization (requires OWNER or ADMIN)
+ * yield* orgService.update({
+ *   userId: "user-123",
+ *   organizationId: org.id,
+ *   data: { name: "New Name" },
+ * });
+ * ```
+ */
+
 import { Effect } from "effect";
 import { and, eq } from "drizzle-orm";
 import {
@@ -21,6 +71,16 @@ import {
   type Role,
 } from "@/db/schema";
 
+// =============================================================================
+// Base Service (Internal)
+// =============================================================================
+
+/**
+ * Low-level CRUD service for the organizations table.
+ *
+ * This is an internal service used by `OrganizationService`.
+ * It provides raw database operations without authentication or authorization.
+ */
 class OrganizationBaseService extends BaseService<
   PublicOrganization,
   "organizations/:organizationId",
@@ -46,6 +106,32 @@ class OrganizationBaseService extends BaseService<
   }
 }
 
+// =============================================================================
+// Organization Service (Public)
+// =============================================================================
+
+/**
+ * Authenticated service for organization management.
+ *
+ * Provides CRUD operations with role-based access control for organizations.
+ * Users interact with organizations through memberships, and their role
+ * determines what actions they can perform.
+ *
+ * ## Permission Matrix
+ *
+ * | Action   | OWNER | ADMIN | DEVELOPER | VIEWER |
+ * |----------|-------|-------|-----------|--------|
+ * | create   | N/A (special handling - creator becomes owner) |
+ * | read     | ✓     | ✓     | ✓         | ✓      |
+ * | update   | ✓     | ✓     | ✗         | ✗      |
+ * | delete   | ✓     | ✗     | ✗         | ✗      |
+ *
+ * ## Security Model
+ *
+ * - Non-members cannot see that an organization exists (returns NotFoundError)
+ * - Organization existence is hidden from unauthorized users
+ * - Creating an organization automatically makes the creator an OWNER
+ */
 export class OrganizationService extends BaseAuthenticatedService<
   PublicOrganization,
   "organizations/:organizationId",
@@ -53,6 +139,10 @@ export class OrganizationService extends BaseAuthenticatedService<
   NewOrganization,
   Role
 > {
+  // ---------------------------------------------------------------------------
+  // Base Service Implementation
+  // ---------------------------------------------------------------------------
+
   protected initializeBaseService() {
     return new OrganizationBaseService(this.db);
   }
@@ -66,9 +156,22 @@ export class OrganizationService extends BaseAuthenticatedService<
     };
   }
 
+  // ---------------------------------------------------------------------------
+  // Role Resolution
+  // ---------------------------------------------------------------------------
+
   /**
-   * Get the user's role in an organization.
-   * Returns NotFoundError if user is not a member (hides org existence from non-members).
+   * Determines the user's role in an organization.
+   *
+   * This method is called by `authorize()` to check permissions before
+   * performing operations. It intentionally returns `NotFoundError` for
+   * non-members to hide organization existence from unauthorized users.
+   *
+   * @param args.organizationId - The organization to check membership in
+   * @param args.userId - The user to check
+   * @returns The user's role in the organization
+   * @throws NotFoundError - If the user is not a member (hides org existence)
+   * @throws DatabaseError - If the database query fails
    */
   getRole({
     organizationId,
@@ -111,6 +214,27 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
+  // ---------------------------------------------------------------------------
+  // CRUD Operations
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Creates a new organization and assigns the creator as OWNER.
+   *
+   * This is a special case that doesn't require prior authorization since
+   * no organization exists yet. The creating user automatically becomes
+   * the organization's owner.
+   *
+   * Performs an atomic transaction:
+   * 1. Insert the organization
+   * 2. Create an OWNER membership for the user
+   *
+   * @param args.userId - The user creating the organization (becomes OWNER)
+   * @param args.data - Organization data (name)
+   * @returns The created organization with the user's role
+   * @throws AlreadyExistsError - If an organization with this name exists
+   * @throws DatabaseError - If the database operation fails
+   */
   create({
     userId,
     data,
@@ -157,6 +281,16 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
+  /**
+   * Retrieves all organizations the user is a member of.
+   *
+   * Returns organizations with the user's role in each. This is a membership-
+   * scoped query that only returns organizations where the user has a role.
+   *
+   * @param args.userId - The user to get organizations for
+   * @returns Array of organizations with the user's role in each
+   * @throws DatabaseError - If the database query fails
+   */
   findAll({
     userId,
   }: {
@@ -185,6 +319,19 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
+  /**
+   * Retrieves an organization by ID.
+   *
+   * Requires the user to be a member of the organization (any role).
+   * Returns the organization with the user's role.
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to retrieve
+   * @returns The organization with the user's role
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
   findById({
     userId,
     organizationId,
@@ -206,6 +353,19 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
+  /**
+   * Updates an organization.
+   *
+   * Requires OWNER or ADMIN role.
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to update
+   * @param args.data - Fields to update (name)
+   * @returns The updated organization with the user's role
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user lacks update permission
+   * @throws DatabaseError - If the database operation fails
+   */
   update({
     userId,
     organizationId,
@@ -232,6 +392,21 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
+  /**
+   * Deletes an organization and all its memberships.
+   *
+   * Requires OWNER role. This is a destructive operation that:
+   * 1. Deletes all organization memberships
+   * 2. Deletes the organization
+   *
+   * Performed as an atomic transaction.
+   *
+   * @param args.userId - The authenticated user (must be OWNER)
+   * @param args.organizationId - The organization to delete
+   * @throws NotFoundError - If the organization doesn't exist or user isn't a member
+   * @throws PermissionDeniedError - If the user is not an OWNER
+   * @throws DatabaseError - If the database operation fails
+   */
   delete({
     userId,
     organizationId,
