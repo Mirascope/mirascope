@@ -38,3 +38,26 @@ AnthropicKnownModels = Literal[
     "anthropic/claude-sonnet-4-latest",
 ]
 """Valid Anthropic model IDs."""
+
+
+MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS: set[str] = {
+    "anthropic/claude-3-5-haiku",
+    "anthropic/claude-3-5-haiku-20241022",
+    "anthropic/claude-3-5-haiku-latest",
+    "anthropic/claude-3-7-sonnet",
+    "anthropic/claude-3-7-sonnet-20250219",
+    "anthropic/claude-3-7-sonnet-latest",
+    "anthropic/claude-3-haiku",
+    "anthropic/claude-3-haiku-20240307",
+    "anthropic/claude-3-haiku-latest",
+    "anthropic/claude-3-opus",
+    "anthropic/claude-3-opus-20240229",
+    "anthropic/claude-3-opus-latest",
+    "anthropic/claude-opus-4",
+    "anthropic/claude-opus-4-20250514",
+    "anthropic/claude-opus-4-latest",
+    "anthropic/claude-sonnet-4",
+    "anthropic/claude-sonnet-4-20250514",
+    "anthropic/claude-sonnet-4-latest",
+}
+"""Models that do not support strict structured outputs (strict mode tools)."""
