@@ -5,7 +5,10 @@ import {
   TestOrganizationFixture,
 } from "@/tests/db";
 import { Effect } from "effect";
-import { type PublicOrganizationWithMembership } from "@/db/schema";
+import {
+  type PublicOrganizationWithMembership,
+  type PublicOrganizationMembershipAudit,
+} from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -122,6 +125,20 @@ describe("OrganizationService", () => {
           name,
           role: "OWNER",
         } satisfies PublicOrganizationWithMembership);
+
+        // Verify audit log was created for OWNER GRANT
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: user.id,
+        });
+        expect(audits).toHaveLength(1);
+        expect(audits[0]).toMatchObject({
+          actorId: user.id,
+          targetId: user.id,
+          action: "GRANT",
+          previousRole: null,
+          newRole: "OWNER",
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 

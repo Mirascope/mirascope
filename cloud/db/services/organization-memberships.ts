@@ -58,9 +58,12 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/db/errors";
+import { isUniqueConstraintError } from "@/db/utils";
 import {
   organizationMemberships,
+  organizationMembershipAudit,
   type PublicOrganizationMembership,
+  type PublicOrganizationMembershipAudit,
   type NewOrganizationMembership,
   type Role,
 } from "@/db/schema";
@@ -77,7 +80,7 @@ import {
  *
  * Path pattern: `organizations/:organizationId/members/:memberId`
  * - Parent param: `organizationId` (scopes to organization)
- * - Resource ID: `memberId` (the user's ID who is a member, maps to `id` column)
+ * - Resource ID: `memberId` (the user's ID who is a member)
  */
 class OrganizationMembershipBaseService extends BaseService<
   PublicOrganizationMembership,
@@ -109,6 +112,61 @@ class OrganizationMembershipBaseService extends BaseService<
       role: organizationMemberships.role,
       createdAt: organizationMemberships.createdAt,
     };
+  }
+}
+
+/**
+ * Low-level read service for the organization_membership_audit table.
+ *
+ * This is an internal service used for querying audit logs of membership changes.
+ * It follows the same path pattern as memberships but adds an audit segment.
+ *
+ * Path pattern: `organizations/:organizationId/members/:memberId/audits/:id`
+ * - Parent params: `organizationId`, `memberId` (maps to targetId column)
+ * - Resource ID: `id` (the audit entry's own ID)
+ */
+class OrganizationMembershipAuditBaseService extends BaseService<
+  PublicOrganizationMembershipAudit,
+  "organizations/:organizationId/members/:memberId/audits/:id",
+  typeof organizationMembershipAudit
+> {
+  protected getTable() {
+    return organizationMembershipAudit;
+  }
+
+  protected getResourceName() {
+    return "organization membership audit";
+  }
+
+  protected getIdParamName() {
+    return "id" as const;
+  }
+
+  protected getPublicFields() {
+    return {
+      id: organizationMembershipAudit.id,
+      actorId: organizationMembershipAudit.actorId,
+      targetId: organizationMembershipAudit.targetId,
+      action: organizationMembershipAudit.action,
+      previousRole: organizationMembershipAudit.previousRole,
+      newRole: organizationMembershipAudit.newRole,
+      createdAt: organizationMembershipAudit.createdAt,
+    };
+  }
+
+  /**
+   * Override to map `memberId` param to `targetId` column.
+   * The path uses `:memberId` to match the membership pattern, but the audit
+   * table stores this as `targetId`.
+   */
+  protected getParentScopedWhere(params: {
+    organizationId: string;
+    memberId: string;
+  }) {
+    return and(
+      eq(organizationMembershipAudit.organizationId, params.organizationId),
+      eq(organizationMembershipAudit.targetId, params.memberId),
+    );
   }
 }
 
@@ -152,6 +210,17 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   // ---------------------------------------------------------------------------
   // Base Service Implementation
   // ---------------------------------------------------------------------------
+
+  /**
+   * Service for querying audit logs of membership changes.
+   * Use `audits.findAll({ organizationId, memberId })` to get audit entries for a member.
+   */
+  public readonly audits: OrganizationMembershipAuditBaseService;
+
+  constructor(db: ConstructorParameters<typeof BaseAuthenticatedService>[0]) {
+    super(db);
+    this.audits = new OrganizationMembershipAuditBaseService(db);
+  }
 
   protected initializeBaseService() {
     return new OrganizationMembershipBaseService(this.db);
@@ -348,12 +417,47 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         );
       }
 
-      return yield* this.baseService.create({
-        organizationId,
-        data: {
-          memberId: data.memberId,
-          organizationId,
-          role: data.role,
+      // Use transaction to ensure membership and audit log are created atomically
+      return yield* Effect.tryPromise({
+        try: async () => {
+          return await this.db.transaction(async (tx) => {
+            // Insert membership
+            const [membership] = await tx
+              .insert(organizationMemberships)
+              .values({
+                memberId: data.memberId,
+                organizationId,
+                role: data.role,
+              })
+              .returning({
+                memberId: organizationMemberships.memberId,
+                role: organizationMemberships.role,
+                createdAt: organizationMemberships.createdAt,
+              });
+
+            // Log audit
+            await tx.insert(organizationMembershipAudit).values({
+              organizationId,
+              actorId: userId,
+              targetId: data.memberId,
+              action: "GRANT",
+              newRole: data.role,
+            });
+
+            return membership as PublicOrganizationMembership;
+          });
+        },
+        catch: (error) => {
+          if (isUniqueConstraintError(error)) {
+            return new AlreadyExistsError({
+              message: "User is already a member of this organization",
+              resource: "organization membership",
+            });
+          }
+          return new DatabaseError({
+            message: "Failed to create organization membership",
+            cause: error,
+          });
         },
       });
     });
@@ -507,10 +611,46 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         );
       }
 
-      return yield* this.baseService.update({
-        organizationId,
-        memberId,
-        data: { role: data.role },
+      const previousRole = targetMembership.role;
+
+      // Use transaction to ensure membership update and audit log are atomic
+      return yield* Effect.tryPromise({
+        try: async () => {
+          return await this.db.transaction(async (tx) => {
+            // Update membership
+            const [membership] = await tx
+              .update(organizationMemberships)
+              .set({ role: data.role })
+              .where(
+                and(
+                  eq(organizationMemberships.memberId, memberId),
+                  eq(organizationMemberships.organizationId, organizationId),
+                ),
+              )
+              .returning({
+                memberId: organizationMemberships.memberId,
+                role: organizationMemberships.role,
+                createdAt: organizationMemberships.createdAt,
+              });
+
+            // Log audit
+            await tx.insert(organizationMembershipAudit).values({
+              organizationId,
+              actorId: userId,
+              targetId: memberId,
+              action: "CHANGE",
+              previousRole,
+              newRole: data.role,
+            });
+
+            return membership as PublicOrganizationMembership;
+          });
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to update organization membership",
+            cause: error,
+          }),
       });
     });
   }
@@ -583,9 +723,37 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         );
       }
 
-      return yield* this.baseService.delete({
-        organizationId,
-        memberId,
+      const previousRole = targetMembership.role;
+
+      // Use transaction to ensure membership deletion and audit log are atomic
+      yield* Effect.tryPromise({
+        try: async () => {
+          await this.db.transaction(async (tx) => {
+            // Delete membership
+            await tx
+              .delete(organizationMemberships)
+              .where(
+                and(
+                  eq(organizationMemberships.memberId, memberId),
+                  eq(organizationMemberships.organizationId, organizationId),
+                ),
+              );
+
+            // Log audit
+            await tx.insert(organizationMembershipAudit).values({
+              organizationId,
+              actorId: userId,
+              targetId: memberId,
+              action: "REVOKE",
+              previousRole,
+            });
+          });
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: "Failed to delete organization membership",
+            cause: error,
+          }),
       });
     });
   }
