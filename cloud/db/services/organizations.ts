@@ -70,6 +70,7 @@ import { isUniqueConstraintError } from "@/db/utils";
 import {
   organizations,
   organizationMemberships,
+  organizationMembershipAudit,
   type NewOrganization,
   type PublicOrganization,
   type PublicOrganizationWithMembership,
@@ -262,6 +263,15 @@ export class OrganizationService extends BaseAuthenticatedService<
             role: "OWNER",
           });
 
+          // Log audit for OWNER membership grant
+          await tx.insert(organizationMembershipAudit).values({
+            organizationId: organization.id,
+            actorId: userId,
+            targetId: userId, // OWNER grants to self
+            action: "GRANT",
+            newRole: "OWNER",
+          });
+
           return {
             id: organization.id,
             name: organization.name,
@@ -425,11 +435,19 @@ export class OrganizationService extends BaseAuthenticatedService<
       yield* Effect.tryPromise({
         try: async () => {
           await this.db.transaction(async (tx) => {
+            // Delete audit logs first (references organization)
+            await tx
+              .delete(organizationMembershipAudit)
+              .where(
+                eq(organizationMembershipAudit.organizationId, organizationId),
+              );
+            // Delete memberships
             await tx
               .delete(organizationMemberships)
               .where(
                 eq(organizationMemberships.organizationId, organizationId),
               );
+            // Delete organization
             await tx
               .delete(organizations)
               .where(eq(organizations.id, organizationId));

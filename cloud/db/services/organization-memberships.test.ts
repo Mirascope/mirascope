@@ -7,7 +7,10 @@ import {
 } from "@/tests/db";
 import { DatabaseService } from "@/db/services";
 import { Effect } from "effect";
-import { type PublicOrganizationMembership } from "@/db/schema";
+import {
+  type PublicOrganizationMembership,
+  type PublicOrganizationMembershipAudit,
+} from "@/db/schema";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -35,6 +38,20 @@ describe("OrganizationMembershipService", () => {
         expect(membership).toMatchObject({
           role: "DEVELOPER",
         } satisfies Partial<PublicOrganizationMembership>);
+
+        // Verify audit log was created
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: nonMember.id,
+        });
+        expect(audits).toHaveLength(1);
+        expect(audits[0]).toMatchObject({
+          actorId: owner.id,
+          targetId: nonMember.id,
+          action: "GRANT",
+          previousRole: null,
+          newRole: "DEVELOPER",
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -50,6 +67,19 @@ describe("OrganizationMembershipService", () => {
         });
 
         expect(membership.role).toBe("VIEWER");
+
+        // Verify audit log was created
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: nonMember.id,
+        });
+        expect(audits).toHaveLength(1);
+        expect(audits[0]).toMatchObject({
+          actorId: admin.id,
+          targetId: nonMember.id,
+          action: "GRANT",
+          newRole: "VIEWER",
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -450,6 +480,22 @@ describe("OrganizationMembershipService", () => {
         });
 
         expect(updated.role).toBe("ADMIN");
+
+        // Verify audit log was created
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: developer.id,
+        });
+        // Filter for CHANGE actions (there may be GRANT from fixture setup)
+        const changeAudits = audits.filter((a) => a.action === "CHANGE");
+        expect(changeAudits).toHaveLength(1);
+        expect(changeAudits[0]).toMatchObject({
+          actorId: owner.id,
+          targetId: developer.id,
+          action: "CHANGE",
+          previousRole: "DEVELOPER",
+          newRole: "ADMIN",
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -466,6 +512,21 @@ describe("OrganizationMembershipService", () => {
         });
 
         expect(updated.role).toBe("VIEWER");
+
+        // Verify audit log was created
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: developer.id,
+        });
+        const changeAudits = audits.filter((a) => a.action === "CHANGE");
+        expect(changeAudits).toHaveLength(1);
+        expect(changeAudits[0]).toMatchObject({
+          actorId: admin.id,
+          targetId: developer.id,
+          action: "CHANGE",
+          previousRole: "DEVELOPER",
+          newRole: "VIEWER",
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -732,6 +793,21 @@ describe("OrganizationMembershipService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
+
+        // Verify audit log was created
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: developer.id,
+        });
+        const revokeAudits = audits.filter((a) => a.action === "REVOKE");
+        expect(revokeAudits).toHaveLength(1);
+        expect(revokeAudits[0]).toMatchObject({
+          actorId: owner.id,
+          targetId: developer.id,
+          action: "REVOKE",
+          previousRole: "DEVELOPER",
+          newRole: null,
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -822,6 +898,20 @@ describe("OrganizationMembershipService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
+
+        // Verify audit log was created
+        const audits = yield* db.organizations.memberships.audits.findAll({
+          organizationId: org.id,
+          memberId: viewer.id,
+        });
+        const revokeAudits = audits.filter((a) => a.action === "REVOKE");
+        expect(revokeAudits).toHaveLength(1);
+        expect(revokeAudits[0]).toMatchObject({
+          actorId: admin.id,
+          targetId: viewer.id,
+          action: "REVOKE",
+          previousRole: "VIEWER",
+        } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
