@@ -162,15 +162,8 @@
       "name": "organization_memberships",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "user_id": {
-          "name": "user_id",
+        "member_id": {
+          "name": "member_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -205,11 +198,11 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "organization_memberships_user_id_users_id_fk": {
-          "name": "organization_memberships_user_id_users_id_fk",
+        "organization_memberships_member_id_users_id_fk": {
+          "name": "organization_memberships_member_id_users_id_fk",
           "tableFrom": "organization_memberships",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
+          "columnsFrom": ["member_id"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -224,14 +217,13 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "organization_memberships_user_id_organization_id_unique": {
-          "name": "organization_memberships_user_id_organization_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["user_id", "organization_id"]
+      "compositePrimaryKeys": {
+        "organization_memberships_member_id_organization_id_pk": {
+          "name": "organization_memberships_member_id_organization_id_pk",
+          "columns": ["member_id", "organization_id"]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

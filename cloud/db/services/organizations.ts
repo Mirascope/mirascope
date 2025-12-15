@@ -257,7 +257,7 @@ export class OrganizationService extends BaseAuthenticatedService<
             .returning({ id: organizations.id, name: organizations.name });
 
           await tx.insert(organizationMemberships).values({
-            userId,
+            memberId: userId,
             organizationId: organization.id,
             role: "OWNER",
           });
@@ -312,7 +312,7 @@ export class OrganizationService extends BaseAuthenticatedService<
             organizations,
             eq(organizationMemberships.organizationId, organizations.id),
           )
-          .where(eq(organizationMemberships.userId, userId));
+          .where(eq(organizationMemberships.memberId, userId));
       },
       catch: (error) =>
         new DatabaseError({

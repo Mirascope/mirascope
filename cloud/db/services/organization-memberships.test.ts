@@ -29,7 +29,7 @@ describe("OrganizationMembershipService", () => {
         const membership = yield* db.organizations.memberships.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { userId: nonMember.id, role: "DEVELOPER" },
+          data: { memberId: nonMember.id, role: "DEVELOPER" },
         });
 
         expect(membership).toMatchObject({
@@ -46,7 +46,7 @@ describe("OrganizationMembershipService", () => {
         const membership = yield* db.organizations.memberships.create({
           userId: admin.id,
           organizationId: org.id,
-          data: { userId: nonMember.id, role: "VIEWER" },
+          data: { memberId: nonMember.id, role: "VIEWER" },
         });
 
         expect(membership.role).toBe("VIEWER");
@@ -66,7 +66,7 @@ describe("OrganizationMembershipService", () => {
             userId: owner.id,
             organizationId: org.id, // path param - authoritative
             data: {
-              userId: nonMember.id,
+              memberId: nonMember.id,
               // @ts-expect-error - this should not be present in the data
               organizationId: "injected-org-id", // should be ignored regardless
               role: "DEVELOPER",
@@ -77,7 +77,7 @@ describe("OrganizationMembershipService", () => {
           const found = yield* db.organizations.memberships.findById({
             userId: owner.id,
             organizationId: org.id,
-            targetUserId: nonMember.id,
+            memberId: nonMember.id,
           });
 
           expect(found.role).toBe("DEVELOPER");
@@ -93,7 +93,7 @@ describe("OrganizationMembershipService", () => {
           .create({
             userId: owner.id,
             organizationId: org.id,
-            data: { userId: nonMember.id, role: "OWNER" },
+            data: { memberId: nonMember.id, role: "OWNER" },
           })
           .pipe(Effect.flip);
 
@@ -113,7 +113,7 @@ describe("OrganizationMembershipService", () => {
             .create({
               userId: owner.id,
               organizationId: org.id,
-              data: { userId: owner.id, role: "ADMIN" },
+              data: { memberId: owner.id, role: "ADMIN" },
             })
             .pipe(Effect.flip);
 
@@ -135,7 +135,7 @@ describe("OrganizationMembershipService", () => {
           .create({
             userId: nonMember.id,
             organizationId: org.id,
-            data: { userId: anotherUser.id, role: "DEVELOPER" },
+            data: { memberId: anotherUser.id, role: "DEVELOPER" },
           })
           .pipe(Effect.flip);
 
@@ -155,7 +155,7 @@ describe("OrganizationMembershipService", () => {
             .create({
               userId: admin.id,
               organizationId: org.id,
-              data: { userId: nonMember.id, role: "ADMIN" },
+              data: { memberId: nonMember.id, role: "ADMIN" },
             })
             .pipe(Effect.flip);
 
@@ -175,7 +175,7 @@ describe("OrganizationMembershipService", () => {
             .create({
               userId: developer.id,
               organizationId: org.id,
-              data: { userId: nonMember.id, role: "VIEWER" },
+              data: { memberId: nonMember.id, role: "VIEWER" },
             })
             .pipe(Effect.flip);
 
@@ -197,7 +197,7 @@ describe("OrganizationMembershipService", () => {
             .create({
               userId: viewer.id,
               organizationId: org.id,
-              data: { userId: nonMember.id, role: "DEVELOPER" },
+              data: { memberId: nonMember.id, role: "DEVELOPER" },
             })
             .pipe(Effect.flip);
 
@@ -219,7 +219,7 @@ describe("OrganizationMembershipService", () => {
           yield* db.organizations.memberships.create({
             userId: owner.id,
             organizationId: org.id,
-            data: { userId: nonMember.id, role: "DEVELOPER" },
+            data: { memberId: nonMember.id, role: "DEVELOPER" },
           });
 
           // Second add fails
@@ -227,7 +227,7 @@ describe("OrganizationMembershipService", () => {
             .create({
               userId: owner.id,
               organizationId: org.id,
-              data: { userId: nonMember.id, role: "ADMIN" },
+              data: { memberId: nonMember.id, role: "ADMIN" },
             })
             .pipe(Effect.flip);
 
@@ -248,7 +248,7 @@ describe("OrganizationMembershipService", () => {
           .create({
             userId: "owner-id",
             organizationId: "org-id",
-            data: { userId: "target-id", role: "DEVELOPER" },
+            data: { memberId: "target-id", role: "DEVELOPER" },
           })
           .pipe(Effect.flip);
 
@@ -352,7 +352,7 @@ describe("OrganizationMembershipService", () => {
         const membership = yield* db.organizations.memberships.findById({
           userId: owner.id,
           organizationId: org.id,
-          targetUserId: developer.id,
+          memberId: developer.id,
         });
 
         expect(membership.role).toBe("DEVELOPER");
@@ -367,7 +367,7 @@ describe("OrganizationMembershipService", () => {
         const membership = yield* db.organizations.memberships.findById({
           userId: viewer.id,
           organizationId: org.id,
-          targetUserId: admin.id,
+          memberId: admin.id,
         });
 
         expect(membership.role).toBe("ADMIN");
@@ -383,7 +383,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: owner.id,
             organizationId: org.id,
-            targetUserId: nonMember.id,
+            memberId: nonMember.id,
           })
           .pipe(Effect.flip);
 
@@ -400,7 +400,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: nonMember.id,
             organizationId: org.id,
-            targetUserId: owner.id,
+            memberId: owner.id,
           })
           .pipe(Effect.flip);
 
@@ -422,7 +422,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: "user-id",
             organizationId: "org-id",
-            targetUserId: "target-id",
+            memberId: "target-id",
           })
           .pipe(Effect.flip);
 
@@ -445,7 +445,7 @@ describe("OrganizationMembershipService", () => {
         const updated = yield* db.organizations.memberships.update({
           userId: owner.id,
           organizationId: org.id,
-          targetUserId: developer.id,
+          memberId: developer.id,
           data: { role: "ADMIN" },
         });
 
@@ -461,7 +461,7 @@ describe("OrganizationMembershipService", () => {
         const updated = yield* db.organizations.memberships.update({
           userId: admin.id,
           organizationId: org.id,
-          targetUserId: developer.id,
+          memberId: developer.id,
           data: { role: "VIEWER" },
         });
 
@@ -480,7 +480,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: owner.id,
               organizationId: org.id,
-              targetUserId: developer.id,
+              memberId: developer.id,
               data: { role: "OWNER" },
             })
             .pipe(Effect.flip);
@@ -501,7 +501,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: admin.id,
               organizationId: org.id,
-              targetUserId: admin.id,
+              memberId: admin.id,
               data: { role: "DEVELOPER" },
             })
             .pipe(Effect.flip);
@@ -522,7 +522,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: admin.id,
               organizationId: org.id,
-              targetUserId: owner.id,
+              memberId: owner.id,
               data: { role: "ADMIN" },
             })
             .pipe(Effect.flip);
@@ -541,7 +541,7 @@ describe("OrganizationMembershipService", () => {
           .update({
             userId: nonMember.id,
             organizationId: org.id,
-            targetUserId: "some-user-id",
+            memberId: "some-user-id",
             data: { role: "DEVELOPER" },
           })
           .pipe(Effect.flip);
@@ -565,7 +565,7 @@ describe("OrganizationMembershipService", () => {
           yield* db.organizations.memberships.create({
             userId: owner.id,
             organizationId: org.id,
-            data: { userId: secondAdmin.id, role: "ADMIN" },
+            data: { memberId: secondAdmin.id, role: "ADMIN" },
           });
 
           // First ADMIN should not be able to update second ADMIN
@@ -573,7 +573,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: admin.id,
               organizationId: org.id,
-              targetUserId: secondAdmin.id,
+              memberId: secondAdmin.id,
               data: { role: "DEVELOPER" },
             })
             .pipe(Effect.flip);
@@ -595,7 +595,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: admin.id,
               organizationId: org.id,
-              targetUserId: developer.id,
+              memberId: developer.id,
               data: { role: "ADMIN" },
             })
             .pipe(Effect.flip);
@@ -616,7 +616,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: developer.id,
               organizationId: org.id,
-              targetUserId: viewer.id,
+              memberId: viewer.id,
               data: { role: "DEVELOPER" },
             })
             .pipe(Effect.flip);
@@ -643,7 +643,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: "owner-id",
               organizationId: "org-id",
-              targetUserId: "target-id",
+              memberId: "target-id",
               data: { role: "ADMIN" },
             })
             .pipe(Effect.flip);
@@ -668,7 +668,7 @@ describe("OrganizationMembershipService", () => {
             .update({
               userId: "owner-id",
               organizationId: "org-id",
-              targetUserId: "nonexistent-id",
+              memberId: "nonexistent-id",
               data: { role: "ADMIN" },
             })
             .pipe(Effect.flip);
@@ -695,7 +695,7 @@ describe("OrganizationMembershipService", () => {
           .update({
             userId: "owner-id",
             organizationId: "org-id",
-            targetUserId: "target-id",
+            memberId: "target-id",
             data: { role: "ADMIN" },
           })
           .pipe(Effect.flip);
@@ -719,7 +719,7 @@ describe("OrganizationMembershipService", () => {
         yield* db.organizations.memberships.delete({
           userId: owner.id,
           organizationId: org.id,
-          targetUserId: developer.id,
+          memberId: developer.id,
         });
 
         // Verify membership is gone
@@ -727,7 +727,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: owner.id,
             organizationId: org.id,
-            targetUserId: developer.id,
+            memberId: developer.id,
           })
           .pipe(Effect.flip);
 
@@ -746,7 +746,7 @@ describe("OrganizationMembershipService", () => {
             .delete({
               userId: owner.id,
               organizationId: org.id,
-              targetUserId: owner.id,
+              memberId: owner.id,
             })
             .pipe(Effect.flip);
 
@@ -773,7 +773,7 @@ describe("OrganizationMembershipService", () => {
             .delete({
               userId: "admin-id",
               organizationId: "org-id",
-              targetUserId: "owner-id",
+              memberId: "owner-id",
             })
             .pipe(Effect.flip);
 
@@ -791,7 +791,7 @@ describe("OrganizationMembershipService", () => {
           .delete({
             userId: nonMember.id,
             organizationId: org.id,
-            targetUserId: "some-user-id",
+            memberId: "some-user-id",
           })
           .pipe(Effect.flip);
 
@@ -809,7 +809,7 @@ describe("OrganizationMembershipService", () => {
         yield* db.organizations.memberships.delete({
           userId: admin.id,
           organizationId: org.id,
-          targetUserId: viewer.id,
+          memberId: viewer.id,
         });
 
         // Verify the membership is deleted
@@ -817,7 +817,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: admin.id,
             organizationId: org.id,
-            targetUserId: viewer.id,
+            memberId: viewer.id,
           })
           .pipe(Effect.flip);
 
@@ -839,7 +839,7 @@ describe("OrganizationMembershipService", () => {
           yield* db.organizations.memberships.create({
             userId: owner.id,
             organizationId: org.id,
-            data: { userId: secondAdmin.id, role: "ADMIN" },
+            data: { memberId: secondAdmin.id, role: "ADMIN" },
           });
 
           // First ADMIN should not be able to delete second ADMIN
@@ -847,7 +847,7 @@ describe("OrganizationMembershipService", () => {
             .delete({
               userId: admin.id,
               organizationId: org.id,
-              targetUserId: secondAdmin.id,
+              memberId: secondAdmin.id,
             })
             .pipe(Effect.flip);
 
@@ -871,7 +871,7 @@ describe("OrganizationMembershipService", () => {
             .delete({
               userId: "owner-id",
               organizationId: "org-id",
-              targetUserId: "target-id",
+              memberId: "target-id",
             })
             .pipe(Effect.flip);
 
@@ -895,7 +895,7 @@ describe("OrganizationMembershipService", () => {
           .delete({
             userId: "owner-id",
             organizationId: "org-id",
-            targetUserId: "target-id",
+            memberId: "target-id",
           })
           .pipe(Effect.flip);
 
@@ -919,7 +919,7 @@ describe("OrganizationMembershipService", () => {
             .delete({
               userId: "owner-id",
               organizationId: "org-id",
-              targetUserId: "nonexistent-id",
+              memberId: "nonexistent-id",
             })
             .pipe(Effect.flip);
 

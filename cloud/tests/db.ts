@@ -427,19 +427,19 @@ export const TestOrganizationFixture = Effect.gen(function* () {
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,
-    data: { userId: adminUser.id, role: "ADMIN" },
+    data: { memberId: adminUser.id, role: "ADMIN" },
   });
 
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,
-    data: { userId: developerUser.id, role: "DEVELOPER" },
+    data: { memberId: developerUser.id, role: "DEVELOPER" },
   });
 
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,
-    data: { userId: viewerUser.id, role: "VIEWER" },
+    data: { memberId: viewerUser.id, role: "VIEWER" },
   });
 
   return {
