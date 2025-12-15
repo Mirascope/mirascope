@@ -16,7 +16,9 @@ export default defineConfig(() => {
         projects: ["./tsconfig.json"],
       }),
       cloudflare({ viteEnvironment: { name: "ssr" } }),
-      tanstackStart(),
+      tanstackStart({
+        srcDirectory: "app",
+      }),
       viteReact(),
       tailwindcss(),
     ],
