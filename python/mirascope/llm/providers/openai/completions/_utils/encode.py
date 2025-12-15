@@ -21,6 +21,7 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
+from ....base._utils import ensure_additional_properties_false
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import MODELS_WITHOUT_AUDIO_SUPPORT
 from ...shared import _utils as _shared_utils
@@ -233,7 +234,7 @@ def _convert_tool_to_tool_param(
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
-    _shared_utils.ensure_additional_properties_false(schema_dict)
+    ensure_additional_properties_false(schema_dict)
     return openai_types.ChatCompletionToolParam(
         type="function",
         function={
@@ -258,7 +259,7 @@ def _create_strict_response_format(
     """
     schema = format.schema.copy()
 
-    _shared_utils.ensure_additional_properties_false(schema)
+    ensure_additional_properties_false(schema)
 
     json_schema = JSONSchema(
         name=format.name,
