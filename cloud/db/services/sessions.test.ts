@@ -126,7 +126,7 @@ describe("SessionService", () => {
           data: { userId: user.id, expiresAt: expiresAt2 },
         });
 
-        const all = yield* db.sessions.findAll();
+        const all = yield* db.sessions.findAll({ userId: user.id });
 
         expect(all).toEqual([session1, session2] satisfies PublicSession[]);
       }).pipe(Effect.provide(TestDatabase)),
@@ -138,7 +138,9 @@ describe("SessionService", () => {
           .select(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.sessions.findAll().pipe(Effect.flip);
+        const result = yield* db.sessions
+          .findAll({ userId: "user-id" })
+          .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
         expect(result.message).toBe("Failed to find all sessions");
@@ -291,7 +293,7 @@ describe("SessionService", () => {
 
         yield* db.sessions.delete({ userId: user.id, sessionId: session.id });
 
-        const all = yield* db.sessions.findAll();
+        const all = yield* db.sessions.findAll({ userId: user.id });
 
         expect(all.find((s) => s.id === session.id)).toBeUndefined();
       }).pipe(Effect.provide(TestDatabase)),
