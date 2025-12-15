@@ -1,7 +1,7 @@
 import logging
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, TypeAlias, get_type_hints
+from typing import TYPE_CHECKING, TypeAlias, cast, get_type_hints
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
@@ -14,6 +14,20 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 SystemMessageContent: TypeAlias = str | None
+
+
+def ensure_additional_properties_false(obj: object) -> None:
+    """Recursively adds additionalProperties = False to a schema, required for strict mode."""
+    if isinstance(obj, dict):
+        obj = cast(dict[str, object], obj)
+        if obj.get("type") == "object" and "additionalProperties" not in obj:
+            obj["additionalProperties"] = False
+        for value in obj.values():
+            ensure_additional_properties_false(value)
+    elif isinstance(obj, list):
+        obj = cast(list[object], obj)
+        for item in obj:
+            ensure_additional_properties_false(item)
 
 
 def add_system_instructions(
