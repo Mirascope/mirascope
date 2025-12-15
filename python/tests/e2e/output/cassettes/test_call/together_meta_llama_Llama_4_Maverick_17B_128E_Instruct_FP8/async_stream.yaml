@@ -1,0 +1,400 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": "What is 4200 + 42?"}], "model":
+      "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "stream": true}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"##","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"##","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        Step","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Step","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"1","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"1","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":":","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":":","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        Understand","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Understand","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        the","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        the","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        problem","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        problem","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"The","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"The","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        problem","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        problem","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        requires","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        requires","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        adding","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        adding","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        two","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        two","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        numbers","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        numbers","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":",","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":",","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"420","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"420","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"0","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"0","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        and","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        and","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"42","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"42","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":".\n\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".\n\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"##","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"##","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        Step","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Step","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"2","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"2","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":":","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":":","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        Perform","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Perform","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        the","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        the","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        addition","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        addition","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"To","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"To","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        find","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        find","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        the","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        the","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        sum","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        sum","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":",","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":",","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        we","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        we","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        simply","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        simply","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        add","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        add","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"420","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"420","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"0","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"0","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        and","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        and","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"42","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"42","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        together","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        together","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":".\n\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".\n\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"##","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"##","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        Step","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Step","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"3","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"3","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":":","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":":","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        Calculate","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Calculate","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        the","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        the","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        sum","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        sum","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"420","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"420","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"0","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"0","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        +","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        +","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"42","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"42","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        =","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        =","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"424","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"424","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"2","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"2","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":".\n\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".\n\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"The","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"The","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        final","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        final","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        answer","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        answer","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        is","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        is","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":":","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":":","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"
+        $\\","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        $\\","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"boxed","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"boxed","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"{","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"{","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"424","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"424","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"2","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"2","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"}$","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"}$","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":"stop","delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvDvV3-28Eivz-9acd85557c04d4e7","object":"chat.completion.chunk","created":1765545644,"choices":[],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":{"prompt_tokens":20,"total_tokens":99,"completion_tokens":79,"prompt_tokens_details":null,"reasoning_tokens":0}}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd85557c04d4e7-NRT
+      Cache-Control:
+      - no-cache, no-transform
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream;charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:20:44 GMT
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - c6231b74-5d4d-4cc6-8044-6ebde6211264-noamzn
+      x-api-call-start:
+      - '2025-12-12T13:20:44.720Z'
+      x-api-received:
+      - '2025-12-12T13:20:44.703Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '2661'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNvDvV3-28Eivz-9acd85557c04d4e7
+    status:
+      code: 200
+      message: OK
+version: 1

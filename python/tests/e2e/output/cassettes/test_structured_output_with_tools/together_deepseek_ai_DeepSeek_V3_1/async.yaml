@@ -1,0 +1,207 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},
+      {"role": "user", "content": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "model": "deepseek-ai/DeepSeek-V3.1",
+      "stream": false, "tools": [{"type": "function", "function": {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "string"}}, "required": ["isbn"],
+      "additionalProperties": false, "type": "object"}, "strict": false}}, {"type":
+      "function", "function": {"description": "Use this tool to extract data in BookSummary
+      format for a final response.", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "string"},
+      "author": {"title": "Author", "type": "string"}, "pages": {"title": "Pages",
+      "type": "integer"}, "publication_year": {"title": "Publication Year", "type":
+      "integer"}}, "required": ["title", "author", "pages", "publication_year"], "additionalProperties":
+      false, "type": "object"}, "strict": true}}], "tool_choice": "required"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNv5JJD-28Eivz-9acd5c40eb1ee391\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765543962,\n  \"model\": \"deepseek-ai/DeepSeek-V3.1\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"\",\n        \"tool_calls\":
+        [\n          {\n            \"id\": \"call_830746772c254165baf68920\",\n            \"index\":
+        -1,\n            \"type\": \"function\",\n            \"function\": {\n              \"name\":
+        \"get_book_info\",\n              \"arguments\": \"{\\\"isbn\\\": \\\"0-7653-1178-X\\\"}\"\n
+        \           }\n          }\n        ],\n        \"reasoning\": null\n      },\n
+        \     \"logprobs\": null,\n      \"finish_reason\": \"tool_calls\",\n      \"seed\":
+        null\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 340,\n    \"total_tokens\":
+        363,\n    \"completion_tokens\": 23\n  },\n  \"warnings\": [\n    {\n      \"message\":
+        \"Model supports only tool_choice auto\"\n    }\n  ]\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd5c40eb1ee391-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:52:42 GMT
+      Etag:
+      - W/"3a9-zVMKkaUn7odl2pgh0uXyF0v8D+8"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 2a9812c3-4798-4a38-9cfa-0788fd6ac84f-noamzn
+      x-api-call-end:
+      - '2025-12-12T12:52:42.914Z'
+      x-api-call-start:
+      - '2025-12-12T12:52:42.095Z'
+      x-api-received:
+      - '2025-12-12T12:52:42.075Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv5JJD-28Eivz-9acd5c40eb1ee391
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "system", "content": "Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},
+      {"role": "user", "content": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}, {"role": "assistant",
+      "content": "", "tool_calls": [{"id": "call_830746772c254165baf68920", "type":
+      "function", "function": {"name": "get_book_info", "arguments": "{\"isbn\": \"0-7653-1178-X\"}"},
+      "index": -1}]}, {"role": "tool", "content": "Title: Mistborn: The Final Empire,
+      Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25", "tool_call_id":
+      "call_830746772c254165baf68920", "name": "get_book_info"}], "model": "deepseek-ai/DeepSeek-V3.1",
+      "stream": false, "tools": [{"type": "function", "function": {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "string"}}, "required": ["isbn"],
+      "additionalProperties": false, "type": "object"}, "strict": false}}, {"type":
+      "function", "function": {"description": "Use this tool to extract data in BookSummary
+      format for a final response.", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "string"},
+      "author": {"title": "Author", "type": "string"}, "pages": {"title": "Pages",
+      "type": "integer"}, "publication_year": {"title": "Publication Year", "type":
+      "integer"}}, "required": ["title", "author", "pages", "publication_year"], "additionalProperties":
+      false, "type": "object"}, "strict": true}}], "tool_choice": "required"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNv5Jqd-4qdXgU-9acd5c48feb9e3a8\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765543964,\n  \"model\": \"deepseek-ai/DeepSeek-V3.1\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"\",\n        \"tool_calls\":
+        [\n          {\n            \"id\": \"call_433bf01af3844ab1b7794aff\",\n            \"index\":
+        -1,\n            \"type\": \"function\",\n            \"function\": {\n              \"name\":
+        \"__mirascope_formatted_output_tool__\",\n              \"arguments\": \"{\\\"title\\\":
+        \\\"Mistborn: The Final Empire\\\", \\\"author\\\": \\\"Brandon Sanderson\\\",
+        \\\"pages\\\": 544, \\\"publication_year\\\": 2006}\"\n            }\n          }\n
+        \       ],\n        \"reasoning\": null\n      },\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"tool_calls\",\n      \"seed\": null\n    }\n  ],\n
+        \ \"usage\": {\n    \"prompt_tokens\": 395,\n    \"total_tokens\": 447,\n
+        \   \"completion_tokens\": 52\n  },\n  \"warnings\": [\n    {\n      \"message\":
+        \"Model supports only tool_choice auto\"\n    }\n  ]\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd5c48feb9e3a8-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:52:44 GMT
+      Etag:
+      - W/"41c-XkBKfsAI+1v1krmZaSGgCsIMESk"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 1134adf8-739b-4552-87ae-39632d65b41d-noamzn
+      x-api-call-end:
+      - '2025-12-12T12:52:44.810Z'
+      x-api-call-start:
+      - '2025-12-12T12:52:43.916Z'
+      x-api-received:
+      - '2025-12-12T12:52:43.897Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv5Jqd-4qdXgU-9acd5c48feb9e3a8
+    status:
+      code: 200
+      message: OK
+version: 1

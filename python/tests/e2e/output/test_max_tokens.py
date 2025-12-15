@@ -3,7 +3,7 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS
+from tests.e2e.conftest import E2E_ASYNC_STREAM_MODEL_IDS, E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -57,7 +57,7 @@ def test_max_tokens_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", E2E_ASYNC_STREAM_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_max_tokens_async_stream(

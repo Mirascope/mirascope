@@ -1,0 +1,313 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},
+      {"role": "user", "content": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "model": "deepseek-ai/DeepSeek-V3.1",
+      "stream": true, "tools": [{"type": "function", "function": {"description": "Look
+      up book information by ISBN.", "name": "get_book_info", "parameters": {"properties":
+      {"isbn": {"title": "Isbn", "type": "string"}}, "required": ["isbn"], "additionalProperties":
+      false, "type": "object"}, "strict": false}}, {"type": "function", "function":
+      {"description": "Use this tool to extract data in BookSummary format for a final
+      response.", "name": "__mirascope_formatted_output_tool__", "parameters": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}, "pages": {"title": "Pages", "type": "integer"}, "publication_year":
+      {"title": "Publication Year", "type": "integer"}}, "required": ["title", "author",
+      "pages", "publication_year"], "additionalProperties": false, "type": "object"},
+      "strict": true}}], "tool_choice": "required"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1208'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"I","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"I","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"''ll
+        look","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"''ll
+        look","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"
+        up the","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        up the","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"
+        book with","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        book with","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"
+        ISBN 0","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ISBN 0","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"-7653-","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"-7653-","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"1178","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"1178","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"-X
+        for","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"-X
+        for","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"
+        you.","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        you.","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":"call_68717d20a62643bb8074c615","index":0,"type":"function","function":{"name":"get_book_info","arguments":""}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"{\"isbn\":
+        \""}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"0-7653"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"-1178"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"-X\"}"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":"tool_calls","delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iVs-zqrih-9acd5e3b3e7a16ef","object":"chat.completion.chunk","created":1765544043,"choices":[],"model":"deepseek-ai/DeepSeek-V3.1","usage":{"prompt_tokens":340,"total_tokens":383,"completion_tokens":43,"prompt_tokens_details":null,"reasoning_tokens":0},"warnings":[{"message":"Model
+        supports only tool_choice auto"}]}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd5e3b3e7a16ef-NRT
+      Cache-Control:
+      - no-cache, no-transform
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream;charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:54:04 GMT
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 6c9c51f1-4b54-48ad-ad39-ebc38c373d70-noamzn
+      x-api-call-start:
+      - '2025-12-12T12:54:03.501Z'
+      x-api-received:
+      - '2025-12-12T12:54:03.486Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv5iVs-zqrih-9acd5e3b3e7a16ef
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "system", "content": "Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},
+      {"role": "user", "content": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}, {"role": "assistant",
+      "content": "I''ll look up the book with ISBN 0-7653-1178-X for you.", "tool_calls":
+      [{"id": "call_68717d20a62643bb8074c615", "type": "function", "function": {"name":
+      "get_book_info", "arguments": "{\"isbn\": \"0-7653-1178-X\"}"}}]}, {"role":
+      "tool", "content": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson,
+      Pages: 544, Published: 2006-07-25", "tool_call_id": "call_68717d20a62643bb8074c615",
+      "name": "get_book_info"}], "model": "deepseek-ai/DeepSeek-V3.1", "stream": true,
+      "tools": [{"type": "function", "function": {"description": "Look up book information
+      by ISBN.", "name": "get_book_info", "parameters": {"properties": {"isbn": {"title":
+      "Isbn", "type": "string"}}, "required": ["isbn"], "additionalProperties": false,
+      "type": "object"}, "strict": false}}, {"type": "function", "function": {"description":
+      "Use this tool to extract data in BookSummary format for a final response.",
+      "name": "__mirascope_formatted_output_tool__", "parameters": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}, "pages": {"title": "Pages", "type": "integer"}, "publication_year":
+      {"title": "Publication Year", "type": "integer"}}, "required": ["title", "author",
+      "pages", "publication_year"], "additionalProperties": false, "type": "object"},
+      "strict": true}}], "tool_choice": "required"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1664'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":"call_30b0aec4d0eb4d07bbb80fbb","index":0,"type":"function","function":{"name":"__mirascope_formatted_output_tool__","arguments":""}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"{\"title\":
+        \"Mist"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"born:
+        The"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"
+        Final Empire\","}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"
+        \"author\": \""}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"Brandon
+        Sanderson"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"\",
+        \"pages"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"\":
+        544,"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"
+        \"publication_year"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"\":"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"id":null,"index":0,"type":"function","function":{"name":null,"arguments":"
+        2006}"}}],"reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":"tool_calls","delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"deepseek-ai/DeepSeek-V3.1","usage":null}
+
+
+        data: {"id":"oNv5iw2-28Eivz-9acd5e46db0cbea7","object":"chat.completion.chunk","created":1765544044,"choices":[],"model":"deepseek-ai/DeepSeek-V3.1","usage":{"prompt_tokens":415,"total_tokens":467,"completion_tokens":52,"prompt_tokens_details":null,"reasoning_tokens":0},"warnings":[{"message":"Model
+        supports only tool_choice auto"}]}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd5e46db0cbea7-NRT
+      Cache-Control:
+      - no-cache, no-transform
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream;charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:54:06 GMT
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - a72e9ff0-bdd6-4a52-a765-fabd042e0cc8-noamzn
+      x-api-call-start:
+      - '2025-12-12T12:54:04.962Z'
+      x-api-received:
+      - '2025-12-12T12:54:04.945Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv5iw2-28Eivz-9acd5e46db0cbea7
+    status:
+      code: 200
+      message: OK
+version: 1

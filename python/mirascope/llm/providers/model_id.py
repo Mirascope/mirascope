@@ -12,5 +12,13 @@ from .mlx import (
 from .openai import (
     OpenAIModelId,
 )
+from .together import TogetherModelId
 
-ModelId: TypeAlias = AnthropicModelId | GoogleModelId | OpenAIModelId | MLXModelId | str
+ModelId: TypeAlias = (
+    AnthropicModelId
+    | GoogleModelId
+    | OpenAIModelId
+    | MLXModelId
+    | TogetherModelId
+    | str
+)

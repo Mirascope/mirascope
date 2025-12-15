@@ -1,0 +1,269 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": "List all U.S. states."}], "model":
+      "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "max_tokens": 50, "stream":
+      true}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"Here","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"Here","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        is","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        is","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        the","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        the","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        list","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        list","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        of","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        of","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        all","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        all","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        ","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        ","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"50","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"50","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        U","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        U","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".S","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".S","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        states","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        states","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":":\n\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":":\n\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"1","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"1","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Alabama","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Alabama","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"2","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"2","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Alaska","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Alaska","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"3","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"3","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Arizona","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Arizona","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"4","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"4","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Arkansas","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Arkansas","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"5","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"5","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        California","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        California","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"6","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"6","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Colorado","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Colorado","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"7","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"7","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Connecticut","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Connecticut","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"8","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"8","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Delaware","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Delaware","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"9","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"9","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":".","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":".","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"
+        Florida","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"
+        Florida","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"\n","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"\n","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"10","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"10","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":"length","delta":{"token_id":null,"role":"assistant","content":"","reasoning":null}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNvEJCZ-28Eivz-9acd871c889d5bfa","object":"chat.completion.chunk","created":1765545717,"choices":[],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":{"prompt_tokens":18,"total_tokens":68,"completion_tokens":50,"prompt_tokens_details":null,"reasoning_tokens":0}}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd871c889d5bfa-NRT
+      Cache-Control:
+      - no-cache, no-transform
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream;charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:21:58 GMT
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 78f19851-b75e-4c23-9816-618772fd9de1-noamzn
+      x-api-call-start:
+      - '2025-12-12T13:21:57.779Z'
+      x-api-received:
+      - '2025-12-12T13:21:57.754Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNvEJCZ-28Eivz-9acd871c889d5bfa
+    status:
+      code: 200
+      message: OK
+version: 1

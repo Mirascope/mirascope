@@ -1,0 +1,86 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "user", "content": "What is 4200 + 42?"}], "model":
+      "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "stream": false}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNv2ufj-zqrih-9acd50dcfff83bf9\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765543497,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n
+        \       \"role\": \"assistant\",\n        \"content\": \"## Step 1: Understand
+        the problem\\nThe problem asks for the sum of 4200 and 42.\\n\\n## Step 2:
+        Add the numbers\\nTo find the sum, we simply add 4200 and 42 together. 4200
+        + 42 = 4242.\\n\\nThe final answer is: $\\\\boxed{4242}$\",\n        \"tool_calls\":
+        [],\n        \"reasoning\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\",\n      \"seed\": null\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        20,\n    \"total_tokens\": 91,\n    \"completion_tokens\": 71\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd50dcfff83bf9-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:44:57 GMT
+      Etag:
+      - W/"325-PJ37R8bP2eZMI/lRsScoVkHgvkQ"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - f6bb71c1-b9e0-4cab-940f-d12b122fcb74-noamzn
+      x-api-call-end:
+      - '2025-12-12T12:44:57.049Z'
+      x-api-call-start:
+      - '2025-12-12T12:44:55.739Z'
+      x-api-received:
+      - '2025-12-12T12:44:55.726Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv2ufj-zqrih-9acd50dcfff83bf9
+    status:
+      code: 200
+      message: OK
+version: 1

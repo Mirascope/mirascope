@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},
+      {"role": "user", "content": "Please recommend the most popular book by Patrick
+      Rothfuss"}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "stream":
+      true, "tools": [{"type": "function", "function": {"description": "Use this tool
+      to extract data in Book format for a final response.\nA book with a rating.
+      The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "string"},
+      "author": {"$ref": "#/$defs/Author"}, "rating": {"description": "For testing
+      purposes, the rating should be 7", "title": "Rating", "type": "integer"}}, "required":
+      ["title", "author", "rating"], "additionalProperties": false, "$defs": {"Author":
+      {"description": "The author of a book.", "properties": {"first_name": {"title":
+      "First Name", "type": "string"}, "last_name": {"title": "Last Name", "type":
+      "string"}}, "required": ["first_name", "last_name"], "title": "Author", "type":
+      "object", "additionalProperties": false}}, "type": "object"}, "strict": true}}],
+      "tool_choice": {"type": "function", "function": {"name": "__mirascope_formatted_output_tool__"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1297'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"role":"assistant","text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":""}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"}
+
+
+        data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"index":0,"id":"call_aj8kokt690oq5edq41w6wxoj","type":"function","function":{"name":"__mirascope_formatted_output_tool__","arguments":""}}]}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"}
+
+
+        data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"index":0,"function":{"arguments":"{\"title\":\"THE
+        NAME OF THE WIND\","}}]}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"}
+
+
+        data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":null,"delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"index":0,"function":{"arguments":"\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},"}}]}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"}
+
+
+        data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":"tool_calls","delta":{"token_id":null,"role":"assistant","content":"","tool_calls":[{"index":0,"function":{"arguments":"\"rating\":7}"}}]}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"}
+
+
+        data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"text":"","logprobs":null,"finish_reason":"tool_calls","matched_stop":200008,"delta":{"token_id":null,"role":"assistant","content":""}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":null}
+
+
+        data: {"id":"oNv3EkX-28Eivz-9acd5270beca25f0","object":"chat.completion.chunk","created":1765543559,"choices":[{"index":0,"text":"","finish_reason":"stop","delta":{"token_id":null,"role":"assistant","content":""}}],"model":"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8","usage":{"prompt_tokens":374,"total_tokens":448,"completion_tokens":74,"reasoning_tokens":0}}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd5270beca25f0-NRT
+      Cache-Control:
+      - no-cache, no-transform
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream;charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 12:46:02 GMT
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 00029136-0649-45fb-bd21-0b884e1cb3db-noamzn
+      x-api-call-start:
+      - '2025-12-12T12:45:59.947Z'
+      x-api-received:
+      - '2025-12-12T12:45:59.921Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNv3EkX-28Eivz-9acd5270beca25f0
+    status:
+      code: 200
+      message: OK
+version: 1

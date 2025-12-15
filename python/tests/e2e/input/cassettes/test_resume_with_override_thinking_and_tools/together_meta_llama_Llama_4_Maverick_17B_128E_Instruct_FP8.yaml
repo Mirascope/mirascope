@@ -1,0 +1,172 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '420'
+      Content-Type:
+      - application/json
+      Host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VU2XLqRhB95ysmeklifNk3pcoPGOIAYTWyWeLU9SC1pAmjGd1Z2Fz+94yEscFx
+        9KCSejunT8/0SwYhy8XMIx5WIK3f0F/GgtBL+k58nClgyjhOJmOMsVAfscfn5ezbhCjYJUnW1ZUT
+        ArojK86w6xI00QYMi/3V1RN7YqM13l8jyZEyQVqCQAzAk+lvsVBQ4Vkm09EKRA4hJ8TqZ4mkEpgE
+        ofK52GLhIWBcB+HRz9a+ptSU3gIK8QZMQSLNF/P26NkDH2uqvuOY5FwexVrBd5+snpGvmasIZwgr
+        xLVAHpExl5iammMQPrjqJ4S6CbYHkgQMPKQ4cjF1NTXqpazZ15yblKJu2lyS4nFk6JhEanIM2Acw
+        81CMpUSEoWd2YyR4fmsYyZBr6qGAbBKlUiwB0vSR9JgUzqEpiWIKaRGgEGCmck/Muv40mDCRKZmN
+        EhrOfK/X/z/NE8GWoXxxFN78DEeQTPtMzk+4JgiLQH6RnKQbs+n1k+P14v/16z6mZg5YaZHCt3T3
+        tjnvd0tsa9udWT7rNr3DvLyLwseVzO7i9gqIIutD+cDEOu6yVrHtjqpNP5yPuk4YVBpF8Pt926vt
+        TBsPXn6Z70wPDflA3XHXncz6vR1vLyr17a6z2GSb9Wzvn57TtAMWPyz2m/telmt7OVQ2UeOIxflo
+        WP5RhTCg5bt5Pt8bFouLfkf3S9peDe9ZY8GmYlRb7ieVUmHzMK63/AXu9GzZGOX/0ANXN/0fkTPd
+        j0q3y5po37YbTqE271Sq9aD3uLX7vFz+szyNu9lD1MaOPQuzrTVdQrk1XU/q9dl2RF0m/UGVkMFd
+        f9m3KQzsERnqLXerssZqj7v6MAhubqzMV4r//aG2JThN1Y24B/QU/j4OyyeMyPAesOTJHK2pMxq/
+        D98izIOdMRc+xQ9AShykdQdJXRQAA2FukfdxG5IL8ov8NXfETMiltCydZA5AYbOz8PuJsmJhTp9y
+        +BpYi+t0Z1WrR9izFXfhL9bf/IorTC9dpcr1f+rKtkEl9Hz3na1FIxCmRO2Tppzf587ZFTAAF7RO
+        KmbOxD4d6UuK1VLmTe3jAB5BSHJUOoDIaPmtlKt+8ymWYYpnma0Qcyah6yUxs9tJA7uwHXqbTUnw
+        8aa+30RN18q8Zv4FoM829vwFAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 12 Dec 2025 13:10:48 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2107
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": "What is the 100th fibonacci
+      number?"}, {"role": "assistant", "tool_calls": [{"id": "google_unknown_tool_id",
+      "type": "function", "function": {"name": "compute_fib", "arguments": "{\"n\":
+      100}"}}]}, {"role": "tool", "content": "218922995834555169026", "tool_call_id":
+      "google_unknown_tool_id", "name": "compute_fib"}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "stream": false, "tools": [{"type": "function", "function": {"description":
+      "Compute the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "integer"}}, "required": ["n"],
+      "additionalProperties": false, "type": "object"}, "strict": false}}]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '730'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNvAsTB-28Eivz-9acd76cc69c7e87a\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765545049,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"stop\",\n      \"seed\": null,\n      \"message\":
+        {\n        \"role\": \"assistant\",\n        \"content\": \"The 100th Fibonacci
+        number is 218922995834555169026.\",\n        \"tool_calls\": []\n      }\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 821,\n    \"total_tokens\":
+        838,\n    \"completion_tokens\": 17\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd76cc69c7e87a-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:10:49 GMT
+      ETag:
+      - W/"264-i2YM7munHxbKoDY/N/woTtIr0Rk"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 0bf73160-6cb4-4de2-8acd-a455e2e08485-noamzn
+      x-api-call-end:
+      - '2025-12-12T13:10:49.390Z'
+      x-api-call-start:
+      - '2025-12-12T13:10:49.180Z'
+      x-api-received:
+      - '2025-12-12T13:10:49.167Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNvAsTB-28Eivz-9acd76cc69c7e87a
+    status:
+      code: 200
+      message: OK
+version: 1

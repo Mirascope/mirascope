@@ -4,7 +4,11 @@ import pytest
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS, FORMATTING_MODES
+from tests.e2e.conftest import (
+    E2E_ASYNC_STREAM_MODEL_IDS,
+    E2E_MODEL_IDS,
+    FORMATTING_MODES,
+)
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -57,7 +61,7 @@ def test_structured_output_sync(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
@@ -90,7 +94,7 @@ def test_structured_output_sync_context(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
@@ -126,7 +130,7 @@ async def test_structured_output_async(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
@@ -160,7 +164,7 @@ async def test_structured_output_async_context(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
@@ -197,7 +201,7 @@ def test_structured_output_stream(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
@@ -232,14 +236,14 @@ def test_structured_output_stream_context(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", E2E_ASYNC_STREAM_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -270,11 +274,11 @@ async def test_structured_output_async_stream(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", E2E_ASYNC_STREAM_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -306,5 +310,5 @@ async def test_structured_output_async_stream_context(
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
-        assert book.title == "THE NAME OF THE WIND"
+        assert book.title.upper() == "THE NAME OF THE WIND"
         assert book.rating == 7

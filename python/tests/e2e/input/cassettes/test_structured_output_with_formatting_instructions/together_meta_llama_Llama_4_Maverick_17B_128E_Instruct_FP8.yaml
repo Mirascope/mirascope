@@ -1,0 +1,105 @@
+interactions:
+- request:
+    body: '{"messages": [{"role": "system", "content": "Always recommend The Name
+      of the Wind.\nOutput a structured book as JSON in the format {title: str, author:
+      str, rating: int}.\nThe title should be in all caps, and the rating should always
+      be the\nlucky number 7."}, {"role": "user", "content": "Please recommend a book
+      to me!"}], "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "stream":
+      false, "tools": [{"type": "function", "function": {"description": "Use this
+      tool to extract data in Book format for a final response.", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "string"},
+      "author": {"title": "Author", "type": "string"}, "rating": {"title": "Rating",
+      "type": "integer"}}, "required": ["title", "author", "rating"], "additionalProperties":
+      false, "type": "object"}, "strict": true}}], "tool_choice": {"type": "function",
+      "function": {"name": "__mirascope_formatted_output_tool__"}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '967'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Together/v1 PythonBindings/1.5.31
+      X-Together-Client-User-Agent:
+      - '{"bindings_version": "1.5.31", "httplib": "requests", "lang": "python", "lang_version":
+        "3.13.3", "platform": "macOS-15.1.1-arm64-arm-64bit-Mach-O", "publisher":
+        "together", "uname": "Darwin 24.1.0 Darwin Kernel Version 24.1.0: Thu Oct
+        10 21:03:11 PDT 2024; root:xnu-11215.41.3~2/RELEASE_ARM64_T6020 arm64 arm"}'
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"oNvAtP1-zqrih-9acd76ddbf9dac71\",\n  \"object\": \"chat.completion\",\n
+        \ \"created\": 1765545053,\n  \"model\": \"meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8\",\n
+        \ \"metadata\": {\n    \"weight_version\": \"default\"\n  },\n  \"prompt\":
+        [],\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"tool_calls\",\n      \"seed\": null,\n      \"message\":
+        {\n        \"role\": \"assistant\",\n        \"content\": null,\n        \"tool_calls\":
+        [\n          {\n            \"index\": 0,\n            \"id\": \"call_q71qw6m8uqclf23fqu8lk4if\",\n
+        \           \"type\": \"function\",\n            \"function\": {\n              \"arguments\":
+        \"{\\\"title\\\":\\\"THE NAME OF THE WIND\\\",\\\"author\\\":\\\"Patrick Rothfuss\\\",\\\"rating\\\":7}\",\n
+        \             \"name\": \"__mirascope_formatted_output_tool__\"\n            }\n
+        \         }\n        ]\n      }\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        281,\n    \"total_tokens\": 339,\n    \"completion_tokens\": 58\n  }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9acd76ddbf9dac71-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 12 Dec 2025 13:10:53 GMT
+      ETag:
+      - W/"397-TbS8fFZ5Jc6uUOMVDTwwYXKkz60"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 30cc271a-0b49-403a-9337-fe19fe5b5982-noamzn
+      x-api-call-end:
+      - '2025-12-12T13:10:53.083Z'
+      x-api-call-start:
+      - '2025-12-12T13:10:52.299Z'
+      x-api-received:
+      - '2025-12-12T13:10:52.288Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oNvAtP1-zqrih-9acd76ddbf9dac71
+    status:
+      code: 200
+      message: OK
+version: 1
