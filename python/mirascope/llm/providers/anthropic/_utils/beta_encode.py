@@ -114,7 +114,7 @@ def beta_encode_request(
         {
             "model": model_name(model_id),
             "max_tokens": max_tokens,
-            "betas": [],
+            "betas": ["structured-outputs-2025-11-13"],
             **processed,
         }
     )
@@ -132,9 +132,7 @@ def beta_encode_request(
                     model_id=model_id,
                 )
             else:
-                kwargs["output_format"] = cast(
-                    type[BaseModel], format.formattable
-                )  # pragma: no cover # TODO remove no cover upstack
+                kwargs["output_format"] = cast(type[BaseModel], format.formattable)
 
         if format.mode == "tool":
             format_tool_schema = _formatting_utils.create_tool_schema(format)

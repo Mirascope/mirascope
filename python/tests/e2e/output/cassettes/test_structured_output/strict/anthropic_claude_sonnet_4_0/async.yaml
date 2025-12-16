@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '148'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VTf2vbMBD9Kof+2RbckISGsvy5jkF/0m2FbizDKPbZvkWWXOmU1JR8953slq0r
+        A4Pte093796dHlXrSjRqpQqjY4lHwVmLfHR8tJgtlrPl/FhlikrB21Dns/mCTm7o8vP11/b06nzz
+        /dv9h/1l/VE43HeYWBiCrlEC3pkU0CFQYG1ZQoWzjPK1+vH4zGd8SMjwWqmzNyV4LFzboi1hMlmr
+        2wbhWrcIrgKW7zuy5VpNJvB2MZudvMtg31DRAIUBrcgHho1zWyALN5o9FVv44ripYghvAlyQrbdk
+        DHo4bbyzVBiEgJ4wTOG2kTTylFiRJUbTQ4q0TnJ2rotGe9Cia09lwnQhllGLEnB+O13btU1qh+py
+        2IySAjvfJ/UXO5GBGWgwWEt7WsIV1dGj9OCGtqPlMJTsXeQGdBByTRVLicAyHMug5YFW11RoA9HS
+        Dn0g7qdwxtJe5zUFYVfOA0muDerIVEUjiAtSnGyyRDOOOSD0gbHNhrbE9k5ki0OjaB5/ki8I1u3Q
+        SKNW3JKaUlzvtS/DcLIZlJYoHabi2m50wMGQ85jmgQMZxQ+Rz08uv56Xhs5o2b4SRKRxdS/TJfEh
+        MeWUL0dmYBlgykictHZxY1JL5OwoNYiTduRmMG7QnbgCV9qKRZ9Q+7VK6zOfy/qIEG2CA3wopN3k
+        MFXJfkD7y/V/iXQWp+rwM1PiTZd71HJRZGNlkDlHb9UTEPA+oi1ktW00JlNxuA2rR0W2i5yz26IN
+        ajV/L7dBFw3mhaRK2vOXhNkzLnD5P+z5bMqPXYNtGky+bF/z/6Dz5l/0kClZtxfqliJPbsWOCsyZ
+        0Euj6Q7LzpbqcPgNR3FPljQEAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9af331392b70e3ab-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 17 Dec 2025 03:04:23 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-17T03:04:19Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-17T03:04:23Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-17T03:04:18Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-17T03:04:19Z'
+      request-id:
+      - req_011CWBWyZjrmgRfekTAvkXQu
+      x-envoy-upstream-service-time:
+      - '5067'
+    status:
+      code: 200
+      message: OK
+version: 1

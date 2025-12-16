@@ -48,6 +48,7 @@ if sys.platform == "darwin":
 
     E2E_MODEL_IDS.append("mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
+STRUCTURED_OUTPUT_MODEL_IDS = [*E2E_MODEL_IDS, "anthropic/claude-sonnet-4-5"]
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
     None,

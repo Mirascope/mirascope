@@ -4,7 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS, FORMATTING_MODES
+from tests.e2e.conftest import FORMATTING_MODES, STRUCTURED_OUTPUT_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -25,7 +25,7 @@ class BookSummary(BaseModel):
 # ============= SYNC TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_sync(
@@ -71,7 +71,7 @@ def test_structured_output_with_tools_sync(
         assert book_summary.publication_year == 2006
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_sync_context(
@@ -121,7 +121,7 @@ def test_structured_output_with_tools_sync_context(
 # ============= ASYNC TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -168,7 +168,7 @@ async def test_structured_output_with_tools_async(
         assert book_summary.publication_year == 2006
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -219,7 +219,7 @@ async def test_structured_output_with_tools_async_context(
 # ============= STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_stream(
@@ -267,7 +267,7 @@ def test_structured_output_with_tools_stream(
         assert book_summary.publication_year == 2006
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_stream_context(
@@ -319,7 +319,7 @@ def test_structured_output_with_tools_stream_context(
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -368,7 +368,7 @@ async def test_structured_output_with_tools_async_stream(
         assert book_summary.publication_year == 2006
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
