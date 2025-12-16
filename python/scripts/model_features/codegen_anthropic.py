@@ -11,7 +11,11 @@ Logic:
   1. The dated version: "anthropic/claude-3-5-haiku-20241022"
   2. The -latest alias: "anthropic/claude-3-5-haiku-latest"
   3. The base name without suffix: "anthropic/claude-3-5-haiku"
-- For models without date suffixes, just adds the model as-is
+- For models with a major version suffix (e.g., claude-sonnet-4), generates:
+  1. The base version: "anthropic/claude-sonnet-4"
+  2. The minor version: "anthropic/claude-sonnet-4-0"
+  3. The -latest alias: "anthropic/claude-sonnet-4-0-latest"
+- For models without date/version suffixes, just adds the model as-is
 - Models are sorted alphabetically for consistency
 - Tracks which models don't support strict structured outputs (negative tracking,
   assuming new models will support it)
@@ -41,21 +45,23 @@ def generate_model_info(data: dict[str, Any]) -> str:
 
     # Pattern to match date suffixes like -20241022
     date_pattern = re.compile(r"-(\d{8})$")
+    # Pattern to match major version suffixes like -4 (but not -3-5 or -4-0)
+    major_version_pattern = re.compile(r"-(\d+)$")
 
     models_data = data.get("models", {})
 
     for model_id, model_info in models_data.items():
-        # Check if model has a date suffix
-        match = date_pattern.search(model_id)
-
         # Check if model supports strict structured outputs
         features = model_info.get("features", {})
         strict_result = features.get("strict_structured_output", {})
         supports_strict = strict_result.get("status") == "supported"
 
-        if match:
-            # Model has a date suffix - generate all three variants
-            base_name = model_id[: match.start()]  # Remove date suffix
+        # Check if model has a date suffix
+        date_match = date_pattern.search(model_id)
+
+        if date_match:
+            # Model has a date suffix - generate variants based on base name
+            base_name = model_id[: date_match.start()]  # Remove date suffix
 
             # Add dated version
             model_ids.add(f"anthropic/{model_id}")
@@ -71,6 +77,26 @@ def generate_model_info(data: dict[str, Any]) -> str:
             model_ids.add(f"anthropic/{base_name}")
             if not supports_strict:
                 models_without_strict.add(f"anthropic/{base_name}")
+
+            # Check if base name has a major version suffix
+            major_version_match = major_version_pattern.search(base_name)
+            if major_version_match:
+                # Also add minor version variant (e.g., claude-sonnet-4-0)
+                minor_version = f"{base_name}-0"
+                model_ids.add(f"anthropic/{minor_version}")
+                if not supports_strict:
+                    models_without_strict.add(f"anthropic/{minor_version}")
+
+                # And its -latest alias (e.g., claude-sonnet-4-0-latest)
+                model_ids.add(f"anthropic/{minor_version}-latest")
+                if not supports_strict:
+                    models_without_strict.add(f"anthropic/{minor_version}-latest")
+
+                # And its dated version (e.g., claude-sonnet-4-0-20250929)
+                dated_minor_version = f"{minor_version}-{date_match.group(1)}"
+                model_ids.add(f"anthropic/{dated_minor_version}")
+                if not supports_strict:
+                    models_without_strict.add(f"anthropic/{dated_minor_version}")
         else:
             # Model without date suffix - add as-is
             model_ids.add(f"anthropic/{model_id}")
@@ -106,8 +132,9 @@ def generate_model_info(data: dict[str, Any]) -> str:
 
     # Add models without strict structured outputs
     for i, model_id in enumerate(sorted_models_without_strict):
+        model_name = model_id.removeprefix("anthropic/")
         comma = "," if i < len(sorted_models_without_strict) - 1 else ""
-        lines.append(f'    "{model_id}"{comma}')
+        lines.append(f'    "{model_name}"{comma}')
 
     lines.append("}")
     lines.append(
