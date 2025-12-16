@@ -1,19 +1,13 @@
 """Google registered LLM models."""
 
-from typing import Literal, TypeAlias
+from typing import TypeAlias, get_args
 
-GoogleModelId: TypeAlias = (
-    Literal[
-        "google/gemini-3-pro-preview",
-        "google/gemini-2.5-pro",
-        "google/gemini-2.5-flash",
-        "google/gemini-2.5-flash-lite",
-        "google/gemini-2.0-flash",
-        "google/gemini-2.0-flash-lite",
-    ]
-    | str
-)
+from .model_info import GoogleKnownModels
+
+GoogleModelId: TypeAlias = GoogleKnownModels | str
 """The Google model ids registered with Mirascope."""
+
+GOOGLE_KNOWN_MODELS: set[str] = set(get_args(GoogleKnownModels))
 
 
 def model_name(model_id: GoogleModelId) -> str:

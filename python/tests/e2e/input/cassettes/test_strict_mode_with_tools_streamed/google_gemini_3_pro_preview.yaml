@@ -1,0 +1,158 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 3,
+      using the custom addition tool?"}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "Perform computation on integers.", "name": "customAdditionImplementation",
+      "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
+      "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":
+      {"responseMimeType": "application/json", "responseSchema": {"description": "A
+      simple response for testing.", "properties": {"integer_a": {"title": "Integer
+      A", "type": "INTEGER"}, "integer_b": {"title": "Integer B", "type": "INTEGER"},
+      "answer": {"title": "Answer", "type": "INTEGER"}}, "property_ordering": ["integer_a",
+      "integer_b", "answer"], "required": ["integer_a", "integer_b", "answer"], "title":
+      "IntegerAdditionResponse", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '883'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"customAdditionImplementation\",\"args\": {\"a\": 2,\"b\": 3}},\"thoughtSignature\":
+        \"Et4FCtsFAXLI2nwD01SyPgNpwr2yFCVPwyFdqcjQrmMwpNVq7jd0u6LK6XClUYGMQxLNq7ssEY5zJRAN5E1xGgDQ1o9RIWOsmQur0HKmAJGPq+NxJo9kruDCQi8pL682O9hmWsKVAwzWBrq8g+Zo/GNOlneeweOl8ubjj8PISjl/LBbNKsZjouF1gHS/y1gSNyDySlc2738utX73Rq/dvcI/hfNzlgTMoa7qg3apYey7hV9I/1tfqYpFjUMLmmfg+IsRqktdvMDbe/XvM07yggdHIMaSKxvZK+LZrxR3A94LvPmB/GPMvR3M3D8YYlQtlp2PcI6GZI0bnsky7et4CWV/HRxnkwqxtR5ZF6pmOVx9oo43rb8mE6yrDnn6s776RwV+4V46aNwn7MckzUPKW0F8QXuGAl1/7pFjtbHs33ltyzrn3vOeFh21YlUQZxWeiTW3G72OIuD2Bu1TLUQSlgXpHYp5cp1Mv6Gfn5p9y5SwwYb6uc6y20sq1nxEIIKCiOW2KvJmuZ0ocsTi3wnzC+pMeXGpTCIF7FoyCxGasJ3G551MmotfWDhhYyfZHTCO0UpepHHo/AToBMx7oaMDjONkQKehbuMrpDUJFoyeZEDlrihVXbVhGfgvAt1ij+XeqCAFnBvMzeqCnilJ+mxFT47rM87EC8zZXc0uxNi5HM262COwmBaSQDU0pOdkCk5BcFPp7Ccu+q0mXREJOEZHv7dq6CAyxKmPFkzAfAukYYf1WZuLyY7AEKprEClmvoehNaJi5kIY0k0sUJtpEIruH0BbtkifULDPh30POjdjLXEjuzaj8Af63DOtKO2SpZDe8kt2yxNH+JGY7jnu8vaN/3IWn133dlDbn7OeHuRPPT7JkBQd5w+69eCoMzAjYDeR111yju5+JkjQ5BMnlhpBitygzVHyfGt287ditQLlExSwenJlwzjE4KE6b85BUH2fsPWceiF+fGGwtiNs9eZEHCw=\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 85,\"candidatesTokenCount\":
+        18,\"totalTokenCount\": 256,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        85}],\"thoughtsTokenCount\": 153},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
+        \"i-5Bad-FJ63pz7IP4eSm2A0\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 85,\"candidatesTokenCount\":
+        18,\"totalTokenCount\": 256,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        85}],\"thoughtsTokenCount\": 153},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
+        \"i-5Bad-FJ63pz7IP4eSm2A0\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Tue, 16 Dec 2025 23:43:07 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3280
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 3,
+      using the custom addition tool?"}], "role": "user"}, {"parts": [{"functionCall":
+      {"args": {"a": 2, "b": 3}, "name": "customAdditionImplementation"}, "thoughtSignature":
+      "Et4FCtsFAXLI2nwD01SyPgNpwr2yFCVPwyFdqcjQrmMwpNVq7jd0u6LK6XClUYGMQxLNq7ssEY5zJRAN5E1xGgDQ1o9RIWOsmQur0HKmAJGPq-NxJo9kruDCQi8pL682O9hmWsKVAwzWBrq8g-Zo_GNOlneeweOl8ubjj8PISjl_LBbNKsZjouF1gHS_y1gSNyDySlc2738utX73Rq_dvcI_hfNzlgTMoa7qg3apYey7hV9I_1tfqYpFjUMLmmfg-IsRqktdvMDbe_XvM07yggdHIMaSKxvZK-LZrxR3A94LvPmB_GPMvR3M3D8YYlQtlp2PcI6GZI0bnsky7et4CWV_HRxnkwqxtR5ZF6pmOVx9oo43rb8mE6yrDnn6s776RwV-4V46aNwn7MckzUPKW0F8QXuGAl1_7pFjtbHs33ltyzrn3vOeFh21YlUQZxWeiTW3G72OIuD2Bu1TLUQSlgXpHYp5cp1Mv6Gfn5p9y5SwwYb6uc6y20sq1nxEIIKCiOW2KvJmuZ0ocsTi3wnzC-pMeXGpTCIF7FoyCxGasJ3G551MmotfWDhhYyfZHTCO0UpepHHo_AToBMx7oaMDjONkQKehbuMrpDUJFoyeZEDlrihVXbVhGfgvAt1ij-XeqCAFnBvMzeqCnilJ-mxFT47rM87EC8zZXc0uxNi5HM262COwmBaSQDU0pOdkCk5BcFPp7Ccu-q0mXREJOEZHv7dq6CAyxKmPFkzAfAukYYf1WZuLyY7AEKprEClmvoehNaJi5kIY0k0sUJtpEIruH0BbtkifULDPh30POjdjLXEjuzaj8Af63DOtKO2SpZDe8kt2yxNH-JGY7jnu8vaN_3IWn133dlDbn7OeHuRPPT7JkBQd5w-69eCoMzAjYDeR111yju5-JkjQ5BMnlhpBitygzVHyfGt287ditQLlExSwenJlwzjE4KE6b85BUH2fsPWceiF-fGGwtiNs9eZEHCw="},
+      {"text": ""}], "role": "model"}, {"parts": [{"functionResponse": {"name": "customAdditionImplementation",
+      "response": {"output": "13"}}}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "Perform computation on integers.", "name": "customAdditionImplementation",
+      "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
+      "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":
+      {"responseMimeType": "application/json", "responseSchema": {"description": "A
+      simple response for testing.", "properties": {"integer_a": {"title": "Integer
+      A", "type": "INTEGER"}, "integer_b": {"title": "Integer B", "type": "INTEGER"},
+      "answer": {"title": "Answer", "type": "INTEGER"}}, "property_ordering": ["integer_a",
+      "integer_b", "answer"], "required": ["integer_a", "integer_b", "answer"], "title":
+      "IntegerAdditionResponse", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '2144'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 118,\"candidatesTokenCount\":
+        1,\"totalTokenCount\": 119,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        118}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"je5BacePHNfpz7IP1LGRsQc\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\n  \\\"integer_a\\\":
+        2,\\n  \\\"integer_b\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 118,\"candidatesTokenCount\": 17,\"totalTokenCount\":
+        135,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 118}]},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"je5BacePHNfpz7IP1LGRsQc\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\\": 3,\\n  \\\"answer\\\":
+        13\\n} \"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        118,\"candidatesTokenCount\": 32,\"totalTokenCount\": 150,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 118}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
+        \"je5BacePHNfpz7IP1LGRsQc\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 271,\"candidatesTokenCount\":
+        32,\"totalTokenCount\": 303,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        271}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"je5BacePHNfpz7IP1LGRsQc\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Tue, 16 Dec 2025 23:43:09 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1783
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

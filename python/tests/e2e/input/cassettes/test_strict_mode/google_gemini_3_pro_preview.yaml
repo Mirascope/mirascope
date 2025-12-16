@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '565'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VUW3OySBB991dYvpqUgBhwq/aBu0aMqNw3W1sgo1xnyAwgmMp/X0w+85ldCqip
+        04funsP0eR8Mh6NDAKMkCipARn8M/+qR4fD9832NIVgBWPWBG9SDZYCr39yv6/1u3VMq0F4/Gr2/
+        wuHwdZT0WU4A/xO89iDz8BMM78EAkjPAV4R9hR+jh/+kjVF9iqt9coJBVWNwLaFgXpHwWRFcfcnA
+        i3A8mGPWspXLpdVXFpY716flSAEWpS6csauUpnqsN4xG2JeTnK0UNxRqoRAsh0ubN+8psF1t0zkn
+        dPQ9QvMe43oUF4vYa8JqTgskc+N9thAxOSB7qYB5fTouDj7ZsXwbrxJPF9duJy/8vWIGM4Exjp1Y
+        Laj5wRaevNgTEvGQV25Aw3n3BhvGJNS53dmOgp3L2sz9Q2kTbzFJWsHFE4atVIluttlirRGLDki1
+        hwprOtzKVGu87e/lFnMCPxYuBW3h3Gvgdu7M4tahrDgWdDbEm3Psovli06Zl/IQoVp1IlqudLznr
+        CvtsJikZn4Kn2A/iuhTwAcJK7zi2sNrlQVqz3cIN3JUZ+S/EltkkN7mQS8t64Wj6DFbLnexML7qc
+        rjdbpljvE5pwZec5OWc/2YiHz2WUlxtNwEXbrUvHOseqWBnhNNwtA6jjkyTaYxUoiup0HR9p6Vmc
+        W2VX6mKjp0yWb3QBGlloWKt6bLp7Q563U5X4XmXYflTwT1wxPpgXJysvfBgI6bMUImNGuwfFkeW1
+        VU+pcKYQKzTG2I0pU2JTRO3rt620OHNox2WSFhwjYBpHtha7NBqnWtjMUZMUQJ4vzIzNXdktxII5
+        nYLVRIYp9C4mErdLrCKDsxrWavd+7U945GdpBbY1CnUTRRPXnm9fDJRd2N1EkXURNqStOXayNORo
+        HwoqzyTT+TE/n9PorWBEtnVigE3ysmuInV/GHjvxl2bZH7H0RK8ztZu9VE5RZUmZSJ3prAvXyJil
+        I04lmaIlQsbP493GPv85uhuTj+/137+nZ4RR/jktBYpAfqN/3AijYwITEu9AQBC80vbmxvgevn5S
+        I9D2MDW4FfhMPapJcAJrUAW9ewTfHjEqMSrKykQZgBKqP92Dnn4luzObH/Ep9SteoSrIf4SYKf3w
+        v7xE7qsm+b0L3RlUv8kgT6ruuhNTcc07G+kL/GjrpsTgTrCbzfxskeb5wS/JvlS0ASbJl1wnUPQC
+        Pk4f+xb7BzQJOH8WHWFASgQJWEZXHnmkxSDUNK15XPa/1eD0UEgEazT4GPwLlr0Hv4sFAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 23:39:31 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3968
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

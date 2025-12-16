@@ -1,0 +1,96 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
+      "thinkingConfig": {"include_thoughts": true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '634'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+        184LAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 23:39:42 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=6146
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

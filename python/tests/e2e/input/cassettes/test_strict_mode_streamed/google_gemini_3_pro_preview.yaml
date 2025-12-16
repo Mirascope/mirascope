@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '565'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n\\\"integer_a\\\":
+        2,\\n\\\"integer_b\\\": 2,\\n\\\"answer\\\": 4\\n}\"}],\"role\": \"model\"},\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"candidatesTokenCount\":
+        27,\"totalTokenCount\": 324,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        13}],\"thoughtsTokenCount\": 284},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
+        \"uO1BafedBNm6mtkP4YiZqAY\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"\",\"thoughtSignature\": \"EuYICuMIAXLI2nwkd+8neATle7ZnKo82hkQxE62LzSMe1ceWrGVhdMtURcZV8JeOhxUsW4uz8IvRODgswfpGZ+TkPfaxkIFsVOOIZKIZlnjyneHVEC51+BmIP+7ZUbMF9ghliDym9xMD1jlyPoh7OF60dSOVqFUxnb8wAN1Xi0BHy6s1iB8q0TJA3KPqAle69drAxeSOWliYCpU4WSfL5pzY1gtiVqYNlI7f1SI54M4FNQagSxQbmmrAAW1VbGYN5+kLi93JlIFLx4W3ehDcfNPibtPn6GXM/rVwuEl0543I7xQRqUmuTRXrRP0Sk/dtSAFCuDgdzNsPCivHKBlhcF+x0tRiG2xoJ6Hp8ycQNVMpatDAN+kJtOeSOrtmJHjPxqlw+JJ/O6vZNoTEf60Qem3EiFQrs+PgOWTLJpHAC7SO01fi2+cuv6pJeZBk1RNmgQVcGd4+qPIkLnyKqaJQcAw2ZwqngnKMEsswaT/pEjl0ha2nFlf3avXIKwzVShCV4FC5ievg00zzNWGunDlgplxpWG9xqdbywP6BmQeTzuawdOKSbjEDDI0FePHMuggwkE9Aa+E4hKZxin2BXwqVidTmBOX6pMUTrQz+qpuQXApkqN9p/y2epxA0mnIzP/hCfUKJRlkPtEj9IkBHy8y+ISgNlclGw5cEWJAr4iMvY9fRE9tYAyjA9XXE/1nUmQIIh8uJIGfFoT0rFUaactYOdh7grp7W6h4pHgbggiMLF/z3Q49dAompDQDgfE2d827G+o0/A9CszelDOo8wUPopuL0hc1n9ID1yN6vUYIZKqSv4Qbra2ohy66Yy56+6JBdsUEde6iZFo+/5zL5FomG+rILI/we+NvmuNoyvxCiWfyb6Wl+mfhuZ3sIezKEFHe4Xw7nfoNYFEbyc4NTuOFjopv3DFC238UByZnD5kBCwxK/2mEfNnCOQlmM84jwGGx2YNXSYKLEOrvkpsEO11qPgKwtC35oCJ3TCwAQr08Espt/ur7Rmu3uXfGbe89O2cv5uShdUMvbPGMd2XeC1qXj9tDxeeeHEBkmB3Tl2gucvEKWGW7bCTrUdgma5Ut/S/eX8dmMfTtPJWJCiEZIBKrsdW7O2oaIqwo9Ww/y1XQA+5hzuO14NOfbkll653xnvFyhAqKPFGa1VrUrq+mW0GTbgiNvSzIbBPPRxDTKqSV3UIlKDa/mSYbjDvxoZeEkSorB73Fd7E67hrhZUPzRs5wvSZsgK3T90KX4w91R7eQpC+cyBcncsQ4zM8zGJRr17Ae+sNuqcI0ZQ2O7ltrP54gR5ueeSJxE/mkccA3qQIRERF0NHyHbGdhsDZH32+8PcjVAVwsuVl5hWAaNYERxDfW+Qw/7jtkRUeHihIz7MvdzLNUMhiSXGH6AfD9a3GNqTYQnRqEh5kifQGMzo+3qYeMFpiYZtdWK/nd9rSAan38jhCGYNyS96Ynu3ojcknobNItRy2vXNqTZYP9EfovbrkpcW62bsQFW7PsmsDw==\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 27,\"totalTokenCount\": 324,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 284},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"uO1BafedBNm6mtkP4YiZqAY\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Tue, 16 Dec 2025 23:39:36 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=4561
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
