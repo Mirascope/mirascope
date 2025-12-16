@@ -14,7 +14,7 @@
  *
  * Users can only create, update, or delete memberships for roles below their own level.
  * No one can add a new OWNER or modify/remove an existing OWNER.
- * No one can modify or remove themselves.
+ * Users can remove themselves from an organization (except OWNERs).
  *
  * ## Architecture
  *
@@ -199,7 +199,7 @@ class OrganizationMembershipAuditBaseService extends BaseService<
  * - Cannot add a new OWNER (organizations have exactly one owner, set at creation)
  * - Cannot modify or remove an existing OWNER
  * - Cannot operate on roles at or above your own level (except read)
- * - Cannot modify or remove yourself
+ * - Cannot modify yourself; can remove yourself (except OWNER)
  */
 export class OrganizationMembershipService extends BaseAuthenticatedService<
   PublicOrganizationMembership,
@@ -235,7 +235,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       create: ["OWNER", "ADMIN"],
       read: ["OWNER", "ADMIN", "MEMBER"],
       update: ["OWNER", "ADMIN"],
-      delete: ["OWNER", "ADMIN"],
+      delete: ["OWNER", "ADMIN", "MEMBER"], // MEMBER can delete themselves but cannot operate on anyone else
     };
   }
 
@@ -672,12 +672,14 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    * - OWNER can remove ADMIN or MEMBER
    * - ADMIN can only remove MEMBER
    * - Cannot remove an OWNER
-   * - Cannot remove yourself
+   *
+   * Self-removal is allowed for ADMIN and MEMBER roles (leaving the organization),
+   * but OWNERs can never remove themselves.
    *
    * @param args.userId - The authenticated user performing the action
    * @param args.organizationId - The organization
    * @param args.memberId - The user ID of the member to remove
-   * @throws PermissionDeniedError - If role hierarchy violation or self-removal
+   * @throws PermissionDeniedError - If role hierarchy violation or OWNER self-removal
    * @throws NotFoundError - If the membership doesn't exist
    * @throws DatabaseError - If the database operation fails
    */
@@ -700,15 +702,6 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         organizationId,
       });
 
-      if (memberId === userId) {
-        return yield* Effect.fail(
-          new PermissionDeniedError({
-            message: "Cannot remove yourself from an organization",
-            resource: "organization membership",
-          }),
-        );
-      }
-
       const targetMembership = yield* this.getMembership({
         userId: memberId,
         organizationId,
@@ -723,12 +716,18 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         );
       }
 
-      // Enforce role hierarchy: can only remove roles you can operate on
+      // ADMIN and MEMBER roles can delete themselves
+      const allowedSelfDeletion =
+        memberId === userId &&
+        ["ADMIN", "MEMBER"].includes(targetMembership.role);
+
+      // Enforce role hierarchy: can only remove roles you can operate on (or yourself)
       if (
         !this.canOperateOnOrganizationRole(
           userOrganizationRole,
           targetMembership.role,
-        )
+        ) &&
+        !allowedSelfDeletion
       ) {
         return yield* Effect.fail(
           new PermissionDeniedError({
@@ -737,8 +736,6 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
           }),
         );
       }
-
-      const previousRole = targetMembership.role;
 
       // Use transaction to ensure membership deletion and audit log are atomic
       yield* Effect.tryPromise({
@@ -760,7 +757,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
               actorId: userId,
               targetId: memberId,
               action: "REVOKE",
-              previousRole,
+              previousRole: targetMembership.role,
             });
           });
         },

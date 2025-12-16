@@ -823,7 +823,87 @@ describe("OrganizationMembershipService", () => {
     );
 
     it.effect(
-      "returns `PermissionDeniedError` when trying to remove yourself",
+      "allows a MEMBER to remove themself (leave the organization)",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, member } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
+
+          yield* db.organizations.memberships.delete({
+            userId: member.id,
+            organizationId: org.id,
+            memberId: member.id,
+          });
+
+          // Verify membership is gone (owner can still read)
+          const result = yield* db.organizations.memberships
+            .findById({
+              userId: owner.id,
+              organizationId: org.id,
+              memberId: member.id,
+            })
+            .pipe(Effect.flip);
+          expect(result).toBeInstanceOf(NotFoundError);
+
+          // Verify audit log was created
+          const audits = yield* db.organizations.memberships.audits.findAll({
+            organizationId: org.id,
+            memberId: member.id,
+          });
+          const revokeAudits = audits.filter((a) => a.action === "REVOKE");
+          expect(revokeAudits).toHaveLength(1);
+          expect(revokeAudits[0]).toMatchObject({
+            actorId: member.id,
+            targetId: member.id,
+            action: "REVOKE",
+            previousRole: "MEMBER",
+            newRole: null,
+          } satisfies Partial<PublicOrganizationMembershipAudit>);
+        }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect(
+      "allows an ADMIN to remove themself (leave the organization)",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, admin } = yield* TestOrganizationFixture;
+          const db = yield* DatabaseService;
+
+          yield* db.organizations.memberships.delete({
+            userId: admin.id,
+            organizationId: org.id,
+            memberId: admin.id,
+          });
+
+          // Verify membership is gone (owner can still read)
+          const result = yield* db.organizations.memberships
+            .findById({
+              userId: owner.id,
+              organizationId: org.id,
+              memberId: admin.id,
+            })
+            .pipe(Effect.flip);
+          expect(result).toBeInstanceOf(NotFoundError);
+
+          // Verify audit log was created
+          const audits = yield* db.organizations.memberships.audits.findAll({
+            organizationId: org.id,
+            memberId: admin.id,
+          });
+          const revokeAudits = audits.filter((a) => a.action === "REVOKE");
+          expect(revokeAudits).toHaveLength(1);
+          expect(revokeAudits[0]).toMatchObject({
+            actorId: admin.id,
+            targetId: admin.id,
+            action: "REVOKE",
+            previousRole: "ADMIN",
+            newRole: null,
+          } satisfies Partial<PublicOrganizationMembershipAudit>);
+        }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when OWNER tries to remove themself (cannot leave as last owner)",
       () =>
         Effect.gen(function* () {
           const { org, owner } = yield* TestOrganizationFixture;
@@ -838,9 +918,7 @@ describe("OrganizationMembershipService", () => {
             .pipe(Effect.flip);
 
           expect(result).toBeInstanceOf(PermissionDeniedError);
-          expect(result.message).toBe(
-            "Cannot remove yourself from an organization",
-          );
+          expect(result.message).toBe("Cannot remove a member with role OWNER");
         }).pipe(Effect.provide(TestDatabase)),
     );
 
