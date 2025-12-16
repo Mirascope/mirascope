@@ -36,6 +36,13 @@
       "when": 1765900000000,
       "tag": "0004_organization_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1765900001000,
+      "tag": "0005_organization_cascade",
+      "breakpoints": true
     }
   ]
 }

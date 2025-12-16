@@ -23,7 +23,7 @@ export const organizationMemberships = pgTable(
       .references(() => users.id)
       .notNull(),
     organizationId: uuid("organization_id")
-      .references(() => organizations.id)
+      .references(() => organizations.id, { onDelete: "cascade" })
       .notNull(),
     role: organizationRoleEnum("role").notNull(),
     createdAt: timestamp("created_at").defaultNow(),

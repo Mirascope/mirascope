@@ -15,7 +15,7 @@ export const organizationMembershipAudit = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     organizationId: uuid("organization_id")
-      .references(() => organizations.id)
+      .references(() => organizations.id, { onDelete: "cascade" })
       .notNull(),
     actorId: uuid("actor_id")
       .references(() => users.id)
