@@ -13,6 +13,7 @@ from .openai import (
     OpenAIModelId,
     OpenAIProvider,
 )
+from .openai.completions import BaseOpenAICompletionsProvider
 from .provider_id import KNOWN_PROVIDER_IDS, ProviderId
 from .provider_registry import get_provider_for_model, register_provider
 
@@ -20,6 +21,7 @@ __all__ = [
     "KNOWN_PROVIDER_IDS",
     "AnthropicModelId",
     "AnthropicProvider",
+    "BaseOpenAICompletionsProvider",
     "BaseProvider",
     "GoogleModelId",
     "GoogleProvider",

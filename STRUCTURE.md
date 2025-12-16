@@ -49,13 +49,15 @@ python/
 │   │   │   ├── base_call.py
 │   │   │   ├── calls.py
 │   │   │   └── decorator.py
-│   │   ├── clients/          # Provider-specific client implementations
+│   │   ├── providers/         # Provider-specific implementations
 │   │   │   ├── __init__.py
 │   │   │   ├── base/
 │   │   │   ├── anthropic/
 │   │   │   ├── google/
 │   │   │   ├── openai/
-│   │   │   └── providers.py
+│   │   │   ├── openai/completions/base_provider.py
+│   │   │   ├── provider_registry.py
+│   │   │   └── load_provider.py
 │   │   ├── content/          # Content types (text, image, audio, etc.)
 │   │   │   ├── __init__.py
 │   │   │   ├── audio.py
@@ -145,6 +147,7 @@ python/
 │   │   ├── messages/
 │   │   ├── models/
 │   │   ├── prompts/
+│   │   ├── providers/
 │   │   ├── responses/
 │   │   └── tools/
 │   ├── test_imports.py

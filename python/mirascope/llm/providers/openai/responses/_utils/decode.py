@@ -77,7 +77,7 @@ def _serialize_output_item(
 def decode_response(
     response: openai_types.Response,
     model_id: OpenAIModelId,
-    provider_id: Literal["openai", "openai:responses"],
+    provider_id: str,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
     """Convert OpenAI Responses Response to mirascope AssistantMessage and usage."""
     parts: list[AssistantContentPart] = []
