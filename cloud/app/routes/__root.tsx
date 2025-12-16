@@ -61,7 +61,7 @@ function RootComponent() {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <Outlet />
-            <TanStackRouterDevtools position="bottom-right" />
+            <TanStackRouterDevtools />
             <Scripts />
           </AuthProvider>
         </QueryClientProvider>
