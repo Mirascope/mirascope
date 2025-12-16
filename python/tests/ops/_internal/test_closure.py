@@ -37,7 +37,11 @@ from .closure_test_functions import (
     internal_imports_fn,
     kwarg_rich_fn,
     multi_decorated_fn,
+    multi_decorator_with_version_fn,
     nested_class_guard_fn,
+    ops_version_decorated_empty_parens_fn,
+    ops_version_decorated_fn,
+    ops_version_decorated_with_tags_fn,
     property_missing_getter_fn,
     registry_decorated_fn,
     self_fn_class_fn,
@@ -58,6 +62,11 @@ from .closure_test_functions import (
     user_defined_from_import_fn,
     user_defined_import_fn,
     user_defined_plain_import_fn,
+    version_decorated_empty_parens_fn,
+    version_decorated_fn,
+    version_decorated_with_all_args_fn,
+    version_decorated_with_tags_fn,
+    version_first_multi_decorator_fn,
 )
 from .closure_test_functions.main import (
     Chatbot,
@@ -1380,3 +1389,164 @@ def test_signature_hash() -> None:
     assert closure.signature_hash == snapshot(
         "cee81f38b242e7d58dd61512d4b387197d67087aebf592403d53b9df76790db2"
     )
+
+
+def test_version_decorated_fn() -> None:
+    """Test that @version decorator is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(version_decorated_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def version_decorated_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@version" not in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_version_decorated_empty_parens_fn() -> None:
+    """Test that @version() decorator is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(version_decorated_empty_parens_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def version_decorated_empty_parens_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@version" not in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_version_decorated_with_tags_fn() -> None:
+    """Test that @version(tags=...) decorator is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(version_decorated_with_tags_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def version_decorated_with_tags_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@version" not in closure.code
+    assert 'tags=["beta"' not in closure.code  # decorator args are removed
+    assert closure.dependencies == snapshot({})
+
+
+def test_version_decorated_with_all_args_fn() -> None:
+    """Test that @version(tags=..., name=..., metadata=...) is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(version_decorated_with_all_args_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def version_decorated_with_all_args_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@version" not in closure.code
+    assert "custom_name" not in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_ops_version_decorated_fn() -> None:
+    """Test that @ops.version decorator is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(ops_version_decorated_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def ops_version_decorated_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@ops.version" not in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_ops_version_decorated_empty_parens_fn() -> None:
+    """Test that @ops.version() decorator is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(ops_version_decorated_empty_parens_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def ops_version_decorated_empty_parens_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@ops.version" not in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_ops_version_decorated_with_tags_fn() -> None:
+    """Test that @ops.version(tags=...) decorator is removed from closure."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(ops_version_decorated_with_tags_fn.fn)
+    assert closure.code == snapshot(
+        """\
+def ops_version_decorated_with_tags_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@ops.version" not in closure.code
+    assert "production" not in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_multi_decorator_with_version_fn() -> None:
+    """Test that @version is removed but other decorators remain."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(multi_decorator_with_version_fn.fn)
+    assert closure.code == snapshot(
+        """\
+from collections.abc import Callable
+from typing import Any, TypeVar
+
+_T = TypeVar("_T", bound=Callable[..., Any])
+
+
+def test_decorator(param: str | None = None) -> Callable[[_T], _T]:
+    def decorator(func: _T) -> _T:
+        func._test_param = param  # type: ignore[attr-defined]
+        return func
+
+    return decorator
+
+
+@test_decorator("test_param")
+def multi_decorator_with_version_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@version" not in closure.code
+    assert "@test_decorator" in closure.code
+    assert closure.dependencies == snapshot({})
+
+
+def test_version_first_multi_decorator_fn() -> None:
+    """Test that @version is removed but other decorators remain (version first)."""
+    Closure.from_fn.cache_clear()
+    closure = Closure.from_fn(version_first_multi_decorator_fn.fn)
+    assert closure.code == snapshot(
+        """\
+from collections.abc import Callable
+from typing import Any, TypeVar
+
+_T = TypeVar("_T", bound=Callable[..., Any])
+
+
+def test_decorator(param: str | None = None) -> Callable[[_T], _T]:
+    def decorator(func: _T) -> _T:
+        func._test_param = param  # type: ignore[attr-defined]
+        return func
+
+    return decorator
+
+
+@test_decorator("test_param")
+def version_first_multi_decorator_fn() -> str:
+    return "Hello, world!"
+"""
+    )
+    assert "@version" not in closure.code
+    assert "@test_decorator" in closure.code
+    assert closure.dependencies == snapshot({})
