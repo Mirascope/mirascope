@@ -32,11 +32,11 @@ describe("OrganizationMembershipService", () => {
         const membership = yield* db.organizations.memberships.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { memberId: nonMember.id, role: "DEVELOPER" },
+          data: { memberId: nonMember.id, role: "MEMBER" },
         });
 
         expect(membership).toMatchObject({
-          role: "DEVELOPER",
+          role: "MEMBER",
         } satisfies Partial<PublicOrganizationMembership>);
 
         // Verify audit log was created
@@ -50,7 +50,7 @@ describe("OrganizationMembershipService", () => {
           targetId: nonMember.id,
           action: "GRANT",
           previousRole: null,
-          newRole: "DEVELOPER",
+          newRole: "MEMBER",
         } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
@@ -63,10 +63,10 @@ describe("OrganizationMembershipService", () => {
         const membership = yield* db.organizations.memberships.create({
           userId: admin.id,
           organizationId: org.id,
-          data: { memberId: nonMember.id, role: "VIEWER" },
+          data: { memberId: nonMember.id, role: "MEMBER" },
         });
 
-        expect(membership.role).toBe("VIEWER");
+        expect(membership.role).toBe("MEMBER");
 
         // Verify audit log was created
         const audits = yield* db.organizations.memberships.audits.findAll({
@@ -78,7 +78,7 @@ describe("OrganizationMembershipService", () => {
           actorId: admin.id,
           targetId: nonMember.id,
           action: "GRANT",
-          newRole: "VIEWER",
+          newRole: "MEMBER",
         } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
@@ -99,7 +99,7 @@ describe("OrganizationMembershipService", () => {
               memberId: nonMember.id,
               // @ts-expect-error - this should not be present in the data
               organizationId: "injected-org-id", // should be ignored regardless
-              role: "DEVELOPER",
+              role: "MEMBER",
             },
           });
 
@@ -110,7 +110,7 @@ describe("OrganizationMembershipService", () => {
             memberId: nonMember.id,
           });
 
-          expect(found.role).toBe("DEVELOPER");
+          expect(found.role).toBe("MEMBER");
         }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -165,7 +165,7 @@ describe("OrganizationMembershipService", () => {
           .create({
             userId: nonMember.id,
             organizationId: org.id,
-            data: { memberId: anotherUser.id, role: "DEVELOPER" },
+            data: { memberId: anotherUser.id, role: "MEMBER" },
           })
           .pipe(Effect.flip);
 
@@ -195,17 +195,17 @@ describe("OrganizationMembershipService", () => {
     );
 
     it.effect(
-      "returns `PermissionDeniedError` when DEVELOPER tries to create",
+      "returns `PermissionDeniedError` when MEMBER tries to create",
       () =>
         Effect.gen(function* () {
-          const { org, developer, nonMember } = yield* TestOrganizationFixture;
+          const { org, member, nonMember } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
 
           const result = yield* db.organizations.memberships
             .create({
-              userId: developer.id,
+              userId: member.id,
               organizationId: org.id,
-              data: { memberId: nonMember.id, role: "VIEWER" },
+              data: { memberId: nonMember.id, role: "MEMBER" },
             })
             .pipe(Effect.flip);
 
@@ -217,17 +217,17 @@ describe("OrganizationMembershipService", () => {
     );
 
     it.effect(
-      "returns `PermissionDeniedError` when VIEWER tries to create",
+      "returns `PermissionDeniedError` when MEMBER tries to create (second case)",
       () =>
         Effect.gen(function* () {
-          const { org, viewer, nonMember } = yield* TestOrganizationFixture;
+          const { org, member, nonMember } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
 
           const result = yield* db.organizations.memberships
             .create({
-              userId: viewer.id,
+              userId: member.id,
               organizationId: org.id,
-              data: { memberId: nonMember.id, role: "DEVELOPER" },
+              data: { memberId: nonMember.id, role: "MEMBER" },
             })
             .pipe(Effect.flip);
 
@@ -249,7 +249,7 @@ describe("OrganizationMembershipService", () => {
           yield* db.organizations.memberships.create({
             userId: owner.id,
             organizationId: org.id,
-            data: { memberId: nonMember.id, role: "DEVELOPER" },
+            data: { memberId: nonMember.id, role: "MEMBER" },
           });
 
           // Second add fails
@@ -278,7 +278,7 @@ describe("OrganizationMembershipService", () => {
           .create({
             userId: "owner-id",
             organizationId: "org-id",
-            data: { memberId: "target-id", role: "DEVELOPER" },
+            data: { memberId: "target-id", role: "MEMBER" },
           })
           .pipe(Effect.flip);
 
@@ -298,33 +298,32 @@ describe("OrganizationMembershipService", () => {
         const { org, owner } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
-        // Fixture creates owner + admin + developer + viewer = 4 members
+        // Fixture creates owner + admin + member = 3 members
         const memberships = yield* db.organizations.memberships.findAll({
           userId: owner.id,
           organizationId: org.id,
         });
 
-        expect(memberships).toHaveLength(4);
+        expect(memberships).toHaveLength(3);
         expect(memberships.map((m) => m.role).sort()).toEqual([
           "ADMIN",
-          "DEVELOPER",
+          "MEMBER",
           "OWNER",
-          "VIEWER",
         ]);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect("allows any member role to read memberships", () =>
       Effect.gen(function* () {
-        const { org, viewer } = yield* TestOrganizationFixture;
+        const { org, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const memberships = yield* db.organizations.memberships.findAll({
-          userId: viewer.id,
+          userId: member.id,
           organizationId: org.id,
         });
 
-        expect(memberships).toHaveLength(4);
+        expect(memberships).toHaveLength(3);
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -376,26 +375,26 @@ describe("OrganizationMembershipService", () => {
   describe("findById", () => {
     it.effect("retrieves a specific membership", () =>
       Effect.gen(function* () {
-        const { org, owner, developer } = yield* TestOrganizationFixture;
+        const { org, owner, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const membership = yield* db.organizations.memberships.findById({
           userId: owner.id,
           organizationId: org.id,
-          memberId: developer.id,
+          memberId: member.id,
         });
 
-        expect(membership.role).toBe("DEVELOPER");
+        expect(membership.role).toBe("MEMBER");
       }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect("allows any member to read another member's info", () =>
       Effect.gen(function* () {
-        const { org, viewer, admin } = yield* TestOrganizationFixture;
+        const { org, member, admin } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const membership = yield* db.organizations.memberships.findById({
-          userId: viewer.id,
+          userId: member.id,
           organizationId: org.id,
           memberId: admin.id,
         });
@@ -469,13 +468,13 @@ describe("OrganizationMembershipService", () => {
   describe("update", () => {
     it.effect("updates a membership role", () =>
       Effect.gen(function* () {
-        const { org, owner, developer } = yield* TestOrganizationFixture;
+        const { org, owner, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const updated = yield* db.organizations.memberships.update({
           userId: owner.id,
           organizationId: org.id,
-          memberId: developer.id,
+          memberId: member.id,
           data: { role: "ADMIN" },
         });
 
@@ -484,16 +483,16 @@ describe("OrganizationMembershipService", () => {
         // Verify audit log was created
         const audits = yield* db.organizations.memberships.audits.findAll({
           organizationId: org.id,
-          memberId: developer.id,
+          memberId: member.id,
         });
         // Filter for CHANGE actions (there may be GRANT from fixture setup)
         const changeAudits = audits.filter((a) => a.action === "CHANGE");
         expect(changeAudits).toHaveLength(1);
         expect(changeAudits[0]).toMatchObject({
           actorId: owner.id,
-          targetId: developer.id,
+          targetId: member.id,
           action: "CHANGE",
-          previousRole: "DEVELOPER",
+          previousRole: "MEMBER",
           newRole: "ADMIN",
         } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
@@ -501,31 +500,31 @@ describe("OrganizationMembershipService", () => {
 
     it.effect("allows ADMIN to update memberships", () =>
       Effect.gen(function* () {
-        const { org, admin, developer } = yield* TestOrganizationFixture;
+        const { org, admin, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const updated = yield* db.organizations.memberships.update({
           userId: admin.id,
           organizationId: org.id,
-          memberId: developer.id,
-          data: { role: "VIEWER" },
+          memberId: member.id,
+          data: { role: "MEMBER" },
         });
 
-        expect(updated.role).toBe("VIEWER");
+        expect(updated.role).toBe("MEMBER");
 
         // Verify audit log was created
         const audits = yield* db.organizations.memberships.audits.findAll({
           organizationId: org.id,
-          memberId: developer.id,
+          memberId: member.id,
         });
         const changeAudits = audits.filter((a) => a.action === "CHANGE");
         expect(changeAudits).toHaveLength(1);
         expect(changeAudits[0]).toMatchObject({
           actorId: admin.id,
-          targetId: developer.id,
+          targetId: member.id,
           action: "CHANGE",
-          previousRole: "DEVELOPER",
-          newRole: "VIEWER",
+          previousRole: "MEMBER",
+          newRole: "MEMBER",
         } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
@@ -534,14 +533,14 @@ describe("OrganizationMembershipService", () => {
       "returns `PermissionDeniedError` when trying to change role to OWNER",
       () =>
         Effect.gen(function* () {
-          const { org, owner, developer } = yield* TestOrganizationFixture;
+          const { org, owner, member } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
 
           const result = yield* db.organizations.memberships
             .update({
               userId: owner.id,
               organizationId: org.id,
-              memberId: developer.id,
+              memberId: member.id,
               data: { role: "OWNER" },
             })
             .pipe(Effect.flip);
@@ -563,7 +562,7 @@ describe("OrganizationMembershipService", () => {
               userId: admin.id,
               organizationId: org.id,
               memberId: admin.id,
-              data: { role: "DEVELOPER" },
+              data: { role: "MEMBER" },
             })
             .pipe(Effect.flip);
 
@@ -603,7 +602,7 @@ describe("OrganizationMembershipService", () => {
             userId: nonMember.id,
             organizationId: org.id,
             memberId: "some-user-id",
-            data: { role: "DEVELOPER" },
+            data: { role: "MEMBER" },
           })
           .pipe(Effect.flip);
 
@@ -635,7 +634,7 @@ describe("OrganizationMembershipService", () => {
               userId: admin.id,
               organizationId: org.id,
               memberId: secondAdmin.id,
-              data: { role: "DEVELOPER" },
+              data: { role: "MEMBER" },
             })
             .pipe(Effect.flip);
 
@@ -648,15 +647,15 @@ describe("OrganizationMembershipService", () => {
       "returns `PermissionDeniedError` when ADMIN tries to promote to ADMIN",
       () =>
         Effect.gen(function* () {
-          const { org, admin, developer } = yield* TestOrganizationFixture;
+          const { org, admin, member } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
 
-          // ADMIN should not be able to promote DEVELOPER to ADMIN
+          // ADMIN should not be able to promote MEMBER to ADMIN
           const result = yield* db.organizations.memberships
             .update({
               userId: admin.id,
               organizationId: org.id,
-              memberId: developer.id,
+              memberId: member.id,
               data: { role: "ADMIN" },
             })
             .pipe(Effect.flip);
@@ -667,18 +666,30 @@ describe("OrganizationMembershipService", () => {
     );
 
     it.effect(
-      "returns `PermissionDeniedError` when DEVELOPER tries to update",
+      "returns `PermissionDeniedError` when MEMBER tries to update",
       () =>
         Effect.gen(function* () {
-          const { org, developer, viewer } = yield* TestOrganizationFixture;
+          const { org, member, admin } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
+
+          const anotherMember = yield* db.users.create({
+            data: {
+              email: "another-member@example.com",
+              name: "Another Member",
+            },
+          });
+          yield* db.organizations.memberships.create({
+            userId: admin.id,
+            organizationId: org.id,
+            data: { memberId: anotherMember.id, role: "MEMBER" },
+          });
 
           const result = yield* db.organizations.memberships
             .update({
-              userId: developer.id,
+              userId: member.id,
               organizationId: org.id,
-              memberId: viewer.id,
-              data: { role: "DEVELOPER" },
+              memberId: anotherMember.id,
+              data: { role: "MEMBER" },
             })
             .pipe(Effect.flip);
 
@@ -746,8 +757,8 @@ describe("OrganizationMembershipService", () => {
         const db = new MockDatabase()
           // authorize: membership found with OWNER role
           .select([{ role: "OWNER" }])
-          // getMembership for target: returns DEVELOPER
-          .select([{ role: "DEVELOPER" }])
+          // getMembership for target: returns MEMBER
+          .select([{ role: "MEMBER" }])
           // update: fails
           .update(new Error("Database connection failed"))
           .build();
@@ -774,13 +785,13 @@ describe("OrganizationMembershipService", () => {
   describe("delete", () => {
     it.effect("removes a member from an organization", () =>
       Effect.gen(function* () {
-        const { org, owner, developer } = yield* TestOrganizationFixture;
+        const { org, owner, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         yield* db.organizations.memberships.delete({
           userId: owner.id,
           organizationId: org.id,
-          memberId: developer.id,
+          memberId: member.id,
         });
 
         // Verify membership is gone
@@ -788,7 +799,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: owner.id,
             organizationId: org.id,
-            memberId: developer.id,
+            memberId: member.id,
           })
           .pipe(Effect.flip);
 
@@ -797,15 +808,15 @@ describe("OrganizationMembershipService", () => {
         // Verify audit log was created
         const audits = yield* db.organizations.memberships.audits.findAll({
           organizationId: org.id,
-          memberId: developer.id,
+          memberId: member.id,
         });
         const revokeAudits = audits.filter((a) => a.action === "REVOKE");
         expect(revokeAudits).toHaveLength(1);
         expect(revokeAudits[0]).toMatchObject({
           actorId: owner.id,
-          targetId: developer.id,
+          targetId: member.id,
           action: "REVOKE",
-          previousRole: "DEVELOPER",
+          previousRole: "MEMBER",
           newRole: null,
         } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
@@ -876,16 +887,16 @@ describe("OrganizationMembershipService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it.effect("allows ADMIN to delete DEVELOPER or VIEWER", () =>
+    it.effect("allows ADMIN to delete MEMBER", () =>
       Effect.gen(function* () {
-        const { org, admin, viewer } = yield* TestOrganizationFixture;
+        const { org, admin, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
-        // ADMIN should be able to delete VIEWER
+        // ADMIN should be able to delete MEMBER
         yield* db.organizations.memberships.delete({
           userId: admin.id,
           organizationId: org.id,
-          memberId: viewer.id,
+          memberId: member.id,
         });
 
         // Verify the membership is deleted
@@ -893,7 +904,7 @@ describe("OrganizationMembershipService", () => {
           .findById({
             userId: admin.id,
             organizationId: org.id,
-            memberId: viewer.id,
+            memberId: member.id,
           })
           .pipe(Effect.flip);
 
@@ -902,15 +913,15 @@ describe("OrganizationMembershipService", () => {
         // Verify audit log was created
         const audits = yield* db.organizations.memberships.audits.findAll({
           organizationId: org.id,
-          memberId: viewer.id,
+          memberId: member.id,
         });
         const revokeAudits = audits.filter((a) => a.action === "REVOKE");
         expect(revokeAudits).toHaveLength(1);
         expect(revokeAudits[0]).toMatchObject({
           actorId: admin.id,
-          targetId: viewer.id,
+          targetId: member.id,
           action: "REVOKE",
-          previousRole: "VIEWER",
+          previousRole: "MEMBER",
         } satisfies Partial<PublicOrganizationMembershipAudit>);
       }).pipe(Effect.provide(TestDatabase)),
     );
@@ -975,8 +986,8 @@ describe("OrganizationMembershipService", () => {
         const db = new MockDatabase()
           // authorize: membership found with OWNER role
           .select([{ role: "OWNER" }])
-          // getMembership for target: returns DEVELOPER
-          .select([{ role: "DEVELOPER" }])
+          // getMembership for target: returns MEMBER
+          .select([{ role: "MEMBER" }])
           // delete: fails
           .delete(new Error("Database connection failed"))
           .build();

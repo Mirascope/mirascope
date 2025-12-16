@@ -601,9 +601,9 @@ export type PermissionAction = "create" | "read" | "update" | "delete";
  *
  * @example
  * ```ts
- * const permissions: PermissionTable<"OWNER" | "ADMIN" | "DEVELOPER" | "VIEWER"> = {
+ * const permissions: PermissionTable<"OWNER" | "ADMIN" | "MEMBER"> = {
  *   create: ["OWNER", "ADMIN"],
- *   read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"],
+ *   read: ["OWNER", "ADMIN", "MEMBER"],
  *   update: ["OWNER", "ADMIN"],
  *   delete: ["OWNER"],
  * };
@@ -653,7 +653,7 @@ export type PermissionTable<TRole extends string> = Record<
  * @example
  * ```ts
  * class OrganizationService extends BaseAuthenticatedService<
- *   PublicOrg, "orgs/:orgId", typeof orgs, NewOrg, Role
+ *   PublicOrg, "orgs/:orgId", typeof orgs, NewOrg, OrganizationRole
  * > {
  *   protected initializeBaseService() {
  *     return new OrganizationBaseService(this.db);
@@ -662,7 +662,7 @@ export type PermissionTable<TRole extends string> = Record<
  *   protected getPermissionTable() {
  *     return {
  *       create: ["OWNER"],
- *       read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"],
+ *       read: ["OWNER", "ADMIN", "MEMBER"],
  *       update: ["OWNER", "ADMIN"],
  *       delete: ["OWNER"],
  *     };

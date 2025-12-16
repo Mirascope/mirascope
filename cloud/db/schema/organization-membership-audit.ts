@@ -2,7 +2,7 @@ import { relations } from "drizzle-orm";
 import { pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 import { organizations } from "./organizations";
 import { users } from "./users";
-import { roleEnum } from "./organization-memberships";
+import { organizationRoleEnum } from "./organization-memberships";
 
 export const auditActionEnum = pgEnum("audit_action", [
   "GRANT", // New membership created
@@ -24,8 +24,8 @@ export const organizationMembershipAudit = pgTable(
       .references(() => users.id)
       .notNull(),
     action: auditActionEnum("action").notNull(),
-    previousRole: roleEnum("previous_role"),
-    newRole: roleEnum("new_role"),
+    previousRole: organizationRoleEnum("previous_role"),
+    newRole: organizationRoleEnum("new_role"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
 );
@@ -40,12 +40,12 @@ export const organizationMembershipAuditRelations = relations(
     actor: one(users, {
       fields: [organizationMembershipAudit.actorId],
       references: [users.id],
-      relationName: "actor",
+      relationName: "organizationMembershipAuditActor",
     }),
     target: one(users, {
       fields: [organizationMembershipAudit.targetId],
       references: [users.id],
-      relationName: "target",
+      relationName: "organizationMembershipAuditTarget",
     }),
   }),
 );

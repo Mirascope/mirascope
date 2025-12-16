@@ -7,11 +7,10 @@
  *
  * ## Role Hierarchy
  *
- * Organizations support four roles with descending permissions:
+ * Organizations support three roles with descending permissions:
  * - `OWNER` - Full control (create, read, update, delete)
  * - `ADMIN` - Administrative access (read, update)
- * - `DEVELOPER` - Read-only access (read)
- * - `VIEWER` - Read-only access (read)
+ * - `MEMBER` - Read-only access (read)
  *
  * ## Architecture
  *
@@ -74,7 +73,7 @@ import {
   type NewOrganization,
   type PublicOrganization,
   type PublicOrganizationWithMembership,
-  type Role,
+  type OrganizationRole,
 } from "@/db/schema";
 
 // =============================================================================
@@ -125,12 +124,12 @@ class OrganizationBaseService extends BaseService<
  *
  * ## Permission Matrix
  *
- * | Action   | OWNER | ADMIN | DEVELOPER | VIEWER |
- * |----------|-------|-------|-----------|--------|
+ * | Action   | OWNER | ADMIN | MEMBER |
+ * |----------|-------|-------|--------|
  * | create   | N/A (special handling - creator becomes owner) |
- * | read     | ✓     | ✓     | ✓         | ✓      |
- * | update   | ✓     | ✓     | ✗         | ✗      |
- * | delete   | ✓     | ✗     | ✗         | ✗      |
+ * | read     | ✓     | ✓     | ✓      |
+ * | update   | ✓     | ✓     | ✗      |
+ * | delete   | ✓     | ✗     | ✗      |
  *
  * ## Security Model
  *
@@ -143,7 +142,7 @@ export class OrganizationService extends BaseAuthenticatedService<
   "organizations/:organizationId",
   typeof organizations,
   NewOrganization,
-  Role
+  OrganizationRole
 > {
   /**
    * Nested service for managing organization memberships.
@@ -158,7 +157,7 @@ export class OrganizationService extends BaseAuthenticatedService<
    *   userId: owner.id,
    *   organizationId: org.id,
    *   targetUserId: newUser.id,
-   *   role: "DEVELOPER",
+   *   role: "MEMBER",
    * });
    *
    * // List all members
@@ -183,10 +182,10 @@ export class OrganizationService extends BaseAuthenticatedService<
     return new OrganizationBaseService(this.db);
   }
 
-  protected getPermissionTable(): PermissionTable<Role> {
+  protected getPermissionTable(): PermissionTable<OrganizationRole> {
     return {
       create: ["OWNER"], // Handled separately (no org exists yet)
-      read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"], // All members can read
+      read: ["OWNER", "ADMIN", "MEMBER"], // All members can read
       update: ["OWNER", "ADMIN"],
       delete: ["OWNER"],
     };
@@ -214,7 +213,7 @@ export class OrganizationService extends BaseAuthenticatedService<
   }: {
     organizationId: string;
     userId: string;
-  }): Effect.Effect<Role, NotFoundError | DatabaseError> {
+  }): Effect.Effect<OrganizationRole, NotFoundError | DatabaseError> {
     return this.memberships.getRole({ userId, organizationId });
   }
 
@@ -275,7 +274,7 @@ export class OrganizationService extends BaseAuthenticatedService<
           return {
             id: organization.id,
             name: organization.name,
-            role: "OWNER" as Role,
+            role: "OWNER" as OrganizationRole,
           };
         });
       },
