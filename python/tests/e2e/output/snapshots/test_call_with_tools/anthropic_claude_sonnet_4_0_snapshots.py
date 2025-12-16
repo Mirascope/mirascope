@@ -286,7 +286,8 @@ Here are the secrets retrieved for each password:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
@@ -424,7 +425,8 @@ Both secrets have been successfully retrieved!\
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [

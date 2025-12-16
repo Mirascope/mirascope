@@ -185,7 +185,8 @@ async_snapshot = snapshot(
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-5",
             "model_id": "anthropic/claude-sonnet-4-5",
             "finish_reason": None,
             "messages": [
@@ -264,7 +265,8 @@ stream_snapshot = snapshot(
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-5",
             "model_id": "anthropic/claude-sonnet-4-5",
             "finish_reason": None,
             "messages": [

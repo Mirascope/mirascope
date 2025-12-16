@@ -394,7 +394,8 @@ Respond only with valid JSON that matches this exact schema:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-4o:completions",
             "model_id": "openai/gpt-4o:completions",
             "finish_reason": None,
             "messages": [
@@ -567,7 +568,8 @@ Respond only with valid JSON that matches this exact schema:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-4o:completions",
             "model_id": "openai/gpt-4o:completions",
             "finish_reason": None,
             "messages": [

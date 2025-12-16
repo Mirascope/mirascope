@@ -114,7 +114,8 @@ Here are all U.S. states, listed alphabetically:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -159,7 +160,8 @@ stream_snapshot = snapshot(
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [

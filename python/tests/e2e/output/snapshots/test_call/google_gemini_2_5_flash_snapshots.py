@@ -153,7 +153,8 @@ So, 4200 + 42 = **4242**.\
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
@@ -232,7 +233,8 @@ So, 42\
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [

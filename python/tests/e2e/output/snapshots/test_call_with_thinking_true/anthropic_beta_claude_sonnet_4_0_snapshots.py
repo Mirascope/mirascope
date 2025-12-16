@@ -370,7 +370,8 @@ Checking primality:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
@@ -555,7 +556,8 @@ Total count: 3 primes.\
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [

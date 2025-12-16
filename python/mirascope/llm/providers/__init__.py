@@ -16,6 +16,7 @@ from .openai import (
 from .openai.completions import BaseOpenAICompletionsProvider
 from .provider_id import KNOWN_PROVIDER_IDS, ProviderId
 from .provider_registry import get_provider_for_model, register_provider
+from .together import TogetherProvider
 
 __all__ = [
     "KNOWN_PROVIDER_IDS",
@@ -33,6 +34,7 @@ __all__ = [
     "Params",
     "Provider",
     "ProviderId",
+    "TogetherProvider",
     "get_provider_for_model",
     "load",
     "load_provider",

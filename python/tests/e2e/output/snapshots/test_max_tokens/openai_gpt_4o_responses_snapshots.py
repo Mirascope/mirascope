@@ -158,7 +158,8 @@ Sure! Here are all the U.S. states:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -197,7 +198,8 @@ Sure! Here is a list of all 50 U.S. states:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [

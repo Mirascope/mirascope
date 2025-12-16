@@ -420,7 +420,8 @@ Respond only with valid JSON that matches this exact schema:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
@@ -638,7 +639,8 @@ Respond only with valid JSON that matches this exact schema:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [

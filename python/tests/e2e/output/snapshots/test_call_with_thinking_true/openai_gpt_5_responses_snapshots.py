@@ -359,7 +359,8 @@ The final answer is simply "3." Great, let's go with that!\
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-5:responses",
             "model_id": "openai/gpt-5:responses",
             "finish_reason": None,
             "messages": [
@@ -523,7 +524,8 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-5:responses",
             "model_id": "openai/gpt-5:responses",
             "finish_reason": None,
             "messages": [

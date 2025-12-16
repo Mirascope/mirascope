@@ -175,7 +175,8 @@ Is there something else I can help you with today?\
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
@@ -254,7 +255,8 @@ If you're interested in chemistry or pharmaceutical science for legitimate educa
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
