@@ -1,0 +1,477 @@
+interactions:
+  61067d9cf85704d58c3516db084b84fb297b0bb0aa77bb27eb9aa549df43e9eb:
+  - finish_reason: null
+    text: <think>
+    token: 151667
+  - finish_reason: null
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    text: Okay
+    token: 32313
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' asking'
+    token: 10161
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' double'
+    token: 1990
+  - finish_reason: null
+    text: -check
+    token: 15934
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' previous'
+    token: 3681
+  - finish_reason: null
+    text: ' question'
+    token: 3405
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    text: ' think'
+    token: 1744
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' The'
+    token: 576
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' first'
+    token: 1156
+  - finish_reason: null
+    text: ' asked'
+    token: 4588
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: Who
+    token: 15191
+  - finish_reason: null
+    text: ' created'
+    token: 3465
+  - finish_reason: null
+    text: ' you'
+    token: 498
+  - finish_reason: null
+    text: ?"
+    token: 7521
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' responded'
+    token: 16441
+  - finish_reason: null
+    text: ' by'
+    token: 553
+  - finish_reason: null
+    text: ' stating'
+    token: 27798
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' am'
+    token: 1079
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' large'
+    token: 3460
+  - finish_reason: null
+    text: ' language'
+    token: 4128
+  - finish_reason: null
+    text: ' model'
+    token: 1614
+  - finish_reason: null
+    text: ' trained'
+    token: 16176
+  - finish_reason: null
+    text: ' by'
+    token: 553
+  - finish_reason: null
+    text: ' Google'
+    token: 5085
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Then'
+    token: 5005
+  - finish_reason: null
+    text: ' they'
+    token: 807
+  - finish_reason: null
+    text: ' asked'
+    token: 4588
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: Can
+    token: 6713
+  - finish_reason: null
+    text: ' you'
+    token: 498
+  - finish_reason: null
+    text: ' double'
+    token: 1990
+  - finish_reason: null
+    text: -check
+    token: 15934
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: ?"
+    token: 7521
+  - finish_reason: null
+    text: ' which'
+    token: 892
+  - finish_reason: null
+    text: ' seems'
+    token: 4977
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ' they'
+    token: 807
+  - finish_reason: null
+    text: ' want'
+    token: 1366
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' confirm'
+    token: 7683
+  - finish_reason: null
+    text: ' my'
+    token: 847
+  - finish_reason: null
+    text: ' answer'
+    token: 4226
+  - finish_reason: null
+    text: '.
+
+
+      '
+    token: 382
+  - finish_reason: null
+    text: I
+    token: 40
+  - finish_reason: null
+    text: ' need'
+    token: 1184
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' make'
+    token: 1281
+  - finish_reason: null
+    text: ' sure'
+    token: 2704
+  - finish_reason: null
+    text: ' my'
+    token: 847
+  - finish_reason: null
+    text: ' response'
+    token: 2033
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' accurate'
+    token: 13382
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' The'
+    token: 576
+  - finish_reason: null
+    text: ' original'
+    token: 4024
+  - finish_reason: null
+    text: ' answer'
+    token: 4226
+  - finish_reason: null
+    text: ' was'
+    token: 572
+  - finish_reason: null
+    text: ' correct'
+    token: 4396
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' so'
+    token: 773
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' acknowledge'
+    token: 24645
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Maybe'
+    token: 10696
+  - finish_reason: null
+    text: ' say'
+    token: 1977
+  - finish_reason: null
+    text: ' something'
+    token: 2494
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: 'Yes'
+    token: 9454
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' double'
+    token: 1990
+  - finish_reason: null
+    text: -check
+    token: 15934
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Your'
+    token: 4615
+  - finish_reason: null
+    text: ' answer'
+    token: 4226
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' correct'
+    token: 4396
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: ' That'
+    token: 2938
+  - finish_reason: null
+    text: ' way'
+    token: 1616
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' feels'
+    token: 11074
+  - finish_reason: null
+    text: ' confident'
+    token: 16506
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' my'
+    token: 847
+  - finish_reason: null
+    text: ' response'
+    token: 2033
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Also'
+    token: 7281
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' keep'
+    token: 2506
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' tone'
+    token: 16232
+  - finish_reason: null
+    text: ' friendly'
+    token: 11657
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' open'
+    token: 1787
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' further'
+    token: 4623
+  - finish_reason: null
+    text: ' questions'
+    token: 4755
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    text: ' put'
+    token: 2182
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: ' into'
+    token: 1119
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' concise'
+    token: 63594
+  - finish_reason: null
+    text: ' reply'
+    token: 9851
+  - finish_reason: null
+    text: '.
+
+      '
+    token: 624
+  - finish_reason: null
+    text: </think>
+    token: 151668
+  - finish_reason: null
+    text: '
+
+
+      '
+    token: 271
+  - finish_reason: null
+    text: 'Yes'
+    token: 9454
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' double'
+    token: 1990
+  - finish_reason: null
+    text: -check
+    token: 15934
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Your'
+    token: 4615
+  - finish_reason: null
+    text: ' answer'
+    token: 4226
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' correct'
+    token: 4396
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: stop
+    text: ''
+    token: 151645
