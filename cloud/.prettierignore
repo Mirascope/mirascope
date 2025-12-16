@@ -1,0 +1,24 @@
+# Build outputs
+dist
+build
+.next
+out
+
+# Generated files
+node_modules
+.DS_Store
+package-lock.json
+bun.lock
+yarn.lock
+pnpm-lock.yaml
+.venv
+
+# Generated TypeScript files
+*.gen.ts
+
+# Markdown/MDX files (to preserve emphasis styles)
+*.md
+*.mdx
+
+# Large text files
+LICENSE
