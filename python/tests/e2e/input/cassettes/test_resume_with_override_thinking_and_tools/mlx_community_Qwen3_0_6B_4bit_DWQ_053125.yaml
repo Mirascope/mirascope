@@ -75,4 +75,152 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '420'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VUW1PqSBB+51dM5eXseoEAInKqfEAOkiBwuEQB1y0Zkg4ZksyEuaBi+d/PJIiC
+        6+YhlfRlvv6+nu7XHEKGi6lHPCxBGD/RP9qC0Gv2Tn2MSqBSO3YmbUwwl5+x2+d171uHSHhOk4yj
+        IycAdE3mjGLXJajBqKIeV/HR0QN9oPWIk0UgT5BgSOpAJYCjJ0ylyH6LpimDvWyq4jnwPEI9hhLO
+        5hHEeWT/WANaMIkwCjSTCBCjWbZkLBIoAA46CAnQlgBLNPPAxyqSjzgheZfFiZLw6JP5DJEtqq+o
+        K4k+xEYUwMsjR6f9EMiNAPPoBXkgyIKCh3zGdQIRuiBbIolDEGhGZwgLhCnCfKFirV1GzkZLJWR2
+        nq4LuTiKEJHoiWh+M3qpic7yaETiRJePRVZoHnUghV2A3Ba+Zf+Oqpk/UOPki+oBU1pOLbzkCvZ8
+        byf/36od3Yau6aDP736KY0hbuSfVF1wdpMmKb5LTdG3W9L443g7+377nMdIyY6l4Bt9Q9lV90rFL
+        9Pm65UyGrdagfVYbsGDenvZ71aK8swbkpnkTd4P28ux8dceW5xjmzoVfbdeLrbhRrczvq9IqTWCB
+        1XRqr2y5xjcLv1vo1fruL9c734zt6tNg1Ro1IuVQpxuq8JjUBF8fj8rTpOKbhabV6dvXhcpkU6sV
+        7+5dtz4amsNQKMGSEp4WV4POxUtvCaa6KpVuafF2MnHofdn0x3UnPO9bol6uKm9TntDbTrvtlcZn
+        y3uRFIbrF/d6fltQ0dXzeNMPRy2TRAlxmpZpb7rNTevYUoXOWnRIHI5WQc8KF/Xy1Jq6vWC8ujCP
+        OXdIb1TgzXAc1Ja1nl+Ml9bT5aWR+07xfz/VNjiLMnVj5kG0C/9oh+ETSkQwBCxY2kdj5PzufzTf
+        INSDZ202v8R3QQi8yM7tpufqK0yB6wXjfc5WOgF/ib/zW8y0uKwsQ6WZXZBYLyT8caMMPe1xIh0W
+        Am0wlS2kSmULu7e/DvzF6rtfMomjQ1epdPKfc8UvjUqi/cW2t/O0QDgi8iUl5TQnzt4IaICDsnYq
+        5vbE3l3pwxIr6Vhkam8bcAdckK3SC4i1lqelfOXUj7AIMjyDg0gYFWB72USuelcYP57W59ZqU7X7
+        F5KEpD41cm+5P1zg56/ZBQAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 18:22:42 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1478
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '420'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/31UWXPiOBB+51do/ZKZDMORcGWr8kA4gjkMBEOAna2JbMu2sJCMJANOKv99ZRMS
+        SGXWDy6p++vr61a/ZADQbEgd7ECJhPY3+EdJAHhJ/4mOUYmoVIqjSAlDyOUH9vC9nJwVRKJ9YqRd
+        XvaRvBCgAYkdERUDmD6UoI0tRqFtY2BEawvxvy4vf9FfdBjAOAt0EFEHcSFVXjmFRyASiIMdpFIA
+        qa7FQkH6Jz5o6iMHwAhxF9lSnfSLLQIekyleMkaUJQO+8kjU3cciwQCBUAp4cpALIyJ/wxDnbLYO
+        I4l+u9h6Am5EbYkZBVgAuIWYQIugLNj52PYTGdpDW5JYCVRVOqAIqZR1CQhjgQAEBwhglQQMkLJX
+        XhSbnqrliT4BKNRVRTp6czBHqS+bcY5EyKiTJp0k+LlWsEMXHAHoyrTuCcsmSA/J/+Enm+qYtcUs
+        EsCGhCQF/Kn0b/RWufn+lAMTvA4VaYiyyPNVsENDHXag8RfVsp9a7yfApPuSR+hE95r987wceVZz
+        Qs6G7U1P4Rol83SS4ae4CgS5J74wTsyVWJXzSfF6dn/9uo4J9iiUEU/DN/iiUZ/39Ssaj5qLSucR
+        y61Ti0dt/KiXS5X7zXikK7Z61SCcNmx/WliVVkTkq3cQVv3Z1XrbLw65EayoXr+XlXJrXiD752Xw
+        uC/w0lbFcep7vWTHeN6A3fa9hRw3jqOF0ctXSuOeUUYWF52aYeF6mdh+tI0Gi1Z943QNNt8ZXtN0
+        98t8cduPXWGWY+5ckfHsru8aYbcj89XZ5MYzljejenfVmNbWVFrWMJhb1dXsahQs42pY1OsT8tiJ
+        TLc+gMRZ0kEPXe9q+dIe9da9PH7wb+ab0rWE+/2dOxw/P+ztR9WL7sCQRdxweq1N/UHwRVy5ud/A
+        UbNaa0+6rCiCdmFtL6eRHw2N1rR5X5v3vOmws7J4YRj/4D9WdDxfh8ycVVqG0do4/WawWdfqZvxA
+        +J1NinGjXbxe1CG3nRBPm3jQXe52fHoT4RnVr2teoDtm3JLl2sR6Dne3t1rmqw7/+9FdjTOSdnPN
+        HESO8Pf2ay6mWPgPCAqWzI02MYej92HTsNpNeyUufMIPkBDQS/0OEr/qNVLE1cZzPpZI8ui+ie+5
+        Q8wkuTQtLUosB0hCtYXh+wRrIVfTLk0WINpgUbqFy+VD2JOlfaYvVt/0kklIzlWlo+2JX9FUUTE5
+        3eYni14RBAmWcVKU2ZqbJ09OBThL68hi5oTs4xM6T7F6nXlj+9CAmVr1+MC0h9aKy59XufJPl0Dh
+        p/G0wzIUSHcSTAiNO2g9Tzsunz1X9RFemISNPS3zmvkP9pAgR84GAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 18:23:33 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1849
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
 version: 1

@@ -1,0 +1,1065 @@
+interactions:
+  1bf8ab5616c0bc28bbe29be9b6fdc350b0aedb75f6753f0c8d8d94842d951568:
+  - finish_reason: null
+    text: <think>
+    token: 151667
+  - finish_reason: null
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    text: Okay
+    token: 32313
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' asking'
+    token: 10161
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' difference'
+    token: 6672
+  - finish_reason: null
+    text: ' between'
+    token: 1948
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' same'
+    token: 1852
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    text: ' think'
+    token: 1744
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' The'
+    token: 576
+  - finish_reason: null
+    text: ' first'
+    token: 1156
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: main
+    token: 3817
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ',"'
+    token: 1335
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' second'
+    token: 2086
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: sub
+    token: 1966
+  - finish_reason: null
+    text: -type
+    token: 10604
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' need'
+    token: 1184
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' explain'
+    token: 10339
+  - finish_reason: null
+    text: ' each'
+    token: 1817
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' simple'
+    token: 4285
+  - finish_reason: null
+    text: ' terms'
+    token: 3793
+  - finish_reason: null
+    text: '.
+
+
+      '
+    token: 382
+  - finish_reason: null
+    text: For
+    token: 2461
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' most'
+    token: 1429
+  - finish_reason: null
+    text: ' general'
+    token: 4586
+  - finish_reason: null
+    text: ' category'
+    token: 5582
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' example'
+    token: 3110
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: '''m'
+    token: 2776
+  - finish_reason: null
+    text: ' talking'
+    token: 7404
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' book'
+    token: 2311
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' would'
+    token: 1035
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: book
+    token: 2190
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: ' The'
+    token: 576
+  - finish_reason: null
+    text: ' sub'
+    token: 1186
+  - finish_reason: null
+    text: -type
+    token: 10604
+  - finish_reason: null
+    text: ' would'
+    token: 1035
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' specific'
+    token: 3151
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: fiction
+    token: 57062
+  - finish_reason: null
+    text: al
+    token: 278
+  - finish_reason: null
+    text: ' books'
+    token: 6467
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: ' That'
+    token: 2938
+  - finish_reason: null
+    text: ' makes'
+    token: 3643
+  - finish_reason: null
+    text: ' sense'
+    token: 5530
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: I
+    token: 40
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' also'
+    token: 1083
+  - finish_reason: null
+    text: ' mention'
+    token: 6286
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: ' sub'
+    token: 1186
+  - finish_reason: null
+    text: -types
+    token: 20817
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' more'
+    token: 803
+  - finish_reason: null
+    text: ' specific'
+    token: 3151
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' narrower'
+    token: 90429
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' instance'
+    token: 2867
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: books
+    token: 12110
+  - finish_reason: null
+    text: ',"'
+    token: 1335
+  - finish_reason: null
+    text: ' sub'
+    token: 1186
+  - finish_reason: null
+    text: -types
+    token: 20817
+  - finish_reason: null
+    text: ' could'
+    token: 1410
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: nov
+    token: 38042
+  - finish_reason: null
+    text: els
+    token: 2010
+  - finish_reason: null
+    text: '"'
+    token: 1
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: non
+    token: 6280
+  - finish_reason: null
+    text: -fiction
+    token: 73431
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: Wait
+    token: 14190
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' check'
+    token: 1779
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' there'
+    token: 1052
+  - finish_reason: null
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' standard'
+    token: 5297
+  - finish_reason: null
+    text: ' way'
+    token: 1616
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' categor'
+    token: 22049
+  - finish_reason: null
+    text: ize
+    token: 551
+  - finish_reason: null
+    text: ' these'
+    token: 1493
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' think'
+    token: 1744
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' programming'
+    token: 15473
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' base'
+    token: 2331
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' sub'
+    token: 1186
+  - finish_reason: null
+    text: -types
+    token: 20817
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' derived'
+    token: 14257
+  - finish_reason: null
+    text: ' from'
+    token: 504
+  - finish_reason: null
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' difference'
+    token: 6672
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' base'
+    token: 2331
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' derived'
+    token: 14257
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: I
+    token: 40
+  - finish_reason: null
+    text: ' need'
+    token: 1184
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' make'
+    token: 1281
+  - finish_reason: null
+    text: ' sure'
+    token: 2704
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' explanation'
+    token: 16148
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' clear'
+    token: 2797
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' not'
+    token: 537
+  - finish_reason: null
+    text: ' too'
+    token: 2238
+  - finish_reason: null
+    text: ' technical'
+    token: 10916
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    text: ' structure'
+    token: 5944
+  - finish_reason: null
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    text: ' step'
+    token: 3019
+  - finish_reason: null
+    text: ' by'
+    token: 553
+  - finish_reason: null
+    text: ' step'
+    token: 3019
+  - finish_reason: null
+    text: ':'
+    token: 25
+  - finish_reason: null
+    text: ' define'
+    token: 6979
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' sub'
+    token: 1186
+  - finish_reason: null
+    text: -type
+    token: 10604
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' examples'
+    token: 10295
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' why'
+    token: 3170
+  - finish_reason: null
+    text: ' they'
+    token: 807
+  - finish_reason: null
+    text: ' differ'
+    token: 1745
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' That'
+    token: 2938
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' cover'
+    token: 3421
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    text: ' question'
+    token: 3405
+  - finish_reason: null
+    text: '.
+
+      '
+    token: 624
+  - finish_reason: null
+    text: </think>
+    token: 151668
+  - finish_reason: null
+    text: '
+
+
+      '
+    token: 271
+  - finish_reason: null
+    text: The
+    token: 785
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' same'
+    token: 1852
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ':'
+    token: 25
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: '1'
+    token: 16
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' **'
+    token: 3070
+  - finish_reason: null
+    text: Main
+    token: 6202
+  - finish_reason: null
+    text: ' Type'
+    token: 3990
+  - finish_reason: null
+    text: '**:'
+    token: 95518
+  - finish_reason: null
+    text: ' This'
+    token: 1096
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' general'
+    token: 4586
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' most'
+    token: 1429
+  - finish_reason: null
+    text: ' basic'
+    token: 6770
+  - finish_reason: null
+    text: ' category'
+    token: 5582
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' example'
+    token: 3110
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' you'
+    token: 498
+  - finish_reason: null
+    text: '''re'
+    token: 2299
+  - finish_reason: null
+    text: ' talking'
+    token: 7404
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' books'
+    token: 6467
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: book
+    token: 2190
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: '2'
+    token: 17
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' **'
+    token: 3070
+  - finish_reason: null
+    text: Sub
+    token: 3136
+  - finish_reason: null
+    text: -Type
+    token: 10804
+  - finish_reason: null
+    text: '**:'
+    token: 95518
+  - finish_reason: null
+    text: ' This'
+    token: 1096
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' specific'
+    token: 3151
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' narrower'
+    token: 90429
+  - finish_reason: null
+    text: ' category'
+    token: 5582
+  - finish_reason: null
+    text: ' derived'
+    token: 14257
+  - finish_reason: null
+    text: ' from'
+    token: 504
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' example'
+    token: 3110
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: book
+    token: 2190
+  - finish_reason: null
+    text: ',"'
+    token: 1335
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' sub'
+    token: 1186
+  - finish_reason: null
+    text: -type
+    token: 10604
+  - finish_reason: null
+    text: ' could'
+    token: 1410
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' "'
+    token: 330
+  - finish_reason: null
+    text: fiction
+    token: 57062
+  - finish_reason: null
+    text: al
+    token: 278
+  - finish_reason: null
+    text: ' books'
+    token: 6467
+  - finish_reason: null
+    text: ."
+    token: 1189
+  - finish_reason: null
+    text: "  \n\n"
+    token: 18611
+  - finish_reason: null
+    text: Sub
+    token: 3136
+  - finish_reason: null
+    text: -types
+    token: 20817
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' more'
+    token: 803
+  - finish_reason: null
+    text: ' specific'
+    token: 3151
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' narrower'
+    token: 90429
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' allowing'
+    token: 10693
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' more'
+    token: 803
+  - finish_reason: null
+    text: ' precise'
+    token: 23560
+  - finish_reason: null
+    text: ' categor'
+    token: 22049
+  - finish_reason: null
+    text: ization
+    token: 2022
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' They'
+    token: 2379
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' often'
+    token: 3545
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' distinguish'
+    token: 32037
+  - finish_reason: null
+    text: ' between'
+    token: 1948
+  - finish_reason: null
+    text: ' different'
+    token: 2155
+  - finish_reason: null
+    text: ' forms'
+    token: 7586
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' broader'
+    token: 26829
+  - finish_reason: null
+    text: ' category'
+    token: 5582
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: stop
+    text: ''
+    token: 151645

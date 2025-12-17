@@ -277,7 +277,7 @@ def _is_mlx_provider(request: pytest.FixtureRequest) -> bool:
     if model_id_param is None:
         return False
 
-    return model_id_param.startswith("mlx/")
+    return model_id_param.startswith("mlx-community/")
 
 
 def _get_mlx_cassette_path(request: pytest.FixtureRequest) -> Path:
