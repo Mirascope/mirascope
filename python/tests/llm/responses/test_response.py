@@ -23,6 +23,7 @@ def test_response_initialization_with_text_content() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -67,6 +68,7 @@ def test_response_initialization_with_mixed_content() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -100,6 +102,7 @@ def test_response_initialization_with_empty_input_messages() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -126,6 +129,7 @@ def test_response_with_different_finish_reasons() -> None:
     for finish_reason in finish_reasons:
         response = llm.Response(
             raw={"test": "response"},
+            usage=None,
             provider_id="openai",
             model_id="openai/gpt-5-mini",
             provider_model_name="gpt-5-mini",
@@ -146,6 +150,7 @@ def test_empty_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
+        usage=None,
         provider_id="openai",
         model_id="test-model",
         provider_model_name="test-model",
@@ -169,6 +174,7 @@ def test_text_only_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
+        usage=None,
         provider_id="openai",
         model_id="test-model",
         provider_model_name="test-model",
@@ -198,6 +204,7 @@ def test_mixed_content_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
+        usage=None,
         provider_id="openai",
         model_id="test-model",
         provider_model_name="test-model",
@@ -234,6 +241,7 @@ def test_multiple_text_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
+        usage=None,
         provider_id="openai",
         model_id="test-model",
         provider_model_name="test-model",
@@ -271,6 +279,7 @@ def test_response_format_success() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -306,6 +315,7 @@ def test_response_format_invalid_json() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -339,6 +349,7 @@ def test_response_format_validation_error() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -365,6 +376,7 @@ def test_response_format_no_format_type() -> None:
     # Create response without format type (defaults to NoneType)
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -395,6 +407,7 @@ def test_response_format_with_text_before_and_after_json() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -436,6 +449,7 @@ Let me know if you need anything else!"""
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -479,6 +493,7 @@ This includes the author information as a nested object."""
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -516,6 +531,7 @@ def test_response_format_with_multiple_json_objects() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -551,6 +567,7 @@ def test_response_format_tool_handling() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -600,6 +617,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -645,6 +663,7 @@ def test_response_format_tool_no_finish_reason_change() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -683,6 +702,7 @@ def test_response_execute_tools() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -720,6 +740,7 @@ async def test_async_response_execute_tools() -> None:
 
     response = llm.AsyncResponse(
         raw={"test": "response"},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -744,6 +765,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.Response(
         raw={},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -756,6 +778,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.AsyncResponse(
         raw={},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -768,6 +791,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.ContextResponse(
         raw={},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",
@@ -780,6 +804,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.AsyncContextResponse(
         raw={},
+        usage=None,
         provider_id="openai",
         model_id="openai/gpt-5-mini",
         provider_model_name="gpt-5-mini",

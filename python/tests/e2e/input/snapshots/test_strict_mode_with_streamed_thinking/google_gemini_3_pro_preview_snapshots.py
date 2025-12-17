@@ -137,6 +137,7 @@ I've moved through the steps: mapping the request, constructing the JSON, and ve
                 "formatting_instructions": None,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 7,
         }
     }

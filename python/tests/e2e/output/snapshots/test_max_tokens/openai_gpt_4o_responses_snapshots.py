@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
+            "usage": {
+                "input_tokens": 14,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -81,6 +88,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
+            "usage": {
+                "input_tokens": 14,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -175,6 +189,7 @@ Sure! Here is a list of all 50 U.S. states:
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 52,
         }
     }
@@ -214,6 +229,7 @@ Here is a list of all U.S. states:
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 52,
         }
     }

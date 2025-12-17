@@ -64,7 +64,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = self.client.beta.messages.parse(**kwargs)
-        assistant_message, finish_reason = beta_decode.beta_decode_response(
+        assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
         return Response(
@@ -77,6 +77,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 
@@ -101,7 +102,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = self.client.beta.messages.parse(**kwargs)
-        assistant_message, finish_reason = beta_decode.beta_decode_response(
+        assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
         return ContextResponse(
@@ -114,6 +115,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 
@@ -135,7 +137,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = await self.async_client.beta.messages.parse(**kwargs)
-        assistant_message, finish_reason = beta_decode.beta_decode_response(
+        assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
         return AsyncResponse(
@@ -148,6 +150,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 
@@ -172,7 +175,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = await self.async_client.beta.messages.parse(**kwargs)
-        assistant_message, finish_reason = beta_decode.beta_decode_response(
+        assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
         return AsyncContextResponse(
@@ -185,6 +188,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 

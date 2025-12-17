@@ -14,6 +14,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 11,
+                "output_tokens": 29,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 157,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -106,6 +113,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 11,
+                "output_tokens": 46,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 162,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -295,6 +309,7 @@ stream_snapshot = snapshot(
                 "formatting_instructions": None,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 3,
         }
     }
@@ -386,6 +401,7 @@ async_stream_snapshot = snapshot(
                 "formatting_instructions": None,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 3,
         }
     }

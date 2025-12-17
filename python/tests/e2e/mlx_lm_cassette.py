@@ -27,6 +27,8 @@ class MLXCassetteResponse:
 
     text: str
     token: int
+    prompt_tokens: int
+    generation_tokens: int
     finish_reason: str | None = None
 
 
@@ -189,6 +191,8 @@ def _patched_stream_generate(
             text=response.text,
             token=response.token,
             finish_reason=response.finish_reason,
+            prompt_tokens=response.prompt_tokens,
+            generation_tokens=response.generation_tokens,
         )
         interaction.append(cassette_response)
         yield cassette_response

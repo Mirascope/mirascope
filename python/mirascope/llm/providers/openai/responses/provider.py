@@ -85,7 +85,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
 
         openai_response = self.client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.active_provider_id
         )
         provider_model_name = model_name(model_id, "responses")
@@ -100,6 +100,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             input_messages=messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 
@@ -134,7 +135,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
 
         openai_response = await self.async_client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.active_provider_id
         )
         provider_model_name = model_name(model_id, "responses")
@@ -149,6 +150,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             input_messages=messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 
@@ -287,7 +289,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
 
         openai_response = self.client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.active_provider_id
         )
         provider_model_name = model_name(model_id, "responses")
@@ -302,6 +304,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             input_messages=messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 
@@ -340,7 +343,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
 
         openai_response = await self.async_client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.active_provider_id
         )
         provider_model_name = model_name(model_id, "responses")
@@ -355,6 +358,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             input_messages=messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 

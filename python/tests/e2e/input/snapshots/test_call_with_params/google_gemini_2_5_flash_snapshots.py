@@ -24,6 +24,13 @@ test_snapshot = snapshot(
                     "encode_thoughts_as_text": False,
                 },
                 "finish_reason": None,
+                "usage": {
+                    "input_tokens": 13,
+                    "output_tokens": 31,
+                    "cache_read_tokens": 0,
+                    "cache_write_tokens": 0,
+                    "reasoning_tokens": 0,
+                },
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(

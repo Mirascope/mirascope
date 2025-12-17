@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 1766,
+                "output_tokens": 18,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -221,6 +228,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 297,
+                "output_tokens": 6,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -603,6 +617,7 @@ Therefore, there are 3 such primes.
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 4,
         }
     }
@@ -787,6 +802,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 4,
         }
     }

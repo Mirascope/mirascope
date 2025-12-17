@@ -17,6 +17,13 @@ test_snapshot = snapshot(
             "provider_model_name": "gpt-4o:completions",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 91,
+                "output_tokens": 23,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(

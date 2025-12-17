@@ -36,6 +36,7 @@ from .streams import (
     ThoughtStream,
     ToolCallStream,
 )
+from .usage import Usage
 
 if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
@@ -165,6 +166,7 @@ class BaseStreamResponse(
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIteratorT,
+        usage: Usage | None = None,
     ) -> None:
         """Initialize the BaseStreamResponse.
 
@@ -177,6 +179,7 @@ class BaseStreamResponse(
             toolkit: Toolkit containing all the tools used to generate the response.
             format: The `Format` for the expected structured output format (or None).
             input_messages: The input messages that were sent to the LLM
+            usage: Token usage statistics for the response.
 
         The BaseStreamResponse will process the tuples to build the chunks and raw lists
         as the stream is consumed.
@@ -187,6 +190,7 @@ class BaseStreamResponse(
         self.provider_model_name = provider_model_name
         self.params = params
         self.toolkit = toolkit
+        self.usage = usage
         self.format = format
 
         # Internal-only lists which we mutate (append) during chunk processing

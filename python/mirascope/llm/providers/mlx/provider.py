@@ -108,6 +108,7 @@ class MLXProvider(BaseProvider[None]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
+            usage=_utils.extract_usage(response),
             format=format,
         )
 
@@ -152,6 +153,7 @@ class MLXProvider(BaseProvider[None]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
+            usage=_utils.extract_usage(response),
             format=format,
         )
 
@@ -196,6 +198,7 @@ class MLXProvider(BaseProvider[None]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
+            usage=_utils.extract_usage(response),
             format=format,
         )
 
@@ -244,6 +247,7 @@ class MLXProvider(BaseProvider[None]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=_utils.extract_finish_reason(response),
+            usage=_utils.extract_usage(response),
             format=format,
         )
 

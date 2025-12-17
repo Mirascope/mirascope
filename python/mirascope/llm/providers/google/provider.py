@@ -81,7 +81,7 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_response = self.client.models.generate_content(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
         )
 
@@ -95,6 +95,7 @@ class GoogleProvider(BaseProvider[Client]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 
@@ -133,7 +134,7 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_response = self.client.models.generate_content(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
         )
 
@@ -147,6 +148,7 @@ class GoogleProvider(BaseProvider[Client]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 
@@ -181,7 +183,7 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_response = await self.client.aio.models.generate_content(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
         )
 
@@ -195,6 +197,7 @@ class GoogleProvider(BaseProvider[Client]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 
@@ -233,7 +236,7 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_response = await self.client.aio.models.generate_content(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
         )
 
@@ -247,6 +250,7 @@ class GoogleProvider(BaseProvider[Client]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=format,
         )
 

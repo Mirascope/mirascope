@@ -29,6 +29,7 @@ from ....responses import (
     FinishReasonChunk,
     RawMessageChunk,
     RawStreamEventChunk,
+    Usage,
 )
 from ..model_id import GoogleModelId, model_name
 from .encode import UNKNOWN_TOOL_ID
@@ -41,6 +42,27 @@ GOOGLE_FINISH_REASON_MAP = {
     "PROHIBITED_CONTENT": FinishReason.REFUSAL,
     "SPII": FinishReason.REFUSAL,
 }
+
+
+def _decode_usage(
+    usage: genai_types.GenerateContentResponseUsageMetadata | None,
+) -> Usage | None:
+    """Convert Google UsageMetadata to Mirascope Usage."""
+    if (
+        usage is None
+        or usage.prompt_token_count is None
+        or usage.candidates_token_count is None
+    ):  # pragma: no cover
+        return None
+
+    return Usage(
+        input_tokens=usage.prompt_token_count,
+        output_tokens=usage.candidates_token_count,
+        cache_read_tokens=usage.cached_content_token_count or 0,
+        cache_write_tokens=0,
+        reasoning_tokens=usage.thoughts_token_count or 0,
+        raw=usage,
+    )
 
 
 def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
@@ -100,8 +122,8 @@ def _decode_candidate_content(
 def decode_response(
     response: genai_types.GenerateContentResponse,
     model_id: GoogleModelId,
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Returns an `AssistantMessage` and `FinishReason` extracted from a `GenerateContentResponse`"""
+) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
+    """Returns an `AssistantMessage`, `FinishReason`, and `Usage` extracted from a `GenerateContentResponse`"""
     content: Sequence[AssistantContentPart] = []
     candidate_content: genai_types.Content | None = None
     finish_reason: FinishReason | None = None
@@ -122,7 +144,8 @@ def decode_response(
         raw_message=candidate_content.model_dump(),
     )
 
-    return assistant_message, finish_reason
+    usage = _decode_usage(response.usage_metadata)
+    return assistant_message, finish_reason, usage
 
 
 class _GoogleChunkProcessor:

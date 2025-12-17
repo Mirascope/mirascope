@@ -16,6 +16,13 @@ test_snapshot = snapshot(
             "provider_model_name": "gemini-3-pro-preview",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 258,
+                "output_tokens": 32,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[

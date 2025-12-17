@@ -14,6 +14,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 16,
+                "output_tokens": 11,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -52,6 +59,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 16,
+                "output_tokens": 11,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -115,6 +129,7 @@ stream_snapshot = snapshot(
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 12,
         }
     }
@@ -152,6 +167,7 @@ async_stream_snapshot = snapshot(
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 12,
         }
     }

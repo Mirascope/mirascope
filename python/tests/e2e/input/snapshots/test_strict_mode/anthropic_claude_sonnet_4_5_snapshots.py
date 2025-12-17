@@ -14,6 +14,13 @@ test_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-5",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 263,
+                "output_tokens": 25,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[Text(text="Answer this question: What is 2 + 2?")]

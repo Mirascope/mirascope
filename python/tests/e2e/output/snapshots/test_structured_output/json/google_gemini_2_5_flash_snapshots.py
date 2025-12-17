@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 317,
+                "output_tokens": 52,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 139,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -213,6 +220,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 317,
+                "output_tokens": 52,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 239,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -610,6 +624,7 @@ Respond only with valid JSON that matches this exact schema:
 """,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 4,
         }
     }
@@ -821,6 +836,7 @@ Respond only with valid JSON that matches this exact schema:
 """,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 4,
         }
     }

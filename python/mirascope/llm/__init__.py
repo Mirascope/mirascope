@@ -117,6 +117,7 @@ from .responses import (
     TextStream,
     ThoughtStream,
     ToolCallStream,
+    Usage,
 )
 from .tools import (
     AsyncContextTool,
@@ -219,6 +220,7 @@ __all__ = [
     "ToolOutput",
     "Toolkit",
     "URLImageSource",
+    "Usage",
     "UserContent",
     "UserContentPart",
     "UserMessage",

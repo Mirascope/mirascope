@@ -17,6 +17,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 721,
+                "output_tokens": 49,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -218,6 +225,13 @@ async_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 721,
+                "output_tokens": 54,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -609,6 +623,7 @@ Respond only with valid JSON that matches this exact schema:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 9,
         }
     }
@@ -807,6 +822,7 @@ Respond only with valid JSON that matches this exact schema:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 9,
         }
     }

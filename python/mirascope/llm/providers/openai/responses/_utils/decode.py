@@ -29,6 +29,7 @@ from .....responses import (
     FinishReasonChunk,
     RawMessageChunk,
     RawStreamEventChunk,
+    Usage,
 )
 from ...model_id import OpenAIModelId, model_name
 
@@ -36,6 +37,33 @@ INCOMPLETE_DETAILS_TO_FINISH_REASON = {
     "max_output_tokens": FinishReason.MAX_TOKENS,
     "content_filter": FinishReason.REFUSAL,
 }
+
+
+def _decode_usage(
+    usage: openai_types.ResponseUsage | None,
+) -> Usage | None:
+    """Convert OpenAI ResponseUsage to Mirascope Usage."""
+    if usage is None:  # pragma: no cover
+        return None
+
+    return Usage(
+        input_tokens=usage.input_tokens,
+        output_tokens=usage.output_tokens,
+        cache_read_tokens=(
+            usage.input_tokens_details.cached_tokens
+            if usage.input_tokens_details
+            else None
+        )
+        or 0,
+        cache_write_tokens=0,
+        reasoning_tokens=(
+            usage.output_tokens_details.reasoning_tokens
+            if usage.output_tokens_details
+            else None
+        )
+        or 0,
+        raw=usage,
+    )
 
 
 def _serialize_output_item(
@@ -49,8 +77,8 @@ def decode_response(
     response: openai_types.Response,
     model_id: OpenAIModelId,
     provider_id: Literal["openai", "openai:responses"],
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert OpenAI Responses Response to mirascope AssistantMessage."""
+) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
+    """Convert OpenAI Responses Response to mirascope AssistantMessage and usage."""
     parts: list[AssistantContentPart] = []
     finish_reason: FinishReason | None = None
     refused = False
@@ -100,7 +128,8 @@ def decode_response(
         ],
     )
 
-    return assistant_message, finish_reason
+    usage = _decode_usage(response.usage)
+    return assistant_message, finish_reason, usage
 
 
 class _OpenAIResponsesChunkProcessor:

@@ -759,6 +759,7 @@ def test_model_call_with_format_tool_finish_reason(
             )
             return llm.Response(
                 raw={"responseId": "resp_format_tool_finish"},
+                usage=None,
                 provider_id=self.id,
                 model_id=model_id,
                 provider_model_name="gpt-4o-mini",

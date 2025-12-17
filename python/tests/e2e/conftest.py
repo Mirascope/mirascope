@@ -194,4 +194,5 @@ SNAPSHOT_IMPORT_SYMBOLS = [
     "ToolOutput",
     "URLImageSource",
     "UserMessage",
+    "Usage",
 ]

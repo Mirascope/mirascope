@@ -15,6 +15,13 @@ test_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 62,
+                "output_tokens": 32,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 110,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(

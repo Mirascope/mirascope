@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
+            "usage": {
+                "input_tokens": 9,
+                "output_tokens": 10,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 38,
+            },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -54,6 +61,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
+            "usage": {
+                "input_tokens": 9,
+                "output_tokens": 17,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 31,
+            },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -131,6 +145,7 @@ stream_snapshot = snapshot(
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 3,
         }
     }
@@ -179,6 +194,7 @@ Here are all 50 U.S. states, listed alphabetically:
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 3,
         }
     }
