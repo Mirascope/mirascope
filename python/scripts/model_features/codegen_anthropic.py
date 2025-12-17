@@ -3,6 +3,7 @@
 This script reads the anthropic.yaml feature test results and generates
 python/mirascope/llm/providers/anthropic/model_info.py with:
 - AnthropicKnownModels type alias containing all valid model IDs
+- MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS set of model IDs that don't support strict mode
 
 Logic:
 - For each discovered model with a date suffix (e.g., claude-3-5-haiku-20241022),
@@ -12,6 +13,8 @@ Logic:
   3. The base name without suffix: "anthropic/claude-3-5-haiku"
 - For models without date suffixes, just adds the model as-is
 - Models are sorted alphabetically for consistency
+- Tracks which models don't support strict structured outputs (negative tracking,
+  assuming new models will support it)
 
 Usage:
     uv run python -m scripts.model_features.codegen_anthropic
@@ -34,13 +37,21 @@ def load_yaml(path: Path) -> dict[str, Any]:
 def generate_model_info(data: dict[str, Any]) -> str:
     """Generate the model_info.py file content."""
     model_ids: set[str] = set()
+    models_without_strict: set[str] = set()
 
     # Pattern to match date suffixes like -20241022
     date_pattern = re.compile(r"-(\d{8})$")
 
-    for model_id in data.get("models", {}):
+    models_data = data.get("models", {})
+
+    for model_id, model_info in models_data.items():
         # Check if model has a date suffix
         match = date_pattern.search(model_id)
+
+        # Check if model supports strict structured outputs
+        features = model_info.get("features", {})
+        strict_result = features.get("strict_structured_output", {})
+        supports_strict = strict_result.get("status") == "supported"
 
         if match:
             # Model has a date suffix - generate all three variants
@@ -48,18 +59,27 @@ def generate_model_info(data: dict[str, Any]) -> str:
 
             # Add dated version
             model_ids.add(f"anthropic/{model_id}")
+            if not supports_strict:
+                models_without_strict.add(f"anthropic/{model_id}")
 
             # Add -latest alias
             model_ids.add(f"anthropic/{base_name}-latest")
+            if not supports_strict:
+                models_without_strict.add(f"anthropic/{base_name}-latest")
 
             # Add base name without suffix
             model_ids.add(f"anthropic/{base_name}")
+            if not supports_strict:
+                models_without_strict.add(f"anthropic/{base_name}")
         else:
             # Model without date suffix - add as-is
             model_ids.add(f"anthropic/{model_id}")
+            if not supports_strict:
+                models_without_strict.add(f"anthropic/{model_id}")
 
     # Sort for consistent output
     sorted_model_ids = sorted(model_ids)
+    sorted_models_without_strict = sorted(models_without_strict)
 
     # Generate the file content
     lines = [
@@ -80,6 +100,19 @@ def generate_model_info(data: dict[str, Any]) -> str:
 
     lines.append("]")
     lines.append('"""Valid Anthropic model IDs."""')
+    lines.append("")
+    lines.append("")
+    lines.append("MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS: set[str] = {")
+
+    # Add models without strict structured outputs
+    for i, model_id in enumerate(sorted_models_without_strict):
+        comma = "," if i < len(sorted_models_without_strict) - 1 else ""
+        lines.append(f'    "{model_id}"{comma}')
+
+    lines.append("}")
+    lines.append(
+        '"""Models that do not support strict structured outputs (strict mode tools)."""'
+    )
     lines.append("")
 
     return "\n".join(lines)
@@ -118,9 +151,21 @@ def main() -> int:
     print(f"Generated: {output_path}")
 
     # Show stats
-    lines = content.split("\n")
-    model_count = sum(1 for line in lines if line.strip().startswith('"anthropic/'))
-    print(f"  Total model IDs: {model_count}")
+    models_data = data.get("models", {})
+    discovered_model_count = len(models_data)
+
+    # Count models without strict support (just base models, not variants)
+    models_without_strict_count = sum(
+        1
+        for model_info in models_data.values()
+        if model_info.get("features", {})
+        .get("strict_structured_output", {})
+        .get("status")
+        != "supported"
+    )
+
+    print(f"  Discovered models: {discovered_model_count}")
+    print(f"  Models without strict structured outputs: {models_without_strict_count}")
 
     return 0
 
