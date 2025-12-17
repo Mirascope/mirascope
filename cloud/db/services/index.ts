@@ -1,5 +1,4 @@
 export * from "@/db/services/base";
-export * from "@/db/services/sessions";
 export * from "@/db/services/organizations";
 export * from "@/db/services/project-memberships";
 export * from "@/db/services/projects";
@@ -12,13 +11,13 @@ import * as schema from "@/db/schema";
 import { Users } from "@/db/users";
 import { type Ready, makeReady } from "@/db/base";
 import { type DrizzleORMClient } from "@/db/client";
-import { SessionService } from "@/db/services/sessions";
+import { Sessions } from "@/db/sessions";
 import { OrganizationService } from "@/db/services/organizations";
 import { ProjectService } from "@/db/services/projects";
 
 export type Database = {
   readonly users: Ready<Users>;
-  readonly sessions: SessionService;
+  readonly sessions: Ready<Sessions>;
   readonly organizations: OrganizationService;
   readonly projects: ProjectService;
   /** @internal TODO: Remove when tests are updated to use db.projects */
@@ -70,7 +69,7 @@ export function getDatabase(
   // Wrap the client for compatibility with the new Users service
   const drizzleORMClient = asDrizzleORMClient(client);
   const users = makeReady(drizzleORMClient, new Users());
-  const sessions = new SessionService(client);
+  const sessions = makeReady(drizzleORMClient, new Sessions());
   const organizations = new OrganizationService(client);
   const projects = new ProjectService(client, organizations.memberships);
 

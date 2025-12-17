@@ -28,7 +28,8 @@
  *
  * ```
  * EffectDatabase (service layer)
- *   └── users: Ready<Users>
+ *   ├── users: Ready<Users>
+ *   └── sessions: Ready<Sessions>
  *
  * Each service uses `yield* DrizzleORM` internally. The `makeReady` wrapper
  * provides the DrizzleORM client, so consumers see methods returning
@@ -43,6 +44,7 @@ import { Context, Layer, Effect } from "effect";
 import { type Ready, makeReady } from "@/db/base";
 import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
 import { Users } from "@/db/users";
+import { Sessions } from "@/db/sessions";
 
 /**
  * Type definition for the EffectDatabase service.
@@ -58,6 +60,7 @@ import { Users } from "@/db/users";
 // TODO: remove "Effect" prefix after refactor is complete
 export interface EffectDatabaseSchema {
   readonly users: Ready<Users>;
+  readonly sessions: Ready<Sessions>;
 }
 
 /**
@@ -102,6 +105,7 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
 
       return {
         users: makeReady(client, new Users()),
+        sessions: makeReady(client, new Sessions()),
       };
     }),
   );
