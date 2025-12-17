@@ -1,7 +1,5 @@
 """Shared utils for all OpenAI clients."""
 
-from typing import cast
-
 MODELS_WITHOUT_JSON_SCHEMA_SUPPORT = {
     "chatgpt-4o-latest",
     "gpt-3.5-turbo",
@@ -43,17 +41,3 @@ MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
     "o1-mini",
     "o1-mini-2024-09-12",
 }
-
-
-def ensure_additional_properties_false(obj: object) -> None:
-    """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
-    if isinstance(obj, dict):
-        obj = cast(dict[str, object], obj)
-        if obj.get("type") == "object" and "additionalProperties" not in obj:
-            obj["additionalProperties"] = False
-        for value in obj.values():
-            ensure_additional_properties_false(value)
-    elif isinstance(obj, list):
-        obj = cast(list[object], obj)
-        for item in obj:
-            ensure_additional_properties_false(item)
