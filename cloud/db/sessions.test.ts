@@ -1,5 +1,4 @@
-import { describe, it, expect } from "@effect/vitest";
-import { TestEffectDatabase, MockDrizzleORM } from "@/tests/db";
+import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 import { Effect } from "effect";
 import { type PublicSession } from "@/db/schema";
 import { type PublicUser } from "@/db/schema/users";
@@ -34,7 +33,7 @@ describe("Sessions", () => {
         expect(session.id).toBeDefined();
         // Compare timestamps to avoid timezone issues
         expect(session.expiresAt).toBeInstanceOf(Date);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when insert fails", () =>
@@ -86,7 +85,7 @@ describe("Sessions", () => {
         const all = yield* db.sessions.findAll({ userId: user.id });
 
         expect(all).toEqual([session1, session2] satisfies PublicSession[]);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns expired sessions (not auto-deleted)", () =>
@@ -117,7 +116,7 @@ describe("Sessions", () => {
         expect(all).toEqual(
           expect.arrayContaining([validSession, expiredSession]),
         );
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns empty array when no sessions exist", () =>
@@ -131,7 +130,7 @@ describe("Sessions", () => {
         const all = yield* db.sessions.findAll({ userId: user.id });
 
         expect(all).toEqual([]);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -177,7 +176,7 @@ describe("Sessions", () => {
         });
 
         expect(found).toEqual(session);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
@@ -194,7 +193,7 @@ describe("Sessions", () => {
         expect(result.message).toBe(
           `session with sessionId ${badId} not found for user with userId ${badUserId}`,
         );
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect(
@@ -229,7 +228,7 @@ describe("Sessions", () => {
           expect(result.message).toBe(
             `session with sessionId ${session.id} not found for user with userId ${user2.id}`,
           );
-        }).pipe(Effect.provide(TestEffectDatabase)),
+        }),
     );
 
     it.effect("returns expired session (does not filter by expiration)", () =>
@@ -254,7 +253,7 @@ describe("Sessions", () => {
         });
 
         expect(found).toEqual(session);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -303,7 +302,7 @@ describe("Sessions", () => {
 
         expect(updated.id).toBe(session.id);
         expect(updated.expiresAt).toBeInstanceOf(Date);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("persists updates correctly", () =>
@@ -334,7 +333,7 @@ describe("Sessions", () => {
 
         // Verify the session was updated (expiresAt changed from original)
         expect(found.expiresAt.getTime()).not.toBe(originalExpiresAt.getTime());
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("can update an already expired session", () =>
@@ -362,7 +361,7 @@ describe("Sessions", () => {
 
         expect(updated.id).toBe(session.id);
         expect(updated.expiresAt.getTime()).toBeGreaterThan(Date.now());
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
@@ -383,7 +382,7 @@ describe("Sessions", () => {
         expect(result.message).toBe(
           `session with sessionId ${badId} not found for user with userId ${badUserId}`,
         );
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -436,7 +435,7 @@ describe("Sessions", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("removes session from findAll results", () =>
@@ -460,7 +459,7 @@ describe("Sessions", () => {
         const all = yield* db.sessions.findAll({ userId: user.id });
 
         expect(all.find((s) => s.id === session.id)).toBeUndefined();
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
@@ -477,7 +476,7 @@ describe("Sessions", () => {
         expect(result.message).toBe(
           `session with sessionId ${badId} not found for user with userId ${badUserId}`,
         );
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -527,7 +526,7 @@ describe("Sessions", () => {
           name,
           deletedAt: user.deletedAt,
         } satisfies PublicUser);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
@@ -541,7 +540,7 @@ describe("Sessions", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe(`Session with id ${badId} not found`);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DeletedUserError` when user has been deleted", () =>
@@ -571,7 +570,7 @@ describe("Sessions", () => {
 
         expect(result).toBeInstanceOf(DeletedUserError);
         expect(result.message).toBe("This user has been deleted");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      })
     );
 
     it.effect("returns `InvalidSessionError` for expired session", () =>
@@ -595,7 +594,7 @@ describe("Sessions", () => {
 
         expect(result).toBeInstanceOf(InvalidSessionError);
         expect(result.message).toBe("Session expired");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -644,7 +643,7 @@ describe("Sessions", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
@@ -660,7 +659,7 @@ describe("Sessions", () => {
         expect(result.message).toBe(
           `Session with sessionId ${badId} not found`,
         );
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
