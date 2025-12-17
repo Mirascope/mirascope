@@ -4,6 +4,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import path from "path";
+import { optimizedImageMiddleware } from "./vite/optimized-image-middleware";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
@@ -21,6 +22,7 @@ export default defineConfig(() => {
       }),
       viteReact(),
       tailwindcss(),
+      optimizedImageMiddleware(),
     ],
     resolve: {
       alias: {
