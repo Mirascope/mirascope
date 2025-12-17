@@ -9,6 +9,7 @@ from .google import GoogleModelId, GoogleProvider
 from .load_provider import load, load_provider
 from .mlx import MLXModelId, MLXProvider
 from .model_id import ModelId
+from .ollama import OllamaProvider
 from .openai import (
     OpenAIModelId,
     OpenAIProvider,
@@ -29,6 +30,7 @@ __all__ = [
     "MLXModelId",
     "MLXProvider",
     "ModelId",
+    "OllamaProvider",
     "OpenAIModelId",
     "OpenAIProvider",
     "Params",

@@ -121,3 +121,35 @@ def test_together_provider_missing_api_key() -> None:
     finally:
         if original_key is not None:
             os.environ["TOGETHER_API_KEY"] = original_key
+
+
+OLLAMA_MODEL_IDS = [
+    "ollama/gemma3:4b",
+]
+
+
+@pytest.mark.parametrize("model_id", OLLAMA_MODEL_IDS)
+@pytest.mark.vcr
+def test_ollama_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
+    """Test that Ollama provider works correctly."""
+    # Clear OLLAMA_BASE_URL to ensure consistent cassette matching
+    original_base_url = os.environ.pop("OLLAMA_BASE_URL", None)
+    try:
+
+        @llm.call(model_id)
+        def add_numbers(a: int, b: int) -> str:
+            return f"What is {a} + {b}?"
+
+        llm.register_provider("ollama")
+
+        with snapshot_test(snapshot) as snap:
+            response = add_numbers(4200, 42)
+            assert response.provider_id == "ollama"
+            assert response.provider_model_name == "gemma3:4b"
+            snap.set_response(response)
+            assert "4242" in response.pretty(), (
+                f"Expected '4242' in response: {response.pretty()}"
+            )
+    finally:
+        if original_base_url is not None:
+            os.environ["OLLAMA_BASE_URL"] = original_base_url
