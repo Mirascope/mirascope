@@ -14,6 +14,7 @@ from mirascope import llm
 
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
+    "anthropic-beta/claude-sonnet-4-0",
     "google/gemini-2.5-flash",
     "openai/gpt-4o:completions",
     "openai/gpt-4o:responses",

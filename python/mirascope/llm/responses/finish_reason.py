@@ -15,6 +15,7 @@ class FinishReason(str, Enum):
 
     MAX_TOKENS = "max_tokens"
     REFUSAL = "refusal"
+    CONTEXT_LENGTH_EXCEEDED = "context_length_exceeded"
 
 
 @dataclass(kw_only=True)

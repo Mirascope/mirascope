@@ -1,0 +1,574 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"How many primes
+      below 400 contain 79 as a substring? Answer ONLY with the number, not sharing
+      which primes they are."}],"model":"claude-sonnet-4-0","thinking":{"type":"enabled","budget_tokens":8000},"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '271'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-stream-helper:
+      - beta.messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"model\":\"claude-sonnet-4-20250514\",\"id\":\"msg_012VTTdNobNXGCUN2soQUcdu\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":67,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":0},\"output_tokens\":8,\"service_tier\":\"standard\"}}
+        \           }\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"thinking\",\"thinking\":\"\",\"signature\":\"\"}
+        \              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"I
+        need to find all primes below\"}               }\n\nevent: ping\ndata: {\"type\":
+        \"ping\"}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        400 that contain \\\"\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"79\\\"
+        as a substring.\\n\\nFirst\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        let me think\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        about what numbers\"}               }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        coul\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        contain \\\"79\\\" as a substring:\"}          }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Numbers\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        that have\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \\\"79\\\" somewhere\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        in their\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        digits\\n- This\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        could be \"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"79,
+        179\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        279, 379, \"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"790\"}
+        \      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        791\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        792, etc\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".,\"}
+        \  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        but since\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        we're looking below\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        400, we need to consider\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\":\"}
+        \             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n
+        \ - 79\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n
+        \ - 179\\n  - \"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"279\\n
+        \ - 379\\n  \"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"-
+        Numbers\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        like\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        790, 791, 792\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        \"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"793,
+        \"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"794,
+        795, 796,\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        797, 798, 799\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        - but these are all \"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\u2265
+        790\"}   }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\">\"}
+        \            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        400\\n\\nActually, let me be\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        more systematic\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".
+        For\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        numbers below 400 \"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"that
+        contain \\\"79\\\":\\n- Two\"}      }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"-digit:\"}
+        \        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        79\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Three-digit: 179\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        279, 379, an\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        numbers of\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        the form 79\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"X\"}
+        \    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        where X is\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"0\"}
+        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"-9,\"}
+        \       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        but these woul\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        be \"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"790-\"}
+        \            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"799
+        \"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"which\"}
+        \  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        are >\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        400\\n\\nSo the\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        candidates\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        are:\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        79, 179, 279\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        379\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nNow\"}
+        \          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        I need to check which of these are\"}    }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        prime:\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\n79:\"}
+        \            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Let\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        me check if \"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"79
+        is prime.\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 2 (it\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'s
+        odd)\\n- Not divisible\"}           }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 3 (7\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"+9=\"}
+        \ }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"16,
+        not divisible by 3\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\")\\n-
+        Not divisible by \"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"5
+        (doesn't end in \"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"0
+        or 5)\\n-\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Not divisible by 7:\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        79 \xF7 \"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"7
+        = 11.28\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"...
+        so\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        not divisible\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Since\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \u221A\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"79
+        \u2248 8\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".9,
+        I only\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        need to check up to 8\"}   }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 8\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        (even\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",\"}
+        \    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        an\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        79 is odd)\\nSo\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        79 is prime.\\n\\n179\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\":
+        Let me check if 179 \"}             }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"is
+        prime.\\n- Not divisible\"}   }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 2 (it's od\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d)\\n-
+        Not divisible by \"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"3
+        (1+7+9\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"=17,
+        not divisible by \"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"3)\\n\"}
+        \    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\n-
+        Not divisible by\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        5 (doesn\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'t
+        end in 0\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        or 5)\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not divisible\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 7: \"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"179
+        \xF7\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        7 =\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        25.57...\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        so not divisible\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not divisible by\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        11: 179\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \xF7\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        11 = \"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"16.27...
+        so\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        not divisible\\n-\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Not divisible by \"}               }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"13:
+        179 \"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\xF7
+        \"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"13
+        = 13\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".77...
+        so not\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible\\n- Since\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \u221A179 \"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\u2248
+        13.\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"4,
+        I only nee\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        to check up to \"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"13\\nSo
+        179\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        is prime.\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nI\"}
+        \        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'ll\"}
+        \              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        systemat\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"ically
+        check divis\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"ibility
+        for\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"279\"}
+        \           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",\"}
+        \   }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        starting\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        with basic\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisibility tests\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".\"}
+        \      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        I\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'ll
+        check if\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        it\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'s
+        divisible by small\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        prime\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        numbers to\"}   }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        determine\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        its\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        primality.\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-\"}
+        \      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Od\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        number\"}   }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",\"}
+        \              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        so not divisible by\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        2\\n- Sum\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        of digits\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        is\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"18\"}
+        \       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        which is divisible\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 3\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",\"}
+        \             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        indicating\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        279 is divis\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"ible
+        by 3\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        279 \"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\xF7
+        3\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        = 93 \"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"confirms\"}
+        \        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        it\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'s
+        not\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        a\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        prime number\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nFor\"}
+        \     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        379, I'll\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        apply\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        the same metho\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"dical
+        divis\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"ibility
+        checks:\\n-\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Odd number, so\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        not divisible by \"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"2\\n-\"}}\n\nevent:
+        content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Digit\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        sum is 19,\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        not\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 3\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 5\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-\"}
+        \      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Checke\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        divis\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"ibility
+        by pr\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"imes
+        up to 19\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        No\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        factors\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        foun\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        within\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \u221A\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"379\"}
+        \ }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\nSo\"}
+        \            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        379 is prime\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".\\n\\nI\"}
+        \    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"'ll
+        verify\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        the\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        calculations\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        for 79.\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-\"}
+        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Odd number, not\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 2\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-\"}
+        \      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Digit sum not\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 3\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not divisible\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 5\\n-\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Checked divisibility by\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        primes up to \"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"8\"}
+        \         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        No factors foun\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d\"}
+        \    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n79\"}
+        \          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        is prime.\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nFor\"}
+        \    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        179:\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Odd number\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        not divisible by\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        2\\n-\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Digit sum not divisible\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 3\\n-\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Not divisible by \"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"5\\n-
+        Checke\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        divisibility by primes\"}        }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        up to 13\"}             }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        No factors found\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n179
+        is prime.\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nFor
+        279:\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Odd number\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        not divisible by\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        2\\n-\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Digit sum divis\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"ible
+        by 3\"}               }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-\"}
+        \          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Divide\"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        by 3 yields\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        93\\n279\"}    }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        is not prime.\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nFor
+        379:\"}  }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Odd number\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        not divisible by\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        2\\n-\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Digit sum not\"}           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        divisible by 3\"}      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n-
+        Not divisible\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        by 5\\n-\"}            }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        Checked divisibility by\"}               }\n\nevent: content_block_delta\ndata:
+        {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        primes up to \"}       }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"19\\n-
+        No factors\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        found\\n379 is\"}     }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        prime\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\".\"}
+        \      }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"\\n\\nIdentifie\"}
+        \           }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"d
+        3 primes\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        containing\"}          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        \\\"79\\\":\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\"
+        79, 179\"}              }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"thinking_delta\",\"thinking\":\",
+        379.\"} }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"signature_delta\",\"signature\":\"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\"}
+        \        }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0
+        \           }\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":1,\"content_block\":{\"type\":\"text\",\"text\":\"\"}
+        \          }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"text_delta\",\"text\":\"3\"}
+        \              }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":1
+        \  }\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"input_tokens\":67,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":1650}
+        \            }\n\nevent: message_stop\ndata: {\"type\":\"message_stop\" }\n\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9af3cd313c6ec368-NRT
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 17 Dec 2025 04:50:47 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-17T04:50:46Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-17T04:50:46Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-17T04:50:46Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-17T04:50:46Z'
+      request-id:
+      - req_011CWBf6UroKNRHu6Y5TgsZh
+      x-envoy-upstream-service-time:
+      - '611'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"max_tokens\":16000,\"messages\":[{\"role\":\"user\",\"content\":\"How
+      many primes below 400 contain 79 as a substring? Answer ONLY with the number,
+      not sharing which primes they are.\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"I
+      need to find all primes below 400 that contain \\\"79\\\" as a substring.\\n\\nFirst,
+      let me think about what numbers could contain \\\"79\\\" as a substring:\\n-
+      Numbers that have \\\"79\\\" somewhere in their digits\\n- This could be 79,
+      179, 279, 379, 790, 791, 792, etc., but since we're looking below 400, we need
+      to consider:\\n  - 79\\n  - 179\\n  - 279\\n  - 379\\n  - Numbers like 790,
+      791, 792, 793, 794, 795, 796, 797, 798, 799 - but these are all \u2265 790 >
+      400\\n\\nActually, let me be more systematic. For numbers below 400 that contain
+      \\\"79\\\":\\n- Two-digit: 79\\n- Three-digit: 179, 279, 379, and numbers of
+      the form 79X where X is 0-9, but these would be 790-799 which are > 400\\n\\nSo
+      the candidates are: 79, 179, 279, 379\\n\\nNow I need to check which of these
+      are prime:\\n\\n79: Let me check if 79 is prime.\\n- Not divisible by 2 (it's
+      odd)\\n- Not divisible by 3 (7+9=16, not divisible by 3)\\n- Not divisible by
+      5 (doesn't end in 0 or 5)\\n- Not divisible by 7: 79 \xF7 7 = 11.28... so not
+      divisible\\n- Since \u221A79 \u2248 8.9, I only need to check up to 8\\n- Not
+      divisible by 8 (even, and 79 is odd)\\nSo 79 is prime.\\n\\n179: Let me check
+      if 179 is prime.\\n- Not divisible by 2 (it's odd)\\n- Not divisible by 3 (1+7+9=17,
+      not divisible by 3)\\n\\n\\n- Not divisible by 5 (doesn't end in 0 or 5)\\n-
+      Not divisible by 7: 179 \xF7 7 = 25.57... so not divisible\\n- Not divisible
+      by 11: 179 \xF7 11 = 16.27... so not divisible\\n- Not divisible by 13: 179
+      \xF7 13 = 13.77... so not divisible\\n- Since \u221A179 \u2248 13.4, I only
+      need to check up to 13\\nSo 179 is prime.\\n\\nI'll systematically check divisibility
+      for 279, starting with basic divisibility tests. I'll check if it's divisible
+      by small prime numbers to determine its primality.\\n- Odd number, so not divisible
+      by 2\\n- Sum of digits is 18, which is divisible by 3, indicating 279 is divisible
+      by 3\\n- 279 \xF7 3 = 93 confirms it's not a prime number\\n\\nFor 379, I'll
+      apply the same methodical divisibility checks:\\n- Odd number, so not divisible
+      by 2\\n- Digit sum is 19, not divisible by 3\\n- Not divisible by 5\\n- Checked
+      divisibility by primes up to 19\\n- No factors found within \u221A379\\nSo 379
+      is prime.\\n\\nI'll verify the calculations for 79.\\n- Odd number, not divisible
+      by 2\\n- Digit sum not divisible by 3\\n- Not divisible by 5\\n- Checked divisibility
+      by primes up to 8\\n- No factors found\\n79 is prime.\\n\\nFor 179:\\n- Odd
+      number, not divisible by 2\\n- Digit sum not divisible by 3\\n- Not divisible
+      by 5\\n- Checked divisibility by primes up to 13\\n- No factors found\\n179
+      is prime.\\n\\nFor 279:\\n- Odd number, not divisible by 2\\n- Digit sum divisible
+      by 3\\n- Divided by 3 yields 93\\n279 is not prime.\\n\\nFor 379:\\n- Odd number,
+      not divisible by 2\\n- Digit sum not divisible by 3\\n- Not divisible by 5\\n-
+      Checked divisibility by primes up to 19\\n- No factors found\\n379 is prime.\\n\\nIdentified
+      3 primes containing \\\"79\\\": 79, 179, 379.\",\"signature\":\"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\"},{\"type\":\"text\",\"text\":\"3\"}]},{\"role\":\"user\",\"content\":\"If
+      you remember what the primes were, then share them, or say 'I don't remember.'\"}],\"model\":\"claude-sonnet-4-0\",\"thinking\":{\"type\":\"disabled\"},\"stream\":true}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '8373'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-stream-helper:
+      - beta.messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01KF64Bb8tbHKa97JHZSw85M","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":68,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":5,"service_tier":"standard"}}        }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"I
+        don''t remember."}}
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0 }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":68,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":8}     }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"        }
+
+
+        '
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9af3cdac9da1c368-NRT
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 17 Dec 2025 04:51:08 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-17T04:51:06Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-17T04:51:06Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-17T04:51:06Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-17T04:51:06Z'
+      request-id:
+      - req_011CWBf7wFL19J9wHv61YKqY
+      x-envoy-upstream-service-time:
+      - '2469'
+    status:
+      code: 200
+      message: OK
+version: 1
