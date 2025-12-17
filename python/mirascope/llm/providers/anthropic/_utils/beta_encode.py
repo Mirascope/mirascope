@@ -15,18 +15,25 @@ from anthropic.types.beta import (
 )
 from pydantic import BaseModel
 
-from .....content import ContentPart
-from .....exceptions import FormattingModeNotSupportedError
-from .....formatting import Format, FormattableT, resolve_format
-from .....messages import AssistantMessage, Message, UserMessage
-from .....tools import AnyToolSchema, BaseToolkit
-from ....base import Params, _utils as _base_utils
-from ..._utils import DEFAULT_MAX_TOKENS, process_params
-from ...model_id import model_name
-from ...model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
-from ...standard._utils.encode import (
-    convert_tool_to_tool_param as standard_convert_tool_to_tool_param,
-    encode_content as standard_encode_content,
+from ....content import ContentPart
+from ....exceptions import FormattingModeNotSupportedError
+from ....formatting import (
+    Format,
+    FormattableT,
+    _utils as _formatting_utils,
+    resolve_format,
+)
+from ....messages import AssistantMessage, Message, UserMessage
+from ....tools import AnyToolSchema, BaseToolkit
+from ...base import Params, _utils as _base_utils
+from ..model_id import model_name
+from ..model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
+from .encode import (
+    DEFAULT_MAX_TOKENS,
+    FORMAT_TOOL_NAME,
+    convert_tool_to_tool_param,
+    encode_content,
+    process_params,
 )
 
 DEFAULT_FORMAT_MODE = "strict"
@@ -50,17 +57,17 @@ class BetaParseKwargs(TypedDict, total=False):
     output_format: type[BaseModel]
 
 
-def _encode_content(
+def _beta_encode_content(
     content: Sequence[ContentPart], encode_thoughts: bool
 ) -> str | Sequence[BetaContentBlockParam]:
     """Convert mirascope content to Beta Anthropic content format."""
-    result = standard_encode_content(content, encode_thoughts)
+    result = encode_content(content, encode_thoughts)
     if isinstance(result, str):
         return result
     return cast(Sequence[BetaContentBlockParam], result)
 
 
-def _encode_message(
+def _beta_encode_message(
     message: UserMessage | AssistantMessage,
     model_id: str,
     encode_thoughts: bool,
@@ -80,16 +87,16 @@ def _encode_message(
         )
     return BetaMessageParam(
         role=message.role,
-        content=_encode_content(message.content, encode_thoughts),
+        content=_beta_encode_content(message.content, encode_thoughts),
     )
 
 
-def _convert_tool_to_tool_param(tool: AnyToolSchema) -> BetaToolParam:
+def _beta_convert_tool_to_tool_param(tool: AnyToolSchema) -> BetaToolParam:
     """Convert a single Mirascope tool to Beta Anthropic tool format."""
-    return cast(BetaToolParam, standard_convert_tool_to_tool_param(tool))
+    return cast(BetaToolParam, convert_tool_to_tool_param(tool))
 
 
-def encode_request(
+def beta_encode_request(
     *,
     model_id: str,
     messages: Sequence[Message],
@@ -113,24 +120,35 @@ def encode_request(
     )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-    anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
+    anthropic_tools = [_beta_convert_tool_to_tool_param(tool) for tool in tools]
     format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
 
     if format is not None:
-        if format.mode != "strict":
-            raise FormattingModeNotSupportedError(
-                formatting_mode=format.mode,
-                provider_id="anthropic:beta",
-                model_id=model_id,
-            )
-        if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
-            raise FormattingModeNotSupportedError(
-                formatting_mode="strict", provider_id="anthropic", model_id=model_id
-            )
-        if format.formattable is not type(None):  # pragma: no cover
-            kwargs["output_format"] = cast(type[BaseModel], format.formattable)
+        if format.mode == "strict":
+            if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
+                raise FormattingModeNotSupportedError(
+                    formatting_mode=format.mode,
+                    provider_id="anthropic",
+                    model_id=model_id,
+                )
+            else:
+                kwargs["output_format"] = cast(
+                    type[BaseModel], format.formattable
+                )  # pragma: no cover # TODO remove no cover upstack
 
-        if format.formatting_instructions:  # pragma: no cover
+        if format.mode == "tool":
+            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            anthropic_tools.append(_beta_convert_tool_to_tool_param(format_tool_schema))
+            if tools:
+                kwargs["tool_choice"] = {"type": "any"}
+            else:
+                kwargs["tool_choice"] = {
+                    "type": "tool",
+                    "name": FORMAT_TOOL_NAME,
+                    "disable_parallel_tool_use": True,
+                }
+
+        if format.formatting_instructions:
             messages = _base_utils.add_system_instructions(
                 messages, format.formatting_instructions
             )
@@ -143,7 +161,7 @@ def encode_request(
     )
 
     kwargs["messages"] = [
-        _encode_message(remaining_message, model_id, encode_thoughts)
+        _beta_encode_message(remaining_message, model_id, encode_thoughts)
         for remaining_message in remaining_messages
     ]
 

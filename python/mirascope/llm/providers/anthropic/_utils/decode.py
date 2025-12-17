@@ -6,7 +6,7 @@ from typing import Any, TypeAlias, cast
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
 
-from .....content import (
+from ....content import (
     AssistantContentPart,
     Text,
     TextChunk,
@@ -21,8 +21,8 @@ from .....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from .....messages import AssistantMessage
-from .....responses import (
+from ....messages import AssistantMessage
+from ....responses import (
     AsyncChunkIterator,
     ChunkIterator,
     FinishReason,
@@ -30,7 +30,7 @@ from .....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ...model_id import AnthropicModelId, model_name
+from ..model_id import AnthropicModelId, model_name
 
 ANTHROPIC_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,

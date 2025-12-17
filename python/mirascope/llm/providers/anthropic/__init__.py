@@ -3,12 +3,12 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .beta import AnthropicBetaProvider
+    from .beta_provider import AnthropicBetaProvider
     from .model_id import AnthropicModelId
     from .provider import AnthropicProvider
 else:
     try:
-        from .beta import AnthropicBetaProvider
+        from .beta_provider import AnthropicBetaProvider
         from .model_id import AnthropicModelId
         from .provider import AnthropicProvider
     except ImportError:  # pragma: no cover

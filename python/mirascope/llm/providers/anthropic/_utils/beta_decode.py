@@ -17,7 +17,7 @@ from anthropic.types.beta import (
 )
 from anthropic.types.beta.parsed_beta_message import ParsedBetaMessage
 
-from .....content import (
+from ....content import (
     AssistantContentPart,
     Text,
     TextChunk,
@@ -32,8 +32,8 @@ from .....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from .....messages import AssistantMessage
-from .....responses import (
+from ....messages import AssistantMessage
+from ....responses import (
     AsyncChunkIterator,
     ChunkIterator,
     FinishReason,
@@ -41,7 +41,7 @@ from .....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ...model_id import model_name
+from ..model_id import model_name
 
 BETA_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
@@ -68,7 +68,7 @@ def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantConten
         )
 
 
-def decode_response(
+def beta_decode_response(
     response: ParsedBetaMessage[Any],
     model_id: str,
 ) -> tuple[AssistantMessage, FinishReason | None]:
@@ -234,7 +234,7 @@ class _BetaChunkProcessor:
         )
 
 
-def decode_stream(
+def beta_decode_stream(
     beta_stream_manager: BetaMessageStreamManager[Any],
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from a Beta MessageStreamManager."""
@@ -245,7 +245,7 @@ def decode_stream(
     yield processor.raw_message_chunk()
 
 
-async def decode_async_stream(
+async def beta_decode_async_stream(
     beta_stream_manager: BetaAsyncMessageStreamManager[Any],
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from a Beta MessageStreamManager."""

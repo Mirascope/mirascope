@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from .anthropic import AnthropicBetaProvider, AnthropicProvider
+from .anthropic import AnthropicProvider
 from .base import Provider
 from .google import GoogleProvider
 from .mlx import MLXProvider
@@ -30,8 +30,6 @@ def load_provider(
     match provider_id:
         case "anthropic":
             return AnthropicProvider(api_key=api_key, base_url=base_url)
-        case "anthropic-beta":
-            return AnthropicBetaProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "openai":
