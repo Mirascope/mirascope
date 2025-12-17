@@ -142,7 +142,7 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
               lines={["The AI Engineer's", "Developer Stack"]}
               fontSize={styleSystem.heroFontSize}
               className="flex flex-col font-medium tracking-tight text-white"
-              lineClassName="font-handwriting"
+              lineClassName="font-handwriting text-shade"
               textShadow={true}
             />
           </div>
@@ -152,7 +152,7 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
             href="/docs/mirascope/v2"
             variant="outline"
             size="lg"
-            className="landing-page-box-shadow landing-page-box-shadow-hover w-full min-w-[200px] border-0 bg-white text-center font-handwriting font-bold text-black hover:bg-white/90 hover:text-black sm:w-auto"
+            className="box-shade w-full min-w-[200px] border-0 bg-white text-center font-handwriting font-bold text-black hover:bg-white/90 hover:text-black sm:w-auto"
           >
             <Rocket className="size-5" aria-hidden="true" />
             Mirascope v2 Alpha
@@ -161,7 +161,7 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
             href="/discord-invite"
             variant="default"
             size="lg"
-            className="landing-page-box-shadow landing-page-box-shadow-hover w-full min-w-[200px] bg-[#5865F2] text-center font-handwriting font-bold text-white hover:bg-[#5865F2]/90 sm:w-auto"
+            className="box-shade w-full min-w-[200px] bg-[#5865F2] text-center font-handwriting font-bold text-white hover:bg-[#5865F2]/90 sm:w-auto"
           >
             Join our
             <img
@@ -180,7 +180,7 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
           showScrollButton ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       >
-        <div className="landing-page-box-shadow landing-page-box-shadow-hover relative h-12 w-12 overflow-hidden rounded-full">
+        <div className="box-shade relative h-12 w-12 overflow-hidden rounded-full">
           <button
             onClick={onScrollDown}
             className="bg-primary/80 hover:bg-primary absolute inset-0 flex items-center justify-center border-0 transition-all"
@@ -247,7 +247,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
           href="/docs/mirascope"
           variant="default"
           size="default"
-          className="landing-page-box-shadow landing-page-box-shadow-hover w-full min-w-[200px] px-6 py-4 text-center font-handwriting font-medium sm:w-auto"
+          className="box-shade w-full min-w-[200px] px-6 py-4 text-center font-handwriting font-medium sm:w-auto"
         >
           <BookOpen className="size-5" aria-hidden="true" /> Mirascope Docs
         </ButtonLink>
@@ -255,7 +255,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
           href="https://mirascope.com/discord-invite"
           variant="outline"
           size="default"
-          className="landing-page-box-shadow landing-page-box-shadow-hover w-full min-w-[200px] border-0 bg-white px-6 py-4 text-center font-handwriting font-medium text-black hover:bg-gray-100 hover:text-black sm:w-auto"
+          className="box-shade w-full min-w-[200px] border-0 bg-white px-6 py-4 text-center font-handwriting font-medium text-black hover:bg-gray-100 hover:text-black sm:w-auto"
         >
           <Users className="size-5" aria-hidden="true" /> Join the Community
         </ButtonLink>
@@ -264,7 +264,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
       {/* Scroll indicator to go back to the top */}
       {onScrollToTop && (
         <div className="mt-8 flex justify-center">
-          <div className="landing-page-box-shadow landing-page-box-shadow-hover relative h-10 w-10 overflow-hidden rounded-full">
+          <div className="box-shade relative h-10 w-10 overflow-hidden rounded-full">
             <button
               onClick={onScrollToTop}
               className="bg-primary/80 hover:bg-primary absolute inset-0 flex items-center justify-center border-0 transition-all"

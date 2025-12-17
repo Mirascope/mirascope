@@ -9,11 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as TermsUseRouteImport } from './routes/terms.use'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
@@ -26,6 +31,16 @@ import { Route as ApiV0HealthRouteImport } from './routes/api.v0.health'
 import { Route as ApiV0DocsRouteImport } from './routes/api.v0.docs'
 import { Route as ApiV0SplatRouteImport } from './routes/api.v0.$'
 
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrganizationsRoute = OrganizationsRouteImport.update({
   id: '/organizations',
   path: '/organizations',
@@ -41,6 +56,16 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +74,11 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsUseRoute = TermsUseRouteImport.update({
+  id: '/terms/use',
+  path: '/terms/use',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
@@ -109,13 +139,18 @@ const ApiV0SplatRoute = ApiV0SplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRoute
+  '/docs': typeof DocsRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
+  '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/terms/use': typeof TermsUseRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -127,13 +162,18 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRoute
+  '/docs': typeof DocsRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
+  '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/terms/use': typeof TermsUseRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -146,13 +186,18 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/blog': typeof BlogRoute
+  '/docs': typeof DocsRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
+  '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/terms/use': typeof TermsUseRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -166,13 +211,18 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/blog'
+    | '/docs'
     | '/home'
     | '/login'
     | '/organizations'
+    | '/pricing'
+    | '/privacy'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
     | '/dashboard/settings'
+    | '/terms/use'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -184,13 +234,18 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/blog'
+    | '/docs'
     | '/home'
     | '/login'
     | '/organizations'
+    | '/pricing'
+    | '/privacy'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
     | '/dashboard/settings'
+    | '/terms/use'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -202,13 +257,18 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/blog'
+    | '/docs'
     | '/home'
     | '/login'
     | '/organizations'
+    | '/pricing'
+    | '/privacy'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
     | '/dashboard/settings'
+    | '/terms/use'
     | '/dashboard/'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -221,13 +281,18 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BlogRoute: typeof BlogRoute
+  DocsRoute: typeof DocsRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   OrganizationsRoute: typeof OrganizationsRoute
+  PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   AuthGithubRoute: typeof AuthGithubRouteWithChildren
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
   AuthMeRoute: typeof AuthMeRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  TermsUseRoute: typeof TermsUseRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
@@ -236,6 +301,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/organizations': {
       id: '/organizations'
       path: '/organizations'
@@ -257,6 +336,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -269,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms/use': {
+      id: '/terms/use'
+      path: '/terms/use'
+      fullPath: '/terms/use'
+      preLoaderRoute: typeof TermsUseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/settings': {
@@ -381,13 +481,18 @@ const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BlogRoute: BlogRoute,
+  DocsRoute: DocsRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   OrganizationsRoute: OrganizationsRoute,
+  PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  TermsUseRoute: TermsUseRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,

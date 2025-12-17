@@ -57,6 +57,20 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
+  /* Header and footer height variables */
+  --header-height-base: 86px; /* Standard header without selector (measured) */
+  --header-height-with-selector: 126px; /* Header with product selector (measured) */
+  --header-height: var(--header-height-base); /* Default value */
+  --footer-height: 52px;
+
+  /* Nav text variables */
+  --color-nav-text: var(--color-foreground);
+  --color-nav-text-hover: var(--color-foreground);
+  --color-nav-text-shadow:
+    0 2px 10px rgba(255, 255, 255, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2);
+  --color-nav-text-shadow-hover:
+    0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+
   /* Paper texture variables */
   --text-offset: 2px;
   --texture-svg-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500' viewBox='0 0 500 500'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.9' numOctaves='1' seed='2'/%3E%3CfeDiffuseLighting lighting-color='white' surfaceScale='1'%3E%3CfeDistantLight azimuth='45' elevation='60'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23grain)' opacity='0.6'/%3E%3C/svg%3E");
@@ -65,6 +79,9 @@
   --texture-opacity: 0.3;
   --texture-opacity-element: 0.2;
   --texture-blend-mode: multiply;
+
+  /* Discord logo variables */
+  --discord-logo: url("/assets/branding/Discord-Logo-Blurple.svg");
 }
 
 .dark {
@@ -106,9 +123,48 @@
   --texture-opacity: 0.5;
   --texture-opacity-element: 0.5;
   --texture-blend-mode: screen;
+
+  --color-nav-text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+  --color-nav-text-shadow-hover:
+    0 2px 10px rgba(255, 255, 255, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+.home-page {
+  --foreground: oklch(0.985 0 0);
+  --color-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --color-nav-text: oklch(1 0 0);
+  --color-nav-text-hover: oklch(1 0 0);
+  --color-nav-text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.2);
+  --color-nav-text-shadow-hover:
+    0 2px 10px rgba(255, 255, 255, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2);
+
+  /* Discord logo for landing page */
+  --discord-logo: url("/assets/branding/Discord-Logo-White.svg");
+}
+
+/* For text over landing page backdrop - using nav text variables */
+.nav-text {
+  color: var(--color-nav-text);
+  text-shadow: var(--color-nav-text-shadow);
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
+}
+.nav-text:hover {
+  color: var(--color-nav-text-hover);
+  text-shadow: var(--color-nav-text-shadow-hover);
 }
 
 @theme inline {
+  --color-mirascope-purple: #6366f1; /* Mirascope purple */
+  --color-mirascope-purple-dark: #5452dc; /* Darker purple */
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -162,7 +218,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    /* Ported from website's body styles */
+    @apply m-0 font-normal tracking-[0.01em] antialiased bg-background text-foreground;
   }
 
   /* Paper texture overlay for all non-home pages */
@@ -249,5 +306,35 @@
     mix-blend-mode: var(--texture-blend-mode);
     z-index: 1;
     border-radius: inherit;
+  }
+
+  /* Text shade (avoid shadow ambiguity) utility class for specific elements */
+  .text-shade {
+    text-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.3),
+      0 4px 14px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Box shade (avoid shadow ambiguity) utility class for specific elements */
+  .box-shade {
+    box-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .box-shade:hover,
+  .box-shade:focus {
+    box-shadow:
+      0 2px 12px rgba(0, 0, 0, 0.4),
+      0 4px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Discord logo utility class that auto-toggles between blurple and white */
+  .discord-logo {
+    background-image: var(--discord-logo);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 }

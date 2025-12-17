@@ -159,7 +159,7 @@ const DropdownMenuRadioItem = React.forwardRef<
     ref={ref}
     className={cn(
       // Base styles
-      "relative flex cursor-pointer items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none",
+      "relative flex cursor-pointer items-center rounded-sm py-1.5 pr-2 pl-8 text-accent-foreground text-sm transition-colors outline-none select-none",
       // State styles
       "focus:bg-accent focus:text-accent-foreground",
       // Disabled state
