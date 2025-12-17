@@ -179,7 +179,7 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM> = Layer.scopedDiscard(
  * );
  * ```
  */
-export const TestEffectDatabase: Layer.Layer<EffectDatabase> =
+export const TestEffectDatabase: Layer.Layer<EffectDatabase | DrizzleORM> =
   EffectDatabase.Default.pipe(Layer.provideMerge(TestDrizzleORM));
 
 // ============================================================================
@@ -336,21 +336,19 @@ type MockEffectResult = unknown[] | Error;
  * @example
  * ```ts
  * const mockLayer = new MockDrizzleORM()
- *   .insert([{ id: "1", email: "test@example.com" }])  // 1st insert succeeds
- *   .select(new Error("Connection lost"))              // 1st select fails
+ *   .insert([{ id: "1", email: "test@example.com" }])  // insert succeeds
  *   .build();
  *
  * const result = yield* db.users
- *   .createOrUpdate({ email: "test@example.com" })
+ *   .create({ data: { email: "test@example.com" } })
  *   .pipe(Effect.provide(mockLayer));
  * ```
  *
  * @example Multi-step operation testing
  * ```ts
- * // Test createOrUpdate where upsert succeeds but fetch fails
+ * // Test where select fails
  * const mockLayer = new MockDrizzleORM()
- *   .insert([])                                        // upsert succeeds (no return)
- *   .select(new Error("Connection failed"))            // fetch fails
+ *   .select(new Error("Connection failed"))
  *   .build();
  * ```
  */

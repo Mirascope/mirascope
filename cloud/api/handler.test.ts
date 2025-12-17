@@ -7,6 +7,7 @@ const mockUser: PublicUser = {
   id: "test-user-id",
   email: "test@example.com",
   name: "Test User",
+  deletedAt: null,
 };
 
 const testDatabaseUrl = "postgresql://test:test@localhost:5432/test";

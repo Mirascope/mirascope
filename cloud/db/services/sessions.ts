@@ -91,6 +91,7 @@ export class SessionService extends BaseService<
         id: userSession.id,
         email: userSession.email,
         name: userSession.name,
+        deletedAt: null, // this is getting deleted
       } satisfies PublicUser);
     });
   }

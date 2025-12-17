@@ -2,7 +2,7 @@
  * @fileoverview Effect-native database service layer.
  *
  * This module provides the `EffectDatabase` service which aggregates all
- * individual database services (Users, Sessions, etc.) and provides them
+ * individual database services (`Users`, `Sessions`, etc.) and provides them
  * through Effect's dependency injection system.
  *
  * ## Usage
@@ -35,13 +35,14 @@
  * Effect<T, E> with no additional dependencies.
  * ```
  *
- * This is a transitional service that will eventually be renamed to `Database`
+ * NOTE: This is a transitional service that will eventually be renamed to `Database`
  * once the migration is complete.
  */
 
 import { Context, Layer, Effect } from "effect";
-import { type Ready } from "@/db/base";
+import { type Ready, makeReady } from "@/db/base";
 import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
+import { Users } from "@/db/users";
 
 /**
  * Type definition for the EffectDatabase service.
@@ -56,7 +57,7 @@ import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
  */
 // TODO: remove "Effect" prefix after refactor is complete
 export interface EffectDatabaseSchema {
-  readonly users: Ready<null>; // TODO: add users service once implemented
+  readonly users: Ready<Users>;
 }
 
 /**
@@ -96,9 +97,13 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
    */
   static Default = Layer.effect(
     EffectDatabase,
-    Effect.sync(() => ({
-      users: null,
-    })),
+    Effect.gen(function* () {
+      const client = yield* DrizzleORM;
+
+      return {
+        users: makeReady(client, new Users()),
+      };
+    }),
   );
 
   /**

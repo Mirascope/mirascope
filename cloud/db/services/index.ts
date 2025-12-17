@@ -1,5 +1,4 @@
 export * from "@/db/services/base";
-export * from "@/db/services/users";
 export * from "@/db/services/sessions";
 export * from "@/db/services/organizations";
 export * from "@/db/services/project-memberships";
@@ -10,13 +9,15 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres, { type Sql } from "postgres";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "@/db/schema";
-import { UserService } from "@/db/services/users";
+import { Users } from "@/db/users";
+import { type Ready, makeReady } from "@/db/base";
+import { type DrizzleORMClient } from "@/db/client";
 import { SessionService } from "@/db/services/sessions";
 import { OrganizationService } from "@/db/services/organizations";
 import { ProjectService } from "@/db/services/projects";
 
 export type Database = {
-  readonly users: UserService;
+  readonly users: Ready<Users>;
   readonly sessions: SessionService;
   readonly organizations: OrganizationService;
   readonly projects: ProjectService;
@@ -29,6 +30,26 @@ export class DatabaseService extends Context.Tag("DatabaseService")<
   DatabaseService,
   Database
 >() {}
+
+/**
+ * Wraps a PostgresJsDatabase as a DrizzleORMClient for compatibility with makeReady.
+ *
+ * The legacy DatabaseService uses postgres-js directly, while the new Users service
+ * expects DrizzleORMClient (from @effect/sql-drizzle). Since both are Drizzle instances
+ * with the same query methods, we can cast with a stub withTransaction.
+ */
+function asDrizzleORMClient(
+  client: PostgresJsDatabase<typeof schema>,
+): DrizzleORMClient {
+  return Object.assign(client, {
+    // Stub - legacy services don't use Effect transactions
+    withTransaction: () => {
+      throw new Error(
+        "withTransaction is not supported in legacy DatabaseService. Use EffectDatabase instead.",
+      );
+    },
+  }) as unknown as DrizzleORMClient;
+}
 
 export function getDatabase(
   connection: string | PostgresJsDatabase<typeof schema>,
@@ -46,7 +67,9 @@ export function getDatabase(
         })()
       : connection;
 
-  const users = new UserService(client);
+  // Wrap the client for compatibility with the new Users service
+  const drizzleORMClient = asDrizzleORMClient(client);
+  const users = makeReady(drizzleORMClient, new Users());
   const sessions = new SessionService(client);
   const organizations = new OrganizationService(client);
   const projects = new ProjectService(client, organizations.memberships);

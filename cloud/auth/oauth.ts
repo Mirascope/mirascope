@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { DatabaseService, DEFAULT_SESSION_DURATION } from "@/db";
-import { AlreadyExistsError, DatabaseError } from "@/db/errors";
+import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/db/errors";
 import { SettingsService } from "@/settings";
 import {
   OAuthError,
@@ -446,7 +446,10 @@ function processAuthenticatedUser(
   siteUrl: string,
 ): Effect.Effect<
   Response,
-  AuthenticationFailedError | AlreadyExistsError | DatabaseError,
+  | AuthenticationFailedError
+  | NotFoundError
+  | AlreadyExistsError
+  | DatabaseError,
   DatabaseService
 > {
   const validateEmail = (email: string | null) => {
@@ -464,10 +467,25 @@ function processAuthenticatedUser(
     return Effect.gen(function* () {
       const db = yield* DatabaseService;
 
-      const user = yield* db.users.createOrUpdate({
-        email: email,
-        name: userInfo.name,
-      });
+      // Try to find existing user by email, or create if not found
+      const existingUser = yield* db.users.findByEmail(email).pipe(
+        Effect.map((user) => user as typeof user | null),
+        Effect.catchIf(
+          (e): e is NotFoundError => e instanceof NotFoundError,
+          () => Effect.succeed(null),
+        ),
+      );
+
+      const user = existingUser
+        ? // User exists - update name if different
+          existingUser.name !== userInfo.name
+          ? yield* db.users.update({
+              userId: existingUser.id,
+              data: { name: userInfo.name },
+            })
+          : existingUser
+        : // User doesn't exist - create new user
+          yield* db.users.create({ data: { email, name: userInfo.name } });
 
       const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
       const session = yield* db.sessions.create({
