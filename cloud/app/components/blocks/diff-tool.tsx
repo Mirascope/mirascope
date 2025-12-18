@@ -360,7 +360,7 @@ export const DiffTool = ({
               </Button>
             </div>
           </div>
-          <div className="w-full grow-1">
+          <div className="w-full grow">
             {mode === "unified" ? (
               <CodeBlockWithLineNumbersAndHighlights
                 diffedLines={diffed}

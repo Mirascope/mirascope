@@ -186,42 +186,82 @@ The TypeScript SDK's development is currently paused. We plan to resume developm
 
 The full-stack cloud application built with React and Cloudflare Workers.
 
+**Note**: React component files use shadcn-style kebab-case (e.g. `home-page.tsx`), exports use PascalCase (e.g. `HomePage`).
+
 ```text
 cloud/
-├── src/                   # Frontend React application
-│   ├── components/          # React components
-│   │   ├── home-page.tsx      # Component for the home page of the application
-│   │   └── ui/                # UI component library
-│   ├── lib/                 # Shared utilities
-│   │   └── utils.ts
-│   ├── routes/              # TanStack Router pages
-│   │   ├── __root.tsx         # Root layout
-│   │   └── index.tsx          # Home page route
-│   ├── styles/              # CSS and styling
+├── app/                           # Frontend React application
+│   ├── api/                       # API client code
+│   │   ├── auth/                  # Authentication API endpoints
+│   │   ├── client.ts
+│   │   └── [other files]          # organizations.ts, index.ts, etc.
+│   ├── components/                # React components
+│   │   ├── blocks/                # Components which are composed of other components
+│   │   │   ├── code-block/        # Code block component
+│   │   │   ├── combobox.tsx
+│   │   │   └── [other files]      # copy-button.tsx, diff-tool.tsx, etc.
+│   │   ├── error/                 # Error components
+│   │   │   └── default-catch-boundary.tsx
+│   │   ├── ui/                    # UI component library, contains the shadcn-ui components
+│   │   ├── home-page.tsx
+│   │   ├── home-page.module.css   # CSS module for non-tailwind CSS of the home page
+│   │   └── [other files]          # front-page.tsx, login-page.tsx, etc.
+│   ├── contexts/                  # React contexts
+│   │   └── auth.tsx               # Authentication context
+│   ├── hooks/                     # Custom React hooks
+│   │   ├── gradient-fade-scroll.ts
+│   │   └── sunset-time.ts
+│   ├── lib/                       # Shared utilities
+│   │   ├── code-highlight.ts
+│   │   └── [other files]          # utils.ts, types.ts, effect.ts, etc.
+│   ├── routes/                    # TanStack Router pages
+│   │   ├── auth/                  # Authentication routes
+│   │   │   ├── github.tsx
+│   │   │   └── [other files]      # google.tsx, callback routes, etc.
+│   │   ├── __root.tsx             # Root layout
+│   │   └── [other files]          # index.tsx, home.tsx, login.tsx, etc.
+│   ├── styles/                    # CSS and styling
 │   │   └── globals.css
-│   ├── main.tsx             # React app entry point
-│   ├── reportWebVitals.ts   # Performance monitoring
-│   └── routeTree.gen.ts     # Auto-generated route tree
-├── worker/                # Backend Cloudflare Workers
-│   ├── api/                 # API route handlers
-│   ├── health/              # Health check endpoints
-│   ├── app.ts               # Hono app configuration
-│   ├── environment.ts       # Environment type definitions
-│   └── index.ts             # Worker entry point
-├── public/                # Static assets
-│   ├── fonts/               # Custom fonts
-│   ├── icons/               # App icons and favicons
-│   ├── manifest.json        # PWA manifest
-│   └── robots.txt           # SEO configuration
-├── .example.dev.vars      # Example Cloudflare env settings
-├── .example.env.local     # Example local env settings
-├── package.json           # Dependencies and scripts
-├── tsconfig.json          # TypeScript configuration
-├── vite.config.ts         # Vite build configuration
-├── vitest.config.ts       # Test runner configuration
-├── wrangler.jsonc         # Cloudflare Workers deployment config
-├── eslint.config.ts       # ESLint configuration
-└── index.html             # HTML entry point
+│   ├── router.tsx
+│   └── routeTree.gen.ts           # Auto-generated route tree
+├── api/                           # Backend API handlers
+│   ├── api.ts
+│   ├── docs.handlers.ts           # Documentation handlers
+│   └── [other files]              # handlers, schemas, tests for docs/health/orgs/traces
+├── auth/                          # Authentication module
+│   ├── service.ts                 # Auth service
+│   └── [other files]              # context.ts, errors.ts, oauth.ts, etc.
+├── db/                            # Database module
+│   ├── migrations/                # Database migrations
+│   │   ├── meta/                  # Migration metadata
+│   │   └── *.sql
+│   ├── schema/                    # Database schema
+│   │   ├── users.ts
+│   │   └── [other files]          # organizations.ts, sessions.ts, etc.
+│   ├── services/                  # Database services
+│   │   ├── base.ts                # Base service
+│   │   └── [other files]          # users.ts, organizations.ts, tests, etc.
+│   ├── errors.ts                  # Database errors
+│   └── utils.ts                   # Database utilities
+├── tests/                         # Test utilities
+│   ├── api.ts                     # API test utilities
+│   └── db.ts                      # Database test utilities
+├── docker/                        # Docker configuration
+│   ├── compose.yml
+│   └── data/                      # Docker data directory
+├── dist/                          # Build output
+│   ├── client/                    # Client build artifacts
+│   └── server/                    # Server build artifacts
+├── public/                        # Static assets
+│   ├── assets/                    # Static assets
+│   │   ├── backgrounds/           # Background images
+│   │   └── branding/              # Branding assets
+│   ├── fonts/                     # Custom fonts
+│   ├── icons/                     # App icons and favicons
+│   ├── manifest.json
+│   └── robots.txt
+├── components.json                # Shadcn-ui components configuration
+├── [other files]                  # e.g. package.json, tsconfig.json, vite.config.ts, etc.
 ```
 
 **Tooling Choices**:
