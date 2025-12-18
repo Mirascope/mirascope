@@ -48,12 +48,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -109,9 +105,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -157,9 +151,7 @@
         "organizations_name_unique": {
           "name": "organizations_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -210,12 +202,8 @@
           "name": "organization_memberships_id_users_id_fk",
           "tableFrom": "organization_memberships",
           "tableTo": "users",
-          "columnsFrom": [
-            "id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -223,12 +211,8 @@
           "name": "organization_memberships_organization_id_organizations_id_fk",
           "tableFrom": "organization_memberships",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -236,10 +220,7 @@
       "compositePrimaryKeys": {
         "organization_memberships_id_organization_id_pk": {
           "name": "organization_memberships_id_organization_id_pk",
-          "columns": [
-            "id",
-            "organization_id"
-          ]
+          "columns": ["id", "organization_id"]
         }
       },
       "uniqueConstraints": {},
@@ -311,12 +292,8 @@
           "name": "organization_membership_audit_organization_id_organizations_id_fk",
           "tableFrom": "organization_membership_audit",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -324,12 +301,8 @@
           "name": "organization_membership_audit_actor_id_users_id_fk",
           "tableFrom": "organization_membership_audit",
           "tableTo": "users",
-          "columnsFrom": [
-            "actor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["actor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -337,12 +310,8 @@
           "name": "organization_membership_audit_target_id_users_id_fk",
           "tableFrom": "organization_membership_audit",
           "tableTo": "users",
-          "columnsFrom": [
-            "target_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["target_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -358,21 +327,12 @@
     "public.role": {
       "name": "role",
       "schema": "public",
-      "values": [
-        "OWNER",
-        "ADMIN",
-        "DEVELOPER",
-        "VIEWER"
-      ]
+      "values": ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"]
     },
     "public.audit_action": {
       "name": "audit_action",
       "schema": "public",
-      "values": [
-        "GRANT",
-        "REVOKE",
-        "CHANGE"
-      ]
+      "values": ["GRANT", "REVOKE", "CHANGE"]
     }
   },
   "schemas": {},

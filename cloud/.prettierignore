@@ -15,6 +15,7 @@ pnpm-lock.yaml
 
 # Generated TypeScript files
 *.gen.ts
+src/routeTree.gen.ts
 
 # Markdown/MDX files (to preserve emphasis styles)
 *.md
