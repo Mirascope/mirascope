@@ -1,0 +1,88 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
+      "thinkingConfig": {"include_thoughts": true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '634'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Assessing
+        the Schema**\\n\\nI'm currently focused on the schema provided. I understand
+        the user requires an object with an \\\"integer_result\\\" property. I've
+        grasped the need to structure my response to precisely match the user's defined
+        output format. I'm contemplating how to generate the correct JSON format.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"totalTokenCount\": 13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        13}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Finalizing the
+        Output**\\n\\nI've moved through the steps: mapping the request, constructing
+        the JSON, and verifying its integrity. It seems I'm prepared to generate the
+        final, valid JSON string, ready for output. The process of constructing and
+        validating the JSON confirms that it aligns with the requested schema. All
+        checks have passed.\\n\\n\\n\",\"thought\": true}],\"role\": \"model\"},\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\": 13,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
+        \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"{\\n  \\\"integer_a\\\": 2,\\n  \\\"integer_b\\\":
+        2,\\n  \\\"answer\\\": 4\\n}\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 13,\"candidatesTokenCount\": 30,\"totalTokenCount\":
+        316,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\":
+        273},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\",\"thoughtSignature\":
+        \"Eq4ICqsIAXLI2nyy5Pdl3XFwLeRSqz+JjJ58uk5zEHIz3N2Sz2J9z58qhgtgRmhkWFOfRDpuqGQb2fLztllASY6F3WQdEMvJZeF2x+/Gx/is+FflYeTsXV86GR+tz0LHZu/dscL0dbaizMyn58bfX7t5Q2BqtU6r/cgRAkwmWIcbd+5CmFoOV/9i1eDjQ1BkXHcBpMVHtkuxL9ZONB7VdTdDsxMVUzV609SiLTc/nnyH83HF6AOXt+Gj0gvRLp6HYyoZ8uFxXi+Dq19EQoWvXl2XH+Vf5bkrJ9GtAWQw3Dwa1hZlu5+vYbR3LDo/87548jZRMaENs5y66MppKW2RKEFq+rvYhzlXMHqH126xdxRQPOCkvu7f4V3TjSxXi5EdvWekQ+0qmLZymzcapEnU8zmeJDrnDHvqETJVwz0xofTbwnLUZl3LS1nO2h0+pgSJUpY/F1n0ttHmP7pvr/xiC7URkoTKdwHOmhYx1Qkkca+a0FnhLPHW85V3AnIc5+VbF4GWUqHA15BI5hADosqvL3JGvoNIuQ2leaTe9pvTBYO5LRfFMene3D9xTDKv+nFmYMaLtKB8n8kmcrvEW8+n8eQ6Hm+CtZl4Eh6iI35Rem2Ib5Dm6Hi3yhX/jvKH36MhE/4+LHi3E/OTFsZ7PL3f0IEk1rzwsdp54qT001V8aMJXDcVwv9ZzTX5oxXnoE4h5wIUGM3qNl4QKDLxB5XBPbuF4k842EBJW9FovLxfpRU/TsclvO+Z4ebq+NmDKZPa5Rn5sX+SoxNGmUInDBsGoPJZymrC+0jwAZeP1iWguzEHSaVX/ffZMVEPUUOvDn8R5vJL8lWyGCzmMNmvBpeMT/mle2jJgWGypF5rXdpVhj2zXlEKcwnmWp/8STmnMrbjbDzizLeUYw0iq6MI7aY5+mu0HLY7Kh5MIg9/OUQBR/ZDZjn1krmqHJv4nD4LU/eMR5LqZai30THw+lJ8JZB0K7wI7KGTLt6ZkJGzgOsRDJ+cKR6R8MsC4NKnDNMLocU8JRSERrgB7ec6Cym+YffE9eBG4mRb7Swl6BiWkrOyRzPKUOdqiD7r0z/1S/OTK1wOCizt19iFny0yphewtcSU0oXYpYRH3m9qbzoUXliDlCJlKhWi9MF+DTi0Jk+vGuajrbvqMLRpwCNNXquBawGXLvZScnRMRrHq8akkH9WqrXoExJXMVTsWhz02J8JTeb9E+Lyx7OLLzsbLp8/7UtLSkQs0OCej3p4GKnIeyNUV8KyIalO5de07F1wnFSC+HEXMuYq5FxUitJeSLeKprzAi/IoxqWVAncF+Z1UEpJ9zTPQmNEf0Jy0jsO9duJfMn+iTmanCY6SW6N7zSYtbKb/oSn56u8jVMd9yeDEQUnCE5vlkn/MLlVLhDK9htvC4EO+4uQY19gRDfzeFEIuV4u8NV62w=\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 30,\"totalTokenCount\": 316,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 273},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Tue, 16 Dec 2025 23:39:45 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3084
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

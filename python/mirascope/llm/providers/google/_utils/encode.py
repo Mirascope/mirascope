@@ -21,6 +21,7 @@ from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ...base import Params, _utils as _base_utils
 from ..model_id import GoogleModelId, model_name
+from ..model_info import MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT
 
 UNKNOWN_TOOL_ID = "google_unknown_tool_id"
 
@@ -187,6 +188,7 @@ def encode_request(
         genai_types.GenerateContentConfigDict()
     )
     encode_thoughts = False
+    google_model_name = model_name(model_id)
 
     with _base_utils.ensure_all_params_accessed(
         params=params, provider_id="google"
@@ -219,17 +221,23 @@ def encode_request(
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
 
-    format = resolve_format(
-        format,
-        # Google does not support strict outputs when tools are present
-        # (Gemini 2.5 will error, 2.0 and below will ignore tools)
-        default_mode="strict" if not tools else "tool",
+    allows_strict_mode_with_tools = (
+        google_model_name not in MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT
     )
+    # Older google models do not allow strict mode when using tools; if so, we use tool
+    # mode when tools are present by default for compatibility. Otherwise, prefer strict mode.
+    default_mode = "tool" if tools and not allows_strict_mode_with_tools else "strict"
+    format = resolve_format(format, default_mode=default_mode)
     if format is not None:
-        if format.mode in ("strict", "json") and tools:
+        if (
+            format.mode in ("strict", "json")
+            and tools
+            and not allows_strict_mode_with_tools
+        ):
             raise FeatureNotSupportedError(
                 feature=f"formatting_mode:{format.mode} with tools",
                 provider_id="google",
+                model_id=model_id,
             )
 
         if format.mode == "strict":

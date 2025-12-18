@@ -1,0 +1,929 @@
+provider: google
+known_features:
+- chat_model
+- structured_output_with_tools
+models:
+  aqa:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533279'
+    metadata:
+      display_name: Model that performs Attributed Question Answering.
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:23.037067'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/aqa is not found for API version
+          v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported
+          methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:23.053621'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  deep-research-pro-preview-12-2025:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533241'
+    metadata:
+      display_name: Deep Research Pro Preview (Dec-12-2025)
+    features:
+      chat_model:
+        status: error
+        tested_at: '2025-12-16T15:16:35.501150'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''This model only supports Interactions
+          API.'', ''status'': ''INVALID_ARGUMENT''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:35.515101'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  embedding-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533247'
+    metadata:
+      display_name: Embedding 001
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:54.527015'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/embedding-001 is not found for API
+          version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and
+          their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:54.557491'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  embedding-gecko-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.532995'
+    metadata:
+      display_name: Embedding Gecko
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:47.966445'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/embedding-gecko-001 is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:47.983870'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-2.0-flash:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533074'
+    metadata:
+      display_name: Gemini 2.0 Flash
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:05.787560'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:17:06.449591'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533080'
+    metadata:
+      display_name: Gemini 2.0 Flash 001
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:07.035269'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:17:07.687047'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-exp:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533067'
+    metadata:
+      display_name: Gemini 2.0 Flash Experimental
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:18.318542'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:16:19.016974'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-exp-image-generation:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533086'
+    metadata:
+      display_name: Gemini 2.0 Flash (Image Generation) Experimental
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:53.727842'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:16:54.406120'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-lite:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533101'
+    metadata:
+      display_name: Gemini 2.0 Flash-Lite
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:37.474547'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:16:38.013477'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-lite-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533096'
+    metadata:
+      display_name: Gemini 2.0 Flash-Lite 001
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:23.496168'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:16:24.052253'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-lite-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533110'
+    metadata:
+      display_name: Gemini 2.0 Flash-Lite Preview
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:14.310624'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:17:14.925399'
+        metadata:
+          called_tool: true
+  gemini-2.0-flash-lite-preview-02-05:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533105'
+    metadata:
+      display_name: Gemini 2.0 Flash-Lite Preview 02-05
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:21.707324'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:16:22.233677'
+        metadata:
+          called_tool: true
+  gemini-2.5-computer-use-preview-10-2025:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533236'
+    metadata:
+      display_name: Gemini 2.5 Computer Use Preview 10-2025
+    features:
+      chat_model:
+        status: error
+        tested_at: '2025-12-16T15:17:12.673805'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''This model requires the use of the
+          Computer Use tool. See https://ai.google.dev/gemini-api/docs/computer-use#send-request for instructions on adding
+          the tool. If you want to use a custom set of functions instead, see https://ai.google.dev/gemini-api/docs/computer-use#custom-functions.'',
+          ''status'': ''INVALID_ARGUMENT''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:12.697561'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-2.5-flash:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533045'
+    metadata:
+      display_name: Gemini 2.5 Flash
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:19.940468'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:20.185261'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-flash-image:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533197'
+    metadata:
+      display_name: Nano Banana
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:22.758969'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:22.956969'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          this model'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-flash-image-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533192'
+    metadata:
+      display_name: Nano Banana
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:40.213558'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:40.422468'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          this model'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-flash-lite:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533181'
+    metadata:
+      display_name: Gemini 2.5 Flash-Lite
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:17.607679'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:17.814677'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-flash-lite-preview-09-2025:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533207'
+    metadata:
+      display_name: Gemini 2.5 Flash-Lite Preview Sep 2025
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:16.719573'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:16.932837'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-flash-native-audio-latest:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.591337'
+    metadata:
+      display_name: Gemini 2.5 Flash Native Audio Latest
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:24.126889'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/gemini-2.5-flash-native-audio-latest
+          is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of
+          available models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:24.139289'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-2.5-flash-native-audio-preview-09-2025:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.591373'
+    metadata:
+      display_name: Gemini 2.5 Flash Native Audio Preview 09-2025
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:07.776900'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/gemini-2.5-flash-native-audio-preview-09-2025
+          is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of
+          available models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:07.805209'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-2.5-flash-native-audio-preview-12-2025:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.591382'
+    metadata:
+      display_name: Gemini 2.5 Flash Native Audio Preview 12-2025
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:04.966181'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/gemini-2.5-flash-native-audio-preview-12-2025
+          is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of
+          available models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:04.985733'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-2.5-flash-preview-09-2025:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533202'
+    metadata:
+      display_name: Gemini 2.5 Flash Preview Sep 2025
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:16.106952'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:16.357543'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-flash-preview-tts:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533120'
+    metadata:
+      display_name: Gemini 2.5 Flash Preview TTS
+    features:
+      chat_model:
+        status: not_supported
+        tested_at: '2025-12-16T15:16:19.217282'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:19.227717'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-2.5-pro:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533055'
+    metadata:
+      display_name: Gemini 2.5 Pro
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:35.052934'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:35.300124'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-2.5-pro-preview-tts:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533124'
+    metadata:
+      display_name: Gemini 2.5 Pro Preview TTS
+    features:
+      chat_model:
+        status: not_supported
+        tested_at: '2025-12-16T15:16:54.955880'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:54.974316'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-3-pro-image-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533220'
+    metadata:
+      display_name: Nano Banana Pro
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:12.247683'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:17:12.418874'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-3-pro-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533214'
+    metadata:
+      display_name: Gemini 3 Pro Preview
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:01.724206'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2025-12-16T15:17:04.440818'
+        metadata:
+          called_tool: true
+  gemini-embedding-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533274'
+    metadata:
+      display_name: Gemini Embedding 001
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:07.995285'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/gemini-embedding-001 is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:08.017093'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-embedding-exp:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533268'
+    metadata:
+      display_name: Gemini Embedding Experimental
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:05.181260'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/gemini-embedding-exp is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:05.204544'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-embedding-exp-03-07:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533256'
+    metadata:
+      display_name: Gemini Embedding Experimental 03-07
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:13.710290'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/gemini-embedding-exp-03-07 is not
+          found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available
+          models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:13.734410'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-exp-1206:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533115'
+    metadata:
+      display_name: Gemini Experimental 1206
+    features:
+      chat_model:
+        status: error
+        tested_at: '2025-12-16T15:16:17.119762'
+        error_message: '429 RESOURCE_EXHAUSTED. {''error'': {''code'': 429, ''message'': ''You exceeded your current quota.
+          Please migrate to Gemini 2.5 Pro (models/gemini-2.5-pro) for higher quota limits. For more information on this error,
+          head to: https://ai.google.dev/gemini-api/docs/rate-limits.'', ''status'': ''RESOURCE_EXHAUSTED'', ''details'':
+          [{''@type'': ''type.googleapis.com/google.rpc.Help'', ''links'': [{''description'': ''Learn more about Gemini API
+          quotas'', ''url'': ''https://ai.google.dev/gemini-api/docs/rate-limits''}]}, {''@type'': ''type.googleapis.com/google.rpc.QuotaFailure'',
+          ''violations'': [{''quotaMetric'': ''generativelanguage.googleapis.com/generate_content_paid_tier_input_token_count'',
+          ''quotaId'': ''GenerateContentPaidTierInputTokensPerModelPerMinute'', ''quotaDimensions'': {''model'': ''gemini-2.0-pro-exp'',
+          ''location'': ''global''}}, {''quotaMetric'': ''generativelanguage.googleapis.com/generate_requests_per_model'',
+          ''quotaId'': ''GenerateRequestsPerMinutePerProjectPerModel'', ''quotaDimensions'': {''location'': ''global'', ''model'':
+          ''gemini-2.0-pro-exp''}}, {''quotaMetric'': ''generativelanguage.googleapis.com/generate_requests_per_model_per_day'',
+          ''quotaId'': ''GenerateRequestsPerDayPerProjectPerModel''}]}, {''@type'': ''type.googleapis.com/google.rpc.RetryInfo'',
+          ''retryDelay'': ''42s''}]}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:17.129185'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  gemini-flash-latest:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533163'
+    metadata:
+      display_name: Gemini Flash Latest
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:13.371369'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:17:13.613249'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-flash-lite-latest:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533168'
+    metadata:
+      display_name: Gemini Flash-Lite Latest
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:36.835026'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:37.029798'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-pro-latest:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533173'
+    metadata:
+      display_name: Gemini Pro Latest
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:29.116827'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:29.322973'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemini-robotics-er-1.5-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533230'
+    metadata:
+      display_name: Gemini Robotics-ER 1.5 Preview
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:47.353869'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:47.545103'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  gemma-3-12b-it:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533143'
+    metadata:
+      display_name: Gemma 3 12B
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:45.743900'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:45.949798'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          models/gemma-3-12b-it'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemma-3-1b-it:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533129'
+    metadata:
+      display_name: Gemma 3 1B
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:36.205576'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:36.372916'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          models/gemma-3-1b-it'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemma-3-27b-it:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533148'
+    metadata:
+      display_name: Gemma 3 27B
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:56.873445'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:57.047147'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          models/gemma-3-27b-it'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemma-3-4b-it:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533138'
+    metadata:
+      display_name: Gemma 3 4B
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:39.375488'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:39.556321'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          models/gemma-3-4b-it'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemma-3n-e2b-it:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533159'
+    metadata:
+      display_name: Gemma 3n E2B
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:21.003715'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:21.204397'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          models/gemma-3n-e2b-it'', ''status'': ''INVALID_ARGUMENT''}}'
+  gemma-3n-e4b-it:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533154'
+    metadata:
+      display_name: Gemma 3n E4B
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:17:15.669279'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:17:15.821596'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': ''Function calling is not enabled for
+          models/gemma-3n-e4b-it'', ''status'': ''INVALID_ARGUMENT''}}'
+  imagen-4.0-fast-generate-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533310'
+    metadata:
+      display_name: Imagen 4 Fast
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:47.629118'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/imagen-4.0-fast-generate-001 is not
+          found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available
+          models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:47.646381'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  imagen-4.0-generate-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533295'
+    metadata:
+      display_name: Imagen 4
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:38.096665'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/imagen-4.0-generate-001 is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:38.118170'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  imagen-4.0-generate-preview-06-06:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533284'
+    metadata:
+      display_name: Imagen 4 (Preview)
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:29.401518'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/imagen-4.0-generate-preview-06-06
+          is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of
+          available models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:29.415465'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  imagen-4.0-ultra-generate-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533304'
+    metadata:
+      display_name: Imagen 4 Ultra
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:04.861176'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/imagen-4.0-ultra-generate-001 is
+          not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available
+          models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:04.881753'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  imagen-4.0-ultra-generate-preview-06-06:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533289'
+    metadata:
+      display_name: Imagen 4 Ultra (Preview)
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:21.287465'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/imagen-4.0-ultra-generate-preview-06-06
+          is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of
+          available models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:21.298520'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  nano-banana-pro-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533225'
+    metadata:
+      display_name: Nano Banana Pro
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2025-12-16T15:16:52.911710'
+      structured_output_with_tools:
+        status: error
+        tested_at: '2025-12-16T15:16:53.139360'
+        error_message: '400 INVALID_ARGUMENT. {''error'': {''code'': 400, ''message'': "Function calling with a response mime
+          type: ''application/json'' is unsupported", ''status'': ''INVALID_ARGUMENT''}}'
+  text-embedding-004:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533251'
+    metadata:
+      display_name: Text Embedding 004
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:17.014699'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/text-embedding-004 is not found for
+          API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:17.023998'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  veo-2.0-generate-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533315'
+    metadata:
+      display_name: Veo 2
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:04.540163'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/veo-2.0-generate-001 is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:04.569528'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  veo-3.0-fast-generate-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533325'
+    metadata:
+      display_name: Veo 3 fast
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:38.198411'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/veo-3.0-fast-generate-001 is not
+          found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available
+          models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:38.219657'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  veo-3.0-generate-001:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533321'
+    metadata:
+      display_name: Veo 3
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:36.463385'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/veo-3.0-generate-001 is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:36.477755'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  veo-3.1-fast-generate-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533342'
+    metadata:
+      display_name: Veo 3.1 fast
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:17:12.782724'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/veo-3.1-fast-generate-preview is
+          not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available
+          models and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:17:12.805302'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+  veo-3.1-generate-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2025-12-16T15:16:15.533336'
+    metadata:
+      display_name: Veo 3.1
+    features:
+      chat_model:
+        status: unavailable
+        tested_at: '2025-12-16T15:16:47.856250'
+        error_message: '404 NOT_FOUND. {''error'': {''code'': 404, ''message'': ''models/veo-3.1-generate-preview is not found
+          for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models
+          and their supported methods.'', ''status'': ''NOT_FOUND''}}'
+      structured_output_with_tools:
+        status: skipped
+        tested_at: '2025-12-16T15:16:47.882597'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - chat_model
+last_discovery: '2025-12-16T15:16:15.591396'
