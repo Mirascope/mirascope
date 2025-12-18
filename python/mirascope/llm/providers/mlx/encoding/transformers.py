@@ -10,7 +10,12 @@ from transformers import PreTrainedTokenizer
 from ....content import ContentPart, TextChunk, TextEndChunk, TextStartChunk
 from ....formatting import Format, FormattableT
 from ....messages import AssistantContent, Message
-from ....responses import ChunkIterator, FinishReasonChunk, RawStreamEventChunk
+from ....responses import (
+    ChunkIterator,
+    FinishReasonChunk,
+    RawStreamEventChunk,
+    UsageDeltaChunk,
+)
 from ....tools import AnyToolSchema, BaseToolkit
 from .. import _utils
 from .base import BaseEncoder, TokenIds
@@ -129,3 +134,14 @@ class TransformersEncoder(BaseEncoder):
             yield FinishReasonChunk(finish_reason=finish_reason)
         else:
             yield TextEndChunk()
+
+        # Emit usage delta if available
+        usage = _utils.extract_usage(response)
+        if usage:
+            yield UsageDeltaChunk(
+                input_tokens=usage.input_tokens,
+                output_tokens=usage.output_tokens,
+                cache_read_tokens=usage.cache_read_tokens,
+                cache_write_tokens=usage.cache_write_tokens,
+                reasoning_tokens=usage.reasoning_tokens,
+            )

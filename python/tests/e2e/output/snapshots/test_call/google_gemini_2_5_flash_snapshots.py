@@ -218,7 +218,13 @@ So, 42\
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 63,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 75,
+            },
             "n_chunks": 4,
         }
     }
@@ -257,7 +263,13 @@ async_stream_snapshot = snapshot(
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 15,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 40,
+            },
             "n_chunks": 3,
         }
     }

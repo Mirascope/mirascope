@@ -137,7 +137,13 @@ I've moved through the steps: mapping the request, constructing the JSON, and ve
                 "formatting_instructions": None,
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 30,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 273,
+            },
             "n_chunks": 7,
         }
     }

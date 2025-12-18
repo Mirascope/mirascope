@@ -27,7 +27,7 @@ from .streams import (
     ThoughtStream,
     ToolCallStream,
 )
-from .usage import Usage
+from .usage import Usage, UsageDeltaChunk
 
 __all__ = [
     "AsyncChunkIterator",
@@ -55,5 +55,6 @@ __all__ = [
     "ThoughtStream",
     "ToolCallStream",
     "Usage",
+    "UsageDeltaChunk",
     "_utils",
 ]

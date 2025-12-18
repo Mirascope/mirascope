@@ -406,7 +406,13 @@ Here are the secrets associated with each password:
                     "strict": False,
                 }
             ],
-            "usage": None,
+            "usage": {
+                "input_tokens": 604,
+                "output_tokens": 41,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 8,
         }
     }
@@ -534,7 +540,13 @@ Here are the secrets retrieved for each password:
                     "strict": False,
                 }
             ],
-            "usage": None,
+            "usage": {
+                "input_tokens": 602,
+                "output_tokens": 39,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 8,
         }
     }

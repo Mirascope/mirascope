@@ -106,7 +106,13 @@ Okay, the user is asking me to list all U.S. states. Let me start by recalling t
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 15,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 51,
         }
     }
@@ -136,7 +142,13 @@ Okay, the user is asking me to list all U.S. states. Let me start by recalling t
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 15,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 51,
         }
     }

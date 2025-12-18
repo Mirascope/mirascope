@@ -86,7 +86,13 @@ test_snapshot = snapshot(
                 "formatting_instructions": None,
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 27,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 284,
+            },
             "n_chunks": 3,
         }
     }

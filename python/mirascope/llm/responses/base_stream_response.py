@@ -36,7 +36,7 @@ from .streams import (
     ThoughtStream,
     ToolCallStream,
 )
-from .usage import Usage
+from .usage import Usage, UsageDeltaChunk
 
 if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
@@ -77,7 +77,11 @@ class RawMessageChunk:
 
 
 StreamResponseChunk: TypeAlias = (
-    AssistantContentChunk | FinishReasonChunk | RawStreamEventChunk | RawMessageChunk
+    AssistantContentChunk
+    | FinishReasonChunk
+    | RawStreamEventChunk
+    | RawMessageChunk
+    | UsageDeltaChunk
 )
 
 ChunkIterator: TypeAlias = Iterator[StreamResponseChunk]
@@ -479,6 +483,14 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                 self._assistant_message.raw_message = chunk.raw_message
             elif chunk.type == "finish_reason_chunk":
                 self.finish_reason = chunk.finish_reason
+            elif chunk.type == "usage_delta_chunk":
+                if self.usage is None:
+                    self.usage = Usage()
+                self.usage.input_tokens += chunk.input_tokens
+                self.usage.output_tokens += chunk.output_tokens
+                self.usage.cache_read_tokens += chunk.cache_read_tokens
+                self.usage.cache_write_tokens += chunk.cache_write_tokens
+                self.usage.reasoning_tokens += chunk.reasoning_tokens
             else:
                 yield self._handle_chunk(chunk)
 
@@ -652,6 +664,14 @@ class BaseAsyncStreamResponse(
                 self._assistant_message.raw_message = chunk.raw_message
             elif chunk.type == "finish_reason_chunk":
                 self.finish_reason = chunk.finish_reason
+            elif chunk.type == "usage_delta_chunk":
+                if self.usage is None:
+                    self.usage = Usage()
+                self.usage.input_tokens += chunk.input_tokens
+                self.usage.output_tokens += chunk.output_tokens
+                self.usage.cache_read_tokens += chunk.cache_read_tokens
+                self.usage.cache_write_tokens += chunk.cache_write_tokens
+                self.usage.reasoning_tokens += chunk.reasoning_tokens
             else:
                 yield self._handle_chunk(chunk)
 

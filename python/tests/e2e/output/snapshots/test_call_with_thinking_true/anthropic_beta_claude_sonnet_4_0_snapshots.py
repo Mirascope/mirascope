@@ -589,7 +589,13 @@ Identified 3 primes containing "79": 79, 179, 379.\
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 68,
+                "output_tokens": 8,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 3,
         }
     }
@@ -784,7 +790,13 @@ Checking each for primality:
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 142,
+                "output_tokens": 17,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 9,
         }
     }

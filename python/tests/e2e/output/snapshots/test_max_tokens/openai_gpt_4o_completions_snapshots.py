@@ -143,6 +143,52 @@ stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
+Here is a list of all 50 U.S. states:
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10\
+"""
+                        )
+                    ],
+                    provider_id="openai",
+                    model_id="openai/gpt-4o:completions",
+                    provider_model_name="gpt-4o:completions",
+                    raw_message=None,
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "usage": {
+                "input_tokens": 14,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
+            "n_chunks": 52,
+        }
+    }
+)
+async_stream_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "openai",
+            "model_id": "openai/gpt-4o:completions",
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 Certainly! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -165,46 +211,13 @@ Certainly! Here is a list of all 50 U.S. states:
             ],
             "format": None,
             "tools": [],
-            "usage": None,
-            "n_chunks": 52,
-        }
-    }
-)
-async_stream_snapshot = snapshot(
-    {
-        "response": {
-            "provider": "openai",
-            "model_id": "openai/gpt-4o:completions",
-            "finish_reason": FinishReason.MAX_TOKENS,
-            "messages": [
-                UserMessage(content=[Text(text="List all U.S. states.")]),
-                AssistantMessage(
-                    content=[
-                        Text(
-                            text="""\
-Sure! Here is a list of all 50 U.S. states:
-
-1. Alabama
-2. Alaska
-3. Arizona
-4. Arkansas
-5. California
-6. Colorado
-7. Connecticut
-8. Delaware
-9. Florida\
-"""
-                        )
-                    ],
-                    provider_id="openai",
-                    model_id="openai/gpt-4o:completions",
-                    provider_model_name="gpt-4o:completions",
-                    raw_message=None,
-                ),
-            ],
-            "format": None,
-            "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 14,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 52,
         }
     }

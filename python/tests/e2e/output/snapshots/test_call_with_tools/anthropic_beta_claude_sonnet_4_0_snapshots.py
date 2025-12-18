@@ -402,7 +402,13 @@ Here are the secrets retrieved for each password:
                     "strict": False,
                 }
             ],
-            "usage": None,
+            "usage": {
+                "input_tokens": 606,
+                "output_tokens": 39,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 13,
         }
     }
@@ -530,7 +536,13 @@ I've successfully retrieved the secrets for both passwords:
                     "strict": False,
                 }
             ],
-            "usage": None,
+            "usage": {
+                "input_tokens": 606,
+                "output_tokens": 40,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 12,
         }
     }

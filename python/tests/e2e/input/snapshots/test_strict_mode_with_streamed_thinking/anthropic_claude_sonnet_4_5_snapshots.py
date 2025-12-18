@@ -93,7 +93,13 @@ I need to respond with a JSON object on a single line without any markdown or ex
                 "formatting_instructions": None,
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 293,
+                "output_tokens": 161,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 40,
         }
     }

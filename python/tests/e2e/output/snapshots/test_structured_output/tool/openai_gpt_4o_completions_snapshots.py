@@ -139,7 +139,7 @@ async_snapshot = snapshot(
                         "annotations": [],
                         "tool_calls": [
                             {
-                                "id": "call_50ZrcDphsvPd2eRO4UhZLDpj",
+                                "id": "call_tgYg3ssyPA5DkmoYJnnTFCwa",
                                 "function": {
                                     "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                                     "name": "__mirascope_formatted_output_tool__",
@@ -252,7 +252,13 @@ stream_snapshot = snapshot(
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 172,
+                "output_tokens": 29,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 31,
         }
     }
@@ -322,7 +328,13 @@ async_stream_snapshot = snapshot(
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 172,
+                "output_tokens": 29,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 31,
         }
     }

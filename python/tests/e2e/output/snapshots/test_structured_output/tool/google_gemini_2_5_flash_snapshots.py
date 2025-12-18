@@ -307,7 +307,13 @@ stream_snapshot = snapshot(
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 217,
+                "output_tokens": 49,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 189,
+            },
             "n_chunks": 3,
         }
     }
@@ -404,7 +410,13 @@ async_stream_snapshot = snapshot(
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 217,
+                "output_tokens": 49,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 167,
+            },
             "n_chunks": 3,
         }
     }

@@ -600,7 +600,13 @@ Respond only with valid JSON that matches this exact schema:
 """,
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 328,
+                "output_tokens": 63,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 12,
         }
     }
@@ -794,7 +800,13 @@ Respond only with valid JSON that matches this exact schema:
 """,
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 328,
+                "output_tokens": 63,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 12,
         }
     }

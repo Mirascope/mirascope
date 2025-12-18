@@ -42,6 +42,7 @@ from ....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
+    UsageDeltaChunk,
 )
 from ..model_id import model_name
 
@@ -238,6 +239,16 @@ class _BetaChunkProcessor:
                 finish_reason = BETA_FINISH_REASON_MAP.get(event.delta.stop_reason)
                 if finish_reason is not None:
                     yield FinishReasonChunk(finish_reason=finish_reason)
+
+            # Emit usage delta
+            usage = event.usage
+            yield UsageDeltaChunk(
+                input_tokens=usage.input_tokens or 0,
+                output_tokens=usage.output_tokens,
+                cache_read_tokens=usage.cache_read_input_tokens or 0,
+                cache_write_tokens=usage.cache_creation_input_tokens or 0,
+                reasoning_tokens=0,
+            )
 
     def raw_message_chunk(self) -> RawMessageChunk:
         return RawMessageChunk(

@@ -453,7 +453,13 @@ stream_snapshot = snapshot(
                     "strict": False,
                 }
             ],
-            "usage": None,
+            "usage": {
+                "input_tokens": 564,
+                "output_tokens": 49,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 208,
+            },
             "n_chunks": 3,
         }
     }
@@ -598,7 +604,13 @@ async_stream_snapshot = snapshot(
                     "strict": False,
                 }
             ],
-            "usage": None,
+            "usage": {
+                "input_tokens": 530,
+                "output_tokens": 49,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 151,
+            },
             "n_chunks": 3,
         }
     }

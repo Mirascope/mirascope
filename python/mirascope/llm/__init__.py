@@ -118,6 +118,7 @@ from .responses import (
     ThoughtStream,
     ToolCallStream,
     Usage,
+    UsageDeltaChunk,
 )
 from .tools import (
     AsyncContextTool,
@@ -221,6 +222,7 @@ __all__ = [
     "Toolkit",
     "URLImageSource",
     "Usage",
+    "UsageDeltaChunk",
     "UserContent",
     "UserContentPart",
     "UserMessage",
