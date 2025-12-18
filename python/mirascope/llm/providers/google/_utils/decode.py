@@ -30,6 +30,7 @@ from ....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
+    UsageDeltaChunk,
 )
 from ..model_id import GoogleModelId, model_name
 from .encode import UNKNOWN_TOOL_ID
@@ -155,6 +156,8 @@ class _GoogleChunkProcessor:
         self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
         self.accumulated_parts: list[genai_types.Part] = []
         self.reconstructed_content = genai_types.Content(parts=[])
+        # Track previous cumulative usage to compute deltas
+        self.prev_usage = Usage()
 
     def process_chunk(
         self, chunk: genai_types.GenerateContentResponse
@@ -229,6 +232,29 @@ class _GoogleChunkProcessor:
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
             if finish_reason is not None:
                 yield FinishReasonChunk(finish_reason=finish_reason)
+
+        # Emit usage delta if usage metadata is present
+        if chunk.usage_metadata:
+            usage_metadata = chunk.usage_metadata
+            current_input = usage_metadata.prompt_token_count or 0
+            current_output = usage_metadata.candidates_token_count or 0
+            current_cache_read = usage_metadata.cached_content_token_count or 0
+            current_reasoning = usage_metadata.thoughts_token_count or 0
+
+            yield UsageDeltaChunk(
+                input_tokens=current_input - self.prev_usage.input_tokens,
+                output_tokens=current_output - self.prev_usage.output_tokens,
+                cache_read_tokens=current_cache_read
+                - self.prev_usage.cache_read_tokens,
+                cache_write_tokens=0,
+                reasoning_tokens=current_reasoning - self.prev_usage.reasoning_tokens,
+            )
+
+            # Update previous usage
+            self.prev_usage.input_tokens = current_input
+            self.prev_usage.output_tokens = current_output
+            self.prev_usage.cache_read_tokens = current_cache_read
+            self.prev_usage.reasoning_tokens = current_reasoning
 
     def raw_message_chunk(self) -> RawMessageChunk:
         content = genai_types.Content(role="model", parts=self.accumulated_parts)

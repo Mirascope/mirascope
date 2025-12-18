@@ -283,12 +283,12 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_5w7ura5ZTZ1PxnvpB9XQZx01",
+                            id="call_M26z19sncd7b4LBgzKRRbaUE",
                             name="secret_retrieval_tool",
                             args='{"password": "mellon"}',
                         ),
                         ToolCall(
-                            id="call_WWinJReYt5aa8tgxDie8ojP1",
+                            id="call_KPXe5NX7IcKkaBUhc6dto2QV",
                             name="secret_retrieval_tool",
                             args='{"password": "radiance"}',
                         ),
@@ -301,12 +301,12 @@ stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_5w7ura5ZTZ1PxnvpB9XQZx01",
+                            id="call_M26z19sncd7b4LBgzKRRbaUE",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="call_WWinJReYt5aa8tgxDie8ojP1",
+                            id="call_KPXe5NX7IcKkaBUhc6dto2QV",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -316,8 +316,10 @@ stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-The secret for the password "mellon" is: "Welcome to Moria!"  \n\
-The secret for the password "radiance" is: "Life before Death"\
+The secrets associated with the passwords are:
+
+- "mellon": Welcome to Moria!
+- "radiance": Life before Death\
 """
                         )
                     ],
@@ -350,8 +352,14 @@ The secret for the password "radiance" is: "Life before Death"\
                     "strict": False,
                 }
             ],
-            "usage": None,
-            "n_chunks": 37,
+            "usage": {
+                "input_tokens": 149,
+                "output_tokens": 28,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
+            "n_chunks": 29,
         }
     }
 )
@@ -373,12 +381,12 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_UWTSbwuUnDJOC6xBNbdOYCrs",
+                            id="call_6oax8ZFo3QtdAwgzRaOBTvwG",
                             name="secret_retrieval_tool",
                             args='{"password": "mellon"}',
                         ),
                         ToolCall(
-                            id="call_9dgVSHRVEVl8M3Hri7Ww5y4T",
+                            id="call_hyeAutdvc58LXHZ0ExZDVXZH",
                             name="secret_retrieval_tool",
                             args='{"password": "radiance"}',
                         ),
@@ -391,12 +399,12 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_UWTSbwuUnDJOC6xBNbdOYCrs",
+                            id="call_6oax8ZFo3QtdAwgzRaOBTvwG",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="call_9dgVSHRVEVl8M3Hri7Ww5y4T",
+                            id="call_hyeAutdvc58LXHZ0ExZDVXZH",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -406,10 +414,9 @@ async_stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are the secrets associated with the provided passwords:
-
-- Password "mellon": "Welcome to Moria!"
-- Password "radiance": "Life before Death"\
+The secrets associated with the passwords are as follows:
+- For "mellon": Welcome to Moria!
+- For "radiance": Life before Death\
 """
                         )
                     ],
@@ -442,8 +449,14 @@ Here are the secrets associated with the provided passwords:
                     "strict": False,
                 }
             ],
-            "usage": None,
-            "n_chunks": 36,
+            "usage": {
+                "input_tokens": 149,
+                "output_tokens": 32,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
+            "n_chunks": 33,
         }
     }
 )

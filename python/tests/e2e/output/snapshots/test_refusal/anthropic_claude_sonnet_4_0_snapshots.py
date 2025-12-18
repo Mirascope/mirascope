@@ -257,7 +257,13 @@ Is there something else I can help you with today?\
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 416,
+                "output_tokens": 221,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 159,
         }
     }
@@ -337,7 +343,13 @@ If you're struggling with substance use, please consider reaching out to:
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 416,
+                "output_tokens": 239,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 160,
         }
     }

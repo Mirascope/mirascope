@@ -30,6 +30,7 @@ from .....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
     Usage,
+    UsageDeltaChunk,
 )
 from ...model_id import OpenAIModelId, model_name
 
@@ -204,6 +205,27 @@ class _OpenAIResponsesChunkProcessor:
                 )
                 if self.refusal_encountered:
                     yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
+
+                # Emit usage delta if present
+                if event.response.usage:
+                    usage = event.response.usage
+                    yield UsageDeltaChunk(
+                        input_tokens=usage.input_tokens,
+                        output_tokens=usage.output_tokens,
+                        cache_read_tokens=(
+                            usage.input_tokens_details.cached_tokens
+                            if usage.input_tokens_details
+                            else None
+                        )
+                        or 0,
+                        cache_write_tokens=0,
+                        reasoning_tokens=(
+                            usage.output_tokens_details.reasoning_tokens
+                            if usage.output_tokens_details
+                            else None
+                        )
+                        or 0,
+                    )
 
 
 def decode_stream(

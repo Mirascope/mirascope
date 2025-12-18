@@ -145,7 +145,13 @@ stream_snapshot = snapshot(
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 9,
+                "output_tokens": 10,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 38,
+            },
             "n_chunks": 3,
         }
     }
@@ -194,7 +200,13 @@ Here are all 50 U.S. states, listed alphabetically:
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 9,
+                "output_tokens": 15,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 32,
+            },
             "n_chunks": 3,
         }
     }

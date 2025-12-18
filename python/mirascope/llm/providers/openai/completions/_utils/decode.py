@@ -25,6 +25,7 @@ from .....responses import (
     FinishReasonChunk,
     RawStreamEventChunk,
     Usage,
+    UsageDeltaChunk,
 )
 from ...model_id import OpenAIModelId, model_name
 
@@ -120,6 +121,26 @@ class _OpenAIChunkProcessor:
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
         """Process a single OpenAI chunk and yield the appropriate content chunks."""
         yield RawStreamEventChunk(raw_stream_event=chunk)
+
+        if chunk.usage:
+            usage = chunk.usage
+            yield UsageDeltaChunk(
+                input_tokens=usage.prompt_tokens,
+                output_tokens=usage.completion_tokens,
+                cache_read_tokens=(
+                    usage.prompt_tokens_details.cached_tokens
+                    if usage.prompt_tokens_details
+                    else None
+                )
+                or 0,
+                cache_write_tokens=0,
+                reasoning_tokens=(
+                    usage.completion_tokens_details.reasoning_tokens
+                    if usage.completion_tokens_details
+                    else None
+                )
+                or 0,
+            )
 
         choice = chunk.choices[0] if chunk.choices else None
         if not choice:

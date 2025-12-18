@@ -3,7 +3,33 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
+
+
+@dataclass(kw_only=True)
+class UsageDeltaChunk:
+    """A chunk containing incremental token usage information from a streaming response.
+
+    This represents a delta/increment in usage statistics as they arrive during streaming.
+    Multiple UsageDeltaChunks are accumulated to produce the final Usage object.
+    """
+
+    type: Literal["usage_delta_chunk"] = "usage_delta_chunk"
+
+    input_tokens: int = 0
+    """Delta in input tokens."""
+
+    output_tokens: int = 0
+    """Delta in output tokens."""
+
+    cache_read_tokens: int = 0
+    """Delta in cache read tokens (prompt caching)."""
+
+    cache_write_tokens: int = 0
+    """Delta in cache write tokens (cache creation)."""
+
+    reasoning_tokens: int = 0
+    """Delta in reasoning/thinking tokens."""
 
 
 @dataclass(kw_only=True)

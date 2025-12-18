@@ -1430,6 +1430,114 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.AsyncContextToolkit)
 
 
+class TestUsageTracking:
+    """Test usage tracking in streams."""
+
+    def test_sync_usage_accumulation(
+        self,
+        example_text_chunks: Sequence[llm.StreamResponseChunk],
+    ) -> None:
+        """Test that usage deltas are accumulated correctly in sync streams."""
+        chunks = [
+            *example_text_chunks,
+            llm.UsageDeltaChunk(input_tokens=10, output_tokens=5),
+            llm.UsageDeltaChunk(output_tokens=3, reasoning_tokens=2),
+            llm.UsageDeltaChunk(cache_read_tokens=100),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        assert stream_response.usage is None
+
+        stream_response.finish()
+
+        assert stream_response.usage is not None
+        assert stream_response.usage.input_tokens == 10
+        assert stream_response.usage.output_tokens == 8
+        assert stream_response.usage.cache_read_tokens == 100
+        assert stream_response.usage.cache_write_tokens == 0
+        assert stream_response.usage.reasoning_tokens == 2
+
+    @pytest.mark.asyncio
+    async def test_async_usage_accumulation(
+        self,
+        example_text_chunks: Sequence[llm.StreamResponseChunk],
+    ) -> None:
+        """Test that usage deltas are accumulated correctly in async streams."""
+        chunks = [
+            *example_text_chunks,
+            llm.UsageDeltaChunk(input_tokens=10, output_tokens=5),
+            llm.UsageDeltaChunk(output_tokens=3, reasoning_tokens=2),
+            llm.UsageDeltaChunk(cache_read_tokens=100),
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        assert stream_response.usage is None
+
+        await stream_response.finish()
+
+        assert stream_response.usage is not None
+        assert stream_response.usage.input_tokens == 10
+        assert stream_response.usage.output_tokens == 8
+        assert stream_response.usage.cache_read_tokens == 100
+        assert stream_response.usage.cache_write_tokens == 0
+        assert stream_response.usage.reasoning_tokens == 2
+
+    def test_sync_no_usage_chunks_means_none(
+        self,
+        example_text_chunks: Sequence[llm.StreamResponseChunk],
+    ) -> None:
+        """Test that usage remains None when no usage chunks are emitted."""
+        stream_response = create_sync_stream_response(example_text_chunks)
+
+        stream_response.finish()
+
+        assert stream_response.usage is None
+
+    @pytest.mark.asyncio
+    async def test_async_no_usage_chunks_means_none(
+        self,
+        example_text_chunks: Sequence[llm.StreamResponseChunk],
+    ) -> None:
+        """Test that usage remains None in async when no usage chunks are emitted."""
+        stream_response = create_async_stream_response(example_text_chunks)
+
+        await stream_response.finish()
+
+        assert stream_response.usage is None
+
+    def test_sync_usage_with_all_fields(self) -> None:
+        """Test accumulating usage with all possible fields."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="test"),
+            llm.TextEndChunk(),
+            llm.UsageDeltaChunk(
+                input_tokens=100,
+                output_tokens=50,
+                cache_read_tokens=25,
+                cache_write_tokens=10,
+                reasoning_tokens=15,
+            ),
+            llm.UsageDeltaChunk(
+                input_tokens=5,
+                output_tokens=10,
+                cache_read_tokens=5,
+                cache_write_tokens=2,
+                reasoning_tokens=3,
+            ),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        stream_response.finish()
+
+        assert stream_response.usage is not None
+        assert stream_response.usage.input_tokens == 105
+        assert stream_response.usage.output_tokens == 60
+        assert stream_response.usage.cache_read_tokens == 30
+        assert stream_response.usage.cache_write_tokens == 12
+        assert stream_response.usage.reasoning_tokens == 18
+
+
 class TestStreams:
     """Test streams() method that yields content-part streams."""
 

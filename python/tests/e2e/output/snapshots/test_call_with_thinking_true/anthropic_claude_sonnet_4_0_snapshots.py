@@ -546,7 +546,13 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 68,
+                "output_tokens": 17,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 6,
         }
     }
@@ -723,7 +729,13 @@ I've identified 179 and 379 as prime numbers containing "79".\
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 68,
+                "output_tokens": 8,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 3,
         }
     }

@@ -165,7 +165,13 @@ $$\
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 20,
+                "output_tokens": 711,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 713,
         }
     }
@@ -215,7 +221,13 @@ $$\
             ],
             "format": None,
             "tools": [],
-            "usage": None,
+            "usage": {
+                "input_tokens": 20,
+                "output_tokens": 711,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "n_chunks": 713,
         }
     }
