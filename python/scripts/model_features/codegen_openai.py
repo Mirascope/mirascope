@@ -37,6 +37,8 @@ def generate_model_info(data: dict[str, Any]) -> str:
     model_ids: list[str] = []
     models_without_audio_support: set[str] = set()
     non_reasoning_models: set[str] = set()
+    models_without_json_schema_support: set[str] = set()
+    models_without_json_object_support: set[str] = set()
 
     for model_id, model_data in sorted(data.get("models", {}).items()):
         features = model_data.get("features", {})
@@ -46,6 +48,8 @@ def generate_model_info(data: dict[str, Any]) -> str:
         responses_result = features.get("responses_api", {})
         audio_result = features.get("audio_input", {})
         reasoning_result = features.get("reasoning", {})
+        structured_output_result = features.get("structured_output", {})
+        json_object_result = features.get("json_object", {})
 
         completions_supported = completions_result.get("status") == "supported"
         responses_supported = responses_result.get("status") == "supported"
@@ -75,6 +79,18 @@ def generate_model_info(data: dict[str, Any]) -> str:
         if reasoning_status == "not_supported":
             non_reasoning_models.add(model_id)
         # If supported, skipped, or error, optimistic default (not in set)
+
+        # Categorize JSON schema support (structured outputs)
+        structured_output_status = structured_output_result.get("status")
+        if structured_output_status in ("not_supported", "unavailable"):
+            models_without_json_schema_support.add(model_id)
+        # If supported, skipped, or not tested, optimistic default (not in set)
+
+        # Categorize JSON object support
+        json_object_status = json_object_result.get("status")
+        if json_object_status in ("not_supported", "unavailable"):
+            models_without_json_object_support.add(model_id)
+        # If supported, skipped, or not tested, optimistic default (not in set)
 
     # Generate the file content
     lines = [
@@ -131,6 +147,40 @@ def generate_model_info(data: dict[str, Any]) -> str:
         "Models not in this set are assumed to support reasoning (optimistic default)."
     )
     lines.append('"""')
+
+    # Add models without JSON schema support set
+    lines.extend(
+        [
+            "",
+            "MODELS_WITHOUT_JSON_SCHEMA_SUPPORT: set[str] = {",
+        ]
+    )
+    for model_id in sorted(models_without_json_schema_support):
+        lines.append(f'    "{model_id}",')
+    lines.append("}")
+    lines.append('"""Models that do not support JSON schema (structured outputs).')
+    lines.append("")
+    lines.append(
+        "Models not in this set are assumed to support JSON schema (optimistic default)."
+    )
+    lines.append('"""')
+
+    # Add models without JSON object support set
+    lines.extend(
+        [
+            "",
+            "MODELS_WITHOUT_JSON_OBJECT_SUPPORT: set[str] = {",
+        ]
+    )
+    for model_id in sorted(models_without_json_object_support):
+        lines.append(f'    "{model_id}",')
+    lines.append("}")
+    lines.append('"""Models that do not support JSON object mode.')
+    lines.append("")
+    lines.append(
+        "Models not in this set are assumed to support JSON object mode (optimistic default)."
+    )
+    lines.append('"""')
     lines.append("")
 
     return "\n".join(lines)
@@ -144,7 +194,7 @@ def main() -> int:
         script_dir.parent.parent
         / "mirascope"
         / "llm"
-        / "clients"
+        / "providers"
         / "openai"
         / "model_info.py"
     )

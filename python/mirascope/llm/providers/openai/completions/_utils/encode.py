@@ -22,8 +22,11 @@ from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
-from ...model_info import MODELS_WITHOUT_AUDIO_SUPPORT
-from ...shared import _utils as _shared_utils
+from ...model_info import (
+    MODELS_WITHOUT_AUDIO_SUPPORT,
+    MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
+    MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
+)
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):
@@ -321,9 +324,7 @@ def encode_request(
 
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
 
-    model_supports_strict = (
-        base_model_name not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
-    )
+    model_supports_strict = base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
     format = resolve_format(format, default_mode=default_mode)
     if format is not None:
@@ -348,7 +349,7 @@ def encode_request(
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
             format.mode == "json"
-            and base_model_name not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            and base_model_name not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["response_format"] = {"type": "json_object"}
 
