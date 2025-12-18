@@ -47,6 +47,7 @@ import { Users } from "@/db/users";
 import { Sessions } from "@/db/sessions";
 import { Organizations } from "@/db/organizations";
 import { OrganizationMemberships } from "@/db/organization-memberships";
+import { ProjectMemberships } from "@/db/project-memberships";
 
 /**
  * Type definition for the organizations service with nested memberships.
@@ -55,6 +56,15 @@ import { OrganizationMemberships } from "@/db/organization-memberships";
  */
 export interface EffectOrganizations extends Ready<Organizations> {
   readonly memberships: Ready<OrganizationMemberships>;
+}
+
+/**
+ * Type definition for the projects service with nested memberships.
+ *
+ * Access pattern: `db.projects.memberships.create(...)`
+ */
+export interface EffectProjects {
+  readonly memberships: Ready<ProjectMemberships>;
 }
 
 /**
@@ -73,6 +83,7 @@ export interface EffectDatabaseSchema {
   readonly users: Ready<Users>;
   readonly sessions: Ready<Sessions>;
   readonly organizations: EffectOrganizations;
+  readonly projects: EffectProjects;
 }
 
 /**
@@ -115,16 +126,22 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
     Effect.gen(function* () {
       const client = yield* DrizzleORM;
 
-      // Create memberships service first, then pass to organizations
-      const memberships = new OrganizationMemberships();
-      const organizations = new Organizations(memberships);
+      // Create memberships services first, then pass to parent services
+      const organizationMemberships = new OrganizationMemberships();
+      const organizations = new Organizations(organizationMemberships);
+      const projectMemberships = new ProjectMemberships(
+        organizationMemberships,
+      );
 
       return {
         users: makeReady(client, new Users()),
         sessions: makeReady(client, new Sessions()),
         organizations: {
           ...makeReady(client, organizations),
-          memberships: makeReady(client, memberships),
+          memberships: makeReady(client, organizationMemberships),
+        },
+        projects: {
+          memberships: makeReady(client, projectMemberships),
         },
       };
     }),

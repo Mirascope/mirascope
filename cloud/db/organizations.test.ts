@@ -20,85 +20,6 @@ import {
 
 describe("Organizations", () => {
   // ===========================================================================
-  // getRole
-  // ===========================================================================
-
-  describe("getRole", () => {
-    it.effect("returns OWNER role", () =>
-      Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
-
-        const role = yield* db.organizations.getRole({
-          organizationId: org.id,
-          userId: owner.id,
-        });
-
-        expect(role).toBe("OWNER");
-      }),
-    );
-
-    it.effect("returns ADMIN role", () =>
-      Effect.gen(function* () {
-        const { org, admin } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
-
-        const role = yield* db.organizations.getRole({
-          organizationId: org.id,
-          userId: admin.id,
-        });
-
-        expect(role).toBe("ADMIN");
-      }),
-    );
-
-    it.effect("returns MEMBER role", () =>
-      Effect.gen(function* () {
-        const { org, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
-
-        const role = yield* db.organizations.getRole({
-          organizationId: org.id,
-          userId: member.id,
-        });
-
-        expect(role).toBe("MEMBER");
-      }),
-    );
-
-    it.effect("returns `NotFoundError` when user is not a member", () =>
-      Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
-
-        const result = yield* db.organizations
-          .getRole({ organizationId: org.id, userId: nonMember.id })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Organization not found");
-      }),
-    );
-
-    it.effect("returns `DatabaseError` when query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* EffectDatabase;
-
-        const result = yield* db.organizations
-          .getRole({ organizationId: "org-id", userId: "user-id" })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to get membership");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM().select(new Error("Connection failed")).build(),
-        ),
-      ),
-    );
-  });
-
-  // ===========================================================================
   // create
   // ===========================================================================
 
@@ -389,8 +310,25 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getRole -> getMembership: returns OWNER
-            .select([{ role: "OWNER" }])
+            // authorize -> getRole -> memberships.findById
+            //   -> authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
+            //   -> findById actual query
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
             // findById query: fails
             .select(new Error("Connection failed"))
             .build(),
@@ -413,8 +351,25 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getRole -> getMembership: returns OWNER
-            .select([{ role: "OWNER" }])
+            // authorize -> getRole -> memberships.findById
+            //   -> authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
+            //   -> findById actual query
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
             // findById query: returns empty (org not found)
             .select([])
             .build(),
@@ -570,8 +525,25 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getRole -> getMembership: returns OWNER
-            .select([{ role: "OWNER" }])
+            // authorize -> getRole -> memberships.findById
+            //   -> authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
+            //   -> findById actual query
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
             // update query: fails
             .update(new Error("Connection failed"))
             .build(),
@@ -598,8 +570,25 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getRole -> getMembership: returns OWNER
-            .select([{ role: "OWNER" }])
+            // authorize -> getRole -> memberships.findById
+            //   -> authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
+            //   -> findById actual query
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
             // update query: no rows updated
             .update([])
             .build(),
@@ -724,8 +713,25 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // getRole -> getMembership: returns OWNER
-            .select([{ role: "OWNER" }])
+            // authorize -> getRole -> memberships.findById
+            //   -> authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
+            //   -> findById actual query
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
             // delete: fails
             .delete(new Error("Connection failed"))
             .build(),
