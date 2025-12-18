@@ -45,15 +45,15 @@ import { type Ready, makeReady } from "@/db/base";
 import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
 import { Users } from "@/db/users";
 import { Sessions } from "@/db/sessions";
+import { Organizations } from "@/db/organizations";
 import { OrganizationMemberships } from "@/db/organization-memberships";
 
 /**
  * Type definition for the organizations service with nested memberships.
  *
- * Access pattern: `db.organizations.memberships.create(...)`
+ * Access pattern: `db.organizations.create(...)` or `db.organizations.memberships.create(...)`
  */
-export interface EffectOrganizations {
-  // TODO: Add Organizations CRUD methods when Organizations service is implemented
+export interface EffectOrganizations extends Ready<Organizations> {
   readonly memberships: Ready<OrganizationMemberships>;
 }
 
@@ -115,12 +115,16 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
     Effect.gen(function* () {
       const client = yield* DrizzleORM;
 
+      // Create memberships service first, then pass to organizations
+      const memberships = new OrganizationMemberships();
+      const organizations = new Organizations(memberships);
+
       return {
         users: makeReady(client, new Users()),
         sessions: makeReady(client, new Sessions()),
         organizations: {
-          // TODO: Add Organizations CRUD methods when Organizations service is implemented
-          memberships: makeReady(client, new OrganizationMemberships()),
+          ...makeReady(client, organizations),
+          memberships: makeReady(client, memberships),
         },
       };
     }),

@@ -10,11 +10,6 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
-import {
-  organizations,
-  organizationMemberships,
-  organizationMembershipAudit,
-} from "@/db/schema";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
@@ -212,7 +207,7 @@ type EffectTestFn = <A, E>(
  * Wraps a test function to automatically provide TestEffectDatabase
  * and wrap in a transaction that rolls back.
  */
- 
+
 const wrapEffectTest =
   (original: any): EffectTestFn =>
   (name, fn, timeout) => {
@@ -618,7 +613,6 @@ export const TestOrganizationFixture = Effect.gen(function* () {
  */
 export const TestEffectOrganizationFixture = Effect.gen(function* () {
   const db = yield* EffectDatabase;
-  const client = yield* DrizzleORM;
 
   // Create users using Effect-native service with unique emails
   const owner = yield* db.users.create({
@@ -637,48 +631,11 @@ export const TestEffectOrganizationFixture = Effect.gen(function* () {
     data: { email: `nonmember@example.com`, name: "Non Member" },
   });
 
-  // Create organization directly (OrganizationService not yet migrated)
-  const [org] = yield* client
-    .insert(organizations)
-    .values({ name: `Test Organization` })
-    .returning({ id: organizations.id, name: organizations.name })
-    .pipe(
-      Effect.mapError(
-        (e) => new Error(`Failed to create organization: ${String(e)}`),
-      ),
-    );
+  const org = yield* db.organizations.create({
+    userId: owner.id,
+    data: { name: `Test Organization` },
+  });
 
-  // Create OWNER membership for the owner
-  yield* client
-    .insert(organizationMemberships)
-    .values({
-      memberId: owner.id,
-      organizationId: org.id,
-      role: "OWNER",
-    })
-    .pipe(
-      Effect.mapError(
-        (e) => new Error(`Failed to create owner membership: ${String(e)}`),
-      ),
-    );
-
-  // Log audit for OWNER membership
-  yield* client
-    .insert(organizationMembershipAudit)
-    .values({
-      organizationId: org.id,
-      actorId: owner.id,
-      targetId: owner.id,
-      action: "GRANT",
-      newRole: "OWNER",
-    })
-    .pipe(
-      Effect.mapError(
-        (e) => new Error(`Failed to create audit log: ${String(e)}`),
-      ),
-    );
-
-  // Add members with different roles using Effect-native memberships service
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,
