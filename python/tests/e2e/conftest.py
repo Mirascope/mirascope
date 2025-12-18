@@ -6,11 +6,31 @@ Includes setting up VCR for HTTP recording/playback.
 from __future__ import annotations
 
 import sys
+from collections.abc import Generator
 from typing import TypedDict, get_args
 
 import pytest
 
 from mirascope import llm
+from mirascope.llm.providers.provider_registry import (
+    PROVIDER_REGISTRY,
+)
+
+
+@pytest.fixture(autouse=True)
+def reset_provider_registry() -> Generator[None, None, None]:
+    """Reset the provider registry before and after each test.
+
+    Also ensures that the anthropic-beta provider is available.
+    """
+    PROVIDER_REGISTRY.clear()
+    _anthropic_provider = llm.load_provider("anthropic")
+    assert isinstance(_anthropic_provider, llm.providers.AnthropicProvider)
+    _beta_provider = _anthropic_provider._beta_provider  # pyright: ignore[reportPrivateUsage]
+    llm.register_provider(_beta_provider, "anthropic-beta/")
+    yield
+    PROVIDER_REGISTRY.clear()
+
 
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
