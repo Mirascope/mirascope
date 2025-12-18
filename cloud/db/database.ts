@@ -47,6 +47,7 @@ import { Users } from "@/db/users";
 import { Sessions } from "@/db/sessions";
 import { Organizations } from "@/db/organizations";
 import { OrganizationMemberships } from "@/db/organization-memberships";
+import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 
 /**
@@ -61,9 +62,9 @@ export interface EffectOrganizations extends Ready<Organizations> {
 /**
  * Type definition for the projects service with nested memberships.
  *
- * Access pattern: `db.projects.memberships.create(...)`
+ * Access pattern: `db.projects.create(...)` or `db.projects.memberships.create(...)`
  */
-export interface EffectProjects {
+export interface EffectProjects extends Ready<Projects> {
   readonly memberships: Ready<ProjectMemberships>;
 }
 
@@ -126,11 +127,15 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
     Effect.gen(function* () {
       const client = yield* DrizzleORM;
 
-      // Create memberships services first, then pass to parent services
+      // Create services with shared dependencies
       const organizationMemberships = new OrganizationMemberships();
       const organizations = new Organizations(organizationMemberships);
       const projectMemberships = new ProjectMemberships(
         organizationMemberships,
+      );
+      const projectsService = new Projects(
+        organizationMemberships,
+        projectMemberships,
       );
 
       return {
@@ -141,6 +146,7 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
           memberships: makeReady(client, organizationMemberships),
         },
         projects: {
+          ...makeReady(client, projectsService),
           memberships: makeReady(client, projectMemberships),
         },
       };
