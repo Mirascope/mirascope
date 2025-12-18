@@ -152,7 +152,7 @@ export function LoginPage() {
   const { loginWithGitHub, loginWithGoogle } = useAuth();
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen">
+    <div>
       <Card className="flex flex-col h-fit w-fit p-4">
         <CardHeader className="mb-2 text-center">
           <CardTitle className="text-2xl">Mirascope Cloud</CardTitle>
