@@ -7,11 +7,10 @@ import {
   PermissionDeniedError,
 } from "@/db/errors";
 
-export const RoleSchema = Schema.Literal(
+export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
   "ADMIN",
-  "DEVELOPER",
-  "VIEWER",
+  "MEMBER",
 );
 
 export const OrganizationSchema = Schema.Struct({
@@ -22,7 +21,7 @@ export const OrganizationSchema = Schema.Struct({
 export const OrganizationWithMembershipSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
-  role: RoleSchema,
+  role: OrganizationRoleSchema,
 });
 
 // Organization name must be 1-100 characters

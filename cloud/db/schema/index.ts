@@ -10,7 +10,7 @@ export type { PublicOrganization } from "@/db/schema/organizations";
 export type {
   PublicOrganizationMembership,
   PublicOrganizationWithMembership,
-  Role,
+  OrganizationRole,
 } from "@/db/schema/organization-memberships";
 export type {
   PublicOrganizationMembershipAudit,

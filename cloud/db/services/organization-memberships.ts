@@ -7,11 +7,10 @@
  *
  * ## Role Hierarchy
  *
- * Organizations support four roles with descending permissions:
+ * Organizations support three roles with descending permissions:
  * - `OWNER` - Full control, can manage all roles except other OWNERs
- * - `ADMIN` - Can manage DEVELOPER and VIEWER roles only
- * - `DEVELOPER` - Read-only access (read)
- * - `VIEWER` - Read-only access (read)
+ * - `ADMIN` - Can manage MEMBER role only
+ * - `MEMBER` - Read-only access (read)
  *
  * Users can only create, update, or delete memberships for roles below their own level.
  * No one can add a new OWNER or modify/remove an existing OWNER.
@@ -30,11 +29,11 @@
  * ```ts
  * const membershipService = new OrganizationMembershipService(db);
  *
- * // Add a member to an organization (ADMIN adding a DEVELOPER)
+ * // Add a member to an organization (ADMIN adding a MEMBER)
  * const membership = yield* membershipService.create({
  *   userId: "admin-123",
  *   organizationId: "org-456",
- *   data: { memberId: "new-user-789", role: "DEVELOPER" },
+ *   data: { memberId: "new-user-789", role: "MEMBER" },
  * });
  *
  * // List all members
@@ -65,7 +64,7 @@ import {
   type PublicOrganizationMembership,
   type PublicOrganizationMembershipAudit,
   type NewOrganizationMembership,
-  type Role,
+  type OrganizationRole,
 } from "@/db/schema";
 
 // =============================================================================
@@ -134,6 +133,7 @@ class OrganizationMembershipAuditBaseService extends BaseService<
     return organizationMembershipAudit;
   }
 
+  /* v8 ignore start - we currently only use this service in testing for `.findAll` */
   protected getResourceName() {
     return "organization membership audit";
   }
@@ -141,6 +141,7 @@ class OrganizationMembershipAuditBaseService extends BaseService<
   protected getIdParamName() {
     return "id" as const;
   }
+  /* v8 ignore end */
 
   protected getPublicFields() {
     return {
@@ -182,15 +183,15 @@ class OrganizationMembershipAuditBaseService extends BaseService<
  *
  * ## Permission Matrix
  *
- * | Action   | OWNER | ADMIN | DEVELOPER | VIEWER |
- * |----------|-------|-------|-----------|--------|
- * | create   | ✓*    | ✓**   | ✗         | ✗      |
- * | read     | ✓     | ✓     | ✓         | ✓      |
- * | update   | ✓*    | ✓**   | ✗         | ✗      |
- * | delete   | ✓*    | ✓**   | ✗         | ✗      |
+ * | Action   | OWNER | ADMIN | MEMBER |
+ * |----------|-------|-------|--------|
+ * | create   | ✓*    | ✓**   | ✗      |
+ * | read     | ✓     | ✓     | ✓      |
+ * | update   | ✓*    | ✓**   | ✗      |
+ * | delete   | ✓*    | ✓**   | ✗      |
  *
- * *OWNER can operate on ADMIN, DEVELOPER, VIEWER (not OWNER)
- * **ADMIN can only operate on DEVELOPER, VIEWER (not OWNER or ADMIN)
+ * *OWNER can operate on ADMIN, MEMBER (not OWNER)
+ * **ADMIN can only operate on MEMBER (not OWNER or ADMIN)
  *
  * ## Security Model
  *
@@ -204,8 +205,8 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   PublicOrganizationMembership,
   "organizations/:organizationId/members/:memberId",
   typeof organizationMemberships,
-  { memberId: string; role: Role },
-  Role
+  { memberId: string; role: OrganizationRole },
+  OrganizationRole
 > {
   // ---------------------------------------------------------------------------
   // Base Service Implementation
@@ -226,13 +227,13 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
     return new OrganizationMembershipBaseService(this.db);
   }
 
-  protected getPermissionTable(): PermissionTable<Role> {
+  protected getPermissionTable(): PermissionTable<OrganizationRole> {
     // Note: The permission table grants base access. Role hierarchy checks
-    // (e.g., ADMIN can only operate on DEVELOPER/VIEWER) are enforced
+    // (e.g., ADMIN can only operate on MEMBER) are enforced
     // in individual methods.
     return {
       create: ["OWNER", "ADMIN"],
-      read: ["OWNER", "ADMIN", "DEVELOPER", "VIEWER"],
+      read: ["OWNER", "ADMIN", "MEMBER"],
       update: ["OWNER", "ADMIN"],
       delete: ["OWNER", "ADMIN"],
     };
@@ -245,33 +246,37 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   /**
    * Defines which roles each role can operate on (create, update, delete).
    *
-   * | Actor Role | Can Operate On                |
-   * |------------|-------------------------------|
-   * | OWNER      | ADMIN, DEVELOPER, VIEWER      |
-   * | ADMIN      | DEVELOPER, VIEWER             |
-   * | DEVELOPER  | (none)                        |
-   * | VIEWER     | (none)                        |
+   * | Actor Role | Can Operate On |
+   * |------------|----------------|
+   * | OWNER      | ADMIN, MEMBER  |
+   * | ADMIN      | MEMBER         |
+   * | MEMBER     | (none)         |
    *
    * TODO: Refactor `authorize` to better handle these types of more granular ACLs
    */
-  private static readonly CAN_OPERATE_ON: Record<Role, Role[]> = {
-    OWNER: ["ADMIN", "DEVELOPER", "VIEWER"],
-    ADMIN: ["DEVELOPER", "VIEWER"],
-    DEVELOPER: [],
-    VIEWER: [],
+  private static readonly CAN_OPERATE_ON: Record<
+    OrganizationRole,
+    OrganizationRole[]
+  > = {
+    OWNER: ["ADMIN", "MEMBER"],
+    ADMIN: ["MEMBER"],
+    MEMBER: [],
   };
 
   /**
    * Checks if the user's role can operate on the target role.
    *
-   * @param userRole - The role of the authenticated user performing the action
-   * @param targetRole - The role being created, modified, or deleted
+   * @param userOrganizationRole - The role of the authenticated user performing the action
+   * @param targetOrganizationRole - The role being created, modified, or deleted
    * @returns true if the user can operate on the target role
    */
-  private canOperateOn(userRole: Role, targetRole: Role): boolean {
-    return OrganizationMembershipService.CAN_OPERATE_ON[userRole].includes(
-      targetRole,
-    );
+  private canOperateOnOrganizationRole(
+    userOrganizationRole: OrganizationRole,
+    targetOrganizationRole: OrganizationRole,
+  ): boolean {
+    return OrganizationMembershipService.CAN_OPERATE_ON[
+      userOrganizationRole
+    ].includes(targetOrganizationRole);
   }
 
   // ---------------------------------------------------------------------------
@@ -295,7 +300,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   }: {
     userId: string;
     organizationId: string;
-  }): Effect.Effect<{ role: Role } | null, DatabaseError> {
+  }): Effect.Effect<{ role: OrganizationRole } | null, DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
         const [membership] = await this.db
@@ -337,7 +342,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   }: {
     userId: string;
     organizationId: string;
-  }): Effect.Effect<Role, NotFoundError | DatabaseError> {
+  }): Effect.Effect<OrganizationRole, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
       const membership = yield* this.getMembership({ userId, organizationId });
 
@@ -361,8 +366,8 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    * Creates a new membership for a user in an organization.
    *
    * Requires OWNER or ADMIN role. Role hierarchy is enforced:
-   * - OWNER can add ADMIN, DEVELOPER, or VIEWER
-   * - ADMIN can only add DEVELOPER or VIEWER
+   * - OWNER can add ADMIN or MEMBER
+   * - ADMIN can only add MEMBER
    * - Cannot add an OWNER (organizations have exactly one owner)
    * - Cannot add yourself
    *
@@ -386,13 +391,13 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
   }: {
     userId: string;
     organizationId: string;
-    data: { memberId: string; role: Role };
+    data: { memberId: string; role: OrganizationRole };
   }): Effect.Effect<
     PublicOrganizationMembership,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const userRole = yield* this.authorize({
+      const userOrganizationRole = yield* this.authorize({
         userId,
         action: "create",
         organizationId,
@@ -408,7 +413,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       }
 
       // Enforce role hierarchy: can only add roles you can operate on
-      if (!this.canOperateOn(userRole, data.role)) {
+      if (!this.canOperateOnOrganizationRole(userOrganizationRole, data.role)) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: `Cannot add a member with role ${data.role}`,
@@ -529,8 +534,8 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    * Updates a membership's role.
    *
    * Requires OWNER or ADMIN role. Role hierarchy is enforced:
-   * - OWNER can change ADMIN/DEVELOPER/VIEWER to ADMIN/DEVELOPER/VIEWER
-   * - ADMIN can only change DEVELOPER/VIEWER to DEVELOPER/VIEWER
+   * - OWNER can change MEMBER to ADMIN or MEMBER (cannot affect OWNER)
+   * - ADMIN can only change MEMBER to MEMBER (no-op) and cannot change ADMIN/OWNER
    * - Cannot change anyone's role to OWNER
    * - Cannot change an OWNER's role
    * - Cannot change your own role
@@ -562,7 +567,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const userRole = yield* this.authorize({
+      const userOrganizationRole = yield* this.authorize({
         userId,
         action: "update",
         organizationId,
@@ -592,7 +597,12 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       }
 
       // Enforce role hierarchy: can only modify roles you can operate on
-      if (!this.canOperateOn(userRole, targetMembership.role)) {
+      if (
+        !this.canOperateOnOrganizationRole(
+          userOrganizationRole,
+          targetMembership.role,
+        )
+      ) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: `Cannot modify a member with role ${targetMembership.role}`,
@@ -602,7 +612,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       }
 
       // Enforce role hierarchy: can only assign roles you can operate on
-      if (!this.canOperateOn(userRole, data.role)) {
+      if (!this.canOperateOnOrganizationRole(userOrganizationRole, data.role)) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: `Cannot change a member's role to ${data.role}`,
@@ -659,8 +669,8 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
    * Removes a member from an organization.
    *
    * Requires OWNER or ADMIN role. Role hierarchy is enforced:
-   * - OWNER can remove ADMIN, DEVELOPER, or VIEWER
-   * - ADMIN can only remove DEVELOPER or VIEWER
+   * - OWNER can remove ADMIN or MEMBER
+   * - ADMIN can only remove MEMBER
    * - Cannot remove an OWNER
    * - Cannot remove yourself
    *
@@ -684,7 +694,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const userRole = yield* this.authorize({
+      const userOrganizationRole = yield* this.authorize({
         userId,
         action: "delete",
         organizationId,
@@ -714,7 +724,12 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
       }
 
       // Enforce role hierarchy: can only remove roles you can operate on
-      if (!this.canOperateOn(userRole, targetMembership.role)) {
+      if (
+        !this.canOperateOnOrganizationRole(
+          userOrganizationRole,
+          targetMembership.role,
+        )
+      ) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message: `Cannot remove a member with role ${targetMembership.role}`,

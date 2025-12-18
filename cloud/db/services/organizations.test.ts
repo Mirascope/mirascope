@@ -47,31 +47,17 @@ describe("OrganizationService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it.effect("returns DEVELOPER role", () =>
+    it.effect("returns MEMBER role", () =>
       Effect.gen(function* () {
-        const { org, developer } = yield* TestOrganizationFixture;
+        const { org, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const role = yield* db.organizations.getRole({
           organizationId: org.id,
-          userId: developer.id,
+          userId: member.id,
         });
 
-        expect(role).toBe("DEVELOPER");
-      }).pipe(Effect.provide(TestDatabase)),
-    );
-
-    it.effect("returns VIEWER role", () =>
-      Effect.gen(function* () {
-        const { org, viewer } = yield* TestOrganizationFixture;
-        const db = yield* DatabaseService;
-
-        const role = yield* db.organizations.getRole({
-          organizationId: org.id,
-          userId: viewer.id,
-        });
-
-        expect(role).toBe("VIEWER");
+        expect(role).toBe("MEMBER");
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -254,38 +240,20 @@ describe("OrganizationService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
-    it.effect("retrieves organization when user is DEVELOPER", () =>
+    it.effect("retrieves organization when user is MEMBER", () =>
       Effect.gen(function* () {
-        const { org, developer } = yield* TestOrganizationFixture;
+        const { org, member } = yield* TestOrganizationFixture;
         const db = yield* DatabaseService;
 
         const found = yield* db.organizations.findById({
           organizationId: org.id,
-          userId: developer.id,
+          userId: member.id,
         });
 
         expect(found).toMatchObject({
           id: org.id,
           name: org.name,
-          role: "DEVELOPER",
-        });
-      }).pipe(Effect.provide(TestDatabase)),
-    );
-
-    it.effect("retrieves organization when user is VIEWER", () =>
-      Effect.gen(function* () {
-        const { org, viewer } = yield* TestOrganizationFixture;
-        const db = yield* DatabaseService;
-
-        const found = yield* db.organizations.findById({
-          organizationId: org.id,
-          userId: viewer.id,
-        });
-
-        expect(found).toMatchObject({
-          id: org.id,
-          name: org.name,
-          role: "VIEWER",
+          role: "MEMBER",
         });
       }).pipe(Effect.provide(TestDatabase)),
     );
@@ -488,37 +456,15 @@ describe("OrganizationService", () => {
     );
 
     it.effect(
-      "returns `PermissionDeniedError` when DEVELOPER tries to update",
+      "returns `PermissionDeniedError` when MEMBER tries to update",
       () =>
         Effect.gen(function* () {
-          const { org, developer } = yield* TestOrganizationFixture;
+          const { org, member } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
 
           const result = yield* db.organizations
             .update({
-              userId: developer.id,
-              organizationId: org.id,
-              data: { name: "New Name" },
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(PermissionDeniedError);
-          expect(result.message).toBe(
-            "You do not have permission to update this organization",
-          );
-        }).pipe(Effect.provide(TestDatabase)),
-    );
-
-    it.effect(
-      "returns `PermissionDeniedError` when VIEWER tries to update",
-      () =>
-        Effect.gen(function* () {
-          const { org, viewer } = yield* TestOrganizationFixture;
-          const db = yield* DatabaseService;
-
-          const result = yield* db.organizations
-            .update({
-              userId: viewer.id,
+              userId: member.id,
               organizationId: org.id,
               data: { name: "New Name" },
             })
@@ -604,32 +550,14 @@ describe("OrganizationService", () => {
     );
 
     it.effect(
-      "returns `PermissionDeniedError` when DEVELOPER tries to delete",
+      "returns `PermissionDeniedError` when MEMBER tries to delete",
       () =>
         Effect.gen(function* () {
-          const { org, developer } = yield* TestOrganizationFixture;
+          const { org, member } = yield* TestOrganizationFixture;
           const db = yield* DatabaseService;
 
           const result = yield* db.organizations
-            .delete({ organizationId: org.id, userId: developer.id })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(PermissionDeniedError);
-          expect(result.message).toBe(
-            "You do not have permission to delete this organization",
-          );
-        }).pipe(Effect.provide(TestDatabase)),
-    );
-
-    it.effect(
-      "returns `PermissionDeniedError` when VIEWER tries to delete",
-      () =>
-        Effect.gen(function* () {
-          const { org, viewer } = yield* TestOrganizationFixture;
-          const db = yield* DatabaseService;
-
-          const result = yield* db.organizations
-            .delete({ organizationId: org.id, userId: viewer.id })
+            .delete({ organizationId: org.id, userId: member.id })
             .pipe(Effect.flip);
 
           expect(result).toBeInstanceOf(PermissionDeniedError);

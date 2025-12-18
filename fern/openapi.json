@@ -561,8 +561,7 @@
                         "enum": [
                           "OWNER",
                           "ADMIN",
-                          "DEVELOPER",
-                          "VIEWER"
+                          "MEMBER"
                         ]
                       }
                     },
@@ -625,8 +624,7 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "DEVELOPER",
-                        "VIEWER"
+                        "MEMBER"
                       ]
                     }
                   },
@@ -732,8 +730,7 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "DEVELOPER",
-                        "VIEWER"
+                        "MEMBER"
                       ]
                     }
                   },
@@ -824,8 +821,7 @@
                       "enum": [
                         "OWNER",
                         "ADMIN",
-                        "DEVELOPER",
-                        "VIEWER"
+                        "MEMBER"
                       ]
                     }
                   },

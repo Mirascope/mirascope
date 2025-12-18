@@ -383,11 +383,10 @@ export class MockDatabase {
 /**
  * Creates a test organization with members of all roles and a non-member user.
  *
- * Returns { org, owner, admin, developer, viewer, nonMember } where:
+ * Returns { org, owner, admin, member, nonMember } where:
  * - owner: a user who owns the organization (OWNER role)
  * - admin: a user with ADMIN role
- * - developer: a user with DEVELOPER role
- * - viewer: a user with VIEWER role
+ * - member: a user with MEMBER role
  * - nonMember: a user who is NOT a member (useful for permission tests)
  *
  * Requires DatabaseService - call `yield* DatabaseService` in your test
@@ -401,16 +400,12 @@ export const TestOrganizationFixture = Effect.gen(function* () {
     data: { email: "owner@example.com", name: "Owner" },
   });
 
-  const adminUser = yield* db.users.create({
+  const admin = yield* db.users.create({
     data: { email: "admin@example.com", name: "Admin" },
   });
 
-  const developerUser = yield* db.users.create({
-    data: { email: "developer@example.com", name: "Developer" },
-  });
-
-  const viewerUser = yield* db.users.create({
-    data: { email: "viewer@example.com", name: "Viewer" },
+  const member = yield* db.users.create({
+    data: { email: "member@example.com", name: "Member" },
   });
 
   const nonMember = yield* db.users.create({
@@ -427,27 +422,20 @@ export const TestOrganizationFixture = Effect.gen(function* () {
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,
-    data: { memberId: adminUser.id, role: "ADMIN" },
+    data: { memberId: admin.id, role: "ADMIN" },
   });
 
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,
-    data: { memberId: developerUser.id, role: "DEVELOPER" },
-  });
-
-  yield* db.organizations.memberships.create({
-    userId: owner.id,
-    organizationId: org.id,
-    data: { memberId: viewerUser.id, role: "VIEWER" },
+    data: { memberId: member.id, role: "MEMBER" },
   });
 
   return {
     org,
     owner,
-    admin: adminUser,
-    developer: developerUser,
-    viewer: viewerUser,
+    admin,
+    member,
     nonMember,
   };
 });

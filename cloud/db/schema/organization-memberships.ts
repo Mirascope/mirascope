@@ -9,13 +9,12 @@ import {
 import { organizations, type PublicOrganization } from "./organizations";
 import { users } from "./users";
 
-export const roleEnum = pgEnum("role", [
+export const organizationRoleEnum = pgEnum("organization_role", [
   "OWNER",
   "ADMIN",
-  "DEVELOPER",
-  "VIEWER",
+  "MEMBER",
 ]);
-export const ROLE_VALUES = roleEnum.enumValues;
+export const ORGANIZATION_ROLE_VALUES = organizationRoleEnum.enumValues;
 
 export const organizationMemberships = pgTable(
   "organization_memberships",
@@ -26,7 +25,7 @@ export const organizationMemberships = pgTable(
     organizationId: uuid("organization_id")
       .references(() => organizations.id)
       .notNull(),
-    role: roleEnum("role").notNull(),
+    role: organizationRoleEnum("role").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -54,7 +53,7 @@ export type OrganizationMembership =
   typeof organizationMemberships.$inferSelect;
 export type NewOrganizationMembership =
   typeof organizationMemberships.$inferInsert;
-export type Role = (typeof roleEnum.enumValues)[number];
+export type OrganizationRole = (typeof organizationRoleEnum.enumValues)[number];
 
 // Public types
 export type PublicOrganizationMembership = Pick<
@@ -64,5 +63,5 @@ export type PublicOrganizationMembership = Pick<
 
 // Public organization with user's membership role
 export type PublicOrganizationWithMembership = PublicOrganization & {
-  role: Role;
+  role: OrganizationRole;
 };
