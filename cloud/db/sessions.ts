@@ -22,12 +22,7 @@
 import { Effect } from "effect";
 import { and, eq } from "drizzle-orm";
 import { BaseEffectService } from "@/db/base";
-import {
-  DatabaseError,
-  DeletedUserError,
-  InvalidSessionError,
-  NotFoundError,
-} from "@/db/errors";
+import { DatabaseError, DeletedUserError, InvalidSessionError, NotFoundError } from "@/errors";
 import {
   sessions,
   users,

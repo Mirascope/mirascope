@@ -12,7 +12,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 import type {
   PublicProjectMembership,
   PublicProjectMembershipAudit,
@@ -43,7 +43,7 @@ describe("ProjectMemberships", () => {
             data: { memberId: newOrgMember.id, role: "MEMBER" },
           });
 
-          const membership = yield* db.projects.memberships.create({
+          const membership = yield* db.organizations.projects.memberships.create({
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
@@ -56,7 +56,7 @@ describe("ProjectMemberships", () => {
             role: "VIEWER",
           } satisfies Partial<PublicProjectMembership>);
 
-          const audits = yield* db.projects.memberships.audits.findAll({
+          const audits = yield* db.organizations.projects.memberships.audits.findAll({
             projectId: project.id,
             memberId: newOrgMember.id,
           });
@@ -83,7 +83,7 @@ describe("ProjectMemberships", () => {
             data: { email: "outsider@example.com", name: "Outsider" },
           });
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .create({
               userId: owner.id,
               organizationId: org.id,
@@ -119,7 +119,7 @@ describe("ProjectMemberships", () => {
             data: { memberId: anotherOrgMember.id, role: "MEMBER" },
           });
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .create({
               userId: projectDeveloper.id, // DEVELOPER role (read-only)
               organizationId: org.id,
@@ -143,7 +143,7 @@ describe("ProjectMemberships", () => {
             yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .create({
               userId: owner.id,
               organizationId: org.id,
@@ -164,7 +164,7 @@ describe("ProjectMemberships", () => {
         const { org, owner, member } = yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .create({
             userId: owner.id,
             organizationId: org.id,
@@ -182,7 +182,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .create({
             userId: "owner-id",
             organizationId: "org-id",
@@ -247,7 +247,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .create({
             userId: "owner-id",
             organizationId: "org-id",
@@ -328,14 +328,14 @@ describe("ProjectMemberships", () => {
         const { project, org, owner } = yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const memberships = yield* db.projects.memberships.findAll({
+        const memberships = yield* db.organizations.projects.memberships.findAll({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
         });
 
         // Fixture creates 5 explicit project members:
-        // - owner (ADMIN, from db.projects.create)
+        // - owner (ADMIN, from db.organizations.projects.create)
         // - projectAdmin (ADMIN)
         // - projectDeveloper (DEVELOPER)
         // - projectViewer (VIEWER)
@@ -358,7 +358,7 @@ describe("ProjectMemberships", () => {
           const { project, org, member } = yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .findAll({
               userId: member.id,
               organizationId: org.id,
@@ -375,7 +375,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .findAll({
             userId: "owner-id",
             organizationId: "org-id",
@@ -421,7 +421,7 @@ describe("ProjectMemberships", () => {
         Effect.gen(function* () {
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .findAll({
               userId: "member-id",
               organizationId: "org-id",
@@ -464,7 +464,7 @@ describe("ProjectMemberships", () => {
         Effect.gen(function* () {
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .findAll({
               userId: "owner-id",
               organizationId: "org-id",
@@ -513,7 +513,7 @@ describe("ProjectMemberships", () => {
           yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const membership = yield* db.projects.memberships.findById({
+        const membership = yield* db.organizations.projects.memberships.findById({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
@@ -529,7 +529,7 @@ describe("ProjectMemberships", () => {
         const { project, org, owner, member } = yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .findById({
             userId: owner.id,
             organizationId: org.id,
@@ -551,7 +551,7 @@ describe("ProjectMemberships", () => {
           yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .findById({
             userId: member.id, // no project access
             organizationId: org.id,
@@ -569,7 +569,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .findById({
             userId: "owner-id",
             organizationId: "org-id",
@@ -622,7 +622,7 @@ describe("ProjectMemberships", () => {
           yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const updated = yield* db.projects.memberships.update({
+        const updated = yield* db.organizations.projects.memberships.update({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
@@ -632,7 +632,7 @@ describe("ProjectMemberships", () => {
 
         expect(updated.role).toBe("ANNOTATOR");
 
-        const audits = yield* db.projects.memberships.audits.findAll({
+        const audits = yield* db.organizations.projects.memberships.audits.findAll({
           projectId: project.id,
           memberId: projectDeveloper.id,
         });
@@ -653,7 +653,7 @@ describe("ProjectMemberships", () => {
         const { project, org, projectAdmin } = yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        const updated = yield* db.projects.memberships.update({
+        const updated = yield* db.organizations.projects.memberships.update({
           userId: projectAdmin.id,
           organizationId: org.id,
           projectId: project.id,
@@ -675,7 +675,7 @@ describe("ProjectMemberships", () => {
 
           // Admin is not an explicit project member, but has implicit ADMIN access
           // Add themselves as a DEVELOPER
-          const created = yield* db.projects.memberships.create({
+          const created = yield* db.organizations.projects.memberships.create({
             userId: admin.id,
             organizationId: org.id,
             projectId: project.id,
@@ -686,7 +686,7 @@ describe("ProjectMemberships", () => {
           expect(created.memberId).toBe(admin.id);
 
           // Now modify their own membership to VIEWER
-          const updated = yield* db.projects.memberships.update({
+          const updated = yield* db.organizations.projects.memberships.update({
             userId: admin.id,
             organizationId: org.id,
             projectId: project.id,
@@ -707,7 +707,7 @@ describe("ProjectMemberships", () => {
             yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .update({
               userId: projectDeveloper.id,
               organizationId: org.id,
@@ -732,7 +732,7 @@ describe("ProjectMemberships", () => {
             yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .update({
               userId: projectDeveloper.id, // read-only role
               organizationId: org.id,
@@ -757,7 +757,7 @@ describe("ProjectMemberships", () => {
             yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .update({
               userId: owner.id,
               organizationId: org.id,
@@ -776,7 +776,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .update({
             userId: "owner-id",
             organizationId: "org-id",
@@ -825,7 +825,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .update({
             userId: "owner-id",
             organizationId: "org-id",
@@ -891,14 +891,14 @@ describe("ProjectMemberships", () => {
           yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        yield* db.projects.memberships.delete({
+        yield* db.organizations.projects.memberships.delete({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
           memberId: projectDeveloper.id,
         });
 
-        const audits = yield* db.projects.memberships.audits.findAll({
+        const audits = yield* db.organizations.projects.memberships.audits.findAll({
           projectId: project.id,
           memberId: projectDeveloper.id,
         });
@@ -919,14 +919,14 @@ describe("ProjectMemberships", () => {
         const { project, org, projectAdmin } = yield* TestEffectProjectFixture;
         const db = yield* EffectDatabase;
 
-        yield* db.projects.memberships.delete({
+        yield* db.organizations.projects.memberships.delete({
           userId: projectAdmin.id,
           organizationId: org.id,
           projectId: project.id,
           memberId: projectAdmin.id,
         });
 
-        const audits = yield* db.projects.memberships.audits.findAll({
+        const audits = yield* db.organizations.projects.memberships.audits.findAll({
           projectId: project.id,
           memberId: projectAdmin.id,
         });
@@ -950,7 +950,7 @@ describe("ProjectMemberships", () => {
             yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .delete({
               userId: projectDeveloper.id, // read-only role
               organizationId: org.id,
@@ -974,7 +974,7 @@ describe("ProjectMemberships", () => {
             yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          const result = yield* db.projects.memberships
+          const result = yield* db.organizations.projects.memberships
             .delete({
               userId: owner.id,
               organizationId: org.id,
@@ -992,7 +992,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .delete({
             userId: "owner-id",
             organizationId: "org-id",
@@ -1040,7 +1040,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships
+        const result = yield* db.organizations.projects.memberships
           .delete({
             userId: "owner-id",
             organizationId: "org-id",
@@ -1099,7 +1099,7 @@ describe("ProjectMemberships", () => {
         const db = yield* EffectDatabase;
 
         // Perform an update to create a CHANGE audit entry
-        yield* db.projects.memberships.update({
+        yield* db.organizations.projects.memberships.update({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
@@ -1107,7 +1107,7 @@ describe("ProjectMemberships", () => {
           data: { role: "ANNOTATOR" },
         });
 
-        const audits = yield* db.projects.memberships.audits.findAll({
+        const audits = yield* db.organizations.projects.memberships.audits.findAll({
           projectId: project.id,
           memberId: projectDeveloper.id,
         });
@@ -1134,7 +1134,7 @@ describe("ProjectMemberships", () => {
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
-        const result = yield* db.projects.memberships.audits
+        const result = yield* db.organizations.projects.memberships.audits
           .findAll({
             projectId: "project-id",
             memberId: "member-id",

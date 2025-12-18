@@ -31,14 +31,14 @@
  * const db = yield* EffectDatabase;
  *
  * // Create a project (creator becomes project ADMIN)
- * const project = yield* db.projects.create({
+ * const project = yield* db.organizations.projects.create({
  *   userId: "user-123",
  *   organizationId: "org-456",
  *   data: { name: "My Project" },
  * });
  *
  * // List accessible projects
- * const projects = yield* db.projects.findAll({
+ * const projects = yield* db.organizations.projects.findAll({
  *   userId: "user-123",
  *   organizationId: "org-456",
  * });
@@ -59,7 +59,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 import {
   projects,
   projectMemberships,

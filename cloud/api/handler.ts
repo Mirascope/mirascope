@@ -1,29 +1,31 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
-import { Layer } from "effect";
+import { Context, Effect, Layer } from "effect";
 import { ApiLive } from "@/api/router";
+import { HandlerError } from "@/errors";
 import { SettingsService } from "@/settings";
-import { DatabaseService, type Database } from "@/db";
+import { EffectDatabase } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser } from "@/db/schema";
 
-export type App = {
-  environment: string;
-  database: Database;
-  authenticatedUser: PublicUser;
-};
-
 export type HandleRequestOptions = {
-  app: App;
   prefix?: string;
+  authenticatedUser: PublicUser;
+  environment: string;
 };
 
-function createWebHandler(options: HandleRequestOptions) {
-  const app = options.app;
+type WebHandlerOptions = {
+  db: Context.Tag.Service<EffectDatabase>;
+  authenticatedUser: PublicUser;
+  environment: string;
+};
+
+function createWebHandler(options: WebHandlerOptions) {
   const services = Layer.mergeAll(
-    Layer.succeed(SettingsService, { env: app.environment }),
-    Layer.succeed(DatabaseService, app.database),
-    Layer.succeed(AuthenticatedUser, app.authenticatedUser),
+    Layer.succeed(SettingsService, { env: options.environment }),
+    Layer.succeed(AuthenticatedUser, options.authenticatedUser),
+    Layer.succeed(EffectDatabase, options.db),
   );
+
   const ApiWithDependencies = Layer.mergeAll(
     HttpServer.layerContext,
     ApiLive.pipe(Layer.provide(services)),
@@ -32,40 +34,75 @@ function createWebHandler(options: HandleRequestOptions) {
   return HttpApiBuilder.toWebHandler(ApiWithDependencies);
 }
 
-export async function handleRequest(
+/**
+ * Handle an API request using the Effect HTTP API.
+ *
+ * This is an Effect that depends on `EffectDatabase` to share the database
+ * connection with authentication and API handlers.
+ *
+ * @param request - The incoming HTTP request
+ * @param options - Configuration including prefix, authenticated user, and environment
+ * @returns An Effect that resolves to the matched status and response
+ */
+export const handleRequest = (
   request: Request,
   options: HandleRequestOptions,
-): Promise<{ matched: boolean; response: Response }> {
-  const webHandler = createWebHandler(options);
+): Effect.Effect<
+  { matched: boolean; response: Response },
+  HandlerError,
+  EffectDatabase
+> =>
+  Effect.gen(function* () {
+    const db = yield* EffectDatabase;
 
-  try {
-    let modifiedRequest = request;
-    const url = new URL(request.url);
-    if (options.prefix && url.pathname.startsWith(options.prefix)) {
-      const pathWithoutPrefix =
-        url.pathname.slice(options.prefix.length) || "/";
-      const newUrl = new URL(pathWithoutPrefix + url.search, url.origin);
-      modifiedRequest = new Request(newUrl.toString(), {
-        method: request.method,
-        headers: request.headers,
-        body: request.body,
-        redirect: request.redirect,
-        signal: request.signal,
-      });
-    }
+    const webHandler = createWebHandler({
+      db,
+      authenticatedUser: options.authenticatedUser,
+      environment: options.environment,
+    });
 
-    const response = await webHandler.handler(modifiedRequest);
+    const result = yield* Effect.tryPromise({
+      try: async () => {
+        let modifiedRequest = request;
+        const url = new URL(request.url);
+        if (options.prefix && url.pathname.startsWith(options.prefix)) {
+          const pathWithoutPrefix =
+            url.pathname.slice(options.prefix.length) || "/";
+          const newUrl = new URL(pathWithoutPrefix + url.search, url.origin);
+          modifiedRequest = new Request(newUrl.toString(), {
+            method: request.method,
+            headers: request.headers,
+            body: request.body,
+            redirect: request.redirect,
+            signal: request.signal,
+          });
+        }
 
-    const matched = response.status !== 404;
-    return { matched, response };
-  } catch (error) {
-    console.error("[Effect API] Error handling request:", error);
+        const response = await webHandler.handler(modifiedRequest);
+        const matched = response.status !== 404;
+        return { matched, response };
+      },
+      catch: (error) =>
+        new HandlerError({
+          message: `[Effect API] Error handling request: ${
+            error instanceof Error
+              ? /* v8 ignore next 2 */
+                error.message
+              : String(error)
+          }`,
+          cause: error,
+        }),
+    });
 
-    return {
-      matched: false,
-      response: new Response("Internal Server Error", { status: 500 }),
-    };
-  } /* v8 ignore next */ finally {
-    webHandler.dispose().catch(console.error);
-  }
-}
+    yield* Effect.tryPromise({
+      try: () => webHandler.dispose(),
+      catch: (error) =>
+        /* v8 ignore next 1 - dispose failures are swallowed, so this error path is not easily testable */
+        new HandlerError({
+          message: "Failed to dispose web handler",
+          cause: error,
+        }),
+    }).pipe(Effect.catchAll(() => Effect.void));
+
+    return result;
+  });

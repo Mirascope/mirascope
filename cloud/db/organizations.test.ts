@@ -16,7 +16,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 
 describe("Organizations", () => {
   // ===========================================================================

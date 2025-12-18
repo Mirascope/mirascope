@@ -43,7 +43,7 @@ import {
   type DeletedUserError,
   type NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 
 // =============================================================================
 // Path Parameter Utility Types

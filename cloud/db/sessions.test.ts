@@ -2,12 +2,7 @@ import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 import { Effect } from "effect";
 import { type PublicSession } from "@/db/schema";
 import { type PublicUser } from "@/db/schema/users";
-import {
-  DatabaseError,
-  DeletedUserError,
-  InvalidSessionError,
-  NotFoundError,
-} from "@/db/errors";
+import { DatabaseError, DeletedUserError, InvalidSessionError, NotFoundError } from "@/errors";
 import { EffectDatabase } from "@/db/database";
 
 describe("Sessions", () => {

@@ -1,6 +1,6 @@
 import { Effect } from "effect";
-import { DatabaseService, DEFAULT_SESSION_DURATION } from "@/db";
-import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/db/errors";
+import { EffectDatabase, DEFAULT_SESSION_DURATION } from "@/db";
+import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
 import {
   OAuthError,
@@ -450,7 +450,7 @@ function processAuthenticatedUser(
   | NotFoundError
   | AlreadyExistsError
   | DatabaseError,
-  DatabaseService
+  EffectDatabase
 > {
   const validateEmail = (email: string | null) => {
     return Effect.filterOrFail(
@@ -465,7 +465,7 @@ function processAuthenticatedUser(
 
   const createUserAndSession = (email: string) => {
     return Effect.gen(function* () {
-      const db = yield* DatabaseService;
+      const db = yield* EffectDatabase;
 
       // Try to find existing user by email, or create if not found
       const existingUser = yield* db.users.findByEmail(email).pipe(

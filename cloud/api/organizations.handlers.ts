@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { DatabaseService } from "@/db";
+import { EffectDatabase } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type {
   CreateOrganizationRequest,
@@ -9,14 +9,14 @@ import type {
 export * from "@/api/organizations.schemas";
 
 export const listOrganizationsHandler = Effect.gen(function* () {
-  const db = yield* DatabaseService;
+  const db = yield* EffectDatabase;
   const user = yield* AuthenticatedUser;
   return yield* db.organizations.findAll({ userId: user.id });
 });
 
 export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
   Effect.gen(function* () {
-    const db = yield* DatabaseService;
+    const db = yield* EffectDatabase;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.create({
       data: { name: payload.name },
@@ -26,7 +26,7 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
 
 export const getOrganizationHandler = (organizationId: string) =>
   Effect.gen(function* () {
-    const db = yield* DatabaseService;
+    const db = yield* EffectDatabase;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.findById({
       organizationId,
@@ -39,7 +39,7 @@ export const updateOrganizationHandler = (
   payload: UpdateOrganizationRequest,
 ) =>
   Effect.gen(function* () {
-    const db = yield* DatabaseService;
+    const db = yield* EffectDatabase;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.update({
       organizationId,
@@ -50,7 +50,7 @@ export const updateOrganizationHandler = (
 
 export const deleteOrganizationHandler = (organizationId: string) =>
   Effect.gen(function* () {
-    const db = yield* DatabaseService;
+    const db = yield* EffectDatabase;
     const user = yield* AuthenticatedUser;
     yield* db.organizations.delete({ organizationId, userId: user.id });
   });

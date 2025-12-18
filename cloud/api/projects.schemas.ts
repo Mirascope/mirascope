@@ -5,7 +5,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 
 export const ProjectSchema = Schema.Struct({
   id: Schema.String,

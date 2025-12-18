@@ -32,7 +32,7 @@
  * const db = yield* EffectDatabase;
  *
  * // Add a developer to a project
- * const membership = yield* db.projects.memberships.create({
+ * const membership = yield* db.organizations.projects.memberships.create({
  *   userId: "admin-123",
  *   organizationId: "org-456",
  *   projectId: "proj-789",
@@ -40,7 +40,7 @@
  * });
  *
  * // List all project members
- * const members = yield* db.projects.memberships.findAll({
+ * const members = yield* db.organizations.projects.memberships.findAll({
  *   userId: "admin-123",
  *   organizationId: "org-456",
  *   projectId: "proj-789",
@@ -61,7 +61,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import {
   projects,

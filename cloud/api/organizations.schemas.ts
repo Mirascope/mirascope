@@ -5,7 +5,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 
 export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",

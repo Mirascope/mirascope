@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect } from "effect";
-import { DatabaseService } from "@/db";
+import { EffectDatabase } from "@/db";
 import { runEffectResponse } from "@/app/lib/effect";
 import { getSessionIdFromCookie } from "@/auth/utils";
 
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/auth/me")({
               );
             }
 
-            const db = yield* DatabaseService;
+            const db = yield* EffectDatabase;
             const user = yield* db.sessions.findUserBySessionId(sessionId);
 
             return Response.json({
