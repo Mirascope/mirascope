@@ -6,7 +6,7 @@ from typing_extensions import Unpack
 from anthropic import Anthropic, AsyncAnthropic
 
 from ...context import Context, DepsT
-from ...formatting import Format, FormattableT
+from ...formatting import Format, FormattableT, resolve_format
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -32,6 +32,22 @@ from ..base import BaseProvider, Params
 from . import _utils
 from .beta_provider import AnthropicBetaProvider
 from .model_id import AnthropicModelId, model_name
+from .model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
+
+
+def _should_use_beta(
+    model_id: AnthropicModelId,
+    format: type[FormattableT] | Format[FormattableT] | None,
+) -> bool:
+    """Determine whether to use the beta API based on format mode.
+
+    If the format resolves to strict mode, and the model plausibly has
+    strict structured output support, then we will use the beta provider.
+    """
+    resolved = resolve_format(format, default_mode=_utils.DEFAULT_FORMAT_MODE)
+    if resolved is None or resolved.mode != "strict":
+        return False
+    return model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 
 
 class AnthropicProvider(BaseProvider[Anthropic]):
@@ -39,6 +55,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
 
     id = "anthropic"
     default_scope = "anthropic/"
+    _beta_provider: AnthropicBetaProvider
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
@@ -58,6 +75,15 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return self._beta_provider.call(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
@@ -95,6 +121,15 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return self._beta_provider.context_call(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
@@ -130,6 +165,14 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return await self._beta_provider.call_async(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
@@ -168,6 +211,15 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return await self._beta_provider.context_call_async(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
@@ -203,6 +255,15 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return self._beta_provider.stream(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
@@ -236,6 +297,16 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return self._beta_provider.context_stream(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
@@ -266,7 +337,14 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Anthropic Messages API."""
-
+        if _should_use_beta(model_id, format):
+            return await self._beta_provider.stream_async(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
@@ -303,6 +381,16 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the Anthropic Messages API."""
+        if _should_use_beta(model_id, format):
+            return await self._beta_provider.context_stream_async(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+
         input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,

@@ -22,6 +22,7 @@ from ...base import Params, _utils as _base_utils
 from ..model_id import AnthropicModelId, model_name
 
 DEFAULT_MAX_TOKENS = 16000
+# TODO: Change DEFAULT_FORMAT_MODE to strict when strict is no longer a beta feature.
 DEFAULT_FORMAT_MODE = "tool"
 
 AnthropicImageMimeType = Literal["image/jpeg", "image/png", "image/gif", "image/webp"]
