@@ -217,30 +217,35 @@ describe("ProjectMemberships", () => {
             ])
             // verifyProjectExists: exists
             .select([{ id: "project-id" }])
-            // target org membership check: organizationMemberships.findById (target)
-            //   -> authorize -> getRole -> getMembership
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "org-id",
-                memberId: "target-id",
-                createdAt: new Date(),
-              },
-            ])
-            //   -> findById actual query
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "org-id",
-                memberId: "target-id",
-                createdAt: new Date(),
-              },
-            ])
             // transaction insert fails
             .insert(new Error("Database connection failed"))
             .build(),
         ),
       ),
+    );
+
+    it.effect(
+      "returns `PermissionDeniedError` when FK constraint fails (target not org member)",
+      () =>
+        Effect.gen(function* () {
+          const { project, org, owner, nonMember } =
+            yield* TestEffectProjectFixture;
+          const db = yield* EffectDatabase;
+
+          const result = yield* db.organizations.projects.memberships
+            .create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              data: { memberId: nonMember.id, role: "VIEWER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PermissionDeniedError);
+          expect(result.message).toBe(
+            "User must be a member of the organization before being added to a project",
+          );
+        }),
     );
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
@@ -282,25 +287,6 @@ describe("ProjectMemberships", () => {
             ])
             // verifyProjectExists: exists
             .select([{ id: "project-id" }])
-            // target org membership check: organizationMemberships.findById (target)
-            //   -> authorize -> getRole -> getMembership
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "org-id",
-                memberId: "target-id",
-                createdAt: new Date(),
-              },
-            ])
-            //   -> findById actual query
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "org-id",
-                memberId: "target-id",
-                createdAt: new Date(),
-              },
-            ])
             // transaction membership insert succeeds
             .insert([
               {

@@ -62,7 +62,10 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import { isUniqueConstraintError } from "@/db/utils";
+import {
+  isUniqueConstraintError,
+  isForeignKeyConstraintError,
+} from "@/db/utils";
 import {
   projects,
   projectMemberships,
@@ -77,6 +80,7 @@ import {
  */
 const publicFields = {
   memberId: projectMemberships.memberId,
+  organizationId: projectMemberships.organizationId,
   projectId: projectMemberships.projectId,
   role: projectMemberships.role,
   createdAt: projectMemberships.createdAt,
@@ -420,6 +424,7 @@ export class ProjectMemberships extends BaseAuthenticatedEffectService<
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
+      const resourceName = this.getResourceName();
 
       yield* this.authorize({
         userId,
@@ -433,47 +438,47 @@ export class ProjectMemberships extends BaseAuthenticatedEffectService<
       // already a project level ADMIN or they are an org OWNER/ADMIN, meaning
       // they can add themselves to the project.
 
-      // Enforce organization membership before project membership
-      yield* this.organizationMemberships
-        .findById({
-          userId,
-          organizationId,
-          memberId: data.memberId,
-        })
-        .pipe(
-          Effect.catchTag("NotFoundError", () =>
-            Effect.fail(
-              new PermissionDeniedError({
-                message:
-                  "User must be a member of the organization before being added to a project",
-                resource: this.getResourceName(),
-              }),
-            ),
-          ),
-        );
-
-      // Use transaction to ensure membership and audit log are created atomically
+      // Use transaction to ensure membership and audit log are created atomically.
+      // The FK constraint on (memberId, organizationId) → organization_memberships
+      // enforces that the target must be an org member.
       return yield* client.withTransaction(
         Effect.gen(function* () {
           const [membership] = yield* client
             .insert(projectMemberships)
             .values({
               projectId,
+              organizationId,
               memberId: data.memberId,
               role: data.role,
             })
             .returning(publicFields)
             .pipe(
-              Effect.mapError((e): AlreadyExistsError | DatabaseError =>
-                isUniqueConstraintError(e.cause)
-                  ? new AlreadyExistsError({
+              Effect.mapError(
+                (
+                  e,
+                ):
+                  | AlreadyExistsError
+                  | PermissionDeniedError
+                  | DatabaseError => {
+                  if (isUniqueConstraintError(e.cause)) {
+                    return new AlreadyExistsError({
                       message: "User is already a member of this project",
                       resource: "project membership",
-                    })
-                  : new DatabaseError({
-                      message: "Failed to create project membership",
-                      cause: e,
-                    }),
+                    });
+                  }
+                  // FK constraint violation means target is not an org member
+                  if (isForeignKeyConstraintError(e.cause)) {
+                    return new PermissionDeniedError({
+                      message:
+                        "User must be a member of the organization before being added to a project",
+                      resource: resourceName,
+                    });
+                  }
+                  return new DatabaseError({
+                    message: "Failed to create project membership",
+                    cause: e,
+                  });
+                },
               ),
             );
 
