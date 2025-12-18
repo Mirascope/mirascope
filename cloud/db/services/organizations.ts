@@ -431,26 +431,13 @@ export class OrganizationService extends BaseAuthenticatedService<
   > {
     return Effect.gen(this, function* () {
       yield* this.authorize({ userId, action: "delete", organizationId });
+      // Cascade deletes handle: memberships, membership audits, projects,
+      // project memberships, and project membership audits
       yield* Effect.tryPromise({
         try: async () => {
-          await this.db.transaction(async (tx) => {
-            // Delete audit logs first (references organization)
-            await tx
-              .delete(organizationMembershipAudit)
-              .where(
-                eq(organizationMembershipAudit.organizationId, organizationId),
-              );
-            // Delete memberships
-            await tx
-              .delete(organizationMemberships)
-              .where(
-                eq(organizationMemberships.organizationId, organizationId),
-              );
-            // Delete organization
-            await tx
-              .delete(organizations)
-              .where(eq(organizations.id, organizationId));
-          });
+          await this.db
+            .delete(organizations)
+            .where(eq(organizations.id, organizationId));
         },
         catch: (error) =>
           new DatabaseError({
