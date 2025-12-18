@@ -14,9 +14,10 @@ def model_name(model_id: AnthropicModelId) -> str:
     """Extract the anthropic model name from the ModelId
 
     Args:
-        model_id: Full model ID (e.g. "anthropic/claude-sonnet-4-5")
+        model_id: Full model ID (e.g. "anthropic/claude-sonnet-4-5" or
+            "anthropic-beta/claude-sonnet-4-5")
 
     Returns:
         Provider-specific model ID (e.g. "claude-sonnet-4-5")
     """
-    return model_id.removeprefix("anthropic/")
+    return model_id.removeprefix("anthropic-beta/").removeprefix("anthropic/")

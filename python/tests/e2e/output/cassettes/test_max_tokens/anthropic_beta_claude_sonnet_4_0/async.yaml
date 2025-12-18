@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: '{"max_tokens":50,"messages":[{"role":"user","content":"List all U.S. states."}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '108'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VRy07DMBD8FcvnNkpKUiA3BBJIiBPqAREUbeOlseqsg+1AS5V/Z10R8RIHy+Od
+        mbV3fJCdVWhkKRsDg8K5t0QY5vl8kS6KtMhyOZNaMd/5TZ1mD6tMrdHd3i9xuVd3ncu76yywJux7
+        jCr0HjbIBWdNLID32gegqGksBWRUPh4mfcDd0R23Ut6gQwFxGSOKVKyS+0SwO6AXmrjat7DGoBsw
+        wjqFrqyooiwRFwbW0EFFiyP2W4YnDJ1+t8Q4j3gL5MFXVCTiEox+to40c0s+WmMdKFvRaTxwAg1f
+        MoSKzhJxhQbe+FEVncvxaSZ9sH3tEDipODDs6mC3SF5+Uh5fBqSGp6PBmJkcjoGUB6mpH8IkLrOC
+        A4GmxbrhZkFbqn8K0olnWv3HTd7YH/sWO3Rg6qL7q/9is/Y3O86kHcL3UsEOj+5VN1gHjY4njb+o
+        wCk5jh/L4ieBNgIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9af3bde9ec585eae-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 17 Dec 2025 04:40:22 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-17T04:40:21Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-17T04:40:22Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-17T04:40:20Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-17T04:40:21Z'
+      request-id:
+      - req_011CWBeJMFcmrLmwpxpyZ2qk
+      x-envoy-upstream-service-time:
+      - '1433'
+    status:
+      code: 200
+      message: OK
+version: 1

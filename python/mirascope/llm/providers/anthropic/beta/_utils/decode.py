@@ -1,12 +1,23 @@
-"""Anthropic response decoding."""
+"""Beta Anthropic response decoding."""
 
 import json
 from typing import Any, TypeAlias, cast
 
-from anthropic import types as anthropic_types
-from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
+from anthropic.lib.streaming._beta_messages import (
+    BetaAsyncMessageStreamManager,
+    BetaMessageStreamManager,
+)
+from anthropic.types.beta import (
+    BetaContentBlock,
+    BetaRawMessageStreamEvent,
+    BetaRedactedThinkingBlockParam,
+    BetaTextBlockParam,
+    BetaThinkingBlockParam,
+    BetaToolUseBlockParam,
+)
+from anthropic.types.beta.parsed_beta_message import ParsedBetaMessage
 
-from ....content import (
+from .....content import (
     AssistantContentPart,
     Text,
     TextChunk,
@@ -21,8 +32,8 @@ from ....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ....messages import AssistantMessage
-from ....responses import (
+from .....messages import AssistantMessage
+from .....responses import (
     AsyncChunkIterator,
     ChunkIterator,
     FinishReason,
@@ -30,18 +41,17 @@ from ....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ..model_id import AnthropicModelId, model_name
+from ...model_id import model_name
 
-ANTHROPIC_FINISH_REASON_MAP = {
+BETA_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
     "refusal": FinishReason.REFUSAL,
+    "model_context_window_exceeded": FinishReason.CONTEXT_LENGTH_EXCEEDED,
 }
 
 
-def _decode_assistant_content(
-    content: anthropic_types.ContentBlock,
-) -> AssistantContentPart:
-    """Convert Anthropic content block to mirascope AssistantContentPart."""
+def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantContentPart:
+    """Convert Beta content block to mirascope AssistantContentPart."""
     if content.type == "text":
         return Text(text=content.text)
     elif content.type == "tool_use":
@@ -54,54 +64,53 @@ def _decode_assistant_content(
         return Thought(thought=content.thinking)
     else:
         raise NotImplementedError(
-            f"Support for content type `{content.type}` is not yet implemented."
+            f"Support for beta content type `{content.type}` is not yet implemented."
         )
 
 
 def decode_response(
-    response: anthropic_types.Message,
-    model_id: AnthropicModelId,
+    response: ParsedBetaMessage[Any],
+    model_id: str,
 ) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert Anthropic message to mirascope AssistantMessage."""
+    """Convert Beta message to mirascope AssistantMessage."""
     assistant_message = AssistantMessage(
-        content=[_decode_assistant_content(part) for part in response.content],
+        content=[_decode_beta_assistant_content(part) for part in response.content],
         provider_id="anthropic",
         model_id=model_id,
         provider_model_name=model_name(model_id),
         raw_message={
             "role": response.role,
-            "content": [part.model_dump() for part in response.content],
+            "content": [
+                part.model_dump(exclude_none=True) for part in response.content
+            ],
         },
     )
     finish_reason = (
-        ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason)
+        BETA_FINISH_REASON_MAP.get(response.stop_reason)
         if response.stop_reason
         else None
     )
     return assistant_message, finish_reason
 
 
-ContentBlock: TypeAlias = (
-    anthropic_types.TextBlockParam
-    | anthropic_types.ThinkingBlockParam
-    | anthropic_types.ToolUseBlockParam
-    | anthropic_types.ThinkingBlockParam
-    | anthropic_types.RedactedThinkingBlockParam
+BetaContentBlockParam: TypeAlias = (
+    BetaTextBlockParam
+    | BetaThinkingBlockParam
+    | BetaToolUseBlockParam
+    | BetaRedactedThinkingBlockParam
 )
 
 
-class _AnthropicChunkProcessor:
-    """Processes Anthropic stream events and maintains state across events."""
+class _BetaChunkProcessor:
+    """Processes Beta stream events and maintains state across events."""
 
     def __init__(self) -> None:
-        self.current_block_param: ContentBlock | None = None
+        self.current_block_param: BetaContentBlockParam | None = None
         self.accumulated_tool_json: str = ""
-        self.accumulated_blocks: list[ContentBlock] = []
+        self.accumulated_blocks: list[BetaContentBlockParam] = []
 
-    def process_event(
-        self, event: anthropic_types.RawMessageStreamEvent
-    ) -> ChunkIterator:
-        """Process a single Anthropic event and yield the appropriate content chunks."""
+    def process_event(self, event: BetaRawMessageStreamEvent) -> ChunkIterator:
+        """Process a single Beta event and yield the appropriate content chunks."""
         yield RawStreamEventChunk(raw_stream_event=event)
 
         if event.type == "content_block_start":
@@ -138,7 +147,10 @@ class _AnthropicChunkProcessor:
                     "data": content_block.data,
                 }
             else:
-                raise NotImplementedError
+                raise NotImplementedError(
+                    f"Support for beta content block type `{content_block.type}` "
+                    "is not yet implemented."
+                )
 
         elif event.type == "content_block_delta":
             if self.current_block_param is None:  # pragma: no cover
@@ -206,7 +218,7 @@ class _AnthropicChunkProcessor:
 
         elif event.type == "message_delta":
             if event.delta.stop_reason:
-                finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(event.delta.stop_reason)
+                finish_reason = BETA_FINISH_REASON_MAP.get(event.delta.stop_reason)
                 if finish_reason is not None:
                     yield FinishReasonChunk(finish_reason=finish_reason)
 
@@ -223,22 +235,22 @@ class _AnthropicChunkProcessor:
 
 
 def decode_stream(
-    anthropic_stream_manager: MessageStreamManager,
+    beta_stream_manager: BetaMessageStreamManager[Any],
 ) -> ChunkIterator:
-    """Returns a ChunkIterator converted from an Anthropic MessageStreamManager"""
-    processor = _AnthropicChunkProcessor()
-    with anthropic_stream_manager as stream:
+    """Returns a ChunkIterator converted from a Beta MessageStreamManager."""
+    processor = _BetaChunkProcessor()
+    with beta_stream_manager as stream:
         for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
             yield from processor.process_event(event)
     yield processor.raw_message_chunk()
 
 
 async def decode_async_stream(
-    anthropic_stream_manager: AsyncMessageStreamManager,
+    beta_stream_manager: BetaAsyncMessageStreamManager[Any],
 ) -> AsyncChunkIterator:
-    """Returns an AsyncChunkIterator converted from an Anthropic MessageStreamManager"""
-    processor = _AnthropicChunkProcessor()
-    async with anthropic_stream_manager as stream:
+    """Returns an AsyncChunkIterator converted from a Beta MessageStreamManager."""
+    processor = _BetaChunkProcessor()
+    async with beta_stream_manager as stream:
         async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
             for item in processor.process_event(event):
                 yield item
