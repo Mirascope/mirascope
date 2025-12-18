@@ -198,6 +198,7 @@ test_snapshot = snapshot(
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 5,
         }
     }

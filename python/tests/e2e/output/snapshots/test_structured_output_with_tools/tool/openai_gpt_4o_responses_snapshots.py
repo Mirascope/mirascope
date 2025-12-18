@@ -17,6 +17,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 213,
+                "output_tokens": 44,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -135,6 +142,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 210,
+                "output_tokens": 44,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -358,6 +372,7 @@ stream_snapshot = snapshot(
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 29,
         }
     }
@@ -475,6 +490,7 @@ async_stream_snapshot = snapshot(
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 29,
         }
     }

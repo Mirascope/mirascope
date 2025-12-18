@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 416,
+                "output_tokens": 201,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -93,6 +100,13 @@ async_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 416,
+                "output_tokens": 221,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -243,6 +257,7 @@ Is there something else I can help you with today?\
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 159,
         }
     }
@@ -322,6 +337,7 @@ If you're struggling with substance use, please consider reaching out to:
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 160,
         }
     }

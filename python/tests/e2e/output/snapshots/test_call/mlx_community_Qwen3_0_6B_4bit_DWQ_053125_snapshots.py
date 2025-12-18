@@ -14,6 +14,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 20,
+                "output_tokens": 711,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -64,6 +71,13 @@ async_snapshot = snapshot(
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 20,
+                "output_tokens": 711,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -151,6 +165,7 @@ $$\
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 713,
         }
     }
@@ -200,6 +215,7 @@ $$\
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 713,
         }
     }

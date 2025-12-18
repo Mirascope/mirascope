@@ -16,6 +16,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 200,
+                "output_tokens": 32,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -128,6 +135,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 200,
+                "output_tokens": 32,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -322,6 +336,7 @@ stream_snapshot = snapshot(
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 29,
         }
     }
@@ -416,6 +431,7 @@ async_stream_snapshot = snapshot(
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 29,
         }
     }

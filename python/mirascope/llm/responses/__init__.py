@@ -27,6 +27,7 @@ from .streams import (
     ThoughtStream,
     ToolCallStream,
 )
+from .usage import Usage
 
 __all__ = [
     "AsyncChunkIterator",
@@ -53,5 +54,6 @@ __all__ = [
     "TextStream",
     "ThoughtStream",
     "ToolCallStream",
+    "Usage",
     "_utils",
 ]

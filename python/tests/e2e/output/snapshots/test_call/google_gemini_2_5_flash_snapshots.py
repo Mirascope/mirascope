@@ -14,6 +14,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 77,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 25,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -83,6 +90,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 56,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 40,
+            },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -204,6 +218,7 @@ So, 42\
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 4,
         }
     }
@@ -242,6 +257,7 @@ async_stream_snapshot = snapshot(
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 3,
         }
     }

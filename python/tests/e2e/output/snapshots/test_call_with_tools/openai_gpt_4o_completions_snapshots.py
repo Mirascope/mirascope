@@ -17,6 +17,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 149,
+                "output_tokens": 32,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -137,6 +144,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 149,
+                "output_tokens": 31,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -336,6 +350,7 @@ The secret for the password "radiance" is: "Life before Death"\
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 37,
         }
     }
@@ -427,6 +442,7 @@ Here are the secrets associated with the provided passwords:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 36,
         }
     }

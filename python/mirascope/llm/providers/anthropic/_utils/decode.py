@@ -29,6 +29,7 @@ from ....responses import (
     FinishReasonChunk,
     RawMessageChunk,
     RawStreamEventChunk,
+    Usage,
 )
 from ..model_id import AnthropicModelId, model_name
 
@@ -58,11 +59,25 @@ def _decode_assistant_content(
         )
 
 
+def _decode_usage(
+    usage: anthropic_types.Usage,
+) -> Usage:
+    """Convert Anthropic Usage (or BetaUsage) to Mirascope Usage."""
+    return Usage(
+        input_tokens=usage.input_tokens,
+        output_tokens=usage.output_tokens,
+        cache_read_tokens=usage.cache_read_input_tokens or 0,
+        cache_write_tokens=usage.cache_creation_input_tokens or 0,
+        reasoning_tokens=0,
+        raw=usage,
+    )
+
+
 def decode_response(
     response: anthropic_types.Message,
     model_id: AnthropicModelId,
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert Anthropic message to mirascope AssistantMessage."""
+) -> tuple[AssistantMessage, FinishReason | None, Usage]:
+    """Convert Anthropic message to mirascope AssistantMessage and usage."""
     assistant_message = AssistantMessage(
         content=[_decode_assistant_content(part) for part in response.content],
         provider_id="anthropic",
@@ -78,7 +93,8 @@ def decode_response(
         if response.stop_reason
         else None
     )
-    return assistant_message, finish_reason
+    usage = _decode_usage(response.usage)
+    return assistant_message, finish_reason, usage
 
 
 ContentBlock: TypeAlias = (

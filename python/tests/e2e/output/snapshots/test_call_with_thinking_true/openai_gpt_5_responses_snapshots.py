@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-5:responses",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 62,
+                "output_tokens": 10,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -180,6 +187,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-5:responses",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 62,
+                "output_tokens": 10,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -495,6 +509,7 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 6,
         }
     }
@@ -687,6 +702,7 @@ I’ll double-check for any primes like 197, but it doesn't have "79." And 297 i
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 6,
         }
     }

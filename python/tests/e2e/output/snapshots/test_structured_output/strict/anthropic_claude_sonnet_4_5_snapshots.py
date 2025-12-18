@@ -14,6 +14,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-5",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 414,
+                "output_tokens": 43,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -95,6 +102,13 @@ async_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-5",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 414,
+                "output_tokens": 36,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -236,6 +250,7 @@ stream_snapshot = snapshot(
                 "formatting_instructions": None,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 10,
         }
     }
@@ -308,6 +323,7 @@ async_stream_snapshot = snapshot(
                 "formatting_instructions": None,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 11,
         }
     }

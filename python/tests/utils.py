@@ -38,6 +38,14 @@ def tool_snapshot(
     }
 
 
+def usage_snapshot(usage: llm.Usage | None) -> dict[str, int | None] | None:
+    if not usage:
+        return None
+    dict_copy = usage.__dict__.copy()
+    dict_copy.pop("raw")
+    return dict_copy
+
+
 def response_snapshot_dict(
     response: llm.responses.RootResponse[Any, Any],
 ) -> dict[str, Any]:
@@ -57,6 +65,7 @@ def response_snapshot_dict(
     dict_copy.pop("tool_calls")
     dict_copy.pop("format")
     dict_copy["format"] = format_snapshot(response.format)
+    dict_copy["usage"] = usage_snapshot(response.usage)
     dict_copy.pop("toolkit")
     dict_copy["tools"] = [tool_snapshot(tool) for tool in response.toolkit.tools]
     return dict_copy
@@ -80,6 +89,7 @@ def stream_response_snapshot_dict(
         "messages": list(response.messages),
         "format": format_snapshot(response.format),
         "tools": [tool_snapshot(tool) for tool in response.toolkit.tools],
+        "usage": usage_snapshot(response.usage),
         "n_chunks": len(
             response.chunks
         ),  # Just snapshot the number of chunks to minimize bloat. Chunk reconstruction is tested separately.

@@ -14,6 +14,13 @@ test_snapshot = snapshot(
             "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 39,
+                "output_tokens": 155,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="Who created you?")]),
                 AssistantMessage(

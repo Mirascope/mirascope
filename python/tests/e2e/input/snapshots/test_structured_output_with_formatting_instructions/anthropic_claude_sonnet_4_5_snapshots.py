@@ -15,6 +15,13 @@ test_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-5",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 789,
+                "output_tokens": 67,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(

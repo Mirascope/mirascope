@@ -14,6 +14,13 @@ test_snapshot = snapshot(
             "provider_model_name": "gemini-3-pro-preview",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 13,
+                "output_tokens": 30,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 188,
+            },
             "messages": [
                 UserMessage(
                     content=[Text(text="Answer this question: What is 2 + 2?")]

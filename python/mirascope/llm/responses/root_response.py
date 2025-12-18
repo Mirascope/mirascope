@@ -11,6 +11,7 @@ from ..messages import Message
 from ..tools import ToolkitT
 from . import _utils
 from .finish_reason import FinishReason
+from .usage import Usage
 
 if TYPE_CHECKING:
     from ..models import Model
@@ -55,11 +56,14 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     """
     finish_reason: FinishReason | None
     """The reason why the LLM finished generating a response, if set.
-    
+
     `finish_reason` is only set if the response did not finish generating normally,
     e.g. `FinishReason.MAX_TOKENS` if the model ran out of tokens before completing.
     When the response generates normally, `response.finish_reason` will be `None`.
     """
+
+    usage: Usage | None
+    """Token usage statistics for this response, if available."""
 
     format: Format[FormattableT] | None
     """The `Format` describing the structured response format, if available."""

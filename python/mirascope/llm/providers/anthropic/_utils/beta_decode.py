@@ -14,6 +14,7 @@ from anthropic.types.beta import (
     BetaTextBlockParam,
     BetaThinkingBlockParam,
     BetaToolUseBlockParam,
+    BetaUsage,
 )
 from anthropic.types.beta.parsed_beta_message import ParsedBetaMessage
 
@@ -40,6 +41,7 @@ from ....responses import (
     FinishReasonChunk,
     RawMessageChunk,
     RawStreamEventChunk,
+    Usage,
 )
 from ..model_id import model_name
 
@@ -48,6 +50,20 @@ BETA_FINISH_REASON_MAP = {
     "refusal": FinishReason.REFUSAL,
     "model_context_window_exceeded": FinishReason.CONTEXT_LENGTH_EXCEEDED,
 }
+
+
+def _decode_usage(
+    usage: BetaUsage,
+) -> Usage:
+    """Convert Anthropic Usage (or BetaUsage) to Mirascope Usage."""
+    return Usage(
+        input_tokens=usage.input_tokens,
+        output_tokens=usage.output_tokens,
+        cache_read_tokens=usage.cache_read_input_tokens or 0,
+        cache_write_tokens=usage.cache_creation_input_tokens or 0,
+        reasoning_tokens=0,
+        raw=usage,
+    )
 
 
 def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantContentPart:
@@ -71,8 +87,8 @@ def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantConten
 def beta_decode_response(
     response: ParsedBetaMessage[Any],
     model_id: str,
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert Beta message to mirascope AssistantMessage."""
+) -> tuple[AssistantMessage, FinishReason | None, Usage]:
+    """Convert Beta message to mirascope AssistantMessage and usage."""
     assistant_message = AssistantMessage(
         content=[_decode_beta_assistant_content(part) for part in response.content],
         provider_id="anthropic",
@@ -90,7 +106,8 @@ def beta_decode_response(
         if response.stop_reason
         else None
     )
-    return assistant_message, finish_reason
+    usage = _decode_usage(response.usage)
+    return assistant_message, finish_reason, usage
 
 
 BetaContentBlockParam: TypeAlias = (

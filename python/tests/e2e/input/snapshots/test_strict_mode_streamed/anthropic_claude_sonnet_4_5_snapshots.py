@@ -52,6 +52,7 @@ test_snapshot = snapshot(
                 "formatting_instructions": None,
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 6,
         }
     }

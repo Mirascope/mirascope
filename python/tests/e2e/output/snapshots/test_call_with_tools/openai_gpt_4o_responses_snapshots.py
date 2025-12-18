@@ -17,6 +17,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 136,
+                "output_tokens": 30,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -146,6 +153,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 136,
+                "output_tokens": 28,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -391,6 +405,7 @@ Here are the secrets associated with each password:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 32,
         }
     }
@@ -519,6 +534,7 @@ Here are the secrets:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 28,
         }
     }

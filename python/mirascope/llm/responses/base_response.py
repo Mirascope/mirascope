@@ -9,6 +9,7 @@ from ..messages import AssistantMessage, Message
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from .finish_reason import FinishReason
 from .root_response import RootResponse
+from .usage import Usage
 
 if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
@@ -30,6 +31,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
+        usage: Usage | None,
     ) -> None:
         """Initialize a Response.
 
@@ -45,6 +47,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
             input_messages: The message history before the final assistant message.
             assistant_message: The final assistant message containing the response content.
             finish_reason: The reason why the LLM finished generating a response.
+            usage: Token usage statistics for the response.
         """
         self.raw = raw
         self.provider_id = provider_id
@@ -53,6 +56,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         self.params = params
         self.toolkit = toolkit
         self.finish_reason = finish_reason
+        self.usage = usage
         self.format = format
 
         # Process content in the assistant message, organizing it by type and

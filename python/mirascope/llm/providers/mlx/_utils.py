@@ -5,7 +5,7 @@ import mlx.core as mx
 from mlx_lm.generate import GenerationResponse
 from mlx_lm.sample_utils import make_sampler
 
-from ...responses import FinishReason
+from ...responses import FinishReason, Usage
 from ..base import Params, _utils as _base_utils
 
 Sampler: TypeAlias = Callable[[mx.array], mx.array]
@@ -105,3 +105,25 @@ def extract_finish_reason(response: GenerationResponse | None) -> FinishReason |
         return FinishReason.MAX_TOKENS
 
     return None
+
+
+def extract_usage(response: GenerationResponse | None) -> Usage | None:
+    """Extract usage information from an MLX generation response.
+
+    Args:
+        response: The MLX generation response to extract from.
+
+    Returns:
+        The Usage object with token counts, or None if not applicable.
+    """
+    if response is None:
+        return None
+
+    return Usage(
+        input_tokens=response.prompt_tokens,
+        output_tokens=response.generation_tokens,
+        cache_read_tokens=0,
+        cache_write_tokens=0,
+        reasoning_tokens=0,
+        raw=response,
+    )

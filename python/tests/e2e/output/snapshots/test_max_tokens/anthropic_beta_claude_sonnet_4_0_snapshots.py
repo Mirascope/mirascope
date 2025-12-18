@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
+            "usage": {
+                "input_tokens": 15,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -74,6 +81,13 @@ async_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
+            "usage": {
+                "input_tokens": 15,
+                "output_tokens": 50,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -179,6 +193,7 @@ Here are all 50 U.S. states in alphabetical order:
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 12,
         }
     }
@@ -237,6 +252,7 @@ Here are all 50 U.S. states in alphabetical order:
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 11,
         }
     }

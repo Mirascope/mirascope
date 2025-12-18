@@ -223,4 +223,153 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '420'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/31VW3PyNhB951do/NI2F2KIuaQzeSDmEhNuCcZQmk4iy2tbYMuOJIdAJv+9MuQC
+        +dLywODds2fPHq/EawEhjWDmUQ9LENqf6G8VQeh1+53nEiaBSZX4CKlgirn8wu4+r3u/FUTCS16k
+        HR0Nl3h9giKQvwnkcsBLJEMqkJesWPHo6J7dMwsJABUFlAngaIWZFNvHkq7LELWpmzBMCEUsi13g
+        RYTsELOln0WRYs6BXkKyWMnEkiYMkQgwj9ZIyHwmBcByi3r0wMdZJB9wSoskidNMwoNP3UfkZ4xs
+        S3NhIGjAwEN+wlHKgVABiiwXXURWPgVGgsZpBJ9lSgReUhYgrBiUX4Ga4pE9IizUo+pyglYhcNjG
+        PEp2so5WISXh0S/j5RoIjkgWKZinhs0tGlNG9iyClzSihEqli8NTBkIh9xyTwOOdMVESUEWG4uQZ
+        cmKZ5NzR/1ixoorgkV0qpsed0xKJMMkiT7m85ZSckqVKjSXHNAil8mmFuVe8Z9rJtyVQdQqg9kDy
+        DPZybyf/vTkfpppK58HavecZjiHfrD3V3/oqEOaB+KE4L1dhNdu3xNvB89vPc4zVXmCZ8W17UxKz
+        MetZZfbSSZxBUhtNJjWe2XYs5l2yvmnJ4YaPp0ZpdndbnflGp3LRbhiBnTqyRTYdfb2ek470uknJ
+        9c42VrkbNsuValZr3jH9pr4EPJ0cm+Xnpxd33UjHJSfMRO/aDCZtx3ZLbQuOR42wd7toTGcdvy6H
+        lU3zaWKZ5oDZBjOvGt5ZfdKDu1K5NZ0vnJnT707xakYS92z417R0bOkL5re6TpUZllW9mOm3wEjJ
+        arOkmY2XQ2c8vXEr1mxueX2Q58fEjNjC6vcqjX57PqThZGmd1Z8dW5ppc8L1wWY5K7s1SDqmuenW
+        yzhulkZ+YGbVBhttwquUjDZu1JDtCZ1ch22dN42aAeu7Rbzs35IA8Hm/GneAiEVodLqLqqLo1RuZ
+        MZ8b/kY50B+UXJKKp2vXYfaq5xi1rGx4Fem0zuYLfbh5mTbuenXzOtCz+njGenPw1t3nczeaeq1O
+        CvGqb5CFCLrHQza56tiD2fnSl2aVhRNzemG3g5vV5aVW+Gkb/vnaBI0n0fbNx4kH0Qf8c1U0nzIq
+        wjvAIsl3TBvbw9HnYmqUefCiwvo3fB+EwMGWt5/zogAY8Pzkf11K+Yn9XfxR3PXMxW1laVleqd4P
+        Vnc3/tx2LeXqZEg7WQIzk2x7d1cqu7Z7V/1BvlR7z8tE4ugwVbk4+YVXNFVXGu3/B+z9PSiDcETl
+        Oh/Kbs3sveOpGhzI+nCxsGf2x3E7lFivFd7d3r0AB7igO6cDiJWXp+Vi5dSPsAi3/TQOIk2YAMvL
+        Mbo+aGLvod+Wa/Ekxehh1Ls6vQ20wlvhX6uIFFUEBwAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 17 Dec 2025 23:59:15 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1480
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '420'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VU23bqNhB95yu0/NQmhBLutCsPEAj3u0PIabpOhD22FWzJluSAycq/VzKHBNKU
+        By+kueyZvTXzlkHIsDC1iY0lCONP9Le6Qegt/WoboxKoVIbjlboMMZefvoff28l/5SJhp4OMi4s7
+        smYUWxZBt9i3Yh9LwihaSK4A3eTi4ok+0ckGJ1kkGJIeoFgAR1tMpUiP1/m89NBnFhoHa+A51MYi
+        QUBZ7Ho51EMcAtAGFYMlerbBwbEvf+KQ5CwWhLGEnw5ZPyMnplZaATmkd9mVZMhhHFnH8qirLQLQ
+        K/ZjEDlkesBBuUAWBQkiQQA2UdUj/JmJ6bIP2EeELAqxEDoboeiZ3qhGnhE+oCoGcQBS92HqGOGx
+        2LeRCxIFkHpgKraqmygm1sZP1NFG4DjEIkoNP8mhMUMUwNbI7BW49AjdICL/SoMlY75AmAPixPUk
+        0vXnnqiR/SKSp9nTOkkew4ntPfv/yh7bU2r6Z8/il52qxrTyJ6x/wVVOmLvim2Adrq4VU18M72fn
+        9+/7WBCXYhnzFP427jUbq2GvQLcvTt26XYa1WT3fqF6G0/th2PWGFac7q6y6MJYNp4udbRXunYHX
+        Gj1O133RuXuZFkeJGU02HbiMyg8he50knkmT8TgsRuviPk9WXruflPh+UZrfVxbBDx499IfVRr40
+        6cTUrbvReN6pPXas1nS7327MVVSfsuuJldjlXr/Wut90R/jB5EFhGeLQ98zdALbdcWcka1Fp0BC9
+        YZfhbq/UGIxnVofR4jQaLDqvndUlS6qjFsbxbF+o8/GyXm25TTGZ1/7A7ebjbl3J0yXftX/Mi+3i
+        6NaCDV5Xq7uKL2sQ7V8ePTJ8uZsNLvuledIcrE26beSTZo1U3ZsbI/Md4/98sm1w5qfsBswG/+j+
+        IYfhEEqENwcsmNbRWJiT6Yf4BqE27NR1/ov/CITAbpp3pPOqMaCg14P9Oa1qOP3fxO+5A6YuLi3L
+        iHXkCCRW+wt/vCgj5Or1SZNtgN6yON1f5fIB9mTdndmvq7/skknsn5sKhex/8oqWQiX+6R48WZGK
+        IOwTmeimzPbKPBkBBXBW1pHFzAnZxyd9XmJZj0XK9kGAJXBBDky7ECgurwq58pXjY+GleAYHETIq
+        oGen5LbnLQyTYg+iZiTFVFpXC2tmZN4z/wIyGk58BwYAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 18 Dec 2025 00:00:48 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1458
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
 version: 1

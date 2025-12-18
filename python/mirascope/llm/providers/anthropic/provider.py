@@ -92,7 +92,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = self.client.messages.create(**kwargs)
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
         return Response(
@@ -105,6 +105,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 
@@ -139,7 +140,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = self.client.messages.create(**kwargs)
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
         return ContextResponse(
@@ -152,6 +153,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 
@@ -182,7 +184,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = await self.async_client.messages.create(**kwargs)
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
         return AsyncResponse(
@@ -195,6 +197,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 
@@ -229,7 +232,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = await self.async_client.messages.create(**kwargs)
-        assistant_message, finish_reason = _utils.decode_response(
+        assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
         return AsyncContextResponse(
@@ -242,6 +245,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
             format=resolved_format,
         )
 

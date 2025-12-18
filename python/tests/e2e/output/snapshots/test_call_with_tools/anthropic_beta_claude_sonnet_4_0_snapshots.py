@@ -17,6 +17,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 602,
+                "output_tokens": 39,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -145,6 +152,13 @@ async_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 606,
+                "output_tokens": 39,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -388,6 +402,7 @@ Here are the secrets retrieved for each password:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 13,
         }
     }
@@ -515,6 +530,7 @@ I've successfully retrieved the secrets for both passwords:
                     "strict": False,
                 }
             ],
+            "usage": None,
             "n_chunks": 12,
         }
     }

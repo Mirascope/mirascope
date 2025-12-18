@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 170,
+                "output_tokens": 30,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -94,6 +101,13 @@ async_snapshot = snapshot(
             "provider_model_name": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 170,
+                "output_tokens": 30,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -239,6 +253,7 @@ stream_snapshot = snapshot(
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 31,
         }
     }
@@ -317,6 +332,7 @@ async_stream_snapshot = snapshot(
                 "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
             "tools": [],
+            "usage": None,
             "n_chunks": 31,
         }
     }

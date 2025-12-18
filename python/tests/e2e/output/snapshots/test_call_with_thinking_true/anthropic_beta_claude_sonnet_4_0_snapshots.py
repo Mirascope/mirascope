@@ -15,6 +15,13 @@ sync_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 145,
+                "output_tokens": 23,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -204,6 +211,13 @@ async_snapshot = snapshot(
             "provider_model_name": "claude-sonnet-4-0",
             "params": {"thinking": False},
             "finish_reason": None,
+            "usage": {
+                "input_tokens": 68,
+                "output_tokens": 8,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
             "messages": [
                 UserMessage(
                     content=[
@@ -575,6 +589,7 @@ Identified 3 primes containing "79": 79, 179, 379.\
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 3,
         }
     }
@@ -769,6 +784,7 @@ Checking each for primality:
             ],
             "format": None,
             "tools": [],
+            "usage": None,
             "n_chunks": 9,
         }
     }

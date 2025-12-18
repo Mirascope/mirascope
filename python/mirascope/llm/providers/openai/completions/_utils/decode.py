@@ -4,6 +4,7 @@ from typing import Literal
 
 from openai import AsyncStream, Stream
 from openai.types import chat as openai_types
+from openai.types.completion_usage import CompletionUsage
 
 from .....content import (
     AssistantContentPart,
@@ -23,6 +24,7 @@ from .....responses import (
     FinishReason,
     FinishReasonChunk,
     RawStreamEventChunk,
+    Usage,
 )
 from ...model_id import OpenAIModelId, model_name
 
@@ -32,12 +34,39 @@ OPENAI_FINISH_REASON_MAP = {
 }
 
 
+def _decode_usage(
+    usage: CompletionUsage | None,
+) -> Usage | None:
+    """Convert OpenAI CompletionUsage to Mirascope Usage."""
+    if usage is None:  # pragma: no cover
+        return None
+
+    return Usage(
+        input_tokens=usage.prompt_tokens,
+        output_tokens=usage.completion_tokens,
+        cache_read_tokens=(
+            usage.prompt_tokens_details.cached_tokens
+            if usage.prompt_tokens_details
+            else None
+        )
+        or 0,
+        cache_write_tokens=0,
+        reasoning_tokens=(
+            usage.completion_tokens_details.reasoning_tokens
+            if usage.completion_tokens_details
+            else None
+        )
+        or 0,
+        raw=usage,
+    )
+
+
 def decode_response(
     response: openai_types.ChatCompletion,
     model_id: OpenAIModelId,
     provider_id: Literal["openai", "openai:completions"],
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert OpenAI ChatCompletion to mirascope AssistantMessage."""
+) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
+    """Convert OpenAI ChatCompletion to mirascope AssistantMessage and usage."""
     choice = response.choices[0]
     message = choice.message
     refused = False
@@ -76,7 +105,8 @@ def decode_response(
         raw_message=message.model_dump(exclude_none=True),
     )
 
-    return assistant_message, finish_reason
+    usage = _decode_usage(response.usage)
+    return assistant_message, finish_reason, usage
 
 
 class _OpenAIChunkProcessor:

@@ -21,6 +21,7 @@ from ..tools import (
 from ..types import Jsonable
 from .base_response import BaseResponse
 from .finish_reason import FinishReason
+from .usage import Usage
 
 if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
@@ -42,6 +43,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
+        usage: Usage | None,
     ) -> None:
         """Initialize a `Response`."""
         toolkit = tools if isinstance(tools, Toolkit) else Toolkit(tools=tools)
@@ -56,6 +58,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
         )
 
     def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
@@ -113,6 +116,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
+        usage: Usage | None,
     ) -> None:
         """Initialize an `AsyncResponse`."""
         toolkit = (
@@ -129,6 +133,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
         )
 
     async def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
@@ -195,6 +200,7 @@ class ContextResponse(
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
+        usage: Usage | None,
     ) -> None:
         """Initialize a `ContextResponse`."""
         toolkit = (
@@ -211,6 +217,7 @@ class ContextResponse(
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
         )
 
     def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput[Jsonable]]:
@@ -283,6 +290,7 @@ class AsyncContextResponse(
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
+        usage: Usage | None,
     ) -> None:
         """Initialize an `AsyncContextResponse`."""
         toolkit = (
@@ -301,6 +309,7 @@ class AsyncContextResponse(
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            usage=usage,
         )
 
     async def execute_tools(
