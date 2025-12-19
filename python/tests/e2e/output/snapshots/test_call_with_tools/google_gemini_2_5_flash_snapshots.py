@@ -23,6 +23,13 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=37 candidates_tokens_details=None prompt_token_count=152 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=152
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=189 traffic_type=None\
+""",
+                "total_tokens": 189,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -169,6 +176,13 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=37 candidates_tokens_details=None prompt_token_count=152 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=152
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=189 traffic_type=None\
+""",
+                "total_tokens": 189,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -466,6 +480,8 @@ stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 241,
             },
             "n_chunks": 5,
         }
@@ -646,6 +662,8 @@ For the password "radiance", the secret is: "Life before Death"\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 276,
             },
             "n_chunks": 5,
         }

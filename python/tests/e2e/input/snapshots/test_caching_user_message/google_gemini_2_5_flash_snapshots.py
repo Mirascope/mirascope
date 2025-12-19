@@ -31,10 +31,17 @@ I would not dare "alter the deal" further, for perfection has been achieved. "Th
 """,
         "usage1": {
             "input_tokens": 3797,
-            "output_tokens": 756,
+            "output_tokens": 2244,
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 1488,
+            "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=756 candidates_tokens_details=None prompt_token_count=3797 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=3797
+)] thoughts_token_count=1488 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=6041 traffic_type=None\
+""",
+            "total_tokens": 6041,
         },
         "response2": """\
 "Goooood! Goooood! The Force is strong with this one! You have truly channeled the collective might of the galaxy's finest strategists. This is no mere escape pod; it is a **fully armed and operational battle station**, indeed! My previous assessment now feels like a quaint memory from a long time ago in a galaxy far, far away.
@@ -77,10 +84,17 @@ This expansion is more than sufficient. You have not just altered the deal; you 
 """,
         "usage2": {
             "input_tokens": 3797,
-            "output_tokens": 1025,
+            "output_tokens": 2098,
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 1073,
+            "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=1025 candidates_tokens_details=None prompt_token_count=3797 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=3797
+)] thoughts_token_count=1073 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=5895 traffic_type=None\
+""",
+            "total_tokens": 5895,
         },
     }
 )

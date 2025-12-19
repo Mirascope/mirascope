@@ -20,6 +20,8 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=8, generation_tokens=351, finish_reason='stop')",
+                "total_tokens": 359,
             },
             "messages": [
                 UserMessage(content=[Text(text="")]),

@@ -9,6 +9,8 @@ test_snapshot = snapshot(
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=24, prompt_tokens=3698, total_tokens=3722, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+            "total_tokens": 3722,
         },
         "response2": """\
 Ah, breakfast! The most important meal of the day. A Jedi would tell you this is indeed the first battle to conquer. "Obi-Wan has taught you well" if you start with something balanced. Consider this:
@@ -31,6 +33,8 @@ Ah, breakfast! The most important meal of the day. A Jedi would tell you this is
             "cache_read_tokens": 3584,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=257, prompt_tokens=3702, total_tokens=3959, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=3584))",
+            "total_tokens": 3959,
         },
     }
 )

@@ -18,10 +18,20 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 91,
-                "output_tokens": 8,
+                "output_tokens": 362,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 354,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=8 candidates_tokens_details=None prompt_token_count=91 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=7
+), ModalityTokenCount(
+  modality=<MediaModality.AUDIO: 'AUDIO'>,
+  token_count=84
+)] thoughts_token_count=354 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=453 traffic_type=None\
+""",
+                "total_tokens": 453,
             },
             "messages": [
                 UserMessage(

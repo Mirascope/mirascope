@@ -37,6 +37,8 @@ This is the Way.\
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=4173, output_tokens=422, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 4595,
         },
         "response2": """\
 *adjusts cape dramatically*
@@ -69,6 +71,8 @@ The only thing that could make this more complete would be seasonal/event-specif
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=4173, output_tokens=365, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 4538,
         },
     }
 )

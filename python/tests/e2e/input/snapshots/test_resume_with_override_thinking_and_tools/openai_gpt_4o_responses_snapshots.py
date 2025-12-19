@@ -23,6 +23,8 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=84, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=24, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=108)",
+                "total_tokens": 108,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),

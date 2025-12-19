@@ -20,6 +20,8 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=7, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=26, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=33)",
+                "total_tokens": 33,
             },
             "messages": [
                 UserMessage(content=[Text(text="")]),

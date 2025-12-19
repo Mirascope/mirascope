@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "MLXCassetteResponse(text=' start', token=1191, prompt_tokens=15, generation_tokens=50, finish_reason='length')",
+                "total_tokens": 65,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -58,6 +60,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "MLXCassetteResponse(text=' start', token=1191, prompt_tokens=15, generation_tokens=50, finish_reason='length')",
+                "total_tokens": 65,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -113,6 +117,8 @@ Okay, the user is asking me to list all U.S. states. Let me start by recalling t
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 65,
             },
             "n_chunks": 51,
         }
@@ -150,6 +156,8 @@ Okay, the user is asking me to list all U.S. states. Let me start by recalling t
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 65,
             },
             "n_chunks": 51,
         }

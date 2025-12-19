@@ -16,10 +16,17 @@ sync_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 8,
-                "output_tokens": 93,
+                "output_tokens": 168,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 75,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=93 candidates_tokens_details=None prompt_token_count=8 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=8
+)] thoughts_token_count=75 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=176 traffic_type=None\
+""",
+                "total_tokens": 176,
             },
             "messages": [
                 UserMessage(
@@ -85,10 +92,17 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 8,
-                "output_tokens": 96,
+                "output_tokens": 170,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 74,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=96 candidates_tokens_details=None prompt_token_count=8 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=8
+)] thoughts_token_count=74 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=178 traffic_type=None\
+""",
+                "total_tokens": 178,
             },
             "messages": [
                 UserMessage(
@@ -228,6 +242,8 @@ stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 49,
+                "raw": "None",
+                "total_tokens": 51,
             },
             "n_chunks": 4,
         }
@@ -309,6 +325,8 @@ async_stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 88,
+                "raw": "None",
+                "total_tokens": 78,
             },
             "n_chunks": 4,
         }

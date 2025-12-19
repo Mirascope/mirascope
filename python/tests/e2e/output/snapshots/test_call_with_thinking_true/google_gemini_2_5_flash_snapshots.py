@@ -21,6 +21,13 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=18 candidates_tokens_details=None prompt_token_count=1766 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=1766
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=1784 traffic_type=None\
+""",
+                "total_tokens": 1784,
             },
             "messages": [
                 UserMessage(
@@ -234,6 +241,13 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=6 candidates_tokens_details=None prompt_token_count=297 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=297
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=303 traffic_type=None\
+""",
+                "total_tokens": 303,
             },
             "messages": [
                 UserMessage(
@@ -624,6 +638,8 @@ Therefore, there are 3 such primes.
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 693,
             },
             "n_chunks": 4,
         }
@@ -816,6 +832,8 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 368,
             },
             "n_chunks": 4,
         }

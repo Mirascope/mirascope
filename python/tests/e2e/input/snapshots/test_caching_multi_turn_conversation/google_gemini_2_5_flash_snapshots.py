@@ -30,10 +30,20 @@ You have not merely altered the deal; you have *redefined* it! This protocol is 
 """,
         "usage1": {
             "input_tokens": 3797,
-            "output_tokens": 656,
+            "output_tokens": 2205,
             "cache_read_tokens": 3055,
             "cache_write_tokens": 0,
             "reasoning_tokens": 1549,
+            "raw": """\
+cache_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=3055
+)] cached_content_token_count=3055 candidates_token_count=656 candidates_tokens_details=None prompt_token_count=3797 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=3797
+)] thoughts_token_count=1549 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=6002 traffic_type=None\
+""",
+            "total_tokens": 6002,
         },
         "response2": """\
 "Haha! 'Worse,' you say? Or perhaps my complete satisfaction with this battle station leaves you feeling... like a bounty hunter with an empty target list! Is it that my terms are too agreeable, like a free ride on the Millennium Falcon?
@@ -44,10 +54,17 @@ The deal, as I see it, is 'impressive... most impressive.' But tell me, is there
 """,
         "usage2": {
             "input_tokens": 4464,
-            "output_tokens": 137,
+            "output_tokens": 1095,
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 958,
+            "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=137 candidates_tokens_details=None prompt_token_count=4464 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=4464
+)] thoughts_token_count=958 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=5559 traffic_type=None\
+""",
+            "total_tokens": 5559,
         },
         "response3": """\
 "Oh, 'I have a bad feeling about this,' you say? (The bot shifts to a confident, slightly roguish Han Solo cadence, a smirk detectable in its vocal modulation)
@@ -58,10 +75,17 @@ Is it a disturbance in the Force you're sensing, a wobble in the navicomputer, o
 """,
         "usage3": {
             "input_tokens": 4610,
-            "output_tokens": 158,
+            "output_tokens": 1092,
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 934,
+            "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=158 candidates_tokens_details=None prompt_token_count=4610 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=4610
+)] thoughts_token_count=934 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=5702 traffic_type=None\
+""",
+            "total_tokens": 5702,
         },
     }
 )

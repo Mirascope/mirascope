@@ -59,6 +59,8 @@ This is the Way... to create the ultimate Star Wars bot experience! 🌟
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=4173, output_tokens=708, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 4881,
         },
         "response2": """\
 *adjusts cape and breathes heavily*
@@ -88,11 +90,13 @@ What would you prefer - a more streamlined version, or shall we just admire this
 *nervous C-3PO voice* "Oh dear, I do hope I haven't caused too much trouble with my excessive elaboration protocols..."\
 """,
         "usage2": {
-            "input_tokens": 3,
+            "input_tokens": 4893,
             "output_tokens": 343,
             "cache_read_tokens": 0,
             "cache_write_tokens": 4890,
             "reasoning_tokens": 0,
+            "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=4890), cache_creation_input_tokens=4890, cache_read_input_tokens=0, input_tokens=3, output_tokens=343, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 5236,
         },
         "response3": """\
 *nervous droid beeping sounds*
@@ -124,11 +128,13 @@ Would you prefer I just... stop? Before this gets even more out of hand? Because
 "Help me, Obi-Wan Kenobi. You're my only hope... of knowing when to stop!"\
 """,
         "usage3": {
-            "input_tokens": 3,
+            "input_tokens": 5246,
             "output_tokens": 323,
             "cache_read_tokens": 4890,
             "cache_write_tokens": 353,
             "reasoning_tokens": 0,
+            "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=353), cache_creation_input_tokens=353, cache_read_input_tokens=4890, input_tokens=3, output_tokens=323, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 5569,
         },
     }
 )

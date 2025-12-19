@@ -14,7 +14,6 @@ from anthropic.types.beta import (
     BetaTextBlockParam,
     BetaThinkingBlockParam,
     BetaToolUseBlockParam,
-    BetaUsage,
 )
 from anthropic.types.beta.parsed_beta_message import ParsedBetaMessage
 
@@ -45,26 +44,13 @@ from ....responses import (
     UsageDeltaChunk,
 )
 from ..model_id import model_name
+from .decode import decode_usage
 
 BETA_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
     "refusal": FinishReason.REFUSAL,
     "model_context_window_exceeded": FinishReason.CONTEXT_LENGTH_EXCEEDED,
 }
-
-
-def _decode_usage(
-    usage: BetaUsage,
-) -> Usage:
-    """Convert Anthropic Usage (or BetaUsage) to Mirascope Usage."""
-    return Usage(
-        input_tokens=usage.input_tokens,
-        output_tokens=usage.output_tokens,
-        cache_read_tokens=usage.cache_read_input_tokens or 0,
-        cache_write_tokens=usage.cache_creation_input_tokens or 0,
-        reasoning_tokens=0,
-        raw=usage,
-    )
 
 
 def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantContentPart:
@@ -107,7 +93,7 @@ def beta_decode_response(
         if response.stop_reason
         else None
     )
-    usage = _decode_usage(response.usage)
+    usage = decode_usage(response.usage)
     return assistant_message, finish_reason, usage
 
 

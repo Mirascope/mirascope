@@ -81,6 +81,8 @@ The bot is designed to be both powerful and adaptable, reflecting the essence of
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=3718, generation_tokens=1066, finish_reason='stop')",
+            "total_tokens": 4784,
         },
         "response2": """\
 <think>
@@ -105,6 +107,8 @@ Let me know if you’d like to adjust the bot’s response to address a particul
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=4370, generation_tokens=369, finish_reason='stop')",
+            "total_tokens": 4739,
         },
         "response3": """\
 <think>
@@ -133,6 +137,8 @@ Let me know if you’d like to adjust the bot’s response to address a particul
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=4495, generation_tokens=373, finish_reason='stop')",
+            "total_tokens": 4868,
         },
     }
 )

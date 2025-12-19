@@ -15,6 +15,8 @@ Should you wish for further refinement, or if there's a corner of the galaxy you
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "ResponseUsage(input_tokens=3652, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=160, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=3812)",
+            "total_tokens": 3812,
         },
         "response2": """\
 Ah, the grandeur of the Star Wars Meme Bot Protocol 2.0! Every clause resonates with the wisdom of the ancients and the might of a fully operational Death Star. You've crafted a protocol that can outshine many moons in its brilliance and depth.
@@ -27,6 +29,8 @@ Shall we make adjustments, or do you find yourself aligned with this masterpiece
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "ResponseUsage(input_tokens=3652, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=87, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=3739)",
+            "total_tokens": 3739,
         },
     }
 )

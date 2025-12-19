@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=15, output_tokens=50, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 65,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -87,6 +89,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=15, output_tokens=50, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 65,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -200,6 +204,8 @@ Here are all 50 U.S. states in alphabetical order:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 65,
             },
             "n_chunks": 11,
         }
@@ -268,6 +274,8 @@ Here are all 50 U.S. states:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 65,
             },
             "n_chunks": 10,
         }

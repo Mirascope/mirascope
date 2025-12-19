@@ -35,6 +35,8 @@ Though I must ask... is there a secret Jar Jar emergency protocol hidden somewhe
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=4173, output_tokens=415, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 4588,
         },
         "response2": """\
 *adjusts cape with sinister satisfaction*
@@ -89,11 +91,13 @@ Is THIS the chaos you were seeking, or shall I continue to make this deal worse?
 *breathes heavily through imaginary respirator*\
 """,
         "usage2": {
-            "input_tokens": 3,
+            "input_tokens": 4600,
             "output_tokens": 588,
             "cache_read_tokens": 0,
             "cache_write_tokens": 4597,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=4597), cache_creation_input_tokens=4597, cache_read_input_tokens=0, input_tokens=3, output_tokens=588, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 5188,
         },
         "response3": """\
 *suddenly stops mid-cackle and straightens up*
@@ -123,11 +127,13 @@ Is THIS the chaos you were seeking, or shall I continue to make this deal worse?
 The Force has brought balance once again. "This is the way" it should be.\
 """,
         "usage3": {
-            "input_tokens": 3,
+            "input_tokens": 5198,
             "output_tokens": 350,
             "cache_read_tokens": 4597,
             "cache_write_tokens": 598,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=598), cache_creation_input_tokens=598, cache_read_input_tokens=4597, input_tokens=3, output_tokens=350, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 5548,
         },
     }
 )

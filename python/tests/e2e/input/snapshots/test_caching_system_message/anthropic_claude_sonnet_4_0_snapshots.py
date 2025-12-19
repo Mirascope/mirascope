@@ -18,11 +18,13 @@ This is where the fun begins! How may this humble astromech... er, *protocol* dr
 *awaits transmission with the patience of Obi-Wan and the enthusiasm of R2-D2*\
 """,
         "usage1": {
-            "input_tokens": 8,
+            "input_tokens": 4175,
             "output_tokens": 204,
             "cache_read_tokens": 0,
             "cache_write_tokens": 4167,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=4167), cache_creation_input_tokens=4167, cache_read_input_tokens=0, input_tokens=8, output_tokens=204, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 4379,
         },
         "response2": """\
 *adjusts imaginary protocol droid posture*
@@ -48,11 +50,13 @@ Remember: "Do or do not, there is no try" - so whatever you choose, commit to it
 What sounds good to your taste sensors, Commander? The Force will guide your decision... but so will your refrigerator's current inventory levels.\
 """,
         "usage2": {
-            "input_tokens": 12,
+            "input_tokens": 4179,
             "output_tokens": 350,
             "cache_read_tokens": 4167,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=4167, input_tokens=12, output_tokens=350, server_tool_use=None, service_tier='standard')",
+            "total_tokens": 4529,
         },
     }
 )

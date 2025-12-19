@@ -17,10 +17,17 @@ sync_snapshot = snapshot(
             "finish_reason": FinishReason.MAX_TOKENS,
             "usage": {
                 "input_tokens": 9,
-                "output_tokens": 10,
+                "output_tokens": 48,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 38,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=10 candidates_tokens_details=None prompt_token_count=9 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=9
+)] thoughts_token_count=38 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=57 traffic_type=None\
+""",
+                "total_tokens": 57,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -63,10 +70,17 @@ async_snapshot = snapshot(
             "finish_reason": FinishReason.MAX_TOKENS,
             "usage": {
                 "input_tokens": 9,
-                "output_tokens": 17,
+                "output_tokens": 48,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 31,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=17 candidates_tokens_details=None prompt_token_count=9 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=9
+)] thoughts_token_count=31 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=57 traffic_type=None\
+""",
+                "total_tokens": 57,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -152,6 +166,8 @@ stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 38,
+                "raw": "None",
+                "total_tokens": 19,
             },
             "n_chunks": 3,
         }
@@ -208,6 +224,8 @@ Here are all 50 U.S. states, listed alphabetically:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 32,
+                "raw": "None",
+                "total_tokens": 24,
             },
             "n_chunks": 3,
         }

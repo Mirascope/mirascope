@@ -23,6 +23,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=136, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=30, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=166)",
+                "total_tokens": 166,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -159,6 +161,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=136, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=28, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=164)",
+                "total_tokens": 164,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -412,6 +416,8 @@ Here are the secrets associated with each password:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 168,
             },
             "n_chunks": 32,
         }
@@ -548,6 +554,8 @@ Here are the secrets:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 164,
             },
             "n_chunks": 28,
         }

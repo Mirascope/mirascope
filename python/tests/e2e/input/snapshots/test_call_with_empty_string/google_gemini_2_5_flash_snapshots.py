@@ -16,10 +16,17 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 1,
-                "output_tokens": 2000,
+                "output_tokens": 6658,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 4658,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=2000 candidates_tokens_details=None prompt_token_count=1 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=1
+)] thoughts_token_count=4658 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=6659 traffic_type=None\
+""",
+                "total_tokens": 6659,
             },
             "messages": [
                 UserMessage(content=[Text(text="")]),
