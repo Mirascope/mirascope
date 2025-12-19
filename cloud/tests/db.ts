@@ -54,6 +54,8 @@ export const TestDatabase: Layer.Layer<DatabaseService> = Layer.scoped(
     const sql = postgres(TEST_DATABASE_URL, {
       max: 5,
       fetch_types: false,
+      // Suppress PostgreSQL NOTICE messages (e.g., identifier truncation, type skipping)
+      onnotice: () => {},
     });
     const db = drizzle(sql, { schema });
 
