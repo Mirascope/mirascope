@@ -17,6 +17,8 @@ export const projectRoleEnum = pgEnum("project_role", [
 ]);
 export const PROJECT_ROLE_VALUES = projectRoleEnum.enumValues;
 
+export type ProjectRole = (typeof projectRoleEnum.enumValues)[number];
+
 export const projectMemberships = pgTable(
   "project_memberships",
   {
