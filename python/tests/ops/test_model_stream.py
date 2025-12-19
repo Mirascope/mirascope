@@ -93,6 +93,8 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
                 "gen_ai.system_instructions": '[{"type":"text","content":"Use parallel tool calling."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Please retrieve the secrets associated with each of these passwords: mellon,radiance"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"tool_call","id":"call_tVwplip8EyrgMsD2ZarNBIFJ","name":"secret_retrieval_tool","arguments":{"password":"mellon"}},{"type":"tool_call","id":"call_MHKI6t2Q3p5qwBAm21ysBMIc","name":"secret_retrieval_tool","arguments":{"password":"radiance"}}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 36,
+                "gen_ai.usage.output_tokens": 54,
             },
         }
     )
@@ -149,6 +151,8 @@ def test_model_stream_with_json_format(
                 "gen_ai.system_instructions": '[{"type":"text","content":"Always respond to the user\'s query using the __mirascope_formatted_output_tool__ tool for structured output."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Please recommend the most popular book by Patrick Rothfuss"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"{\\"title\\":\\"THE NAME OF THE WIND\\",\\"author\\":{\\"first_name\\":\\"Patrick\\",\\"last_name\\":\\"Rothfuss\\"},\\"rating\\":7}"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 170,
+                "gen_ai.usage.output_tokens": 30,
             },
         }
     )
@@ -269,6 +273,8 @@ def test_model_stream_with_none_parameters(
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 4200 + 42?"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 = 4242"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 16,
+                "gen_ai.usage.output_tokens": 10,
             },
         }
     )
@@ -304,6 +310,8 @@ def test_model_stream_records_response_id(
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 4200 + 42?"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 equals 4242."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 16,
+                "gen_ai.usage.output_tokens": 11,
             },
         }
     )

@@ -58,6 +58,8 @@ async def test_model_context_call_async_exports_genai_span(
                 "gen_ai.system_instructions": '[{"type":"text","content":"You are a concise assistant."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello to the user named Kai."}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello, Kai! How can I assist you today?"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 25,
+                "gen_ai.usage.output_tokens": 12,
             },
         }
     )

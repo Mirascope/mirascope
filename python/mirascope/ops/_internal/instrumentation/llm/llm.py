@@ -327,7 +327,13 @@ def _attach_response(
         key=GenAIAttributes.GEN_AI_OUTPUT_MESSAGES,
         payload=snapshot.outputs,
     )
-    # TODO: Emit gen_ai.usage metrics once Response exposes provider-agnostic usage fields.
+    if response.usage is not None:
+        span.set_attribute(
+            GenAIAttributes.GEN_AI_USAGE_INPUT_TOKENS, response.usage.input_tokens
+        )
+        span.set_attribute(
+            GenAIAttributes.GEN_AI_USAGE_OUTPUT_TOKENS, response.usage.output_tokens
+        )
 
 
 _ORIGINAL_MODEL_CALL = Model.call
