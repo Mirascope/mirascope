@@ -18,8 +18,8 @@ test_snapshot = snapshot(
             "params": {"thinking": False},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 107,
-                "output_tokens": 38,
+                "input_tokens": 122,
+                "output_tokens": 32,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -29,10 +29,11 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Thought(
-                            thought='The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.'
+                            thought='The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the value n=100, so I have all the required parameters to make the function call.'
                         ),
+                        Text(text="I'll compute the 100th Fibonacci number for you."),
                         ToolCall(
-                            id="toolu_01MnLnuRr9SYqk4Nt4zvBopq",
+                            id="toolu_01KXqBWRjCb92pEDLMwsfkPX",
                             name="compute_fib",
                             args='{"n": 100}',
                         ),
@@ -44,12 +45,17 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "ErQDCkYICRgCKkC1U5aLDccw6hfKtcWrClCTiZ6M12W9sfSIILD3F5gCggCOaELdyMLcXBM4QIU+YK9MZn5ZMu5v1Rx8ibkKyrbXEgxN0vJibplcGc6LU58aDI1emmpMRP8L7LzYaiIwmx+BjJtfz6CmWato1sgn/SInbtCLCoMAWXe51nSsFPtvUqF4qeOxliYQQjcxG6HOKpsC+PFTKFloh3uZJU18TX8i9GvZOe6UvoO10NdIZflTrRoBEZIPkGEh0X/8L2qD/ZyWKM+u2N0V7DzcEy+RA0Bczo+pzYmTJQo/xYrg+tOon3aboix8zWZvzolQatvxG9YIUhK8NtPTsFpOOFHmcCb2/Ap+piNfT3AWzKTy3h23Daaz6srxOuaHaW03t3vS4x24pMMrIleTbUcKFa7e+Uh7dSmrwZO5zBxo6RjauZvz5fV/Hz6LOYGHPC8uQ6fSAOgA1wQaRNvcdVHZVdvbWAxfhXoKCEOIRQB1KrqNa/sbo+ru6uXPeBsetHrRmLO8ZU3ZghgLpSrKKWvrdG01frZVS6+fgtdr3alTVsIhyIxXichJxe38IzvsTJyV2RgB",
-                                "thinking": 'The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.',
+                                "signature": "EqsDCkYIChgCKkBT7oIGohP32ulgcIefSb6/LPBH9l4slTP8rDj/vjx/hHXP0qrU3q3UzFaJ9CdIMPgGA9N8UPCQjrDhhYPhtcMNEgxx9fRkZRRt8VpES1IaDONKBKhOfArHjrsRryIwsOB8tMXns1xHKuiw5nUVxrmgKG7aSUgVkLiTzc7ajNlewQckFNFyvXlrsIrd6138KpICXwjymuKI6f2oYEiSOhuqTvAMEaDsCAintBHezS3JnzDdoQmm3C5c8EXngKE1GBbPh88FKoAYp+gJAtKmLa3vplE7sKqpdDOeoERLOFC0s0PE/LM+YSm0LjBZ/xJym7M2iU1np2mCo1xE0UUpCVbhqHTMHfCL6xozo2glBCZXhYkpBYEG8f/6vIOEb5vf7Cuy64J4PYKeUDCMShp6gNcS3AX5MDivzDMyurrHD55522AmFMYn+shYMeJoth8g+DpwLAtgrgc6gVieAOMBg9xLcKiMOYhxPCHQ0djjlge3sZ6ehUK9zPAyVV4rOY1TbwhBbo4fiXL5eHwrD3/WUdhXOGGOZVkZ+i5PQShbkRfD59GZ1hgB",
+                                "thinking": 'The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the value n=100, so I have all the required parameters to make the function call.',
                                 "type": "thinking",
                             },
                             {
-                                "id": "toolu_01MnLnuRr9SYqk4Nt4zvBopq",
+                                "citations": None,
+                                "text": "I'll compute the 100th Fibonacci number for you.",
+                                "type": "text",
+                            },
+                            {
+                                "id": "toolu_01KXqBWRjCb92pEDLMwsfkPX",
                                 "input": {"n": 100},
                                 "name": "compute_fib",
                                 "type": "tool_use",
@@ -60,7 +66,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01MnLnuRr9SYqk4Nt4zvBopq",
+                            id="toolu_01KXqBWRjCb92pEDLMwsfkPX",
                             name="compute_fib",
                             value="218922995834555169026",
                         )
@@ -69,7 +75,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The 100th Fibonacci number is 218,922,995,834,555,169,026."
+                            text="The 100th Fibonacci number is 218922995834555169026."
                         )
                     ],
                     provider_id="google",
@@ -84,7 +90,7 @@ test_snapshot = snapshot(
                                 "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
-                                "text": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                                "text": "The 100th Fibonacci number is 218922995834555169026.",
                                 "thought": None,
                                 "thought_signature": None,
                                 "video_metadata": None,

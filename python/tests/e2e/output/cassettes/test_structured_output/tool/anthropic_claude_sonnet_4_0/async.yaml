@@ -1,14 +1,14 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Always
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
       respond to the user''s query using the __mirascope_formatted_output_tool__ tool
-      for structured output.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      for structured output.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
       a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
       testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
       author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
-      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"}}]}'
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -19,13 +19,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1118'
+      - '1217'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - AsyncAnthropic/Python 0.64.0
+      - AsyncAnthropic/Python 0.75.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -35,7 +35,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -51,16 +51,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJHdbhMxEIVfJZprR9otCT++QzRQJFpoiGgEQtbIO9m1uuvZeMaoEO27
-        V04JVUHc2ec7M2c8PsDADfVgwfeYG5oLx0g6X8zPqrNltawXYCA0YGGQ1lX1q4vt3V5v1l9W8o7u
-        iLsPb9rPCAb050jFRSLYEhhI3BcBRYIoRgUDnqNSVLDfDie/MvcuC51Syj27qt42Ie4vN+1m262v
-        V8PI51+vF7/AQMSh1Dk3hITieSS34zSgKjWOs45Z3bGpKy3jmBXsATTocZrNxWp29fpyNfv4dlbO
-        N++vzsEAZu04FeMuJFH3O+QTagr+Fgz0+KiuWbtdFoHJQEINsQX7Ypq+GxDl0SVC4fj0aUcgtM8U
-        PYGNue8N5OOi7OFhSqd8S1HALp8/M+DRd+R8ItTA0T11VCeeCJv/sVNtCaCxo4ES9m45/Ot/pHX3
-        N50M/Nnpg/SyNiCUfgRPTgMlsFC+t8HUwDTdAwAA//8DAP/m4pNPAgAA
+        H4sIAAAAAAAA/3VRXU/DMAz8K1OeN2kdKx99m8QQH2PABpoGQlFo3TVam5TYQaCp/x2nMKaBeIvv
+        zj77shGVzaAUiUhL5TPooTUGqDfsDfqDuB9HQ9EVOmO+wpXsRxMXr+dXK8Tx5RKXo/kgf5+ZnDX0
+        UUNQAaJaAQPOlgFQiBpJGWIotYaAX8nTZqsna0vpEbYuofbsc1a92NEsv5uf4PBhMXiMJnqeL1ll
+        VBX6pKy0U5jaGmRuXaWIIJPWU+1JtkNlGGm4FAm7aWq3uT8fd6aj63Hn5qwT3ouL6SnrlKfCuiDM
+        tUOS3ya3ipxO1ywo1Q6dWSpyjygaPlKRNiuRHDXNc1cg2Vo6UJzh/mktgfDqwaQ8wviy7ArfBsWe
+        7Za89BoMiiQ+POCkVFqATHkWaWvkvqK/5ZnO/uO2vcEA6gIqcKqUcfVXv2Oj4jfLJ/5k+gUdR3wO
+        uDedgiQNHJoI35spl4mm+QQl7azpTwIAAA==
     headers:
+      CF-Cache-Status:
+      - DYNAMIC
       CF-RAY:
-      - 99026d38696c7604-SEA
+      - 9b0278794ef43295-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,11 +70,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 20:08:15 GMT
+      - Thu, 18 Dec 2025 23:34:24 GMT
       Server:
       - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
+      Vary:
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -82,35 +88,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-17T20:08:14Z'
+      - '2025-12-18T23:34:23Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-17T20:08:15Z'
+      - '2025-12-18T23:34:24Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-17T20:08:12Z'
+      - '2025-12-18T23:34:23Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-17T20:08:14Z'
-      cf-cache-status:
-      - DYNAMIC
+      - '2025-12-18T23:34:23Z'
       request-id:
-      - req_011CUDNiKX4XXW2SNpECz95o
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
+      - req_011CWF2awY9auoJasQ6uqkgH
       x-envoy-upstream-service-time:
-      - '2354'
+      - '1407'
     status:
       code: 200
       message: OK

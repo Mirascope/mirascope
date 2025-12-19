@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","system":"Respond
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Respond
       only with valid JSON that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\":
       {\n      \"description\": \"The author of a book.\",\n      \"properties\":
       {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
@@ -14,7 +14,7 @@ interactions:
       {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
       \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
       \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
-      \"Book\",\n  \"type\": \"object\"\n}"}'
+      \"Book\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -25,7 +25,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1248'
+      - '1310'
       content-type:
       - application/json
       host:
@@ -57,18 +57,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJHRahsxEEV/ZbnPMthOnNZ6K8RuSpO0lEAfqqAVuxOv6t2RK41Kjdl/
-        L3Jt2iT0ScM950qgOWAILfXQaHqXW5qkwEwyuZwsJvPpfDFdzpdQ8C00hrSx09mDyO1+tf14eRXX
-        i264ad/vl+sZFGS/o2JRSm5DUIihL4FLySdxLFBoAguxQH87nH2hX4UcD426rr+nwIYPhqvKQLz0
-        ZKArg4ebVXX/7m5VfVpXZf764f7aQP3xXJYuxCIeiyV68jGJZTec+p+dRN9sT5Vi9O6Z8CVI95RT
-        MijCeLo5OvG8KcYbw6Phuq4xPiokCTsbyaXA0CBureTIOIFEPzJxQ9Cc+14hH/9EH+B5l8VK2BIn
-        6Iv5W4XGNR3ZJpITH9g+N6ZnHsm1/2PnbnmAdh0NFF1vF8Nr/y+ddS/pqBCy/BtdXSgkij99Q1Y8
-        RWiUTbYuthjH3wAAAP//AwAX33vLPAIAAA==
+        H4sIAAAAAAAA/3WR0U/CMBDG/5XlnkeCICp7I4pRElEJ6oMzpW4Hq2xXbK+oIfvfbXFE0fjUy/f9
+        rv3uuoFK51hCAlkpXY4tq4mQW4etXqvT7vTa/U4fYlC5Jyq7EO2DwWR0OhxUd/R2O71fV6P+XLJ8
+        9gx/rDBQaK1coBeMLoMgrVWWJbGXMk2MvkoeNzue8T042yOB2Wz24iOktEkpilJgxSWmkPhyejGM
+        xoOrYXR9HoX64XJ8lkL8xUnHhTYB3DYGaa6MZUGyavpvJBuVLZuWQJRyD5hoLubO2hQCUDc3G8mK
+        FoE4TqlOySeE+ikGy3olDEqf1udGygU7Q9AYFl8dUuYHJFeWMbjtTpINKFo5FqyXSBaSbufEL0Vm
+        BYrM38VKk9gn2jvf2/l/3q43PICrAis0shS96i//7R4Uv906Bu34p3TU9eOgWasMBSs0ftDwk7k0
+        OdT1J25UwMc8AgAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
-      CF-Ray:
-      - 9af063c738c5838c-SEA
+      CF-RAY:
+      - 9b027860e9fa8392-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -76,7 +76,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Dec 2025 18:54:34 GMT
+      - Thu, 18 Dec 2025 23:34:22 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -84,7 +84,7 @@ interactions:
       Transfer-Encoding:
       - chunked
       Vary:
-      - Accept-Encoding
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -94,29 +94,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-16T18:54:33Z'
+      - '2025-12-18T23:34:21Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-16T18:54:34Z'
+      - '2025-12-18T23:34:22Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-16T18:54:31Z'
+      - '2025-12-18T23:34:19Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-16T18:54:33Z'
+      - '2025-12-18T23:34:21Z'
       request-id:
-      - req_011CWAsdM4kGfMZ6HLA6Uwvg
+      - req_011CWF2aesHsYGjBpbJzcvuU
       x-envoy-upstream-service-time:
-      - '3063'
+      - '3378'
     status:
       code: 200
       message: OK

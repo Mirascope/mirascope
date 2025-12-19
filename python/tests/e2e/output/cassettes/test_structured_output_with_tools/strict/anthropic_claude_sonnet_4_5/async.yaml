@@ -4,7 +4,7 @@ interactions:
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
       score"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
       Year"}},"additionalProperties":false,"required":["title","author","pages","publication_year"]},"type":"json_schema"},"tools":[{"name":"get_book_info","description":"Look
-      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}}]}'
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -17,7 +17,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '795'
+      - '832'
       content-type:
       - application/json
       host:
@@ -39,11 +39,11 @@ interactions:
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '0'
+      - '1'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.13.3
+      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
@@ -51,17 +51,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VQ3UrDMBR+l1w30HZr1+5OQXejIhvCnEjImuMamia1STal9N09GRSd4l3y/fKd
-        gbRGgCJLUinuBVBrtAZH5zSjaZxmcZmWJCJSoKK1BxYnJc/T5iq/2a3lfblfrIrNZv58ixr32UFQ
-        gbX8AAj0RgWAWyut49ohVBntAF/Ll2HSO2MU8xamlvD32HPXQnHaCfHxcFptm8f1tWvk0xFVmrfB
-        dwDH9sY0TOo3E8y68xg8EGn3GvmYLvJsRpNkUdAtGcfXiFhnOtYDx42XxWfCwrsHXWG29kpFxJ9n
-        hMCQzJxpQFuyLLI57uBVDazCLCeNZpeKeOKRFv9xkzcUQFdDCz1XLGv/6r/ZpP7NjhEx3v2E8hnO
-        gf4oK2BOQo9Dw/EF7wUe4QuQGdZx7wEAAA==
+        H4sIAAAAAAAA/3VQW0vDMBT+L3luoe2adtvjmJcHFeaDeEFClh67uDSnNokwRv+7J4OiU3xLvivf
+        ObIOGzBsyZSRoYHUobXg0zLlaZEVPFsUC5Yw3ZCic63I8vrhsNgUt9Xqvnz2l/l65p7KXJHGH3qI
+        KnBOtkDAgCYC0jntvLSeIIXWA72WL8dJ7xGNCA6mlvgP1LOWfNXyiw2+twXW1zdXvqjmd6Sysou+
+        FrzYIu6Ftm8YzbYPFHxk2m0t8VlaV3yW5nk9Tx/ZOL4mzHnsxQCSNp4XnwgHHwGsomwbjElYOM2I
+        gTFZeNyDdWw55yXtkGoHQlGW12jFuSKbeKKb/7jJGwug30EHgzSCd3/132y++82OCcPgf0LVjObA
+        8KkVCK9hoKHx+I0cGjrCF53U0g3vAQAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 9af35476ae98268b-NRT
+      - 9b027b96be2b30a0-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,7 +69,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Dec 2025 03:28:27 GMT
+      - Thu, 18 Dec 2025 23:36:33 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -87,40 +87,40 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-17T03:28:25Z'
+      - '2025-12-18T23:36:32Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-17T03:28:27Z'
+      - '2025-12-18T23:36:33Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-17T03:28:21Z'
+      - '2025-12-18T23:36:30Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-17T03:28:25Z'
+      - '2025-12-18T23:36:32Z'
       request-id:
-      - req_011CWBYoxghHR8PiWS8mAYYT
+      - req_011CWF2kM41iVZG64achtYst
       x-envoy-upstream-service-time:
-      - '5422'
+      - '3306'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"id":"toolu_01Lme8wZddxNwGXkPRBtkiUv","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01Lme8wZddxNwGXkPRBtkiUv","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_01Da5Bg5EQojg2o7HLGt268N","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01Da5Bg5EQojg2o7HLGt268N","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
-      2006-07-25"}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
+      2006-07-25","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"BookSummary","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"pages":{"type":"integer","title":"Pages"},"publication_year":{"type":"integer","title":"Publication
       Year"}},"additionalProperties":false,"required":["title","author","pages","publication_year"]},"type":"json_schema"},"tools":[{"name":"get_book_info","description":"Look
-      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}}]}'
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -133,7 +133,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1148'
+      - '1222'
       content-type:
       - application/json
       host:
@@ -159,7 +159,7 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.13.3
+      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
@@ -167,17 +167,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3WRb0vDMBCHv0q51y10dRXadwrz3QZOwYmTkqXHGkyTmlxks/S7e+0c/sNXSe55
-        Lrkf6aG1NWooQWoRaky8NQYpmSd5kqVZnhZZATGomo3W76t0VqxuD7SRS/OwXjyuN6ur7v2wkezQ
-        scPRQu/FHrngrB4LwnvlSRjikrSGkHflU3/2CQ8jmZYS+i2QIo1bKKMtLLlxZ50po/sGoxtlhI4W
-        bacc85i5CNRYd3KvnTC1NdEdL+g4xknpeBY/Gvl8Pp3DTispSFlTHVFMzVmaXg4wPMfgyXaVQ8Ht
-        PAyauqLgDHwCj68BjeSpTdA6hjAFLXtQpgtUkX1B46EsLmecVMgGK8l3TU/9NNIzZ1z/x8694wPY
-        NdiiE7rK27/+F501v+kQgw30vXRRcBx0b0piRQodBx2/pxauhmH4AC/PDvARAgAA
+        H4sIAAAAAAAA/3WRTU/DMAyG/0rlcyd1ZUVqjxPjAAMJbRfEUJU11hpIky5xJkbV/47bMfElTkn8
+        PE78Kh00VqKGAiotgsSJt8YgTWaTbJImaZbkaQ4xKMlG43dlMn3Arbx/vFosDy/79W12875cNX7O
+        Dh1bHCz0XuyQC87qoSC8V56EIS5V1hDyrnjqzj7h20DGpYBuA6RI4waKaAN33Li1zhTRusboWhmh
+        o0XTKsc8Zi4C1dad3LkTRloTrXhBxzFOSsuz+MHIZrPxHLZaVYKUNeURxdicJsllD/1zDJ5sWzoU
+        3M7DoJElBWfgE3jcBzQVT22C1jGEMWjRgTJtoJLsKxoPRX455aSiqrGs+K7xqZ9GcuaM5X/s3Ds8
+        gG2NDTqhy6z563/Raf2b9jHYQN9LFznHQXdQFZak0HHQ4XukcBL6/gM3q3H9EQIAAA==
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 9af35499cd7d268b-NRT
+      - 9b027bac6c5d30a0-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -185,7 +185,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Dec 2025 03:28:31 GMT
+      - Thu, 18 Dec 2025 23:36:37 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -203,29 +203,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-17T03:28:30Z'
+      - '2025-12-18T23:36:35Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-17T03:28:31Z'
+      - '2025-12-18T23:36:37Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-17T03:28:27Z'
+      - '2025-12-18T23:36:34Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-17T03:28:30Z'
+      - '2025-12-18T23:36:35Z'
       request-id:
-      - req_011CWBYpNg5g5B2HCZSiQ2xE
+      - req_011CWF2kbuj5xZ9BPfw3jCJj
       x-envoy-upstream-service-time:
-      - '4653'
+      - '3149'
     status:
       code: 200
       message: OK

@@ -4,7 +4,7 @@ interactions:
       What is 2 + 3, using the custom addition tool??"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
       simple response for testing.","title":"IntegerAdditionResponse","properties":{"integer_a":{"type":"integer","title":"Integer
       A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"},"tools":[{"name":"customAdditionImplementation","description":"Perform
-      computation on integers.","input_schema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"}}]}'
+      computation on integers.","input_schema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -17,7 +17,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '810'
+      - '847'
       content-type:
       - application/json
       host:
@@ -51,17 +51,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VRy07DMBD8F58TKU2JaHOroC1wAsQbIcuxV41VP4IfharKv7OOFEFB3LwzszMe
-        7YFoK0CRmnDFooDcW2Mg5Cd5lZdFWRXzck4yIgUqtN/QYrJomqbcfdxe7LbLG/Gwd7CcvNyjJuw7
-        SCrwnm0AAWdVApj30gdmAkLcmgD4ql8Poz5Yq2j0MKakOWLO9ZWtVk/P+7tpezZbGyvPH9efK1QZ
-        ptMejz5YvRBCBmnNpe4UaLRmaUpepouYcyCM1GVGGlJP+/4tI7jUUQcMex6HD4SH9wiGo7+JSmUk
-        DlXQZbCjwW7BeFLPqil2YbwFytErRdJjRTHySIv/uHE3BUDX4v8dU7TSf/Xf7KT9zfYZsTH8hE6x
-        sAe3kxxokOCwaDqAYE6Qvv8Cp30DUfMBAAA=
+        H4sIAAAAAAAA/3VRXUvDQBD8L/ucQJo21OatKFTFh4qVQkWO693SBO8j3kdBQv67e4GgVfp2OzM7
+        c8P2oK1EBTUIxaPE3FtjMOSLvMrLoqyKVbmCDFpJCu1PrJitV2K7i/P94vl298i3slkeRflCmvDV
+        YVKh9/yEBDirEsC9b33gJhAkrAlIr/qtn/TBWsWixyklzTHlHBabrY5+tj8YdHev5/Pu6X5DKsN1
+        2hPRB6vXUrahteZBdwo1WfM0JS/TRcrpgUNdZnCEej4M7xnQUscccup5GT4SHj8jGkH+JiqVQRyr
+        kMtox4L9QOOhvqnm1IWLBpkgrxTJLhXFxBMtr3HTbgrArqH/O65Ypf/rf9hZ85cdMrAx/IaWVNij
+        O7cCWWjRUdF0AMmdhGH4Bhk4Yh/zAQAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 9af205a7efe2e945-SEA
+      - 9b026fcc3eef76c1-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,7 +69,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Dec 2025 23:40:03 GMT
+      - Thu, 18 Dec 2025 23:28:42 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -87,38 +87,38 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-16T23:40:02Z'
+      - '2025-12-18T23:28:41Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-16T23:40:03Z'
+      - '2025-12-18T23:28:42Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-16T23:39:47Z'
+      - '2025-12-18T23:28:27Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-16T23:40:02Z'
+      - '2025-12-18T23:28:41Z'
       request-id:
-      - req_011CWBFP4S3oZ29bBVqenFV5
+      - req_011CWF28kDXx8acCDKjAwpji
       x-envoy-upstream-service-time:
-      - '15379'
+      - '14894'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Answer this question:
-      What is 2 + 3, using the custom addition tool??"},{"role":"assistant","content":[{"id":"toolu_01PJo5FXYyT3hC8GnoiDWGxF","input":{"a":2,"b":3},"name":"customAdditionImplementation","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01PJo5FXYyT3hC8GnoiDWGxF","content":"13"}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
+      What is 2 + 3, using the custom addition tool??"},{"role":"assistant","content":[{"id":"toolu_01AZ4GPmus1WZnerDUvvTLHG","input":{"a":2,"b":3},"name":"customAdditionImplementation","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01AZ4GPmus1WZnerDUvvTLHG","content":"13","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
       simple response for testing.","title":"IntegerAdditionResponse","properties":{"integer_a":{"type":"integer","title":"Integer
       A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"},"tools":[{"name":"customAdditionImplementation","description":"Perform
-      computation on integers.","input_schema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"}}]}'
+      computation on integers.","input_schema":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -131,7 +131,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1074'
+      - '1148'
       content-type:
       - application/json
       host:
@@ -165,17 +165,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3WQTW+DMAyG/0rlM0hAywGuO0zatDOb1ilKiQdoIWGJ025C/Pc51VD3oZ6SvM8T
-        x84Mo1WooYZWy6Aw9dYYpHSXlmmRFWVWFRUkMCg2Rt+JLL8NN4+73DWH02vz0If7pyY3xzt26HPC
-        aKH3skMOnNUxkN4PnqQhjlprCHlXP8+rT/gRyXmpYd7DwEqHTsg91Jsi2VySQ0y2MZHGn9DFY75d
-        YHlJwJOdhEPJ/XMZNEpQcAa+gcf3gKbl90zQOoFwbrGeufQUSJB9Q+OhrrYV9yjbHkXLtWiwRvw2
-        spUzVtfYejc+gFOPIzqpRTn+9y807//SJQEb6GdUlDwOuuPQoqABHQ8aP1ZJp2BZvgCOLNdTywEA
-        AA==
+        H4sIAAAAAAAA/3WQTUvEMBCG/8oy5xa6rUXbm+BBPCmiiK6E2Axt3DbpJhM/KP3vThbL+sGekrzP
+        k8lMJhiswh5qaHoZFKbeGoOUnqRlmmd5mVV5BQloxcbgW5GtL093ZX6h7+/Oy9frx+7m6nZ7Fh7Y
+        oc8Ro4XeyxY5cLaPgfRee5KGOGqsIeRd/TQtPuFHJPulhmkDmpUWnZAbqFd5sjokLzEpYiKNf0cX
+        j+tihvk5AU92FA4l989l0ChBwRn4Bh53AU3D75nQ9wmEfYv1xKXHQILsFo2Huioq7lE2HYqGa5G2
+        Rvw2soUzVsfYcjc+gGOHAzrZi3L47x/ouvtL5wRsoJ9RXvI46N50g4I0Oh40fqySTsE8fwGUUimF
+        ywEAAA==
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 9af20608aae7e945-SEA
+      - 9b02702a9f4376c1-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -183,7 +183,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Dec 2025 23:40:07 GMT
+      - Thu, 18 Dec 2025 23:28:45 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -201,29 +201,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-16T23:40:06Z'
+      - '2025-12-18T23:28:44Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-16T23:40:07Z'
+      - '2025-12-18T23:28:45Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-16T23:40:03Z'
+      - '2025-12-18T23:28:42Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-16T23:40:06Z'
+      - '2025-12-18T23:28:44Z'
       request-id:
-      - req_011CWBFQCbxVZXEkiWLXEvp9
+      - req_011CWF29rjj7SRcALeChV66v
       x-envoy-upstream-service-time:
-      - '4152'
+      - '2761'
     status:
       code: 200
       message: OK

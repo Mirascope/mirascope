@@ -18,7 +18,7 @@ sync_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 606,
+                "input_tokens": 602,
                 "output_tokens": 39,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
@@ -36,15 +36,15 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="I'll retrieve the secrets for both passwords you provided using parallel tool calls."
+                            text="I'll retrieve the secrets for both passwords you provided."
                         ),
                         ToolCall(
-                            id="toolu_014izkyodyDgp24saPHZbk9B",
+                            id="toolu_01BUvqBj8Yb34pNAbCJJY1oc",
                             name="secret_retrieval_tool",
                             args='{"password": "mellon"}',
                         ),
                         ToolCall(
-                            id="toolu_01R74iW4gYeDvEFhkSDpgBXV",
+                            id="toolu_01VPuQJ1LonDBYXrr8pqPkqQ",
                             name="secret_retrieval_tool",
                             args='{"password": "radiance"}',
                         ),
@@ -57,17 +57,17 @@ sync_snapshot = snapshot(
                         "content": [
                             {
                                 "citations": None,
-                                "text": "I'll retrieve the secrets for both passwords you provided using parallel tool calls.",
+                                "text": "I'll retrieve the secrets for both passwords you provided.",
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_014izkyodyDgp24saPHZbk9B",
+                                "id": "toolu_01BUvqBj8Yb34pNAbCJJY1oc",
                                 "input": {"password": "mellon"},
                                 "name": "secret_retrieval_tool",
                                 "type": "tool_use",
                             },
                             {
-                                "id": "toolu_01R74iW4gYeDvEFhkSDpgBXV",
+                                "id": "toolu_01VPuQJ1LonDBYXrr8pqPkqQ",
                                 "input": {"password": "radiance"},
                                 "name": "secret_retrieval_tool",
                                 "type": "tool_use",
@@ -78,12 +78,12 @@ sync_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_014izkyodyDgp24saPHZbk9B",
+                            id="toolu_01BUvqBj8Yb34pNAbCJJY1oc",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="toolu_01R74iW4gYeDvEFhkSDpgBXV",
+                            id="toolu_01VPuQJ1LonDBYXrr8pqPkqQ",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -156,7 +156,7 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 606,
-                "output_tokens": 38,
+                "output_tokens": 35,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -176,12 +176,12 @@ async_snapshot = snapshot(
                             text="I'll retrieve the secrets for both passwords using the secret retrieval tool."
                         ),
                         ToolCall(
-                            id="toolu_01KkhBRe6e4EhNMC7qBnq1am",
+                            id="toolu_01D9i29ihVc1jnMZcsnjihvd",
                             name="secret_retrieval_tool",
                             args='{"password": "mellon"}',
                         ),
                         ToolCall(
-                            id="toolu_01RBd7qzFUzbaJVV2jC6Qteu",
+                            id="toolu_01MHY6tDEpQVfKiymoNQuc3j",
                             name="secret_retrieval_tool",
                             args='{"password": "radiance"}',
                         ),
@@ -198,13 +198,13 @@ async_snapshot = snapshot(
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_01KkhBRe6e4EhNMC7qBnq1am",
+                                "id": "toolu_01D9i29ihVc1jnMZcsnjihvd",
                                 "input": {"password": "mellon"},
                                 "name": "secret_retrieval_tool",
                                 "type": "tool_use",
                             },
                             {
-                                "id": "toolu_01RBd7qzFUzbaJVV2jC6Qteu",
+                                "id": "toolu_01MHY6tDEpQVfKiymoNQuc3j",
                                 "input": {"password": "radiance"},
                                 "name": "secret_retrieval_tool",
                                 "type": "tool_use",
@@ -215,12 +215,12 @@ async_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01KkhBRe6e4EhNMC7qBnq1am",
+                            id="toolu_01D9i29ihVc1jnMZcsnjihvd",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="toolu_01RBd7qzFUzbaJVV2jC6Qteu",
+                            id="toolu_01MHY6tDEpQVfKiymoNQuc3j",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -232,8 +232,8 @@ async_snapshot = snapshot(
                             text="""\
 Here are the secrets retrieved for each password:
 
-- Password "mellon": "Welcome to Moria!"
-- Password "radiance": "Life before Death"\
+- Password "mellon": Welcome to Moria!
+- Password "radiance": Life before Death\
 """
                         )
                     ],
@@ -248,8 +248,8 @@ Here are the secrets retrieved for each password:
                                 "text": """\
 Here are the secrets retrieved for each password:
 
-- Password "mellon": "Welcome to Moria!"
-- Password "radiance": "Life before Death"\
+- Password "mellon": Welcome to Moria!
+- Password "radiance": Life before Death\
 """,
                                 "type": "text",
                             }
@@ -301,149 +301,15 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="I'll retrieve the secrets for both passwords using parallel tool calls."
-                        ),
-                        ToolCall(
-                            id="toolu_01UGWjZemBUh7yLBkhMiFUbP",
-                            name="secret_retrieval_tool",
-                            args='{"password": "mellon"}',
-                        ),
-                        ToolCall(
-                            id="toolu_01SdbaDAD8PfqeGMBqqCMzWr",
-                            name="secret_retrieval_tool",
-                            args='{"password": "radiance"}',
-                        ),
-                    ],
-                    provider_id="anthropic",
-                    model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_name="claude-sonnet-4-0",
-                    raw_message={
-                        "role": "assistant",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": "I'll retrieve the secrets for both passwords using parallel tool calls.",
-                            },
-                            {
-                                "type": "tool_use",
-                                "id": "toolu_01UGWjZemBUh7yLBkhMiFUbP",
-                                "name": "secret_retrieval_tool",
-                                "input": {"password": "mellon"},
-                            },
-                            {
-                                "type": "tool_use",
-                                "id": "toolu_01SdbaDAD8PfqeGMBqqCMzWr",
-                                "name": "secret_retrieval_tool",
-                                "input": {"password": "radiance"},
-                            },
-                        ],
-                    },
-                ),
-                UserMessage(
-                    content=[
-                        ToolOutput(
-                            id="toolu_01UGWjZemBUh7yLBkhMiFUbP",
-                            name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
-                        ),
-                        ToolOutput(
-                            id="toolu_01SdbaDAD8PfqeGMBqqCMzWr",
-                            name="secret_retrieval_tool",
-                            value="Life before Death",
-                        ),
-                    ]
-                ),
-                AssistantMessage(
-                    content=[
-                        Text(
-                            text="""\
-Here are the secrets associated with each password:
-
-1. Password "mellon": **Welcome to Moria!**
-2. Password "radiance": **Life before Death**\
-"""
-                        )
-                    ],
-                    provider_id="anthropic",
-                    model_id="anthropic/claude-sonnet-4-0",
-                    provider_model_name="claude-sonnet-4-0",
-                    raw_message={
-                        "role": "assistant",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": """\
-Here are the secrets associated with each password:
-
-1. Password "mellon": **Welcome to Moria!**
-2. Password "radiance": **Life before Death**\
-""",
-                            }
-                        ],
-                    },
-                ),
-            ],
-            "format": None,
-            "tools": [
-                {
-                    "name": "secret_retrieval_tool",
-                    "description": "A tool that requires a password to retrieve a secret.",
-                    "parameters": """\
-{
-  "properties": {
-    "password": {
-      "title": "Password",
-      "type": "string"
-    }
-  },
-  "required": [
-    "password"
-  ],
-  "additionalProperties": false,
-  "defs": null
-}\
-""",
-                    "strict": False,
-                }
-            ],
-            "usage": {
-                "input_tokens": 604,
-                "output_tokens": 41,
-                "cache_read_tokens": 0,
-                "cache_write_tokens": 0,
-                "reasoning_tokens": 0,
-            },
-            "n_chunks": 8,
-        }
-    }
-)
-async_stream_snapshot = snapshot(
-    {
-        "response": {
-            "provider": "anthropic",
-            "model_id": "anthropic/claude-sonnet-4-0",
-            "finish_reason": None,
-            "messages": [
-                SystemMessage(content=Text(text="Use parallel tool calling.")),
-                UserMessage(
-                    content=[
-                        Text(
-                            text="Please retrieve the secrets associated with each of these passwords: mellon,radiance"
-                        )
-                    ]
-                ),
-                AssistantMessage(
-                    content=[
-                        Text(
                             text="I'll retrieve the secrets for both passwords you provided."
                         ),
                         ToolCall(
-                            id="toolu_01JQnZJer1m2WRb9X2zAUBGc",
+                            id="toolu_015cUijgET79LXjgeYQerN2h",
                             name="secret_retrieval_tool",
                             args='{"password": "mellon"}',
                         ),
                         ToolCall(
-                            id="toolu_0129i6swEausTNAJfWj8fEtG",
+                            id="toolu_01XZTimPexA7h3EVKesnKt5T",
                             name="secret_retrieval_tool",
                             args='{"password": "radiance"}',
                         ),
@@ -460,13 +326,13 @@ async_stream_snapshot = snapshot(
                             },
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01JQnZJer1m2WRb9X2zAUBGc",
+                                "id": "toolu_015cUijgET79LXjgeYQerN2h",
                                 "name": "secret_retrieval_tool",
                                 "input": {"password": "mellon"},
                             },
                             {
                                 "type": "tool_use",
-                                "id": "toolu_0129i6swEausTNAJfWj8fEtG",
+                                "id": "toolu_01XZTimPexA7h3EVKesnKt5T",
                                 "name": "secret_retrieval_tool",
                                 "input": {"password": "radiance"},
                             },
@@ -476,12 +342,12 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01JQnZJer1m2WRb9X2zAUBGc",
+                            id="toolu_015cUijgET79LXjgeYQerN2h",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="toolu_0129i6swEausTNAJfWj8fEtG",
+                            id="toolu_01XZTimPexA7h3EVKesnKt5T",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -493,8 +359,10 @@ async_stream_snapshot = snapshot(
                             text="""\
 Here are the secrets retrieved for each password:
 
-- Password "mellon": **Welcome to Moria!**
-- Password "radiance": **Life before Death**\
+1. **Password "mellon"**: "Welcome to Moria!"
+2. **Password "radiance"**: "Life before Death"
+
+Both secrets have been successfully retrieved!\
 """
                         )
                     ],
@@ -509,8 +377,10 @@ Here are the secrets retrieved for each password:
                                 "text": """\
 Here are the secrets retrieved for each password:
 
-- Password "mellon": **Welcome to Moria!**
-- Password "radiance": **Life before Death**\
+1. **Password "mellon"**: "Welcome to Moria!"
+2. **Password "radiance"**: "Life before Death"
+
+Both secrets have been successfully retrieved!\
 """,
                             }
                         ],
@@ -542,12 +412,146 @@ Here are the secrets retrieved for each password:
             ],
             "usage": {
                 "input_tokens": 602,
+                "output_tokens": 52,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+            },
+            "n_chunks": 17,
+        }
+    }
+)
+async_stream_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "anthropic",
+            "model_id": "anthropic/claude-sonnet-4-0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(content=Text(text="Use parallel tool calling.")),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please retrieve the secrets associated with each of these passwords: mellon,radiance"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="I'll retrieve the secrets for both passwords using the secret retrieval tool."
+                        ),
+                        ToolCall(
+                            id="toolu_017N2md1Efjsccg9yCoHRqaC",
+                            name="secret_retrieval_tool",
+                            args='{"password": "mellon"}',
+                        ),
+                        ToolCall(
+                            id="toolu_01S7QvvN8RQAx1m31iAG4HYA",
+                            name="secret_retrieval_tool",
+                            args='{"password": "radiance"}',
+                        ),
+                    ],
+                    provider_id="anthropic",
+                    model_id="anthropic/claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "I'll retrieve the secrets for both passwords using the secret retrieval tool.",
+                            },
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_017N2md1Efjsccg9yCoHRqaC",
+                                "name": "secret_retrieval_tool",
+                                "input": {"password": "mellon"},
+                            },
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_01S7QvvN8RQAx1m31iAG4HYA",
+                                "name": "secret_retrieval_tool",
+                                "input": {"password": "radiance"},
+                            },
+                        ],
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_017N2md1Efjsccg9yCoHRqaC",
+                            name="secret_retrieval_tool",
+                            value="Welcome to Moria!",
+                        ),
+                        ToolOutput(
+                            id="toolu_01S7QvvN8RQAx1m31iAG4HYA",
+                            name="secret_retrieval_tool",
+                            value="Life before Death",
+                        ),
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+Here are the secrets retrieved for each password:
+
+- Password "mellon": **Welcome to Moria!**
+- Password "radiance": **Life before Death**\
+"""
+                        )
+                    ],
+                    provider_id="anthropic",
+                    model_id="anthropic/claude-sonnet-4-0",
+                    provider_model_name="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
+Here are the secrets retrieved for each password:
+
+- Password "mellon": **Welcome to Moria!**
+- Password "radiance": **Life before Death**\
+""",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [
+                {
+                    "name": "secret_retrieval_tool",
+                    "description": "A tool that requires a password to retrieve a secret.",
+                    "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                    "strict": False,
+                }
+            ],
+            "usage": {
+                "input_tokens": 606,
                 "output_tokens": 39,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 8,
+            "n_chunks": 10,
         }
     }
 )

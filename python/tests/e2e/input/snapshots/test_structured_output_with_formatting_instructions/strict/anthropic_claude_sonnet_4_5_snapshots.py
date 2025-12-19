@@ -17,7 +17,7 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 285,
-                "output_tokens": 30,
+                "output_tokens": 25,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -37,7 +37,7 @@ lucky number 7.\
                 AssistantMessage(
                     content=[
                         Text(
-                            text='{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}'
+                            text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                         )
                     ],
                     provider_id="anthropic",
@@ -47,7 +47,7 @@ lucky number 7.\
                         "role": "assistant",
                         "content": [
                             {
-                                "text": '{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}',
+                                "text": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
                                 "type": "text",
                                 "parsed_output": {
                                     "title": "THE NAME OF THE WIND",

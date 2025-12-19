@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
       fibonacci number?"}],"model":"claude-sonnet-4-0","thinking":{"type":"enabled","budget_tokens":8000},"tools":[{"name":"compute_fib","description":"Compute
-      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}]}'
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -13,13 +13,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '400'
+      - '437'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - Anthropic/Python 0.72.0
+      - Anthropic/Python 0.75.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -29,7 +29,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.72.0
+      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -45,27 +45,29 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA2xUW4/qNhj8K5afWsEuCbcFpD5AuIUkBMI9PRUyjpP4kNjBdrIhq/3vFZzuaY/U
-        N3/jmfHok8YfMOUBSeAA4gTlAXmRnDGiXtovTa3Z0Tp6G9YhDeAApjI6a/oSEYcyrxxtrF7fW/oh
-        xk57DutQ3TPyYBEpUURgHQqePAAkJZUKMQXrEHOmCFNw8OfHF1/FlF0pix4OX8cB3MYE5JIIQCVA
-        8gGCkAugYgJ0TVMxmNILZwhjClieXoh4BSaIUUEAwphICRQHCIQ5w4pyBjBKEhKAbxDzNMsVOYf0
-        8g0CFSMFMGLgH/jpz/7HHfymv1AWkJIEv7+Cn+FiJEEmeEEDEjy1MiOYhhSDAiU5AewPXdPqQPKf
-        4ZLkyRPkllNBApAhgVKiiHgmTtH1R4Zfgr/COpQ0Ykjl4rGxiViPjevJNLzIsK6Gvusge4zxezcO
-        LYUPwkiMLfW7jt489GW4MU173Jp2IiOKDBdN7ODu2Pg4ctprc1c7WX3HZx3fyTuF7pU9erlad3E5
-        TqJyqRULeskSPMNde9fpobGpkzTNHG/Vs9/s6oSo+Z6WtdH3hQqrrpEekOK6jFhjY7KLMmyDO8PD
-        kXR0tpHTlSp2t2n7Rtwyoaf1+jsuZ925a2XSqK2mW2ua8LiV+4ud3tsee7Q/K3yXdHcFd3VtGZh+
-        mGyFx0cT31xdZ5NYOzZ6dvM2bvj3g+XU8uZS27+NKzy517yhNsIVr2XVKd0u1rxRnkRUUy5nLXTh
-        tOxVB7+oeLJGqihn/ZO5i63eUq22cpq57nSeYuPSbAyzWkaX4bY1PFTW9t6Km60xQlVXitLN0Rwd
-        tJZqFZt22WxnjiPMhGwvO2xN0Rup7eK3YJOKd9/tVKOSd73vKPeLqhPuG/Oqa7un2Xxl9PJ1N9wM
-        3Wiov6+RtyxwsJ/7+6C4HIZlGB+5ZUxc01uPdEvclqghL7wm8m5+XJGRJGouvNR2e/6u5UdxZGcb
-        YVmHQgQzTQ+Fv990a2GkAtFCyXYvzfhulkeK40VJWj2zKuR2cd83vWgEP+v/NpHz5JxL8tX3x5yf
-        Nd1hNss90d+cbtf2UrWrYsSzG6xDhtKH7j+dekhZlis4+IAMDnRN+/z8qw6l4tlZECQ5+/Wd54Uk
-        t5wwTOCA5UlSh/nz/xh8/LA6q7+Vn52aV6xkZWJspKOUnJickRqfXJSaCMoe8agqDGDyRamJKbjk
-        YHpBFqQWZKTmphYl5sSb5mKqR8gaZqDL1uoo5ZeWIAsZGpnpKBWnFpVlJqfGl2SmFilZKYGKvZTE
-        ohSl2loAAAAA//8DAOuFDGhnBQAA
+        H4sIAAAAAAAA/3VU2ZLqNhT8FZdfktQsYIzZqvKAF5YxBg/bBXJTlLBlS2BLRpLBMMW/RyaZmTvJ
+        zZOt060+Ryp1v6kpDWGidtQgAXkInzglBIqn+lOtWjOqhlZXH1UcSjzl8baqeW1n0AqKkDX23iWL
+        emEzJ2khOeKSwZIFOQcxlAVGk7IAOMdcACJkKaBEQPnX+ePtnS8QJgdM4lLh/bejzhFUcg6ZgrkC
+        eFlUIsoUIctatSqQ0sM7SkAQYIXk6Q6yZ2WoIHCCClCinAQCU6KAE8AJ2CVQCUCSwFD5LgdIs1zA
+        bYR331UpB4TEiPJP+a5PfqKu/Ko9YRLCAoa/PSsfwyHAlYzREw6leLn3BJJcKvwuZ3xUOP2YKUnu
+        MIPHHDPJzQADKRSQcUVQJQWHv1t/TF7O+yxvhOOYAJGz8qKcI7etw3poodhyD+a8SYd9iny9lidx
+        MITRbNeojHxz0E7qPJn7LWbvK6d9UUGDlV89soV+1BfXHnhpW+HQ8+N+tz1uLXzrdc9shNY+EoE3
+        duKiaEfTw2Y6Fa1l5sy0IbAnY9d00STqssGe8Sm7DM98YraEtyJcKwZujs8GWSwLlsZuvwlmi3h5
+        GOH5NWiC/TiB59fg0Bv3LqdVwviQhQ1Nb7nZ0Fqd95c0d4eNqEbXDp5NUH6cn7qeA2xudTER5gBe
+        Z/oLudohfU1T3TKClrMisetofXPno1ar59LuOnuIX7rCTUdAP2WJ0+TuMQvtCaTOdDTpWVVe9Z3K
+        yHtYz9LqaG9uKsXLJW16NbzQSFZLLaoVTnWxyKzlDh0Hc28QWaNGQa+0FiemtVmh9SEz106/FVUa
+        p+HE2RmnqGnll0b9pe6vXbiwLW+GskY8DmZ6d2V4Nj5dbe+SMzawDcOo1bppz1uTB47WHnyhArXi
+        Bzs7j7oiZnHQiJcYdieeGbeLUeBib7JGhW8NXqvhfp/EUOebBkQLt331u5flss4ma22+OyNzR+sR
+        Xo0MODgzW698W4RoNen3J5vlYfOADf91hnaHaWQb7f5GQ7Gp3h4/TQeL0o73T0cd/iLf548W+LnF
+        7g680Pz5ixKlyVaa4T0kynUuY8JdHc1v0721a9cyxx55Zx4d/JVkEfnwy7D5NGK5lciF2nlTidqR
+        zW+3P+XbFzTbMghkHn3tcwe4tBIkgZQieZI8qvk9dKTCXWor6AESrnbqui5TBwQIbgOpVZpr+5VR
+        fcclHP4f9r63bAAzBFPIQLI10v/yP1EN/Ru9Pao0Fz+WNL0pzwPZCQdwKzBk8qRlVoaAhert9hfJ
+        4N3TnAUAAA==
     headers:
+      CF-Cache-Status:
+      - DYNAMIC
       CF-RAY:
-      - 99974f735abd309b-SEA
+      - 9b02deee7d73def5-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -73,11 +75,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 04 Nov 2025 21:47:34 GMT
+      - Fri, 19 Dec 2025 00:44:22 GMT
       Server:
       - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
+      Vary:
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -87,43 +93,38 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-11-04T21:47:33Z'
+      - '2025-12-19T00:44:21Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-11-04T21:47:34Z'
+      - '2025-12-19T00:44:22Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-11-04T21:47:31Z'
+      - '2025-12-19T00:44:19Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-11-04T21:47:33Z'
-      cf-cache-status:
-      - DYNAMIC
+      - '2025-12-19T00:44:21Z'
       request-id:
-      - req_011CUoar4B5QDxX3M2rarTpE
-      retry-after:
-      - '29'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
+      - req_011CWF7vJAEqCPpX9G2HaVxy
       x-envoy-upstream-service-time:
-      - '2727'
+      - '3186'
     status:
       code: 200
       message: OK
 - request:
     body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
-      "role": "user"}, {"parts": [{"functionCall": {"id": "toolu_01MnLnuRr9SYqk4Nt4zvBopq",
-      "args": {"n": 100}, "name": "compute_fib"}}], "role": "model"}, {"parts": [{"functionResponse":
-      {"id": "toolu_01MnLnuRr9SYqk4Nt4zvBopq", "name": "compute_fib", "response":
+      "role": "user"}, {"parts": [{"text": "I''ll compute the 100th Fibonacci number
+      for you."}, {"functionCall": {"id": "toolu_01KXqBWRjCb92pEDLMwsfkPX", "args":
+      {"n": 100}, "name": "compute_fib"}}], "role": "model"}, {"parts": [{"functionResponse":
+      {"id": "toolu_01KXqBWRjCb92pEDLMwsfkPX", "name": "compute_fib", "response":
       {"output": "218922995834555169026"}}}], "role": "user"}], "tools": [{"functionDeclarations":
       [{"description": "Compute the nth Fibonacci number (1-indexed).", "name": "compute_fib",
       "parameters": {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required":
@@ -137,7 +138,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '718'
+      - '780'
       content-type:
       - application/json
       host:
@@ -151,12 +152,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WQ32+CMBDH3/krmj5XAygKe92PjCzLdCPGbPGhyiHNoGVtWXSE/30FRHHrQ3u5
-        +973rp/KQgjvKI9ZTDUofIM+TAahqr2bmuAauDaFPmWSBZX6ou1ONYiNRMOhacJRCsixbZ2iB7YV
-        nO52DPEy34JETCHX8UnguiQIPOJPpsTzPOLMAmK7szEeGNbneEMua0iRQTMjFzFkvbzuBThhnKn0
-        FagSvJG9RS8LfK4yHsPBpG2rH9Ba41LRPTyDpgYIPX8bF1LkhY7EJ/BbUbZAHHveuQ0AXgkm/qmu
-        habZde/UI/+M1Z0Zy7Ih2QF080uaMX1sqd6vIzwgof/s1bNo3411otKBWoFUrCOyh9wwGrljb5Rk
-        VKWtJZagCsEVhHGjgfXyib4fk/D7Mf2ZhwuhEvm19LFVW7/sDvAcPQIAAA==
+        H4sIAAAAAAAC/2WQUU/CMBDH3/cpmj4D2QolzDcjGH0wok5iYngo7GCNWzvam4Es++52m4OhfWgv
+        d//73/VXeoTQrVCxjAWCpTfk02UIKZu7rmmFoNAVupRL5sLgRdueshc7CcKxbqJRAiTwfUzIvdxo
+        JbZbSVSRbcAQaQkLZiFjYchn4wnnPJiGPpuOaM+qOsfrwWUBo1Oo3TMdQ9rJq05Ad1JJm7yCsFrV
+        srfoeUnPValiOLq073UDGmtaWLGHJ0DhUIjzh2ludJZjpL9A3emiQREw1rr10F0Jxl0dNYr0updP
+        Bv+M7dyNlWmfaQ+3+6VIJZ4anouPiPZI4J+9OhbNu/Z+qbSgVmCsbInsIXOMhmzEh7tU2KSxpAZs
+        rpWFx7jWcB4uhDD8oTh9H9AuD4f5+/72hXqV9wPr90lHNwIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -165,11 +166,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:47:37 GMT
+      - Fri, 19 Dec 2025 00:44:23 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=3050
+      - gfet4t7; dur=656
       Transfer-Encoding:
       - chunked
       Vary:

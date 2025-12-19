@@ -18,7 +18,7 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 34,
-                "output_tokens": 32,
+                "output_tokens": 36,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -39,7 +39,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="This is the iconic Wikipedia logo, featuring a spherical globe made up of puzzle pieces with text in various languages and scripts from different Wikipedia editions."
+                            text="This is the Wikipedia logo, which features a spherical puzzle globe made up of jigsaw puzzle pieces with text in various languages and scripts from around the world."
                         )
                     ],
                     provider_id="anthropic",
@@ -50,7 +50,7 @@ test_snapshot = snapshot(
                         "content": [
                             {
                                 "citations": None,
-                                "text": "This is the iconic Wikipedia logo, featuring a spherical globe made up of puzzle pieces with text in various languages and scripts from different Wikipedia editions.",
+                                "text": "This is the Wikipedia logo, which features a spherical puzzle globe made up of jigsaw puzzle pieces with text in various languages and scripts from around the world.",
                                 "type": "text",
                             }
                         ],

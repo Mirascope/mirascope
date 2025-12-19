@@ -603,7 +603,7 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 12,
+            "n_chunks": 13,
         }
     }
 )
@@ -799,7 +799,7 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 10,
+            "n_chunks": 11,
         }
     }
 )

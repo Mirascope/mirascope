@@ -39,14 +39,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//RM7BSsNAFEbhVwn/1omkY2LMQLdSXImICCJhnLltpyZzQ+4NCCXvLl1o
-        t9/icM5IEQ6jHPpq83pK8W0S2cvpcdlNu/en5SU/wyAcOQUSuI8z9iknOfYzeeEMB1GeYJBypB+4
-        ymAkEX8guDNmHggOXiSJ+qyXFGelrHCobVUVN0Vti21R29piXT8NwkxeKcJt2vumaR/qrjMYOdIA
-        hzD4JVIpnDNpWZdNaSvbVJ3tYMBfJwqXcDh6vQ08TgNp4gyD5W/oqr3yN2WB2zQG08zjpFdqDZTV
-        D/9yZ9f1FwAA//8DALfJIXwrAQAA
+        H4sIAAAAAAAA/0SPwWrDMAyGXyXoumQ4rpPSwC477bLB1pw6RvAcrfHmWCFWYRDy7lUPbS+S+CV9
+        +rWA76GBMR07Ve5f4+Ftr2s6eNM+v7iPFsf2HXJwA3mHCZrPBX589GnoZrSJoqwmpklGfOzxHxqV
+        w4gp2SNCs8BMQTLYlHxiG/mCosgoVQNGK5U9ZEZnTxKMhnX9kr6AGcVTua3rUilTbwRJPQZZccGe
+        eizkcEQuTFEVWulK7fROyPT9i+4CdoPlR0fjFJC9eMzhdDV0VzumP4zyUlnlMM2i813a5sDENtyU
+        jV7XMwAAAP//AwCd68CgKwEAAA==
     headers:
+      CF-Cache-Status:
+      - DYNAMIC
       CF-RAY:
-      - 9ad0a7671abca3c6-SEA
+      - 9b026ea80f97c66f-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -54,19 +56,19 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 12 Dec 2025 22:28:20 GMT
+      - Thu, 18 Dec 2025 23:27:43 GMT
       Server:
       - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
+      Vary:
+      - accept-encoding
       X-Robots-Tag:
       - none
-      cf-cache-status:
-      - DYNAMIC
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2817'
+      - '2851'
       x-ratelimit-remaining-requests:
       - '3999'
       x-ratelimit-remaining-tokens:
@@ -80,7 +82,7 @@ interactions:
       x-ratelimit-tokens:
       - '2400000'
       x-request-id:
-      - req_011CW3ah7R53hgLc1q7i6qhf
+      - req_011CWF25JHypLJsN6uZksbsg
     status:
       code: 200
       message: OK

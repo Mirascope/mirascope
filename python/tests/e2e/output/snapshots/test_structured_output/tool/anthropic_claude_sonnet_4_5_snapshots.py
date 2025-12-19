@@ -48,7 +48,7 @@ sync_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_019aWfaRXPZiV1osKoc9Hxp3",
+                                "id": "toolu_01BdiiT5XnXyVufpJ34PtWE8",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
                                     "author": {
@@ -142,7 +142,7 @@ async_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_01WnjVCN4GLM6EgWZHH3rTJe",
+                                "id": "toolu_01TQz5Cw2H9f3WyUehYkVnV5",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
                                     "author": {
@@ -228,7 +228,7 @@ stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_013VdCQXhkCYJdz4DFi5jwyn",
+                                "id": "toolu_01WMZPyKjDKM3JTnyDSeCyp1",
                                 "name": "__mirascope_formatted_output_tool__",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
@@ -321,7 +321,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01AxwMNBbuZ3sJQqwwB1SWsC",
+                                "id": "toolu_01UMh1Lb3WbauXv7st7Q79WW",
                                 "name": "__mirascope_formatted_output_tool__",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",

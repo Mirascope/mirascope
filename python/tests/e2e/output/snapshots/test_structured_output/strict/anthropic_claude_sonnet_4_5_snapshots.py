@@ -278,7 +278,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
+                            text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
                     provider_id="anthropic",
@@ -289,7 +289,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "text",
-                                "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                             }
                         ],
                     },
@@ -331,12 +331,12 @@ async_stream_snapshot = snapshot(
             "tools": [],
             "usage": {
                 "input_tokens": 414,
-                "output_tokens": 43,
+                "output_tokens": 36,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 11,
+            "n_chunks": 10,
         }
     }
 )

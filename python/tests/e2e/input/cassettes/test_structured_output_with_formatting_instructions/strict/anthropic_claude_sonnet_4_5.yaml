@@ -1,10 +1,10 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      a book to me!"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"Book","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"rating":{"type":"integer","title":"Rating"}},"additionalProperties":false,"required":["title","author","rating"]},"type":"json_schema"},"system":"Always
+      a book to me!"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","title":"Book","properties":{"title":{"type":"string","title":"Title"},"author":{"type":"string","title":"Author"},"rating":{"type":"integer","title":"Rating"}},"additionalProperties":false,"required":["title","author","rating"]},"type":"json_schema"},"system":[{"type":"text","text":"Always
       recommend The Name of the Wind.\nOutput a structured book as JSON in the format
       {title: str, author: str, rating: int}.\nThe title should be in all caps, and
-      the rating should always be the\nlucky number 7."}'
+      the rating should always be the\nlucky number 7.","cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -17,7 +17,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '640'
+      - '702'
       content-type:
       - application/json
       host:
@@ -51,17 +51,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJDdSsNAEEZfJXzXG0ijtXbvClaqYC1VKGIkrMm0WZvupruzopS8u6S1
-        +IdXM3znDMPMDhtbUg2JolahpNhbY4jj07gfp0naT4bpEAK6hMTGr/Kkd/awndCwedaDedp7uV4s
-        zd14NIMAvzfUWeS9WhEEnK27QHmvPSvDECisYTIM+bg7+kxvHdkXiV0G1lxTBhlluJ+Mo+noZhzd
-        XkZdv7iaXmQQUQYVuLLuYM0UO12so7nlahm8PxhOsTarzhi0aJ8EPNsmd6S8NZAgU+YcnMEn8LQN
-        ZAqCNKGuBcL+CLmDNk3gnO2ajIdMz/sChSoqygtHirU1+U8jOXJHqvyPHWe7BdRUtCGn6ry/+et/
-        0V71m7YCNvD36CQR8ORedUE5a3KQ6F5fKleibT8AAAD//wMASq9ivO0BAAA=
+        H4sIAAAAAAAA/3WQYUvDMBCG/0q5zy10xaLrt4ETRTdFBg6shNCca1iadMlFJqX/3aQ4ZIqfctzz
+        JPdeBuiMQAUVNIp7gZkzWiNlF1mZFXlR5vNiDilIEYzO7Vg+uzouDque7rsZ0na7EfKBz0sMDn32
+        GC10ju9iwxoVG9w56YhrCq3GaMJQVa/DySc8RjIdFQw1kCSFNVQ1bG6XyXqxWiaPN0msX+7W1zWk
+        NXBPrbGT88TJymafPBtq371zE7ecpN4FfjnC+JaCI9MzizwsF2agFoy81fANHB486iaE0V6pFPyU
+        vxpA6t4TI7NH7aAqrsqwAG9aZE14i6TR7NzITzxg8R873Y0DsG+xQ8sVK7u//g+dtb/pmILxdBYv
+        pHNoP2SDjCTasGj8dcGtgHH8AqroD93oAQAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
-      CF-Ray:
-      - 9af068b12c8deb87-SEA
+      CF-RAY:
+      - 9b027065ee2876c1-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,7 +69,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Dec 2025 18:57:57 GMT
+      - Thu, 18 Dec 2025 23:28:56 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -77,7 +77,7 @@ interactions:
       Transfer-Encoding:
       - chunked
       Vary:
-      - Accept-Encoding
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -87,29 +87,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-16T18:57:56Z'
+      - '2025-12-18T23:28:55Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-16T18:57:57Z'
+      - '2025-12-18T23:28:56Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-16T18:57:52Z'
+      - '2025-12-18T23:28:52Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-16T18:57:56Z'
+      - '2025-12-18T23:28:55Z'
       request-id:
-      - req_011CWAstBbtrSfbDyf2QRs6P
+      - req_011CWF2AZJm3LBgRdDTkaH7F
       x-envoy-upstream-service-time:
-      - '4359'
+      - '4358'
     status:
       code: 200
       message: OK
