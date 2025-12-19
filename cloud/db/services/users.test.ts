@@ -79,7 +79,7 @@ describe("UserService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(`user with userId ${badId} not found`);
+        expect(result.message).toBe("User not found");
       }).pipe(Effect.provide(TestDatabase)),
     );
 
@@ -94,7 +94,7 @@ describe("UserService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to find user");
+        expect(result.message).toBe("Failed to get user");
       }),
     );
   });
@@ -126,7 +126,7 @@ describe("UserService", () => {
         const result = yield* db.users.findAll().pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to find all users");
+        expect(result.message).toBe("Failed to get users");
       }),
     );
   });
@@ -224,8 +224,8 @@ describe("UserService", () => {
     );
   });
 
-  describe("delete", () => {
-    it.effect("deletes a user", () =>
+  describe("delete (soft deletion)", () => {
+    it.effect("soft-deletes a user (no longer found by findById)", () =>
       Effect.gen(function* () {
         const db = yield* DatabaseService;
 
@@ -259,6 +259,31 @@ describe("UserService", () => {
       }).pipe(Effect.provide(TestDatabase)),
     );
 
+    it.effect("replaces PII with placeholders on deletion", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const created = yield* db.users.create({
+          data: { email: "pii@example.com", name: "PII User" },
+        });
+
+        yield* db.users.delete({ userId: created.id });
+
+        // Use createOrUpdate with the placeholder email to verify it exists
+        // (This is a workaround since findById filters deleted users)
+        const placeholderEmail = `deleted-${created.id}@deleted.local`;
+        const reactivated = yield* db.users.createOrUpdate({
+          email: placeholderEmail,
+          name: "Reactivated",
+        });
+
+        // The UUID should be preserved (same id)
+        expect(reactivated.id).toBe(created.id);
+        // Email should be the placeholder
+        expect(reactivated.email).toBe(placeholderEmail);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
     it.effect("returns `NotFoundError` when user does not exist", () =>
       Effect.gen(function* () {
         const db = yield* DatabaseService;
@@ -269,14 +294,37 @@ describe("UserService", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(`user with userId ${badId} not found`);
+        expect(result.message).toBe("User not found");
       }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when deleting already-deleted user",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* DatabaseService;
+
+          const created = yield* db.users.create({
+            data: { email: "double-delete@example.com", name: "Double Delete" },
+          });
+
+          // First delete succeeds
+          yield* db.users.delete({ userId: created.id });
+
+          // Second delete fails with NotFoundError
+          const result = yield* db.users
+            .delete({ userId: created.id })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe("User not found");
+        }).pipe(Effect.provide(TestDatabase)),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
         const db = new MockDatabase()
-          .delete(new Error("Database connection failed"))
+          .update(new Error("Database connection failed"))
           .build();
 
         const result = yield* db.users
