@@ -18,7 +18,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Add a member to an organization (ADMIN adding a MEMBER)
  * const membership = yield* db.organizationMemberships.create({

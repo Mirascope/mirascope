@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { type PublicSession } from "@/db/schema";
 import { type PublicUser } from "@/db/schema/users";
 import { DatabaseError, DeletedUserError, InvalidSessionError, NotFoundError } from "@/errors";
-import { EffectDatabase } from "@/db/database";
+import { Database } from "@/db/database";
 
 describe("Sessions", () => {
   // ===========================================================================
@@ -13,7 +13,7 @@ describe("Sessions", () => {
   describe("create", () => {
     it.effect("creates a session", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "test@example.com", name: "Test User" },
@@ -33,7 +33,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .create({
@@ -59,7 +59,7 @@ describe("Sessions", () => {
   describe("findAll", () => {
     it.effect("finds all sessions for a user", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "findall@example.com", name: "Find All User" },
@@ -85,7 +85,7 @@ describe("Sessions", () => {
 
     it.effect("returns expired sessions (not auto-deleted)", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "findall-expired@example.com", name: "Find All User" },
@@ -116,7 +116,7 @@ describe("Sessions", () => {
 
     it.effect("returns empty array when no sessions exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "nosessions@example.com", name: "No Sessions User" },
@@ -130,7 +130,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .findAll({ userId: "user-id" })
@@ -153,7 +153,7 @@ describe("Sessions", () => {
   describe("findById", () => {
     it.effect("finds a session by id", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "find@example.com", name: "Find User" },
@@ -176,7 +176,7 @@ describe("Sessions", () => {
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badUserId = "00000000-0000-0000-0000-000000000001";
         const badId = "00000000-0000-0000-0000-000000000000";
@@ -195,7 +195,7 @@ describe("Sessions", () => {
       "returns `NotFoundError` when session exists but userId is incorrect",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           // Create two users
           const user1 = yield* db.users.create({
@@ -228,7 +228,7 @@ describe("Sessions", () => {
 
     it.effect("returns expired session (does not filter by expiration)", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "findbyid-expired@example.com", name: "User" },
@@ -253,7 +253,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .findById({ userId: "user-id", sessionId: "session-id" })
@@ -276,7 +276,7 @@ describe("Sessions", () => {
   describe("update", () => {
     it.effect("updates a session", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "update@example.com", name: "Update User" },
@@ -302,7 +302,7 @@ describe("Sessions", () => {
 
     it.effect("persists updates correctly", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "persist@example.com", name: "Persist User" },
@@ -333,7 +333,7 @@ describe("Sessions", () => {
 
     it.effect("can update an already expired session", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "update-expired@example.com", name: "User" },
@@ -361,7 +361,7 @@ describe("Sessions", () => {
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badUserId = "00000000-0000-0000-0000-000000000001";
         const badId = "00000000-0000-0000-0000-000000000000";
@@ -382,7 +382,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .update({
@@ -409,7 +409,7 @@ describe("Sessions", () => {
   describe("delete", () => {
     it.effect("deletes a session", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "delete@example.com", name: "Delete User" },
@@ -435,7 +435,7 @@ describe("Sessions", () => {
 
     it.effect("removes session from findAll results", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "deleteall@example.com", name: "Delete All User" },
@@ -459,7 +459,7 @@ describe("Sessions", () => {
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badUserId = "00000000-0000-0000-0000-000000000001";
         const badId = "00000000-0000-0000-0000-000000000000";
@@ -476,7 +476,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .delete({ userId: "user-id", sessionId: "session-id" })
@@ -499,7 +499,7 @@ describe("Sessions", () => {
   describe("findUserBySessionId", () => {
     it.effect("returns user for valid session", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const email = "finduser@example.com";
         const name = "Find User";
@@ -526,7 +526,7 @@ describe("Sessions", () => {
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.sessions
@@ -540,7 +540,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DeletedUserError` when user has been deleted", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         // Create a user and session
         const user = yield* db.users.create({
@@ -570,7 +570,7 @@ describe("Sessions", () => {
 
     it.effect("returns `InvalidSessionError` for expired session", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "expired@example.com", name: "Expired User" },
@@ -594,7 +594,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .findUserBySessionId("session-id")
@@ -617,7 +617,7 @@ describe("Sessions", () => {
   describe("deleteBySessionId", () => {
     it.effect("deletes a session by sessionId only", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "deletebysessionid@example.com", name: "Delete User" },
@@ -643,7 +643,7 @@ describe("Sessions", () => {
 
     it.effect("returns `NotFoundError` when session does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.sessions
@@ -659,7 +659,7 @@ describe("Sessions", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.sessions
           .deleteBySessionId("session-id")

@@ -12,7 +12,7 @@
  * tested via integration tests rather than unit tests.
  */
 import { Effect, Schema } from "effect";
-import { EffectDatabase, DEFAULT_SESSION_DURATION } from "@/db";
+import { Database, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
 import {
@@ -623,7 +623,7 @@ function processAuthenticatedUser(
   | NotFoundError
   | AlreadyExistsError
   | DatabaseError,
-  EffectDatabase
+  Database
 > {
   return Effect.gen(function* () {
     // 1. Validate email is present
@@ -635,7 +635,7 @@ function processAuthenticatedUser(
       );
     }
 
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
 
     // 2. Try to find existing user by email, or create if not found
     const existingUser = yield* db.users.findByEmail(userInfo.email).pipe(

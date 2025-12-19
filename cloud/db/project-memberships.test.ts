@@ -3,10 +3,10 @@ import {
   it,
   expect,
   MockDrizzleORM,
-  TestEffectProjectFixture,
+  TestProjectFixture,
 } from "@/tests/db";
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db/database";
+import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -28,8 +28,8 @@ describe("ProjectMemberships", () => {
       "creates a project membership (ADMIN actor) and writes audit",
       () =>
         Effect.gen(function* () {
-          const { project, org, owner } = yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, owner } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           const newOrgMember = yield* db.users.create({
             data: {
@@ -76,8 +76,8 @@ describe("ProjectMemberships", () => {
       "returns `PermissionDeniedError` when target is not an org member",
       () =>
         Effect.gen(function* () {
-          const { project, org, owner } = yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, owner } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           const outsider = yield* db.users.create({
             data: { email: "outsider@example.com", name: "Outsider" },
@@ -104,8 +104,8 @@ describe("ProjectMemberships", () => {
       () =>
         Effect.gen(function* () {
           const { project, org, owner, projectDeveloper } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+            yield* TestProjectFixture;
+          const db = yield* Database;
 
           const anotherOrgMember = yield* db.users.create({
             data: {
@@ -140,8 +140,8 @@ describe("ProjectMemberships", () => {
       () =>
         Effect.gen(function* () {
           const { project, org, owner, projectDeveloper } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+            yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .create({
@@ -161,8 +161,8 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `NotFoundError` when project does not exist", () =>
       Effect.gen(function* () {
-        const { org, owner, member } = yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, member } = yield* TestProjectFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .create({
@@ -180,7 +180,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .create({
@@ -228,9 +228,8 @@ describe("ProjectMemberships", () => {
       "returns `PermissionDeniedError` when FK constraint fails (target not org member)",
       () =>
         Effect.gen(function* () {
-          const { project, org, owner, nonMember } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, owner, nonMember } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .create({
@@ -250,7 +249,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .create({
@@ -311,8 +310,8 @@ describe("ProjectMemberships", () => {
   describe("findAll", () => {
     it.effect("retrieves all memberships for a project", () =>
       Effect.gen(function* () {
-        const { project, org, owner } = yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+        const { project, org, owner } = yield* TestProjectFixture;
+        const db = yield* Database;
 
         const memberships = yield* db.organizations.projects.memberships.findAll({
           userId: owner.id,
@@ -341,8 +340,8 @@ describe("ProjectMemberships", () => {
       "returns `NotFoundError` when org member has no project access",
       () =>
         Effect.gen(function* () {
-          const { project, org, member } = yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, member } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .findAll({
@@ -359,7 +358,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .findAll({
@@ -405,7 +404,7 @@ describe("ProjectMemberships", () => {
       "returns `DatabaseError` when membership lookup fails during authorization",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .findAll({
@@ -448,7 +447,7 @@ describe("ProjectMemberships", () => {
       "returns `DatabaseError` when project verification fails during authorization",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .findAll({
@@ -496,8 +495,8 @@ describe("ProjectMemberships", () => {
     it.effect("retrieves a specific membership", () =>
       Effect.gen(function* () {
         const { project, org, owner, projectDeveloper } =
-          yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+          yield* TestProjectFixture;
+        const db = yield* Database;
 
         const membership = yield* db.organizations.projects.memberships.findById({
           userId: owner.id,
@@ -512,8 +511,8 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `NotFoundError` when membership doesn't exist", () =>
       Effect.gen(function* () {
-        const { project, org, owner, member } = yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+        const { project, org, owner, member } = yield* TestProjectFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .findById({
@@ -534,8 +533,8 @@ describe("ProjectMemberships", () => {
     it.effect("returns `NotFoundError` when user has no project access", () =>
       Effect.gen(function* () {
         const { project, org, member, projectDeveloper } =
-          yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+          yield* TestProjectFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .findById({
@@ -553,7 +552,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .findById({
@@ -605,8 +604,8 @@ describe("ProjectMemberships", () => {
     it.effect("updates a membership role and writes audit", () =>
       Effect.gen(function* () {
         const { project, org, owner, projectDeveloper } =
-          yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+          yield* TestProjectFixture;
+        const db = yield* Database;
 
         const updated = yield* db.organizations.projects.memberships.update({
           userId: owner.id,
@@ -636,8 +635,8 @@ describe("ProjectMemberships", () => {
 
     it.effect("allows ADMIN to modify their own membership", () =>
       Effect.gen(function* () {
-        const { project, org, projectAdmin } = yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+        const { project, org, projectAdmin } = yield* TestProjectFixture;
+        const db = yield* Database;
 
         const updated = yield* db.organizations.projects.memberships.update({
           userId: projectAdmin.id,
@@ -656,8 +655,8 @@ describe("ProjectMemberships", () => {
       "allows org ADMIN (implicit project ADMIN) to add and modify their own project membership",
       () =>
         Effect.gen(function* () {
-          const { project, org, admin } = yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, admin } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           // Admin is not an explicit project member, but has implicit ADMIN access
           // Add themselves as a DEVELOPER
@@ -690,8 +689,8 @@ describe("ProjectMemberships", () => {
       () =>
         Effect.gen(function* () {
           const { project, org, projectDeveloper } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+            yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .update({
@@ -715,8 +714,8 @@ describe("ProjectMemberships", () => {
       () =>
         Effect.gen(function* () {
           const { project, org, projectDeveloper, projectViewer } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+            yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .update({
@@ -739,9 +738,8 @@ describe("ProjectMemberships", () => {
       "returns `NotFoundError` when target is not a project member",
       () =>
         Effect.gen(function* () {
-          const { project, org, owner, member } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, owner, member } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .update({
@@ -760,7 +758,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when transaction fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .update({
@@ -809,7 +807,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .update({
@@ -874,8 +872,8 @@ describe("ProjectMemberships", () => {
     it.effect("deletes a membership and writes audit", () =>
       Effect.gen(function* () {
         const { project, org, owner, projectDeveloper } =
-          yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+          yield* TestProjectFixture;
+        const db = yield* Database;
 
         yield* db.organizations.projects.memberships.delete({
           userId: owner.id,
@@ -902,8 +900,8 @@ describe("ProjectMemberships", () => {
 
     it.effect("allows ADMIN to remove themselves from a project", () =>
       Effect.gen(function* () {
-        const { project, org, projectAdmin } = yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+        const { project, org, projectAdmin } = yield* TestProjectFixture;
+        const db = yield* Database;
 
         yield* db.organizations.projects.memberships.delete({
           userId: projectAdmin.id,
@@ -933,8 +931,8 @@ describe("ProjectMemberships", () => {
       () =>
         Effect.gen(function* () {
           const { project, org, projectDeveloper, projectViewer } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+            yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .delete({
@@ -956,9 +954,8 @@ describe("ProjectMemberships", () => {
       "returns `NotFoundError` when target is not a project member",
       () =>
         Effect.gen(function* () {
-          const { project, org, owner, member } =
-            yield* TestEffectProjectFixture;
-          const db = yield* EffectDatabase;
+          const { project, org, owner, member } = yield* TestProjectFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
             .delete({
@@ -976,7 +973,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when transaction fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .delete({
@@ -1024,7 +1021,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships
           .delete({
@@ -1081,8 +1078,8 @@ describe("ProjectMemberships", () => {
     it.effect("findAll retrieves all audit entries for a member", () =>
       Effect.gen(function* () {
         const { project, org, owner, projectDeveloper } =
-          yield* TestEffectProjectFixture;
-        const db = yield* EffectDatabase;
+          yield* TestProjectFixture;
+        const db = yield* Database;
 
         // Perform an update to create a CHANGE audit entry
         yield* db.organizations.projects.memberships.update({
@@ -1118,7 +1115,7 @@ describe("ProjectMemberships", () => {
 
     it.effect("returns `DatabaseError` when findAll query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.memberships.audits
           .findAll({

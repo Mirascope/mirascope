@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { type PublicUser, users } from "@/db/schema";
 import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
 import { DrizzleORM } from "@/db/client";
-import { EffectDatabase } from "@/db/database";
+import { Database } from "@/db/database";
 import { eq } from "drizzle-orm";
 
 describe("Users", () => {
@@ -14,7 +14,7 @@ describe("Users", () => {
   describe("create", () => {
     it.effect("creates a user", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const email = "test@example.com";
         const name = "Test User";
@@ -31,7 +31,7 @@ describe("Users", () => {
 
     it.effect("returns `AlreadyExistsError` when email is taken", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const email = "duplicate@example.com";
         yield* db.users.create({ data: { email, name: "First User" } });
@@ -47,7 +47,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users
           .create({ data: { email: "test@example.com", name: "Test" } })
@@ -70,7 +70,7 @@ describe("Users", () => {
   describe("findAll", () => {
     it.effect("finds all users", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user1 = yield* db.users.create({
           data: { email: "user1@example.com", name: "User 1" },
@@ -87,7 +87,7 @@ describe("Users", () => {
 
     it.effect("returns empty array when no users exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const all = yield* db.users.findAll();
 
@@ -97,7 +97,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users.findAll().pipe(Effect.flip);
 
@@ -118,7 +118,7 @@ describe("Users", () => {
   describe("findById", () => {
     it.effect("finds a user by id", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "find@example.com", name: "Find User" },
@@ -131,7 +131,7 @@ describe("Users", () => {
 
     it.effect("returns `NotFoundError` when user does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.users
@@ -145,7 +145,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users
           .findById({ userId: "user-id" })
@@ -168,7 +168,7 @@ describe("Users", () => {
   describe("update", () => {
     it.effect("updates a user", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const created = yield* db.users.create({
           data: { name: "Original Name", email: "original@example.com" },
@@ -192,7 +192,7 @@ describe("Users", () => {
 
     it.effect("persists updates correctly", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const created = yield* db.users.create({
           data: { email: "persist@example.com", name: "Original" },
@@ -211,7 +211,7 @@ describe("Users", () => {
 
     it.effect("returns `NotFoundError` when user does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.users
@@ -225,7 +225,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users
           .update({ userId: "user-id", data: { name: "Test" } })
@@ -248,7 +248,7 @@ describe("Users", () => {
   describe("delete (soft deletion)", () => {
     it.effect("soft-deletes a user (PII replaced)", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const created = yield* db.users.create({
           data: { email: "delete@example.com", name: "Delete User" },
@@ -265,7 +265,7 @@ describe("Users", () => {
 
     it.effect("includes deleted user from findAll results", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const created = yield* db.users.create({
           data: { email: "deleteall@example.com", name: "Delete All User" },
@@ -282,7 +282,7 @@ describe("Users", () => {
     it.effect("replaces PII with placeholders on deletion", () =>
       Effect.gen(function* () {
         const client = yield* DrizzleORM;
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const created = yield* db.users.create({
           data: { email: "pii@example.com", name: "PII User" },
@@ -303,7 +303,7 @@ describe("Users", () => {
 
     it.effect("returns `NotFoundError` when user does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const badId = "00000000-0000-0000-0000-000000000000";
         const result = yield* db.users
@@ -319,7 +319,7 @@ describe("Users", () => {
       "returns `NotFoundError` when deleting already-deleted user",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const created = yield* db.users.create({
             data: { email: "double-delete@example.com", name: "Double Delete" },
@@ -340,7 +340,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users
           .delete({ userId: "user-id" })
@@ -365,7 +365,7 @@ describe("Users", () => {
   describe("findByEmail", () => {
     it.effect("finds a user by email", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const email = "findbyemail@example.com";
         const name = "Find By Email User";
@@ -379,7 +379,7 @@ describe("Users", () => {
 
     it.effect("returns `NotFoundError` when email does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users
           .findByEmail("nonexistent@example.com")
@@ -392,7 +392,7 @@ describe("Users", () => {
 
     it.effect("returns `NotFoundError` for deleted user", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const email = "deletedfind@example.com";
         const user = yield* db.users.create({
@@ -410,7 +410,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users
           .findByEmail("test@example.com")
@@ -433,7 +433,7 @@ describe("Users", () => {
   describe("count", () => {
     it.effect("returns 0 when no users exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const count = yield* db.users.count();
 
@@ -443,7 +443,7 @@ describe("Users", () => {
 
     it.effect("counts non-deleted users", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         yield* db.users.create({
           data: { email: "count1@example.com", name: "Count 1" },
@@ -463,7 +463,7 @@ describe("Users", () => {
 
     it.effect("excludes soft-deleted users from count", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user1 = yield* db.users.create({
           data: { email: "countdel1@example.com", name: "Count Del 1" },
@@ -482,7 +482,7 @@ describe("Users", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.users.count().pipe(Effect.flip);
 
@@ -497,7 +497,7 @@ describe("Users", () => {
 
     it.effect("returns 0 when count is undefined", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const count = yield* db.users.count();
 

@@ -1,6 +1,6 @@
-import { describe, it, expect, TestEffectEnvironmentFixture } from "@/tests/db";
+import { describe, it, expect, TestEnvironmentFixture } from "@/tests/db";
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 
 // Re-export describe, it, and expect for convenience
 export { describe, it, expect };
@@ -12,7 +12,7 @@ export { describe, it, expect };
 /**
  * Effect-native test fixture for authentication testing.
  *
- * Builds on TestEffectEnvironmentFixture and adds:
+ * Builds on TestEnvironmentFixture and adds:
  * - An API key for the environment
  * - An additional environment for cross-environment validation
  *
@@ -25,12 +25,12 @@ export { describe, it, expect };
  * - otherEnvironment: another environment in the same project (for cross-environment validation)
  * - apiKey: a plaintext API key for the environment
  *
- * Requires EffectDatabase - call `yield* EffectDatabase` in your test
+ * Requires Database - call `yield* Database` in your test
  * if you need to perform additional database operations.
  */
-export const TestEffectAuthFixture = Effect.gen(function* () {
-  const envFixture = yield* TestEffectEnvironmentFixture;
-  const db = yield* EffectDatabase;
+export const TestAuthFixture = Effect.gen(function* () {
+  const envFixture = yield* TestEnvironmentFixture;
+  const db = yield* Database;
 
   // Create another environment to test cross-environment validation
   const otherEnvironment = yield* db.organizations.projects.environments.create(

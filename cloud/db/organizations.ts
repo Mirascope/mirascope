@@ -22,7 +22,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Create organization (user becomes OWNER)
  * const org = yield* db.organizations.create({
