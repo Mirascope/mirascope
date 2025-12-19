@@ -16,10 +16,17 @@ sync_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 77,
+                "output_tokens": 102,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 25,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=77 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=13
+)] thoughts_token_count=25 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=115 traffic_type=None\
+""",
+                "total_tokens": 115,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -92,10 +99,17 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 56,
+                "output_tokens": 96,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 40,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=56 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=13
+)] thoughts_token_count=40 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=109 traffic_type=None\
+""",
+                "total_tokens": 109,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -225,6 +239,8 @@ So, 42\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 75,
+                "raw": "None",
+                "total_tokens": 76,
             },
             "n_chunks": 4,
         }
@@ -271,6 +287,8 @@ async_stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 40,
+                "raw": "None",
+                "total_tokens": 28,
             },
             "n_chunks": 3,
         }

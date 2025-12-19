@@ -81,6 +81,8 @@ The bot is designed to be both powerful and adaptable, reflecting the essence of
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=3718, generation_tokens=1066, finish_reason='stop')",
+            "total_tokens": 4784,
         },
         "response2": """\
 <think>
@@ -161,6 +163,8 @@ The bot is designed to be both powerful and adaptable, reflecting the essence of
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=3718, generation_tokens=1066, finish_reason='stop')",
+            "total_tokens": 4784,
         },
     }
 )

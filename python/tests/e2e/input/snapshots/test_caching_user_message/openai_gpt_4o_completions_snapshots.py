@@ -17,6 +17,8 @@ If further refinement becomes necessary, know that I am always here, ready to ch
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=263, prompt_tokens=3652, total_tokens=3915, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+            "total_tokens": 3915,
         },
         "response2": """\
 This protocol is indeed "impressive... most impressive." You've crafted a comprehensive guide to turning a Star Wars meme bot into a fully armed and operational battle station of galactic communication. The integration of humor, Star Wars lore, and a structured interaction framework creates a unique, entertaining experience while ensuring functionality. Each section is detailed with creative implementations and considerations, ensuring the bot’s responses maintain thematic consistency and context.
@@ -31,6 +33,8 @@ May the Force be with your implementation!\
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=151, prompt_tokens=3652, total_tokens=3803, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+            "total_tokens": 3803,
         },
     }
 )

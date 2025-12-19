@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=68, output_tokens=8, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 76,
             },
             "messages": [
                 UserMessage(
@@ -177,6 +179,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=154, output_tokens=17, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 171,
             },
             "messages": [
                 UserMessage(
@@ -548,6 +552,8 @@ Total count: 3 primes.\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 76,
             },
             "n_chunks": 4,
         }
@@ -804,6 +810,8 @@ Checking which are prime:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 170,
             },
             "n_chunks": 10,
         }

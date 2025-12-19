@@ -56,9 +56,12 @@ def _decode_usage(
     ):  # pragma: no cover
         return None
 
+    reasoning_tokens = usage.thoughts_token_count or 0
+    output_tokens = usage.candidates_token_count + reasoning_tokens
+
     return Usage(
         input_tokens=usage.prompt_token_count,
-        output_tokens=usage.candidates_token_count,
+        output_tokens=output_tokens,
         cache_read_tokens=usage.cached_content_token_count or 0,
         cache_write_tokens=0,
         reasoning_tokens=usage.thoughts_token_count or 0,

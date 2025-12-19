@@ -20,6 +20,8 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=39, generation_tokens=155, finish_reason='stop')",
+                "total_tokens": 194,
             },
             "messages": [
                 UserMessage(content=[Text(text="Who created you?")]),

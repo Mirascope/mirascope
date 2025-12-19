@@ -20,6 +20,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=20, generation_tokens=711, finish_reason='stop')",
+                "total_tokens": 731,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -77,6 +79,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=20, generation_tokens=711, finish_reason='stop')",
+                "total_tokens": 731,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -172,6 +176,8 @@ $$\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 731,
             },
             "n_chunks": 713,
         }
@@ -229,6 +235,8 @@ $$\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 731,
             },
             "n_chunks": 713,
         }

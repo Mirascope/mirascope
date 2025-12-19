@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=416, output_tokens=141, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 557,
             },
             "messages": [
                 SystemMessage(
@@ -97,6 +99,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=416, output_tokens=210, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 626,
             },
             "messages": [
                 SystemMessage(
@@ -247,6 +251,8 @@ If you're interested in chemistry or pharmaceutical science for legitimate educa
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 570,
             },
             "n_chunks": 111,
         }
@@ -321,6 +327,8 @@ If you're interested in chemistry for educational purposes, I'd be happy to disc
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 557,
             },
             "n_chunks": 100,
         }

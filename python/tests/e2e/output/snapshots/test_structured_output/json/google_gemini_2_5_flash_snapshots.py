@@ -17,10 +17,17 @@ sync_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 317,
-                "output_tokens": 52,
+                "output_tokens": 191,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 139,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=52 candidates_tokens_details=None prompt_token_count=317 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=317
+)] thoughts_token_count=139 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=508 traffic_type=None\
+""",
+                "total_tokens": 508,
             },
             "messages": [
                 SystemMessage(
@@ -222,10 +229,17 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 317,
-                "output_tokens": 52,
+                "output_tokens": 291,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 239,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=52 candidates_tokens_details=None prompt_token_count=317 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=317
+)] thoughts_token_count=239 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=608 traffic_type=None\
+""",
+                "total_tokens": 608,
             },
             "messages": [
                 SystemMessage(
@@ -631,6 +645,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 272,
+                "raw": "None",
+                "total_tokens": 369,
             },
             "n_chunks": 4,
         }
@@ -850,6 +866,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 194,
+                "raw": "None",
+                "total_tokens": 369,
             },
             "n_chunks": 4,
         }

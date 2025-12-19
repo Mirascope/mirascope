@@ -13,6 +13,8 @@ Should you require further revisions, feel free to ask. But as it stands, this i
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=137, prompt_tokens=3652, total_tokens=3789, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+            "total_tokens": 3789,
         },
         "response2": 'Ah, "I see what you did there." A classic Lando Calrissian sentiment! If you feel the deal is getting worse, perhaps I can assist in "altering" the protocol to better suit your needs. Just let me know what you’d like to change, and we\'ll make sure it becomes "most impressive" once more. "This is the Way!"',
         "usage2": {
@@ -21,6 +23,8 @@ Should you require further revisions, feel free to ask. But as it stands, this i
             "cache_read_tokens": 3072,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=76, prompt_tokens=3806, total_tokens=3882, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=3072))",
+            "total_tokens": 3882,
         },
         "response3": "\"It’s a trap!\" Or maybe just a minor disturbance in the Force. If there's anything specific that's causing this feeling, let me know, and together we'll navigate out of this asteroid field of uncertainty. \"Stay on target,\" and we'll ensure the protocol is as solid as a Wookiee's loyalty. How can I assist in turning that bad feeling into a victorious end?",
         "usage3": {
@@ -29,6 +33,8 @@ Should you require further revisions, feel free to ask. But as it stands, this i
             "cache_read_tokens": 3840,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "CompletionUsage(completion_tokens=75, prompt_tokens=3897, total_tokens=3972, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=3840))",
+            "total_tokens": 3972,
         },
     }
 )

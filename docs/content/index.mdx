@@ -117,6 +117,7 @@ as a convenient helper for converting response content to text; however, in prod
 | `finish_reason` | `FinishReason \| None` | The reason why the LLM finished generating a response, if set. Only set if the response did not finish generating normally (e.g. `FinishReason.MAX_TOKENS`). `None` when the response generates normally |
 | `format` | `Format[FormattableT] \| None` | The `Format` describing the structured response format, if available |
 | `model` | `Model` | A `Model` with parameters matching this response |
+| `usage` | `Usage | None` | The token usage of this response, if available |
 
 **Methods:**
 | Method | Description |

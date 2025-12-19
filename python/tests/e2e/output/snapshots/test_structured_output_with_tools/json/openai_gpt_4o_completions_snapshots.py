@@ -23,6 +23,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "CompletionUsage(completion_tokens=41, prompt_tokens=278, total_tokens=319, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+                "total_tokens": 319,
             },
             "messages": [
                 SystemMessage(
@@ -221,6 +223,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "CompletionUsage(completion_tokens=28, prompt_tokens=278, total_tokens=306, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+                "total_tokens": 306,
             },
             "messages": [
                 SystemMessage(
@@ -560,6 +564,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 319,
             },
             "n_chunks": 42,
         }
@@ -734,6 +740,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 319,
             },
             "n_chunks": 42,
         }

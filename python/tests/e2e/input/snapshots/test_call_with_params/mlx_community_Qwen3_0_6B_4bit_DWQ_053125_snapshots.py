@@ -31,6 +31,8 @@ test_snapshot = snapshot(
                     "cache_read_tokens": 0,
                     "cache_write_tokens": 0,
                     "reasoning_tokens": 0,
+                    "raw": "MLXCassetteResponse(text=' is', token=374, prompt_tokens=20, generation_tokens=500, finish_reason='length')",
+                    "total_tokens": 520,
                 },
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),

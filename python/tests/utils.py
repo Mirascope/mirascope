@@ -42,7 +42,8 @@ def usage_snapshot(usage: llm.Usage | None) -> dict[str, int | None] | None:
     if not usage:
         return None
     dict_copy = usage.__dict__.copy()
-    dict_copy.pop("raw")
+    dict_copy["total_tokens"] = usage.total_tokens
+    dict_copy["raw"] = str(usage.raw)  # Useful for sanity checking snapshots
     return dict_copy
 
 

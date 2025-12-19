@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=62, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=10, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=72)",
+                "total_tokens": 72,
             },
             "messages": [
                 UserMessage(
@@ -193,6 +195,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=62, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=10, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=72)",
+                "total_tokens": 72,
             },
             "messages": [
                 UserMessage(
@@ -516,6 +520,8 @@ So, I have three primes: 79, 179, and 379. I made sure to rule out other numbers
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 72,
             },
             "n_chunks": 6,
         }
@@ -716,6 +722,8 @@ I’ll double-check for any primes like 197, but it doesn't have "79." And 297 i
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 72,
             },
             "n_chunks": 6,
         }

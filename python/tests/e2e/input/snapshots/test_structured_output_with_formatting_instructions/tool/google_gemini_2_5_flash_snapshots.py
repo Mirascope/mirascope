@@ -17,10 +17,17 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 137,
-                "output_tokens": 37,
+                "output_tokens": 174,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 137,
+                "raw": """\
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=37 candidates_tokens_details=None prompt_token_count=137 prompt_tokens_details=[ModalityTokenCount(
+  modality=<MediaModality.TEXT: 'TEXT'>,
+  token_count=137
+)] thoughts_token_count=137 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=311 traffic_type=None\
+""",
+                "total_tokens": 311,
             },
             "messages": [
                 SystemMessage(

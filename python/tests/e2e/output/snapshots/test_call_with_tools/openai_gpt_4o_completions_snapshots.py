@@ -23,6 +23,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "CompletionUsage(completion_tokens=32, prompt_tokens=149, total_tokens=181, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+                "total_tokens": 181,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -150,6 +152,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "CompletionUsage(completion_tokens=31, prompt_tokens=149, total_tokens=180, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+                "total_tokens": 180,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -359,6 +363,8 @@ The secrets associated with the passwords are:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 177,
             },
             "n_chunks": 29,
         }
@@ -457,6 +463,8 @@ The secrets associated with the passwords are as follows:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 181,
             },
             "n_chunks": 33,
         }

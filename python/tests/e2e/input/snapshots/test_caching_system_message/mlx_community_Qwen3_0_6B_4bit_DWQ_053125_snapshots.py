@@ -19,6 +19,8 @@ Hello, and welcome to the Star Wars Meme Bot Protocol 2.0!\
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=3726, generation_tokens=208, finish_reason='stop')",
+            "total_tokens": 3934,
         },
         "response2": """\
 <think>
@@ -43,6 +45,8 @@ So, the final answer would be a simple, positive breakfast recommendation. Let m
             "cache_read_tokens": 0,
             "cache_write_tokens": 0,
             "reasoning_tokens": 0,
+            "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=3730, generation_tokens=382, finish_reason='stop')",
+            "total_tokens": 4112,
         },
     }
 )

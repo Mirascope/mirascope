@@ -20,6 +20,8 @@ test_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "CompletionUsage(completion_tokens=16, prompt_tokens=21, total_tokens=37, completion_tokens_details=None, prompt_tokens_details=None)",
+                "total_tokens": 37,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),

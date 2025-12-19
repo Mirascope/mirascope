@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=278, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=47, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=325)",
+                "total_tokens": 325,
             },
             "messages": [
                 SystemMessage(
@@ -225,6 +227,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=278, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=47, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=325)",
+                "total_tokens": 325,
             },
             "messages": [
                 SystemMessage(
@@ -614,6 +618,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 325,
             },
             "n_chunks": 48,
         }
@@ -818,6 +824,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 325,
             },
             "n_chunks": 48,
         }

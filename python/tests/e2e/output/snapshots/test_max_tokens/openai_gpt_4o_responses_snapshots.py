@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=14, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=50, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=64)",
+                "total_tokens": 64,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -94,6 +96,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=14, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=50, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=64)",
+                "total_tokens": 64,
             },
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),

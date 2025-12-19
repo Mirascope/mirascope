@@ -20,6 +20,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=166, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=30, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=196)",
+                "total_tokens": 196,
             },
             "messages": [
                 UserMessage(
@@ -108,6 +110,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "ResponseUsage(input_tokens=166, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=30, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=196)",
+                "total_tokens": 196,
             },
             "messages": [
                 UserMessage(
@@ -265,6 +269,8 @@ stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 196,
             },
             "n_chunks": 31,
         }
@@ -353,6 +359,8 @@ async_stream_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 196,
             },
             "n_chunks": 31,
         }

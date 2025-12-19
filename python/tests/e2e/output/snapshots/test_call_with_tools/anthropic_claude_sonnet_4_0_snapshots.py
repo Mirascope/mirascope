@@ -23,6 +23,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=602, output_tokens=39, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 641,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -160,6 +162,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=606, output_tokens=35, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 641,
             },
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -417,6 +421,8 @@ Both secrets have been successfully retrieved!\
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 654,
             },
             "n_chunks": 17,
         }
@@ -552,6 +558,8 @@ Here are the secrets retrieved for each password:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 645,
             },
             "n_chunks": 10,
         }

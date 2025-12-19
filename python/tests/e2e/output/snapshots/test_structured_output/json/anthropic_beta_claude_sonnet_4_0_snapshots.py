@@ -21,6 +21,8 @@ sync_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=328, output_tokens=58, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 386,
             },
             "messages": [
                 SystemMessage(
@@ -218,6 +220,8 @@ async_snapshot = snapshot(
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=328, output_tokens=58, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 386,
             },
             "messages": [
                 SystemMessage(
@@ -593,6 +597,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 386,
             },
             "n_chunks": 11,
         }
@@ -790,6 +796,8 @@ Respond only with valid JSON that matches this exact schema:
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 386,
             },
             "n_chunks": 11,
         }

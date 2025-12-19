@@ -5,6 +5,7 @@ from typing import Any, TypeAlias, cast
 
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
+from anthropic.types.beta import BetaUsage
 
 from ....content import (
     AssistantContentPart,
@@ -60,15 +61,20 @@ def _decode_assistant_content(
         )
 
 
-def _decode_usage(
-    usage: anthropic_types.Usage,
+def decode_usage(
+    usage: anthropic_types.Usage | BetaUsage,
 ) -> Usage:
     """Convert Anthropic Usage (or BetaUsage) to Mirascope Usage."""
+
+    cache_read_tokens = usage.cache_read_input_tokens or 0
+    cache_write_tokens = usage.cache_creation_input_tokens or 0
+    input_tokens = usage.input_tokens + cache_read_tokens + cache_write_tokens
+    output_tokens = usage.output_tokens
     return Usage(
-        input_tokens=usage.input_tokens,
-        output_tokens=usage.output_tokens,
-        cache_read_tokens=usage.cache_read_input_tokens or 0,
-        cache_write_tokens=usage.cache_creation_input_tokens or 0,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        cache_read_tokens=cache_read_tokens,
+        cache_write_tokens=cache_write_tokens,
         reasoning_tokens=0,
         raw=usage,
     )
@@ -94,7 +100,7 @@ def decode_response(
         if response.stop_reason
         else None
     )
-    usage = _decode_usage(response.usage)
+    usage = decode_usage(response.usage)
     return assistant_message, finish_reason, usage
 
 
