@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"Describe the following image in one sentence","type":"input_text"},{"image_url":"https://en.wikipedia.org/static/images/icons/wikipedia.png","detail":"auto","type":"input_image"}],"role":"user","type":"message"}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '265'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Error while downloading https://en.wikipedia.org/static/images/icons/wikipedia.png.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"url\",\n    \"code\":
+        \"invalid_value\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 9b1f5555e8fdd797-NRT
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '207'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:38:30 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '105'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '107'
+      x-request-id:
+      - req_9a7b50fe4a4d44e98f4fc4477eff2dad
+    status:
+      code: 400
+      message: Bad Request
+version: 1

@@ -98,6 +98,17 @@ def stream_response_snapshot_dict(
     }
 
 
+def _normalize_azure_url(value: str) -> str:
+    """Normalize Azure OpenAI URLs to use dummy endpoint for consistent snapshots."""
+    import re
+
+    return re.sub(
+        r"https://[^/]+\.openai\.azure\.com",
+        "https://dummy.openai.azure.com",
+        value,
+    )
+
+
 def exception_snapshot_dict(exception: Exception) -> dict[str, Any]:
     """Convert an exception to a dictionary for snapshot testing.
 
@@ -109,14 +120,15 @@ def exception_snapshot_dict(exception: Exception) -> dict[str, Any]:
         if "Connection error" in arg or "Can't overwrite existing cassette" in arg:
             raise exception
 
-    return {
-        "type": type(exception).__name__,
-        **{
-            attr: str(getattr(exception, attr))
-            for attr in dir(exception)
-            if not attr.startswith("_") and not callable(getattr(exception, attr))
-        },
-    }
+    result: dict[str, Any] = {"type": type(exception).__name__}
+    for attr in dir(exception):
+        if attr.startswith("_") or callable(getattr(exception, attr)):
+            continue
+        value = str(getattr(exception, attr))
+        if ".openai.azure.com" in value:
+            value = _normalize_azure_url(value)
+        result[attr] = value
+    return result
 
 
 class SnapshotDict(dict[str, Any]):

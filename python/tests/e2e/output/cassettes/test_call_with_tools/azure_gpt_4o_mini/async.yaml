@@ -1,0 +1,177 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Use parallel tool calling."},{"role":"user","content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '512'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"content_filter_results":{},"finish_reason":"tool_calls","index":0,"logprobs":null,"message":{"annotations":[],"content":null,"refusal":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{\"password\":
+        \"mellon\"}","name":"secret_retrieval_tool"},"id":"call_r8b881HRzf27JmUu3bIvqLc5","type":"function"},{"function":{"arguments":"{\"password\":
+        \"radiance\"}","name":"secret_retrieval_tool"},"id":"call_330DkELs2oB4p2CzV1EwlCza","type":"function"}]}}],"created":1766394351,"id":"chatcmpl-CpW9Pw02wV9pDJOPGnJqjAo0soX7z","model":"gpt-4o-mini-2024-07-18","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"jailbreak":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}}}],"system_fingerprint":"fp_f97eff32c5","usage":{"completion_tokens":54,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":0,"rejected_prediction_tokens":0},"prompt_tokens":75,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":129}}
+
+        '
+    headers:
+      Content-Length:
+      - '1211'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 09:05:52 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 9a8cd1e1-ff62-4491-a7cc-e96c22be79e1
+      azureml-model-session:
+      - d20251214100634-9856757b6b614f8a
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '297'
+      x-ratelimit-remaining-tokens:
+      - '29678'
+      x-request-id:
+      - d841ea34-b5bf-4d62-84b7-cedb9878d032
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Use parallel tool calling."},{"role":"user","content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":null,"tool_calls":[{"id":"call_r8b881HRzf27JmUu3bIvqLc5","type":"function","function":{"name":"secret_retrieval_tool","arguments":"{\"password\":
+      \"mellon\"}"}},{"id":"call_330DkELs2oB4p2CzV1EwlCza","type":"function","function":{"name":"secret_retrieval_tool","arguments":"{\"password\":
+      \"radiance\"}"}}]},{"role":"tool","content":"Welcome to Moria!","tool_call_id":"call_r8b881HRzf27JmUu3bIvqLc5"},{"role":"tool","content":"Life
+      before Death","tool_call_id":"call_330DkELs2oB4p2CzV1EwlCza"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1035'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"protected_material_code":{"filtered":false,"detected":false},"protected_material_text":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}},"finish_reason":"stop","index":0,"logprobs":null,"message":{"annotations":[],"content":"The
+        secrets retrieved are:\n\n- For the password **mellon**: \"Welcome to Moria!\"\n-
+        For the password **radiance**: \"Life before Death\"","refusal":null,"role":"assistant"}}],"created":1766394352,"id":"chatcmpl-CpW9QXIIQ3sIjCw1daIe1YrX0KeVp","model":"gpt-4o-mini-2024-07-18","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"jailbreak":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}}}],"system_fingerprint":"fp_efad92c60b","usage":{"completion_tokens":37,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":0,"rejected_prediction_tokens":0},"prompt_tokens":149,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":186}}
+
+        '
+    headers:
+      Content-Length:
+      - '1351'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 09:05:53 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - b605b44b-1c52-48f1-a8b6-743d4a1a398b
+      azureml-model-session:
+      - d039-20251204115444
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '296'
+      x-ratelimit-remaining-tokens:
+      - '29564'
+      x-request-id:
+      - 68b57339-bfd9-418f-88f9-27bea45711e2
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,148 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQ3UrDQBCF7/MUy143JYlW1Dvxj4pisaEIIjJtpsnSzW7YnUBr6bu7SZp2g7lY
+        hjknZ2a+fcAYX4HKRAaElt+yL9dhbN++jaYVoSIn9C3XrMDQ2dt9e692FsJt8xOfMigZMAkmR/eq
+        vAZXlDpDOWJkQCjM2HLHnrXOJY65l3I41d+j82yjJTbBbURvP/QGvhZK2OIDwWrV2Obp+4yfVKEy
+        3Lp2FPQD2mheW7fVGxI4CnC6lVdGlxWleoPqXtcthUmX5TEbyHF81EkTyIF0EUejf7H2wQ0V0ofp
+        cXY3ghS0aw5JHz9T7nGgwVY9h8DDxanQdV7QcMPk5jI4AusYLtBY0cHKsXT4wmQ8CdcSbNHO4wZt
+        pZXFadZ4kvnTCyx/f15xXkThZhaFydX13YoHh+APsedw/k0CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 22 Dec 2025 10:47:53 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2501
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
+      am a large language model, trained by Google."},{"role":"user","content":"Can
+      you double-check that?"}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '216'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "{\"choices\":[{\"content_filter_results\":{\"hate\":{\"filtered\":false,\"severity\":\"safe\"},\"protected_material_code\":{\"filtered\":false,\"detected\":false},\"protected_material_text\":{\"filtered\":false,\"detected\":false},\"self_harm\":{\"filtered\":false,\"severity\":\"safe\"},\"sexual\":{\"filtered\":false,\"severity\":\"safe\"},\"violence\":{\"filtered\":false,\"severity\":\"safe\"}},\"finish_reason\":\"stop\",\"index\":0,\"logprobs\":null,\"message\":{\"annotations\":[],\"content\":\"Sorry
+        \u2014 that was incorrect. I was created and trained by OpenAI. I don\u2019t
+        have independent browsing to verify beyond my internal system info, but my
+        development and training are by OpenAI (using a mixture of licensed data,
+        human-created data, and publicly available text).\",\"refusal\":null,\"role\":\"assistant\"}}],\"created\":1766400474,\"id\":\"chatcmpl-CpXkAFLTHNsooj1Vq6LEmkW1FnVtT\",\"model\":\"gpt-5-mini-2025-08-07\",\"object\":\"chat.completion\",\"prompt_filter_results\":[{\"prompt_index\":0,\"content_filter_results\":{\"hate\":{\"filtered\":false,\"severity\":\"safe\"},\"jailbreak\":{\"filtered\":false,\"detected\":false},\"self_harm\":{\"filtered\":false,\"severity\":\"safe\"},\"sexual\":{\"filtered\":false,\"severity\":\"safe\"},\"violence\":{\"filtered\":false,\"severity\":\"safe\"}}}],\"system_fingerprint\":null,\"usage\":{\"completion_tokens\":321,\"completion_tokens_details\":{\"accepted_prediction_tokens\":0,\"audio_tokens\":0,\"reasoning_tokens\":256,\"rejected_prediction_tokens\":0},\"prompt_tokens\":37,\"prompt_tokens_details\":{\"audio_tokens\":0,\"cached_tokens\":0},\"total_tokens\":358}}\n"
+    headers:
+      Content-Length:
+      - '1478'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 10:47:55 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - a119ad76-cb6b-4f39-b048-3a2725a35381
+      azureml-model-session:
+      - d20251213051038-f19b4ffce7bb4412
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-5-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '100'
+      x-ratelimit-limit-tokens:
+      - '100000'
+      x-ratelimit-remaining-requests:
+      - '90'
+      x-ratelimit-remaining-tokens:
+      - '83187'
+      x-request-id:
+      - 53b82b10-9411-49f0-896f-b7e6c5f2e769
+    status:
+      code: 200
+      message: OK
+version: 1

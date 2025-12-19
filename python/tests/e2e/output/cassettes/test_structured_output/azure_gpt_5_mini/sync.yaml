@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Please recommend the most popular
+      book by Patrick Rothfuss"}],"model":"gpt-5-mini","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book with a rating. The title should be in all caps!"}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '933'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"protected_material_code":{"filtered":false,"detected":false},"protected_material_text":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}},"finish_reason":"stop","index":0,"logprobs":null,"message":{"annotations":[],"content":"{\"title\":\"THE
+        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","refusal":null,"role":"assistant"}}],"created":1766400577,"id":"chatcmpl-CpXlpRww1ljNO2gyZITEDsw1IpKuc","model":"gpt-5-mini-2025-08-07","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"jailbreak":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}}}],"system_fingerprint":null,"usage":{"completion_tokens":170,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":128,"rejected_prediction_tokens":0},"prompt_tokens":168,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":338}}
+
+        '
+    headers:
+      Content-Length:
+      - '1320'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 10:49:38 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 2c262b0e-e77b-4476-bad8-4ce0082b3709
+      azureml-model-session:
+      - d20251213100918-a69d9e0cbad848be
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-5-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '100'
+      x-ratelimit-limit-tokens:
+      - '100000'
+      x-ratelimit-remaining-requests:
+      - '85'
+      x-ratelimit-remaining-tokens:
+      - '98389'
+      x-request-id:
+      - 1a73432c-2b32-44d9-8df1-2b38aeb4b11a
+    status:
+      code: 200
+      message: OK
+version: 1

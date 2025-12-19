@@ -1,0 +1,178 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQQWvDMAyF7/kVxue2LBmFdbfRjdFBWVjDGIwd1EVNzBwr2Aq0lP73OUnTOtQH
+        Y/Sen6TvGAkhf8HkKgdGJx/Ft68IcezuViPDaNgLQ8kXa7B89fbnGLy9hXHffpIrAZUAocEW6G9T
+        NOAfFeWoJ4ItKIO52B7EK1GhcSaDlNPl/TO59raksQ3uIgb7aTDInTLKlR8Ijkxr22TvqbyoyuS4
+        9+W7aGjQRcvG+anWyOApwGVXWVuqas7oD82Smo7CvM8KmI3kOD7rTAx6JCWLxeQm1j37pkqHMAPO
+        fkfQig/tItnLVyYDDjyaauAQBbgkl9QUJY8nTB7uozOwnuEnWqd6WAVWHt80mc2nOw2u7PpJi64m
+        43CVt569it9gu0nS9TJNLKVz8l+enIxO0T/CvSBPTQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 22 Dec 2025 11:38:47 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2303
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"Who created you?","role":"user"},{"content":"I am
+      a large language model, trained by Google.","role":"assistant"},{"content":"Can
+      you double-check that?","role":"user"}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '213'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xUu3LjOgzt8xUY1XFGtiU/0t0y1RZbbnY0EAk5vKYIDQkl8ezk3++QsmTpJtlO
+        wuPgADjEnzuAzOjsETJPoatyao57VarDulE54TbPd8fiuNFqX+R5flgfS0SlGlLF7lgU62NTZPcR
+        gut/SckIwy7QYFeeUEhXGH3r/W5X5Ntys0++ICh9iDmK286SkB6SalTnk+feRV4N2kCD2Vhr3Cl7
+        hD93AABZhxfyMV/TK1nuyGd3AB9D4RFyWXq7SV7ynmOm661NBuPGhEqToLFh6Q3ieyWG3cLe4nvF
+        vXS9VMJn+uwUZlsptEu4ljXZyPvUyapctcaZ1SbflKv8sMr314Em2OwRfqVeh45vuwp/2VRTb4u0
+        qb1WRbnb1qrZ0bYpE3ACkUtHw64wsIsznVyhb1v0l1j4d7J93H9FoA2n7xnU+5oOkcEhz3VZb2rd
+        HNalOujPDFoKAU80q/+NKJJTsRNyt6nMiS1gx6XQu0zZKQCdY8Fxkb9+L5yWT53n+gtPAnqE7Cd7
+        f4HnfpOvC5AXFHjDAFE83pOSB3hKhqvqAZ2GUZsa6gv86Mj98/QAz+7ZPTVw4T5hHTVYc6Z7eAKF
+        Dui9s2gctOwJsOZe4IXfIMkmpEhoCdATiEfjSAN7eItszsZp4AY0CqbqARuSC3h6NfQGJ6bIVnhk
+        1ZKTh2zq9OP6NTWfebZpoBiCCYJOhuAYmIKyDj1aS3YpdfH98Ga7WJn7UI1noUr6mZ5C57ntpFKo
+        Xqg60+Vbn6e4ecNuHnHT73QTqGnYyyAtbfr2uv6ZrmP2dCaG+VRGR/DG0OIoBPKvRlElZjwzDfZ2
+        UFQWhD3NWxVqO/IofTKvH/KrNSnnyq5h3+Ltf6bYFDd/cNkr+ZqDkcusmYn3MO0XNmpYTy+cTY6b
+        gDPhrprJOp+M3Zyj753C63AzbQLWdrzFfXqeUwPGLY7ddn//2T67oFObaYn6lpgvWv3/Dd3mu688
+        XwFPErhlb8rdAl1Y0M7Ai+00xj4sN96SYHw7scLH3cd/AAAA//8DAI+rHhIeBwAA
+    headers:
+      CF-RAY:
+      - 9b1f55bcbd4fd797-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:38:52 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=IEqOE4B4kLn7.Zcq4FBu_.8I5xKVndyaSxud8PgCR10-1766403532-1.0.1.1-bgikfBJT_n.TkXJYemvthh0quUdeRj3VcSRynvp7oNxrouiDCvGSp9e__GntL9qQ5HL9REAx38GcFSEEa7ohrBgKKpp0p1ZTXjxXuU0QBto;
+        path=/; expires=Mon, 22-Dec-25 12:08:52 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=vcEUULLribxVSng1LI3sI9S5gdQP7_epqnu_.JImmEU-1766403532412-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '5098'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '5100'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999911'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_33886e3337f34a96808957d10b54cb78
+    status:
+      code: 200
+      message: OK
+version: 1

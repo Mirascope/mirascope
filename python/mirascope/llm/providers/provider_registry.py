@@ -15,6 +15,7 @@ PROVIDER_REGISTRY: dict[str, Provider] = {}
 # These providers will be automatically registered on first use
 DEFAULT_AUTO_REGISTER_SCOPES: dict[str, ProviderId] = {
     "anthropic/": "anthropic",
+    "azure/": "azure",
     "google/": "google",
     "mlx-community/": "mlx",
     "ollama/": "ollama",

@@ -83,3 +83,33 @@ def test_ollama_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     finally:
         if original_base_url is not None:
             os.environ["OLLAMA_BASE_URL"] = original_base_url
+
+
+AZURE_MODEL_IDS = [
+    "azure/gpt-5-mini",
+]
+
+
+@pytest.mark.parametrize("model_id", AZURE_MODEL_IDS)
+@pytest.mark.vcr
+def test_azure_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
+    """Test that Azure provider works correctly."""
+
+    @llm.call(model_id)
+    def add_numbers(a: int, b: int) -> str:
+        return f"What is {a} + {b}?"
+
+    llm.register_provider(
+        "azure",
+        api_key=os.getenv("AZURE_OPENAI_API_KEY", "test"),
+        base_url=os.getenv("AZURE_OPENAI_ENDPOINT", "https://dummy.openai.azure.com/"),
+    )
+
+    with snapshot_test(snapshot) as snap:
+        response = add_numbers(4200, 42)
+        assert response.provider_id == "azure"
+        assert response.provider_model_name == "gpt-5-mini"
+        snap.set_response(response)
+        assert "4242" in response.pretty(), (
+            f"Expected '4242' in response: {response.pretty()}"
+        )

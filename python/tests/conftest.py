@@ -21,3 +21,5 @@ def load_api_keys() -> None:
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
     os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
     os.environ.setdefault("TOGETHER_API_KEY", "dummy-together-key")
+    os.environ.setdefault("AZURE_OPENAI_API_KEY", "dummy-azure-openai-key")
+    os.environ.setdefault("AZURE_OPENAI_ENDPOINT", "https://dummy.openai.azure.com/")

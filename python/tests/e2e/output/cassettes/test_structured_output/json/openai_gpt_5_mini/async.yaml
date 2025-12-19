@@ -1,0 +1,123 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Respond only with valid JSON that
+      matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\": {\n      \"description\":
+      \"The author of a book.\",\n      \"properties\": {\n        \"first_name\":
+      {\n          \"title\": \"First Name\",\n          \"type\": \"string\"\n        },\n        \"last_name\":
+      {\n          \"title\": \"Last Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"},{"content":"Please recommend the most
+      popular book by Patrick Rothfuss","role":"user"}],"model":"gpt-5-mini","text":{"format":{"type":"json_object"}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1282'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RUyW7bMBC95ysInuNCVixL8q1AW7SHLigK9FAXwogaOWwoUiCHQY3A/16QWiw1
+        yU2aN/P4Zn26YYzLhh8Yt+j6KikSLDLAbN/s21qUSbIvd2WKRY7Jvii2ZV5AWbRwl7ZiX4hM5Pw2
+        UJj6DwqaaIx2ONiFRSBsKgjYNt/vd8ldvi0j5gjIuxAjTNcrJGyGoBrEw8kar4OuFpTDwSyVkvrE
+        D+zphjHGeA9ntCG+wUdUpkfLbxi7DA9PlOun0yyiaK0JkdorFQ1STwFVgwRSuTXqyHpB0uiVvYO/
+        lfHUe6rIPOBzkIxRlQC1putMgyroPvW0yTad1HKTJmm2SYpNMhU00vID+xVzHTK+9sq93qkiryF2
+        CsSd2CV5XaAosC7SSBxJ6Nzj0CtwRoeazpDzXQf2HB7+HW2X25cEdO70ugKR70VUUGdpXW93za4p
+        IWvK+rmCDp2DEy7ef2UoIiiMJtTXqiyFrWinpuBfmqOjA2htCKZG/vq9ApU59dbULyCR6MD401Ez
+        duQkSeGRH9iR//j4nn15+/k9+/qBhe+fn768O/LbwQ883RsbHGNgMLXSOqo0dGP8NyArxcMYEjwU
+        rBy+G7pvvXNHHhwuI7MFkvoUPPKjvvBZ62X8muVza1QsCTgnHYGmwTk4RifegwWlUK2Hlawftq63
+        +CiNd9W02FWcgHmYe2u6nioB4h6rBzy/ilkMvZNGLz2uEzhvNbatsTQMRyN9NzZwMZkhel50By3S
+        uZJNIG8lrtbaoX2UAiuS06FowathJrgjY3GZKmHXowXy0bx9k4zW2PtRXWtsB9f/xcz9cUZX4x1c
+        bg5/RFsbJ+m8yGmWPxT93kgxdMmT4TNwnUROpq8W85nMxn4p1XotYKwxb6SDWk1H1cc9m/OQenW1
+        0jy/fQ4sbuGcbmxmc41MVrn+fw3T3e4l5CXieRSu0dsyXbGTIVBXOEu3cx29W3e+Q4IGCMILl5vL
+        PwAAAP//AwCwT1Jg6AYAAA==
+    headers:
+      CF-RAY:
+      - 9b1f5a70997ad5cb-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:42:05 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '5774'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '5776'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999973'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_c40e5a6f70e64edab57800ca201b46ea
+    status:
+      code: 200
+      message: OK
+version: 1

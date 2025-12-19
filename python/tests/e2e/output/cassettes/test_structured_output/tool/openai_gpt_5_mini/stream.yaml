@@ -1,0 +1,296 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      recommend the most popular book by Patrick Rothfuss","role":"user"}],"model":"gpt-5-mini","stream":true,"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1155'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_07ab68104920adf10069492ea6bc1081938a88df13833f6101","object":"response","created_at":1766403750,"status":"in_progress","background":false,"completed_at":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-5-mini-2025-08-07","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
+        this tool to extract data in Book format for a final response.\nA book with
+        a rating. The title should be in all caps!","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+        testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+        author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+        Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_07ab68104920adf10069492ea6bc1081938a88df13833f6101","object":"response","created_at":1766403750,"status":"in_progress","background":false,"completed_at":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-5-mini-2025-08-07","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
+        this tool to extract data in Book format for a final response.\nA book with
+        a rating. The title should be in all caps!","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+        testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+        author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+        Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"rs_07ab68104920adf10069492ea70a748193b2b87eece877bee8","type":"reasoning","summary":[]}}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":3,"output_index":0,"item":{"id":"rs_07ab68104920adf10069492ea70a748193b2b87eece877bee8","type":"reasoning","summary":[]}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":4,"output_index":1,"item":{"id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","type":"function_call","status":"in_progress","arguments":"","call_id":"call_MfHmQ3iFygdsUyYETnWWfLq5","name":"__mirascope_formatted_output_tool__"}}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"{\"","obfuscation":"yGeQfrWnutroh3"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"title","obfuscation":"XJgAycdDEeY"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\":\"","obfuscation":"a0gW9yIKjaLJ0"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"THE","obfuscation":"GOjOO2inOv4v1"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"
+        NAME","obfuscation":"55Wg9AA8uCl"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"
+        OF","obfuscation":"RmAHqPt3aTnvk"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"
+        THE","obfuscation":"u1IqMAiacu7m"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"
+        WIND","obfuscation":"WtJFoFNFbi1"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\",\"","obfuscation":"LkcMZoAWuDC4B"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"author","obfuscation":"VbOyoQ9p44"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":15,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\":{\"","obfuscation":"v3cyX4dsCyHp"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":16,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"first","obfuscation":"zWI03VF6GMM"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":17,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"_name","obfuscation":"yYx3HITf5eK"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":18,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\":\"","obfuscation":"MooEDomr1DXxl"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":19,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"Patrick","obfuscation":"zaz5kXmhN"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":20,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\",\"","obfuscation":"plqs6PK9JlDar"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":21,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"last","obfuscation":"IjyriC0kJIm9"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":22,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"_name","obfuscation":"iW268mRjFv5"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":23,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\":\"","obfuscation":"kc8IeSFXXBqIV"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":24,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"R","obfuscation":"xQVgu46M16hsRN2"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":25,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"oth","obfuscation":"3E0UI6Jpbv1e2"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":26,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"f","obfuscation":"9761iJ0JvmBUB66"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":27,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"uss","obfuscation":"s3K1tok98cvbo"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":28,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\"}","obfuscation":"h1FpU2Chfr38Fw"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":29,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":",\"","obfuscation":"IQspbom9BRN11B"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":30,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"rating","obfuscation":"3dB9r335zd"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":31,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"\":","obfuscation":"yJ44iYFPVvRBLu"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":32,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"7","obfuscation":"YWTxJpHTk2KA5pp"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":33,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"delta":"}","obfuscation":"2ICacJ5leVAPusG"}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","sequence_number":34,"item_id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","output_index":1,"arguments":"{\"title\":\"THE
+        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}"}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":35,"output_index":1,"item":{"id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","type":"function_call","status":"completed","arguments":"{\"title\":\"THE
+        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","call_id":"call_MfHmQ3iFygdsUyYETnWWfLq5","name":"__mirascope_formatted_output_tool__"}}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","sequence_number":36,"response":{"id":"resp_07ab68104920adf10069492ea6bc1081938a88df13833f6101","object":"response","created_at":1766403750,"status":"completed","background":false,"completed_at":1766403756,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-5-mini-2025-08-07","output":[{"id":"rs_07ab68104920adf10069492ea70a748193b2b87eece877bee8","type":"reasoning","summary":[]},{"id":"fc_07ab68104920adf10069492eac25a08193a27fc6d22bb01886","type":"function_call","status":"completed","arguments":"{\"title\":\"THE
+        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","call_id":"call_MfHmQ3iFygdsUyYETnWWfLq5","name":"__mirascope_formatted_output_tool__"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
+        this tool to extract data in Book format for a final response.\nA book with
+        a rating. The title should be in all caps!","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+        testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+        author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+        Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":159,"input_tokens_details":{"cached_tokens":0},"output_tokens":371,"output_tokens_details":{"reasoning_tokens":320},"total_tokens":530},"user":null,"metadata":{}}}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9b1f5b3178aa6c77-NRT
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Mon, 22 Dec 2025 11:42:30 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '47'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '52'
+      x-request-id:
+      - req_4fef91625e20427eb16c6f5510c213e0
+    status:
+      code: 200
+      message: OK
+version: 1

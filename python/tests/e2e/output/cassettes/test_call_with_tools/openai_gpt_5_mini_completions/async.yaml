@@ -1,0 +1,225 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Use parallel tool calling."},{"role":"user","content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance"}],"model":"gpt-5-mini","tools":[{"type":"function","function":{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '511'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA8xUXW+bMBR951dY9zlMJMtHw9uoNGlbu6lpVy1ZKuTaF+LO2MQ2abso/70CEiDp
+        Ou1xPCDj43PuuZd7vfUIAcEhJMBW1LEsl/55vhgvvjL8Mv/UzzD6uI4W9uJHkUbfots19EqGvn9A
+        5g6sd0xnuUQntKphZpA6LFX7k/F4GIwmwaQCMs1RlrQ0d/7Iz4QS/iAYjPzgzA8me/JKC4YWQvLT
+        I4SQbfUubSqOTxCSoHfYydBamiKEzSFCwGhZ7gC1VlhHlYNeCzKtHKrSuSqk7ABOaxkzKmUbuH62
+        nXVbKyplbD9cUvd0zaKL86vRfdJ/dPzm9/zquhOvln7OK0NJoVhTow7e7IcnwQgBRbOKa5EZdLFB
+        ZwRuqIxLvydChAA1aZGhcmUSsF1CTq191IYvISRLyFBKrZawgyPervO16/1T6rPhFG8+f59P2eVs
+        tkkGw83DLErW8r9N3VAuqGL49+Sb9V2nMwwmhaXydctQpbSjpf2qZ+68kxJCIpSwq9ggtVWK3Sbz
+        DgGrUFAc9THkRme5i53+hZV4fzStVaEdtQ463Y8EOO2qAu2B98MD7Ugw5uioqDq9GS5G2Qp5S22H
+        jBZc6A7gdZJ8bedP2nUBhEo7lgdnbwZoAcYwd8jj3CAX7Djp9pjB8jJ661hT6MoyWDQbwTB2Ak35
+        SzgmtJD1HQH22TrM4kSoFE1uRHNReDvvBQAA//8DAHpeB3QqBQAA
+    headers:
+      CF-RAY:
+      - 9b1f8af72a1a8eb8-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:15:11 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '3712'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '3730'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999969'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_249a2748522d4fc6b783e8c033ccfe0e
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Use parallel tool calling."},{"role":"user","content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","annotations":[],"tool_calls":[{"id":"call_sAMatxScBLCQ5bf1wtdTzYQS","function":{"arguments":"{\"password\":
+      \"mellon\"}","name":"secret_retrieval_tool"},"type":"function"},{"id":"call_R49eTJUY9cMRRvf24vjRBfql","function":{"arguments":"{\"password\":
+      \"radiance\"}","name":"secret_retrieval_tool"},"type":"function"}]},{"role":"tool","content":"Welcome
+      to Moria!","tool_call_id":"call_sAMatxScBLCQ5bf1wtdTzYQS"},{"role":"tool","content":"Life
+      before Death","tool_call_id":"call_R49eTJUY9cMRRvf24vjRBfql"}],"model":"gpt-5-mini","tools":[{"type":"function","function":{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1036'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SSTW7bMBCF9zrFlGurkFX/JN62aLtogWyCAqkDgSGfLDYUKZAjt0HgbQ/QI/Yk
+        BWXHUtBkowW/N6P3ZuYxIxJGiw0J1UhWbWfz993NSu+V9DfXV9G6Xf3w6ef96mO4ul7IhZilCn/3
+        A4qfqt4q33YWbLw7YhUgGanrfL1aLYrlej4fQOs1bCrbdZwv89Y4k5dFucyLi7xYn4obbxSi2ND3
+        jIjocfgmm07jl9hQMXt6aRGj3EFsziIiEbxNL0LGaCJLx2I2QuUdww3OPyOAZABxAwrgYLCHpggV
+        wHGzdVuXUwtrvaO/v//QVnyDVb4FsaevPhj5ZiuSJkhtpFM4qb6YGnSH2gfQB0hutmLqIKDuo0xD
+        cL21EyCd8yzTEIfstydyOKetjTOxqQJk9C4liOw7MdBDRnQ7TK9/NhDRBd92XLG/x9C2fHd57CfG
+        nY10vipPlD1LO4JFMZ+90LDSYGlsnCxAKKka6LF03JbstfETkE3i/W/npd7H6MbtJpbLi1d/MAKl
+        0DF01QVoo56HHmUB6apfk50HPVgWEWFvFCo2CGkZGrXs7fHYRHyIjLaqjdshdMEMF5f2nR2yfwAA
+        AP//AwAHPD0EcwMAAA==
+    headers:
+      CF-RAY:
+      - 9b1f8b102a6a8eb8-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:15:16 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '4526'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '4545'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999958'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_a490b791c21a4b5cb6e4679464501b59
+    status:
+      code: 200
+      message: OK
+version: 1

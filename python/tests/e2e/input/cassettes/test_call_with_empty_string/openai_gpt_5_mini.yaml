@@ -1,0 +1,120 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"","role":"user"}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '61'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RVTY/bOAy9z68gfGqBpHAydr4uxWIPOz3tYRfYQ6cwaIlx1JElrURNJlvMf19I
+        ThynnTnFIR+fSD6R+nEHUChZ7KDwFFxTLmpqRb3ZrJdSiEVVlqtttV3Ktr2vVtVmsb3fynW73Ve1
+        qKpqU8ltMUsUtv1Ogi801gQa7MITMskGk2+xXq2q8r5e1NkXGDmGFCNs7zQxySGoRfHUeRtNymuP
+        OtBgVlor0xU7+HEHAFA4PJFP8ZKeSVtHvrgDeB0OvlD+dPQ2e8l7myJN1DoblLkENJIYlQ633sA+
+        ClbW3Nh7fGlsZBe5YftEvzrZWt0I1Ld0vZWkU96d43k975VR82W5rOflZl6uzw3NtMUOvuZah4qv
+        WoX3lRL3y2qTlGqrtl0tVmvaim1bl1UmziR8cjRohcGa1NPRFWLfoz+lg79l2+vsrQT60L2fgazX
+        mDPAuqTNnqq63C9X7fKNDHoKATuanP/OpchOYQ2TuXZlmtgN7UUUeuExOgPQGMt4EfLrtxuntp3z
+        tn3Dk4l2UDwoeIzLclHBwR5BoIEvcCDt4GQjsJV4+vxoHs0DeQL0BMH2BHxQpgvwJeOlhQ9OiSew
+        hsB6kBSEVy0lBg+GSH7cPZo5/GbCkTwg/BsppHwTmF6cRmUAQVgjyHFC/uMVZyqSioF6VHoGnkLs
+        aQbCPpMHTczkZwlk+UAeUj0p9q+stvqPAA2gZyV0ptLWdCCtiD2ZDHxIRR4VH0BYSTOQ1MauU6bL
+        pEevWJkOUimOQwr4gwx5ZAIlCcMOWo9piqzvc5DBnsIMnEaT4X97NEEnfEotcareeftM4A4egzJd
+        Qv2etwkgBCY3b0/z9JtJUoQ4kHjSKvDQP9SnoS7VY0fwIUmUFIhOW5Sp/x+TVn96+B4DA5PW0BMc
+        D8hZzqQFKDMIY48GjtbL8KkY78Xr+Wu8KoW3Ol8/DEEFRsMDOAEzqHDoUWvSt4uBfRw2nPP0rGwM
+        zWWJNnnaxsXhvO0dNwLFgZonOr3r85TmRFkzRVynfdygtN9bz8MgShX787BMtkCKHpdqwD3xqVEy
+        ke8V3azQQP5ZCWpYXZbyHqMe5q9IytO0VKbepQsSs3nxqTxb85yds9tb3+P1/2S+M266nopn8q0N
+        ik+TYsa8h24frBKDPJFtMTqu416wdc1kCZSj0U1z9NEIPDe3kCpgqy8vV8zLbCxAmZunYTX71Tx5
+        bsYqs4byGlfeVPrzg7PYbN/yvEU83oBJTtUNOVtGPeHe1mMTY7jVuydGiYzpgNe71/8BAAD//wMA
+        oXNmu0oIAAA=
+    headers:
+      CF-RAY:
+      - 9b1f556e9c1ed797-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:38:39 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=FqbCZbYiqKtEV730WZwcz8JWwN4OhVD9JCUDi79sX.E-1766403519-1.0.1.1-t48yicfe4essPjGkKlT2jpp5dX.9PhqAeDeFK973a23AB_7nNIW_rk8gzZwkOtJ98W.KOjJ.eNn30N57iuPxdwjunDUSvw9Y.wB.Wv_tZbY;
+        path=/; expires=Mon, 22-Dec-25 12:08:39 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=TiMYEeUNu2NKl4_OGeEsaAKobM2SIkup6FjyKUumQzE-1766403519256-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '3994'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '3998'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '4000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_e181df1636854adfbd79a21da663c028
+    status:
+      code: 200
+      message: OK
+version: 1

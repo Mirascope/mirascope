@@ -1,0 +1,122 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gpt-5-mini","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '136'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"chatcmpl-CpZ15guD29jUnISW7dnFgfUoQf9qm","object":"chat.completion.chunk","created":1766405367,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"usage":null,"obfuscation":"FV4p5"}
+
+
+        data: {"id":"chatcmpl-CpZ15guD29jUnISW7dnFgfUoQf9qm","object":"chat.completion.chunk","created":1766405367,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"content":"424"},"finish_reason":null}],"usage":null,"obfuscation":"k3oz"}
+
+
+        data: {"id":"chatcmpl-CpZ15guD29jUnISW7dnFgfUoQf9qm","object":"chat.completion.chunk","created":1766405367,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"content":"2"},"finish_reason":null}],"usage":null,"obfuscation":"AuGvNQ"}
+
+
+        data: {"id":"chatcmpl-CpZ15guD29jUnISW7dnFgfUoQf9qm","object":"chat.completion.chunk","created":1766405367,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"usage":null,"obfuscation":"7"}
+
+
+        data: {"id":"chatcmpl-CpZ15guD29jUnISW7dnFgfUoQf9qm","object":"chat.completion.chunk","created":1766405367,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[],"usage":{"prompt_tokens":15,"completion_tokens":11,"total_tokens":26,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"completion_tokens_details":{"reasoning_tokens":0,"audio_tokens":0,"accepted_prediction_tokens":0,"rejected_prediction_tokens":0}},"obfuscation":"lzLwMB"}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9b1f82a29c1eca1b-NRT
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Mon, 22 Dec 2025 12:09:28 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=dH2ZXXIxic81v0h9F9ZwcKiKfpHYNEvHWhMflBZp_oM-1766405368-1.0.1.1-lCU6gdZoltREBQ4Psu79_HNljghSn9CjkWgb9EEUdJpYdnC9fzcux__vCkIOJZM1NQu7mJLwhp9wqxwVeSdumAUhV_KPJTm6EJsbfS7gjcg;
+        path=/; expires=Mon, 22-Dec-25 12:39:28 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=MhkQxNO6YMLCW.d1O72xxg6i6XObDHsKUnLsF5QkkLI-1766405368524-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1016'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1458'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999993'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_e279b96d80d045a3861efb4907c56dba
+    status:
+      code: 200
+      message: OK
+version: 1

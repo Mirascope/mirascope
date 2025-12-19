@@ -5,6 +5,8 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import os
+import re
 import sys
 from collections.abc import Callable, Generator
 from copy import deepcopy
@@ -18,6 +20,7 @@ from mirascope.llm.providers.provider_registry import (
 )
 
 SENSITIVE_HEADERS = [
+    "api-key",  # Azure OpenAI API keys
     "authorization",  # OpenAI Bearer tokens
     "x-api-key",  # Anthropic API keys
     "x-goog-api-key",  # Google/Gemini API keys
@@ -30,13 +33,19 @@ SENSITIVE_HEADERS = [
 def reset_provider_registry() -> Generator[None, None, None]:
     """Reset the provider registry before and after each test.
 
-    Also ensures that the anthropic-beta provider is available.
+    Also ensures that the anthropic-beta and azure providers are available.
     """
     PROVIDER_REGISTRY.clear()
     _anthropic_provider = llm.load_provider("anthropic")
     assert isinstance(_anthropic_provider, llm.providers.AnthropicProvider)
     _beta_provider = _anthropic_provider._beta_provider  # pyright: ignore[reportPrivateUsage]
     llm.register_provider(_beta_provider, "anthropic-beta/")
+    # Register Azure provider with dummy credentials for VCR playback
+    llm.register_provider(
+        "azure",
+        api_key=os.getenv("AZURE_OPENAI_API_KEY", "test"),
+        base_url=os.getenv("AZURE_OPENAI_ENDPOINT", "https://dummy.openai.azure.com/"),
+    )
     yield
     PROVIDER_REGISTRY.clear()
 
@@ -44,6 +53,7 @@ def reset_provider_registry() -> Generator[None, None, None]:
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
     "anthropic-beta/claude-sonnet-4-0",
+    "azure/gpt-5-mini",
     "google/gemini-2.5-flash",
     "openai/gpt-4o:completions",
     "openai/gpt-4o:responses",
@@ -51,6 +61,8 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
 
 # GPT-5 (reasoning model) for testing max_completion_tokens conversion and refusal behavior.
 # Kept separate from E2E_MODEL_IDS because reasoning models have limited cassette coverage.
+# Note: openai/gpt-5-mini (Responses API) is excluded due to incompatibilities
+# (no URL image support, different tool resume behavior).
 GPT5_MODEL_IDS: list[llm.ModelId] = ["openai/gpt-5-mini:completions"]
 
 # NOTE: MLX is only available on macOS (Apple Silicon)
@@ -157,6 +169,13 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
         Sanitized copy of the request safe for cassette storage
     """
     request = deepcopy(request)
+
+    if ".openai.azure.com" in request.uri:
+        request.uri = re.sub(
+            r"https://[^/]+\.openai\.azure\.com",
+            "https://dummy.openai.azure.com",
+            request.uri,
+        )
 
     headers_to_filter = {header.lower() for header in SENSITIVE_HEADERS}
     for req_header in request.headers:

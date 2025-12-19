@@ -1,0 +1,116 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":[{"text":"Describe the following
+      image in one sentence","type":"text"},{"type":"image_url","image_url":{"url":"https://en.wikipedia.org/static/images/icons/wikipedia.png","detail":"auto"}}]}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '251'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SSwW7bMAyG734KQue4SLI66XJcMQwbMKArtm7YUBiKRNtsZUkQ5WZpEaCvsdfb
+        kwxy0tjF2osP+kj65//zIQMQpMUKhGpkVK03+bn/WVQ/Ls4/XF1cfrxcXm0+Vesv9bf388/vlBaT
+        1OHWN6jiU9eJcq03GMnZPVYBZcQ0dbZcLE6nxaKY9aB1Gk1qq33Mi7wlS/l8Oi/y6Vk+XR6aG0cK
+        WazgVwYA8NB/k0yr8bdYwXTy9NIis6xRrI5FACI4k16EZCaO0kYxGaByNqLtlX9tEKiVNQI3bsPw
+        nW7Joyb59/EPAylnSUFt3BpzbqRHDTdUs9yA7+7vDYJxtYNWagRXQR3kFiIZZCDLKtAaNWwoNnAn
+        A7mOwWCMGBik1cDbdu0Mn4yVBaw6lskc2xkzAtJaF2Uyt/fk+kB2RxcqssRNGVCys2kzjs6Lnu4y
+        gOve1e6ZUcIH1/pYRneL/dg3p/txYohygLPF7ECji9KMwNti8sK8UmOUZHiUi1BSNaiH1iFE2Wly
+        I5CNtvtfzkuz95uTrUfK5mev/mAASqGPqEsfUJN6vvRQFjAd+2tlR597yYIx3JHCMhKGlIXGSnZm
+        f4OCtxyxLSuyNQYfqD/EFHe2y/4BAAD//wMAOTUKtIoDAAA=
+    headers:
+      CF-RAY:
+      - 9b1f89998d8fd54d-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:14:14 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2996'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '3020'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-input-images:
+      - '50000'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-input-images:
+      - '49999'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999222'
+      x-ratelimit-reset-input-images:
+      - 1ms
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 11ms
+      x-request-id:
+      - req_79224db20fb2423e99b843dbb5202ead
+    status:
+      code: 200
+      message: OK
+version: 1
