@@ -4,18 +4,13 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .http_api_decode_error_tag import HttpApiDecodeErrorTag
-from .issue import Issue
+from .permission_denied_error_tag import PermissionDeniedErrorTag
 
 
-class HttpApiDecodeError(UniversalBaseModel):
-    """
-    The request did not match the expected schema
-    """
-
-    issues: typing.List[Issue]
+class PermissionDeniedError(UniversalBaseModel):
     message: str
-    tag: HttpApiDecodeErrorTag
+    resource: typing.Optional[str] = None
+    tag: PermissionDeniedErrorTag
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

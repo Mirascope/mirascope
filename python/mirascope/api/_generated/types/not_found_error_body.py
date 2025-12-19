@@ -4,18 +4,13 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .http_api_decode_error_tag import HttpApiDecodeErrorTag
-from .issue import Issue
+from .not_found_error_tag import NotFoundErrorTag
 
 
-class HttpApiDecodeError(UniversalBaseModel):
-    """
-    The request did not match the expected schema
-    """
-
-    issues: typing.List[Issue]
+class NotFoundErrorBody(UniversalBaseModel):
     message: str
-    tag: HttpApiDecodeErrorTag
+    resource: typing.Optional[str] = None
+    tag: NotFoundErrorTag
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

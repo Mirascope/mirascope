@@ -4,18 +4,16 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .http_api_decode_error_tag import HttpApiDecodeErrorTag
-from .issue import Issue
+from .property_key_key_tag import PropertyKeyKeyTag
 
 
-class HttpApiDecodeError(UniversalBaseModel):
+class PropertyKeyKey(UniversalBaseModel):
     """
-    The request did not match the expected schema
+    an object to be decoded into a globally shared symbol
     """
 
-    issues: typing.List[Issue]
-    message: str
-    tag: HttpApiDecodeErrorTag
+    tag: PropertyKeyKeyTag
+    key: str
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

@@ -3,19 +3,14 @@
 import typing
 
 import pydantic
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .http_api_decode_error_tag import HttpApiDecodeErrorTag
-from .issue import Issue
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .organizations_get_response_role import OrganizationsGetResponseRole
 
 
-class HttpApiDecodeError(UniversalBaseModel):
-    """
-    The request did not match the expected schema
-    """
-
-    issues: typing.List[Issue]
-    message: str
-    tag: HttpApiDecodeErrorTag
+class OrganizationsGetResponse(UniversalBaseModel):
+    id: str
+    name: str
+    role: OrganizationsGetResponseRole
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

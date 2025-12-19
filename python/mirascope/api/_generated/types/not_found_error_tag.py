@@ -2,4 +2,4 @@
 
 import typing
 
-PropertyKeyTagTag = typing.Union[typing.Literal["symbol"], typing.Any]
+NotFoundErrorTag = typing.Union[typing.Literal["NotFoundError"], typing.Any]
