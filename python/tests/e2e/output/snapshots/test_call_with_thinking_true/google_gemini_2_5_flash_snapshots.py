@@ -334,7 +334,8 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
@@ -631,7 +632,8 @@ Therefore, there are 3 such primes.
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [

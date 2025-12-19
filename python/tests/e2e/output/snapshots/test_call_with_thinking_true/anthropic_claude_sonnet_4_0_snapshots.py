@@ -378,7 +378,8 @@ My final count reveals 3 primes containing "79": 79, 179, and 379.\
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
@@ -548,7 +549,8 @@ Therefore, the primes below 400 that contain "79" as a substring are 79, 179, an
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [

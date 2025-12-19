@@ -55,7 +55,8 @@ python/
 │   │   │   ├── anthropic/
 │   │   │   ├── google/
 │   │   │   ├── openai/
-│   │   │   ├── openai/completions/base_provider.py
+│   │   │   │   └── completions/base_provider.py
+│   │   │   ├── together/
 │   │   │   ├── provider_registry.py
 │   │   │   └── load_provider.py
 │   │   ├── content/          # Content types (text, image, audio, etc.)

@@ -284,7 +284,8 @@ The secrets for the passwords are:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
             "finish_reason": None,
             "messages": [
@@ -419,7 +420,8 @@ Here are the secrets associated with each password:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai",
+            "provider_id": "openai",
+            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
             "finish_reason": None,
             "messages": [

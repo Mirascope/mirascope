@@ -11,7 +11,8 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-3-pro-preview",
             "model_id": "google/gemini-3-pro-preview",
             "finish_reason": None,
             "messages": [

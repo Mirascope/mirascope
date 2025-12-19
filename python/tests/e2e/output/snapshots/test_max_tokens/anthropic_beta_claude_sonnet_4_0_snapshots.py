@@ -142,7 +142,8 @@ Here are all 50 U.S. states in alphabetical order:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -207,7 +208,8 @@ Here are all 50 U.S. states in alphabetical order:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "anthropic",
+            "provider_id": "anthropic",
+            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [

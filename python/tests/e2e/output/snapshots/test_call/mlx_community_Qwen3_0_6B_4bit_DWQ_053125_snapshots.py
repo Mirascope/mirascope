@@ -123,7 +123,8 @@ $$\
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "mlx",
+            "provider_id": "mlx",
+            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "finish_reason": None,
             "messages": [
@@ -179,7 +180,8 @@ $$\
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "mlx",
+            "provider_id": "mlx",
+            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "finish_reason": None,
             "messages": [

@@ -1,0 +1,105 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"meta-llama/Llama-3.3-70B-Instruct-Turbo"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '111'
+      content-type:
+      - application/json
+      host:
+      - api.together.xyz
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.together.xyz/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//VFHBTsMwDL3vK6xcoSPrsnadxAVOSIA4cEGAJi/11kIaV40nJk38O0o7
+        VrhYznv2e9bLcQKg6lKtQPHT7kUOD4l5ebzdmKTAbbmws6XZWlzOskJdxlHefJCVOG4rlKnlpnUk
+        NfuBth2hUJSb5VmmTZ7maU80XJKLaw0JJs5hg1f3sSbz6TzJ9U1y54N0eyvJ877b8CDXdty00e31
+        fZCvuLYUIjABADj2FUBta1+Hat0RBvbRJgi3vUZPB+pvKgpTLPLlPC/SbKGXM631eaT2JR3UCkbE
+        8a7teBPd/N65M95QCLgjtTrbA6iOXUQUhlAHQS9n83g2eyHfp/bMsK19CVIRoA9f1F0CliWYVGtA
+        H5vpm3/z/fsCTArXYFKT/pUTZre26FwfxPuJ+J781iGr/b8jT1GuhT/Jxz1jBkU1fuFIpvMTKSzo
+        RjzLf5fQVlSOhJ5E6+8fAAAA//8DAHO/+z1OAgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-Ray:
+      - 9afd5c184fca8169-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 18 Dec 2025 08:41:13 GMT
+      ETag:
+      - W/"24e-ufEvuT6yNDDZxOJW0AgFInKwd1I"
+      Retry-After:
+      - '2'
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=15552000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      alt-svc:
+      - h3=":443"; ma=86400
+      x-amzn-trace-id:
+      - 322bc83f-8f1b-4aaa-bfb3-c661b6988e6a-noamzn
+      x-api-call-end:
+      - '2025-12-18T08:41:13.495Z'
+      x-api-call-start:
+      - '2025-12-18T08:41:12.526Z'
+      x-api-received:
+      - '2025-12-18T08:41:12.511Z'
+      x-inference-version:
+      - v2
+      x-ratelimit:
+      - 'false'
+      x-ratelimit-limit:
+      - '10'
+      x-ratelimit-limit-tokens:
+      - '3000'
+      x-ratelimit-remaining:
+      - '19'
+      x-ratelimit-remaining-tokens:
+      - '3000'
+      x-ratelimit-reset:
+      - '2'
+      x-request-id:
+      - oPgYtxM-4YNCb4-9afd5c184fca8169
+    status:
+      code: 200
+      message: OK
+version: 1

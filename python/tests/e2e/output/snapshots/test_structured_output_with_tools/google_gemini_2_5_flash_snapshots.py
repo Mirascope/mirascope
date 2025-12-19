@@ -316,7 +316,8 @@ async_snapshot = snapshot(
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
@@ -467,7 +468,8 @@ stream_snapshot = snapshot(
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "google",
+            "provider_id": "google",
+            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
