@@ -6,7 +6,7 @@ KnownProviderId: TypeAlias = Literal[
     "anthropic",  # Anthropic provider via AnthropicProvider
     "anthropic-beta",  # Anthropic beta provider via AnthropicBetaProvider
     "google",  # Google provider via GoogleProvider
-    "openai",  # OpenAI provider via OpenAIProvider
+    "openai",  # OpenAI provider via OpenAIProvider (prefers Responses routing when available)
     "mlx",  # Local inference powered by `mlx-lm`, via MLXProvider
 ]
 KNOWN_PROVIDER_IDS = get_args(KnownProviderId)

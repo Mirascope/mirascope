@@ -90,6 +90,18 @@ def choose_api_mode(model_id: OpenAIModelId, messages: Sequence[Message]) -> str
         return "completions"
 
 
+class OpenAIRoutedCompletionsProvider(OpenAICompletionsProvider):
+    """OpenAI completions client that reports provider_id as 'openai'."""
+
+    id = "openai"
+
+
+class OpenAIRoutedResponsesProvider(OpenAIResponsesProvider):
+    """OpenAI responses client that reports provider_id as 'openai'."""
+
+    id = "openai"
+
+
 class OpenAIProvider(BaseProvider[OpenAI]):
     """Unified provider for OpenAI that routes to Completions or Responses API based on model_id."""
 
@@ -100,11 +112,11 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         self, *, api_key: str | None = None, base_url: str | None = None
     ) -> None:
         """Initialize the OpenAI provider with both subclients."""
-        self._completions_provider = OpenAICompletionsProvider(
-            api_key=api_key, base_url=base_url, wrapped_by_openai_provider=True
+        self._completions_provider = OpenAIRoutedCompletionsProvider(
+            api_key=api_key, base_url=base_url
         )
-        self._responses_provider = OpenAIResponsesProvider(
-            api_key=api_key, base_url=base_url, wrapped_by_openai_provider=True
+        self._responses_provider = OpenAIRoutedResponsesProvider(
+            api_key=api_key, base_url=base_url
         )
         # Use completions client's underlying OpenAI client as the main one
         self.client = self._completions_provider.client

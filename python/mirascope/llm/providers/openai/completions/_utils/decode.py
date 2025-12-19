@@ -65,7 +65,8 @@ def _decode_usage(
 def decode_response(
     response: openai_types.ChatCompletion,
     model_id: OpenAIModelId,
-    provider_id: Literal["openai", "openai:completions"],
+    provider_id: str,
+    provider_model_name: str | None = None,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
     """Convert OpenAI ChatCompletion to mirascope AssistantMessage and usage."""
     choice = response.choices[0]
@@ -102,7 +103,7 @@ def decode_response(
         content=parts,
         provider_id=provider_id,
         model_id=model_id,
-        provider_model_name=model_name(model_id, "completions"),
+        provider_model_name=provider_model_name or model_name(model_id, "completions"),
         raw_message=message.model_dump(exclude_none=True),
     )
 
