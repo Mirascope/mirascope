@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 import { Effect, Layer } from "effect";
 import { getDatabase, DatabaseService, type Database } from "@/db/services";
-import { ProjectMembershipService } from "@/db/services/project-memberships";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -319,29 +318,12 @@ export const TestProjectFixture = Effect.gen(function* () {
   const orgFixture = yield* TestOrganizationFixture;
   const db = yield* DatabaseService;
 
-  // TODO: Replace with db.projects.create() when ProjectService is implemented
-  const [project] = yield* Effect.tryPromise({
-    try: () =>
-      db.client
-        .insert(schema.projects)
-        .values({
-          name: "Test Project",
-          organizationId: orgFixture.org.id,
-          createdByUserId: orgFixture.owner.id,
-        })
-        .returning({
-          id: schema.projects.id,
-          name: schema.projects.name,
-          organizationId: schema.projects.organizationId,
-        }),
-    catch: (error) => new Error(`Failed to create project: ${String(error)}`),
+  // Create project through the ProjectService (creator gets project ADMIN automatically).
+  const project = yield* db.organizations.projects.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { name: "Test Project" },
   });
-
-  // ProjectMembershipService isn't mounted under db.projects yet, so create a local instance.
-  const projectMemberships = new ProjectMembershipService(
-    db.client,
-    db.organizations,
-  );
 
   const projectAdmin = yield* db.users.create({
     data: { email: "project-admin@example.com", name: "Project Admin" },
@@ -351,7 +333,7 @@ export const TestProjectFixture = Effect.gen(function* () {
     organizationId: orgFixture.org.id,
     data: { memberId: projectAdmin.id, role: "MEMBER" },
   });
-  yield* projectMemberships.create({
+  yield* db.organizations.projects.memberships.create({
     userId: orgFixture.owner.id,
     organizationId: orgFixture.org.id,
     projectId: project.id,
@@ -366,7 +348,7 @@ export const TestProjectFixture = Effect.gen(function* () {
     organizationId: orgFixture.org.id,
     data: { memberId: projectDeveloper.id, role: "MEMBER" },
   });
-  yield* projectMemberships.create({
+  yield* db.organizations.projects.memberships.create({
     userId: orgFixture.owner.id,
     organizationId: orgFixture.org.id,
     projectId: project.id,
@@ -381,7 +363,7 @@ export const TestProjectFixture = Effect.gen(function* () {
     organizationId: orgFixture.org.id,
     data: { memberId: projectViewer.id, role: "MEMBER" },
   });
-  yield* projectMemberships.create({
+  yield* db.organizations.projects.memberships.create({
     userId: orgFixture.owner.id,
     organizationId: orgFixture.org.id,
     projectId: project.id,
@@ -396,7 +378,7 @@ export const TestProjectFixture = Effect.gen(function* () {
     organizationId: orgFixture.org.id,
     data: { memberId: projectAnnotator.id, role: "MEMBER" },
   });
-  yield* projectMemberships.create({
+  yield* db.organizations.projects.memberships.create({
     userId: orgFixture.owner.id,
     organizationId: orgFixture.org.id,
     projectId: project.id,

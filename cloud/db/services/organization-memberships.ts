@@ -401,6 +401,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         userId,
         action: "create",
         organizationId,
+        memberId: userId,
       });
 
       if (data.memberId === userId) {
@@ -491,7 +492,12 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      yield* this.authorize({ userId, action: "read", organizationId });
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        memberId: userId,
+      });
       return yield* this.baseService.findAll({ organizationId });
     });
   }
@@ -522,7 +528,12 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      yield* this.authorize({ userId, action: "read", organizationId });
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        memberId: userId,
+      });
       return yield* this.baseService.findById({
         organizationId,
         memberId,
@@ -571,6 +582,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         userId,
         action: "update",
         organizationId,
+        memberId: userId,
       });
 
       if (memberId === userId) {
@@ -700,6 +712,7 @@ export class OrganizationMembershipService extends BaseAuthenticatedService<
         userId,
         action: "delete",
         organizationId,
+        memberId: userId,
       });
 
       const targetMembership = yield* this.getMembership({

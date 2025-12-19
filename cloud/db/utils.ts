@@ -1,5 +1,6 @@
 // PostgreSQL error codes
 const PG_UNIQUE_VIOLATION = "23505";
+const PG_CHECK_VIOLATION = "23514";
 // const PG_FOREIGN_KEY_VIOLATION = "23503";
 
 /**
@@ -34,4 +35,11 @@ function getPostgresErrorCode(error: unknown): string | undefined {
  */
 export function isUniqueConstraintError(error: unknown): boolean {
   return getPostgresErrorCode(error) === PG_UNIQUE_VIOLATION;
+}
+
+/**
+ * Check if an error is a PostgreSQL check constraint violation.
+ */
+export function isCheckConstraintError(error: unknown): boolean {
+  return getPostgresErrorCode(error) === PG_CHECK_VIOLATION;
 }

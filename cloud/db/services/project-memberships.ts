@@ -41,14 +41,15 @@
  */
 
 import { Effect } from "effect";
-import { and, eq, type SQL } from "drizzle-orm";
+import { and, eq, exists, type SQL } from "drizzle-orm";
 import {
   BaseAuthenticatedService,
   BaseService,
   type PermissionTable,
   type ParentParams,
+  type PathParams,
 } from "@/db/services/base";
-import type { OrganizationService } from "@/db/services/organizations";
+import type { OrganizationMembershipService } from "@/db/services/organization-memberships";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -99,6 +100,7 @@ class ProjectMembershipBaseService extends BaseService<
 
   /** Override: memberships are identified by (projectId, memberId). */
   protected getIdColumn() {
+    /* v8 ignore next 2 -- this override is defensive; BaseService.getScopedWhere is overridden below */
     return projectMemberships.memberId;
   }
 
@@ -122,6 +124,24 @@ class ProjectMembershipBaseService extends BaseService<
   ): SQL | undefined {
     // Only use projectId for scoping (organizationId is for auth only)
     return eq(projectMemberships.projectId, params.projectId);
+  }
+
+  /**
+   * Override to skip `organizationId` since it's not on the table.
+   *
+   * The full scoped WHERE uses:
+   * - userId column for memberId (via getIdColumn override)
+   * - projectId column (from table)
+   * - organizationId is skipped (only used for authorization)
+   */
+  protected getScopedWhere(
+    params: PathParams<"organizations/:organizationId/projects/:projectId/members/:memberId">,
+  ): SQL {
+    // Build condition: projectId = params.projectId AND memberId = params.memberId
+    return and(
+      eq(projectMemberships.projectId, params.projectId),
+      eq(projectMemberships.memberId, params.memberId),
+    )!;
   }
 }
 
@@ -166,11 +186,47 @@ class ProjectMembershipAuditBaseService extends BaseService<
     projectId: string;
     memberId: string;
   }) {
-    // organizationId is for auth only; projectId scopes the table. memberId maps to targetId.
+    // Scope by project + member, and ensure the project belongs to the organization.
     return and(
       eq(projectMembershipAudit.projectId, params.projectId),
       eq(projectMembershipAudit.targetId, params.memberId),
+      exists(
+        this.db
+          .select({ id: projects.id })
+          .from(projects)
+          .where(
+            and(
+              eq(projects.id, params.projectId),
+              eq(projects.organizationId, params.organizationId),
+            ),
+          )
+          .limit(1),
+      ),
     );
+  }
+
+  protected getScopedWhere(
+    params: PathParams<"organizations/:organizationId/projects/:projectId/members/:memberId/audits/:id">,
+  ): SQL {
+    // Override BaseService convention: audit table doesn't have organizationId/memberId columns.
+    // memberId maps to targetId; organizationId is enforced via projects table.
+    return and(
+      eq(projectMembershipAudit.id, params.id),
+      eq(projectMembershipAudit.projectId, params.projectId),
+      eq(projectMembershipAudit.targetId, params.memberId),
+      exists(
+        this.db
+          .select({ id: projects.id })
+          .from(projects)
+          .where(
+            and(
+              eq(projects.id, params.projectId),
+              eq(projects.organizationId, params.organizationId),
+            ),
+          )
+          .limit(1),
+      ),
+    )!;
   }
 }
 
@@ -209,15 +265,15 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
   Pick<NewProjectMembership, "memberId" | "role">,
   ProjectRole
 > {
-  private readonly organizations: OrganizationService;
+  private readonly organizationMemberships: OrganizationMembershipService;
   public readonly audits: ProjectMembershipAuditBaseService;
 
   constructor(
     db: PostgresJsDatabase<typeof schema>,
-    organizations: OrganizationService,
+    organizationMemberships: OrganizationMembershipService,
   ) {
     super(db);
-    this.organizations = organizations;
+    this.organizationMemberships = organizationMemberships;
     this.audits = new ProjectMembershipAuditBaseService(db);
   }
 
@@ -265,7 +321,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
             ),
           )
           .limit(1);
-        return (membership as { role: ProjectRole }) ?? null;
+        return membership ?? null;
       },
       catch: (error) =>
         new DatabaseError({
@@ -302,7 +358,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
   }): Effect.Effect<ProjectRole, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
       // Check org role first for implicit access
-      const userOrganizationRole = yield* this.organizations
+      const userOrganizationRole = yield* this.organizationMemberships
         .getRole({ organizationId, userId })
         .pipe(
           Effect.catchTag("NotFoundError", () =>
@@ -422,6 +478,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
         action: "create",
         organizationId,
         projectId,
+        memberId: userId,
       });
 
       // NOTE: we do not need to block on self-invite because the user is either
@@ -430,12 +487,12 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
 
       // Enforce organization membership before project membership
       // TODO: Support external collaborators via invite/collaborator model.
-      const targetOrganizationMembership =
-        yield* this.organizations.memberships.getMembership({
+      const targetOrganizationRole =
+        yield* this.organizationMemberships.getMembership({
           userId: data.memberId,
           organizationId,
         });
-      if (!targetOrganizationMembership) {
+      if (!targetOrganizationRole) {
         return yield* Effect.fail(
           new PermissionDeniedError({
             message:
@@ -522,6 +579,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
         action: "read",
         organizationId,
         projectId,
+        memberId: userId,
       });
       return yield* this.baseService.findAll({ organizationId, projectId });
     });
@@ -561,6 +619,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
         action: "read",
         organizationId,
         projectId,
+        memberId: userId,
       });
       return yield* this.baseService.findById({
         organizationId,
@@ -609,6 +668,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
         action: "update",
         organizationId,
         projectId,
+        memberId: userId,
       });
 
       if (memberId === userId) {
@@ -709,6 +769,7 @@ export class ProjectMembershipService extends BaseAuthenticatedService<
         action: "delete",
         organizationId,
         projectId,
+        memberId: userId,
       });
 
       const existing = yield* this.getMembership({

@@ -159,7 +159,7 @@ export type HasParentParams<T extends string> =
  * ```
  */
 export type AuthorizationParams<T extends string> =
-  HasParentParams<T> extends true ? ParentParams<T> : PathParams<T>;
+  HasParentParams<T> extends true ? PathParams<T> : PathParams<T>;
 
 /**
  * Parameter type for create operations.
@@ -284,6 +284,47 @@ export abstract class BaseService<
   }
 
   /**
+   * Builds a scoped where clause based on path params.
+   *
+   * Convention: any *parent* path params (everything except the id param) must map
+   * to columns of the same name on the table.
+   *
+   * Example:
+   * - TPath = "users/:userId/sessions/:sessionId" => scopes by sessions.userId
+   * - TPath = "organizations/:organizationId/projects/:projectId" => scopes by projects.organizationId
+   */
+  protected getScopedWhere(params: PathParams<TPath>) {
+    const table = this.getTable() as unknown as Record<string, PgColumn>;
+    const idParamName = this.getIdParamName() as unknown as string;
+
+    const conditions: SQL[] = [];
+
+    // Always scope by the resource id column.
+    const id = this.getIdFromParams(params);
+    conditions.push(eq(this.getIdColumn(), id));
+
+    // Scope by all other path params (parent params).
+    for (const [key, value] of Object.entries(params)) {
+      if (key === idParamName) continue;
+      // Ignore non-path keys (e.g. accidental extra props like `data` from update calls).
+      if (typeof value !== "string") continue;
+
+      const column = table[key];
+      if (!column) {
+        // Fail fast: service/table is misconfigured (path param doesn't map to a column).
+        throw new Error(
+          `BaseService misconfiguration: table is missing column '${key}' for path param scoping`,
+        );
+      }
+
+      conditions.push(eq(column, value));
+    }
+
+    // `and` can return undefined if all inputs are undefined; ours are always defined.
+    return conditions.length > 1 ? and(...conditions)! : conditions[0];
+  }
+
+  /**
    * Builds a WHERE clause from parent path params only.
    *
    * Used by `findAll` to scope queries to a parent resource without
@@ -296,7 +337,7 @@ export abstract class BaseService<
     const conditions: SQL[] = [];
 
     for (const [key, value] of Object.entries(params)) {
-      if (typeof value !== "string") continue;
+      if (typeof value !== "string") continue; /* v8 ignore next 1 */
 
       const column = table[key];
       if (!column) {
@@ -309,38 +350,9 @@ export abstract class BaseService<
       conditions.push(eq(column, value));
     }
 
-    if (conditions.length === 0) return undefined;
+    if (conditions.length === 0) return undefined; /* v8 ignore next 1 */
     /* v8 ignore next 1 -- multiple parent params branch covered when we add nested resources (e.g., projects) */
     return conditions.length > 1 ? and(...conditions)! : conditions[0];
-  }
-
-  /**
-   * Builds a WHERE clause from all path params (resource ID + parent params).
-   *
-   * Used by `findById`, `update`, and `delete` to uniquely identify a resource
-   * while also verifying parent ownership.
-   *
-   * @example
-   * ```ts
-   * // Path: "users/:userId/sessions/:sessionId"
-   * // Params: { userId: "u1", sessionId: "s1" }
-   * // Result: WHERE sessions.id = 's1' AND sessions.userId = 'u1'
-   * ```
-   */
-  protected getScopedWhere(params: PathParams<TPath>): SQL {
-    const idParamName = this.getIdParamName() as unknown as string;
-
-    // Build condition for the resource's own ID
-    const id = this.getIdFromParams(params);
-    const idCondition = eq(this.getIdColumn(), id);
-
-    // Build conditions for parent params
-    const parentParams = Object.fromEntries(
-      Object.entries(params).filter(([key]) => key !== idParamName),
-    ) as ParentParams<TPath>;
-    const parentWhere = this.getParentScopedWhere(parentParams);
-
-    return parentWhere ? and(idCondition, parentWhere)! : idCondition;
   }
 
   // ---------------------------------------------------------------------------
@@ -411,33 +423,39 @@ export abstract class BaseService<
       ? [params: ParentParams<TPath>]
       : [params?: undefined]
   ): Effect.Effect<TPublic[], DatabaseError> {
-    const params = args[0];
+    return Effect.gen(this, function* () {
+      const params = args[0];
 
-    return Effect.tryPromise({
-      try: async () => {
-        const table = this.getTable();
-        const publicFields = this.getPublicFields();
-        // Type assertion: Drizzle's .from() has complex conditional types that
-        // don't work well with generic table types
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const query = this.db.select(publicFields).from(table as any);
+      /* v8 ignore start - TODO: test directly since user service overrides this? */
+      const whereClause = params
+        ? this.getParentScopedWhere(params)
+        : undefined;
+      /* v8 ignore end */
 
-        /* v8 ignore start - TODO: test directly since user service overrides this?*/
-        const whereClause = params
-          ? this.getParentScopedWhere(params)
-          : undefined;
-        const results = whereClause
-          ? await query.where(whereClause)
-          : await query;
-        /* v8 ignore end */
+      return yield* Effect.tryPromise({
+        try: async () => {
+          const table = this.getTable();
+          const publicFields = this.getPublicFields();
 
-        return results as TPublic[];
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: `Failed to find all ${this.getResourceName()}s`,
-          cause: error,
-        }),
+          // Type assertion: Drizzle's .from() has complex conditional types that
+          // don't work well with generic table types
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const query = this.db.select(publicFields).from(table as any);
+
+          /* v8 ignore start - TODO: test directly since user service overrides this? */
+          const results = whereClause
+            ? await query.where(whereClause)
+            : await query;
+          /* v8 ignore end */
+
+          return results as TPublic[];
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: `Failed to find all ${this.getResourceName()}s`,
+            cause: error,
+          }),
+      });
     });
   }
 

@@ -33,7 +33,7 @@ class MisconfiguredSessionService extends BaseService<
 
 describe("BaseService", () => {
   describe("nested scoping", () => {
-    it("throws a clear error when a parent path param doesn't map to a table column", async () => {
+    it("findById throws a clear error when a parent path param doesn't map to a table column", async () => {
       // We never reach the DB call; this is only to satisfy the constructor.
       const db = {} as PostgresJsDatabase<typeof schema>;
       const service = new MisconfiguredSessionService(db);
@@ -51,7 +51,27 @@ describe("BaseService", () => {
         expect(Cause.isDie(exit.cause)).toBe(true);
         const pretty = Cause.pretty(exit.cause);
         expect(pretty).toContain(
-          "BaseService misconfiguration: table 'session' is missing column 'fooId' for path param scoping. Ensure the column name matches the path parameter name.",
+          "BaseService misconfiguration: table is missing column 'fooId' for path param scoping",
+        );
+      }
+    });
+    it("findAll throws a clear error when a parent path param doesn't map to a table column", async () => {
+      const db = {} as PostgresJsDatabase<typeof schema>;
+      const service = new MisconfiguredSessionService(db);
+
+      const exit = await Effect.runPromiseExit(
+        service.findAll({
+          fooId: "foo-id",
+        }),
+      );
+
+      expect(Exit.isFailure(exit)).toBe(true);
+      if (Exit.isFailure(exit)) {
+        // This is a defect (thrown Error), not a typed failure.
+        expect(Cause.isDie(exit.cause)).toBe(true);
+        const pretty = Cause.pretty(exit.cause);
+        expect(pretty).toContain(
+          "BaseService misconfiguration: table 'session' is missing column 'fooId' for path param scoping.",
         );
       }
     });

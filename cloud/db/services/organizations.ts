@@ -59,6 +59,7 @@ import {
   type PermissionTable,
 } from "@/db/services/base";
 import { OrganizationMembershipService } from "@/db/services/organization-memberships";
+import { ProjectService } from "@/db/services/projects";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -168,10 +169,12 @@ export class OrganizationService extends BaseAuthenticatedService<
    * ```
    */
   public readonly memberships: OrganizationMembershipService;
+  public readonly projects: ProjectService;
 
   constructor(db: ConstructorParameters<typeof BaseAuthenticatedService>[0]) {
     super(db);
     this.memberships = new OrganizationMembershipService(db);
+    this.projects = new ProjectService(db, this.memberships);
   }
 
   // ---------------------------------------------------------------------------
@@ -211,8 +214,8 @@ export class OrganizationService extends BaseAuthenticatedService<
     userId,
     organizationId,
   }: {
-    organizationId: string;
     userId: string;
+    organizationId: string;
   }): Effect.Effect<OrganizationRole, NotFoundError | DatabaseError> {
     return this.memberships.getRole({ userId, organizationId });
   }
