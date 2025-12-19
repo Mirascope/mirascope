@@ -1,4 +1,4 @@
-import { describe, it, expect } from "@/tests/db";
+import { describe, it, expect, TestEffectEnvironmentFixture } from "@/tests/db";
 import { Effect } from "effect";
 import { EffectDatabase } from "@/db";
 
@@ -12,75 +12,49 @@ export { describe, it, expect };
 /**
  * Effect-native test fixture for authentication testing.
  *
- * Creates a test environment with an API key for testing authentication
- * and authorization flows.
+ * Builds on TestEffectEnvironmentFixture and adds:
+ * - An API key for the environment
+ * - An additional environment for cross-environment validation
  *
- * Returns { testUser, testOrg, testProject, testEnvironment, otherEnvironment, testApiKey } where:
- * - testUser: the user who owns the organization
- * - testOrg: the organization
- * - testProject: the project within the organization
- * - testEnvironment: the environment associated with the API key
+ * Returns { owner, admin, org, project, environment, otherEnvironment, apiKey } where:
+ * - owner: the user who owns the organization
+ * - admin: an admin user in the organization
+ * - org: the organization
+ * - project: the project within the organization
+ * - environment: the environment associated with the API key
  * - otherEnvironment: another environment in the same project (for cross-environment validation)
- * - testApiKey: a plaintext API key for the testEnvironment
+ * - apiKey: a plaintext API key for the environment
  *
  * Requires EffectDatabase - call `yield* EffectDatabase` in your test
  * if you need to perform additional database operations.
  */
 export const TestEffectAuthFixture = Effect.gen(function* () {
+  const envFixture = yield* TestEffectEnvironmentFixture;
   const db = yield* EffectDatabase;
-
-  // Create test user
-  const testUser = yield* db.users.create({
-    data: { email: "test@example.com", name: "Test User" },
-  });
-
-  // Create organization
-  const testOrg = yield* db.organizations.create({
-    userId: testUser.id,
-    data: { name: "Test Org" },
-  });
-
-  // Create project
-  const testProject = yield* db.organizations.projects.create({
-    userId: testUser.id,
-    organizationId: testOrg.id,
-    data: { name: "Test Project" },
-  });
-
-  // Create environment
-  const testEnvironment = yield* db.organizations.projects.environments.create({
-    userId: testUser.id,
-    organizationId: testOrg.id,
-    projectId: testProject.id,
-    data: { name: "Test Env" },
-  });
 
   // Create another environment to test cross-environment validation
   const otherEnvironment = yield* db.organizations.projects.environments.create(
     {
-      userId: testUser.id,
-      organizationId: testOrg.id,
-      projectId: testProject.id,
+      userId: envFixture.owner.id,
+      organizationId: envFixture.org.id,
+      projectId: envFixture.project.id,
       data: { name: "Other Env" },
     },
   );
 
-  // Create API key
+  // Create API key for the main environment
   const apiKeyResponse =
     yield* db.organizations.projects.environments.apiKeys.create({
-      userId: testUser.id,
-      organizationId: testOrg.id,
-      projectId: testProject.id,
-      environmentId: testEnvironment.id,
+      userId: envFixture.owner.id,
+      organizationId: envFixture.org.id,
+      projectId: envFixture.project.id,
+      environmentId: envFixture.environment.id,
       data: { name: "Test API Key" },
     });
 
   return {
-    testUser,
-    testOrg,
-    testProject,
-    testEnvironment,
+    ...envFixture,
     otherEnvironment,
-    testApiKey: apiKeyResponse.key,
+    apiKey: apiKeyResponse.key,
   };
 });
