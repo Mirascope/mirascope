@@ -1,8 +1,5 @@
 import * as dotenv from "dotenv";
-import { Effect, Layer } from "effect";
-import { beforeAll, afterAll } from "vitest";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { Context, Effect, Layer } from "effect";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import {
   HttpClient,
@@ -16,8 +13,8 @@ import { SettingsService } from "@/settings";
 import { DatabaseService, getDatabase, type Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { App } from "@/api/handler";
-import * as schema from "@/db/schema";
 import type { PublicUser } from "@/db/schema";
+import { TestDatabase } from "@/tests/db";
 
 dotenv.config({ path: ".env.local", override: true });
 
@@ -69,141 +66,138 @@ function createHandlerHttpClient(
   );
 }
 
-function createTestClient(options?: {
-  authenticatedUser?: PublicUser;
-  database?: Database;
-}) {
-  const database = options?.database ?? getDatabase(testDatabaseUrl);
-  const app: App = {
-    environment: "test",
-    database,
-    authenticatedUser: options?.authenticatedUser ?? mockUser,
-  };
+const makeClient = HttpApiClient.make(MirascopeCloudApi, {
+  baseUrl: "http://127.0.0.1:3000/",
+});
+type ApiClient = Effect.Effect.Success<typeof makeClient>;
 
-  const webHandler = createTestWebHandler(app);
-  const HandlerHttpClient = createHandlerHttpClient(webHandler);
-  const HandlerHttpClientLayer = Layer.succeed(
-    HttpClient.HttpClient,
-    HandlerHttpClient,
-  );
+function createApiClient(
+  database: Database,
+  authenticatedUser: PublicUser,
+): Effect.Effect<
+  { client: ApiClient; dispose: () => Promise<void> },
+  never,
+  never
+> {
+  return Effect.gen(function* () {
+    const app: App = {
+      environment: "test",
+      database,
+      authenticatedUser,
+    };
 
-  const client = Effect.runSync(
-    Effect.scoped(
-      HttpApiClient.make(MirascopeCloudApi, {
-        baseUrl: "http://127.0.0.1:3000/",
-      }).pipe(Effect.provide(HandlerHttpClientLayer)),
-    ),
-  );
+    const webHandler = createTestWebHandler(app);
+    const HandlerHttpClient = createHandlerHttpClient(webHandler);
+    const HandlerHttpClientLayer = Layer.succeed(
+      HttpClient.HttpClient,
+      HandlerHttpClient,
+    );
 
-  const cleanup = async () => {
-    await webHandler.dispose();
-    // Only close if we created the database connection
-    if (!options?.database) {
-      await database.close();
-    }
-  };
+    const client = yield* makeClient.pipe(
+      Effect.provide(HandlerHttpClientLayer),
+      Effect.scoped,
+    );
 
-  return { client, cleanup };
+    return {
+      client,
+      dispose: () => webHandler.dispose(),
+    };
+  });
 }
 
-export type TestClient = ReturnType<typeof createTestClient>["client"];
+// ============================================================================
+// Effect-based API testing utilities
+// ============================================================================
 
 /**
- * Wraps a describe block callback with a shared test client.
- * Uses vitest's beforeAll/afterAll hooks for proper resource lifecycle.
- *
- * @example
- * describe("Health API", withTestClient((client) => {
- *   it("GET /health", async () => {
- *     const result = await Effect.runPromise(client.health.check());
- *     expect(result.status).toBe("ok");
- *   });
- * }));
+ * Context.Tag for the test API client.
  */
-export const withTestClient = (
-  testFn: (client: TestClient) => void,
-  options?: {
-    authenticatedUser?: PublicUser;
-    database?: Database;
-  },
-) => {
-  return () => {
-    let client: TestClient;
-    let cleanup: () => Promise<void>;
+export class TestApiClient extends Context.Tag("TestApiClient")<
+  TestApiClient,
+  ApiClient
+>() {}
 
-    beforeAll(() => {
-      const result = createTestClient(options);
-      client = result.client;
-      cleanup = result.cleanup;
-    });
+/**
+ * Test client utilities for API testing.
+ *
+ * For simple tests without database (health, docs, traces):
+ * ```ts
+ * Effect.gen(function* () {
+ *   const client = yield* TestApiClient;
+ *   const result = yield* client.health.check();
+ * }).pipe(Effect.provide(TestClient.Default))
+ * ```
+ *
+ * For tests with fixtures that need a specific authenticated user:
+ * ```ts
+ * Effect.gen(function* () {
+ *   const { owner, org } = yield* TestOrganizationFixture;
+ *   const client = yield* TestClient.authenticate(owner);
+ *   const orgs = yield* client.organizations.list();
+ * }).pipe(Effect.provide(TestDatabase))
+ * ```
+ *
+ * For tests that just need an authenticated user (no specific fixtures):
+ * ```ts
+ * Effect.gen(function* () {
+ *   const client = yield* TestApiClient;
+ *   const org = yield* client.organizations.create({ ... });
+ * }).pipe(Effect.provide(TestClient.Authenticated))
+ * ```
+ */
+export const TestClient = {
+  /**
+   * Self-contained layer with mock user and mock database.
+   * Use for simple tests that don't need real database interactions.
+   */
+  Default: Layer.scoped(
+    TestApiClient,
+    Effect.gen(function* () {
+      const database = getDatabase(testDatabaseUrl);
 
-    afterAll(async () => {
-      await cleanup();
-    });
+      const { client, dispose } = yield* createApiClient(database, mockUser);
 
-    // Use a getter to access the client lazily (after beforeAll runs)
-    testFn(
-      new Proxy({} as TestClient, {
-        get: (_, prop) => {
-          return (client as Record<string | symbol, unknown>)[prop];
-        },
-      }),
-    );
-  };
-};
-
-export const withTestClientDb = (
-  testFn: (client: TestClient) => void | Promise<void>,
-) => {
-  return async () => {
-    const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL;
-    if (!TEST_DATABASE_URL) {
-      throw new Error(
-        "TEST_DATABASE_URL environment variable is required for database tests",
+      yield* Effect.addFinalizer(() =>
+        Effect.promise(async () => {
+          await dispose();
+          await database.close();
+        }),
       );
-    }
 
-    const sql = postgres(TEST_DATABASE_URL, { max: 5, fetch_types: false });
-    const db = drizzle(sql, { schema });
+      return client;
+    }),
+  ),
 
-    try {
-      await db
-        .transaction(async (tx) => {
-          const txDb = getDatabase(tx);
+  /**
+   * Creates an authenticated API client for a specific user.
+   * Requires DatabaseService from context (use with TestDatabase).
+   *
+   * @param user - The user to authenticate as
+   * @returns Effect that yields the authenticated API client
+   */
+  authenticate: (
+    user: PublicUser,
+  ): Effect.Effect<ApiClient, never, DatabaseService> =>
+    Effect.gen(function* () {
+      const database = yield* DatabaseService;
+      const { client } = yield* createApiClient(database, user);
+      return client;
+    }),
 
-          const [user] = await tx
-            .insert(schema.users)
-            .values({ email: "api-test@example.com", name: "API Test User" })
-            .returning({
-              id: schema.users.id,
-              email: schema.users.email,
-              name: schema.users.name,
-            });
-
-          const { client, cleanup } = createTestClient({
-            database: txDb,
-            authenticatedUser: user,
-          });
-
-          try {
-            await testFn(client);
-          } finally {
-            await cleanup();
-          }
-          throw new Error("__ROLLBACK_TEST_DB__");
-        })
-        .catch((err: unknown) => {
-          if (
-            err &&
-            typeof err === "object" &&
-            "message" in err &&
-            err.message !== "__ROLLBACK_TEST_DB__"
-          ) {
-            throw err;
-          }
-        });
-    } finally {
-      await sql.end();
-    }
-  };
+  /**
+   * Layer that provides an authenticated client with a newly created test user.
+   * Self-contained - includes TestDatabase internally.
+   */
+  Authenticated: Layer.scoped(
+    TestApiClient,
+    Effect.gen(function* () {
+      const database = yield* DatabaseService;
+      const user = yield* database.users.create({
+        data: { email: "api-test@example.com", name: "API Test User" },
+      });
+      const { client, dispose } = yield* createApiClient(database, user);
+      yield* Effect.addFinalizer(() => Effect.promise(dispose));
+      return client;
+    }),
+  ).pipe(Layer.provide(TestDatabase), Layer.orDie),
 };

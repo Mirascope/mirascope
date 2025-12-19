@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { withTestClient } from "@/tests/api";
+import { TestApiClient, TestClient } from "@/tests/api";
 
-describe(
-  "Traces API",
-  withTestClient((client) => {
-    it("POST /traces", async () => {
+describe("Traces API", () => {
+  it.effect("POST /traces", () =>
+    Effect.gen(function* () {
+      const client = yield* TestApiClient;
       const payload = {
         resourceSpans: [
           {
@@ -40,13 +40,16 @@ describe(
         ],
       };
 
-      const result = await Effect.runPromise(client.traces.create({ payload }));
+      const result = yield* client.traces.create({ payload });
       expect(result).toMatchObject({
         partialSuccess: expect.any(Object) as unknown,
       });
-    });
+    }).pipe(Effect.provide(TestClient.Default)),
+  );
 
-    it("POST /traces - missing service.name and spans", async () => {
+  it.effect("POST /traces - missing service.name and spans", () =>
+    Effect.gen(function* () {
+      const client = yield* TestApiClient;
       const payload = {
         resourceSpans: [
           {
@@ -72,10 +75,10 @@ describe(
         ],
       };
 
-      const result = await Effect.runPromise(client.traces.create({ payload }));
+      const result = yield* client.traces.create({ payload });
       expect(result).toMatchObject({
         partialSuccess: expect.any(Object) as unknown,
       });
-    });
-  }),
-);
+    }).pipe(Effect.provide(TestClient.Default)),
+  );
+});

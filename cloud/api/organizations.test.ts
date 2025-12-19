@@ -1,80 +1,81 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { withTestClientDb } from "@/tests/api";
+import { TestApiClient, TestClient } from "@/tests/api";
+import { TestDatabase, TestOrganizationFixture } from "@/tests/db";
+import type { PublicOrganizationWithMembership } from "@/db/schema";
 
 describe("Organizations API", () => {
-  it(
-    "GET /organizations - list organizations",
-    withTestClientDb(async (client) => {
-      const orgs = await Effect.runPromise(client.organizations.list());
-      expect(Array.isArray(orgs)).toBe(true);
-    }),
-  );
+  // Simple test using TestClient.Authenticated (creates user automatically)
+  it.effect("POST /organizations - create organization", () =>
+    Effect.gen(function* () {
+      const client = yield* TestApiClient;
 
-  it(
-    "POST /organizations - create organization",
-    withTestClientDb(async (client) => {
-      const org = await Effect.runPromise(
-        client.organizations.create({ payload: { name: "Test Organization" } }),
-      );
-      expect(org.name).toBe("Test Organization");
+      const org = yield* client.organizations.create({
+        payload: { name: "New Test Organization" },
+      });
+      expect(org.name).toBe("New Test Organization");
       expect(org.role).toBe("OWNER");
       expect(org.id).toBeDefined();
-    }),
+    }).pipe(Effect.provide(TestClient.Authenticated)),
   );
 
-  it(
-    "GET /organizations/:id - get organization",
-    withTestClientDb(async (client) => {
-      const created = await Effect.runPromise(
-        client.organizations.create({ payload: { name: "Get Test Org" } }),
-      );
+  // Tests with fixtures use TestClient.authenticate(user) to get a client
+  it.effect("GET /organizations - list organizations", () =>
+    Effect.gen(function* () {
+      const { owner, org } = yield* TestOrganizationFixture;
+      const client = yield* TestClient.authenticate(owner);
 
-      const org = await Effect.runPromise(
-        client.organizations.get({ path: { id: created.id } }),
-      );
-
-      expect(org.id).toBe(created.id);
-      expect(org.name).toBe("Get Test Org");
-      expect(org.role).toBe("OWNER");
-    }),
+      const orgs = yield* client.organizations.list();
+      expect(orgs.length).toBe(1);
+      expect(orgs[0].id).toBe(org.id);
+      expect(orgs[0].name).toBe(org.name);
+    }).pipe(Effect.provide(TestDatabase)),
   );
 
-  it(
-    "PUT /organizations/:id - update organization",
-    withTestClientDb(async (client) => {
-      const created = await Effect.runPromise(
-        client.organizations.create({ payload: { name: "Update Test Org" } }),
-      );
+  it.effect("GET /organizations/:id - get organization", () =>
+    Effect.gen(function* () {
+      const { owner, org } = yield* TestOrganizationFixture;
+      const client = yield* TestClient.authenticate(owner);
 
-      const updated = await Effect.runPromise(
-        client.organizations.update({
-          path: { id: created.id },
-          payload: { name: "Updated Org Name" },
-        }),
-      );
+      const fetched = yield* client.organizations.get({
+        path: { id: org.id },
+      });
 
-      expect(updated.id).toBe(created.id);
+      expect(fetched.id).toBe(org.id);
+      expect(fetched.name).toBe(org.name);
+      expect(fetched.role).toBe("OWNER");
+    }).pipe(Effect.provide(TestDatabase)),
+  );
+
+  it.effect("PUT /organizations/:id - update organization", () =>
+    Effect.gen(function* () {
+      const { owner, org } = yield* TestOrganizationFixture;
+      const client = yield* TestClient.authenticate(owner);
+
+      const updated = yield* client.organizations.update({
+        path: { id: org.id },
+        payload: { name: "Updated Org Name" },
+      });
+
+      expect(updated.id).toBe(org.id);
       expect(updated.name).toBe("Updated Org Name");
       expect(updated.role).toBe("OWNER");
-    }),
+    }).pipe(Effect.provide(TestDatabase)),
   );
 
-  it(
-    "DELETE /organizations/:id - delete organization",
-    withTestClientDb(async (client) => {
-      const created = await Effect.runPromise(
-        client.organizations.create({ payload: { name: "Delete Test Org" } }),
-      );
+  it.effect("DELETE /organizations/:id - delete organization", () =>
+    Effect.gen(function* () {
+      const { owner, org } = yield* TestOrganizationFixture;
+      const client = yield* TestClient.authenticate(owner);
 
-      await Effect.runPromise(
-        client.organizations.delete({ path: { id: created.id } }),
-      );
+      yield* client.organizations.delete({ path: { id: org.id } });
 
       // Verify it's gone by listing and checking it's not there
-      const orgs = await Effect.runPromise(client.organizations.list());
-      const found = orgs.find((o) => o.id === created.id);
+      const orgs = yield* client.organizations.list();
+      const found = orgs.find(
+        (o: PublicOrganizationWithMembership) => o.id === org.id,
+      );
       expect(found).toBeUndefined();
-    }),
+    }).pipe(Effect.provide(TestDatabase)),
   );
 });
