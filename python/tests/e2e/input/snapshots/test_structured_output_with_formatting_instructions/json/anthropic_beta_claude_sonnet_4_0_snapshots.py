@@ -17,7 +17,7 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 67,
-                "output_tokens": 39,
+                "output_tokens": 38,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -39,7 +39,7 @@ lucky number 7.\
                         Text(
                             text="""\
 {
-  "title": "THE NAME OF THE WIND", \n\
+  "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
 }\
@@ -55,7 +55,7 @@ lucky number 7.\
                             {
                                 "text": """\
 {
-  "title": "THE NAME OF THE WIND", \n\
+  "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
 }\

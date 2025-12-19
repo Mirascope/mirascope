@@ -16,7 +16,7 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 35,
-                "output_tokens": 51,
+                "output_tokens": 40,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -52,7 +52,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="You're absolutely right - I apologize for the error. I was created by Anthropic, not Google. Thank you for prompting me to double-check that. I'm Claude, an AI assistant made by Anthropic."
+                            text="You're absolutely right, and I apologize for the error. I am Claude, an AI assistant created by Anthropic. Thank you for prompting me to correct that mistake."
                         )
                     ],
                     provider_id="anthropic",
@@ -62,7 +62,7 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "text": "You're absolutely right - I apologize for the error. I was created by Anthropic, not Google. Thank you for prompting me to double-check that. I'm Claude, an AI assistant made by Anthropic.",
+                                "text": "You're absolutely right, and I apologize for the error. I am Claude, an AI assistant created by Anthropic. Thank you for prompting me to correct that mistake.",
                                 "type": "text",
                             }
                         ],

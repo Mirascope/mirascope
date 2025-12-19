@@ -15,20 +15,20 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WQQU+DQBCF7/yKzZ7bxmKI0ZtWY6o2EiVqYjyMZQqryy7ZHbSk6X93gUKXyGEz
-        mfd4M/PtAsb4GlQqUiC0/IK9uw5ju/ZtNK0IFTmhb7lmCYaO3u7bebWzEG6bn/iSQcGASTAZuldl
-        Fbii0CnKCSMDQmHKPmt2q3Umcca9lP1Qf0yOs42W2AS3Eb193xv4Rihh8ycEq1Vje04eYz6oQqW4
-        de2ToB/QRvPKuq1WSOAowHArL40uSkr0N6qFrloKUZflMRvJ8/lBJ00gR1IYnk/+xdprN1RIH6bH
-        2d0IUlDdHJLcvCXc40CjrXoOgYeLU66rLKfxhuH8NDgA6xi+oLGig5Vh4fBNw1k03UiweTuPG7Sl
-        VhaXaeN5vfupIX5YXd3Hi6/VOo7Oavt7aXmwD/4ATiZb900CAAA=
+        H4sIAAAAAAAC/2WQQWvCQBCF7/kVy56jaMBieytVigdR2lBqSw/T7iRZutmNuxNQxP/eTWJ0Q3NY
+        hnkvb2a+U8QY/wEtpABCxx/Yp+8wdmrfRjOaUJMX+pZvVmDp5u2+U1B7C+Gh+YmvGJQMmAKbo391
+        XoMvSiNQxYwsSI2CfR/ZszG5wjEPUs7X+iu+zbZGYRPcRvT2c2/gmdTSFS8IzujG9pputvyqSi3w
+        4NuTqB/QRvPa+a3WSOApwPVWXllTVpSaX9RPpm4pzLqsgNlAnk4vOhkCNZQmSfwv1i38UKlCmAFn
+        fyMoScfmkHT5nvKAAw226jlEAS5OhanzgoYbzu+iC68O4RtaJztWOZae3igZz0aZAle047hFVxnt
+        cCUaz3w3XYLIPha7zf2e3Fbt0n3yuObROfoDapA/rUwCAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -37,11 +37,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 19:39:04 GMT
+      - Thu, 18 Dec 2025 23:27:45 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1894
+      - gfet4t7; dur=793
       Transfer-Encoding:
       - chunked
       Vary:
@@ -59,8 +59,8 @@ interactions:
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
-      am a large language model, trained by Google."},{"role":"user","content":"Can
-      you double-check that?"}],"model":"claude-sonnet-4-0"}'
+      am a large language model, trained by Google."},{"role":"user","content":[{"type":"text","text":"Can
+      you double-check that?","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0"}'
     headers:
       accept:
       - application/json
@@ -71,13 +71,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '242'
+      - '304'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - Anthropic/Python 0.64.0
+      - Anthropic/Python 0.75.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -87,7 +87,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -103,16 +103,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJBBaxtBDIX/itCll7Gxk2yL5xYSArmVNoeGUpbxrLI78exoqtEkcY3/
-        e9mlbkhLTgJ9T0+Pd8CRO4po0UdXO1oUTol0cbE4W501q2Z9gQZDhxbH0rer9SfZuO236893/UOT
-        +dHffP34ZfOMBnWfaVJRKa4nNCgcp4UrJRR1SdGg56SUFO33w0mv9DKReVi85/pBCNy2cKxKcQ8S
-        +kFhAbfgMkfuwy+CBxbQgYBEWJYTGuFqTm/AJbi8hb9PwQs5pQ62e7hMOgjn4JdwN7i0gz3X2SsL
-        j1lD6mEkUAbPIuQVdHAK42S0oyUefxgsyrkVcoUTWqTUtVol4R9Q6Gel5AltqjEarHMT9oAh5aqt
-        8o5SQXveGPTOD9TO4QKn9q1gdeJCrnuPnW4nf8oDjSQuts34v/6Vrod/6dEgV32TbmOwkDwFT60G
-        ErQ4Ndk56fB4/A0AAP//AwAD5BDgLwIAAA==
+        H4sIAAAAAAAA/3WRza7TMBCFX2XkDZukakMrpOzgChCs2dwiFLn2NLFqe3ztMZdQ9d2ZRFT8iZWt
+        8x3PzBlfVSCLXvXKeF0ttoViRG73bbftDtvDbq8a5azwUMZhu3uYwuXYlXcdv32qx+745jl9PD+K
+        h+eEiwtL0SOKkMkvgi7FFdaRRTIUGeXWf77e/YzfFrIevXqk+iIj6FMhXxn9DNmNE0MLH0An8jS6
+        7whnysATAuZMebOgAA/r9A3oaEV41gVMRs1o4TTD68hTpuRMA5EY3hONHjfwadLxAjPVtWLKFBK7
+        OEJAYAJL9eSxNROai7TTDCddnIGzNiwTUmUIc0F/3qjbl0YVpjRIS9mfBMFoB645qp+g4FPFaCRx
+        rN43qq5L6q/KxVR5YLpgLKp/eZAlaWk5rNM7isOfhu2dC7b/Y/e3S31MEwbM2g+H8K//F91Nf9Nb
+        oyTj79L+laTB/NUZHNhhlpzLz1qdrbrdfgC+ZiouSgIAAA==
     headers:
+      CF-Cache-Status:
+      - DYNAMIC
       CF-RAY:
-      - 990242877f46c3a1-SEA
+      - 9b026ec43c091846-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -120,11 +122,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:39:06 GMT
+      - Thu, 18 Dec 2025 23:27:48 GMT
       Server:
       - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
+      Vary:
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -134,35 +140,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-17T19:39:05Z'
+      - '2025-12-18T23:27:47Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-17T19:39:06Z'
+      - '2025-12-18T23:27:48Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-17T19:39:04Z'
+      - '2025-12-18T23:27:45Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-17T19:39:05Z'
-      cf-cache-status:
-      - DYNAMIC
+      - '2025-12-18T23:27:47Z'
       request-id:
-      - req_011CUDLVRLxUYfe16UJAhcty
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
+      - req_011CWF25dcaUpZyw16ywWiYa
       x-envoy-upstream-service-time:
-      - '2378'
+      - '3191'
     status:
       code: 200
       message: OK

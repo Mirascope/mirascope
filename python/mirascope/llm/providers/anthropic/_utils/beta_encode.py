@@ -9,6 +9,7 @@ from anthropic.types.anthropic_beta_param import AnthropicBetaParam
 from anthropic.types.beta import (
     BetaContentBlockParam,
     BetaMessageParam,
+    BetaTextBlockParam,
     BetaThinkingConfigParam,
     BetaToolChoiceParam,
     BetaToolParam,
@@ -45,7 +46,7 @@ class BetaParseKwargs(TypedDict, total=False):
     model: Required[str]
     max_tokens: Required[int]
     messages: Sequence[BetaMessageParam]
-    system: str | Omit
+    system: Sequence[BetaTextBlockParam] | Omit
     tools: Sequence[BetaToolParam] | Omit
     tool_choice: BetaToolChoiceParam | Omit
     temperature: float | Omit
@@ -58,10 +59,12 @@ class BetaParseKwargs(TypedDict, total=False):
 
 
 def _beta_encode_content(
-    content: Sequence[ContentPart], encode_thoughts: bool
+    content: Sequence[ContentPart],
+    encode_thoughts: bool,
+    add_cache_control: bool = False,
 ) -> str | Sequence[BetaContentBlockParam]:
     """Convert mirascope content to Beta Anthropic content format."""
-    result = encode_content(content, encode_thoughts)
+    result = encode_content(content, encode_thoughts, add_cache_control)
     if isinstance(result, str):
         return result
     return cast(Sequence[BetaContentBlockParam], result)
@@ -71,24 +74,60 @@ def _beta_encode_message(
     message: UserMessage | AssistantMessage,
     model_id: str,
     encode_thoughts: bool,
+    add_cache_control: bool = False,
 ) -> BetaMessageParam:
-    """Convert user or assistant Message to Beta MessageParam format."""
+    """Convert user or assistant Message to Beta MessageParam format.
+
+    Args:
+        message: The message to encode
+        model_id: The Anthropic model ID
+        encode_thoughts: Whether to encode thought blocks as text
+        add_cache_control: Whether to add cache_control to the last content block
+    """
     if (
         message.role == "assistant"
         and message.provider_id == "anthropic"
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
+        and not add_cache_control
     ):
         raw = cast(dict[str, Any], message.raw_message)
         return BetaMessageParam(
             role=raw["role"],
             content=raw["content"],
         )
+
+    content = _beta_encode_content(message.content, encode_thoughts, add_cache_control)
+
     return BetaMessageParam(
         role=message.role,
-        content=_beta_encode_content(message.content, encode_thoughts),
+        content=content,
     )
+
+
+def _beta_encode_messages(
+    messages: Sequence[UserMessage | AssistantMessage],
+    model_id: str,
+    encode_thoughts: bool,
+) -> Sequence[BetaMessageParam]:
+    """Encode messages and add cache control for multi-turn conversations.
+
+    If the conversation contains assistant messages (indicating multi-turn),
+    adds cache_control to the last content block of the last message.
+    """
+    # Detect multi-turn conversations by checking for assistant messages
+    has_assistant_message = any(msg.role == "assistant" for msg in messages)
+
+    # Encode messages, adding cache_control to the last message if multi-turn
+    encoded_messages: list[BetaMessageParam] = []
+    for i, message in enumerate(messages):
+        is_last = i == len(messages) - 1
+        add_cache = has_assistant_message and is_last
+        encoded_messages.append(
+            _beta_encode_message(message, model_id, encode_thoughts, add_cache)
+        )
+    return encoded_messages
 
 
 def _beta_convert_tool_to_tool_param(tool: AnyToolSchema) -> BetaToolParam:
@@ -152,18 +191,26 @@ def beta_encode_request(
             )
 
     if anthropic_tools:
+        # Add cache control to the last tool for prompt caching
+        last_tool = anthropic_tools[-1]
+        last_tool["cache_control"] = {"type": "ephemeral"}
         kwargs["tools"] = anthropic_tools
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(
         messages
     )
 
-    kwargs["messages"] = [
-        _beta_encode_message(remaining_message, model_id, encode_thoughts)
-        for remaining_message in remaining_messages
-    ]
+    kwargs["messages"] = _beta_encode_messages(
+        remaining_messages, model_id, encode_thoughts
+    )
 
     if system_message_content:
-        kwargs["system"] = system_message_content
+        kwargs["system"] = [
+            BetaTextBlockParam(
+                type="text",
+                text=system_message_content,
+                cache_control={"type": "ephemeral"},
+            )
+        ]
 
     return messages, format, kwargs

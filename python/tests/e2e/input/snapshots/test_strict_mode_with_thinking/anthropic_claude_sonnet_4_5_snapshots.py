@@ -17,7 +17,7 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 293,
-                "output_tokens": 155,
+                "output_tokens": 154,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
@@ -33,16 +33,18 @@ test_snapshot = snapshot(
 The user is asking me to answer "What is 2 + 2?" and I need to respond in JSON format according to the schema provided.
 
 The schema requires:
-- integer_a: an integer
-- integer_b: an integer  \n\
-- answer: an integer
+- integer_a: integer
+- integer_b: integer  \n\
+- answer: integer
 
-The question is "What is 2 + 2?" so:
+All three fields are required.
+
+So for the question "What is 2 + 2?":
 - integer_a = 2
 - integer_b = 2
 - answer = 4
 
-I need to return valid JSON with no markdown, no backticks, just the JSON object on a single line.\
+I need to return this as a single line JSON object without any markdown formatting or extra text.\
 """
                         ),
                         Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}'),
@@ -54,21 +56,23 @@ I need to return valid JSON with no markdown, no backticks, just the JSON object
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "ErQECkYIChgCKkAtm18SjxEMOZZLFdTofDI+NGF+Wn+F2lXZKK5xmS8Xuh+Nn/Rs+X2ad6yEOiZJ1nJSbhOW2FaEGuXBHm+mOEPGEgyZeimNXYK6Q3spgCwaDC9y3BoizE8nJnyGPiIwmTEeY4B0y0Kk7SXuCRM4yQIyBw/TA9TFOYMvq3xZGDTVCyXv8tXUiYVy0s1VM4FaKpsDTi8/qcEp7Hpch6t4Ymn1WzyMAvvvtrSFax7nk9+SZYb2E6THPwoEVmIwLyFj6E+2CitTFDRTxkeRrRxetp9QJYqQhZmHF8Hawhgw/q+eFSwcDwR5vpCJmahvsyzT9JXACTeqPSVpmSFblre1BEmNBpqfVcuB9MHMF+t2mPTDY8NJENw+1IMlGnrf9W430UPFEnfJ3OcMsBlIcm4rBF4Ed4Qoy1pg2wzP8TBSHCmh5qgdWThP/rB+SLPYxYROOedmbG7l8suJ3RzAi3sWKZDTjmpnuWMC1n2+6O9ZaiRsiBbltd7zAwpI5wHP+fx3fxTjtadhdkT4S7z/DXW2U5AWjqZ7HN530ceGymQ2sbd5bWdelSP2xBeTzwa2LiuNOTQkK0MHikcGrVJiYny64m9u1o2q8WtZYEwkID/MP87JW1lZKYztHRnDyKog17dfUcK4wkAd9DHjfGyZtatdmW4iY1TPIsYBgpOaBInJLH+01zjEzn/YQuRSlcRPZar4owCEIC82SGzhxkQsgz8AitDq8EbFuCOJObZJUkoIGAE=",
+                                "signature": "EssECkYIChgCKkDSbncMSCfIvPhvksJ7pyjCQVYbrDYBjuOWsITZO+AeQKkcvd58HG844sHCDtvCzGM55gYpa7Iembnd4s3c4hpYEgxl/81Itls4Waxfr4UaDC2aJrCfP4zsKDJihCIwsnV5o60f+L558a4hnwJwkcjYPvdIPHevytWAkNlJ+WVLS2vRQGtaur0z/WOFpKwuKrIDhEA8dJsIBild7IOfBd/m+QD3/q3mSXfyjzUMQowZCqUP2ha7gyGuKYpkqd4rqxMkD9fTXe7kRBeXB6uK6dmgfKrIK2PjRNvhyHRBAGlfRmTyLNLUTNHTGWrVkAgHQvOZQj7lBKQvdh96pKJH3KTGJixRBS0G75yqkLbc6etdp2usHLZ5Sg56VPDRq8y3H1UtsmNp7bLUtl5fOX1AGjAdNE/GDfDKHttWIXbytKv8elBiByksFO70A6msC06CMOy3Aa6uf6OyYu/dBWr3rz+Ys39XYdrcgMS9QsgMcOiU+FT0yC+RqfnGXMMf6d4YDVrS/pSjNw8vqkiZXyCHxRoAJ651s4vEfixU+Rf5CtZy9hvJhfGMLGvLq+rBM/VYQhylyYoD882/1OD4D2IjdNtMu583fefYMecdf9mbMPHQSwWc/57oFBAKqSpg1lI6ZyXhz4Qf8KBi51+f0+kUjTlrsLIL+ne5C7wiL53f010B/7A0Mx62YYiogM1SpBt/OGKwxflq7ns3ngO4MStH1sqUvJVyNXWlUttTNaxA6GO0mw0QZmMkdvrjrx/fD2afalwRVTQYAQ==",
                                 "thinking": """\
 The user is asking me to answer "What is 2 + 2?" and I need to respond in JSON format according to the schema provided.
 
 The schema requires:
-- integer_a: an integer
-- integer_b: an integer  \n\
-- answer: an integer
+- integer_a: integer
+- integer_b: integer  \n\
+- answer: integer
 
-The question is "What is 2 + 2?" so:
+All three fields are required.
+
+So for the question "What is 2 + 2?":
 - integer_a = 2
 - integer_b = 2
 - answer = 4
 
-I need to return valid JSON with no markdown, no backticks, just the JSON object on a single line.\
+I need to return this as a single line JSON object without any markdown formatting or extra text.\
 """,
                                 "type": "thinking",
                             },

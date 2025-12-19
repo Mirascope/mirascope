@@ -28,22 +28,22 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/3VU23LiOBB95ytUftndwHAdYjJV+2CScFuuMRDIZmsQVhtrsCUjyRBI5d9HNiEx
-        VNYPLrtvp89pqV8zCBkOZoQSrEAaP9C/2oLQa/KOfZwpYEo7TiZtDLFQn7HH5zX1rUMUvMRJxtVV
-        F9QfEjVBobFHJWrQJWfYcSjqR8ESxNXVM3tmgzXe55DkqI0kAFIeoEiCQDvMlEx+S8Wi8lLZLMnO
-        I9TnKBR86UOQ19k0CIBQzcXf6zTK1oi7+gMr5GmWe7RweBBGCn66dLlAbsQcRTlDlCUgCwIujnz1
-        E4d0oWvbAIFEPl0fWwpBuOAopDj3kctFjKC7w3KtY9voVyQVYgBEByAH+/4F2o5qBgv2t6ayyCHd
-        TszW45FPdHPbIwRmcqd5634YR4oGkEc2DUIfknipBKYrT2nsHRYkh+AFO0pT9fhOF0sapSr/zIzc
-        xTg0jM7TE1EigpTvLff/Mzypc6upnB2Adz/DAcQzTpG8wNVBWKzkF8lxujZrKS4cb2f/b1/zsOmK
-        YRWJBP5W7uoWaWmxbu6GbEjc66WwSC07WbnEdoYBdCO6tbPDljVh9+GoZLbmZXLYN9k8KG+H5caS
-        MLOzmfYnESGzXfGxVe/NxQCmhQaMmPcwrE3s2f478aOnB/vX8u7edHuVtilfKtfmrDboVWulUX3m
-        yusJrlqFetssTJ42Fm12rLB6PdyGXf+ufvMUdTHZ7NxG81Cwt1Zvfyi4na2sdiphLawLyyrePKx6
-        lVEp7HZw0zefVo5zM10N1t8rrlhO5WyebfSF98hLRY965WUpW+g82kHZmhW9kumRbD/LmsVNq9du
-        DDp+yTIyXyn636eahuB+ol7ACfin8A+5DZcyKr0HwJLHczLs8WD4MVyDMgIv2ly8iO+BlHiV1O3F
-        ddEKGAh9G8nnVYsvxp/yr/wRM24uacuI4sweKKw3Ef44MYa+20GoxnwN7JZHySaqVo+wqcV15i+Z
-        737FFfbPXeVTbqquvNOo1E9vtNSy0wJhn6p9TGp8PxunjrgGOGvrpGImJfbpyJ63WK1k3tU+DmAK
-        QtKj0isItJbfyvnqN9fH0kvwDAEy5ExCmyQ3rjX6B8+b5aY4jA5me7irblTNKhqZt8xvGCsI39IF
-        AAA=
+        H4sIAAAAAAAC/3VUW1PiSBR+51d05cVdR7lJYJ0qHxwugiSCQ0CGdWvoJJ2kSac79MUIlv99O0EU
+        XDcPqe5zvj6X71xeSgAYHqQ+9qFEwvgO/tYSAF6Kf65jVCIqtWIv0sIUcvmB3X0vB2cNkeg5f2Sc
+        nvawyyj0PAzuVOIiDtqQeIpAiRk9PX2kj3QUw80ZEAzICAElNCSDVIriWqtWZQQ+bNDCRhmAOwZS
+        zlyCkjIYgJiyrMAvfRRAReRvmOKyx5JUSfQ7wO4SBIp6uU8Q6XQJys1jAVLEA+RJstEmB/JEAB8J
+        HFLkg4BxgJ5hrnuDKp4ygTTQziVMhZHMY/CQEEDrBU5Sgr6DwQkhYKWEBB7Up+VRFBnW6Szplc5r
+        WQZOBCUQ2hTxQYifEEhQkQWkItM06OPmhCNAGIsxDYuQcgNMSQ3Z6JS4hnCQQIrTN0oBRchHfhl0
+        odjo9PS//EiNs0/l2YWvKyS5Qge617P/r+meQV1ActQQb3oKE5TX/CDhT341CPJQfPE4f67FmpZP
+        itej++vXeUx0yaBUvHDfVoMf13NrUKeZfbNaR3H09AzHvVave2nPhlFQ71rY7Hcukin3xEMkrMHN
+        qh+5Yk1cd+Q2h5HJKk77Eo2n7nSVwgQnjTr8Kab3TZhmcOQl19Hczug2mlwTB3FlNTYrj/oz3Gxe
+        2D964S+LTs1oFizaPFijNWs13Uk1HlNzHfcX9z6tfateMrczcoeMqa5du4+qdbTO5Oy2OiSk3mOL
+        uOHeSsee9a1aXIl18yfhLbfmbsXsNOD8YeL05v1vjf4vMri4s2Ayk4ttxefj9Tww3Y51T0bNwcON
+        VH2xfXKqzqwDWys0v21v/lIV2oUtsY1b6XRe1/5nsVovsqsro/QV4/98sG1wRgp2E+Yjsoe/l8MI
+        MMUi+qnbjeV1NCbOaPxefANTHz1rcfUT3tajA8PCrp3bBSGiiOtN5H+Maz5Ef4g/yzufeXBFWIbK
+        X9pIQr254HtHGXogk1Q6LEa0zVSxuUxz5/Zg0R3pa603vWQSkmNVvX72H7uio71icrgBD5ajJggS
+        LDd5Uk537hyMgHZwFNaexdIB2fuWPg7RzMeiYHtXgBniAu+YDlGiuTyvl83zgEARFf4MjkTKqEAD
+        P8ecs1oXQmvY8bfZWorxxWUyjK+rRum19C/EqR4bAgYAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -52,11 +52,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:47:28 GMT
+      - Thu, 18 Dec 2025 23:27:54 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1797
+      - gfet4t7; dur=1343
       Transfer-Encoding:
       - chunked
       Vary:
@@ -74,8 +74,8 @@ interactions:
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
-      fibonacci number?"},{"role":"assistant","content":[{"type":"tool_use","id":"google_unknown_tool_id","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"google_unknown_tool_id","content":"218922995834555169026"}]}],"model":"claude-sonnet-4-0","thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
-      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}]}'
+      fibonacci number?"},{"role":"assistant","content":[{"type":"tool_use","id":"google_unknown_tool_id","name":"compute_fib","input":{"n":100},"cache_control":null}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"google_unknown_tool_id","content":"218922995834555169026","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -86,13 +86,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '626'
+      - '721'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - Anthropic/Python 0.72.0
+      - Anthropic/Python 0.75.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -102,7 +102,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.72.0
+      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -118,17 +118,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJFNa+MwEIb/ynQuC0EpttdOGh8Lba89tJduF6PIgy0qj1xptE4a8t8X
-        ZxO6H+xJ8D6P3hmkAw6+JYc1GqdTS8vomUmW5bLIiiqr8hIV2hZrHGLXZPnjrrgLt93DRzndlc/P
-        H/7lJa1zVCj7kWaLYtQdocLg3RzoGG0UzYIKjWchFqy/HS6+0G4mp6PGp54gzzLp4d5uPWtjLHAa
-        thTARlgsivxGbYpCbTaVuvlaqqqqVL7aqKxYLRbXr/zKT72Ns/uerBBocDp0dO64grn/sznSeyI2
-        BF3wUwTajZ6JxWrn9gqih+0epCcQOxBMBIG06U/Jrx2FwqBgoi+BoCXtLHcwWelBQ5EvW9tZOU++
-        xuN3hVH82ATS0TPWSNw2kgLjGVy2wZqTcwrT6R3rA1oekzTi34gj1uV6rdBo01NjAmmxnps/jezC
-        A+n2f+xydx5AY08DBe2aavjX/6R5/zc9KvRJfo9WlcJI4Yc11IilgDXOv9/q0OLx+BMAAP//AwBi
-        zqnsbgIAAA==
+        H4sIAAAAAAAA/3WQXWvDIBSG/0rw2g5jY9vkB5TSi910o2VjiNVDI0s00+PYKPnvM2VlX+xKeZ/3
+        fLznTHpvoCMN0Z1KBmbROwc4q2acccFEWRFKrMm8jyfJysN+82B21QHFbp/MZr7ebve399mD7wNM
+        LohRnSALwXeToGK0EZXDLGnvEPKveTxf/QhvE7k8DblroSgZw7ZY26N3SmtbuNQfIRQ2Frxc0Zpz
+        WteCruYVFULQclFTxhc3ZHyiJKIfZACVM+Rm4IzEFBz5BBFeEjidp7rUdZSky6LNmVg3JJTon8FF
+        0lTLZd5U6Rakzr3Qeid/OtiVZ2z+Y9faaQAMLfQQVCdF/9f/Rcv2Nx0p8Qm/S3yR40B4tRokWgg5
+        6HReo4Ih4/gB+3tJBs8BAAA=
     headers:
+      CF-Cache-Status:
+      - DYNAMIC
       CF-RAY:
-      - 99974f5f7e2b309b-SEA
+      - 9b026efd3e85a7d2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -136,11 +136,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 04 Nov 2025 21:47:31 GMT
+      - Thu, 18 Dec 2025 23:27:56 GMT
       Server:
       - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
+      Vary:
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -150,35 +154,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-11-04T21:47:30Z'
+      - '2025-12-18T23:27:56Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-11-04T21:47:31Z'
+      - '2025-12-18T23:27:56Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-11-04T21:47:28Z'
+      - '2025-12-18T23:27:54Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-11-04T21:47:30Z'
-      cf-cache-status:
-      - DYNAMIC
+      - '2025-12-18T23:27:56Z'
       request-id:
-      - req_011CUoaqpjwUu263gk4XvNd2
-      retry-after:
-      - '30'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
+      - req_011CWF26Ja8Cvp6U2hZswWj2
       x-envoy-upstream-service-time:
-      - '2941'
+      - '2016'
     status:
       code: 200
       message: OK

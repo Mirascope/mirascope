@@ -1,14 +1,14 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
-      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Always
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
       respond to the user''s query using the __mirascope_formatted_output_tool__ tool
-      for structured output.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      for structured output.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
       a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
       testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
       author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
-      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"}}]}'
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -21,7 +21,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1118'
+      - '1217'
       content-type:
       - application/json
       host:
@@ -55,18 +55,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VRYU/CMBD9K6SfIQEEJPuGYQQNIhoTDMY0ZbuxwtqO9mpiyP671+kkaPzWe+/d
-        vbvXE1MmhYJFLCmET6HjjNaAnUGn3+0Pu8PegLWZTIlXbse7vcVsP1/rbDRZbI/ZzfVI3kG2H5EG
-        P0oIKnBO7IAAa4oACOekQ6GRoMRoBHpFr6dGj8YU3DtoXELtySdWi/4k3gz8eDN93K6UXefH8Qup
-        tFChj3MlrXCJKYFnxiqBCCk3HkuPvB7Kw0hNJYvITWK9zfM8bi0n93HrYdYK7/Xtcko64TE3Nggz
-        aR3yb5OVQCuTAwkKcUafDOaZd45VdKRAqXcsuq6qtzZzaEpuQVCGl6fVhIOjB53QCO2Los18HRR5
-        1lvS0gfQjkXD0RUlJZIceEKzUBrNLxXdhic6/Y9reoMBlDkosKLgQ/VXf2Z7+W+WTvzJ9Asa9+gc
-        sO8yAY4SKDQWvjcVNmVV9Qlh+v8bTwIAAA==
+        H4sIAAAAAAAA/3VRy07DMBD8lcrnVmqgL3JDoi0UKIjyFEKWSbaN1fiBvUZAlX9nHQhVQdy8M7M7
+        u+MNUyaHkqUsK0XIoeON1oCdXmevu9fv9pMeazOZE6/8ineT0+n9MDFoxjdvAnrqwx6M7GJBGny3
+        EFXgvVgBAc6UERDeS49CI0GZ0Qj0Sh83jR6NKXnw0LjEOpDPUN4OliM7W0wGalWczexg+vA8I5UW
+        KvZxrqQTPjMW+NI4JRAh5yagDcjroTyO1FSylNwk1ttcH49b88Pzceti0orvu5P5EelEwMK4KFxK
+        55F/m1wKdDJbk6AUW/TKYLEM3rOKjhQo9Yqlw6p6ajOPxnIHgjLcPa0mPLwE0BmN0KEs2yzUQZFn
+        vSUtvQbtWdof7FNSIiuAZzQLpdF8V9FteKLz/7imNxqALUCBEyXvq7/6LZsUv1k68SfTL2iU0Dng
+        XmUGHCVQaCx+by5czqrqE1KFfkRPAgAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 9af99e836aa434d4-SEA
+      - 9b0277d89e548173-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -74,7 +74,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Dec 2025 21:47:32 GMT
+      - Thu, 18 Dec 2025 23:33:59 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -92,29 +92,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-17T21:47:31Z'
+      - '2025-12-18T23:33:58Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-17T21:47:32Z'
+      - '2025-12-18T23:33:58Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-17T21:47:29Z'
+      - '2025-12-18T23:33:57Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-17T21:47:31Z'
+      - '2025-12-18T23:33:58Z'
       request-id:
-      - req_011CWCzdEzh2L5NNvUk3oJ2M
+      - req_011CWF2Z3bUFKkfpeHW8bQf7
       x-envoy-upstream-service-time:
-      - '3439'
+      - '1825'
     status:
       code: 200
       message: OK

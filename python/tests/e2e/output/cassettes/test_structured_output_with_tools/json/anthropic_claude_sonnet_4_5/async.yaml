@@ -2,15 +2,15 @@ interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"}],"model":"claude-sonnet-4-5","system":"Respond only with valid JSON
-      that matches this exact schema:\n{\n  \"properties\": {\n    \"title\": {\n      \"title\":
-      \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
-      \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\": {\n      \"title\":
-      \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\": {\n      \"title\":
-      \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      score"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\":
+      {\n      \"title\": \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\":
+      {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
       [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
-      \"BookSummary\",\n  \"type\": \"object\"\n}","tools":[{"name":"get_book_info","description":"Look
-      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}}]}'
+      \"BookSummary\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -21,7 +21,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1029'
+      - '1128'
       content-type:
       - application/json
       host:
@@ -53,17 +53,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SQX2vCQBDEv8s8XyCJjdF7tC9FSqmlQrWU47ysmprcpfenopLvXk6Q1pY+7vxm
-        dtg9oTUVNeBQjQwVJc5oTT65SYokT/MiHedjMNQVOFq3EWmWPU/2o4dyP7jbT6dh/qTCYTa7BYM/
-        dBRd5JzcEBisaaIgnaudl9qDQRntSXvw19PF741pRHB0aYlzEGmWL4fHhXtf3s8rNX+crHbrw3G8
-        AIOWbcxtyIuVMTtR67WJYd0FD35C7VYaHGlSDotBkmXlKHlB378xOG86YUk6o6+Lz8DRRyCtCFyH
-        pmEI5zPiwrhZeLMj7cDLsmRQUm1JKEvS10aLa0d64ZZk9R+7ZGMBdVtqycpGFO1f/zfNtr9pz2CC
-        /ykNBwyO7GetSPiaLDji8ytpK/T9FwAAAP//AwAV92BJ7wEAAA==
+        H4sIAAAAAAAA/3WQX0vDMBTFv0ueW2i7dXV7U3AbKCI+OUVClt52YWlulz9jMvrdvRkUneJbcs/v
+        nsO5Z9ZhDZotmNQi1JA6NAZ8Ok3LtMiKMpsXc5YwVRPRuZZn+bLZe1zft9O36bo5uXz14oxEYvxn
+        D5EC50QLNLCo40A4p5wXxtNIovFAr8X7eeQ9oubBwZgS/4FyitXdabPZHBvA5wfxZJf+9vAoiTKi
+        i3steL5F3HNlmhivTB/I+MyU2xrSs7SalZM0z6ub9JUNw0fCnMeeWxDU8Tr4Ijg4BDCSvE3QOmHh
+        UiMaRmfucQ/GsUVVVdRDyB1wSV5eoeHXRDbqJNf/aeNuDIB+Bx1YoXnZ/eW/1Xz3Wx0ShsH/HM0m
+        VAfsUUngXoGlovH4tbA1HeEL70m6e+8BAAA=
     headers:
       CF-Cache-Status:
       - DYNAMIC
-      CF-Ray:
-      - 9af08391d98531ba-SEA
+      CF-RAY:
+      - 9b027c086e9c7548-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -71,7 +71,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Dec 2025 19:16:16 GMT
+      - Thu, 18 Dec 2025 23:36:51 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -79,7 +79,7 @@ interactions:
       Transfer-Encoding:
       - chunked
       Vary:
-      - Accept-Encoding
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -89,46 +89,46 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-16T19:16:15Z'
+      - '2025-12-18T23:36:50Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-16T19:16:16Z'
+      - '2025-12-18T23:36:51Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-16T19:16:13Z'
+      - '2025-12-18T23:36:48Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-16T19:16:15Z'
+      - '2025-12-18T23:36:50Z'
       request-id:
-      - req_011CWAuHLTTjcj1HgXzSzBbT
+      - req_011CWF2mgoBmWAwnQc5TWN3W
       x-envoy-upstream-service-time:
-      - '2824'
+      - '2966'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"id":"toolu_012Z6zYsjZLUdcUPBbkfyz9Y","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_012Z6zYsjZLUdcUPBbkfyz9Y","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_012GBxYYYvfeoPKaNrFtAqLc","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_012GBxYYYvfeoPKaNrFtAqLc","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
-      2006-07-25"}]}],"model":"claude-sonnet-4-5","system":"Respond only with valid
-      JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
+      2006-07-25","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
       {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
       {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\":
       {\n      \"title\": \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\":
       {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
       [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
-      \"BookSummary\",\n  \"type\": \"object\"\n}","tools":[{"name":"get_book_info","description":"Look
-      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}}]}'
+      \"BookSummary\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -139,7 +139,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1382'
+      - '1518'
       content-type:
       - application/json
       host:
@@ -171,25 +171,29 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
+        VMXh8B61KOh72gYAAA==
     headers:
       CF-Cache-Status:
       - DYNAMIC
-      CF-Ray:
-      - 9af083a42f4931ba-SEA
+      CF-RAY:
+      - 9b027c1b9cc67548-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -197,7 +201,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Dec 2025 19:16:22 GMT
+      - Thu, 18 Dec 2025 23:37:00 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -205,7 +209,7 @@ interactions:
       Transfer-Encoding:
       - chunked
       Vary:
-      - Accept-Encoding
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -215,29 +219,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-16T19:16:18Z'
+      - '2025-12-18T23:36:53Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-16T19:16:22Z'
+      - '2025-12-18T23:37:00Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-16T19:16:16Z'
+      - '2025-12-18T23:36:51Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-16T19:16:18Z'
+      - '2025-12-18T23:36:53Z'
       request-id:
-      - req_011CWAuHYyH8Q2HUL3jX5FY6
+      - req_011CWF2muwxdvKsfewVBNmp1
       x-envoy-upstream-service-time:
-      - '6097'
+      - '8763'
     status:
       code: 200
       message: OK

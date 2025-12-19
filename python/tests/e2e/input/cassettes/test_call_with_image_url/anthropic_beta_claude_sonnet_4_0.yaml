@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":[{"type":"text","text":"Describe
-      the following image in one sentence"},{"type":"image","source":{"type":"url","url":"https://en.wikipedia.org/static/images/icons/wikipedia.png"}}]}],"model":"claude-sonnet-4-0"}'
+      the following image in one sentence","cache_control":null},{"type":"image","source":{"type":"url","url":"https://en.wikipedia.org/static/images/icons/wikipedia.png"},"cache_control":null}]}],"model":"claude-sonnet-4-0"}'
     headers:
       accept:
       - application/json
@@ -14,7 +14,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '267'
+      - '309'
       content-type:
       - application/json
       host:
@@ -40,7 +40,7 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.13.3
+      - 3.10.16
       x-stainless-timeout:
       - '600'
     method: POST
@@ -48,18 +48,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VRXasTMRD9K0Oet9LWVmEfvS+C3AdBuQWRJU2mu+PNJjEzqbal/91JsfiFEEg4
-        58zMmZOLmZPHYHrjgq0eF5xiRFlsFuvlervcrjamM+SVn3kclqs3b8tOXr37+Pjl4fD0+Pr4sNu9
-        X2XVyCljUyGzHVGBkkIDLDOx2CgKuRQF9dV/utz1gt8bc7t682EiBj0yIZCqycETPVNGTxZCGlMH
-        B7RSC8URLHCesJCzAXI9nwPCGNIeYbYeoWZIhzueCR0yfCOZoI0CinC0hVJlCDaOVS0z2OiBXaEs
-        3AGf5n0KdG6Tmh2XQrD7VKzQEW/SuQahQK06QGyusI1s4hQVR8DoTi6km/0X5vq5MywpDwWtpqzr
-        YvSDlkXzk2D8WrVGc4k1hM7UW5T9xVDMVQZJzxjZ9C83GqV1Ew5OWwmlOPwpWN55pf3/uHtt648a
-        5IzFhmE7/6v/xa6mv9lrZ1KV36HNWrfBciSHgxAW3bP9v7fFm+v1B6YK1SNwAgAA
+        H4sIAAAAAAAA/3VRTWsbMRD9K4PO62K79mWPgUIJFEop9FDKMpXGu9NoJVUzspsY//fOhpiQhJwk
+        vQ/pzdPZzTlQdL3zEVugleSUSFe71Xa93a/3m53rHAfjZxmH9eZ293UknunPePPt9vCpnr7cVP1s
+        Gr0vtKhIBEcyoOa4ACjCopjUIJ+Tku36n+erXunfwjwuvfs+EfBsfpApnwTUzsHsnLzy0dAyUWWP
+        EWIeM+QD/OA7LhQYOzgQaqucRkAoWJUxxnvweS6RlAKMMf8mmDEQtLJ4S3t4iASFyZPAiXWCJQdw
+        giNWzk0gYhqb5RHAFEB85aLywV1+dU40l6ESWmGWnFIY7PXkngihv42StxFTi7Fz7bGV/uw4laaD
+        5jtK4vqPO2sF/USDt6uUcxpeCtZX3ujwHnf1LveTVTRTxTjs57f6Z3YzvWYvnctNX6Tb2jRUj+xp
+        UKZqcy5fGbAGd7n8B0t1AXQ7AgAA
     headers:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 9af3bd0438a785d7-NRT
+      - 9b026e50ed4730a5-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -67,7 +67,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Dec 2025 04:39:46 GMT
+      - Thu, 18 Dec 2025 23:27:30 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -85,29 +85,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-17T04:39:45Z'
+      - '2025-12-18T23:27:29Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-17T04:39:46Z'
+      - '2025-12-18T23:27:30Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-17T04:39:44Z'
+      - '2025-12-18T23:27:26Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-17T04:39:45Z'
+      - '2025-12-18T23:27:29Z'
       request-id:
-      - req_011CWBeFe92wyLbKi6Dungt6
+      - req_011CWF24GihMDHEF9AwtnKDC
       x-envoy-upstream-service-time:
-      - '2772'
+      - '3841'
     status:
       code: 200
       message: OK

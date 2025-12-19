@@ -21,21 +21,19 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-The user is asking me to answer "What is 2 + 2?" and I need to respond with valid JSON that matches the provided schema.
+The user is asking me to answer "What is 2 + 2?" and I need to respond in a specific JSON format according to the schema provided.
 
 The schema requires:
-- integer_a: integer
-- integer_b: integer
-- answer: integer
-
-All three fields are required.
+- integer_a: an integer
+- integer_b: an integer  \n\
+- answer: an integer
 
 The question is "What is 2 + 2?" so:
-- integer_a = 2
-- integer_b = 2
-- answer = 2 + 2 = 4
+- integer_a should be 2
+- integer_b should be 2
+- answer should be 4 (since 2 + 2 = 4)
 
-I need to respond with a JSON object on a single line without any markdown or extra formatting.\
+I need to return valid JSON matching the schema, without any markdown formatting or additional text.\
 """
                         ),
                         Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}'),
@@ -49,23 +47,21 @@ I need to respond with a JSON object on a single line without any markdown or ex
                             {
                                 "type": "thinking",
                                 "thinking": """\
-The user is asking me to answer "What is 2 + 2?" and I need to respond with valid JSON that matches the provided schema.
+The user is asking me to answer "What is 2 + 2?" and I need to respond in a specific JSON format according to the schema provided.
 
 The schema requires:
-- integer_a: integer
-- integer_b: integer
-- answer: integer
-
-All three fields are required.
+- integer_a: an integer
+- integer_b: an integer  \n\
+- answer: an integer
 
 The question is "What is 2 + 2?" so:
-- integer_a = 2
-- integer_b = 2
-- answer = 2 + 2 = 4
+- integer_a should be 2
+- integer_b should be 2
+- answer should be 4 (since 2 + 2 = 4)
 
-I need to respond with a JSON object on a single line without any markdown or extra formatting.\
+I need to return valid JSON matching the schema, without any markdown formatting or additional text.\
 """,
-                                "signature": "EsUECkYIChgCKkBVfIvsuU7abyN1VAn4iOuarOKChrpRcTgYCvkqVFxnrIouN1diNge7Kuyc6ZtSKYGlkOoSrzmXKbmb5i1ICeAFEgyjjnZv+HG/GZsl3osaDGTxBmp1yOXX15HWLyIwWpGmCEWxdncyqPHVK7Zc1l+j+v8JTBioputEQEnBrG3P3Sf1JvH7/ZNmh5StrPWTKqwDvjs42Ygf6nL1ZChGUXtyvBCAaLCPq534aPsG0aqUJs34NZw5ZHDx0dCwcM5qT9lbQxJzHtPHQ+Gumu1pPgTwXCEL5ZJiVFjcWI0+DpKMqYp3sCMIhKGJG22I7AoGT5zg03K0voN3XbBcwF49pAChya5/B3YHOuchVGKyWqCmbaenhTrGd3tXHzmwlqwGU4NThuAKZupbg5H734BY79NInUOKnmyNHPMXEdKeSxGVXven5/IBMqNrgRvOk1ZdNuuPWE7wA51/BPndF5REOkZl7hJ2DTRTW33IOOKMDNGf72f57CQCp37nHGgiWr0GSFZfV1uQBeODGPG8C5p0kxK8zs5T/cwtJ5/xuieGT/fau1ARrQpLd30KARSuOhTtXJrSytcksGfnpzHXd4z5RbI3WS3r3j8Rr+TrV1aF5Ccrw5NJnEEfRtBLvZu/UpMHMCYziS8EX8/Xo7zDpsCWjYKOR7ydW9TElzs8K+fzAfntTSwrki2nLjv+ha/ONqBt7MDFFiw/GU9orNEuBcq53lgrmLtx31j0oJX+sudritV93HfC3+TONfbz5ZQ5X1kYAQ==",
+                                "signature": "EukECkYIChgCKkDBy9QBhQ33NlvMEnNTPHKXpM2B7yZSprszsKwGHQXNolvqQ7ObDAiHJACJIGahwoA2Ag02QbodFR2flneyXB5EEgwzfkM29Av4Crzyd98aDPpO8jDa2KUMfGQibCIw58VWXjW/AACFR0HnUQrVGetMct8vEfO8rRYUmWzZEAulnIG8DsM9h5JwUuBsNTdHKtADrEl6goH8lRcv+nuhOKO+KF9OBrF4nNCfYmZnYgm8vrAa7e5tYds4j3QvPvWmdTka5WfxrLyP34AjjEQ/s5St9SjOgSkbEdtXv/cGb5E//971LBE3Hbi2nWruAxjp9IUekSS21P0OTDOVHUcghjfPqEZCNhtrzAaiU3hnyORnQNOURXZiN/3jcM1LkPL+npueZqW4P/YmAbqvie/u/i5VRvP+0qBzd0pqK8xXSeFAEKQf2BZVwugmJWp1LYDfbsE6VN3iKiLXvcAXtCPb3pIHudkk2n99cJ7C6gEncrzfEkgeEsaNetkKEIRSjiLcT3sotGWPNz0n3i/nsVZlwComPvkTWGnEngaz8bUypCaPGxCrTBGJtpHUmz6mA2seQMaXtWjX3H2NP3MuBrFB7e+y0cfgGEg1IocJg8fTMCWKZIsUYwfCnv9opwQw4lq7MdyQM34ouAhMqD8iclqF2LqR9eGRILRaDW1VrtKnZAvp5AAsV5fCmmPEQrYnH9br/J7FE/LD3LJLfZIoF0ZR42P26TEnFhpgnQSqL3zOs3KfsCRT5fDK9ir3xa0pSKr9Ts1OhwMIigzWPLV71ebS8K5ujPG/Pp84eZpsyTvJU/6FaHMYAQ==",
                             },
                             {
                                 "type": "text",
@@ -95,12 +91,12 @@ I need to respond with a JSON object on a single line without any markdown or ex
             "tools": [],
             "usage": {
                 "input_tokens": 293,
-                "output_tokens": 161,
+                "output_tokens": 168,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 40,
+            "n_chunks": 45,
         }
     }
 )

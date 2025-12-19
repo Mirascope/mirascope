@@ -48,7 +48,7 @@ sync_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_01GrPPvn7oyH4HJVKDi3yV1C",
+                                "id": "toolu_01SRRKcJZJptNQNGTgQiMmJt",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
                                     "author": {
@@ -142,7 +142,7 @@ async_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "id": "toolu_01XdinqMTgTXhRQEmpoDZQ4z",
+                                "id": "toolu_01FmboARfQS9s4UW2Z1LiSfY",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
                                     "author": {
@@ -228,7 +228,7 @@ stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01BxiD7dbWGxXE7HQ699rEtm",
+                                "id": "toolu_01DHUHxGZFvhMTraUdoHYRET",
                                 "name": "__mirascope_formatted_output_tool__",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
@@ -284,7 +284,7 @@ stream_snapshot = snapshot(
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 22,
+            "n_chunks": 21,
         }
     }
 )
@@ -321,7 +321,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01MoXSiTmWBH8YPi2A7XcnQS",
+                                "id": "toolu_0135p4DMkLBQ7Y4PQcrPw8CN",
                                 "name": "__mirascope_formatted_output_tool__",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
@@ -377,7 +377,7 @@ async_stream_snapshot = snapshot(
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 22,
+            "n_chunks": 21,
         }
     }
 )

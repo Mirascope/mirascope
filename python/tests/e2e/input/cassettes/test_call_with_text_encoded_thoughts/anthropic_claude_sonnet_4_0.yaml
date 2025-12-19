@@ -10,9 +10,9 @@ interactions:
       : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
       11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
       we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
-      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},{"type":"text","text":"Yes."}]},{"role":"user","content":"Please
-      tell me what the number is."}],"model":"claude-sonnet-4-0","system":"Always
-      answer with extreme concision, giving the answer and no added context."}'
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},{"type":"text","text":"Yes.","cache_control":null}]},{"role":"user","content":[{"type":"text","text":"Please
+      tell me what the number is.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
+      answer with extreme concision, giving the answer and no added context.","cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -23,13 +23,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1106'
+      - '1251'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - Anthropic/Python 0.64.0
+      - Anthropic/Python 0.75.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -39,7 +39,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.75.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -55,14 +55,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJBNS8QwFEX/y11noC3TOmQ5CxeCG5FZKBJC8phW25eavOho6X+XDha/
-        cPXgnnO58CYMwVMPDdfb7GmTAjPJZrupiqou6nILhc5DY0hHU5SH8bR7r+7aW043l9dHu98/Xr0e
-        oCBvIy0WpWSPBIUY+iWwKXVJLAsUXGAhFuj7afWFTgs5H41q19QXmB8UkoTRRLIpMDSIvZEcGZ8g
-        0XMmdgTNue8V8nlTT+h4zGIkPBEn6G3ZKDjrWjIukpUusPlpFCuPZP1/bO0uAzS2NFC0vamHv/4X
-        LdvfdFYIWb5HjUKi+NI5MtJRhMbyKG+jxzx/AAAA//8DAJIkrymZAQAA
+        H4sIAAAAAAAA/3WQy07EMAxF/8XrVmqrtqDuByRgOSwAoShqrGkgTUrs8FDVf8cdUfHSrBLdc+1r
+        e4YxGHTQQe90MphT8B45r/OqqJqiKWvIwBrhIx1UUbbN2+Vuv3sivL/V1/v6gm+mqzvx8MeEqwuJ
+        9AFFiMGtgiayxNqzSH3wjPLrHubNz/i+kuPTQXXeNmewPGZAHCYVUcs4oqM3ilP08AUIXxL6Xhr4
+        5FwG6ZjZzWD9lFhxeEZP0NVlK6G6H1D10ott8Oq3o9i4YHOKbbVrAE4Djhi1U8343/9Ny+EvXTII
+        iX9KMhxhfLU9KrYYZc/1UEZHA8vyCbt1XWWZAQAA
     headers:
+      CF-Cache-Status:
+      - DYNAMIC
       CF-RAY:
-      - 9902425d2985c3a1-SEA
+      - 9b026e8e9afd7654-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -70,11 +72,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:38:59 GMT
+      - Thu, 18 Dec 2025 23:27:38 GMT
       Server:
       - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
+      Vary:
+      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -84,35 +90,29 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-17T19:38:58Z'
+      - '2025-12-18T23:27:38Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-17T19:38:59Z'
+      - '2025-12-18T23:27:38Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-17T19:38:57Z'
+      - '2025-12-18T23:27:36Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-17T19:38:58Z'
-      cf-cache-status:
-      - DYNAMIC
+      - '2025-12-18T23:27:38Z'
       request-id:
-      - req_011CUDLUvRAKyCgY2QCZM4Ac
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
+      - req_011CWF24zwhMffo4ybM5r2Ac
       x-envoy-upstream-service-time:
-      - '1799'
+      - '1950'
     status:
       code: 200
       message: OK

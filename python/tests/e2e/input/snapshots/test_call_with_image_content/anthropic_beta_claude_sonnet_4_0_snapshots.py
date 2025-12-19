@@ -39,7 +39,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="This is the iconic Wikipedia logo, featuring a spherical puzzle made up of interlocking pieces displaying text in various languages and writing systems."
+                            text="This is the iconic Wikipedia logo featuring a spherical puzzle globe made up of interlocking pieces displaying text in various languages and writing systems."
                         )
                     ],
                     provider_id="anthropic",
@@ -49,7 +49,7 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "text": "This is the iconic Wikipedia logo, featuring a spherical puzzle made up of interlocking pieces displaying text in various languages and writing systems.",
+                                "text": "This is the iconic Wikipedia logo featuring a spherical puzzle globe made up of interlocking pieces displaying text in various languages and writing systems.",
                                 "type": "text",
                             }
                         ],

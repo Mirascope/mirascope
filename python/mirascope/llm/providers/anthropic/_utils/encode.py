@@ -90,7 +90,7 @@ class MessageCreateKwargs(TypedDict, total=False):
     model: Required[str]
     max_tokens: Required[int]
     messages: Sequence[anthropic_types.MessageParam]
-    system: str | Omit
+    system: Sequence[anthropic_types.TextBlockParam] | Omit
     tools: Sequence[anthropic_types.ToolParam] | Omit
     tool_choice: anthropic_types.ToolChoiceParam | Omit
     temperature: float | Omit
@@ -101,7 +101,9 @@ class MessageCreateKwargs(TypedDict, total=False):
 
 
 def encode_content(
-    content: Sequence[ContentPart], encode_thoughts: bool
+    content: Sequence[ContentPart],
+    encode_thoughts: bool,
+    add_cache_control: bool,
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
     """Convert mirascope content to Anthropic content format."""
 
@@ -112,15 +114,42 @@ def encode_content(
                 "anthropic",
                 message="Anthropic does not support empty message content.",
             )
+        if add_cache_control:
+            return [
+                anthropic_types.TextBlockParam(
+                    type="text",
+                    text=content[0].text,
+                    cache_control={"type": "ephemeral"},
+                )
+            ]
         return content[0].text
 
     blocks: list[anthropic_types.ContentBlockParam] = []
 
-    for part in content:
+    # Find the last cacheable content part (text, image, tool_result, or tool_call)
+    last_cacheable_index = -1
+    if add_cache_control:
+        for i in range(len(content) - 1, -1, -1):
+            part = content[i]
+            if part.type in ("text", "image", "tool_output", "tool_call"):
+                if part.type == "text" and not part.text:  # pragma: no cover
+                    continue  # Skip empty text
+                last_cacheable_index = i
+                break
+
+    for i, part in enumerate(content):
+        should_add_cache = add_cache_control and i == last_cacheable_index
+
         if part.type == "text":
             if part.text:
                 blocks.append(
-                    anthropic_types.TextBlockParam(type="text", text=part.text)
+                    anthropic_types.TextBlockParam(
+                        type="text",
+                        text=part.text,
+                        cache_control={"type": "ephemeral"}
+                        if should_add_cache
+                        else None,
+                    )
                 )
         elif part.type == "image":
             source: (
@@ -138,7 +167,13 @@ def encode_content(
                     type="url",
                     url=part.source.url,
                 )
-            blocks.append(anthropic_types.ImageBlockParam(type="image", source=source))
+            blocks.append(
+                anthropic_types.ImageBlockParam(
+                    type="image",
+                    source=source,
+                    cache_control={"type": "ephemeral"} if should_add_cache else None,
+                )
+            )
         elif part.type == "audio":
             raise FeatureNotSupportedError(
                 "audio input",
@@ -151,6 +186,7 @@ def encode_content(
                     type="tool_result",
                     tool_use_id=part.id,
                     content=str(part.value),
+                    cache_control={"type": "ephemeral"} if should_add_cache else None,
                 )
             )
         elif part.type == "tool_call":
@@ -160,6 +196,7 @@ def encode_content(
                     id=part.id,
                     name=part.name,
                     input=json.loads(part.args),
+                    cache_control={"type": "ephemeral"} if should_add_cache else None,
                 )
             )
         elif part.type == "thought":
@@ -186,20 +223,56 @@ def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
     encode_thoughts: bool,
+    add_cache_control: bool = False,
 ) -> anthropic_types.MessageParam:
-    """Convert user or assistant Message to Anthropic MessageParam format."""
+    """Convert user or assistant Message to Anthropic MessageParam format.
+
+    Args:
+        message: The message to encode
+        model_id: The Anthropic model ID
+        encode_thoughts: Whether to encode thought blocks as text
+        add_cache_control: Whether to add cache_control to the last content block
+    """
     if (
         message.role == "assistant"
         and message.provider_id == "anthropic"
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
+        and not add_cache_control
     ):
         return cast(anthropic_types.MessageParam, message.raw_message)
+
+    content = encode_content(message.content, encode_thoughts, add_cache_control)
+
     return {
         "role": message.role,
-        "content": encode_content(message.content, encode_thoughts),
+        "content": content,
     }
+
+
+def _encode_messages(
+    messages: Sequence[UserMessage | AssistantMessage],
+    model_id: AnthropicModelId,
+    encode_thoughts: bool,
+) -> Sequence[anthropic_types.MessageParam]:
+    """Encode messages and add cache control for multi-turn conversations.
+
+    If the conversation contains assistant messages (indicating multi-turn),
+    adds cache_control to the last content block of the last message.
+    """
+    # Detect multi-turn conversations by checking for assistant messages
+    has_assistant_message = any(msg.role == "assistant" for msg in messages)
+
+    # Encode messages, adding cache_control to the last message if multi-turn
+    encoded_messages: list[anthropic_types.MessageParam] = []
+    for i, message in enumerate(messages):
+        is_last = i == len(messages) - 1
+        add_cache = has_assistant_message and is_last
+        encoded_messages.append(
+            _encode_message(message, model_id, encode_thoughts, add_cache)
+        )
+    return encoded_messages
 
 
 @lru_cache(maxsize=128)
@@ -260,18 +333,24 @@ def encode_request(
             )
 
     if anthropic_tools:
+        # Add cache control to the last tool for prompt caching
+        last_tool = anthropic_tools[-1]
+        last_tool["cache_control"] = {"type": "ephemeral"}
         kwargs["tools"] = anthropic_tools
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(
         messages
     )
 
-    kwargs["messages"] = [
-        _encode_message(remaining_message, model_id, encode_thoughts)
-        for remaining_message in remaining_messages
-    ]
+    kwargs["messages"] = _encode_messages(remaining_messages, model_id, encode_thoughts)
 
     if system_message_content:
-        kwargs["system"] = system_message_content
+        kwargs["system"] = [
+            anthropic_types.TextBlockParam(
+                type="text",
+                text=system_message_content,
+                cache_control={"type": "ephemeral"},
+            )
+        ]
 
     return messages, format, kwargs

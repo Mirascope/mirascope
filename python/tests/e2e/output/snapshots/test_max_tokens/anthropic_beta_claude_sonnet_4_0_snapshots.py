@@ -28,7 +28,7 @@ sync_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are all 50 U.S. states listed alphabetically:
+Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
 2. Alaska
@@ -38,7 +38,7 @@ Here are all 50 U.S. states listed alphabetically:
 6. Colorado
 7. Connecticut
 8. Delaware
-9.\
+9\
 """
                         )
                     ],
@@ -50,7 +50,7 @@ Here are all 50 U.S. states listed alphabetically:
                         "content": [
                             {
                                 "text": """\
-Here are all 50 U.S. states listed alphabetically:
+Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
 2. Alaska
@@ -60,7 +60,7 @@ Here are all 50 U.S. states listed alphabetically:
 6. Colorado
 7. Connecticut
 8. Delaware
-9.\
+9\
 """,
                                 "type": "text",
                             }
@@ -200,7 +200,7 @@ Here are all 50 U.S. states in alphabetical order:
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 12,
+            "n_chunks": 11,
         }
     }
 )
@@ -216,7 +216,7 @@ async_stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are all 50 U.S. states in alphabetical order:
+Here are all 50 U.S. states:
 
 1. Alabama
 2. Alaska
@@ -226,7 +226,8 @@ Here are all 50 U.S. states in alphabetical order:
 6. Colorado
 7. Connecticut
 8. Delaware
-9\
+9. Florida
+10\
 """
                         )
                     ],
@@ -239,7 +240,7 @@ Here are all 50 U.S. states in alphabetical order:
                             {
                                 "type": "text",
                                 "text": """\
-Here are all 50 U.S. states in alphabetical order:
+Here are all 50 U.S. states:
 
 1. Alabama
 2. Alaska
@@ -249,7 +250,8 @@ Here are all 50 U.S. states in alphabetical order:
 6. Colorado
 7. Connecticut
 8. Delaware
-9\
+9. Florida
+10\
 """,
                             }
                         ],
@@ -265,7 +267,7 @@ Here are all 50 U.S. states in alphabetical order:
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
             },
-            "n_chunks": 11,
+            "n_chunks": 10,
         }
     }
 )
