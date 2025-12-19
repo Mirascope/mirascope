@@ -40,8 +40,11 @@ from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
-from ...model_info import NON_REASONING_MODELS
-from ...shared import _utils as _shared_utils
+from ...model_info import (
+    MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
+    MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
+    NON_REASONING_MODELS,
+)
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -294,9 +297,7 @@ def encode_request(
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
 
-    model_supports_strict = (
-        model_id not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
-    )
+    model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
 
     format = resolve_format(format, default_mode=default_mode)
@@ -323,8 +324,7 @@ def encode_request(
                     name=FORMAT_TOOL_NAME,
                 )
         elif (
-            format.mode == "json"
-            and model_id not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["text"] = {"format": ResponseFormatJSONObject(type="json_object")}
 

@@ -323,6 +323,32 @@ class StructuredOutputSupport(FeatureTest[OpenAI]):
         return FeatureTestResult(status=TestStatus.ERROR, error_message=str(result))
 
 
+class JSONObjectSupport(FeatureTest[OpenAI]):
+    """Test if a model supports JSON object mode (response_format type json_object)."""
+
+    name = "json_object"
+    dependencies = ["completions_api"]  # Requires Chat Completions API support
+
+    def test(self, model_id: str, client: OpenAI) -> FeatureTestResult:
+        result = _try_completions_call(
+            client,
+            model_id,
+            messages=[{"role": "user", "content": "Give me a person's name in JSON"}],
+            response_format={"type": "json_object"},
+            max_tokens=20,
+        )
+        if isinstance(result, FeatureTestResult):
+            return result
+
+        # result is an exception
+        error_str = str(result).lower()
+
+        if "response_format" in error_str or "json_object" in error_str:
+            return FeatureTestResult(status=TestStatus.NOT_SUPPORTED)
+
+        return FeatureTestResult(status=TestStatus.ERROR, error_message=str(result))
+
+
 def get_all_openai_feature_tests(
     audio_file_path: Path | None = None,
 ) -> list[OpenAIFeatureTest]:
@@ -333,6 +359,7 @@ def get_all_openai_feature_tests(
         CompletionsAPISupport(),
         AudioInputSupport(audio_file_path),
         StructuredOutputSupport(),
+        JSONObjectSupport(),
     ]
 
 

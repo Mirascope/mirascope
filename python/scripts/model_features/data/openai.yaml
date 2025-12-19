@@ -2,6 +2,7 @@ provider: openai
 known_features:
 - audio_input
 - completions_api
+- json_object
 - reasoning
 - responses_api
 - structured_output
@@ -25,6 +26,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.933540'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:26.092128'
@@ -56,6 +64,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:06.473021'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:41.374791'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:54:06.008803'
@@ -65,6 +76,50 @@ models:
       structured_output:
         status: not_supported
         tested_at: '2025-12-09T10:54:06.680776'
+  chatgpt-image-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-16T14:47:59'
+    discovered_at: '2025-12-18T11:37:47.379035'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:57.886841'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-18T11:38:57.735856'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''The server had an error while processing your request.
+          Sorry about that!'', ''type'': ''server_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:57.985875'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:58.324006'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:38:58.220657'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''chatgpt-image-latest'' was not
+          found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:58.425424'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
   codex-mini-latest:
     owned_by: system
     deprecated: false
@@ -83,6 +138,13 @@ models:
         tested_at: '2025-12-09T10:52:27.008507'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.647171'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:52:28.479558'
@@ -115,6 +177,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:26.590774'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:26.917433'
@@ -154,6 +223,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:51.878541'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:04.451918'
@@ -192,6 +268,13 @@ models:
         tested_at: '2025-12-09T10:53:01.308112'
         error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
           ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.464217'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:25.487632'
@@ -229,6 +312,13 @@ models:
         tested_at: '2025-12-09T10:46:31.212669'
         error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
           ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:57.606930'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:18.981779'
@@ -267,6 +357,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:13.654022'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:10.672390'
@@ -298,6 +395,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:34.712123'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:26.242136'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:52:34.925967'
@@ -319,6 +419,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:44:56.372181'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:58.458794'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:44:57.615644'
@@ -340,6 +443,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:43:03.824772'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:14.946133'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:43:05.160201'
@@ -361,6 +467,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:18.402420'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:30.748398'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:18.041309'
@@ -395,6 +504,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:11.794193'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:56:18.691945'
@@ -435,6 +551,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.525721'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:24.297917'
@@ -468,6 +591,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:42.660813'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:29.890937'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:52:42.858531'
@@ -489,6 +615,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:41.918727'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:26.460704'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:42:43.745596'
@@ -510,6 +639,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:48:52.293402'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:30.138872'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:48:54.188574'
@@ -531,6 +663,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:44:15.613462'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:05.730580'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:44:17.756167'
@@ -552,6 +687,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:48:55.137251'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:55.088247'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:48:56.910151'
@@ -573,6 +711,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:25.918194'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:09.141419'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:42:27.645162'
@@ -594,6 +735,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:51:22.846019'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:03.252647'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:51:23.045181'
@@ -615,6 +759,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:23.590837'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:00.465010'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:42:24.664934'
@@ -636,6 +783,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:03.242872'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:59.029113'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:54:02.786781'
@@ -657,6 +807,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:36.748404'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:26.870534'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:52:36.930067'
@@ -678,6 +831,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:16.917510'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:43.167685'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:54:16.401557'
@@ -699,6 +855,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:53:00.138576'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:07.672388'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:53:00.304243'
@@ -720,6 +879,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:50:51.093485'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:59.674843'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:50:51.274230'
@@ -741,6 +903,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:48:57.936968'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:11.384626'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:48:59.055623'
@@ -762,6 +927,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:43:59.757002'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:57.519489'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:44:01.962815'
@@ -783,6 +951,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:46:28.639431'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:09.638528'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:46:30.231446'
@@ -804,6 +975,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:09.558161'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:04.605244'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:54:09.021317'
@@ -831,6 +1005,13 @@ models:
         tested_at: '2025-12-09T10:42:36.811896'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:08.235502'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:12.694501'
@@ -866,6 +1047,13 @@ models:
         tested_at: '2025-12-09T10:52:29.030491'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:26.329398'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:00.930020'
@@ -901,6 +1089,13 @@ models:
         tested_at: '2025-12-09T10:44:55.506459'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:58.665160'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:28.115231'
@@ -930,6 +1125,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:32.263880'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:12.547052'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:52:32.437967'
@@ -951,6 +1149,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:57.908676'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:02.788804'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:52:58.081940'
@@ -978,6 +1179,13 @@ models:
         tested_at: '2025-12-09T10:48:40.513255'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:19.285302'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:14.142610'
@@ -1013,6 +1221,13 @@ models:
         tested_at: '2025-12-09T10:52:43.885704'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:40.947063'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:24.800123'
@@ -1049,6 +1264,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:19.194538'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:11.259360'
@@ -1085,6 +1307,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.235640'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:01.177415'
@@ -1114,6 +1343,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:43:07.632670'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:52.370661'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:19.396032'
@@ -1141,6 +1373,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:21.732283'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:14.091448'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:20.428502'
@@ -1175,6 +1410,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:57.682010'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:10.885623'
@@ -1188,6 +1430,92 @@ models:
       structured_output:
         status: skipped
         tested_at: '2025-12-09T10:54:10.956625'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-transcribe-2025-03-20:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:22:25'
+    discovered_at: '2025-12-18T11:37:47.379429'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.106264'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:29.012314'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.201727'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.582914'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:29.475818'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.675042'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-transcribe-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:20:07'
+    discovered_at: '2025-12-18T11:37:47.379423'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.171746'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:59.055730'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.280047'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.643637'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:59.517023'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.740600'
         metadata:
           reason: unmet_dependencies
           failed_dependencies:
@@ -1211,6 +1539,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:07.774325'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:19.542508'
@@ -1224,6 +1559,92 @@ models:
       structured_output:
         status: skipped
         tested_at: '2025-12-09T10:54:19.615853'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-tts-2025-03-20:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:25:31'
+    discovered_at: '2025-12-18T11:37:47.379092'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.000727'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:27.903542'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.089564'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.687434'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:28.445135'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.809614'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-tts-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:27:17'
+    discovered_at: '2025-12-18T11:37:47.379101'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:06.572017'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:06.475417'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:06.658367'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:06.994241'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:06.902734'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:07.285187'
         metadata:
           reason: unmet_dependencies
           failed_dependencies:
@@ -1247,6 +1668,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.836124'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:10.440615'
@@ -1285,6 +1713,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.269361'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:25.028051'
@@ -1323,6 +1758,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:26.981049'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:12.088480'
@@ -1354,6 +1796,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:49:02.372969'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:39:03.110010'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:07.109582'
@@ -1381,6 +1826,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:51:15.670214'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:39:20.246029'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:25.634829'
@@ -1415,6 +1863,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.139911'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:13.576409'
@@ -1450,6 +1905,13 @@ models:
         tested_at: '2025-12-09T10:42:47.548684'
         error_message: 'Error code: 500 - {''error'': {''message'': ''The server had an error while processing your request.
           Sorry about that!'', ''type'': ''server_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:11.698292'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:19.203186'
@@ -1479,6 +1941,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:44:58.669433'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:49.336758'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:45:04.335985'
@@ -1500,6 +1965,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:19.259984'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:00.902919'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:52:20.671001'
@@ -1521,6 +1989,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:44:19.300127'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:03.762258'
       reasoning:
         status: not_supported
         tested_at: '2025-12-09T10:44:20.584756'
@@ -1548,6 +2019,13 @@ models:
         tested_at: '2025-12-09T10:52:39.018024'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:04.185568'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:52:40.255490'
@@ -1573,6 +2051,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:44:03.622827'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:13.539600'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:44:07.329800'
@@ -1594,6 +2075,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:50:54.304578'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:32.940244'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:50:56.727021'
@@ -1615,6 +2099,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:52:51.668559'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:31.425941'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:52:54.295222'
@@ -1636,6 +2123,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:16.565646'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:04.256039'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:42:21.606318'
@@ -1663,6 +2153,13 @@ models:
         tested_at: '2025-12-09T10:43:15.538687'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.685476'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: error
         tested_at: '2025-12-09T10:43:59.082888'
@@ -1697,6 +2194,13 @@ models:
         tested_at: '2025-12-09T10:52:15.115426'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:31.621664'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: error
         tested_at: '2025-12-09T10:52:15.296497'
@@ -1725,6 +2229,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:30.657885'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:30.374571'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:53:59.974981'
@@ -1754,6 +2261,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:51:07.952038'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:25.806854'
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:25.725528'
@@ -1790,6 +2300,13 @@ models:
         error_message: 'Error code: 400 - {''error'': {''message'': ''Could not finish the message because max_tokens or model
           output limit was reached. Please try again with higher max_tokens.'', ''type'': ''invalid_request_error'', ''param'':
           None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.166695'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:48:40.223820'
@@ -1822,6 +2339,13 @@ models:
         error_message: 'Error code: 400 - {''error'': {''message'': ''Could not finish the message because max_tokens or model
           output limit was reached. Please try again with higher max_tokens.'', ''type'': ''invalid_request_error'', ''param'':
           None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.189374'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:52:47.423188'
@@ -1847,6 +2371,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:49:25.094583'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:42.368726'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:49:27.637050'
@@ -1878,6 +2405,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:03.364500'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:43:12.846051'
@@ -1910,6 +2444,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:07.875839'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:46:37.530621'
@@ -1941,6 +2482,13 @@ models:
         tested_at: '2025-12-09T10:52:24.300194'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:26.688960'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:52:25.273541'
@@ -1950,6 +2498,156 @@ models:
       structured_output:
         status: skipped
         tested_at: '2025-12-09T10:54:24.134526'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.2:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T12:44:11'
+    discovered_at: '2025-12-18T11:37:47.379399'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-18T11:39:21.521389'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-18T11:39:21.160408'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:22.620129'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:39:24.504007'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:39:23.437482'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-18T11:39:25.403941'
+  gpt-5.2-2025-12-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T12:43:48'
+    discovered_at: '2025-12-18T11:37:47.379392'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:20.690971'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:20.197033'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:21.623438'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:38:23.636515'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:22.601374'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-18T11:38:24.603857'
+  gpt-5.2-chat-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T21:25:52'
+    discovered_at: '2025-12-18T11:37:47.379417'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:44.270313'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:44.005942'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:48.823558'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:38:50.692076'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:49.646490'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-18T11:38:51.674348'
+  gpt-5.2-pro:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T21:19:43'
+    discovered_at: '2025-12-18T11:37:47.379411'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.443654'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:33.348882'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.534710'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:38:40.732699'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:37.014653'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:40.857478'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.2-pro-2025-12-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T21:19:19'
+    discovered_at: '2025-12-18T11:37:47.379405'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:39:10.516910'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:39:10.383069'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:10.628848'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:39:19.633595'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:39:13.443309'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:39:19.818504'
         metadata:
           reason: unmet_dependencies
           failed_dependencies:
@@ -1972,6 +2670,13 @@ models:
         tested_at: '2025-12-09T10:44:12.937636'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:03.469347'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:19.998328'
@@ -2009,6 +2714,13 @@ models:
         tested_at: '2025-12-09T10:44:18.238032'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:25.536834'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:56:18.931775'
@@ -2046,6 +2758,13 @@ models:
         tested_at: '2025-12-09T10:42:36.035524'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:20.346446'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:11.660399'
@@ -2083,6 +2802,13 @@ models:
         tested_at: '2025-12-09T10:44:14.385857'
         error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
           modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:05.782190'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:24.559387'
@@ -2098,6 +2824,50 @@ models:
       structured_output:
         status: skipped
         tested_at: '2025-12-09T10:54:24.633201'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-audio-mini-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-14T16:53:28'
+    discovered_at: '2025-12-18T11:37:47.379116'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:15.490590'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-18T11:38:15.325113'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:15.596294'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:16.353886'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:38:16.262374'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''There was an issue with your request. Please check your
+          inputs and try again'', ''type'': ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:16.448747'
         metadata:
           reason: unmet_dependencies
           failed_dependencies:
@@ -2120,6 +2890,13 @@ models:
         tested_at: '2025-12-09T10:43:05.783742'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:05.905292'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:12.936027'
@@ -2155,6 +2932,13 @@ models:
         tested_at: '2025-12-09T10:44:46.468587'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:19.920431'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:27.616423'
@@ -2170,6 +2954,50 @@ models:
       structured_output:
         status: skipped
         tested_at: '2025-12-09T10:54:27.700186'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-image-1.5:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-24T16:30:20'
+    discovered_at: '2025-12-18T11:37:47.379383'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.325525'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-18T11:38:10.227982'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''The server had an error while processing your request.
+          Sorry about that!'', ''type'': ''server_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.416636'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.736691'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:38:10.643960'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-image-1.5'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.824481'
         metadata:
           reason: unmet_dependencies
           failed_dependencies:
@@ -2193,6 +3021,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.136187'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:25.262507'
@@ -2231,6 +3066,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.109341'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:27.879506'
@@ -2269,6 +3111,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:31.530963'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:53:59.836752'
@@ -2309,6 +3158,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.041771'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:14.996191'
@@ -2330,6 +3186,53 @@ models:
           reason: unmet_dependencies
           failed_dependencies:
           - completions_api
+  gpt-realtime-mini-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:46:47'
+    discovered_at: '2025-12-18T11:37:47.379108'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:37:49.776408'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:37:49.689506'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:49.857740'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:37:56.865274'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:37:56.744784'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_2b9695293dad44a8b47c7bd5adfe57e5 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:37:56.944407'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
   o1:
     owned_by: system
     deprecated: false
@@ -2342,6 +3245,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:48:41.962717'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:02.395306'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:48:50.262529'
@@ -2363,6 +3269,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:44:48.080329'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:19.086319'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:44:53.303758'
@@ -2390,6 +3299,13 @@ models:
         tested_at: '2025-12-09T10:44:21.410528'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:24.712633'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:44:45.109565'
@@ -2421,6 +3337,13 @@ models:
         tested_at: '2025-12-09T10:45:32.707604'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:51.782287'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:46:27.522661'
@@ -2446,6 +3369,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:48.578573'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:05.600750'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:42:51.202143'
@@ -2467,6 +3393,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:49:18.898645'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:01.308527'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:49:23.158698'
@@ -2494,6 +3423,13 @@ models:
         tested_at: '2025-12-09T10:49:28.799295'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:11.489605'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:13.151689'
@@ -2531,6 +3467,13 @@ models:
         tested_at: '2025-12-09T10:42:28.052445'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.026747'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:18.743096'
@@ -2562,6 +3505,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:42:53.844009'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:17.258709'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:42:59.367286'
@@ -2583,6 +3529,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:45:22.107443'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:25.556497'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:45:31.586612'
@@ -2611,6 +3560,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:01.420741'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:45:20.846347'
@@ -2643,6 +3599,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.330064'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:51:40.861872'
@@ -2668,6 +3631,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:51:00.613421'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:53.565087'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:51:02.745969'
@@ -2689,6 +3655,9 @@ models:
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:46:38.350620'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:55.923282'
       reasoning:
         status: supported
         tested_at: '2025-12-09T10:46:42.656320'
@@ -2716,6 +3685,13 @@ models:
         tested_at: '2025-12-09T10:45:05.736705'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:31.713542'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:19.762304'
@@ -2753,6 +3729,13 @@ models:
         tested_at: '2025-12-09T10:42:41.095996'
         error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
           in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:09.741496'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:26.476610'
@@ -2791,6 +3774,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:13.755437'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:25.876625'
@@ -2829,6 +3819,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.045336'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:23.896658'
@@ -2868,6 +3865,13 @@ models:
         tested_at: '2025-12-09T10:43:03.197782'
         error_message: 'Error code: 503 - {''error'': {''message'': ''No available capacity was found for the model'', ''type'':
           ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.870367'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:04.023517'
@@ -2905,6 +3909,13 @@ models:
         tested_at: '2025-12-09T10:43:15.121885'
         error_message: 'Error code: 503 - {''error'': {''message'': ''No available capacity was found for the model'', ''type'':
           ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.788518'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:14.358329'
@@ -2942,6 +3953,13 @@ models:
         tested_at: '2025-12-09T10:44:55.016192'
         error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
           ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.426585'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:11.871798'
@@ -2979,6 +3997,13 @@ models:
         tested_at: '2025-12-09T10:43:06.152249'
         error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
           ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:08.148202'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:04.239475'
@@ -3017,6 +4042,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:03.861594'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:00.372577'
@@ -3055,6 +4087,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:55.210489'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:07.442364'
@@ -3093,6 +4132,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:05.685208'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:12.321576'
@@ -3131,6 +4177,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:04.081068'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:06.967435'
@@ -3169,6 +4222,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:03.981445'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:14.760297'
@@ -3207,6 +4267,13 @@ models:
         error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
           v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
           ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:20.026420'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
       reasoning:
         status: skipped
         tested_at: '2025-12-09T10:54:28.340712'
@@ -3226,4 +4293,4 @@ models:
           reason: unmet_dependencies
           failed_dependencies:
           - completions_api
-last_discovery: '2025-12-10T18:06:51.264997'
+last_discovery: '2025-12-18T11:37:47.379462'
