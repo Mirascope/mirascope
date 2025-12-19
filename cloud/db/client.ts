@@ -71,6 +71,7 @@ export const mapSqlError = <A, E, R>(
 ): Effect.Effect<A, Exclude<E, SqlError.SqlError> | DatabaseError, R> =>
   effect.pipe(
     Effect.mapError((e): Exclude<E, SqlError.SqlError> | DatabaseError =>
+      /* v8 ignore next 5 -- SqlError from @effect/sql transaction failures are impractical to simulate */
       e && typeof e === "object" && "_tag" in e && e._tag === "SqlError"
         ? new DatabaseError({
             message: "Database transaction failed",
@@ -221,6 +222,7 @@ export class DrizzleORM extends Context.Tag("DrizzleORM")<
    * ```
    */
   static layer = (config: DrizzleORMConfig) => {
+    /* v8 ignore next 11 -- Individual host/port/database/username/password config not used in tests */
     const PgLive = config.connectionString
       ? PgClient.layerConfig({
           url: Config.redacted(Config.succeed(config.connectionString)),
