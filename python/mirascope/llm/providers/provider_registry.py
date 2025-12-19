@@ -17,6 +17,7 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, ProviderId] = {
     "anthropic/": "anthropic",
     "google/": "google",
     "mlx-community/": "mlx",
+    "ollama/": "ollama",
     "openai/": "openai",
     "together/": "together",
 }

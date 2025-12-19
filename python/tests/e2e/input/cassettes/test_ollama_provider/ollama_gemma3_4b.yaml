@@ -1,0 +1,55 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gemma3:4b"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '81'
+      content-type:
+      - application/json
+      host:
+      - localhost:11434
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: http://localhost:11434/v1/chat/completions
+  response:
+    body:
+      string: '{"id":"chatcmpl-674","object":"chat.completion","created":1765962162,"model":"gemma3:4b","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"4200
+        + 42 = 4242\n"},"finish_reason":"stop"}],"usage":{"prompt_tokens":21,"completion_tokens":16,"total_tokens":37}}
+
+        '
+    headers:
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 17 Dec 2025 09:02:42 GMT
+    status:
+      code: 200
+      message: OK
+version: 1
