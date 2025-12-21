@@ -363,6 +363,7 @@ describe("SessionService", () => {
           id: user.id,
           email,
           name,
+          deletedAt: user.deletedAt,
         } satisfies PublicUser);
       }).pipe(Effect.provide(TestDatabase)),
     );

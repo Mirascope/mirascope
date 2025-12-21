@@ -14,4 +14,4 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
 // Public types for API responses
-export type PublicUser = Pick<User, "id" | "email" | "name">;
+export type PublicUser = Pick<User, "id" | "email" | "name" | "deletedAt">;
