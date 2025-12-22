@@ -6,10 +6,12 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
+import { createSlugSchema } from "@/db/slug";
 
 export const ProjectSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
+  slug: Schema.String,
   organizationId: Schema.String,
   createdByUserId: Schema.String,
 });
@@ -21,12 +23,17 @@ const ProjectNameSchema = Schema.String.pipe(
   }),
 );
 
+// Project slug validation
+const ProjectSlugSchema = createSlugSchema("Project");
+
 export const CreateProjectRequestSchema = Schema.Struct({
   name: ProjectNameSchema,
+  slug: ProjectSlugSchema,
 });
 
 export const UpdateProjectRequestSchema = Schema.Struct({
-  name: ProjectNameSchema,
+  name: Schema.optional(ProjectNameSchema),
+  slug: Schema.optional(ProjectSlugSchema),
 });
 
 export type Project = typeof ProjectSchema.Type;
@@ -81,6 +88,7 @@ export class ProjectsApi extends HttpApiGroup.make("projects")
       )
       .setPayload(UpdateProjectRequestSchema)
       .addSuccess(ProjectSchema)
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),

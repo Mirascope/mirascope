@@ -27,7 +27,7 @@ export const createProjectHandler = (
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.projects.create({
       organizationId,
-      data: { name: payload.name },
+      data: { name: payload.name, slug: payload.slug },
       userId: user.id,
     });
   });

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
 import { ApiClient, eq } from "@/app/api/client";
+import { generateSlug } from "@/db/slug";
 
 export const useProjects = (organizationId: string | null) => {
   return useQuery({
@@ -45,7 +46,7 @@ export const useCreateProject = () => {
           const client = yield* ApiClient;
           return yield* client.projects.create({
             path: { organizationId: data.organizationId },
-            payload: { name: data.name },
+            payload: { name: data.name, slug: generateSlug(data.name) },
           });
         }),
     }),

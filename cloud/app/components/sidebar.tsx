@@ -14,6 +14,7 @@ import { useCreateOrganization } from "@/app/api/organizations";
 import { useCreateProject } from "@/app/api/projects";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useCreateEnvironment } from "@/app/api/environments";
+import { generateSlug } from "@/db/slug";
 
 function CreateOrganizationDialog({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
@@ -30,7 +31,10 @@ function CreateOrganizationDialog({ onClose }: { onClose: () => void }) {
     }
 
     try {
-      await createOrganization.mutateAsync({ name: name.trim() });
+      await createOrganization.mutateAsync({
+        name: name.trim(),
+        slug: generateSlug(name.trim()),
+      });
       onClose();
     } catch (err) {
       setError(
@@ -168,7 +172,7 @@ function CreateEnvironmentDialog({
       await createEnvironment.mutateAsync({
         organizationId,
         projectId,
-        data: { name: name.trim() },
+        data: { name: name.trim(), slug: generateSlug(name.trim()) },
       });
       onClose();
     } catch (err) {

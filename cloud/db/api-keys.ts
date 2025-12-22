@@ -232,7 +232,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
    * @param args.organizationId - The organization containing the project
    * @param args.projectId - The project containing the environment
    * @param args.environmentId - The environment to create the API key in
-   * @param args.data - API key data (name)
+   * @param args.data - API key data
    * @returns The created API key with plaintext key
    * @throws PermissionDeniedError - If user lacks create permission
    * @throws AlreadyExistsError - If an API key with this name exists in the environment
@@ -455,7 +455,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
    * @param args.projectId - The project containing the environment
    * @param args.environmentId - The environment containing the API key
    * @param args.apiKeyId - The API key to update
-   * @param args.data - Fields to update (only `name` allowed)
+   * @param args.data - Fields to update
    * @returns The updated API key
    * @throws NotFoundError - If the API key doesn't exist
    * @throws PermissionDeniedError - If the user lacks update permission

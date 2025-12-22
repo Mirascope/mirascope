@@ -6,6 +6,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
+import { createSlugSchema } from "@/db/slug";
 
 export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
@@ -16,11 +17,13 @@ export const OrganizationRoleSchema = Schema.Literal(
 export const OrganizationSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
+  slug: Schema.String,
 });
 
 export const OrganizationWithMembershipSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
+  slug: Schema.String,
   role: OrganizationRoleSchema,
 });
 
@@ -32,12 +35,17 @@ const OrganizationNameSchema = Schema.String.pipe(
   }),
 );
 
+// Organization slug validation
+const OrganizationSlugSchema = createSlugSchema("Organization");
+
 export const CreateOrganizationRequestSchema = Schema.Struct({
   name: OrganizationNameSchema,
+  slug: OrganizationSlugSchema,
 });
 
 export const UpdateOrganizationRequestSchema = Schema.Struct({
-  name: OrganizationNameSchema,
+  name: Schema.optional(OrganizationNameSchema),
+  slug: Schema.optional(OrganizationSlugSchema),
 });
 
 export type Organization = typeof OrganizationSchema.Type;

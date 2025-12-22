@@ -371,7 +371,7 @@ export const TestOrganizationFixture = Effect.gen(function* () {
 
   const org = yield* db.organizations.create({
     userId: owner.id,
-    data: { name: `Test Organization` },
+    data: { name: `Test Organization`, slug: `test-organization` },
   });
 
   yield* db.organizations.memberships.create({
@@ -426,7 +426,7 @@ export const TestProjectFixture = Effect.gen(function* () {
   const project = yield* db.organizations.projects.create({
     userId: orgFixture.owner.id,
     organizationId: orgFixture.org.id,
-    data: { name: "Test Project" },
+    data: { name: "Test Project", slug: "test-project" },
   });
 
   // Create project members (must be org members first)
@@ -522,7 +522,7 @@ export const TestEnvironmentFixture = Effect.gen(function* () {
     userId: projectFixture.owner.id,
     organizationId: projectFixture.org.id,
     projectId: projectFixture.project.id,
-    data: { name: "development" },
+    data: { name: "development", slug: "development" },
   });
 
   return {

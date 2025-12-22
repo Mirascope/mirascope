@@ -28,6 +28,7 @@ import {
   CardTitle,
   CardContent,
 } from "@/app/components/ui/card";
+import { generateSlug } from "@/db/slug";
 
 export const Route = createFileRoute("/dashboard/settings")({
   component: SettingsPage,
@@ -279,7 +280,7 @@ function EnvironmentsSection({
     await createEnvironment.mutateAsync({
       organizationId,
       projectId,
-      data: { name: newEnvName.trim() },
+      data: { name: newEnvName.trim(), slug: generateSlug(newEnvName.trim()) },
     });
     setNewEnvName("");
   };

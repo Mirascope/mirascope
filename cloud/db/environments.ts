@@ -74,6 +74,7 @@ import {
 const publicFields = {
   id: environments.id,
   name: environments.name,
+  slug: environments.slug,
   projectId: environments.projectId,
 };
 
@@ -101,8 +102,8 @@ const publicFields = {
 export class Environments extends BaseAuthenticatedEffectService<
   PublicEnvironment,
   "organizations/:organizationId/projects/:projectId/environments/:environmentId",
-  Pick<NewEnvironment, "name">,
-  Partial<Pick<NewEnvironment, "name">>,
+  Pick<NewEnvironment, "name" | "slug">,
+  Partial<Pick<NewEnvironment, "name" | "slug">>,
   ProjectRole
 > {
   private readonly projectMemberships: ProjectMemberships;
@@ -179,7 +180,7 @@ export class Environments extends BaseAuthenticatedEffectService<
    * @param args.userId - The user creating the environment
    * @param args.organizationId - The organization containing the project
    * @param args.projectId - The project to create the environment in
-   * @param args.data - Environment data (name)
+   * @param args.data - Environment data
    * @returns The created environment
    * @throws PermissionDeniedError - If user lacks create permission
    * @throws AlreadyExistsError - If an environment with this name exists in the project
@@ -195,7 +196,7 @@ export class Environments extends BaseAuthenticatedEffectService<
     userId: string;
     organizationId: string;
     projectId: string;
-    data: Pick<NewEnvironment, "name">;
+    data: Pick<NewEnvironment, "name" | "slug">;
   }): Effect.Effect<
     PublicEnvironment,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
@@ -217,6 +218,7 @@ export class Environments extends BaseAuthenticatedEffectService<
         .insert(environments)
         .values({
           name: data.name,
+          slug: data.slug,
           projectId,
         })
         .returning(publicFields)
@@ -224,7 +226,7 @@ export class Environments extends BaseAuthenticatedEffectService<
           Effect.mapError((e): AlreadyExistsError | DatabaseError =>
             isUniqueConstraintError(e.cause)
               ? new AlreadyExistsError({
-                  message: `An environment with name "${data.name}" already exists in this project`,
+                  message: `An environment with this slug already exists in this project`,
                   resource: this.getResourceName(),
                 })
               : new DatabaseError({
@@ -378,7 +380,7 @@ export class Environments extends BaseAuthenticatedEffectService<
    * @param args.organizationId - The organization containing the project
    * @param args.projectId - The project containing the environment
    * @param args.environmentId - The environment to update
-   * @param args.data - Fields to update (only `name` allowed)
+   * @param args.data - Fields to update
    * @returns The updated environment
    * @throws NotFoundError - If the environment doesn't exist
    * @throws PermissionDeniedError - If the user lacks update permission
@@ -396,7 +398,7 @@ export class Environments extends BaseAuthenticatedEffectService<
     organizationId: string;
     projectId: string;
     environmentId: string;
-    data: Partial<Pick<NewEnvironment, "name">>;
+    data: Partial<Pick<NewEnvironment, "name" | "slug">>;
   }): Effect.Effect<
     PublicEnvironment,
     NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError,
@@ -428,7 +430,7 @@ export class Environments extends BaseAuthenticatedEffectService<
           Effect.mapError((e): AlreadyExistsError | DatabaseError =>
             isUniqueConstraintError(e.cause)
               ? new AlreadyExistsError({
-                  message: `An environment with name "${data.name}" already exists in this project`,
+                  message: `An environment with this slug already exists in this project`,
                   resource: this.getResourceName(),
                 })
               : new DatabaseError({

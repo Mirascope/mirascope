@@ -8,6 +8,7 @@ import {
 import { Effect } from "effect";
 import { Database } from "@/db/database";
 import {
+  AlreadyExistsError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
@@ -28,11 +29,12 @@ describe("Projects", () => {
         const project = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "New Project" },
+          data: { name: "New Project", slug: "new-project" },
         });
 
         expect(project).toMatchObject({
           name: "New Project",
+          slug: "new-project",
           organizationId: org.id,
           createdByUserId: owner.id,
         } satisfies Partial<PublicProject>);
@@ -72,10 +74,14 @@ describe("Projects", () => {
         const project = yield* db.organizations.projects.create({
           userId: admin.id,
           organizationId: org.id,
-          data: { name: "Admin Created Project" },
+          data: {
+            name: "Admin Created Project",
+            slug: "admin-created-project",
+          },
         });
 
         expect(project.name).toBe("Admin Created Project");
+        expect(project.slug).toBe("admin-created-project");
         expect(project.createdByUserId).toBe(admin.id);
       }),
     );
@@ -91,7 +97,10 @@ describe("Projects", () => {
             .create({
               userId: member.id,
               organizationId: org.id,
-              data: { name: "Unauthorized Project" },
+              data: {
+                name: "Unauthorized Project",
+                slug: "unauthorized-project",
+              },
             })
             .pipe(Effect.flip);
 
@@ -113,7 +122,10 @@ describe("Projects", () => {
             .create({
               userId: nonMember.id,
               organizationId: org.id,
-              data: { name: "Unauthorized Project" },
+              data: {
+                name: "Unauthorized Project",
+                slug: "unauthorized-project-2",
+              },
             })
             .pipe(Effect.flip);
 
@@ -130,7 +142,7 @@ describe("Projects", () => {
           .create({
             userId: "owner-id",
             organizationId: "org-id",
-            data: { name: "Test Project" },
+            data: { name: "Test Project", slug: "test-project" },
           })
           .pipe(Effect.flip);
 
@@ -168,17 +180,17 @@ describe("Projects", () => {
         const { org, owner } = yield* TestOrganizationFixture;
         const db = yield* Database;
 
-        // Create two projects with the same name
+        // Create two projects with the same name but different slugs
         const project1 = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Duplicate Name" },
+          data: { name: "Duplicate Name", slug: "duplicate-name-1" },
         });
 
         const project2 = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Duplicate Name" },
+          data: { name: "Duplicate Name", slug: "duplicate-name-2" },
         });
 
         // Both should succeed with different IDs
@@ -197,6 +209,78 @@ describe("Projects", () => {
         expect(duplicateNameProjects).toHaveLength(2);
       }),
     );
+
+    it.effect(
+      "returns `AlreadyExistsError` when slug is taken in the same organization",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner } = yield* TestOrganizationFixture;
+          const db = yield* Database;
+
+          // Create first project
+          yield* db.organizations.projects.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { name: "First Project", slug: "shared-slug" },
+          });
+
+          // Try to create second project with same slug
+          const result = yield* db.organizations.projects
+            .create({
+              userId: owner.id,
+              organizationId: org.id,
+              data: { name: "Second Project", slug: "shared-slug" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(AlreadyExistsError);
+          expect(result.message).toBe(
+            "A project with this slug already exists in this organization",
+          );
+        }),
+    );
+
+    it.effect(
+      "allows projects with the same slug across different organizations",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          // Create first organization and project
+          const user1 = yield* db.users.create({
+            data: { email: "user1@example.com", name: "User 1" },
+          });
+          const org1 = yield* db.organizations.create({
+            userId: user1.id,
+            data: { name: "Org 1", slug: "org-1" },
+          });
+          const project1 = yield* db.organizations.projects.create({
+            userId: user1.id,
+            organizationId: org1.id,
+            data: { name: "Project", slug: "shared-slug" },
+          });
+
+          // Create second organization and project with same slug
+          const user2 = yield* db.users.create({
+            data: { email: "user2@example.com", name: "User 2" },
+          });
+          const org2 = yield* db.organizations.create({
+            userId: user2.id,
+            data: { name: "Org 2", slug: "org-2" },
+          });
+          const project2 = yield* db.organizations.projects.create({
+            userId: user2.id,
+            organizationId: org2.id,
+            data: { name: "Project", slug: "shared-slug" },
+          });
+
+          // Both should succeed
+          expect(project1.slug).toBe("shared-slug");
+          expect(project2.slug).toBe("shared-slug");
+          expect(project1.id).not.toBe(project2.id);
+          expect(project1.organizationId).not.toBe(project2.organizationId);
+        }),
+    );
   });
 
   // ===========================================================================
@@ -213,12 +297,12 @@ describe("Projects", () => {
         yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Project 1" },
+          data: { name: "Project 1", slug: "project-1" },
         });
         yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Project 2" },
+          data: { name: "Project 2", slug: "project-2" },
         });
 
         // Owner sees all projects
@@ -246,12 +330,12 @@ describe("Projects", () => {
         const project1 = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Project 1" },
+          data: { name: "Project 1", slug: "project-1" },
         });
         yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Project 2" },
+          data: { name: "Project 2", slug: "project-2" },
         });
 
         // Add member to project1 only
@@ -384,7 +468,7 @@ describe("Projects", () => {
         const created = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Test Project" },
+          data: { name: "Test Project", slug: "test-project" },
         });
 
         const project = yield* db.organizations.projects.findById({
@@ -424,7 +508,7 @@ describe("Projects", () => {
         const created = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Test Project" },
+          data: { name: "Test Project", slug: "test-project" },
         });
 
         const result = yield* db.organizations.projects
@@ -562,7 +646,7 @@ describe("Projects", () => {
         const created = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Original Name" },
+          data: { name: "Original Name", slug: "original-name" },
         });
 
         const updated = yield* db.organizations.projects.update({
@@ -586,7 +670,7 @@ describe("Projects", () => {
           const created = yield* db.organizations.projects.create({
             userId: owner.id,
             organizationId: org.id,
-            data: { name: "Test Project" },
+            data: { name: "Test Project", slug: "test-project" },
           });
 
           // Add member as DEVELOPER
@@ -629,6 +713,44 @@ describe("Projects", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
       }),
+    );
+
+    it.effect(
+      "returns `AlreadyExistsError` when slug is taken in the same organization",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner } = yield* TestOrganizationFixture;
+          const db = yield* Database;
+
+          // Create first project
+          yield* db.organizations.projects.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { name: "Existing Project", slug: "existing-project" },
+          });
+
+          // Create second project
+          const project2 = yield* db.organizations.projects.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { name: "Second Project", slug: "second-project" },
+          });
+
+          // Try to update second project with existing slug
+          const result = yield* db.organizations.projects
+            .update({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project2.id,
+              data: { slug: "existing-project" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(AlreadyExistsError);
+          expect(result.message).toBe(
+            "A project with this slug already exists in this organization",
+          );
+        }),
     );
 
     it.effect("returns `DatabaseError` when update fails", () =>
@@ -755,7 +877,7 @@ describe("Projects", () => {
         const created = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Test Project" },
+          data: { name: "Test Project", slug: "test-project" },
         });
 
         yield* db.organizations.projects.delete({
@@ -787,7 +909,7 @@ describe("Projects", () => {
           const created = yield* db.organizations.projects.create({
             userId: owner.id,
             organizationId: org.id,
-            data: { name: "Test Project" },
+            data: { name: "Test Project", slug: "test-project" },
           });
 
           // Add member as DEVELOPER
@@ -952,7 +1074,7 @@ describe("Projects", () => {
         const created = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Test Project" },
+          data: { name: "Test Project", slug: "test-project" },
         });
 
         // getRole should work (owner has implicit ADMIN)

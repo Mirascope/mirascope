@@ -547,6 +547,7 @@
                     "required": [
                       "id",
                       "name",
+                      "slug",
                       "role"
                     ],
                     "properties": {
@@ -554,6 +555,9 @@
                         "type": "string"
                       },
                       "name": {
+                        "type": "string"
+                      },
+                      "slug": {
                         "type": "string"
                       },
                       "role": {
@@ -610,6 +614,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "role"
                   ],
                   "properties": {
@@ -617,6 +622,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "role": {
@@ -670,7 +678,8 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "name"
+                  "name",
+                  "slug"
                 ],
                 "properties": {
                   "name": {
@@ -679,6 +688,14 @@
                     "title": "maxLength(100)",
                     "minLength": 1,
                     "maxLength": 100
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$",
+                    "title": "maxLength(100)",
+                    "minLength": 3,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9][a-z0-9_-]*[a-z0-9]$"
                   }
                 },
                 "additionalProperties": false
@@ -716,6 +733,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "role"
                   ],
                   "properties": {
@@ -723,6 +741,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "role": {
@@ -807,6 +828,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "role"
                   ],
                   "properties": {
@@ -814,6 +836,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "role": {
@@ -876,9 +901,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name"
-                ],
+                "required": [],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -886,6 +909,14 @@
                     "title": "maxLength(100)",
                     "minLength": 1,
                     "maxLength": 100
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$",
+                    "title": "maxLength(100)",
+                    "minLength": 3,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9][a-z0-9_-]*[a-z0-9]$"
                   }
                 },
                 "additionalProperties": false
@@ -987,6 +1018,7 @@
                     "required": [
                       "id",
                       "name",
+                      "slug",
                       "organizationId",
                       "createdByUserId"
                     ],
@@ -995,6 +1027,9 @@
                         "type": "string"
                       },
                       "name": {
+                        "type": "string"
+                      },
+                      "slug": {
                         "type": "string"
                       },
                       "organizationId": {
@@ -1078,6 +1113,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "organizationId",
                     "createdByUserId"
                   ],
@@ -1086,6 +1122,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "organizationId": {
@@ -1157,7 +1196,8 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "name"
+                  "name",
+                  "slug"
                 ],
                 "properties": {
                   "name": {
@@ -1166,6 +1206,14 @@
                     "title": "maxLength(100)",
                     "minLength": 1,
                     "maxLength": 100
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$",
+                    "title": "maxLength(100)",
+                    "minLength": 3,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9][a-z0-9_-]*[a-z0-9]$"
                   }
                 },
                 "additionalProperties": false
@@ -1211,6 +1259,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "organizationId",
                     "createdByUserId"
                   ],
@@ -1219,6 +1268,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "organizationId": {
@@ -1309,6 +1361,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "organizationId",
                     "createdByUserId"
                   ],
@@ -1317,6 +1370,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "organizationId": {
@@ -1361,6 +1417,16 @@
               }
             }
           },
+          "409": {
+            "description": "AlreadyExistsError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlreadyExistsError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "DatabaseError",
             "content": {
@@ -1377,9 +1443,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name"
-                ],
+                "required": [],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -1387,6 +1451,14 @@
                     "title": "maxLength(100)",
                     "minLength": 1,
                     "maxLength": 100
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$",
+                    "title": "maxLength(100)",
+                    "minLength": 3,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9][a-z0-9_-]*[a-z0-9]$"
                   }
                 },
                 "additionalProperties": false
@@ -1504,6 +1576,7 @@
                     "required": [
                       "id",
                       "name",
+                      "slug",
                       "projectId"
                     ],
                     "properties": {
@@ -1511,6 +1584,9 @@
                         "type": "string"
                       },
                       "name": {
+                        "type": "string"
+                      },
+                      "slug": {
                         "type": "string"
                       },
                       "projectId": {
@@ -1599,6 +1675,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "projectId"
                   ],
                   "properties": {
@@ -1606,6 +1683,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "projectId": {
@@ -1674,7 +1754,8 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "name"
+                  "name",
+                  "slug"
                 ],
                 "properties": {
                   "name": {
@@ -1683,6 +1764,14 @@
                     "title": "maxLength(100)",
                     "minLength": 1,
                     "maxLength": 100
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$",
+                    "title": "maxLength(100)",
+                    "minLength": 3,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9][a-z0-9_-]*[a-z0-9]$"
                   }
                 },
                 "additionalProperties": false
@@ -1736,6 +1825,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "projectId"
                   ],
                   "properties": {
@@ -1743,6 +1833,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "projectId": {
@@ -1838,6 +1931,7 @@
                   "required": [
                     "id",
                     "name",
+                    "slug",
                     "projectId"
                   ],
                   "properties": {
@@ -1845,6 +1939,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "slug": {
                       "type": "string"
                     },
                     "projectId": {
@@ -1912,9 +2009,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name"
-                ],
+                "required": [],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -1922,6 +2017,14 @@
                     "title": "maxLength(100)",
                     "minLength": 1,
                     "maxLength": 100
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$",
+                    "title": "maxLength(100)",
+                    "minLength": 3,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9][a-z0-9_-]*[a-z0-9]$"
                   }
                 },
                 "additionalProperties": false

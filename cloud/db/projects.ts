@@ -60,6 +60,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
+import { isUniqueConstraintError } from "@/db/utils";
 import {
   projects,
   projectMemberships,
@@ -74,6 +75,7 @@ import {
 const publicFields = {
   id: projects.id,
   name: projects.name,
+  slug: projects.slug,
   organizationId: projects.organizationId,
   createdByUserId: projects.createdByUserId,
 };
@@ -104,8 +106,8 @@ const publicFields = {
 export class Projects extends BaseAuthenticatedEffectService<
   PublicProject,
   "organizations/:organizationId/projects/:projectId",
-  Pick<NewProject, "name">,
-  Partial<Pick<NewProject, "name">>,
+  Pick<NewProject, "name" | "slug">,
+  Partial<Pick<NewProject, "name" | "slug">>,
   ProjectRole
 > {
   /**
@@ -195,7 +197,7 @@ export class Projects extends BaseAuthenticatedEffectService<
    *
    * @param args.userId - The user creating the project (becomes project ADMIN)
    * @param args.organizationId - The organization to create the project in
-   * @param args.data - Project data (name)
+   * @param args.data - Project data
    * @returns The created project
    * @throws PermissionDeniedError - If user lacks org OWNER/ADMIN role
    * @throws DatabaseError - If the database operation fails
@@ -207,7 +209,7 @@ export class Projects extends BaseAuthenticatedEffectService<
   }: {
     userId: string;
     organizationId: string;
-    data: Pick<NewProject, "name">;
+    data: Pick<NewProject, "name" | "slug">;
   }): Effect.Effect<
     PublicProject,
     NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError,
@@ -241,17 +243,23 @@ export class Projects extends BaseAuthenticatedEffectService<
             .insert(projects)
             .values({
               name: data.name,
+              slug: data.slug,
               organizationId,
               createdByUserId: userId,
             })
             .returning(publicFields)
             .pipe(
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to create project",
-                    cause: e,
-                  }),
+              Effect.mapError((e): AlreadyExistsError | DatabaseError =>
+                isUniqueConstraintError(e.cause)
+                  ? new AlreadyExistsError({
+                      message:
+                        "A project with this slug already exists in this organization",
+                      resource: "project",
+                    })
+                  : new DatabaseError({
+                      message: "Failed to create project",
+                      cause: e,
+                    }),
               ),
             );
 
@@ -429,7 +437,7 @@ export class Projects extends BaseAuthenticatedEffectService<
    * @param args.userId - The authenticated user
    * @param args.organizationId - The organization containing the project
    * @param args.projectId - The project to update
-   * @param args.data - Fields to update (only `name` allowed)
+   * @param args.data - Fields to update
    * @returns The updated project
    * @throws NotFoundError - If the project doesn't exist
    * @throws PermissionDeniedError - If the user lacks update permission
@@ -444,10 +452,10 @@ export class Projects extends BaseAuthenticatedEffectService<
     userId: string;
     organizationId: string;
     projectId: string;
-    data: Partial<Pick<NewProject, "name">>;
+    data: Partial<Pick<NewProject, "name" | "slug">>;
   }): Effect.Effect<
     PublicProject,
-    NotFoundError | PermissionDeniedError | DatabaseError,
+    NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError,
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
@@ -471,12 +479,17 @@ export class Projects extends BaseAuthenticatedEffectService<
         )
         .returning(publicFields)
         .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to update project",
-                cause: e,
-              }),
+          Effect.mapError((e): AlreadyExistsError | DatabaseError =>
+            isUniqueConstraintError(e.cause)
+              ? new AlreadyExistsError({
+                  message:
+                    "A project with this slug already exists in this organization",
+                  resource: "project",
+                })
+              : new DatabaseError({
+                  message: "Failed to update project",
+                  cause: e,
+                }),
           ),
         );
 

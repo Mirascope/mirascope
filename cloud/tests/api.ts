@@ -259,7 +259,10 @@ function createSequentialDescribe(
           // Create test organization
           const org = yield* db.organizations.create({
             userId: owner.id,
-            data: { name: "API Test Organization" },
+            data: {
+              name: "API Test Organization",
+              slug: "api-test-organization",
+            },
           });
 
           return { owner, org };

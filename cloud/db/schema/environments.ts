@@ -7,6 +7,7 @@ export const environments = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
+    slug: text("slug").notNull(),
     projectId: uuid("project_id")
       .references(() => projects.id, { onDelete: "cascade" })
       .notNull(),
@@ -14,7 +15,7 @@ export const environments = pgTable(
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
-    projectNameUnique: unique().on(table.projectId, table.name),
+    uniqueProjectSlug: unique().on(table.projectId, table.slug),
   }),
 );
 
@@ -30,4 +31,7 @@ export type Environment = typeof environments.$inferSelect;
 export type NewEnvironment = typeof environments.$inferInsert;
 
 // Public types for API responses
-export type PublicEnvironment = Pick<Environment, "id" | "name" | "projectId">;
+export type PublicEnvironment = Pick<
+  Environment,
+  "id" | "name" | "slug" | "projectId"
+>;
