@@ -154,18 +154,12 @@ export function OrganizationsPage() {
 
   if (isLoading) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading organizations...</div>
-      </div>
+      <div className="text-muted-foreground">Loading organizations...</div>
     );
   }
 
   if (error) {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <div className="text-destructive">Failed to load organizations</div>
-      </div>
-    );
+    return <div className="text-destructive">Failed to load organizations</div>;
   }
 
   return (
