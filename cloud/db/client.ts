@@ -58,6 +58,27 @@ import * as Pg from "@effect/sql-drizzle/Pg";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient, type SqlError } from "@effect/sql";
 import * as schema from "@/db/schema";
+import { DatabaseError } from "@/db/errors";
+
+/**
+ * Wraps an effect that may fail with SqlError and maps it to DatabaseError.
+ *
+ * Use this to convert SqlError (from @effect/sql) to DatabaseError for cleaner
+ * error handling in service code.
+ */
+export const mapSqlError = <A, E, R>(
+  effect: Effect.Effect<A, E | SqlError.SqlError, R>,
+): Effect.Effect<A, Exclude<E, SqlError.SqlError> | DatabaseError, R> =>
+  effect.pipe(
+    Effect.mapError((e): Exclude<E, SqlError.SqlError> | DatabaseError =>
+      e && typeof e === "object" && "_tag" in e && e._tag === "SqlError"
+        ? new DatabaseError({
+            message: "Database transaction failed",
+            cause: e,
+          })
+        : (e as Exclude<E, SqlError.SqlError>),
+    ),
+  );
 
 /**
  * DrizzleORM client configuration options.
@@ -91,10 +112,11 @@ export interface DrizzleORMClient extends PgRemoteDatabase<typeof schema> {
    *
    * Nested transactions use savepoints automatically.
    *
-   * Note: Named `withTransaction` to avoid conflict with Drizzle's native `transaction` method.
+   * SqlError from transaction management is automatically mapped to DatabaseError
+   * for cleaner error handling in service code.
    *
    * @param effect - The Effect to run within the transaction
-   * @returns The result of the Effect, with SqlError added to the error channel
+   * @returns The result of the Effect, with DatabaseError for transaction failures
    *
    * @example
    * ```ts
@@ -117,7 +139,7 @@ export interface DrizzleORMClient extends PgRemoteDatabase<typeof schema> {
    */
   withTransaction: <A, E, R>(
     effect: Effect.Effect<A, E, R>,
-  ) => Effect.Effect<A, E | SqlError.SqlError, R>;
+  ) => Effect.Effect<A, Exclude<E, SqlError.SqlError> | DatabaseError, R>;
 }
 
 /**
@@ -163,13 +185,14 @@ export class DrizzleORM extends Context.Tag("DrizzleORM")<
     DrizzleORM,
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      const db = yield* Pg.make({ schema });
+       
+      const db: PgRemoteDatabase<typeof schema> = yield* Pg.make({ schema });
 
       return Object.assign(db, {
         withTransaction: <A, E, R>(
           effect: Effect.Effect<A, E, R>,
-        ): Effect.Effect<A, E | SqlError.SqlError, R> =>
-          sql.withTransaction(effect),
+        ): Effect.Effect<A, Exclude<E, SqlError.SqlError> | DatabaseError, R> =>
+          mapSqlError(sql.withTransaction(effect)),
       }) as DrizzleORMClient;
     }),
   );

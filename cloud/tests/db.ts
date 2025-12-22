@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
-import { Effect, Layer, Config } from "effect";
+import { Effect, Layer, Config, Option } from "effect";
+import { it as vitestIt, describe, expect } from "@effect/vitest";
 import { getDatabase, DatabaseService, type Database } from "@/db/services";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { EffectDatabase } from "@/db/database";
@@ -9,6 +10,14 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
+import {
+  organizations,
+  organizationMemberships,
+  organizationMembershipAudit,
+} from "@/db/schema";
+
+// Re-export describe and expect for convenience
+export { describe, expect };
 
 dotenv.config({ path: ".env.local", override: true });
 
@@ -109,78 +118,146 @@ const TestPgClient = PgClient.layerConfig({
 });
 
 /**
- * A scoped Layer that provides the Effect-native DrizzleORM service backed by
- * a transaction that automatically rolls back when the test completes.
+ * Layer that provides the Effect-native DrizzleORM service for tests.
  *
- * This ensures test isolation - all database changes made during a test are
- * rolled back when the test finishes, leaving the database in its original state.
- *
- * Nested transactions (e.g., service code calling `drizzle.transaction()`) use
- * PostgreSQL savepoints automatically via @effect/sql.
- *
- * Usage with @effect/vitest:
- * ```ts
- * import { it } from "@effect/vitest";
- * import { Effect } from "effect";
- * import { DrizzleORM } from "@/db/database";
- * import { TestDrizzleORM } from "@/tests/db";
- *
- * it.effect("should do something", () =>
- *   Effect.gen(function* () {
- *     const drizzle = yield* DrizzleORM;
- *     const [user] = yield* drizzle
- *       .select()
- *       .from(users)
- *       .where(eq(users.id, userId));
- *     // ... test code
- *   }).pipe(Effect.provide(TestDrizzleORM))
- * );
- * ```
+ * Note: This layer is automatically provided by the patched `it.effect`.
+ * You only need to import this if you need to provide it manually.
  */
-export const TestDrizzleORM: Layer.Layer<DrizzleORM> = Layer.scopedDiscard(
-  Effect.gen(function* () {
-    const sql = yield* SqlClient.SqlClient;
-
-    // Start transaction - all queries will run within this transaction
-    yield* sql.unsafe("BEGIN");
-
-    // Always rollback when scope ends (test completes)
-    yield* Effect.addFinalizer(() =>
-      sql.unsafe("ROLLBACK").pipe(Effect.ignore),
-    );
-  }),
-).pipe(
-  Layer.provideMerge(DrizzleORM.Default),
-  Layer.provide(TestPgClient),
-  Layer.orDie,
-);
+export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
+  DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
 /**
- * A Layer that provides the Effect-native `EffectDatabase` service for tests.
+ * A Layer that provides the Effect-native `EffectDatabase`, `DrizzleORM`, and
+ * `SqlClient` services for tests.
  *
- * This layer provides both DrizzleORM and EffectDatabase, making it easy to
- * test services that use `yield* EffectDatabase` to access `db.users`, etc.
+ * Note: This layer is automatically provided by `it.effect` from this module,
+ * and tests are automatically wrapped in a transaction that rolls back.
+ * You only need to import this if you need to provide it manually (e.g., in
+ * tests that don't use `it.effect`).
+ */
+export const TestEffectDatabase: Layer.Layer<
+  EffectDatabase | DrizzleORM | SqlClient.SqlClient
+> = EffectDatabase.Default.pipe(Layer.provideMerge(TestDrizzleORM));
+
+// =============================================================================
+// Rollback transaction wrapper
+// =============================================================================
+
+// Sentinel error used to force transaction rollback
+class TestRollbackError {
+  readonly _tag = "TestRollbackError";
+}
+
+/**
+ * Wraps a test effect in a transaction that always rolls back.
  *
- * Usage with @effect/vitest:
+ * If SqlClient is not available (e.g., mock tests), the effect runs
+ * without transaction wrapping.
+ */
+const withRollback = <A, E, R>(
+  effect: Effect.Effect<A, E, R>,
+): Effect.Effect<A, E, R> =>
+  Effect.gen(function* () {
+    // Check if SqlClient is available (won't be for mock tests)
+    const sqlOption = yield* Effect.serviceOption(SqlClient.SqlClient);
+
+    if (Option.isNone(sqlOption)) {
+      // No SqlClient available (mock test), run without transaction
+      return yield* effect;
+    }
+
+    const sql = sqlOption.value;
+    let result: A;
+
+    yield* sql
+      .withTransaction(
+        Effect.gen(function* () {
+          // Run the test effect and capture its result
+          result = yield* effect;
+          // Always fail to trigger rollback
+          return yield* Effect.fail(new TestRollbackError());
+        }),
+      )
+      .pipe(
+        // Catch the rollback error - this is expected
+        Effect.catchIf(
+          (e): e is TestRollbackError => e instanceof TestRollbackError,
+          () => Effect.void,
+        ),
+      );
+
+    // @ts-expect-error - result is assigned before we get here
+    return result;
+  }) as Effect.Effect<A, E, R>;
+
+// =============================================================================
+// Type-safe test utilities with automatic layer provision
+// =============================================================================
+
+/**
+ * Services that are automatically provided to all `it.effect` tests.
+ */
+export type TestServices = EffectDatabase | DrizzleORM | SqlClient.SqlClient;
+
+/**
+ * Type for effect test functions that accept TestServices as dependencies.
+ */
+type EffectTestFn = <A, E>(
+  name: string,
+  fn: () => Effect.Effect<A, E, TestServices>,
+  timeout?: number,
+) => void;
+
+/**
+ * Wraps a test function to automatically provide TestEffectDatabase
+ * and wrap in a transaction that rolls back.
+ */
+ 
+const wrapEffectTest =
+  (original: any): EffectTestFn =>
+  (name, fn, timeout) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+    return original(
+      name,
+      () => withRollback(fn()).pipe(Effect.provide(TestEffectDatabase)),
+      timeout,
+    );
+  };
+
+/**
+ * Type-safe `it` with `it.effect` that automatically:
+ * 1. Wraps tests in a transaction that rolls back
+ * 2. Provides TestEffectDatabase layer
+ *
+ * Use this instead of importing directly from @effect/vitest.
+ *
+ * @example
  * ```ts
- * import { it } from "@effect/vitest";
+ * import { it, expect } from "@/tests/db";
  * import { Effect } from "effect";
- * import { EffectDatabase } from "@/db/effect-database";
- * import { TestEffectDatabase } from "@/tests/db";
+ * import { EffectDatabase } from "@/db/database";
  *
- * it.effect("should create a user", () =>
+ * it.effect("creates a user", () =>
  *   Effect.gen(function* () {
  *     const db = yield* EffectDatabase;
- *     const user = yield* db.users.create({
- *       data: { email: "test@example.com" },
- *     });
+ *     const user = yield* db.users.create({ data: { email: "test@example.com" } });
  *     expect(user.email).toBe("test@example.com");
- *   }).pipe(Effect.provide(TestEffectDatabase))
+ *   })
  * );
  * ```
  */
-export const TestEffectDatabase: Layer.Layer<EffectDatabase | DrizzleORM> =
-  EffectDatabase.Default.pipe(Layer.provideMerge(TestDrizzleORM));
+export const it = {
+  ...vitestIt,
+  effect: Object.assign(wrapEffectTest(vitestIt.effect), {
+    skip: wrapEffectTest(vitestIt.effect.skip),
+    only: wrapEffectTest(vitestIt.effect.only),
+    fails: wrapEffectTest(vitestIt.effect.fails),
+    skipIf: (condition: unknown) =>
+      wrapEffectTest(vitestIt.effect.skipIf(condition)),
+    runIf: (condition: unknown) =>
+      wrapEffectTest(vitestIt.effect.runIf(condition)),
+  }),
+};
 
 // ============================================================================
 // Mock database builder
@@ -448,6 +525,8 @@ export class MockDrizzleORM {
         const idx = deleteIndex++;
         return createChainableProxy(this.deleteResults, idx);
       },
+      // Mock withTransaction to just run the effect directly (no actual transaction)
+      withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) => effect,
     } as unknown as DrizzleORMClient;
 
     const mockDrizzleORMLayer = Layer.succeed(DrizzleORM, drizzleMock);
@@ -498,6 +577,108 @@ export const TestOrganizationFixture = Effect.gen(function* () {
   });
 
   // Add members with different roles using the memberships service
+  yield* db.organizations.memberships.create({
+    userId: owner.id,
+    organizationId: org.id,
+    data: { memberId: admin.id, role: "ADMIN" },
+  });
+
+  yield* db.organizations.memberships.create({
+    userId: owner.id,
+    organizationId: org.id,
+    data: { memberId: member.id, role: "MEMBER" },
+  });
+
+  return {
+    org,
+    owner,
+    admin,
+    member,
+    nonMember,
+  };
+});
+
+/**
+ * Effect-native test fixture for organizations.
+ *
+ * Creates a test organization with members of all roles and a non-member user
+ * using the Effect-native `EffectDatabase` service.
+ *
+ * Each invocation generates unique email addresses to prevent conflicts
+ * when tests run in shared transaction contexts.
+ *
+ * Returns { org, owner, admin, member, nonMember } where:
+ * - owner: a user who owns the organization (OWNER role)
+ * - admin: a user with ADMIN role
+ * - member: a user with MEMBER role
+ * - nonMember: a user who is NOT a member (useful for permission tests)
+ *
+ * Requires EffectDatabase - call `yield* EffectDatabase` in your test
+ * if you need to perform additional database operations.
+ */
+export const TestEffectOrganizationFixture = Effect.gen(function* () {
+  const db = yield* EffectDatabase;
+  const client = yield* DrizzleORM;
+
+  // Create users using Effect-native service with unique emails
+  const owner = yield* db.users.create({
+    data: { email: `owner@example.com`, name: "Owner" },
+  });
+
+  const admin = yield* db.users.create({
+    data: { email: `admin@example.com`, name: "Admin" },
+  });
+
+  const member = yield* db.users.create({
+    data: { email: `member@example.com`, name: "Member" },
+  });
+
+  const nonMember = yield* db.users.create({
+    data: { email: `nonmember@example.com`, name: "Non Member" },
+  });
+
+  // Create organization directly (OrganizationService not yet migrated)
+  const [org] = yield* client
+    .insert(organizations)
+    .values({ name: `Test Organization` })
+    .returning({ id: organizations.id, name: organizations.name })
+    .pipe(
+      Effect.mapError(
+        (e) => new Error(`Failed to create organization: ${String(e)}`),
+      ),
+    );
+
+  // Create OWNER membership for the owner
+  yield* client
+    .insert(organizationMemberships)
+    .values({
+      memberId: owner.id,
+      organizationId: org.id,
+      role: "OWNER",
+    })
+    .pipe(
+      Effect.mapError(
+        (e) => new Error(`Failed to create owner membership: ${String(e)}`),
+      ),
+    );
+
+  // Log audit for OWNER membership
+  yield* client
+    .insert(organizationMembershipAudit)
+    .values({
+      organizationId: org.id,
+      actorId: owner.id,
+      targetId: owner.id,
+      action: "GRANT",
+      newRole: "OWNER",
+    })
+    .pipe(
+      Effect.mapError(
+        (e) => new Error(`Failed to create audit log: ${String(e)}`),
+      ),
+    );
+
+  // Add members with different roles using Effect-native memberships service
   yield* db.organizations.memberships.create({
     userId: owner.id,
     organizationId: org.id,

@@ -40,6 +40,7 @@ import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import {
   type AlreadyExistsError,
   type DatabaseError,
+  type DeletedUserError,
   type NotFoundError,
   PermissionDeniedError,
 } from "@/db/errors";
@@ -136,6 +137,8 @@ export type HasParentParams<T extends string> =
  * This represents a "ready" service where the DrizzleORM client has been provided.
  * Methods return `Effect<A, E>` instead of `Effect<A, E, DrizzleORM>`.
  *
+ * Also handles nested objects (like `audits`) by recursively applying the transformation.
+ *
  * @example
  * ```ts
  * class Users extends BaseEffectService<...> {
@@ -151,7 +154,9 @@ export type Ready<T> = {
     ...args: infer A
   ) => Effect.Effect<infer R, infer E, DrizzleORM>
     ? (...args: A) => Effect.Effect<R, E>
-    : never;
+    : T[K] extends object
+      ? Ready<T[K]>
+      : never;
 };
 
 /**
@@ -159,6 +164,8 @@ export type Ready<T> = {
  *
  * Wraps all methods on the service instance to automatically provide the
  * DrizzleORM client, so callers don't need to manage that dependency.
+ *
+ * Also handles nested objects (like `audits`) by recursively wrapping their methods.
  *
  * @param client - The DrizzleORM client instance
  * @param service - The service instance to wrap
@@ -179,6 +186,7 @@ export const makeReady = <T extends object>(
   const ready = {} as Ready<T>;
   const proto = Object.getPrototypeOf(service) as object;
 
+  // Wrap methods from the prototype
   for (const key of Object.getOwnPropertyNames(proto)) {
     if (key === "constructor") continue;
 
@@ -194,6 +202,14 @@ export const makeReady = <T extends object>(
             DrizzleORM
           >
         ).pipe(Effect.provideService(DrizzleORM, client));
+    }
+  }
+
+  // Handle nested objects (like `audits`) by recursively wrapping them
+  for (const key of Object.keys(service)) {
+    const value = (service as Record<string, unknown>)[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      (ready as Record<string, unknown>)[key] = makeReady(client, value);
     }
   }
 
@@ -617,7 +633,11 @@ export abstract class BaseAuthenticatedEffectService<
       : { data: TInsert }),
   ): Effect.Effect<
     TPublic,
-    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
+    | AlreadyExistsError
+    | NotFoundError
+    | PermissionDeniedError
+    | DeletedUserError
+    | DatabaseError,
     DrizzleORM
   >;
 
@@ -676,7 +696,7 @@ export abstract class BaseAuthenticatedEffectService<
     args: { userId: string } & PathParams<TPath> & { data: TUpdate },
   ): Effect.Effect<
     TPublic,
-    NotFoundError | PermissionDeniedError | DatabaseError,
+    NotFoundError | PermissionDeniedError | DeletedUserError | DatabaseError,
     DrizzleORM
   >;
 

@@ -1,5 +1,4 @@
-import { describe, it, expect } from "@effect/vitest";
-import { TestEffectDatabase, MockDrizzleORM } from "@/tests/db";
+import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 import { Effect } from "effect";
 import { type PublicUser, users } from "@/db/schema";
 import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/db/errors";
@@ -27,7 +26,7 @@ describe("Users", () => {
           name,
           deletedAt: null,
         } satisfies PublicUser);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `AlreadyExistsError` when email is taken", () =>
@@ -43,7 +42,7 @@ describe("Users", () => {
 
         expect(result).toBeInstanceOf(AlreadyExistsError);
         expect(result.message).toBe("User already exists");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when insert fails", () =>
@@ -83,7 +82,7 @@ describe("Users", () => {
         const all = yield* db.users.findAll();
 
         expect(all).toEqual([user1, user2] satisfies PublicUser[]);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns empty array when no users exist", () =>
@@ -93,7 +92,7 @@ describe("Users", () => {
         const all = yield* db.users.findAll();
 
         expect(all).toEqual([]);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -127,7 +126,7 @@ describe("Users", () => {
         const found = yield* db.users.findById({ userId: user.id });
 
         expect(found).toEqual(user);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when user does not exist", () =>
@@ -141,7 +140,7 @@ describe("Users", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe("User not found");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -188,7 +187,7 @@ describe("Users", () => {
           email: updatedEmail,
           deletedAt: null,
         } satisfies PublicUser);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("persists updates correctly", () =>
@@ -207,7 +206,7 @@ describe("Users", () => {
         const found = yield* db.users.findById({ userId: created.id });
 
         expect(found.name).toBe("Persisted");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when user does not exist", () =>
@@ -221,7 +220,7 @@ describe("Users", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe("User not found");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -261,7 +260,7 @@ describe("Users", () => {
 
         expect(result.name).toBeNull();
         expect(result.email).toBe(`deleted-${created.id}@deleted.local`);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("includes deleted user from findAll results", () =>
@@ -277,7 +276,7 @@ describe("Users", () => {
         const all = yield* db.users.findAll();
 
         expect(all.find((u) => u.id === created.id)).toBeDefined();
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("replaces PII with placeholders on deletion", () =>
@@ -299,7 +298,7 @@ describe("Users", () => {
 
         expect(deleted.id).toBe(created.id);
         expect(deleted.email).toBe(`deleted-${created.id}@deleted.local`);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when user does not exist", () =>
@@ -313,7 +312,7 @@ describe("Users", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe("User not found");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect(
@@ -336,7 +335,7 @@ describe("Users", () => {
 
           expect(result).toBeInstanceOf(NotFoundError);
           expect(result.message).toBe("User not found");
-        }).pipe(Effect.provide(TestEffectDatabase)),
+        }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -375,7 +374,7 @@ describe("Users", () => {
         const found = yield* db.users.findByEmail(email);
 
         expect(found).toEqual(created);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` when email does not exist", () =>
@@ -388,7 +387,7 @@ describe("Users", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect(result.message).toBe("User not found");
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `NotFoundError` for deleted user", () =>
@@ -406,7 +405,7 @@ describe("Users", () => {
         const result = yield* db.users.findByEmail(email).pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
@@ -439,7 +438,7 @@ describe("Users", () => {
         const count = yield* db.users.count();
 
         expect(count).toBe(0);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("counts non-deleted users", () =>
@@ -459,7 +458,7 @@ describe("Users", () => {
         const count = yield* db.users.count();
 
         expect(count).toBe(3);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("excludes soft-deleted users from count", () =>
@@ -478,7 +477,7 @@ describe("Users", () => {
         const count = yield* db.users.count();
 
         expect(count).toBe(1);
-      }).pipe(Effect.provide(TestEffectDatabase)),
+      }),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>

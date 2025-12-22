@@ -1,5 +1,6 @@
 export * from "@/db/services/base";
 export * from "@/db/services/organizations";
+export * from "@/db/services/organization-memberships";
 export * from "@/db/services/project-memberships";
 export * from "@/db/services/projects";
 
@@ -66,7 +67,7 @@ export function getDatabase(
         })()
       : connection;
 
-  // Wrap the client for compatibility with the new Users service
+  // Wrap the client for compatibility with the new Effect-based services
   const drizzleORMClient = asDrizzleORMClient(client);
   const users = makeReady(drizzleORMClient, new Users());
   const sessions = makeReady(drizzleORMClient, new Sessions());
