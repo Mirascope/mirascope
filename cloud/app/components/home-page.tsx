@@ -97,7 +97,7 @@ const LogoBanner = () => {
               marginBottom: 0,
               lineHeight: logoStyles.lineHeightMultiplier,
             }}
-            className="font-handwriting text-mirascope-purple"
+            className="font-handwriting text-mirple"
           >
             Mirascope
           </h1>
@@ -161,7 +161,7 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
             href="/discord-invite"
             variant="default"
             size="lg"
-            className="box-shade w-full min-w-[200px] bg-mirascope-purple text-center font-handwriting font-bold text-white hover:bg-mirascope-purple-dark/90 sm:w-auto"
+            className="box-shade w-full min-w-[200px] bg-mirple text-center font-handwriting font-bold text-white hover:bg-mirple-dark/90 sm:w-auto"
           >
             Join our
             <img
@@ -183,7 +183,7 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
         <div className="box-shade relative h-12 w-12 overflow-hidden rounded-full">
           <button
             onClick={onScrollDown}
-            className="bg-mirascope-purple/80 hover:bg-mirascope-purple-dark/90 absolute inset-0 flex items-center justify-center border-0 transition-all"
+            className="bg-mirple/80 hover:bg-mirple-dark/90 absolute inset-0 flex items-center justify-center border-0 transition-all"
             aria-label="Scroll to learn more"
           >
             <ChevronDown className="h-6 w-6 text-white" />
@@ -247,7 +247,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
           href="/docs/mirascope"
           variant="default"
           size="default"
-          className="box-shade w-full min-w-[200px] bg-mirascope-purple px-6 py-4 text-center font-handwriting font-medium text-white hover:bg-mirascope-purple-dark/90 sm:w-auto"
+          className="box-shade w-full min-w-[200px] bg-mirple px-6 py-4 text-center font-handwriting font-medium text-white hover:bg-mirple-dark/90 sm:w-auto"
         >
           <BookOpen className="size-5" aria-hidden="true" /> Mirascope Docs
         </ButtonLink>
@@ -267,7 +267,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
           <div className="box-shade relative h-10 w-10 overflow-hidden rounded-full">
             <button
               onClick={onScrollToTop}
-              className="bg-mirascope-purple/80 hover:bg-mirascope-purple-dark/90 absolute inset-0 flex items-center justify-center border-0 transition-all"
+              className="bg-mirple/80 hover:bg-mirple-dark/90 absolute inset-0 flex items-center justify-center border-0 transition-all"
               aria-label="Scroll to top"
             >
               <ChevronUp className="h-5 w-5 text-white" />

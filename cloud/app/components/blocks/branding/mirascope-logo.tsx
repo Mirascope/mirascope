@@ -38,7 +38,7 @@ const MirascopeLogo: React.FC<BaseLogoProps> = ({
           <span
             className={cn(
               selectedSize.text,
-              "text-mirascope-purple font-handwriting mb-0",
+              "text-mirple font-handwriting mb-0",
             )}
           >
             {MIRASCOPE.title}
