@@ -1249,6 +1249,7 @@ dev = [
     { name = "pytest-httpserver" },
     { name = "pytest-vcr" },
     { name = "ruff" },
+    { name = "tomli" },
     { name = "vcrpy" },
 ]
 
@@ -1294,6 +1295,7 @@ dev = [
     { name = "pytest-httpserver", specifier = ">=1.1.0" },
     { name = "pytest-vcr", specifier = ">=1.0.2" },
     { name = "ruff", specifier = ">=0.9.7" },
+    { name = "tomli", specifier = ">=2.2.1" },
     { name = "vcrpy", specifier = ">=7.0.0" },
 ]
 
