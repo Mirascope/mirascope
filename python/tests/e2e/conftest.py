@@ -49,6 +49,10 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "openai/gpt-4o:responses",
 ]
 
+# GPT-5 (reasoning model) for testing max_completion_tokens conversion and refusal behavior.
+# Kept separate from E2E_MODEL_IDS because reasoning models have limited cassette coverage.
+GPT5_MODEL_IDS: list[llm.ModelId] = ["openai/gpt-5-mini:completions"]
+
 # NOTE: MLX is only available on macOS (Apple Silicon)
 if sys.platform == "darwin":
     from .mlx_lm_cassette import (
@@ -58,6 +62,41 @@ if sys.platform == "darwin":
     E2E_MODEL_IDS.append("mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
 STRUCTURED_OUTPUT_MODEL_IDS = [*E2E_MODEL_IDS, "anthropic/claude-sonnet-4-5"]
+
+# Reasoning models (GPT-5 series, o1/o3/o4 series) have special parameter requirements:
+# - Require max_completion_tokens instead of max_tokens (auto-converted by Mirascope)
+# - Do NOT support temperature, top_p, or other sampling parameters
+# See: https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/reasoning
+# See: https://community.openai.com/t/why-was-max-tokens-changed-to-max-completion-tokens/938077
+REASONING_MODEL_PREFIXES = {
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
+    "o1",
+    "o1-mini",
+    "o3",
+    "o3-mini",
+    "o4-mini",
+}
+
+
+def _is_reasoning_model(model_id: llm.ModelId) -> bool:
+    """Check if the model is a reasoning model (GPT-5 series, o1/o3/o4 series)."""
+    model_name = model_id.split("/")[-1].split(":")[0]
+    return any(model_name.startswith(prefix) for prefix in REASONING_MODEL_PREFIXES)
+
+
+# Models that support max_tokens parameter.
+# Note: Mirascope automatically converts max_tokens to max_completion_tokens for reasoning models,
+# so all models can use max_tokens (including Azure and reasoning models via Completions API).
+# Includes GPT-5 models since they support max_completion_tokens (auto-converted from max_tokens).
+MAX_TOKENS_MODEL_IDS = [
+    m for m in [*E2E_MODEL_IDS, *GPT5_MODEL_IDS] if not m.startswith("azure/")
+]
+
+# Models that support temperature/sampling parameters (excludes reasoning models)
+# Reasoning models do not support temperature, top_p, etc.
+PARAMS_MODEL_IDS = [m for m in MAX_TOKENS_MODEL_IDS if not _is_reasoning_model(m)]
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
     None,
