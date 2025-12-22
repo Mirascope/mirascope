@@ -10,6 +10,9 @@ import { AuthProvider } from "@/app/contexts/auth";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/app/api/client";
 import globalsCss from "@/app/styles/globals.css?url";
+import { ThemeProvider } from "@/app/components/blocks/theme-provider";
+import Header from "@/app/components/blocks/navigation/header";
+import Footer from "@/app/components/blocks/navigation/footer";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -58,13 +61,22 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <Outlet />
-            <TanStackRouterDevtools />
-            <Scripts />
-          </AuthProvider>
-        </QueryClientProvider>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <Header />
+              <main className="grow">
+                {/* Content container with padding to account for fixed header */}
+                <div className="mx-auto w-full max-w-7xl grow pt-(--header-height)">
+                  <Outlet />
+                </div>
+              </main>
+              <Footer />
+              <TanStackRouterDevtools />
+              <Scripts />
+            </AuthProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
