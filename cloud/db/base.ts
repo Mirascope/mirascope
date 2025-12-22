@@ -518,9 +518,13 @@ export abstract class BaseAuthenticatedEffectService<
    * }
    * ```
    */
-  abstract getRole(
+  protected abstract getRole(
     args: { userId: string } & AuthorizationParams<TPath>,
-  ): Effect.Effect<TRole, NotFoundError | DatabaseError, DrizzleORM>;
+  ): Effect.Effect<
+    TRole,
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  >;
 
   // ---------------------------------------------------------------------------
   // Authorization Helpers

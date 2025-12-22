@@ -4,12 +4,14 @@ import { it as vitestIt, describe, expect } from "@effect/vitest";
 import { getDatabase, DatabaseService, type Database } from "@/db/services";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { EffectDatabase } from "@/db/database";
+import { DatabaseError } from "@/db/errors";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
+import { projects } from "@/db/schema";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
@@ -654,6 +656,131 @@ export const TestEffectOrganizationFixture = Effect.gen(function* () {
     admin,
     member,
     nonMember,
+  };
+});
+
+/**
+ * Effect-native test fixture for projects.
+ *
+ * Creates a test project within an organization with explicit project members
+ * using the Effect-native `EffectDatabase` service.
+ *
+ * Reuses `TestEffectOrganizationFixture` to set up the organization.
+ *
+ * Returns { org, project, owner, admin, member, nonMember, projectAdmin, projectDeveloper, projectViewer, projectAnnotator } where:
+ * - org: the organization containing the project
+ * - project: the created project
+ * - owner: org owner (implicit project ADMIN access)
+ * - admin: org admin (implicit project ADMIN access)
+ * - member: org member without explicit project membership
+ * - nonMember: not an org member
+ * - projectAdmin: org member with explicit project ADMIN membership
+ * - projectDeveloper: org member with explicit project DEVELOPER membership
+ * - projectViewer: org member with explicit project VIEWER membership
+ * - projectAnnotator: org member with explicit project ANNOTATOR membership
+ *
+ * Requires EffectDatabase - call `yield* EffectDatabase` in your test
+ * if you need to perform additional database operations.
+ *
+ * TODO: Refactor to use db.projects.create() once Projects Effect-native service is implemented.
+ */
+export const TestEffectProjectFixture = Effect.gen(function* () {
+  const orgFixture = yield* TestEffectOrganizationFixture;
+  const db = yield* EffectDatabase;
+  const client = yield* DrizzleORM;
+
+  // Create project using raw SQL since Projects Effect-native service doesn't exist yet
+  const [project] = yield* client
+    .insert(projects)
+    .values({
+      name: "Test Project",
+      organizationId: orgFixture.org.id,
+      createdByUserId: orgFixture.owner.id,
+    })
+    .returning({
+      id: projects.id,
+      name: projects.name,
+      organizationId: projects.organizationId,
+      createdByUserId: projects.createdByUserId,
+    })
+    .pipe(
+      Effect.mapError(
+        (e) =>
+          new DatabaseError({
+            message: "Failed to create project",
+            cause: e,
+          }),
+      ),
+    );
+
+  // Create project members (must be org members first)
+  const projectAdmin = yield* db.users.create({
+    data: { email: "project-admin@example.com", name: "Project Admin" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectAdmin.id, role: "MEMBER" },
+  });
+  yield* db.projects.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectAdmin.id, role: "ADMIN" },
+  });
+
+  const projectDeveloper = yield* db.users.create({
+    data: { email: "project-developer@example.com", name: "Project Developer" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectDeveloper.id, role: "MEMBER" },
+  });
+  yield* db.projects.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectDeveloper.id, role: "DEVELOPER" },
+  });
+
+  const projectViewer = yield* db.users.create({
+    data: { email: "project-viewer@example.com", name: "Project Viewer" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectViewer.id, role: "MEMBER" },
+  });
+  yield* db.projects.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectViewer.id, role: "VIEWER" },
+  });
+
+  const projectAnnotator = yield* db.users.create({
+    data: { email: "project-annotator@example.com", name: "Project Annotator" },
+  });
+  yield* db.organizations.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { memberId: projectAnnotator.id, role: "MEMBER" },
+  });
+  yield* db.projects.memberships.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    projectId: project.id,
+    data: { memberId: projectAnnotator.id, role: "ANNOTATOR" },
+  });
+
+  return {
+    ...orgFixture,
+    project,
+    projectAdmin,
+    projectDeveloper,
+    projectViewer,
+    projectAnnotator,
   };
 });
 

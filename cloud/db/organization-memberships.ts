@@ -244,7 +244,7 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
    * This method is used internally for checking target member existence.
    * For convenience, we filter out soft-deleted users who should not g
    */
-  getMembership({
+  protected getMembership({
     userId,
     organizationId,
   }: {
@@ -302,7 +302,7 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
    * because role lookup only needs userId and organizationId, not the full
    * path parameters (memberId is the resource being acted on, not needed here).
    */
-  getRole({
+  protected getRole({
     userId,
     organizationId,
   }: {

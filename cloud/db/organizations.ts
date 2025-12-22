@@ -18,6 +18,8 @@
  * - Creating an organization automatically makes the creator an OWNER
  * - Cascade deletes handle memberships and audit logs
  *
+ * TODO: add support for a GUEST role for adding non-members to projects.
+ *
  * @example
  * ```ts
  * const db = yield* EffectDatabase;
@@ -146,7 +148,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * @throws NotFoundError - If the user is not a member (hides org existence)
    * @throws DatabaseError - If the database query fails
    */
-  getRole({
+  protected getRole({
     userId,
     organizationId,
   }: {
@@ -154,10 +156,17 @@ export class Organizations extends BaseAuthenticatedEffectService<
     organizationId: string;
   }): Effect.Effect<
     OrganizationRole,
-    NotFoundError | DatabaseError,
+    NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
-    return this.memberships.getRole({ userId, organizationId });
+    return Effect.gen(this, function* () {
+      const { role } = yield* this.memberships.findById({
+        userId,
+        organizationId,
+        memberId: userId,
+      });
+      return role;
+    });
   }
 
   // ---------------------------------------------------------------------------
