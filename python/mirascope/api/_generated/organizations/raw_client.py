@@ -97,13 +97,20 @@ class RawOrganizationsClient:
         )
 
     def create(
-        self, *, name: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[OrganizationsCreateResponse]:
         """
         Parameters
         ----------
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -118,6 +125,7 @@ class RawOrganizationsClient:
             method="POST",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -273,7 +281,8 @@ class RawOrganizationsClient:
         self,
         id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[OrganizationsUpdateResponse]:
         """
@@ -281,8 +290,11 @@ class RawOrganizationsClient:
         ----------
         id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -297,6 +309,7 @@ class RawOrganizationsClient:
             method="PUT",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -521,13 +534,20 @@ class AsyncRawOrganizationsClient:
         )
 
     async def create(
-        self, *, name: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[OrganizationsCreateResponse]:
         """
         Parameters
         ----------
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -542,6 +562,7 @@ class AsyncRawOrganizationsClient:
             method="POST",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -697,7 +718,8 @@ class AsyncRawOrganizationsClient:
         self,
         id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[OrganizationsUpdateResponse]:
         """
@@ -705,8 +727,11 @@ class AsyncRawOrganizationsClient:
         ----------
         id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -721,6 +746,7 @@ class AsyncRawOrganizationsClient:
             method="PUT",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
