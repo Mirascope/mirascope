@@ -11,6 +11,15 @@ import { Schema } from "effect";
  *   .addError(NotFoundError, { status: NotFoundError.status })
  */
 
+export class DatabaseError extends Schema.TaggedError<DatabaseError>()(
+  "DatabaseError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
 export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
   "NotFoundError",
   {
@@ -21,14 +30,14 @@ export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
   static readonly status = 404 as const;
 }
 
-export class DatabaseError extends Schema.TaggedError<DatabaseError>()(
-  "DatabaseError",
+export class DeletedUserError extends Schema.TaggedError<DeletedUserError>()(
+  "DeletedUserError",
   {
     message: Schema.String,
-    cause: Schema.optional(Schema.Unknown),
+    resource: Schema.optional(Schema.String),
   },
 ) {
-  static readonly status = 500 as const;
+  static readonly status = 401 as const;
 }
 
 export class InvalidSessionError extends Schema.TaggedError<InvalidSessionError>()(
