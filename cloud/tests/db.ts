@@ -1,4 +1,3 @@
-import * as dotenv from "dotenv";
 import { Effect, Layer, Config, Option } from "effect";
 import { it as vitestIt, describe, expect } from "@effect/vitest";
 import { getDatabase, DatabaseService, type Database } from "@/db/services";
@@ -10,19 +9,24 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
+import { CONNECTION_FILE } from "@/tests/global-setup";
+import fs from "fs";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
 
-dotenv.config({ path: ".env.local", override: true });
-
-if (!process.env.TEST_DATABASE_URL) {
-  throw new Error(
-    "TEST_DATABASE_URL environment variable is required. Please set it in your .env file.",
-  );
+// Get the test database URL from the file written by global-setup.ts
+function getTestDatabaseUrl(): string {
+  try {
+    return fs.readFileSync(CONNECTION_FILE, "utf-8");
+  } catch {
+    throw new Error(
+      "TEST_DATABASE_URL not set. Ensure global-setup.ts ran successfully.",
+    );
+  }
 }
 
-const TEST_DATABASE_URL: string = process.env.TEST_DATABASE_URL;
+const TEST_DATABASE_URL = getTestDatabaseUrl();
 
 /**
  * A scoped Layer that provides a DatabaseService backed by a transaction that
