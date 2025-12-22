@@ -4,14 +4,12 @@ import { it as vitestIt, describe, expect } from "@effect/vitest";
 import { getDatabase, DatabaseService, type Database } from "@/db/services";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { EffectDatabase } from "@/db/database";
-import { DatabaseError } from "@/db/errors";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
-import { projects } from "@/db/schema";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
@@ -211,15 +209,16 @@ type EffectTestFn = <A, E>(
  */
 
 const wrapEffectTest =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (original: any): EffectTestFn =>
-  (name, fn, timeout) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-    return original(
-      name,
-      () => withRollback(fn()).pipe(Effect.provide(TestEffectDatabase)),
-      timeout,
-    );
-  };
+    (name, fn, timeout) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      return original(
+        name,
+        () => withRollback(fn()).pipe(Effect.provide(TestEffectDatabase)),
+        timeout,
+      );
+    };
 
 /**
  * Type-safe `it` with `it.effect` that automatically:
@@ -681,37 +680,17 @@ export const TestEffectOrganizationFixture = Effect.gen(function* () {
  *
  * Requires EffectDatabase - call `yield* EffectDatabase` in your test
  * if you need to perform additional database operations.
- *
- * TODO: Refactor to use db.projects.create() once Projects Effect-native service is implemented.
  */
 export const TestEffectProjectFixture = Effect.gen(function* () {
   const orgFixture = yield* TestEffectOrganizationFixture;
   const db = yield* EffectDatabase;
-  const client = yield* DrizzleORM;
 
-  // Create project using raw SQL since Projects Effect-native service doesn't exist yet
-  const [project] = yield* client
-    .insert(projects)
-    .values({
-      name: "Test Project",
-      organizationId: orgFixture.org.id,
-      createdByUserId: orgFixture.owner.id,
-    })
-    .returning({
-      id: projects.id,
-      name: projects.name,
-      organizationId: projects.organizationId,
-      createdByUserId: projects.createdByUserId,
-    })
-    .pipe(
-      Effect.mapError(
-        (e) =>
-          new DatabaseError({
-            message: "Failed to create project",
-            cause: e,
-          }),
-      ),
-    );
+  // Create project using Projects Effect-native service (creator gets project ADMIN automatically)
+  const project = yield* db.projects.create({
+    userId: orgFixture.owner.id,
+    organizationId: orgFixture.org.id,
+    data: { name: "Test Project" },
+  });
 
   // Create project members (must be org members first)
   const projectAdmin = yield* db.users.create({
@@ -799,9 +778,7 @@ export const TestEffectProjectFixture = Effect.gen(function* () {
  * - projectViewer: org member with explicit project VIEWER membership
  * - projectAnnotator: org member with explicit project ANNOTATOR membership
  *
- * Note: Project members must already be org members (TODO: external collaborators).
- *
- * TODO: Refactor to use db.projects.create() and db.projects.memberships once ProjectService is implemented.
+ * Note: Project members must already be org members.
  */
 export const TestProjectFixture = Effect.gen(function* () {
   const orgFixture = yield* TestOrganizationFixture;

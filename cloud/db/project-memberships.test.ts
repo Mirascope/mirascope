@@ -334,9 +334,15 @@ describe("ProjectMemberships", () => {
           projectId: project.id,
         });
 
-        // Fixture creates 4 explicit project members
-        expect(memberships).toHaveLength(4);
+        // Fixture creates 5 explicit project members:
+        // - owner (ADMIN, from db.projects.create)
+        // - projectAdmin (ADMIN)
+        // - projectDeveloper (DEVELOPER)
+        // - projectViewer (VIEWER)
+        // - projectAnnotator (ANNOTATOR)
+        expect(memberships).toHaveLength(5);
         expect(memberships.map((m) => m.role).sort()).toEqual([
+          "ADMIN",
           "ADMIN",
           "ANNOTATOR",
           "DEVELOPER",
@@ -661,35 +667,35 @@ describe("ProjectMemberships", () => {
     );
 
     it.effect(
-      "allows org OWNER (implicit ADMIN) to add and modify their own project membership",
+      "allows org ADMIN (implicit project ADMIN) to add and modify their own project membership",
       () =>
         Effect.gen(function* () {
-          const { project, org, owner } = yield* TestEffectProjectFixture;
+          const { project, org, admin } = yield* TestEffectProjectFixture;
           const db = yield* EffectDatabase;
 
-          // Owner is not an explicit project member, but has implicit ADMIN access
+          // Admin is not an explicit project member, but has implicit ADMIN access
           // Add themselves as a DEVELOPER
           const created = yield* db.projects.memberships.create({
-            userId: owner.id,
+            userId: admin.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { memberId: owner.id, role: "DEVELOPER" },
+            data: { memberId: admin.id, role: "DEVELOPER" },
           });
 
           expect(created.role).toBe("DEVELOPER");
-          expect(created.memberId).toBe(owner.id);
+          expect(created.memberId).toBe(admin.id);
 
           // Now modify their own membership to VIEWER
           const updated = yield* db.projects.memberships.update({
-            userId: owner.id,
+            userId: admin.id,
             organizationId: org.id,
             projectId: project.id,
-            memberId: owner.id,
+            memberId: admin.id,
             data: { role: "VIEWER" },
           });
 
           expect(updated.role).toBe("VIEWER");
-          expect(updated.memberId).toBe(owner.id);
+          expect(updated.memberId).toBe(admin.id);
         }),
     );
 
