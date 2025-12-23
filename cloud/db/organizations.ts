@@ -80,6 +80,7 @@ import {
 const publicFields = {
   id: organizations.id,
   name: organizations.name,
+  slug: organizations.slug,
 };
 
 /**
@@ -179,7 +180,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * 3. Create an audit log for the OWNER grant
    *
    * @param args.userId - The user creating the organization (becomes OWNER)
-   * @param args.data - Organization data (name)
+   * @param args.data - Organization data
    * @returns The created organization with the user's role
    * @throws AlreadyExistsError - If an organization with this name exists
    * @throws DatabaseError - If the database operation fails
@@ -203,13 +204,13 @@ export class Organizations extends BaseAuthenticatedEffectService<
           // Insert the organization
           const results = yield* client
             .insert(organizations)
-            .values({ name: data.name })
+            .values({ name: data.name, slug: data.slug })
             .returning(publicFields)
             .pipe(
               Effect.mapError((e): AlreadyExistsError | DatabaseError =>
                 isUniqueConstraintError(e.cause)
                   ? new AlreadyExistsError({
-                      message: "An organization with this name already exists",
+                      message: "An organization with this slug already exists",
                       resource: "organization",
                     })
                   : new DatabaseError({
@@ -294,6 +295,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
         .select({
           id: organizations.id,
           name: organizations.name,
+          slug: organizations.slug,
           role: organizationMemberships.role,
         })
         .from(organizationMemberships)
@@ -386,7 +388,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
    *
    * @param args.userId - The authenticated user
    * @param args.organizationId - The organization to update
-   * @param args.data - Fields to update (name)
+   * @param args.data - Fields to update
    * @returns The updated organization with the user's role
    * @throws NotFoundError - If the organization doesn't exist or user isn't a member
    * @throws PermissionDeniedError - If the user lacks update permission

@@ -34,7 +34,7 @@ export const createEnvironmentHandler = (
       userId: user.id,
       organizationId,
       projectId,
-      data: { name: payload.name },
+      data: { name: payload.name, slug: payload.slug },
     });
   });
 

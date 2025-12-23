@@ -6,10 +6,12 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
+import { createSlugSchema } from "@/db/slug";
 
 export const EnvironmentSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
+  slug: Schema.String,
   projectId: Schema.String,
 });
 
@@ -20,12 +22,17 @@ const EnvironmentNameSchema = Schema.String.pipe(
   }),
 );
 
+// Environment slug validation
+const EnvironmentSlugSchema = createSlugSchema("Environment");
+
 export const CreateEnvironmentRequestSchema = Schema.Struct({
   name: EnvironmentNameSchema,
+  slug: EnvironmentSlugSchema,
 });
 
 export const UpdateEnvironmentRequestSchema = Schema.Struct({
-  name: EnvironmentNameSchema,
+  name: Schema.optional(EnvironmentNameSchema),
+  slug: Schema.optional(EnvironmentSlugSchema),
 });
 
 export type Environment = typeof EnvironmentSchema.Type;

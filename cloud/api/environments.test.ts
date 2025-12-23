@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe, expect, TestApiContext } from "@/tests/api";
 import type { PublicEnvironment, PublicProject } from "@/db/schema";
+import { ParseError } from "effect/ParseResult";
 
 describe.sequential("Environments API", (it) => {
   let project: PublicProject;
@@ -13,7 +14,10 @@ describe.sequential("Environments API", (it) => {
         const { client, org } = yield* TestApiContext;
         project = yield* client.projects.create({
           path: { organizationId: org.id },
-          payload: { name: "Environment Test Project" },
+          payload: {
+            name: "Environment Test Project",
+            slug: "environment-test-project",
+          },
         });
         expect(project.id).toBeDefined();
       }),
@@ -39,12 +43,31 @@ describe.sequential("Environments API", (it) => {
         const { client, org } = yield* TestApiContext;
         environment = yield* client.environments.create({
           path: { organizationId: org.id, projectId: project.id },
-          payload: { name: "production" },
+          payload: { name: "production", slug: "production" },
         });
 
         expect(environment.name).toBe("production");
         expect(environment.projectId).toBe(project.id);
         expect(environment.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects/:projectId/environments - rejects invalid slug pattern",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.environments
+          .create({
+            path: { organizationId: org.id, projectId: project.id },
+            payload: { name: "Test Env", slug: "Invalid Slug!" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(ParseError);
+        expect(String(result)).toContain(
+          "Environment slug must start and end with a letter or number, and only contain lowercase letters, numbers, hyphens, and underscores",
+        );
       }),
   );
 

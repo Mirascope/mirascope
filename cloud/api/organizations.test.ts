@@ -1,4 +1,5 @@
 import { Effect } from "effect";
+import { ParseError } from "effect/ParseResult";
 import { describe, expect, TestApiContext } from "@/tests/api";
 import type { PublicOrganizationWithMembership } from "@/db/schema";
 
@@ -9,11 +10,30 @@ describe.sequential("Organizations API", (it) => {
     Effect.gen(function* () {
       const { client } = yield* TestApiContext;
       org = yield* client.organizations.create({
-        payload: { name: "New Test Organization" },
+        payload: {
+          name: "New Test Organization",
+          slug: "new-test-organization",
+        },
       });
       expect(org.name).toBe("New Test Organization");
       expect(org.role).toBe("OWNER");
       expect(org.id).toBeDefined();
+    }),
+  );
+
+  it.effect("POST /organizations - rejects invalid slug pattern", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      const result = yield* client.organizations
+        .create({
+          payload: { name: "Test Org", slug: "Invalid Slug!" },
+        })
+        .pipe(Effect.flip);
+
+      expect(result).toBeInstanceOf(ParseError);
+      expect(result.message).toContain(
+        "Organization slug must start and end with a letter or number, and only contain lowercase letters, numbers, hyphens, and underscores",
+      );
     }),
   );
 

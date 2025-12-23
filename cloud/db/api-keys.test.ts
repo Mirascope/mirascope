@@ -232,7 +232,7 @@ describe("ApiKeys", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "staging" },
+          data: { name: "staging", slug: "staging" },
         });
 
         // Create API key with same name in second environment

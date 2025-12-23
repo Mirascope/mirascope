@@ -13,6 +13,7 @@ import {
 } from "@/app/api/organizations";
 import type { PublicOrganizationWithMembership } from "@/db/schema/organization-memberships";
 import { Link } from "@tanstack/react-router";
+import { generateSlug } from "@/db/slug";
 
 function CreateOrganizationForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
@@ -29,7 +30,10 @@ function CreateOrganizationForm({ onClose }: { onClose: () => void }) {
     }
 
     try {
-      await createOrganization.mutateAsync({ name: name.trim() });
+      await createOrganization.mutateAsync({
+        name: name.trim(),
+        slug: generateSlug(name.trim()),
+      });
       onClose();
     } catch (err) {
       setError(

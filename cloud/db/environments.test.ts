@@ -31,11 +31,12 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
         expect(environment).toMatchObject({
           name: "production",
+          slug: "production",
           projectId: project.id,
         } satisfies Partial<PublicEnvironment>);
         expect(environment.id).toBeDefined();
@@ -52,10 +53,11 @@ describe("Environments", () => {
             userId: admin.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "staging" },
+            data: { name: "staging", slug: "staging" },
           });
 
         expect(environment.name).toBe("staging");
+        expect(environment.slug).toBe("staging");
       }),
     );
 
@@ -69,7 +71,7 @@ describe("Environments", () => {
             userId: projectAdmin.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "dev" },
+            data: { name: "dev", slug: "dev" },
           });
 
         expect(environment.name).toBe("dev");
@@ -86,7 +88,7 @@ describe("Environments", () => {
             userId: projectDeveloper.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "testing" },
+            data: { name: "testing", slug: "testing" },
           });
 
         expect(environment.name).toBe("testing");
@@ -105,7 +107,7 @@ describe("Environments", () => {
               userId: projectViewer.id,
               organizationId: org.id,
               projectId: project.id,
-              data: { name: "unauthorized" },
+              data: { name: "unauthorized", slug: "unauthorized" },
             })
             .pipe(Effect.flip);
 
@@ -128,7 +130,7 @@ describe("Environments", () => {
               userId: projectAnnotator.id,
               organizationId: org.id,
               projectId: project.id,
-              data: { name: "unauthorized" },
+              data: { name: "unauthorized", slug: "unauthorized" },
             })
             .pipe(Effect.flip);
 
@@ -148,7 +150,7 @@ describe("Environments", () => {
               userId: nonMember.id,
               organizationId: org.id,
               projectId: project.id,
-              data: { name: "unauthorized" },
+              data: { name: "unauthorized", slug: "unauthorized" },
             })
             .pipe(Effect.flip);
 
@@ -167,7 +169,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
           const result = yield* db.organizations.projects.environments
@@ -175,13 +177,13 @@ describe("Environments", () => {
               userId: owner.id,
               organizationId: org.id,
               projectId: project.id,
-              data: { name: "production" },
+              data: { name: "production", slug: "production" },
             })
             .pipe(Effect.flip);
 
           expect(result).toBeInstanceOf(AlreadyExistsError);
           expect(result.message).toBe(
-            'An environment with name "production" already exists in this project',
+            "An environment with this slug already exists in this project",
           );
         }),
     );
@@ -196,14 +198,14 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
 
         // Create second project
         const project2 = yield* db.organizations.projects.create({
           userId: owner.id,
           organizationId: org.id,
-          data: { name: "Second Project" },
+          data: { name: "Second Project", slug: "second-project" },
         });
 
         // Create environment with same name in second project
@@ -211,7 +213,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project2.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
 
         expect(env1.name).toBe(env2.name);
@@ -230,7 +232,7 @@ describe("Environments", () => {
             userId: "owner-id",
             organizationId: "org-id",
             projectId: "project-id",
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           })
           .pipe(Effect.flip);
 
@@ -284,13 +286,13 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
         yield* db.organizations.projects.environments.create({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "staging" },
+          data: { name: "staging", slug: "staging" },
         });
 
         const environments =
@@ -318,7 +320,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
 
         const environments =
@@ -446,7 +448,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
 
         const environment =
@@ -472,7 +474,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
 
         const environment =
@@ -520,7 +522,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
           const result = yield* db.organizations.projects.environments
@@ -547,7 +549,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
           const result = yield* db.organizations.projects.environments
@@ -624,7 +626,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "original" },
+          data: { name: "original", slug: "original" },
         });
 
         const updated = yield* db.organizations.projects.environments.update({
@@ -632,7 +634,7 @@ describe("Environments", () => {
           organizationId: org.id,
           projectId: project.id,
           environmentId: created.id,
-          data: { name: "updated" },
+          data: { name: "updated", slug: "updated" },
         });
 
         expect(updated.name).toBe("updated");
@@ -650,7 +652,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "original" },
+          data: { name: "original", slug: "original" },
         });
 
         const updated = yield* db.organizations.projects.environments.update({
@@ -658,7 +660,7 @@ describe("Environments", () => {
           organizationId: org.id,
           projectId: project.id,
           environmentId: created.id,
-          data: { name: "updated-by-dev" },
+          data: { name: "updated-by-dev", slug: "updated-by-dev" },
         });
 
         expect(updated.name).toBe("updated-by-dev");
@@ -677,7 +679,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "original" },
+            data: { name: "original", slug: "original" },
           });
 
           const result = yield* db.organizations.projects.environments
@@ -686,7 +688,7 @@ describe("Environments", () => {
               organizationId: org.id,
               projectId: project.id,
               environmentId: created.id,
-              data: { name: "unauthorized" },
+              data: { name: "unauthorized", slug: "unauthorized" },
             })
             .pipe(Effect.flip);
 
@@ -708,7 +710,7 @@ describe("Environments", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: "00000000-0000-0000-0000-000000000000",
-            data: { name: "updated" },
+            data: { name: "updated", slug: "updated" },
           })
           .pipe(Effect.flip);
 
@@ -725,14 +727,14 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "production" },
+          data: { name: "production", slug: "production" },
         });
 
         const staging = yield* db.organizations.projects.environments.create({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "staging" },
+          data: { name: "staging", slug: "staging" },
         });
 
         const result = yield* db.organizations.projects.environments
@@ -741,13 +743,13 @@ describe("Environments", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: staging.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(AlreadyExistsError);
         expect(result.message).toBe(
-          'An environment with name "production" already exists in this project',
+          "An environment with this slug already exists in this project",
         );
       }),
     );
@@ -762,7 +764,7 @@ describe("Environments", () => {
             organizationId: "org-id",
             projectId: "project-id",
             environmentId: "env-id",
-            data: { name: "updated" },
+            data: { name: "updated", slug: "updated" },
           })
           .pipe(Effect.flip);
 
@@ -812,7 +814,7 @@ describe("Environments", () => {
               organizationId: "org-id",
               projectId: "project-id",
               environmentId: "env-id",
-              data: { name: "updated" },
+              data: { name: "updated", slug: "updated" },
             })
             .pipe(Effect.flip);
 
@@ -867,7 +869,7 @@ describe("Environments", () => {
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
-          data: { name: "to-delete" },
+          data: { name: "to-delete", slug: "to-delete" },
         });
 
         yield* db.organizations.projects.environments.delete({
@@ -903,7 +905,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
           const result = yield* db.organizations.projects.environments
@@ -934,7 +936,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
           const result = yield* db.organizations.projects.environments
@@ -979,7 +981,7 @@ describe("Environments", () => {
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
-            data: { name: "production" },
+            data: { name: "production", slug: "production" },
           });
 
           const result = yield* db.organizations.projects.environments

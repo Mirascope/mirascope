@@ -19,7 +19,7 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.create({
-      data: { name: payload.name },
+      data: { name: payload.name, slug: payload.slug },
       userId: user.id,
     });
   });
@@ -43,7 +43,7 @@ export const updateOrganizationHandler = (
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.update({
       organizationId,
-      data: { name: payload.name },
+      data: payload,
       userId: user.id,
     });
   });

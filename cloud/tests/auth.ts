@@ -38,7 +38,7 @@ export const TestAuthFixture = Effect.gen(function* () {
       userId: envFixture.owner.id,
       organizationId: envFixture.org.id,
       projectId: envFixture.project.id,
-      data: { name: "Other Env" },
+      data: { name: "Other Env", slug: "other-env" },
     },
   );
 

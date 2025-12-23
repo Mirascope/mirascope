@@ -33,14 +33,16 @@ describe("Organizations", () => {
         });
 
         const name = "New Test Organization";
+        const slug = "new-test-organization";
         const org = yield* db.organizations.create({
           userId: user.id,
-          data: { name },
+          data: { name, slug },
         });
 
         expect(org).toEqual({
           id: org.id,
           name,
+          slug,
           role: "OWNER",
         } satisfies PublicOrganizationWithMembership);
 
@@ -67,18 +69,21 @@ describe("Organizations", () => {
       }),
     );
 
-    it.effect("returns `AlreadyExistsError` when name is taken", () =>
+    it.effect("returns `AlreadyExistsError` when slug is taken", () =>
       Effect.gen(function* () {
         const { org, owner } = yield* TestOrganizationFixture;
         const db = yield* Database;
 
         const result = yield* db.organizations
-          .create({ userId: owner.id, data: { name: org.name } })
+          .create({
+            userId: owner.id,
+            data: { name: "Different Name", slug: org.slug },
+          })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(AlreadyExistsError);
         expect(result.message).toBe(
-          "An organization with this name already exists",
+          "An organization with this slug already exists",
         );
       }),
     );
@@ -88,7 +93,10 @@ describe("Organizations", () => {
         const db = yield* Database;
 
         const result = yield* db.organizations
-          .create({ userId: "user-id", data: { name: "Test Org" } })
+          .create({
+            userId: "user-id",
+            data: { name: "Test Org", slug: "test-org" },
+          })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -105,7 +113,10 @@ describe("Organizations", () => {
         const db = yield* Database;
 
         const result = yield* db.organizations
-          .create({ userId: "user-id", data: { name: "Test Org" } })
+          .create({
+            userId: "user-id",
+            data: { name: "Test Org", slug: "test-org" },
+          })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -127,7 +138,10 @@ describe("Organizations", () => {
         const db = yield* Database;
 
         const result = yield* db.organizations
-          .create({ userId: "user-id", data: { name: "Test Org" } })
+          .create({
+            userId: "user-id",
+            data: { name: "Test Org", slug: "test-org" },
+          })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -160,7 +174,7 @@ describe("Organizations", () => {
         // Create a second organization
         const org2 = yield* db.organizations.create({
           userId: owner.id,
-          data: { name: "Second Organization" },
+          data: { name: "Second Organization", slug: "second-organization" },
         });
 
         const orgs = yield* db.organizations.findAll({ userId: owner.id });
@@ -378,6 +392,7 @@ describe("Organizations", () => {
         expect(updated).toEqual({
           id: org.id,
           name: newName,
+          slug: org.slug,
           role: "OWNER",
         } satisfies PublicOrganizationWithMembership);
       }),
@@ -398,6 +413,7 @@ describe("Organizations", () => {
         expect(updated).toEqual({
           id: org.id,
           name: newName,
+          slug: org.slug,
           role: "ADMIN",
         } satisfies PublicOrganizationWithMembership);
       }),
@@ -593,7 +609,10 @@ describe("Organizations", () => {
 
         const org = yield* db.organizations.create({
           userId: user.id,
-          data: { name: "Organization To Delete" },
+          data: {
+            name: "Organization To Delete",
+            slug: "organization-to-delete",
+          },
         });
 
         yield* db.organizations.delete({

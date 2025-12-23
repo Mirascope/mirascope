@@ -101,7 +101,10 @@ describe.sequential("API Keys API", (it) => {
         const { client, org } = yield* TestApiContext;
         project = yield* client.projects.create({
           path: { organizationId: org.id },
-          payload: { name: "API Keys Test Project" },
+          payload: {
+            name: "API Keys Test Project",
+            slug: "api-keys-test-project",
+          },
         });
         expect(project.id).toBeDefined();
       }),
@@ -114,7 +117,7 @@ describe.sequential("API Keys API", (it) => {
         const { client, org } = yield* TestApiContext;
         environment = yield* client.environments.create({
           path: { organizationId: org.id, projectId: project.id },
-          payload: { name: "development" },
+          payload: { name: "development", slug: "development" },
         });
         expect(environment.id).toBeDefined();
       }),

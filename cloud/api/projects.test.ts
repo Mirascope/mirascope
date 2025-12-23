@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe, expect, TestApiContext } from "@/tests/api";
 import type { PublicProject } from "@/db/schema";
+import { ParseError } from "effect/ParseResult";
 
 describe.sequential("Projects API", (it) => {
   let project: PublicProject;
@@ -26,13 +27,32 @@ describe.sequential("Projects API", (it) => {
         const { client, org } = yield* TestApiContext;
         project = yield* client.projects.create({
           path: { organizationId: org.id },
-          payload: { name: "Test Project" },
+          payload: { name: "Test Project", slug: "test-project" },
         });
 
         expect(project.name).toBe("Test Project");
         expect(project.organizationId).toBe(org.id);
         expect(project.createdByUserId).toBeDefined();
         expect(project.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects - rejects invalid slug pattern",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.projects
+          .create({
+            path: { organizationId: org.id },
+            payload: { name: "Test Project", slug: "Invalid Slug!" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(ParseError);
+        expect(result.message).toContain(
+          "Project slug must start and end with a letter or number, and only contain lowercase letters, numbers, hyphens, and underscores",
+        );
       }),
   );
 
