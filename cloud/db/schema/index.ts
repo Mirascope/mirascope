@@ -7,6 +7,7 @@ export * from "@/db/schema/projects";
 export * from "@/db/schema/project-memberships";
 export * from "@/db/schema/project-membership-audit";
 export * from "@/db/schema/environments";
+export * from "@/db/schema/api-keys";
 
 export type { PublicSession } from "@/db/schema/sessions";
 export type { PublicUser } from "@/db/schema/users";
@@ -27,6 +28,7 @@ export type {
 } from "@/db/schema/project-memberships";
 export type { PublicProjectMembershipAudit } from "@/db/schema/project-membership-audit";
 export type { PublicEnvironment, NewEnvironment } from "@/db/schema/environments";
+export type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema/api-keys";
 
 import { users } from "@/db/schema/users";
 import { sessions } from "@/db/schema/sessions";
@@ -37,6 +39,7 @@ import { projects } from "@/db/schema/projects";
 import { projectMemberships } from "@/db/schema/project-memberships";
 import { projectMembershipAudit } from "@/db/schema/project-membership-audit";
 import { environments } from "@/db/schema/environments";
+import { apiKeys } from "@/db/schema/api-keys";
 
 export type DatabaseTable =
   | typeof users
@@ -47,4 +50,5 @@ export type DatabaseTable =
   | typeof projects
   | typeof projectMemberships
   | typeof projectMembershipAudit
-  | typeof environments;
+  | typeof environments
+  | typeof apiKeys;

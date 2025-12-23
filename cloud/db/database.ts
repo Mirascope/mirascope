@@ -50,16 +50,27 @@ import { OrganizationMemberships } from "@/db/organization-memberships";
 import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
+import { ApiKeys } from "@/db/api-keys";
+
+/**
+ * Type definition for the environments service with nested API keys.
+ *
+ * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
+ */
+export interface EffectEnvironments extends Ready<Environments> {
+  readonly apiKeys: Ready<ApiKeys>;
+}
 
 /**
  * Type definition for the projects service with nested memberships and environments.
  *
  * Access pattern: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
  * Environments: `db.organizations.projects.environments.create(...)`
+ * API Keys: `db.organizations.projects.environments.apiKeys.create(...)`
  */
 export interface EffectProjects extends Ready<Projects> {
   readonly memberships: Ready<ProjectMemberships>;
-  readonly environments: Ready<Environments>;
+  readonly environments: EffectEnvironments;
 }
 
 /**
@@ -142,6 +153,7 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
         projectMemberships,
       );
       const environmentsService = new Environments(projectMemberships);
+      const apiKeysService = new ApiKeys(projectMemberships);
 
       return {
         users: makeReady(client, new Users()),
@@ -152,7 +164,10 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
           projects: {
             ...makeReady(client, projectsService),
             memberships: makeReady(client, projectMemberships),
-            environments: makeReady(client, environmentsService),
+            environments: {
+              ...makeReady(client, environmentsService),
+              apiKeys: makeReady(client, apiKeysService),
+            },
           },
         },
       };
