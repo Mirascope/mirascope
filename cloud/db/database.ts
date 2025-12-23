@@ -48,6 +48,7 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
+import { Stripe, type StripeConfig } from "@/payments";
 
 /**
  * Type definition for the environments service with nested API keys.
@@ -116,13 +117,15 @@ export class Database extends Context.Tag("Database")<
   /**
    * Default layer that creates the Database service.
    *
-   * Requires DrizzleORM to be provided. The `makeReady` wrapper provides
-   * the DrizzleORM client to each service, removing it from method signatures.
+   * Requires both DrizzleORM and Stripe to be provided. The `makeReady` and
+   * `makeReadyWithStripe` wrappers provide these dependencies to services,
+   * removing them from method signatures.
    */
   static Default = Layer.effect(
     Database,
     Effect.gen(function* () {
       const client = yield* DrizzleORM;
+      const stripe = yield* Stripe;
 
       // Create services with shared dependencies
       const organizationMemberships = new OrganizationMemberships();
@@ -138,17 +141,17 @@ export class Database extends Context.Tag("Database")<
       const apiKeysService = new ApiKeys(projectMemberships);
 
       return {
-        users: makeReady(client, new Users()),
-        sessions: makeReady(client, new Sessions()),
+        users: makeReady(client, stripe, new Users()),
+        sessions: makeReady(client, stripe, new Sessions()),
         organizations: {
-          ...makeReady(client, organizations),
-          memberships: makeReady(client, organizationMemberships),
+          ...makeReady(client, stripe, organizations),
+          memberships: makeReady(client, stripe, organizationMemberships),
           projects: {
-            ...makeReady(client, projectsService),
-            memberships: makeReady(client, projectMemberships),
+            ...makeReady(client, stripe, projectsService),
+            memberships: makeReady(client, stripe, projectMemberships),
             environments: {
-              ...makeReady(client, environmentsService),
-              apiKeys: makeReady(client, apiKeysService),
+              ...makeReady(client, stripe, environmentsService),
+              apiKeys: makeReady(client, stripe, apiKeysService),
             },
           },
         },
@@ -157,24 +160,31 @@ export class Database extends Context.Tag("Database")<
   );
 
   /**
-   * Creates a fully configured layer with database connection.
+   * Creates a fully configured layer with database and Stripe connections.
    *
-   * This is the standard way to use Database. Provide a connection
-   * configuration and get back a layer that provides both Database
-   * and its DrizzleORM dependency.
+   * This is the standard way to use Database. Provide database and Stripe
+   * configurations and get back a layer that provides Database with all
+   * its dependencies (DrizzleORM and Stripe).
    *
-   * @param config - Database connection configuration
+   * @param config - Database and Stripe configuration
    * @returns A Layer providing Database with no dependencies
    *
    * @example
    * ```ts
    * const DbLive = Database.Live({
-   *   connectionString: process.env.DATABASE_URL,
+   *   database: { connectionString: process.env.DATABASE_URL },
+   *   stripe: { apiKey: process.env.STRIPE_SECRET_KEY },
    * });
    *
    * program.pipe(Effect.provide(DbLive));
    * ```
    */
-  static Live = (config: DrizzleORMConfig) =>
-    Database.Default.pipe(Layer.provide(DrizzleORM.layer(config)));
+  static Live = (config: {
+    database: DrizzleORMConfig;
+    stripe: StripeConfig;
+  }) =>
+    Database.Default.pipe(
+      Layer.provide(DrizzleORM.layer(config.database)),
+      Layer.provide(Stripe.layer(config.stripe)),
+    );
 }

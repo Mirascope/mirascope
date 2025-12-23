@@ -548,6 +548,7 @@
                       "id",
                       "name",
                       "slug",
+                      "stripeCustomerId",
                       "role"
                     ],
                     "properties": {
@@ -558,6 +559,9 @@
                         "type": "string"
                       },
                       "slug": {
+                        "type": "string"
+                      },
+                      "stripeCustomerId": {
                         "type": "string"
                       },
                       "role": {
@@ -615,6 +619,7 @@
                     "id",
                     "name",
                     "slug",
+                    "stripeCustomerId",
                     "role"
                   ],
                   "properties": {
@@ -625,6 +630,9 @@
                       "type": "string"
                     },
                     "slug": {
+                      "type": "string"
+                    },
+                    "stripeCustomerId": {
                       "type": "string"
                     },
                     "role": {
@@ -651,6 +659,16 @@
               }
             }
           },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
           "409": {
             "description": "AlreadyExistsError",
             "content": {
@@ -666,7 +684,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    }
+                  ]
                 }
               }
             }
@@ -734,6 +759,7 @@
                     "id",
                     "name",
                     "slug",
+                    "stripeCustomerId",
                     "role"
                   ],
                   "properties": {
@@ -744,6 +770,9 @@
                       "type": "string"
                     },
                     "slug": {
+                      "type": "string"
+                    },
+                    "stripeCustomerId": {
                       "type": "string"
                     },
                     "role": {
@@ -829,6 +858,7 @@
                     "id",
                     "name",
                     "slug",
+                    "stripeCustomerId",
                     "role"
                   ],
                   "properties": {
@@ -839,6 +869,9 @@
                       "type": "string"
                     },
                     "slug": {
+                      "type": "string"
+                    },
+                    "stripeCustomerId": {
                       "type": "string"
                     },
                     "role": {
@@ -2767,6 +2800,28 @@
         },
         "additionalProperties": false
       },
+      "NotFoundError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "NotFoundError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
       "AlreadyExistsError": {
         "type": "object",
         "required": [
@@ -2789,7 +2844,7 @@
         },
         "additionalProperties": false
       },
-      "NotFoundError": {
+      "StripeError": {
         "type": "object",
         "required": [
           "message",
@@ -2799,13 +2854,14 @@
           "message": {
             "type": "string"
           },
-          "resource": {
-            "type": "string"
+          "cause": {
+            "$id": "/schemas/unknown",
+            "title": "unknown"
           },
           "tag": {
             "type": "string",
             "enum": [
-              "NotFoundError"
+              "StripeError"
             ]
           }
         },

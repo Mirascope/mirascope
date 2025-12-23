@@ -1,9 +1,30 @@
 import { describe, it, expect } from "vitest";
-import { Effect } from "effect";
+import { Context, Effect } from "effect";
 import { makeReady } from "@/db/base";
 import type { DrizzleORMClient } from "@/db/client";
+import { Stripe } from "@/payments";
 
 describe("makeReady", () => {
+  const mockClient = {} as DrizzleORMClient;
+  const mockStripe = {} as Context.Tag.Service<Stripe>;
+
+  it("should preserve method identity", () => {
+    class MockService {
+      method() {
+        return Effect.succeed("result");
+      }
+    }
+
+    const ready = makeReady(mockClient, mockStripe, new MockService());
+
+    // Access the same method twice
+    const method1 = ready.method;
+    const method2 = ready.method;
+
+    // They should be the exact same function (reference equality)
+    expect(method1).toBe(method2);
+  });
+
   it("should preserve nested object identity", () => {
     // Create a mock service with nested objects
     class MockService {
@@ -18,9 +39,7 @@ describe("makeReady", () => {
       }
     }
 
-    const mockClient = {} as DrizzleORMClient;
-    const service = new MockService();
-    const ready = makeReady(mockClient, service);
+    const ready = makeReady(mockClient, mockStripe, new MockService());
 
     // Access the same nested object twice
     const nested1 = ready.nested;
@@ -28,25 +47,6 @@ describe("makeReady", () => {
 
     // They should be the exact same object (reference equality)
     expect(nested1).toBe(nested2);
-  });
-
-  it("should preserve method identity", () => {
-    class MockService {
-      method() {
-        return Effect.succeed("result");
-      }
-    }
-
-    const mockClient = {} as DrizzleORMClient;
-    const service = new MockService();
-    const ready = makeReady(mockClient, service);
-
-    // Access the same method twice
-    const method1 = ready.method;
-    const method2 = ready.method;
-
-    // They should be the exact same function (reference equality)
-    expect(method1).toBe(method2);
   });
 
   it("should preserve deeply nested object identity", () => {
@@ -60,9 +60,7 @@ describe("makeReady", () => {
       };
     }
 
-    const mockClient = {} as DrizzleORMClient;
-    const service = new MockService();
-    const ready = makeReady(mockClient, service);
+    const ready = makeReady(mockClient, mockStripe, new MockService());
 
     // Access the same deeply nested objects multiple times
     const level1_a = ready.level1;
@@ -82,10 +80,8 @@ describe("makeReady", () => {
         },
       };
     }
-
-    const mockClient = {} as DrizzleORMClient;
     const service = new MockService();
-    const ready = makeReady(mockClient, service);
+    const ready = makeReady(mockClient, mockStripe, service);
 
     // WeakMaps require reference equality
     const weakMap = new WeakMap<object, string>();
@@ -109,9 +105,8 @@ describe("makeReady", () => {
       nested = new NestedClass();
     }
 
-    const mockClient = {} as DrizzleORMClient;
     const service = new MockService();
-    const ready = makeReady(mockClient, service);
+    const ready = makeReady(mockClient, mockStripe, service);
 
     // First access wraps the object
     const firstAccess = ready.nested;
@@ -134,9 +129,8 @@ describe("makeReady", () => {
       }
     }
 
-    const mockClient = {} as DrizzleORMClient;
     const service = new MockService();
-    const ready = makeReady(mockClient, service);
+    const ready = makeReady(mockClient, mockStripe, service);
 
     // Arrays should pass through without wrapping
     const items = ready.items;

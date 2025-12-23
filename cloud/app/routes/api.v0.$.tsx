@@ -79,7 +79,12 @@ export const Route = createFileRoute("/api/v0/$")({
 
           return result.response;
         }).pipe(
-          Effect.provide(Database.Live({ connectionString: databaseUrl })),
+          Effect.provide(
+            Database.Live({
+              database: { connectionString: databaseUrl },
+              stripe: { apiKey: process.env.STRIPE_SECRET_KEY || "" },
+            }),
+          ),
           handleErrors,
           handleDefects,
         );

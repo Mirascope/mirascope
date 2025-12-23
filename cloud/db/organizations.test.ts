@@ -2,11 +2,14 @@ import {
   describe,
   it,
   expect,
+  assert,
   TestOrganizationFixture,
+  TestDrizzleORM,
   MockDrizzleORM,
+  MockStripe,
 } from "@/tests/db";
 import { Database } from "@/db/database";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   type PublicOrganizationWithMembership,
   type PublicOrganizationMembershipAudit,
@@ -43,6 +46,7 @@ describe("Organizations", () => {
           id: org.id,
           name,
           slug,
+          stripeCustomerId: org.stripeCustomerId,
           role: "OWNER",
         } satisfies PublicOrganizationWithMembership);
 
@@ -88,6 +92,56 @@ describe("Organizations", () => {
       }),
     );
 
+    it.effect("returns `NotFoundError` when user does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations
+          .create({
+            userId: "nonexistent-user-id",
+            data: { name: "Test Org", slug: "test-org" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(
+          "User with id nonexistent-user-id not found",
+        );
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // select user email: returns empty (user not found)
+            .select([])
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns `DatabaseError` when fetching user email fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations
+          .create({
+            userId: "user-id",
+            data: { name: "Test Org", slug: "test-org" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe(
+          "Failed to fetch user for organization creation",
+        );
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // select user email: fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
         const db = yield* Database;
@@ -103,7 +157,12 @@ describe("Organizations", () => {
         expect(result.message).toBe("Failed to create organization");
       }).pipe(
         Effect.provide(
-          new MockDrizzleORM().insert(new Error("Connection failed")).build(),
+          new MockDrizzleORM()
+            // select user email: succeeds
+            .select([{ email: "test@example.com" }])
+            // insert organization: fails
+            .insert(new Error("Connection failed"))
+            .build(),
         ),
       ),
     );
@@ -124,6 +183,8 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
+            // select user email: succeeds
+            .select([{ email: "test@example.com" }])
             // insert organization: succeeds
             .insert([{ id: "org-id", name: "Test Org" }])
             // insert membership: fails
@@ -149,6 +210,8 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
+            // select user email: succeeds
+            .select([{ email: "test@example.com" }])
             // insert organization: succeeds
             .insert([{ id: "org-id", name: "Test Org" }])
             // insert membership: succeeds
@@ -159,6 +222,110 @@ describe("Organizations", () => {
         ),
       ),
     );
+
+    it.effect(
+      "creates Stripe customer with correct email, name, and metadata",
+      () => {
+        // Capture the params passed to Stripe for customer creation
+        type CapturedParams = {
+          email?: string;
+          name?: string;
+          metadata?: Record<string, string>;
+        };
+
+        let capturedParams: CapturedParams | null = null;
+
+        return Effect.gen(capturedParams, function* () {
+          const db = yield* Database;
+
+          const user = yield* db.users.create({
+            data: {
+              email: "stripe-test@example.com",
+              name: "Stripe Test User",
+            },
+          });
+
+          const organizationName = "Stripe Test Org";
+          const organizationSlug = "stripe-test-org";
+
+          const organization = yield* db.organizations.create({
+            userId: user.id,
+            data: { name: organizationName, slug: organizationSlug },
+          });
+
+          // Verify Stripe customer was created with correct parameters
+          assert(capturedParams !== null);
+          expect(capturedParams.email).toBe(user.email);
+          expect(capturedParams.name).toBe(organizationName);
+          expect(capturedParams.metadata).toMatchObject({
+            organizationId: organization.id,
+            organizationName,
+            organizationSlug,
+          });
+        }).pipe(
+          Effect.provide(
+            Database.Default.pipe(
+              Layer.provideMerge(TestDrizzleORM),
+              Layer.provide(
+                new MockStripe().customers
+                  .create((params: CapturedParams) => {
+                    capturedParams = params;
+                    return { id: "cus_mock" };
+                  })
+                  .build(),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    it.effect("deletes Stripe customer when database transaction fails", () => {
+      // Track Stripe calls
+      type CapturedCustomerId = string;
+      let createdCustomerId: CapturedCustomerId | null = null;
+      let deletedCustomerId: CapturedCustomerId | null = null;
+
+      return Effect.gen(function* () {
+        const db = yield* Database;
+
+        // Attempt to create organization with DB insert that fails
+        const result = yield* db.organizations
+          .create({
+            userId: "user-id",
+            data: { name: "Test Org", slug: "test-org" },
+          })
+          .pipe(Effect.flip);
+
+        // Verify the operation failed
+        expect(result).toBeInstanceOf(DatabaseError);
+
+        // Verify Stripe customer was created and deleted in cleanup
+        assert(createdCustomerId !== null);
+        assert(deletedCustomerId !== null);
+        expect(deletedCustomerId).toBe(createdCustomerId);
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // select user email: succeeds
+            .select([{ email: "test@example.com" }])
+            // insert organization: fails (triggers rollback)
+            .insert(new Error("Database connection failed"))
+            .build(
+              new MockStripe().customers
+                .create(() => {
+                  createdCustomerId = "cus_mock";
+                  return { id: createdCustomerId };
+                })
+                .customers.del((id: CapturedCustomerId) => {
+                  deletedCustomerId = id;
+                  return { id };
+                })
+                .build(),
+            ),
+        ),
+      );
+    });
   });
 
   // ===========================================================================
@@ -393,6 +560,7 @@ describe("Organizations", () => {
           id: org.id,
           name: newName,
           slug: org.slug,
+          stripeCustomerId: org.stripeCustomerId,
           role: "OWNER",
         } satisfies PublicOrganizationWithMembership);
       }),
@@ -414,6 +582,7 @@ describe("Organizations", () => {
           id: org.id,
           name: newName,
           slug: org.slug,
+          stripeCustomerId: org.stripeCustomerId,
           role: "ADMIN",
         } satisfies PublicOrganizationWithMembership);
       }),
