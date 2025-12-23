@@ -183,37 +183,87 @@ export const makeReady = <T extends object>(
   client: DrizzleORMClient,
   service: T,
 ): Ready<T> => {
-  const ready = {} as Ready<T>;
   const proto = Object.getPrototypeOf(service) as object;
 
-  // Wrap methods from the prototype
-  for (const key of Object.getOwnPropertyNames(proto)) {
-    if (key === "constructor") continue;
+  // Collect all method names from prototype
+  const methodNames = Object.getOwnPropertyNames(proto).filter(
+    (key) =>
+      key !== "constructor" &&
+      typeof (service as Record<string, unknown>)[key] === "function",
+  );
 
-    const method = (service as Record<string, unknown>)[key];
-    if (typeof method === "function") {
-      (ready as Record<string, unknown>)[key] = (
-        ...args: unknown[]
-      ): Effect.Effect<unknown, unknown> =>
-        (
-          method.apply(service, args) as Effect.Effect<
-            unknown,
-            unknown,
-            DrizzleORM
-          >
-        ).pipe(Effect.provideService(DrizzleORM, client));
+  type WrappedMethod = (...args: unknown[]) => Effect.Effect<unknown, unknown>;
+
+  // Helper to wrap a method with DrizzleORM provision
+  const wrapMethod =
+    (method: (...args: unknown[]) => unknown): WrappedMethod =>
+    (...args: unknown[]) =>
+      (
+        method.apply(service, args) as Effect.Effect<
+          unknown,
+          unknown,
+          DrizzleORM
+        >
+      ).pipe(Effect.provideService(DrizzleORM, client));
+
+  // Cache wrapped methods to ensure consistent identity
+  const wrappedMethods = new Map<string | symbol, WrappedMethod>();
+  // Cache wrapped nested objects to preserve identity
+  const wrappedObjects = new Map<string | symbol, object>();
+
+  const getWrappedMethod = (prop: string | symbol): WrappedMethod => {
+    let wrapped = wrappedMethods.get(prop);
+    if (!wrapped) {
+      const method = (service as Record<string | symbol, unknown>)[prop];
+      if (typeof method === "function") {
+        wrapped = wrapMethod(method as (...args: unknown[]) => unknown);
+        wrappedMethods.set(prop, wrapped);
+      }
     }
-  }
+    return wrapped!;
+  };
 
-  // Handle nested objects (like `audits`) by recursively wrapping them
-  for (const key of Object.keys(service)) {
-    const value = (service as Record<string, unknown>)[key];
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      (ready as Record<string, unknown>)[key] = makeReady(client, value);
-    }
-  }
+  return new Proxy(service, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
 
-  return ready;
+      // Wrap functions to provide DrizzleORM
+      if (typeof value === "function") {
+        return getWrappedMethod(prop);
+      }
+
+      // Recursively wrap nested objects (with caching to preserve identity)
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        let wrapped = wrappedObjects.get(prop);
+        if (!wrapped) {
+          wrapped = makeReady(client, value as object);
+          wrappedObjects.set(prop, wrapped);
+        }
+        return wrapped;
+      }
+
+      /* v8 ignore next 1 - primitives pass through unchanged */
+      return value;
+    },
+
+    // Make prototype methods appear as own properties for spread operator
+    ownKeys() {
+      return [...methodNames, ...Object.keys(service)];
+    },
+
+    getOwnPropertyDescriptor(target, prop) {
+      // For prototype methods, make them enumerable
+      if (typeof prop === "string" && methodNames.includes(prop)) {
+        return {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: getWrappedMethod(prop),
+        };
+      }
+      return Object.getOwnPropertyDescriptor(target, prop);
+    },
+  }) as Ready<T>;
 };
 
 // =============================================================================

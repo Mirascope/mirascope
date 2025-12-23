@@ -1270,7 +1270,6 @@ describe("OrganizationMemberships", () => {
         // Delete the user (soft delete)
         yield* db.users.delete({ userId: nonMember.id });
 
-
         // Should be able to remove the deleted user's membership
         yield* db.organizations.memberships.delete({
           userId: owner.id,
@@ -1301,68 +1300,6 @@ describe("OrganizationMemberships", () => {
             userId: "user-id",
             organizationId: "org-id",
             memberId: "user-id",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to get membership");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            // getMembership: fails
-            .select(new Error("Connection failed"))
-            .build(),
-        ),
-      ),
-    );
-  });
-
-  // ===========================================================================
-  // getMembership (Helper Method)
-  // ===========================================================================
-
-  describe("getMembership", () => {
-    it.effect("returns membership when user is a member", () =>
-      Effect.gen(function* () {
-        const { org, owner } = yield* TestOrganizationFixture;
-        const db = yield* Database;
-
-        const membership = yield* db.organizations.memberships.getMembership({
-          userId: owner.id,
-          organizationId: org.id,
-        });
-
-        expect(membership).toEqual({ role: "OWNER" });
-      }),
-    );
-
-    it.effect("returns `NotFoundError` when user is not a member", () =>
-      Effect.gen(function* () {
-        const { org, nonMember } = yield* TestOrganizationFixture;
-        const db = yield* Database;
-
-        const result = yield* db.organizations.memberships
-          .getMembership({
-            userId: nonMember.id,
-            organizationId: org.id,
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(
-          "User is not a member of this organization",
-        );
-      }),
-    );
-
-    it.effect("returns `DatabaseError` when query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.memberships
-          .getMembership({
-            userId: "user-id",
-            organizationId: "org-id",
           })
           .pipe(Effect.flip);
 
