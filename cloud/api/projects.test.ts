@@ -1,109 +1,101 @@
-import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { TestClient } from "@/tests/api";
-import { TestDatabase, TestOrganizationFixture } from "@/tests/db";
+import { describe, expect, TestApiContext } from "@/tests/api";
+import type { PublicProject } from "@/db/schema";
 
-describe("Projects API", () => {
-  it.effect("GET /organizations/:organizationId/projects - list projects", () =>
-    Effect.gen(function* () {
-      const { owner, org } = yield* TestOrganizationFixture;
-      const client = yield* TestClient.authenticate(owner);
+describe.sequential("Projects API", (it) => {
+  let project: PublicProject;
 
-      // Initially should return empty array
-      const projects = yield* client.projects.list({
-        path: { organizationId: org.id },
-      });
-      expect(Array.isArray(projects)).toBe(true);
-      expect(projects).toHaveLength(0);
-    }).pipe(Effect.provide(TestDatabase)),
+  it.effect(
+    "GET /organizations/:organizationId/projects - list projects (initially empty)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const projects = yield* client.projects.list({
+          path: { organizationId: org.id },
+        });
+        expect(Array.isArray(projects)).toBe(true);
+        // Initially should be empty (no projects created yet)
+        expect(projects).toHaveLength(0);
+      }),
   );
 
   it.effect(
     "POST /organizations/:organizationId/projects - create project",
     () =>
       Effect.gen(function* () {
-        const { owner, org } = yield* TestOrganizationFixture;
-        const client = yield* TestClient.authenticate(owner);
-
-        const project = yield* client.projects.create({
+        const { client, org } = yield* TestApiContext;
+        project = yield* client.projects.create({
           path: { organizationId: org.id },
-          payload: { name: "Org Project" },
+          payload: { name: "Test Project" },
         });
 
-        expect(project.name).toBe("Org Project");
+        expect(project.name).toBe("Test Project");
         expect(project.organizationId).toBe(org.id);
         expect(project.createdByUserId).toBeDefined();
         expect(project.id).toBeDefined();
-      }).pipe(Effect.provide(TestDatabase)),
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:organizationId/projects - list projects (after create)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const projects = yield* client.projects.list({
+          path: { organizationId: org.id },
+        });
+        expect(projects).toHaveLength(1);
+        expect(projects[0].id).toBe(project.id);
+        expect(projects[0].name).toBe("Test Project");
+      }),
   );
 
   it.effect(
     "GET /organizations/:organizationId/projects/:projectId - get project",
     () =>
       Effect.gen(function* () {
-        const { owner, org } = yield* TestOrganizationFixture;
-        const client = yield* TestClient.authenticate(owner);
-
-        const created = yield* client.projects.create({
-          path: { organizationId: org.id },
-          payload: { name: "Get Test Project" },
+        const { client, org } = yield* TestApiContext;
+        const fetched = yield* client.projects.get({
+          path: { organizationId: org.id, projectId: project.id },
         });
 
-        const project = yield* client.projects.get({
-          path: { organizationId: org.id, projectId: created.id },
-        });
-
-        expect(project.id).toBe(created.id);
-        expect(project.name).toBe("Get Test Project");
-        expect(project.organizationId).toBe(org.id);
-      }).pipe(Effect.provide(TestDatabase)),
+        expect(fetched.id).toBe(project.id);
+        expect(fetched.name).toBe("Test Project");
+        expect(fetched.organizationId).toBe(org.id);
+      }),
   );
 
   it.effect(
     "PUT /organizations/:organizationId/projects/:projectId - update project",
     () =>
       Effect.gen(function* () {
-        const { owner, org } = yield* TestOrganizationFixture;
-        const client = yield* TestClient.authenticate(owner);
-
-        const created = yield* client.projects.create({
-          path: { organizationId: org.id },
-          payload: { name: "Original Project Name" },
-        });
-
+        const { client, org } = yield* TestApiContext;
         const updated = yield* client.projects.update({
-          path: { organizationId: org.id, projectId: created.id },
+          path: { organizationId: org.id, projectId: project.id },
           payload: { name: "Updated Project Name" },
         });
 
-        expect(updated.id).toBe(created.id);
+        expect(updated.id).toBe(project.id);
         expect(updated.name).toBe("Updated Project Name");
         expect(updated.organizationId).toBe(org.id);
-      }).pipe(Effect.provide(TestDatabase)),
+      }),
   );
 
   it.effect(
     "DELETE /organizations/:organizationId/projects/:projectId - delete project",
     () =>
       Effect.gen(function* () {
-        const { owner, org } = yield* TestOrganizationFixture;
-        const client = yield* TestClient.authenticate(owner);
-
-        const created = yield* client.projects.create({
-          path: { organizationId: org.id },
-          payload: { name: "Delete Test Project" },
-        });
-
+        const { client, org } = yield* TestApiContext;
         yield* client.projects.delete({
-          path: { organizationId: org.id, projectId: created.id },
+          path: { organizationId: org.id, projectId: project.id },
         });
 
         // Verify it's gone by listing and checking it's not there
         const projects = yield* client.projects.list({
           path: { organizationId: org.id },
         });
-        const found = projects.find((p) => p.id === created.id);
+        const found = projects.find((p) => p.id === project.id);
         expect(found).toBeUndefined();
-      }).pipe(Effect.provide(TestDatabase)),
+      }),
   );
 });

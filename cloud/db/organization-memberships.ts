@@ -47,7 +47,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 
 import {

@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { DatabaseService } from "@/db";
+import { EffectDatabase } from "@/db";
 import type { PublicUser } from "@/db/schema";
 
 function isSecure(): boolean {
@@ -87,14 +87,14 @@ export function clearOAuthStateCookie(): string {
 
 export const getAuthenticatedUser = (
   request: Request,
-): Effect.Effect<PublicUser | null, never, DatabaseService> =>
+): Effect.Effect<PublicUser | null, never, EffectDatabase> =>
   Effect.gen(function* () {
     const sessionId = getSessionIdFromCookie(request);
     if (!sessionId) {
       return null;
     }
 
-    const db = yield* DatabaseService;
+    const db = yield* EffectDatabase;
     return yield* db.sessions
       .findUserBySessionId(sessionId)
       .pipe(Effect.catchAll(() => Effect.succeed(null)));

@@ -1,54 +1,52 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Effect, Layer } from "effect";
-import { handleRequest, type App } from "@/api/handler";
+import { Effect } from "effect";
+import { handleRequest } from "@/api/handler";
+import { handleErrors, handleDefects } from "@/api/utils";
+import { UnauthorizedError, NotFoundError, InternalError } from "@/errors";
 import { getAuthenticatedUser } from "@/auth";
-import { DatabaseService, getDatabase } from "@/db";
-import { UnauthorizedError } from "@/db/errors";
+import { EffectDatabase } from "@/db";
 
 export const Route = createFileRoute("/api/v0/$")({
   server: {
     handlers: {
       ANY: async ({ request }: { request: Request }) => {
         const databaseUrl = process.env.DATABASE_URL;
-        if (!databaseUrl) {
-          return new Response("Database not configured", { status: 500 });
-        }
 
-        const database = getDatabase(databaseUrl);
+        const handler = Effect.gen(function* () {
+          if (!databaseUrl) {
+            return yield* new InternalError({
+              message: "Database not configured",
+            });
+          }
 
-        try {
-          const databaseLayer = Layer.succeed(DatabaseService, database);
-
-          const authenticatedUser = await Effect.runPromise(
-            getAuthenticatedUser(request).pipe(Effect.provide(databaseLayer)),
-          );
+          const authenticatedUser = yield* getAuthenticatedUser(request);
 
           if (!authenticatedUser) {
-            return Response.json(
-              new UnauthorizedError({ message: "Authentication required" }),
-              { status: 401 },
-            );
+            return yield* new UnauthorizedError({
+              message: "Authentication required",
+            });
           }
 
-          const app: App = {
-            environment: process.env.ENVIRONMENT || "development",
-            database,
-            authenticatedUser,
-          };
-
-          const { matched, response } = await handleRequest(request, {
-            app,
+          const result = yield* handleRequest(request, {
             prefix: "/api/v0",
+            authenticatedUser,
+            environment: process.env.ENVIRONMENT || "development",
           });
 
-          if (matched) {
-            return response;
+          if (!result.matched) {
+            return yield* new NotFoundError({ message: "Route not found" });
           }
 
-          return new Response("Not Found", { status: 404 });
-        } finally {
-          await database.close();
-        }
+          return result.response;
+        }).pipe(
+          Effect.provide(
+            EffectDatabase.Live({ connectionString: databaseUrl }),
+          ),
+          handleErrors,
+          handleDefects,
+        );
+
+        return Effect.runPromise(handler);
       },
     },
   },

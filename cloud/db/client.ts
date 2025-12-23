@@ -58,7 +58,7 @@ import * as Pg from "@effect/sql-drizzle/Pg";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient, type SqlError } from "@effect/sql";
 import * as schema from "@/db/schema";
-import { DatabaseError } from "@/db/errors";
+import { DatabaseError } from "@/errors";
 
 /**
  * Wraps an effect that may fail with SqlError and maps it to DatabaseError.
@@ -185,7 +185,7 @@ export class DrizzleORM extends Context.Tag("DrizzleORM")<
     DrizzleORM,
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-       
+
       const db: PgRemoteDatabase<typeof schema> = yield* Pg.make({ schema });
 
       return Object.assign(db, {

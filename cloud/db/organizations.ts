@@ -60,7 +60,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
-} from "@/db/errors";
+} from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
 
@@ -199,7 +199,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
     data: NewOrganization;
   }): Effect.Effect<
     PublicOrganizationWithMembership,
-    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
+    AlreadyExistsError | DatabaseError,
     DrizzleORM
   > {
     return Effect.gen(function* () {
@@ -291,7 +291,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
     userId: string;
   }): Effect.Effect<
     PublicOrganizationWithMembership[],
-    NotFoundError | PermissionDeniedError | DatabaseError,
+    DatabaseError,
     DrizzleORM
   > {
     return Effect.gen(function* () {

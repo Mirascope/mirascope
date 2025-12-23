@@ -20,7 +20,7 @@ import { Effect } from "effect";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { BaseEffectService } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
-import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/db/errors";
+import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
 import { users, type PublicUser, type NewUser } from "@/db/schema/users";
 import { isUniqueConstraintError } from "@/db/utils";
 

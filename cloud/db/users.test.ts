@@ -1,7 +1,7 @@
 import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 import { Effect } from "effect";
 import { type PublicUser, users } from "@/db/schema";
-import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/db/errors";
+import { AlreadyExistsError, DatabaseError, NotFoundError } from "@/errors";
 import { DrizzleORM } from "@/db/client";
 import { EffectDatabase } from "@/db/database";
 import { eq } from "drizzle-orm";

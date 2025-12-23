@@ -5,7 +5,7 @@ import { DocsApi } from "@/api/docs.schemas";
 import { OrganizationsApi } from "@/api/organizations.schemas";
 import { ProjectsApi } from "@/api/projects.schemas";
 
-export * from "@/db/errors";
+export * from "@/errors";
 export * from "@/api/health.schemas";
 export * from "@/api/traces.schemas";
 export * from "@/api/docs.schemas";

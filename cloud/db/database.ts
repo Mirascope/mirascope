@@ -51,21 +51,23 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 
 /**
- * Type definition for the organizations service with nested memberships.
- *
- * Access pattern: `db.organizations.create(...)` or `db.organizations.memberships.create(...)`
- */
-export interface EffectOrganizations extends Ready<Organizations> {
-  readonly memberships: Ready<OrganizationMemberships>;
-}
-
-/**
  * Type definition for the projects service with nested memberships.
  *
- * Access pattern: `db.projects.create(...)` or `db.projects.memberships.create(...)`
+ * Access pattern: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
  */
 export interface EffectProjects extends Ready<Projects> {
   readonly memberships: Ready<ProjectMemberships>;
+}
+
+/**
+ * Type definition for the organizations service with nested memberships and projects.
+ *
+ * Access pattern: `db.organizations.create(...)` or `db.organizations.memberships.create(...)`
+ * Projects: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
+ */
+export interface EffectOrganizations extends Ready<Organizations> {
+  readonly memberships: Ready<OrganizationMemberships>;
+  readonly projects: EffectProjects;
 }
 
 /**
@@ -84,7 +86,6 @@ export interface EffectDatabaseSchema {
   readonly users: Ready<Users>;
   readonly sessions: Ready<Sessions>;
   readonly organizations: EffectOrganizations;
-  readonly projects: EffectProjects;
 }
 
 /**
@@ -144,10 +145,10 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
         organizations: {
           ...makeReady(client, organizations),
           memberships: makeReady(client, organizationMemberships),
-        },
-        projects: {
-          ...makeReady(client, projectsService),
-          memberships: makeReady(client, projectMemberships),
+          projects: {
+            ...makeReady(client, projectsService),
+            memberships: makeReady(client, projectMemberships),
+          },
         },
       };
     }),
