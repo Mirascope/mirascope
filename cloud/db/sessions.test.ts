@@ -2,7 +2,12 @@ import { describe, it, expect, MockDrizzleORM } from "@/tests/db";
 import { Effect } from "effect";
 import { type PublicSession } from "@/db/schema";
 import { type PublicUser } from "@/db/schema/users";
-import { DatabaseError, DeletedUserError, InvalidSessionError, NotFoundError } from "@/errors";
+import {
+  DatabaseError,
+  DeletedUserError,
+  InvalidSessionError,
+  NotFoundError,
+} from "@/errors";
 import { Database } from "@/db/database";
 
 describe("Sessions", () => {
@@ -565,7 +570,7 @@ describe("Sessions", () => {
 
         expect(result).toBeInstanceOf(DeletedUserError);
         expect(result.message).toBe("This user has been deleted");
-      })
+      }),
     );
 
     it.effect("returns `InvalidSessionError` for expired session", () =>

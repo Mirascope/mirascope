@@ -43,12 +43,13 @@ describe("ProjectMemberships", () => {
             data: { memberId: newOrgMember.id, role: "MEMBER" },
           });
 
-          const membership = yield* db.organizations.projects.memberships.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            data: { memberId: newOrgMember.id, role: "VIEWER" },
-          });
+          const membership =
+            yield* db.organizations.projects.memberships.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              data: { memberId: newOrgMember.id, role: "VIEWER" },
+            });
 
           expect(membership).toMatchObject({
             projectId: project.id,
@@ -56,10 +57,11 @@ describe("ProjectMemberships", () => {
             role: "VIEWER",
           } satisfies Partial<PublicProjectMembership>);
 
-          const audits = yield* db.organizations.projects.memberships.audits.findAll({
-            projectId: project.id,
-            memberId: newOrgMember.id,
-          });
+          const audits =
+            yield* db.organizations.projects.memberships.audits.findAll({
+              projectId: project.id,
+              memberId: newOrgMember.id,
+            });
           const grants = audits.filter((a) => a.action === "GRANT");
           expect(grants).toHaveLength(1);
           expect(grants[0]).toMatchObject({
@@ -313,11 +315,12 @@ describe("ProjectMemberships", () => {
         const { project, org, owner } = yield* TestProjectFixture;
         const db = yield* Database;
 
-        const memberships = yield* db.organizations.projects.memberships.findAll({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-        });
+        const memberships =
+          yield* db.organizations.projects.memberships.findAll({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+          });
 
         // Fixture creates 5 explicit project members:
         // - owner (ADMIN, from db.organizations.projects.create)
@@ -498,12 +501,13 @@ describe("ProjectMemberships", () => {
           yield* TestProjectFixture;
         const db = yield* Database;
 
-        const membership = yield* db.organizations.projects.memberships.findById({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          memberId: projectDeveloper.id,
-        });
+        const membership =
+          yield* db.organizations.projects.memberships.findById({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            memberId: projectDeveloper.id,
+          });
 
         expect(membership.role).toBe("DEVELOPER");
       }),
@@ -617,10 +621,11 @@ describe("ProjectMemberships", () => {
 
         expect(updated.role).toBe("ANNOTATOR");
 
-        const audits = yield* db.organizations.projects.memberships.audits.findAll({
-          projectId: project.id,
-          memberId: projectDeveloper.id,
-        });
+        const audits =
+          yield* db.organizations.projects.memberships.audits.findAll({
+            projectId: project.id,
+            memberId: projectDeveloper.id,
+          });
         const changes = audits.filter((a) => a.action === "CHANGE");
         expect(changes).toHaveLength(1);
         expect(changes[0]).toMatchObject({
@@ -688,8 +693,7 @@ describe("ProjectMemberships", () => {
       "returns `PermissionDeniedError` when non-ADMIN tries to modify their own membership",
       () =>
         Effect.gen(function* () {
-          const { project, org, projectDeveloper } =
-            yield* TestProjectFixture;
+          const { project, org, projectDeveloper } = yield* TestProjectFixture;
           const db = yield* Database;
 
           const result = yield* db.organizations.projects.memberships
@@ -882,10 +886,11 @@ describe("ProjectMemberships", () => {
           memberId: projectDeveloper.id,
         });
 
-        const audits = yield* db.organizations.projects.memberships.audits.findAll({
-          projectId: project.id,
-          memberId: projectDeveloper.id,
-        });
+        const audits =
+          yield* db.organizations.projects.memberships.audits.findAll({
+            projectId: project.id,
+            memberId: projectDeveloper.id,
+          });
         const revokes = audits.filter((a) => a.action === "REVOKE");
         expect(revokes).toHaveLength(1);
         expect(revokes[0]).toMatchObject({
@@ -910,10 +915,11 @@ describe("ProjectMemberships", () => {
           memberId: projectAdmin.id,
         });
 
-        const audits = yield* db.organizations.projects.memberships.audits.findAll({
-          projectId: project.id,
-          memberId: projectAdmin.id,
-        });
+        const audits =
+          yield* db.organizations.projects.memberships.audits.findAll({
+            projectId: project.id,
+            memberId: projectAdmin.id,
+          });
         const revokes = audits.filter((a) => a.action === "REVOKE");
         expect(revokes).toHaveLength(1);
         expect(revokes[0]).toMatchObject({
@@ -1090,10 +1096,11 @@ describe("ProjectMemberships", () => {
           data: { role: "ANNOTATOR" },
         });
 
-        const audits = yield* db.organizations.projects.memberships.audits.findAll({
-          projectId: project.id,
-          memberId: projectDeveloper.id,
-        });
+        const audits =
+          yield* db.organizations.projects.memberships.audits.findAll({
+            projectId: project.id,
+            memberId: projectDeveloper.id,
+          });
 
         // Should have GRANT (from fixture) + CHANGE (from update)
         expect(audits.length).toBeGreaterThanOrEqual(2);

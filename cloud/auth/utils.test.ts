@@ -345,8 +345,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should reject API key when any parameter mismatches", () =>
     Effect.gen(function* () {
-      const { org, project, otherEnvironment, apiKey } =
-        yield* TestAuthFixture;
+      const { org, project, otherEnvironment, apiKey } = yield* TestAuthFixture;
 
       const request = new Request("https://example.com/api/test", {
         headers: {
