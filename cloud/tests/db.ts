@@ -78,6 +78,8 @@ export class MockStripe {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private createSubscriptionResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private listCreditGrantsResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private configResult?: any;
 
   /**
@@ -124,6 +126,25 @@ export class MockStripe {
   }
 
   /**
+   * Stripe billing resource mock.
+   */
+  get billing() {
+    return {
+      creditGrants: {
+        /**
+         * Mock `billing.creditGrants.list()` - accepts either a static value or a function.
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        list: (result: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          this.listCreditGrantsResult = result;
+          return this;
+        },
+      },
+    };
+  }
+
+  /**
    * Mock Stripe config - accepts a config object.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,6 +164,8 @@ export class MockStripe {
     const deleteCustomerResult = this.deleteCustomerResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const createSubscriptionResult = this.createSubscriptionResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const listCreditGrantsResult = this.listCreditGrantsResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const configResult = this.configResult;
 
@@ -226,6 +249,107 @@ export class MockStripe {
             status: "active" as const,
             metadata: params.metadata || {},
           });
+        },
+      },
+      billing: {
+        creditGrants: {
+          list: () => {
+            if (listCreditGrantsResult !== undefined) {
+              // If it's a function, call it
+              if (typeof listCreditGrantsResult === "function") {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                return Effect.succeed(listCreditGrantsResult());
+              }
+              // Otherwise return the static value
+              return Effect.succeed(listCreditGrantsResult);
+            }
+
+            // Default implementation
+            return Effect.succeed({
+              object: "list" as const,
+              data: [
+                // Valid grant #1: USD, router price - SHOULD BE COUNTED ($7)
+                {
+                  amount: {
+                    monetary: {
+                      value: 700, // $7.00 in cents
+                      currency: "usd",
+                    },
+                  },
+                  applicability_config: {
+                    scope: {
+                      prices: [
+                        { id: "price_test_mock_for_testing" },
+                        { id: "price_other" },
+                      ],
+                    },
+                  },
+                },
+                // Valid grant #2: USD, router price - SHOULD BE COUNTED ($11)
+                {
+                  amount: {
+                    monetary: {
+                      value: 1100, // $11.00 in cents
+                      currency: "usd",
+                    },
+                  },
+                  applicability_config: {
+                    scope: {
+                      prices: [{ id: "price_test_mock_for_testing" }],
+                    },
+                  },
+                },
+                // Invalid: EUR currency - should NOT be counted
+                {
+                  amount: {
+                    monetary: {
+                      value: 500, // €5.00 in cents
+                      currency: "eur",
+                    },
+                  },
+                  applicability_config: {
+                    scope: {
+                      prices: [{ id: "price_test_mock_for_testing" }],
+                    },
+                  },
+                },
+                // Invalid: No monetary amount - should NOT be counted
+                {
+                  amount: {},
+                  applicability_config: {
+                    scope: {
+                      prices: [{ id: "price_test_mock_for_testing" }],
+                    },
+                  },
+                },
+                // Invalid: Different price - should NOT be counted
+                {
+                  amount: {
+                    monetary: {
+                      value: 1900, // $19.00 in cents
+                      currency: "usd",
+                    },
+                  },
+                  applicability_config: {
+                    scope: {
+                      prices: [{ id: "price_different" }],
+                    },
+                  },
+                },
+                // Invalid: No scope - should NOT be counted
+                {
+                  amount: {
+                    monetary: {
+                      value: 2300, // $23.00 in cents
+                      currency: "usd",
+                    },
+                  },
+                  applicability_config: {},
+                },
+              ],
+              has_more: false,
+            });
+          },
         },
       },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -4,6 +4,7 @@ import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
+import { Stripe } from "@/payments";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser } from "@/db/schema";
 
@@ -15,6 +16,7 @@ export type HandleRequestOptions = {
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
+  stripe: Context.Tag.Service<Stripe>;
   authenticatedUser: PublicUser;
   environment: string;
 };
@@ -24,6 +26,7 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(SettingsService, { env: options.environment }),
     Layer.succeed(AuthenticatedUser, options.authenticatedUser),
     Layer.succeed(Database, options.db),
+    Layer.succeed(Stripe, options.stripe),
   );
 
   const ApiWithDependencies = Layer.mergeAll(
@@ -37,8 +40,8 @@ function createWebHandler(options: WebHandlerOptions) {
 /**
  * Handle an API request using the Effect HTTP API.
  *
- * This is an Effect that depends on `Database` to share the database
- * connection with authentication and API handlers.
+ * This is an Effect that depends on `Database` and `Stripe` to share the
+ * services with authentication and API handlers.
  *
  * @param request - The incoming HTTP request
  * @param options - Configuration including prefix, authenticated user, and environment
@@ -50,13 +53,15 @@ export const handleRequest = (
 ): Effect.Effect<
   { matched: boolean; response: Response },
   HandlerError,
-  Database
+  Database | Stripe
 > =>
   Effect.gen(function* () {
     const db = yield* Database;
+    const stripe = yield* Stripe;
 
     const webHandler = createWebHandler({
       db,
+      stripe,
       authenticatedUser: options.authenticatedUser,
       environment: options.environment,
     });

@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
+import { getCustomerBalance } from "@/payments";
 import type {
   CreateOrganizationRequest,
   UpdateOrganizationRequest,
@@ -53,4 +54,21 @@ export const deleteOrganizationHandler = (organizationId: string) =>
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     yield* db.organizations.delete({ organizationId, userId: user.id });
+  });
+
+export const getOrganizationCreditsHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+
+    // First verify user has access to this organization
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    // Get the customer balance from Stripe
+    const balance = yield* getCustomerBalance(organization.stripeCustomerId);
+
+    return { balance };
   });

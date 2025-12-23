@@ -76,6 +76,20 @@ describe.sequential("Organizations API", (it) => {
     }),
   );
 
+  it.effect("GET /organizations/:id/credits - get organization credits", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      const credits = yield* client.organizations.credits({
+        path: { id: org.id },
+      });
+
+      // MockStripe includes various grant types totaling $18
+      // (see tests/db.ts MockStripe for details)
+      expect(credits.balance).toBe(18);
+      expect(typeof credits.balance).toBe("number");
+    }),
+  );
+
   it.effect("DELETE /organizations/:id - delete organization", () =>
     Effect.gen(function* () {
       const { client } = yield* TestApiContext;

@@ -51,6 +51,10 @@ export const UpdateOrganizationRequestSchema = Schema.Struct({
   slug: Schema.optional(OrganizationSlugSchema),
 });
 
+export const OrganizationCreditsSchema = Schema.Struct({
+  balance: Schema.Number,
+});
+
 export type Organization = typeof OrganizationSchema.Type;
 export type OrganizationWithMembership =
   typeof OrganizationWithMembershipSchema.Type;
@@ -58,6 +62,7 @@ export type CreateOrganizationRequest =
   typeof CreateOrganizationRequestSchema.Type;
 export type UpdateOrganizationRequest =
   typeof UpdateOrganizationRequestSchema.Type;
+export type OrganizationCredits = typeof OrganizationCreditsSchema.Type;
 
 export class OrganizationsApi extends HttpApiGroup.make("organizations")
   .add(
@@ -97,5 +102,14 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addSuccess(Schema.Void)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("credits", "/organizations/:id/credits")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(OrganizationCreditsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}
