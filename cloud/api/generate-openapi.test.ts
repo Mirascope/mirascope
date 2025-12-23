@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { generateOpenApiSpec } from "@/api/generate-openapi";
 import { execSync } from "child_process";
+import { readFileSync, unlinkSync, mkdtempSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 describe("generateOpenApiSpec", () => {
   it("should generate OpenAPI spec with correct structure", () => {
@@ -78,10 +81,17 @@ describe("generateOpenApiSpec", () => {
 
 describe("generate-openapi script execution", () => {
   it("should output JSON when executed as a script", () => {
-    const output = execSync("bun generate-openapi.ts", {
-      cwd: __dirname, // optional
+    // Use file-based approach to avoid buffer truncation issues with execSync
+    const tempDir = mkdtempSync(join(tmpdir(), "openapi-test-"));
+    const tempFile = join(tempDir, "output.json");
+
+    execSync(`bun generate-openapi.ts > "${tempFile}"`, {
+      cwd: __dirname,
       encoding: "utf-8",
     });
+
+    const output = readFileSync(tempFile, "utf-8");
+    unlinkSync(tempFile);
 
     const parsed_stdout = JSON.parse(output) as {
       info?: { title?: string };
