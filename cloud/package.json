@@ -21,6 +21,7 @@
     "typecheck": "bun x tsc --build ./tsconfig.json",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "lint": "bun run typecheck && bun run lint:eslint && bun run format:check",
     "lint:eslint": "eslint .",
     "lint:eslint:fix": "eslint . --fix"
   },

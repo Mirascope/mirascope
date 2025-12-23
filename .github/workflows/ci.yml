@@ -14,6 +14,29 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.changes.outputs.python }}
+      typescript: ${{ steps.changes.outputs.typescript }}
+      cloud: ${{ steps.changes.outputs.cloud }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            python:
+              - 'python/**'
+              - '.github/workflows/ci.yml'
+            typescript:
+              - 'typescript/**'
+              - '.github/workflows/ci.yml'
+            cloud:
+              - 'cloud/**'
+              - '.github/workflows/ci.yml'
+
   codespell:
     name: Spell Check
     runs-on: ubuntu-latest
@@ -24,6 +47,8 @@ jobs:
 
   python-lint:
     name: Python Lint & Type Check
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -71,6 +96,8 @@ jobs:
 
   python-tests:
     name: Python Tests (Python ${{ matrix.python-version }})
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -103,9 +130,80 @@ jobs:
       - name: Minimize `uv` cache
         run: uv cache prune --ci
 
+  typescript-lint:
+    name: TypeScript Lint & Type Check
+    needs: changes
+    if: needs.changes.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup `bun`
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run lint checks
+        run: bun run lint
+
+  cloud-lint:
+    name: Cloud Lint & Type Check
+    needs: changes
+    if: needs.changes.outputs.cloud == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: cloud
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup `bun`
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run lint checks
+        run: bun run lint
+
+  cloud-tests:
+    name: Cloud Tests
+    needs: changes
+    if: needs.changes.outputs.cloud == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: cloud
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup `bun`
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run `vitest` with code coverage
+        run: bun run test:coverage
+
   ci-success:
     name: CI Success
-    needs: [codespell, python-lint, python-tests]
+    needs:
+      [
+        codespell,
+        python-lint,
+        python-tests,
+        typescript-lint,
+        cloud-lint,
+        cloud-tests,
+      ]
     runs-on: ubuntu-latest
     if: always()
     steps:

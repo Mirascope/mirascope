@@ -29,7 +29,7 @@ import type {
   GoogleUser,
   TokenData,
 } from "@/auth/types";
-import { 
+import {
   TokenDataSchema,
   GitHubUserSchema,
   GitHubEmailSchema,

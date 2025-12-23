@@ -27,7 +27,10 @@ export type {
   ProjectRole,
 } from "@/db/schema/project-memberships";
 export type { PublicProjectMembershipAudit } from "@/db/schema/project-membership-audit";
-export type { PublicEnvironment, NewEnvironment } from "@/db/schema/environments";
+export type {
+  PublicEnvironment,
+  NewEnvironment,
+} from "@/db/schema/environments";
 export type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema/api-keys";
 
 import { users } from "@/db/schema/users";
