@@ -57,6 +57,13 @@
       "when": 1766014272370,
       "tag": "0007_petite_captain_midlands",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766025553976,
+      "tag": "0008_last_peter_quill",
+      "breakpoints": true
     }
   ]
 }

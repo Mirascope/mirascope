@@ -1,7 +1,7 @@
 // PostgreSQL error codes
 const PG_UNIQUE_VIOLATION = "23505";
 const PG_CHECK_VIOLATION = "23514";
-// const PG_FOREIGN_KEY_VIOLATION = "23503";
+const PG_FOREIGN_KEY_VIOLATION = "23503";
 
 /**
  * Helper to extract PostgreSQL error code from Drizzle-wrapped errors.
@@ -42,4 +42,11 @@ export function isUniqueConstraintError(error: unknown): boolean {
  */
 export function isCheckConstraintError(error: unknown): boolean {
   return getPostgresErrorCode(error) === PG_CHECK_VIOLATION;
+}
+
+/**
+ * Check if an error is a PostgreSQL foreign key constraint violation.
+ */
+export function isForeignKeyConstraintError(error: unknown): boolean {
+  return getPostgresErrorCode(error) === PG_FOREIGN_KEY_VIOLATION;
 }

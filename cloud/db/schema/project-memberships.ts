@@ -5,9 +5,11 @@ import {
   pgEnum,
   uuid,
   primaryKey,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import { projects } from "./projects";
 import { users } from "./users";
+import { organizationMemberships } from "./organization-memberships";
 
 export const projectRoleEnum = pgEnum("project_role", [
   "ADMIN",
@@ -22,9 +24,8 @@ export type ProjectRole = (typeof projectRoleEnum.enumValues)[number];
 export const projectMemberships = pgTable(
   "project_memberships",
   {
-    memberId: uuid("member_id")
-      .references(() => users.id)
-      .notNull(),
+    memberId: uuid("member_id").notNull(),
+    organizationId: uuid("organization_id").notNull(),
     projectId: uuid("project_id")
       .references(() => projects.id, { onDelete: "cascade" })
       .notNull(),
@@ -34,6 +35,15 @@ export const projectMemberships = pgTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.memberId, table.projectId] }),
+    // Enforces that project members must be organization members.
+    // Cascade delete removes project membership when org membership is removed.
+    orgMembershipFk: foreignKey({
+      columns: [table.memberId, table.organizationId],
+      foreignColumns: [
+        organizationMemberships.memberId,
+        organizationMemberships.organizationId,
+      ],
+    }).onDelete("cascade"),
   }),
 );
 
@@ -48,6 +58,13 @@ export const projectMembershipsRelations = relations(
       fields: [projectMemberships.projectId],
       references: [projects.id],
     }),
+    organizationMembership: one(organizationMemberships, {
+      fields: [projectMemberships.memberId, projectMemberships.organizationId],
+      references: [
+        organizationMemberships.memberId,
+        organizationMemberships.organizationId,
+      ],
+    }),
   }),
 );
 
@@ -58,5 +75,5 @@ export type NewProjectMembership = typeof projectMemberships.$inferInsert;
 // Public types
 export type PublicProjectMembership = Pick<
   ProjectMembership,
-  "memberId" | "projectId" | "role" | "createdAt"
+  "memberId" | "organizationId" | "projectId" | "role" | "createdAt"
 >;
