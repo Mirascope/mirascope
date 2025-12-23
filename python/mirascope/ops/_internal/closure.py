@@ -50,6 +50,55 @@ def _is_third_party(module: ModuleType, site_packages: set[str]) -> bool:
     )
 
 
+class _RemoveVersionDecoratorTransformer(cst.CSTTransformer):
+    """CST transformer to remove @ops.version and @version decorators."""
+
+    @classmethod
+    def _is_version_decorator(cls, decorator: cst.Decorator) -> bool:
+        """Returns True if the decorator is @version or @ops.version."""
+        decorator_node = decorator.decorator
+
+        if isinstance(decorator_node, cst.Name) and decorator_node.value == "version":
+            return True
+        if (
+            isinstance(decorator_node, cst.Call)
+            and isinstance(decorator_node.func, cst.Name)
+            and decorator_node.func.value == "version"
+        ):
+            return True
+
+        if (
+            isinstance(decorator_node, cst.Attribute)
+            and isinstance(decorator_node.value, cst.Name)
+            and decorator_node.value.value == "ops"
+            and decorator_node.attr.value == "version"
+        ):
+            return True
+        if isinstance(decorator_node, cst.Call) and isinstance(
+            decorator_node.func, cst.Attribute
+        ):
+            func_attribute = decorator_node.func
+            if (
+                isinstance(func_attribute.value, cst.Name)
+                and func_attribute.value.value == "ops"
+                and func_attribute.attr.value == "version"
+            ):
+                return True
+
+        return False
+
+    def leave_FunctionDef(
+        self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef
+    ) -> cst.FunctionDef:
+        """Returns function definition with @version/@ops.version decorators removed."""
+        new_decorators = [
+            decorator
+            for decorator in updated_node.decorators
+            if not self._is_version_decorator(decorator)
+        ]
+        return updated_node.with_changes(decorators=new_decorators)
+
+
 class _RemoveDocstringTransformer(cst.CSTTransformer):
     """CST transformer to remove docstrings from functions and classes."""
 
@@ -125,14 +174,9 @@ def _clean_source_code(
     if docstr_flag in ("1", "true", "yes"):
         return source.rstrip()
     module = cst.parse_module(source)
-
-    transformer = _RemoveDocstringTransformer(exclude_fn_body=exclude_fn_body)
-    new_module = module.visit(transformer)
-
-    code = new_module.code
-    code = code.rstrip()
-
-    return code
+    module = module.visit(_RemoveVersionDecoratorTransformer())
+    module = module.visit(_RemoveDocstringTransformer(exclude_fn_body=exclude_fn_body))
+    return module.code.rstrip()
 
 
 @dataclass(frozen=True)
@@ -596,9 +640,9 @@ def _clean_source_from_string(source: str, exclude_fn_body: bool = False) -> str
     """Returns cleaned source code string with optional docstring removal."""
     source = dedent(source)
     module = cst.parse_module(source)
-    transformer = _RemoveDocstringTransformer(exclude_fn_body=exclude_fn_body)
-    new_module = module.visit(transformer)
-    return new_module.code.rstrip()
+    module = module.visit(_RemoveVersionDecoratorTransformer())
+    module = module.visit(_RemoveDocstringTransformer(exclude_fn_body=exclude_fn_body))
+    return module.code.rstrip()
 
 
 def _get_class_source_from_method(method: Callable[..., Any]) -> str:
@@ -693,6 +737,13 @@ class _DependencyCollector:
         ):
             # For Python 3.13+
             return definition.func  # pyright: ignore[reportFunctionMemberAccess] # pragma: no cover
+
+        if (
+            (wrapped_function := getattr(definition, "fn", None)) is not None
+            and not hasattr(definition, "__qualname__")
+            and callable(wrapped_function)
+        ):
+            return wrapped_function
 
         return definition
 

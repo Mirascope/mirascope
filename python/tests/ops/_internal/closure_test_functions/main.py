@@ -17,6 +17,8 @@ from openai.types.chat import ChatCompletionUserMessageParam
 from pydantic import BaseModel
 
 import tests.ops._internal.closure_test_functions as closure_test_functions_pkg
+from mirascope import ops
+from mirascope.ops import version
 from mirascope.ops._internal.closure import Closure
 
 from . import other, other as oth
@@ -468,3 +470,50 @@ def fn_using_time_module():
 
 def fn_using_random_module():
     return random.random()
+
+
+@version
+def version_decorated_fn() -> str:
+    return "Hello, world!"
+
+
+@version()
+def version_decorated_empty_parens_fn() -> str:
+    return "Hello, world!"
+
+
+@version(tags=["beta", "test"])
+def version_decorated_with_tags_fn() -> str:
+    return "Hello, world!"
+
+
+@version(tags=["beta"], name="custom_name", metadata={"key": "value"})
+def version_decorated_with_all_args_fn() -> str:
+    return "Hello, world!"
+
+
+@ops.version
+def ops_version_decorated_fn() -> str:
+    return "Hello, world!"
+
+
+@ops.version()
+def ops_version_decorated_empty_parens_fn() -> str:
+    return "Hello, world!"
+
+
+@ops.version(tags=["production"])
+def ops_version_decorated_with_tags_fn() -> str:
+    return "Hello, world!"
+
+
+@test_decorator("test_param")
+@version(tags=["beta"])
+def multi_decorator_with_version_fn() -> str:
+    return "Hello, world!"
+
+
+@version(tags=["beta"])
+@test_decorator("test_param")
+def version_first_multi_decorator_fn() -> str:
+    return "Hello, world!"
