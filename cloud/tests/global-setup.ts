@@ -34,7 +34,11 @@ const acquireContainer = Effect.tryPromise({
 const runMigrations = (connectionUri: string) =>
   Effect.tryPromise({
     try: async () => {
-      const sql = postgres(connectionUri, { max: 1 });
+      const sql = postgres(connectionUri, {
+        max: 1,
+        // Suppress PostgreSQL NOTICE messages (e.g., identifier truncation, type skipping)
+        onnotice: () => {},
+      });
       const db = drizzle(sql);
       await migrate(db, {
         migrationsFolder: path.resolve(__dirname, "../db/migrations"),
