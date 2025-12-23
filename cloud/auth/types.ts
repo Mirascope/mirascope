@@ -1,3 +1,8 @@
+/**
+ * @fileoverview OAuth type definitions.
+ *
+ * This module contains only TypeScript type definitions with no runtime code.
+ */
 import { Schema } from "effect";
 
 export type AuthenticatedUserInfo = {

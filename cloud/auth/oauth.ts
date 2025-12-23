@@ -1,3 +1,16 @@
+/* v8 ignore start -- OAuth flows require network requests to external providers */
+/**
+ * @fileoverview OAuth authentication flow implementation.
+ *
+ * This module handles OAuth flows for GitHub and Google providers, including:
+ * - Provider configuration creation
+ * - OAuth flow initiation and callbacks
+ * - Token exchange and user info fetching
+ * - Session creation and redirect handling
+ *
+ * These functions involve network requests to external OAuth providers and are
+ * tested via integration tests rather than unit tests.
+ */
 import { Effect, Schema } from "effect";
 import { EffectDatabase, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
@@ -16,7 +29,7 @@ import type {
   GoogleUser,
   TokenData,
 } from "@/auth/types";
-import {
+import { 
   TokenDataSchema,
   GitHubUserSchema,
   GitHubEmailSchema,
