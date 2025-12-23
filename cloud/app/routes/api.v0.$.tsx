@@ -82,7 +82,10 @@ export const Route = createFileRoute("/api/v0/$")({
           Effect.provide(
             Database.Live({
               database: { connectionString: databaseUrl },
-              stripe: { apiKey: process.env.STRIPE_SECRET_KEY || "" },
+              stripe: {
+                apiKey: process.env.STRIPE_SECRET_KEY || "",
+                routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
+              },
             }),
           ),
           handleErrors,
