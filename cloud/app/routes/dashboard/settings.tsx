@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Protected } from "@/app/components/protected";
 import { DashboardLayout } from "@/app/components/dashboard-layout";
@@ -10,6 +10,17 @@ import {
   useCreateApiKey,
   useDeleteApiKey,
 } from "@/app/api/api-keys";
+import {
+  useProjects,
+  useCreateProject,
+  useDeleteProject,
+} from "@/app/api/projects";
+import {
+  useEnvironments,
+  useCreateEnvironment,
+  useDeleteEnvironment,
+} from "@/app/api/environments";
+import { useDeleteOrganization } from "@/app/api/organizations";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -34,6 +45,19 @@ function SettingsPage() {
           <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
           <div className="space-y-6">
+            <OrganizationSection
+              organizationId={selectedOrganization?.id ?? null}
+            />
+
+            <ProjectsSection
+              organizationId={selectedOrganization?.id ?? null}
+            />
+
+            <EnvironmentsSection
+              organizationId={selectedOrganization?.id ?? null}
+              projectId={selectedProject?.id ?? null}
+            />
+
             <ApiKeysSection
               organizationId={selectedOrganization?.id ?? null}
               projectId={selectedProject?.id ?? null}
@@ -43,6 +67,305 @@ function SettingsPage() {
         </div>
       </DashboardLayout>
     </Protected>
+  );
+}
+
+function OrganizationSection({
+  organizationId,
+}: {
+  organizationId: string | null;
+}) {
+  const [confirmDelete, setConfirmDelete] = useState("");
+  const navigate = useNavigate();
+  const { selectedOrganization, setSelectedOrganization } = useOrganization();
+  const deleteOrganization = useDeleteOrganization();
+
+  const handleDelete = async () => {
+    if (!organizationId || confirmDelete !== selectedOrganization?.name) {
+      return;
+    }
+
+    await deleteOrganization.mutateAsync(organizationId);
+    setSelectedOrganization(null);
+    void navigate({ to: "/dashboard" });
+  };
+
+  if (!organizationId || !selectedOrganization) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Organization</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Select an organization to manage.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="border-destructive/50">
+      <CardHeader>
+        <CardTitle>Danger Zone</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="p-4 border border-destructive/50 rounded-md">
+          <h3 className="font-medium text-destructive mb-2">
+            Delete Organization
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            This will permanently delete the organization{" "}
+            <strong>{selectedOrganization.name}</strong> and all its projects,
+            environments, and API keys. This action cannot be undone.
+          </p>
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={confirmDelete}
+              onChange={(e) => setConfirmDelete(e.target.value)}
+              placeholder={`Type "${selectedOrganization.name}" to confirm`}
+              className="w-full px-3 py-2 border rounded-md bg-background"
+            />
+            <Button
+              variant="destructive"
+              onClick={() => void handleDelete()}
+              disabled={
+                confirmDelete !== selectedOrganization.name ||
+                deleteOrganization.isPending
+              }
+            >
+              {deleteOrganization.isPending
+                ? "Deleting..."
+                : "Delete Organization"}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProjectsSection({
+  organizationId,
+}: {
+  organizationId: string | null;
+}) {
+  const [newProjectName, setNewProjectName] = useState("");
+  const { setSelectedProject } = useProject();
+
+  const { data: projects, isLoading } = useProjects(organizationId);
+  const createProject = useCreateProject();
+  const deleteProject = useDeleteProject();
+
+  const handleCreate = async () => {
+    if (!organizationId || !newProjectName.trim()) return;
+
+    await createProject.mutateAsync({
+      organizationId,
+      name: newProjectName.trim(),
+    });
+    setNewProjectName("");
+  };
+
+  const handleDelete = async (projectId: string, projectName: string) => {
+    if (!organizationId) return;
+
+    if (
+      !window.confirm(
+        `Are you sure you want to delete project "${projectName}"? This will also delete all environments and API keys.`,
+      )
+    ) {
+      return;
+    }
+
+    await deleteProject.mutateAsync({ organizationId, projectId });
+    setSelectedProject(null);
+  };
+
+  if (!organizationId) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Projects</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Select an organization to manage projects.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Projects</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newProjectName}
+            onChange={(e) => setNewProjectName(e.target.value)}
+            placeholder="Project name"
+            className="flex-1 px-3 py-2 border rounded-md bg-background"
+          />
+          <Button
+            onClick={() => void handleCreate()}
+            disabled={!newProjectName.trim() || createProject.isPending}
+          >
+            {createProject.isPending ? "Creating..." : "Create Project"}
+          </Button>
+        </div>
+
+        {isLoading ? (
+          <p className="text-muted-foreground">Loading projects...</p>
+        ) : projects && projects.length > 0 ? (
+          <div className="space-y-2">
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                className="flex items-center justify-between p-3 border rounded-md"
+              >
+                <p className="font-medium">{project.name}</p>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => void handleDelete(project.id, project.name)}
+                  disabled={deleteProject.isPending}
+                >
+                  Delete
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">
+            No projects yet. Create one to get started.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function EnvironmentsSection({
+  organizationId,
+  projectId,
+}: {
+  organizationId: string | null;
+  projectId: string | null;
+}) {
+  const [newEnvName, setNewEnvName] = useState("");
+  const { selectedEnvironment, setSelectedEnvironment } = useEnvironment();
+
+  const { data: environments, isLoading } = useEnvironments(
+    organizationId,
+    projectId,
+  );
+  const createEnvironment = useCreateEnvironment();
+  const deleteEnvironment = useDeleteEnvironment();
+
+  const handleCreate = async () => {
+    if (!organizationId || !projectId || !newEnvName.trim()) return;
+
+    await createEnvironment.mutateAsync({
+      organizationId,
+      projectId,
+      data: { name: newEnvName.trim() },
+    });
+    setNewEnvName("");
+  };
+
+  const handleDelete = async (environmentId: string, envName: string) => {
+    if (!organizationId || !projectId) return;
+
+    if (
+      !window.confirm(
+        `Are you sure you want to delete environment "${envName}"? This will also delete all API keys.`,
+      )
+    ) {
+      return;
+    }
+
+    await deleteEnvironment.mutateAsync({
+      organizationId,
+      projectId,
+      environmentId,
+    });
+    if (selectedEnvironment?.id === environmentId) {
+      setSelectedEnvironment(null);
+    }
+  };
+
+  if (!organizationId || !projectId) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Environments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Select an organization and project to manage environments.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Environments</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newEnvName}
+            onChange={(e) => setNewEnvName(e.target.value)}
+            placeholder="Environment name"
+            className="flex-1 px-3 py-2 border rounded-md bg-background"
+          />
+          <Button
+            onClick={() => void handleCreate()}
+            disabled={!newEnvName.trim() || createEnvironment.isPending}
+          >
+            {createEnvironment.isPending ? "Creating..." : "Create Environment"}
+          </Button>
+        </div>
+
+        {isLoading ? (
+          <p className="text-muted-foreground">Loading environments...</p>
+        ) : environments && environments.length > 0 ? (
+          <div className="space-y-2">
+            {environments.map((env) => (
+              <div
+                key={env.id}
+                className="flex items-center justify-between p-3 border rounded-md"
+              >
+                <p className="font-medium">{env.name}</p>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => void handleDelete(env.id, env.name)}
+                  disabled={deleteEnvironment.isPending}
+                >
+                  Delete
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">
+            No environments yet. Create one to get started.
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -122,7 +445,6 @@ function ApiKeysSection({
         <CardTitle>API Keys</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Create new API key */}
         <div className="flex gap-2">
           <input
             type="text"
@@ -139,7 +461,6 @@ function ApiKeysSection({
           </Button>
         </div>
 
-        {/* Show newly created key */}
         {createdKey && (
           <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-md">
             <p className="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
@@ -167,7 +488,6 @@ function ApiKeysSection({
           </div>
         )}
 
-        {/* List existing keys */}
         {isLoading ? (
           <p className="text-muted-foreground">Loading API keys...</p>
         ) : apiKeys && apiKeys.length > 0 ? (
