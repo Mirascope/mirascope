@@ -97,7 +97,7 @@ export const handleRequest = (
     yield* Effect.tryPromise({
       try: () => webHandler.dispose(),
       catch: (error) =>
-        /* v8 ignore next 1 - dispose failures are swallowed, so this error path is not easily testable */
+        /* v8 ignore next 4 - dispose failures are swallowed, so this error path is not easily testable */
         new HandlerError({
           message: "Failed to dispose web handler",
           cause: error,

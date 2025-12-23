@@ -12,6 +12,8 @@ import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useCreateOrganization } from "@/app/api/organizations";
 import { useCreateProject } from "@/app/api/projects";
+import { useEnvironment } from "@/app/contexts/environment";
+import { useCreateEnvironment } from "@/app/api/environments";
 
 function CreateOrganizationDialog({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
@@ -140,6 +142,78 @@ function CreateProjectDialog({
   );
 }
 
+function CreateEnvironmentDialog({
+  organizationId,
+  projectId,
+  onClose,
+}: {
+  organizationId: string;
+  projectId: string;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const createEnvironment = useCreateEnvironment();
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!name.trim()) {
+      setError("Environment name is required");
+      return;
+    }
+
+    try {
+      await createEnvironment.mutateAsync({
+        organizationId,
+        projectId,
+        data: { name: name.trim() },
+      });
+      onClose();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to create environment",
+      );
+    }
+  };
+
+  return (
+    <div className="p-3 border-b border-sidebar-border">
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-2">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Environment name"
+          className="w-full px-2 py-1.5 text-sm border border-input rounded-md bg-background"
+          autoFocus
+        />
+        {error && <p className="text-xs text-destructive">{error}</p>}
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            size="sm"
+            disabled={createEnvironment.isPending}
+            className="flex-1"
+          >
+            {createEnvironment.isPending ? "..." : "Create"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function Sidebar() {
   const {
     organizations,
@@ -153,9 +227,16 @@ export function Sidebar() {
     setSelectedProject,
     isLoading: projectsLoading,
   } = useProject();
+  const {
+    environments,
+    selectedEnvironment,
+    setSelectedEnvironment,
+    isLoading: envsLoading,
+  } = useEnvironment();
 
   const [showCreateOrg, setShowCreateOrg] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
+  const [showCreateEnv, setShowCreateEnv] = useState(false);
 
   return (
     <aside className="w-64 h-screen flex flex-col bg-sidebar border-r border-sidebar-border">
@@ -204,6 +285,57 @@ export function Sidebar() {
         <CreateProjectDialog
           organizationId={selectedOrganization.id}
           onClose={() => setShowCreateProject(false)}
+        />
+      )}
+
+      {/* Environment selector */}
+      <div className="p-3 border-b border-sidebar-border">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-medium text-sidebar-foreground/70">
+            Environment
+          </span>
+          {selectedOrganization && selectedProject && (
+            <button
+              onClick={() => setShowCreateEnv(!showCreateEnv)}
+              className="text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground"
+            >
+              {showCreateEnv ? "×" : "+"}
+            </button>
+          )}
+        </div>
+        {envsLoading ? (
+          <div className="text-sm text-sidebar-foreground/50">Loading...</div>
+        ) : environments.length === 0 ? (
+          <div className="text-sm text-sidebar-foreground/50">
+            No environments
+          </div>
+        ) : (
+          <Select
+            value={selectedEnvironment?.id || ""}
+            onValueChange={(value) => {
+              const env = environments.find((e) => e.id === value);
+              setSelectedEnvironment(env || null);
+            }}
+          >
+            <SelectTrigger className="bg-sidebar">
+              <SelectValue placeholder="Select environment" />
+            </SelectTrigger>
+            <SelectContent>
+              {environments.map((env) => (
+                <SelectItem key={env.id} value={env.id}>
+                  {env.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      {showCreateEnv && selectedOrganization && selectedProject && (
+        <CreateEnvironmentDialog
+          organizationId={selectedOrganization.id}
+          projectId={selectedProject.id}
+          onClose={() => setShowCreateEnv(false)}
         />
       )}
 
