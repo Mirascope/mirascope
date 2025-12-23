@@ -106,3 +106,36 @@ export class PermissionDeniedError extends Schema.TaggedError<PermissionDeniedEr
 ) {
   static readonly status = 403 as const;
 }
+
+// =============================================================================
+// Payment Errors
+// =============================================================================
+
+/**
+ * Error that occurs during Stripe API operations.
+ *
+ * This error wraps any failures from the Stripe SDK, including:
+ * - Network errors
+ * - API errors (invalid parameters, authentication failures, etc.)
+ * - Rate limiting
+ * - Server errors
+ *
+ * @example
+ * ```ts
+ * const customer = yield* stripe.customers.create({ email: "..." }).pipe(
+ *   Effect.catchTag("StripeError", (error) => {
+ *     console.error("Stripe operation failed:", error.message);
+ *     return Effect.succeed(null);
+ *   })
+ * );
+ * ```
+ */
+export class StripeError extends Schema.TaggedError<StripeError>()(
+  "StripeError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
