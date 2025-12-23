@@ -162,8 +162,8 @@
 }
 
 @theme inline {
-  --color-mirascope-purple: #6366f1; /* Mirascope purple */
-  --color-mirascope-purple-dark: #5452dc; /* Darker purple */
+  --color-mirple: #6366f1; /* Mirascope purple */
+  --color-mirple-dark: #5452dc; /* Darker purple */
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
