@@ -67,6 +67,7 @@ class ProjectsClient:
         organization_id: str,
         *,
         name: str,
+        slug: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ProjectsCreateResponse:
         """
@@ -76,6 +77,9 @@ class ProjectsClient:
 
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -93,10 +97,11 @@ class ProjectsClient:
         client.projects.create(
             organization_id="organizationId",
             name="name",
+            slug="slug",
         )
         """
         _response = self._raw_client.create(
-            organization_id, name=name, request_options=request_options
+            organization_id, name=name, slug=slug, request_options=request_options
         )
         return _response.data
 
@@ -142,7 +147,8 @@ class ProjectsClient:
         organization_id: str,
         project_id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ProjectsUpdateResponse:
         """
@@ -152,8 +158,11 @@ class ProjectsClient:
 
         project_id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -171,11 +180,14 @@ class ProjectsClient:
         client.projects.update(
             organization_id="organizationId",
             project_id="projectId",
-            name="name",
         )
         """
         _response = self._raw_client.update(
-            organization_id, project_id, name=name, request_options=request_options
+            organization_id,
+            project_id,
+            name=name,
+            slug=slug,
+            request_options=request_options,
         )
         return _response.data
 
@@ -277,6 +289,7 @@ class AsyncProjectsClient:
         organization_id: str,
         *,
         name: str,
+        slug: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ProjectsCreateResponse:
         """
@@ -286,6 +299,9 @@ class AsyncProjectsClient:
 
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -308,13 +324,14 @@ class AsyncProjectsClient:
             await client.projects.create(
                 organization_id="organizationId",
                 name="name",
+                slug="slug",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            organization_id, name=name, request_options=request_options
+            organization_id, name=name, slug=slug, request_options=request_options
         )
         return _response.data
 
@@ -368,7 +385,8 @@ class AsyncProjectsClient:
         organization_id: str,
         project_id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> ProjectsUpdateResponse:
         """
@@ -378,8 +396,11 @@ class AsyncProjectsClient:
 
         project_id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -402,14 +423,17 @@ class AsyncProjectsClient:
             await client.projects.update(
                 organization_id="organizationId",
                 project_id="projectId",
-                name="name",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            organization_id, project_id, name=name, request_options=request_options
+            organization_id,
+            project_id,
+            name=name,
+            slug=slug,
+            request_options=request_options,
         )
         return _response.data
 

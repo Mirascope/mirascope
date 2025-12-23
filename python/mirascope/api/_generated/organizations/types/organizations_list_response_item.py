@@ -10,6 +10,7 @@ from .organizations_list_response_item_role import OrganizationsListResponseItem
 class OrganizationsListResponseItem(UniversalBaseModel):
     id: str
     name: str
+    slug: str
     role: OrganizationsListResponseItemRole
 
     if IS_PYDANTIC_V2:

@@ -11,6 +11,7 @@ from ...core.serialization import FieldMetadata
 class ProjectsUpdateResponse(UniversalBaseModel):
     id: str
     name: str
+    slug: str
     organization_id: typing_extensions.Annotated[
         str, FieldMetadata(alias="organizationId")
     ]

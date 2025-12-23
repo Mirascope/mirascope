@@ -54,13 +54,20 @@ class OrganizationsClient:
         return _response.data
 
     def create(
-        self, *, name: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
         Parameters
         ----------
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -77,9 +84,12 @@ class OrganizationsClient:
         client = Mirascope()
         client.organizations.create(
             name="name",
+            slug="slug",
         )
         """
-        _response = self._raw_client.create(name=name, request_options=request_options)
+        _response = self._raw_client.create(
+            name=name, slug=slug, request_options=request_options
+        )
         return _response.data
 
     def get(
@@ -114,7 +124,8 @@ class OrganizationsClient:
         self,
         id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsUpdateResponse:
         """
@@ -122,8 +133,11 @@ class OrganizationsClient:
         ----------
         id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -140,11 +154,10 @@ class OrganizationsClient:
         client = Mirascope()
         client.organizations.update(
             id="id",
-            name="name",
         )
         """
         _response = self._raw_client.update(
-            id, name=name, request_options=request_options
+            id, name=name, slug=slug, request_options=request_options
         )
         return _response.data
 
@@ -224,13 +237,20 @@ class AsyncOrganizationsClient:
         return _response.data
 
     async def create(
-        self, *, name: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
         Parameters
         ----------
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -252,13 +272,14 @@ class AsyncOrganizationsClient:
         async def main() -> None:
             await client.organizations.create(
                 name="name",
+                slug="slug",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            name=name, request_options=request_options
+            name=name, slug=slug, request_options=request_options
         )
         return _response.data
 
@@ -302,7 +323,8 @@ class AsyncOrganizationsClient:
         self,
         id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsUpdateResponse:
         """
@@ -310,8 +332,11 @@ class AsyncOrganizationsClient:
         ----------
         id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -333,14 +358,13 @@ class AsyncOrganizationsClient:
         async def main() -> None:
             await client.organizations.update(
                 id="id",
-                name="name",
             )
 
 
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            id, name=name, request_options=request_options
+            id, name=name, slug=slug, request_options=request_options
         )
         return _response.data
 

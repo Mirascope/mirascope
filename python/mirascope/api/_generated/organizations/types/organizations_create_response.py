@@ -10,6 +10,7 @@ from .organizations_create_response_role import OrganizationsCreateResponseRole
 class OrganizationsCreateResponse(UniversalBaseModel):
     id: str
     name: str
+    slug: str
     role: OrganizationsCreateResponseRole
 
     if IS_PYDANTIC_V2:

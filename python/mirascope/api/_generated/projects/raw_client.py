@@ -128,6 +128,7 @@ class RawProjectsClient:
         organization_id: str,
         *,
         name: str,
+        slug: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ProjectsCreateResponse]:
         """
@@ -137,6 +138,9 @@ class RawProjectsClient:
 
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -151,6 +155,7 @@ class RawProjectsClient:
             method="POST",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -335,7 +340,8 @@ class RawProjectsClient:
         organization_id: str,
         project_id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ProjectsUpdateResponse]:
         """
@@ -345,8 +351,11 @@ class RawProjectsClient:
 
         project_id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -361,6 +370,7 @@ class RawProjectsClient:
             method="PUT",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -407,6 +417,17 @@ class RawProjectsClient:
                         NotFoundErrorBody,
                         parse_obj_as(
                             type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        AlreadyExistsError,
+                        parse_obj_as(
+                            type_=AlreadyExistsError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -622,6 +643,7 @@ class AsyncRawProjectsClient:
         organization_id: str,
         *,
         name: str,
+        slug: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ProjectsCreateResponse]:
         """
@@ -631,6 +653,9 @@ class AsyncRawProjectsClient:
 
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -645,6 +670,7 @@ class AsyncRawProjectsClient:
             method="POST",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -829,7 +855,8 @@ class AsyncRawProjectsClient:
         organization_id: str,
         project_id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ProjectsUpdateResponse]:
         """
@@ -839,8 +866,11 @@ class AsyncRawProjectsClient:
 
         project_id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -855,6 +885,7 @@ class AsyncRawProjectsClient:
             method="PUT",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -901,6 +932,17 @@ class AsyncRawProjectsClient:
                         NotFoundErrorBody,
                         parse_obj_as(
                             type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        AlreadyExistsError,
+                        parse_obj_as(
+                            type_=AlreadyExistsError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

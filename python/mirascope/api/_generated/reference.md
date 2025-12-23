@@ -228,6 +228,7 @@ from mirascope.api._generated import Mirascope
 client = Mirascope()
 client.organizations.create(
     name="name",
+    slug="slug",
 )
 
 ```
@@ -245,6 +246,14 @@ client.organizations.create(
 <dd>
 
 **name:** `str` — a string at most 100 character(s) long
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slug:** `str` — a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
     
 </dd>
 </dl>
@@ -336,7 +345,6 @@ from mirascope.api._generated import Mirascope
 client = Mirascope()
 client.organizations.update(
     id="id",
-    name="name",
 )
 
 ```
@@ -361,7 +369,15 @@ client.organizations.update(
 <dl>
 <dd>
 
-**name:** `str` — a string at most 100 character(s) long
+**name:** `typing.Optional[str]` — a string at most 100 character(s) long
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slug:** `typing.Optional[str]` — a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
     
 </dd>
 </dl>
@@ -509,6 +525,7 @@ client = Mirascope()
 client.projects.create(
     organization_id="organizationId",
     name="name",
+    slug="slug",
 )
 
 ```
@@ -534,6 +551,14 @@ client.projects.create(
 <dd>
 
 **name:** `str` — a string at most 100 character(s) long
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slug:** `str` — a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
     
 </dd>
 </dl>
@@ -635,7 +660,6 @@ client = Mirascope()
 client.projects.update(
     organization_id="organizationId",
     project_id="projectId",
-    name="name",
 )
 
 ```
@@ -668,7 +692,15 @@ client.projects.update(
 <dl>
 <dd>
 
-**name:** `str` — a string at most 100 character(s) long
+**name:** `typing.Optional[str]` — a string at most 100 character(s) long
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slug:** `typing.Optional[str]` — a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
     
 </dd>
 </dl>
@@ -835,6 +867,7 @@ client.environments.create(
     organization_id="organizationId",
     project_id="projectId",
     name="name",
+    slug="slug",
 )
 
 ```
@@ -868,6 +901,14 @@ client.environments.create(
 <dd>
 
 **name:** `str` — a string at most 100 character(s) long
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slug:** `str` — a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
     
 </dd>
 </dl>
@@ -979,7 +1020,6 @@ client.environments.update(
     organization_id="organizationId",
     project_id="projectId",
     environment_id="environmentId",
-    name="name",
 )
 
 ```
@@ -1020,7 +1060,15 @@ client.environments.update(
 <dl>
 <dd>
 
-**name:** `str` — a string at most 100 character(s) long
+**name:** `typing.Optional[str]` — a string at most 100 character(s) long
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slug:** `typing.Optional[str]` — a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
     
 </dd>
 </dl>

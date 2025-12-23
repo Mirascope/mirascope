@@ -132,6 +132,7 @@ class RawEnvironmentsClient:
         project_id: str,
         *,
         name: str,
+        slug: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EnvironmentsCreateResponse]:
         """
@@ -143,6 +144,9 @@ class RawEnvironmentsClient:
 
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -157,6 +161,7 @@ class RawEnvironmentsClient:
             method="POST",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -345,7 +350,8 @@ class RawEnvironmentsClient:
         project_id: str,
         environment_id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EnvironmentsUpdateResponse]:
         """
@@ -357,8 +363,11 @@ class RawEnvironmentsClient:
 
         environment_id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -373,6 +382,7 @@ class RawEnvironmentsClient:
             method="PUT",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -652,6 +662,7 @@ class AsyncRawEnvironmentsClient:
         project_id: str,
         *,
         name: str,
+        slug: str,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EnvironmentsCreateResponse]:
         """
@@ -663,6 +674,9 @@ class AsyncRawEnvironmentsClient:
 
         name : str
             a string at most 100 character(s) long
+
+        slug : str
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -677,6 +691,7 @@ class AsyncRawEnvironmentsClient:
             method="POST",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",
@@ -865,7 +880,8 @@ class AsyncRawEnvironmentsClient:
         project_id: str,
         environment_id: str,
         *,
-        name: str,
+        name: typing.Optional[str] = OMIT,
+        slug: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EnvironmentsUpdateResponse]:
         """
@@ -877,8 +893,11 @@ class AsyncRawEnvironmentsClient:
 
         environment_id : str
 
-        name : str
+        name : typing.Optional[str]
             a string at most 100 character(s) long
+
+        slug : typing.Optional[str]
+            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -893,6 +912,7 @@ class AsyncRawEnvironmentsClient:
             method="PUT",
             json={
                 "name": name,
+                "slug": slug,
             },
             headers={
                 "content-type": "application/json",

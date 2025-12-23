@@ -11,6 +11,7 @@ from ...core.serialization import FieldMetadata
 class EnvironmentsListResponseItem(UniversalBaseModel):
     id: str
     name: str
+    slug: str
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
 
     if IS_PYDANTIC_V2:
