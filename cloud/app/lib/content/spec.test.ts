@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import {
   validateSlug,
   validateDocSpec,
@@ -10,14 +10,14 @@ import {
 } from "./spec";
 
 describe("validateSlug", () => {
-  test("valid slugs pass validation", () => {
+  it("valid slugs pass validation", () => {
     expect(validateSlug("valid-slug").isValid).toBe(true);
     expect(validateSlug("valid_slug").isValid).toBe(true);
     expect(validateSlug("validslug123").isValid).toBe(true);
     expect(validateSlug("index").isValid).toBe(true); // Special case
   });
 
-  test("invalid slugs fail validation", () => {
+  it("invalid slugs fail validation", () => {
     expect(validateSlug("").isValid).toBe(false);
     expect(validateSlug("Invalid").isValid).toBe(false); // Contains uppercase
     expect(validateSlug("invalid/slug").isValid).toBe(false); // Contains slash
@@ -25,7 +25,7 @@ describe("validateSlug", () => {
     expect(validateSlug("invalid.slug").isValid).toBe(false); // Contains period
   });
 
-  test("error messages are descriptive", () => {
+  it("error messages are descriptive", () => {
     const result = validateSlug("Invalid/slug");
     expect(result.isValid).toBe(false);
     expect(result.errors.length).toBe(2);
@@ -35,7 +35,7 @@ describe("validateSlug", () => {
 });
 
 describe("validateDocSpec", () => {
-  test("valid DocSpec passes validation", () => {
+  it("valid DocSpec passes validation", () => {
     const validDoc: DocSpec = {
       slug: "valid-slug",
       label: "Valid Document",
@@ -43,7 +43,7 @@ describe("validateDocSpec", () => {
     expect(validateDocSpec(validDoc).isValid).toBe(true);
   });
 
-  test("invalid slug fails validation", () => {
+  it("invalid slug fails validation", () => {
     const invalidDoc: DocSpec = {
       slug: "Invalid/slug",
       label: "Invalid Document",
@@ -51,7 +51,7 @@ describe("validateDocSpec", () => {
     expect(validateDocSpec(invalidDoc).isValid).toBe(false);
   });
 
-  test("nested children are validated", () => {
+  it("nested children are validated", () => {
     const docWithInvalidChild: DocSpec = {
       slug: "valid-parent",
       label: "Parent",
@@ -67,7 +67,7 @@ describe("validateDocSpec", () => {
     expect(result.errors[0]).toContain('In child "Invalid Child"');
   });
 
-  test("duplicate child slugs fail validation", () => {
+  it("duplicate child slugs fail validation", () => {
     const docWithDupeChildren: DocSpec = {
       slug: "valid-parent",
       label: "Parent",
@@ -83,7 +83,7 @@ describe("validateDocSpec", () => {
 });
 
 describe("validateSectionSpec", () => {
-  test("valid section passes validation", () => {
+  it("valid section passes validation", () => {
     const validSection: SectionSpec = {
       slug: "valid-section",
       label: "Valid Section",
@@ -95,7 +95,7 @@ describe("validateSectionSpec", () => {
     expect(validateSectionSpec(validSection).isValid).toBe(true);
   });
 
-  test("section without children fails validation", () => {
+  it("section without children fails validation", () => {
     const emptySection: SectionSpec = {
       slug: "empty-section",
       label: "Empty Section",
@@ -108,7 +108,7 @@ describe("validateSectionSpec", () => {
 });
 
 describe("validateProductSpec", () => {
-  test("valid product passes validation", () => {
+  it("valid product passes validation", () => {
     const validProduct: ProductSpec = {
       product: { name: "mirascope" },
       sections: [
@@ -122,7 +122,7 @@ describe("validateProductSpec", () => {
     expect(validateProductSpec(validProduct).isValid).toBe(true);
   });
 
-  test("product with duplicate sections fails validation", () => {
+  it("product with duplicate sections fails validation", () => {
     const productWithDupeSections: ProductSpec = {
       product: { name: "mirascope" },
       sections: [

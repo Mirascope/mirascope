@@ -112,7 +112,9 @@ class DocRegistry {
    * Get all docs for a specific product
    */
   getDocsByProduct(product: Product): DocInfo[] {
-    return this.allDocs.filter((doc) => productKey(doc.product) === productKey(product));
+    return this.allDocs.filter(
+      (doc) => productKey(doc.product) === productKey(product),
+    );
   }
 
   /**

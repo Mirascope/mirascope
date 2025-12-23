@@ -14,12 +14,20 @@ export type Slug = string;
 function countTokens(text: string): number {
   try {
     // Import dynamically to avoid bundling in client
-    const { encodingForModel } = require("js-tiktoken");
-    const encoder = encodingForModel("gpt-4");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const tiktoken = require("js-tiktoken") as {
+      encodingForModel: (model: string) => {
+        encode: (text: string) => number[];
+      };
+    };
+    const encoder = tiktoken.encodingForModel("gpt-4");
     const tokens = encoder.encode(text);
     return tokens.length;
   } catch (error) {
-    console.warn("Token counting failed, falling back to approximation:", error);
+    console.warn(
+      "Token counting failed, falling back to approximation:",
+      error,
+    );
     return Math.ceil(text.length / 4);
   }
 }
@@ -158,7 +166,9 @@ export class LLMContent {
    * Check if this is a leaf content item (has raw content, no children)
    */
   isLeaf(): boolean {
-    return Boolean(this.rawContent && (!this.children || this.children.length === 0));
+    return Boolean(
+      this.rawContent && (!this.children || this.children.length === 0),
+    );
   }
 
   /**
@@ -203,20 +213,24 @@ export class LLMContent {
   /**
    * Deserialize from JSON (for frontend consumption)
    */
-  static fromJSON(data: any): LLMContent {
+  static fromJSON(data: unknown): LLMContent {
     if (!data || typeof data !== "object") {
       throw new Error("Invalid JSON data for LLMContent");
     }
 
-    const children = data.children?.map((childData: any) => LLMContent.fromJSON(childData));
+    const obj = data as Record<string, unknown>;
+    const childrenData = obj.children as unknown[] | undefined;
+    const children = childrenData?.map((childData: unknown) =>
+      LLMContent.fromJSON(childData),
+    );
 
     return new LLMContent({
-      slug: data.slug,
-      title: data.title,
-      tokenCount: data.tokenCount,
-      description: data.description,
-      route: data.route,
-      rawContent: data.rawContent,
+      slug: obj.slug as string,
+      title: obj.title as string,
+      tokenCount: obj.tokenCount as number,
+      description: obj.description as string | undefined,
+      route: obj.route as string | undefined,
+      rawContent: obj.rawContent as string | undefined,
       children,
     });
   }
@@ -230,7 +244,9 @@ export class LLMContent {
  * Generate a table of contents from an array of children
  * Recursively walks the content tree and builds a hierarchical ToC
  */
-export function generateTableOfContents(children: ReadonlyArray<LLMContent>): string {
+export function generateTableOfContents(
+  children: ReadonlyArray<LLMContent>,
+): string {
   let toc = "# Table of Contents\n\n";
 
   // Add sections for each child
@@ -266,7 +282,9 @@ function formatContainerContent(children: ReadonlyArray<LLMContent>): string {
     .map((child) => {
       // For child containers, use getChildrenContent() to avoid nested ToCs
       // For child leaves, use getContent() to get the wrapped content
-      return child.isContainer() ? child.getChildrenContent() : child.getContent();
+      return child.isContainer()
+        ? child.getChildrenContent()
+        : child.getContent();
     })
     .join("\n\n");
   return tocContent + "\n\n" + childrenContent;

@@ -93,7 +93,7 @@ export function processDocSpec(
   docSpec: DocSpec,
   product: Product,
   pathPrefix: string,
-  parentWeight: number = 1.0
+  parentWeight: number = 1.0,
 ): DocInfo[] {
   const result: DocInfo[] = [];
 
@@ -128,7 +128,12 @@ export function processDocSpec(
   // Process children recursively with updated section path and weight
   if (docSpec.children && docSpec.children.length > 0) {
     docSpec.children.forEach((childSpec) => {
-      const childItems = processDocSpec(childSpec, product, path, currentWeight);
+      const childItems = processDocSpec(
+        childSpec,
+        product,
+        path,
+        currentWeight,
+      );
       result.push(...childItems);
     });
   }
@@ -160,7 +165,12 @@ export function getDocsFromSpec(fullSpec: FullDocsSpec): DocInfo[] {
 
       // Process each document in this section
       section.children.forEach((docSpec) => {
-        const docItems = processDocSpec(docSpec, product, sectionPathPrefix, productWeight);
+        const docItems = processDocSpec(
+          docSpec,
+          product,
+          sectionPathPrefix,
+          productWeight,
+        );
         allDocs.push(...docItems);
       });
     });
@@ -189,7 +199,9 @@ export function validateSlug(slug: string): ValidationResult {
   // Check for valid characters
   const validSlugRegex = /^[a-z0-9-_]+$/;
   if (!validSlugRegex.test(slug)) {
-    errors.push("Slug must contain only lowercase letters, numbers, hyphens, and underscores");
+    errors.push(
+      "Slug must contain only lowercase letters, numbers, hyphens, and underscores",
+    );
   }
 
   // Check for slashes
@@ -226,7 +238,9 @@ function checkDuplicateSlugs(items: DocSpec[]): ValidationResult {
   // Check for duplicates
   for (const [slug, labels] of slugMap.entries()) {
     if (labels.length > 1) {
-      errors.push(`Duplicate slug "${slug}" found for items: ${labels.join(", ")}`);
+      errors.push(
+        `Duplicate slug "${slug}" found for items: ${labels.join(", ")}`,
+      );
     }
   }
 
@@ -245,7 +259,9 @@ export function validateDocSpec(spec: DocSpec): ValidationResult {
   // Validate slug
   const slugResult = validateSlug(spec.slug);
   if (!slugResult.isValid) {
-    errors.push(...slugResult.errors.map((err) => `Invalid slug "${spec.slug}": ${err}`));
+    errors.push(
+      ...slugResult.errors.map((err) => `Invalid slug "${spec.slug}": ${err}`),
+    );
   }
 
   // Validate children if present
@@ -253,14 +269,20 @@ export function validateDocSpec(spec: DocSpec): ValidationResult {
     // Check for duplicates within children
     const childrenResult = checkDuplicateSlugs(spec.children);
     if (!childrenResult.isValid) {
-      errors.push(...childrenResult.errors.map((err) => `In "${spec.label}": ${err}`));
+      errors.push(
+        ...childrenResult.errors.map((err) => `In "${spec.label}": ${err}`),
+      );
     }
 
     // Recursively validate each child
     spec.children.forEach((child) => {
       const childResult = validateDocSpec(child);
       if (!childResult.isValid) {
-        errors.push(...childResult.errors.map((err) => `In child "${child.label}": ${err}`));
+        errors.push(
+          ...childResult.errors.map(
+            (err) => `In child "${child.label}": ${err}`,
+          ),
+        );
       }
     });
   }
@@ -280,7 +302,11 @@ export function validateSectionSpec(spec: SectionSpec): ValidationResult {
   // Validate slug
   const slugResult = validateSlug(spec.slug);
   if (!slugResult.isValid) {
-    errors.push(...slugResult.errors.map((err) => `Invalid section slug "${spec.slug}": ${err}`));
+    errors.push(
+      ...slugResult.errors.map(
+        (err) => `Invalid section slug "${spec.slug}": ${err}`,
+      ),
+    );
   }
 
   // Ensure section has children
@@ -290,7 +316,11 @@ export function validateSectionSpec(spec: SectionSpec): ValidationResult {
     // Check for duplicates within children
     const childrenResult = checkDuplicateSlugs(spec.children);
     if (!childrenResult.isValid) {
-      errors.push(...childrenResult.errors.map((err) => `In section "${spec.label}": ${err}`));
+      errors.push(
+        ...childrenResult.errors.map(
+          (err) => `In section "${spec.label}": ${err}`,
+        ),
+      );
     }
 
     // Validate each child
@@ -299,8 +329,9 @@ export function validateSectionSpec(spec: SectionSpec): ValidationResult {
       if (!childResult.isValid) {
         errors.push(
           ...childResult.errors.map(
-            (err) => `In section "${spec.label}", child "${child.label}": ${err}`
-          )
+            (err) =>
+              `In section "${spec.label}", child "${child.label}": ${err}`,
+          ),
         );
       }
     });
@@ -331,7 +362,11 @@ export function validateProductSpec(spec: ProductSpec): ValidationResult {
     spec.sections.forEach((section) => {
       const sectionResult = validateSectionSpec(section);
       if (!sectionResult.isValid) {
-        errors.push(...sectionResult.errors.map((err) => `In section "${section.label}": ${err}`));
+        errors.push(
+          ...sectionResult.errors.map(
+            (err) => `In section "${section.label}": ${err}`,
+          ),
+        );
       }
     });
   }
@@ -358,7 +393,9 @@ export function validateFullDocsSpec(specs: FullDocsSpec): ValidationResult {
     productPaths.add(path);
     const productResult = validateProductSpec(productSpec);
     if (!productResult.isValid) {
-      errors.push(...productResult.errors.map((err) => `In product "${path}": ${err}`));
+      errors.push(
+        ...productResult.errors.map((err) => `In product "${path}": ${err}`),
+      );
     }
   });
 

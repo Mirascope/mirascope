@@ -146,7 +146,7 @@ export function extractTextFromReactChildren(
  * @returns The component's display name or type name
  */
 function getComponentName(
-  component: React.ComponentType<any> | string | undefined,
+  component: React.ComponentType<object> | string | undefined,
 ): string {
   if (!component) return "";
   if (typeof component === "string") return component;

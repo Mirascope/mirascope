@@ -1,8 +1,8 @@
-import { describe, test, expect } from "bun:test";
-import { isHiddenRoute } from "./router-utils";
+import { describe, it, expect } from "vitest";
+import { isHiddenRoute } from "./hidden-routes";
 
 describe("isHiddenRoute", () => {
-  test("should correctly identify dev routes as hidden", () => {
+  it("should correctly identify dev routes as hidden", () => {
     // These should all be hidden
     expect(isHiddenRoute("/dev")).toBe(true);
     expect(isHiddenRoute("/dev/")).toBe(true);

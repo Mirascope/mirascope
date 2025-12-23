@@ -1,15 +1,16 @@
-import { ContentError } from "./content";
+import { Effect } from "effect";
 import remarkGfm from "remark-gfm";
 import { compile } from "@mdx-js/mdx";
 import { rehypeCodeMeta } from "./rehype-code-meta";
 import type { TOCItem } from "@/app/components/blocks/table-of-contents";
 import { extractHeadings } from "@/app/lib/mdx/heading-utils";
+import { ContentError } from "./errors";
 
 /**
  * Result of frontmatter parsing
  */
 export interface FrontmatterResult {
-  frontmatter: Record<string, any>;
+  frontmatter: Record<string, unknown>;
   content: string;
 }
 
@@ -18,7 +19,7 @@ export interface FrontmatterResult {
  */
 export interface ProcessedContent {
   content: string;
-  frontmatter: Record<string, any>;
+  frontmatter: Record<string, unknown>;
   code: string;
   tableOfContents: TOCItem[];
 }
@@ -56,7 +57,7 @@ export function parseFrontmatter(content: string): FrontmatterResult {
       const cleanContent = contentParts.trimStart();
 
       // Parse frontmatter into key-value pairs
-      const frontmatter: Record<string, any> = {};
+      const frontmatter: Record<string, unknown> = {};
 
       // Split by lines and process each line
       frontmatterStr.split("\n").forEach((line) => {
@@ -85,7 +86,7 @@ export function parseFrontmatter(content: string): FrontmatterResult {
       frontmatter: {},
       content,
     };
-  } catch (error) {
+  } catch {
     // In case of parsing error, return the original content
     return {
       frontmatter: {},
@@ -103,10 +104,10 @@ export function parseFrontmatter(content: string): FrontmatterResult {
  * @returns The merged frontmatter
  */
 export function mergeFrontmatter(
-  target: Record<string, any>,
-  source: Record<string, any>,
+  target: Record<string, unknown>,
+  source: Record<string, unknown>,
   overwrite = false,
-): Record<string, any> {
+): Record<string, unknown> {
   const result = { ...target };
 
   for (const [key, value] of Object.entries(source)) {
@@ -123,34 +124,47 @@ export function mergeFrontmatter(
  * MDX processing that parses frontmatter and compiles MDX content
  *
  * @param rawContent - Raw content string with frontmatter
- * @param contentType - The type of content being processed
  * @param options - Additional processing options
- * @returns Processed content with frontmatter, content and compiled code
- * @throws ContentError if MDX processing fails
+ * @returns Effect that yields processed content with frontmatter, content and compiled code
  */
-export async function processMDXContent(
+export function processMDXContent(
   rawContent: string,
   options?: {
     path?: string; // Optional path for better error reporting
   },
-): Promise<ProcessedContent> {
-  if (!rawContent) {
-    throw new ContentError("Empty content provided", options?.path);
-  }
+): Effect.Effect<ProcessedContent, ContentError> {
+  return Effect.gen(function* () {
+    if (!rawContent) {
+      return yield* Effect.fail(
+        new ContentError({
+          message: "Empty content provided",
+          path: options?.path,
+        }),
+      );
+    }
 
-  try {
-    // Extract frontmatter
+    // Extract frontmatter (pure function, won't throw)
     const { frontmatter, content } = parseFrontmatter(rawContent);
 
-    // Extract table of contents
+    // Extract table of contents (pure function)
     const tableOfContents = extractHeadings(content);
 
-    const compiledResult = await compile(content, {
-      outputFormat: "function-body",
-      providerImportSource: "@mdx-js/react",
-      development: process.env.NODE_ENV !== "production",
-      remarkPlugins: [remarkGfm],
-      rehypePlugins: [rehypeCodeMeta],
+    // Compile MDX content using Effect.tryPromise
+    const compiledResult = yield* Effect.tryPromise({
+      try: () =>
+        compile(content, {
+          outputFormat: "function-body",
+          providerImportSource: "@mdx-js/react",
+          development: process.env.NODE_ENV !== "production",
+          remarkPlugins: [remarkGfm],
+          rehypePlugins: [rehypeCodeMeta],
+        }),
+      catch: (error) =>
+        new ContentError({
+          message: `Error processing MDX content: ${error instanceof Error ? error.message : String(error)}`,
+          path: options?.path,
+          cause: error,
+        }),
     });
 
     // Return processed content
@@ -160,12 +174,5 @@ export async function processMDXContent(
       code: String(compiledResult),
       tableOfContents,
     };
-  } catch (error) {
-    // Throw a ContentError instead of returning an error component
-    throw new ContentError(
-      `Error processing MDX content: ${error instanceof Error ? error.message : String(error)}`,
-      options?.path,
-      error instanceof Error ? error : undefined,
-    );
-  }
+  });
 }

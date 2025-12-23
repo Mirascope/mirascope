@@ -1,9 +1,9 @@
-import { describe, test, expect } from "bun:test";
+import { describe, it, expect } from "vitest";
 import { parseFrontmatter, mergeFrontmatter } from "./mdx-processing";
 
 describe("Frontmatter Parser", () => {
   describe("parseFrontmatter", () => {
-    test("extracts frontmatter and content using regex", () => {
+    it("extracts frontmatter and content using regex", () => {
       const input = `---
 title: Test Document
 description: This is a test
@@ -21,10 +21,12 @@ This is the content.`;
         description: "This is a test",
         author: "Test Author",
       });
-      expect(result.content.trim()).toBe("# Test Document\n\nThis is the content.");
+      expect(result.content.trim()).toBe(
+        "# Test Document\n\nThis is the content.",
+      );
     });
 
-    test("handles frontmatter with quoted values", () => {
+    it("handles frontmatter with quoted values", () => {
       const input = `---
 title: "Test Document with Quotes"
 description: 'Single quoted description'
@@ -38,7 +40,7 @@ Content here.`;
       expect(result.frontmatter.description).toBe("Single quoted description");
     });
 
-    test("handles content without frontmatter", () => {
+    it("handles content without frontmatter", () => {
       const input = `# Just Content
       
 No frontmatter here.`;
@@ -49,7 +51,7 @@ No frontmatter here.`;
       expect(result.content).toBe(input);
     });
 
-    test("handles empty frontmatter", () => {
+    it("handles empty frontmatter", () => {
       const input = `---
 ---
 
@@ -61,7 +63,7 @@ Content after empty frontmatter.`;
       expect(result.content.trim()).toBe("Content after empty frontmatter.");
     });
 
-    test("handles frontmatter with empty lines", () => {
+    it("handles frontmatter with empty lines", () => {
       const input = `---
 title: Document with Empty Lines
 
@@ -73,10 +75,12 @@ Content here.`;
       const result = parseFrontmatter(input);
 
       expect(result.frontmatter.title).toBe("Document with Empty Lines");
-      expect(result.frontmatter.description).toBe("Has a blank line in frontmatter");
+      expect(result.frontmatter.description).toBe(
+        "Has a blank line in frontmatter",
+      );
     });
 
-    test("handles documents containing triple dashes in content", () => {
+    it("handles documents containing triple dashes in content", () => {
       const input = `---
 title: Document with Dashes
 ---
@@ -90,10 +94,12 @@ This should be part of the content too.`;
 
       expect(result.frontmatter.title).toBe("Document with Dashes");
       expect(result.content).toContain("Content with --- dashes");
-      expect(result.content).toContain("This should be part of the content too.");
+      expect(result.content).toContain(
+        "This should be part of the content too.",
+      );
     });
 
-    test("handles malformed frontmatter gracefully", () => {
+    it("handles malformed frontmatter gracefully", () => {
       const input = `---
 This is not proper frontmatter
 No colons here
@@ -104,13 +110,18 @@ Content after malformed frontmatter.`;
       const result = parseFrontmatter(input);
 
       expect(result.frontmatter).toEqual({});
-      expect(result.content.trim()).toBe("Content after malformed frontmatter.");
+      expect(result.content.trim()).toBe(
+        "Content after malformed frontmatter.",
+      );
     });
   });
 
   describe("mergeFrontmatter", () => {
-    test("merges two frontmatter objects without overwriting", () => {
-      const target = { title: "Original Title", description: "Original Description" };
+    it("merges two frontmatter objects without overwriting", () => {
+      const target = {
+        title: "Original Title",
+        description: "Original Description",
+      };
       const source = { title: "New Title", author: "Test Author" };
 
       const result = mergeFrontmatter(target, source);
@@ -120,8 +131,11 @@ Content after malformed frontmatter.`;
       expect(result.author).toBe("Test Author"); // Added
     });
 
-    test("merges with overwrite when specified", () => {
-      const target = { title: "Original Title", description: "Original Description" };
+    it("merges with overwrite when specified", () => {
+      const target = {
+        title: "Original Title",
+        description: "Original Description",
+      };
       const source = { title: "New Title", author: "Test Author" };
 
       const result = mergeFrontmatter(target, source, true);
@@ -131,7 +145,7 @@ Content after malformed frontmatter.`;
       expect(result.author).toBe("Test Author"); // Added
     });
 
-    test("handles empty source", () => {
+    it("handles empty source", () => {
       const target = { title: "Original Title" };
       const source = {};
 
@@ -140,7 +154,7 @@ Content after malformed frontmatter.`;
       expect(result).toEqual(target);
     });
 
-    test("handles empty target", () => {
+    it("handles empty target", () => {
       const target = {};
       const source = { title: "New Title" };
 

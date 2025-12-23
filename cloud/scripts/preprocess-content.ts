@@ -1,145 +1,207 @@
 import fs from "fs";
 import path from "path";
-import { ContentPreprocessor } from "@/app/lib/content/preprocess";
+import { Effect, Console } from "effect";
+import { NodeFileSystem } from "@effect/platform-node";
+import { FileSystem } from "@effect/platform";
+import {
+  processAllContent,
+  type PreprocessResult,
+} from "@/app/lib/content/preprocess";
 import type { LLMContent } from "@/app/lib/content/llm-content";
 import { getAllRoutes, isHiddenRoute } from "@/app/lib/router-utils";
 import type { BlogMeta } from "@/app/lib/content/content";
 import llmMeta from "@/content/llms/_llms-meta";
 import type { ViteDevServer, HmrContext } from "vite";
 import { getSettings } from "@/settings";
+import { ContentError } from "@/app/lib/content/errors";
+
+// =============================================================================
+// Effect-based Content Preprocessing
+// =============================================================================
 
 /**
- * Main processing function that generates static JSON files for all MDX content,
- * processes template files, and creates a sitemap.xml file
+ * Effect-based preprocessing that uses NodeFileSystem layer.
+ * This is the main entry point for content preprocessing.
  */
-async function preprocessContent(verbose = true): Promise<void> {
-  try {
-    const preprocessor = new ContentPreprocessor(process.cwd(), verbose);
-    await preprocessor.processAllContent();
+const runPreprocessContent = (
+  verbose = true,
+): Effect.Effect<PreprocessResult, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const result = yield* processAllContent({
+      baseDir: process.cwd(),
+      verbose,
+    });
 
-    if (verbose) console.log("Processing LLM documents...");
-    await writeLLMDocuments(llmMeta, verbose);
+    if (verbose) {
+      yield* Console.log("Processing LLM documents...");
+    }
 
-    await generateSitemap(preprocessor.getMetadataByType().blog, llmMeta);
-    return;
-  } catch (error) {
-    console.error("Error during preprocessing:", error);
-    throw error; // Let the caller handle the error
-  }
+    // Write LLM documents
+    yield* writeLLMDocuments(llmMeta, verbose);
+
+    // Generate sitemap
+    yield* generateSitemap(result.blog, llmMeta);
+
+    return result;
+  });
+
+/**
+ * Run the Effect-based preprocessing with NodeFileSystem layer.
+ */
+async function preprocessContent(verbose = true): Promise<PreprocessResult> {
+  return Effect.runPromise(
+    runPreprocessContent(verbose).pipe(Effect.provide(NodeFileSystem.layer)),
+  );
 }
+
+// =============================================================================
+// LLM Document Processing (Effect-based async)
+// =============================================================================
 
 /**
  * Write LLM documents to disk as JSON and TXT files
  */
-async function writeLLMDocuments(
+const writeLLMDocuments = (
   llmDocs: LLMContent[],
   verbose = true,
-): Promise<void> {
-  const publicDir = path.join(process.cwd(), "public");
+): Effect.Effect<void, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const publicDir = path.join(process.cwd(), "public");
 
-  for (const doc of llmDocs) {
-    const routePath = doc.route!;
+    for (const doc of llmDocs) {
+      const routePath = doc.route!;
 
-    // Write JSON file for viewer consumption at public/static/content/{routePath}.json
-    const jsonPath = path.join(
-      publicDir,
-      "static",
-      "content",
-      `${routePath}.json`,
-    );
-    fs.mkdirSync(path.dirname(jsonPath), { recursive: true });
-    fs.writeFileSync(jsonPath, JSON.stringify(doc.toJSON(), null, 2));
-
-    // Write TXT file for direct LLM consumption at public/{routePath}.txt
-    const txtPath = path.join(publicDir, `${routePath}.txt`);
-    fs.mkdirSync(path.dirname(txtPath), { recursive: true });
-    fs.writeFileSync(txtPath, doc.getContent());
-
-    if (verbose) {
-      console.log(
-        `Generated LLM document: ${routePath} (${doc.tokenCount} tokens)`,
+      // Write JSON file for viewer consumption at public/static/content/{routePath}.json
+      const jsonPath = path.join(
+        publicDir,
+        "static",
+        "content",
+        `${routePath}.json`,
       );
+      yield* fs.makeDirectory(path.dirname(jsonPath), { recursive: true });
+      yield* fs.writeFileString(
+        jsonPath,
+        JSON.stringify(doc.toJSON(), null, 2),
+      );
+
+      // Write TXT file for direct LLM consumption at public/{routePath}.txt
+      const txtPath = path.join(publicDir, `${routePath}.txt`);
+      yield* fs.makeDirectory(path.dirname(txtPath), { recursive: true });
+      yield* fs.writeFileString(txtPath, doc.getContent());
+
+      if (verbose) {
+        yield* Console.log(
+          `Generated LLM document: ${routePath} (${doc.tokenCount} tokens)`,
+        );
+      }
     }
-  }
-}
+  }).pipe(
+    Effect.mapError(
+      (e) =>
+        new ContentError({
+          message: `Failed to write LLM documents: ${String(e)}`,
+        }),
+    ),
+  );
+
+// =============================================================================
+// Sitemap Generation (Effect-based async)
+// =============================================================================
 
 /**
  * Generate sitemap.xml file based on the processed content
  */
-async function generateSitemap(
+const generateSitemap = (
   blogPosts: BlogMeta[],
   llmDocs: LLMContent[],
-): Promise<void> {
-  console.log("Generating sitemap.xml...");
+): Effect.Effect<void, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    yield* Console.log("Generating sitemap.xml...");
 
-  const settings = getSettings();
-  const siteUrl = settings.SITE_URL || "http://localhost:3000";
+    const fsService = yield* FileSystem.FileSystem;
+    const settings = getSettings();
+    const siteUrl = settings.SITE_URL || "http://localhost:3000";
 
-  // Get all routes using our centralized utility
-  const uniqueRoutes = getAllRoutes().filter((route) => route !== "/404");
+    // Get all routes using our centralized utility
+    const uniqueRoutes = getAllRoutes().filter((route) => route !== "/404");
 
-  // Use the blog posts metadata
-  const postsList = blogPosts || [];
+    // Use the blog posts metadata
+    const postsList = blogPosts || [];
 
-  // Current date for default lastmod
-  const today = new Date().toISOString().split("T")[0];
+    // Current date for default lastmod
+    const today = new Date().toISOString().split("T")[0];
 
-  // Get the date of the latest blog post for the /blog route
-  const latestBlogDate =
-    postsList.length > 0
-      ? postsList[0].lastUpdated || postsList[0].date
-      : today;
+    // Get the date of the latest blog post for the /blog route
+    const latestBlogDate =
+      postsList.length > 0
+        ? postsList[0].lastUpdated || postsList[0].date
+        : today;
 
-  // Generate sitemap XML
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    // Generate sitemap XML
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
-  // Add LLM document URLs to the sitemap
-  llmDocs.forEach((llmDoc) => {
-    if (!llmDoc.route || isHiddenRoute(llmDoc.route)) {
-      return;
-    }
-    // Add the .txt file
-    xml += "  <url>\n";
-    xml += `    <loc>${siteUrl}${llmDoc.route}.txt</loc>\n`;
-    xml += `    <lastmod>${today}</lastmod>\n`;
-    xml += "    <changefreq>daily</changefreq>\n";
-    xml += "  </url>\n";
-  });
-
-  // Add each URL
-  uniqueRoutes.forEach((route) => {
-    xml += "  <url>\n";
-    xml += `    <loc>${siteUrl}${route}</loc>\n`;
-
-    // Set lastmod based on whether it's a blog post, blog index, or other page
-    if (route === "/blog") {
-      xml += `    <lastmod>${latestBlogDate}</lastmod>\n`;
-      xml += "    <changefreq>daily</changefreq>\n";
-    } else if (route.startsWith("/blog/")) {
-      // Find the post to get its lastUpdated date
-      const postSlug = route.replace("/blog/", "");
-      const post = postsList.find((p) => p.slug === postSlug);
-      if (post) {
-        xml += `    <lastmod>${post.lastUpdated || post.date}</lastmod>\n`;
-      } else {
-        xml += `    <lastmod>${today}</lastmod>\n`;
+    // Add LLM document URLs to the sitemap
+    llmDocs.forEach((llmDoc) => {
+      if (!llmDoc.route || isHiddenRoute(llmDoc.route)) {
+        return;
       }
-      xml += "    <changefreq>weekly</changefreq>\n";
-    } else {
+      // Add the .txt file
+      xml += "  <url>\n";
+      xml += `    <loc>${siteUrl}${llmDoc.route}.txt</loc>\n`;
       xml += `    <lastmod>${today}</lastmod>\n`;
       xml += "    <changefreq>daily</changefreq>\n";
-    }
+      xml += "  </url>\n";
+    });
 
-    xml += "  </url>\n";
-  });
+    // Add each URL
+    uniqueRoutes.forEach((route) => {
+      xml += "  <url>\n";
+      xml += `    <loc>${siteUrl}${route}</loc>\n`;
 
-  xml += "</urlset>";
+      // Set lastmod based on whether it's a blog post, blog index, or other page
+      if (route === "/blog") {
+        xml += `    <lastmod>${latestBlogDate}</lastmod>\n`;
+        xml += "    <changefreq>daily</changefreq>\n";
+      } else if (route.startsWith("/blog/")) {
+        // Find the post to get its lastUpdated date
+        const postSlug = route.replace("/blog/", "");
+        const post = postsList.find((p) => p.slug === postSlug);
+        if (post) {
+          xml += `    <lastmod>${post.lastUpdated || post.date}</lastmod>\n`;
+        } else {
+          xml += `    <lastmod>${today}</lastmod>\n`;
+        }
+        xml += "    <changefreq>weekly</changefreq>\n";
+      } else {
+        xml += `    <lastmod>${today}</lastmod>\n`;
+        xml += "    <changefreq>daily</changefreq>\n";
+      }
 
-  // Write to file
-  const outFile = path.join(process.cwd(), "public", "sitemap.xml");
-  fs.writeFileSync(outFile, xml);
-}
+      xml += "  </url>\n";
+    });
+
+    xml += "</urlset>";
+
+    // Write to file
+    const outFile = path.join(process.cwd(), "public", "sitemap.xml");
+    yield* fsService.writeFileString(outFile, xml);
+  }).pipe(
+    Effect.mapError(
+      (e) =>
+        new ContentError({
+          message: `Failed to generate sitemap: ${String(e)}`,
+        }),
+    ),
+  );
+
+// =============================================================================
+// Vite Plugin
+// =============================================================================
+
+// Type alias for Node.js setTimeout function because eslint doesn't know NodeJS
+type NodeJsTimeout = ReturnType<typeof setTimeout>;
 
 export function contentPreprocessPlugin(options = { verbose: true }) {
   // Get all content directories (docs includes LLM document templates)
@@ -167,7 +229,7 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
     configureServer(server: ViteDevServer) {
       const { verbose } = options;
 
-      let hmrDebounceTimer: NodeJS.Timeout | null = null;
+      let hmrDebounceTimer: NodeJsTimeout | null = null;
 
       const debouncedHMR = () => {
         if (hmrDebounceTimer) {
@@ -186,10 +248,10 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
       };
 
       // Run preprocessing when the server starts
-      server.httpServer?.once("listening", async () => {
+      server.httpServer?.once("listening", () => {
         if (verbose)
           console.log("Initial content preprocessing for development...");
-        await preprocessContent(verbose).catch((error) => {
+        void preprocessContent(verbose).catch((error: unknown) => {
           console.error("Error preprocessing content:", error);
         });
       });
@@ -230,14 +292,14 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
       }
 
       // React to content changes - these will work for any content directory
-      server.watcher.on("change", async (filePath: string) => {
+      server.watcher.on("change", (filePath: string) => {
         // Handle MDX/TS source file changes - regenerate JSON but don't trigger HMR
         if (
           (filePath.endsWith(".mdx") || filePath.endsWith(".ts")) &&
           filePath.includes("/content/")
         ) {
           if (verbose) console.log(`Content file changed: ${filePath}`);
-          await preprocessContent(false).catch((error) => {
+          void preprocessContent(false).catch((error: unknown) => {
             console.error(
               "Error preprocessing content after file change:",
               error,
@@ -253,14 +315,14 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
         }
       });
 
-      server.watcher.on("add", async (filePath: string) => {
+      server.watcher.on("add", (filePath: string) => {
         // Handle new MDX/TS source files - regenerate JSON
         if (
           (filePath.endsWith(".mdx") || filePath.endsWith(".ts")) &&
           filePath.includes("/content/")
         ) {
           if (verbose) console.log(`Content file added: ${filePath}`);
-          await preprocessContent(false).catch((error) => {
+          void preprocessContent(false).catch((error: unknown) => {
             console.error("Error preprocessing content after file add:", error);
           });
         }
@@ -273,14 +335,14 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
         }
       });
 
-      server.watcher.on("unlink", async (filePath: string) => {
+      server.watcher.on("unlink", (filePath: string) => {
         // Handle deleted MDX/TS source files - regenerate JSON
         if (
           (filePath.endsWith(".mdx") || filePath.endsWith(".ts")) &&
           filePath.includes("/content/")
         ) {
           if (verbose) console.log(`Content file deleted: ${filePath}`);
-          await preprocessContent(false).catch((error) => {
+          void preprocessContent(false).catch((error: unknown) => {
             console.error(
               "Error preprocessing content after file delete:",
               error,
@@ -299,10 +361,18 @@ export function contentPreprocessPlugin(options = { verbose: true }) {
   };
 }
 
+// =============================================================================
+// CLI Entry Point
+// =============================================================================
+
 // Run the preprocessing when this script is executed directly
 if (import.meta.main) {
-  preprocessContent().catch((error) => {
-    console.error("Fatal error during preprocessing:", error);
-    process.exit(1);
-  });
+  preprocessContent()
+    .then(() => {
+      console.log("Preprocessing completed successfully.");
+    })
+    .catch((error) => {
+      console.error("Fatal error during preprocessing:", error);
+      process.exit(1);
+    });
 }

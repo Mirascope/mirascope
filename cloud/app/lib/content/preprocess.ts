@@ -1,6 +1,6 @@
-import fs from "fs";
 import path from "path";
-import { glob } from "glob";
+import { Effect, Array as A, Ref, Console } from "effect";
+import { FileSystem } from "@effect/platform";
 import {
   CONTENT_TYPES,
   type ContentType,
@@ -12,6 +12,11 @@ import {
 } from "./content";
 import { type Product } from "./spec";
 import { preprocessMdx } from "./mdx-preprocessing";
+import { ContentError, MetadataValidationError } from "./errors";
+
+// =============================================================================
+// Types
+// =============================================================================
 
 /**
  * Path representation for consistent handling across the application
@@ -28,305 +33,144 @@ export interface ContentPath {
 }
 
 /**
- * ContentPreprocessor - A class that handles preprocessing of MDX content files
- * into static JSON files with validated metadata.
+ * Result of content preprocessing containing all collected metadata
  */
-export class ContentPreprocessor {
-  // Base directories
-  private readonly baseDir: string;
-  private readonly staticDir: string;
-  private readonly contentDir: string;
-  private readonly metaDir: string;
+export interface PreprocessResult {
+  blog: BlogMeta[];
+  docs: DocMeta[];
+  policy: PolicyMeta[];
+  dev: ContentMeta[];
+}
 
-  // Content tracking with type-specific collections
-  private blogMetadata: BlogMeta[] = [];
-  private docMetadata: DocMeta[] = [];
-  private policyMetadata: PolicyMeta[] = [];
-  private devMetadata: ContentMeta[] = [];
+/**
+ * Configuration for content preprocessing
+ */
+export interface PreprocessConfig {
+  baseDir: string;
+  verbose: boolean;
+}
 
-  // Track errors for reporting
-  private errors: string[] = [];
+// =============================================================================
+// Pure Functions
+// =============================================================================
 
-  // Validation pattern for filenames/slugs
-  private static readonly VALID_SLUG_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
-  private verbose: boolean;
+/**
+ * Validation pattern for filenames/slugs
+ */
+const VALID_SLUG_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
 
-  /**
-   * Constructor - initializes directory structure
-   */
-  constructor(baseDir: string, verbose = true) {
-    this.baseDir = baseDir;
-    this.verbose = verbose;
+/**
+ * Create a consistent ContentPath object from file path components.
+ * This is a pure function.
+ */
+function createContentPath(
+  contentType: ContentType,
+  relativePath: string,
+  filename: string,
+): ContentPath {
+  // Remove .mdx extension from relative path
+  const cleanPath = relativePath.replace(/\.mdx$/, "");
 
-    // Create static directories
-    this.staticDir = path.join(this.baseDir, "public", "static");
-    this.contentDir = path.join(this.staticDir, "content");
-    this.metaDir = path.join(this.staticDir, "content-meta");
+  // The type-scoped path (e.g., "blog/my-post")
+  const typePath = `${contentType}/${cleanPath}`;
 
-    // Initialize directory structure
-    this.initializeDirectories();
-  }
+  // The portion after content type
+  const subpath = cleanPath;
 
-  /**
-   * Create necessary directory structure
-   */
-  private initializeDirectories(): void {
-    // Create base directories
-    fs.mkdirSync(this.staticDir, { recursive: true });
-    fs.mkdirSync(this.contentDir, { recursive: true });
-    fs.mkdirSync(this.metaDir, { recursive: true });
+  // The filename without extension (slug)
+  const slug = filename;
 
-    // Create content type directories
-    for (const contentType of CONTENT_TYPES) {
-      fs.mkdirSync(path.join(this.contentDir, contentType), {
-        recursive: true,
-      });
-      fs.mkdirSync(path.join(this.metaDir, contentType), { recursive: true });
-    }
-  }
+  return {
+    typePath,
+    subpath,
+    slug,
+  };
+}
 
-  /**
-   * Process all content types
-   */
-  async processAllContent(): Promise<void> {
-    if (this.verbose) console.log("Processing all content...");
+/**
+ * Generate a full URL route from content type and path.
+ * Returns an Effect that fails with ContentError if doc not found in registry.
+ */
+function generateRouteFromPath(
+  contentType: ContentType,
+  contentPath: ContentPath,
+  filePath: string,
+): Effect.Effect<string, ContentError> {
+  switch (contentType) {
+    case "blog":
+      return Effect.succeed(`/blog/${contentPath.slug}`);
 
-    // Process each content type
-    for (const contentType of CONTENT_TYPES) {
-      await this.processContentType(contentType);
-    }
+    case "docs": {
+      // Use the DocRegistry to get the pre-calculated routePath
+      const docInfo = docRegistry.getDocInfoByPath(contentPath.subpath);
 
-    // Write metadata index files
-    this.writeMetadataFiles();
-
-    // Generate the unified metadata file
-    this.writeUnifiedMetaFile();
-
-    // Report any errors
-    if (this.errors.length > 0) {
-      console.error("\n🚨 Content preprocessing failed with errors:");
-      this.errors.forEach((error) => console.error(`- ${error}`));
-      throw new Error("Content preprocessing failed. See errors above.");
-    }
-
-    if (this.verbose) console.log("Content preprocessing complete!");
-  }
-
-  /**
-   * Process a specific content type
-   */
-  private async processContentType(contentType: ContentType): Promise<void> {
-    if (this.verbose) console.log(`Processing ${contentType} content...`);
-
-    const srcDir = path.join(this.baseDir, "content", contentType);
-
-    // Skip if source directory doesn't exist
-    if (!fs.existsSync(srcDir)) {
-      if (this.verbose)
-        console.warn(
-          `Source directory for ${contentType} not found: ${srcDir}`,
-        );
-      return;
-    }
-
-    const outputBase = path.join(this.contentDir, contentType);
-
-    try {
-      await this.processContentDirectory(srcDir, contentType, outputBase);
-
-      // Sort blog posts by date if applicable
-      if (contentType === "blog") {
-        this.sortBlogPosts();
+      if (docInfo) {
+        return Effect.succeed(docInfo.routePath);
       }
-    } catch (error) {
-      this.addError(
-        `Error processing ${contentType} content: ${error instanceof Error ? error.message : String(error)}`,
+
+      // If doc not found in registry, this is an error condition
+      return Effect.fail(
+        new ContentError({
+          message: `Doc not found in registry: ${contentPath.subpath}. Make sure it's defined in the _meta.ts file.`,
+          path: filePath,
+        }),
       );
     }
+
+    case "policy":
+      return Effect.succeed(`/${contentPath.subpath}`);
+
+    case "dev":
+      return Effect.succeed(`/dev/${contentPath.slug}`);
+
+    default:
+      return Effect.succeed(`/${contentPath.subpath}`);
   }
+}
 
-  /**
-   * Process a content directory using glob to find all MDX files
-   */
-  private async processContentDirectory(
-    srcDir: string,
-    contentType: ContentType,
-    outputBase: string,
-  ): Promise<void> {
-    // Create output directory if it doesn't exist
-    fs.mkdirSync(outputBase, { recursive: true });
-
-    // Use glob to find all MDX files in the source directory
-    const mdxFiles = await glob(path.join(srcDir, "**/*.mdx"));
-
-    if (this.verbose) {
-      console.log(`Found ${mdxFiles.length} MDX files for ${contentType}`);
-    }
-
-    // Process each MDX file
-    for (const filePath of mdxFiles) {
-      try {
-        await this.processMdxFile(filePath, srcDir, contentType, outputBase);
-      } catch (error) {
-        this.addError(
-          `Error processing ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
-        );
-      }
-    }
-  }
-
-  /**
-   * Create a consistent ContentPath object from file path components
-   */
-  private createContentPath(
-    contentType: ContentType,
-    relativePath: string,
-    filename: string,
-  ): ContentPath {
-    // Remove .mdx extension from relative path
-    const cleanPath = relativePath.replace(/\.mdx$/, "");
-
-    // The type-scoped path (e.g., "blog/my-post")
-    const typePath = `${contentType}/${cleanPath}`;
-
-    // The portion after content type
-    const subpath = cleanPath;
-
-    // The filename without extension (slug)
-    const slug = filename;
-
-    return {
-      typePath,
-      subpath,
-      slug,
-    };
-  }
-
-  /**
-   * Generate a full URL route from content type and path
-   * This creates routes that match the actual URLs used in the site
-   */
-  private generateRouteFromPath(
-    contentType: ContentType,
-    contentPath: ContentPath,
-  ): string {
-    switch (contentType) {
-      case "blog":
-        return `/blog/${contentPath.slug}`;
-
-      case "docs":
-        // Use the DocRegistry to get the pre-calculated routePath
-        const docInfo = docRegistry.getDocInfoByPath(contentPath.subpath);
-
-        if (docInfo) {
-          return docInfo.routePath;
-        }
-
-        // If doc not found in registry, this is an error condition
-        throw new Error(
-          `Doc not found in registry: ${contentPath.subpath}. Make sure it's defined in the _meta.ts file.`,
-        );
-
-      case "policy":
-        if (contentPath.subpath.startsWith("terms/")) {
-          return `/${contentPath.subpath}`;
-        }
-        return `/${contentPath.subpath}`;
-
-      case "dev":
-        return `/dev/${contentPath.slug}`;
-
-      default:
-        return `/${contentPath.subpath}`;
-    }
-  }
-
-  /**
-   * Validate that a filename is a valid slug
-   */
-  private validateSlug(filename: string, filePath: string): void {
-    if (!ContentPreprocessor.VALID_SLUG_PATTERN.test(filename)) {
-      throw new Error(
-        `Invalid filename "${filename}" in ${filePath}. ` +
+/**
+ * Validate that a filename is a valid slug.
+ * Returns an Effect that fails with ContentError if the slug is invalid.
+ */
+function validateSlug(
+  filename: string,
+  filePath: string,
+): Effect.Effect<void, ContentError> {
+  if (!VALID_SLUG_PATTERN.test(filename)) {
+    return Effect.fail(
+      new ContentError({
+        message:
+          `Invalid filename "${filename}" in ${filePath}. ` +
           `Filenames must be lowercase, contain only letters, numbers, and hyphens, ` +
           `and cannot have consecutive or leading/trailing hyphens.`,
-      );
-    }
-  }
-
-  /**
-   * Add an error to the collection for later reporting
-   */
-  private addError(message: string): void {
-    this.errors.push(message);
-    console.error(message);
-  }
-
-  /**
-   * Process a single MDX file
-   */
-  private async processMdxFile(
-    filePath: string,
-    srcDir: string,
-    contentType: ContentType,
-    outputBase: string,
-  ): Promise<void> {
-    const { frontmatter, fullContent } = preprocessMdx(filePath);
-
-    // Get the relative path from the source directory
-    const relativePath = path.relative(srcDir, filePath);
-
-    // Get the file name without extension
-    const filename = path.basename(filePath, ".mdx");
-
-    // Validate the filename is a valid slug
-    this.validateSlug(filename, filePath);
-
-    // Create a consistent content path object
-    const contentPath = this.createContentPath(
-      contentType,
-      relativePath,
-      filename,
+        path: filePath,
+      }),
     );
-
-    // Create and validate metadata in one step
-    const metadata = this.createAndValidateMetadata(
-      contentType,
-      frontmatter,
-      contentPath,
-      filePath,
-    );
-
-    // Add to the appropriate metadata collection
-    this.addToMetadataCollection(contentType, metadata);
-
-    // Create content object that will be saved to JSON
-    // Just store meta and the processed content (with frontmatter and CodeExamples resolved)
-    // MDX processing will happen at load time
-    const contentObject = {
-      meta: metadata,
-      content: fullContent,
-    };
-
-    const outputDir = path.dirname(
-      path.join(outputBase, `${contentPath.subpath}.json`),
-    );
-    fs.mkdirSync(outputDir, { recursive: true });
-
-    const outputPath = path.join(outputBase, `${contentPath.subpath}.json`);
-
-    fs.writeFileSync(outputPath, JSON.stringify(contentObject));
   }
+  return Effect.void;
+}
 
-  /**
-   * Create and validate metadata for a content file
-   */
-  private createAndValidateMetadata(
-    contentType: ContentType,
-    frontmatter: Record<string, any>,
-    contentPath: ContentPath,
-    filePath: string,
-  ): ContentMeta {
+/**
+ * Sort blog posts by date (newest first).
+ * This is a pure function.
+ */
+function sortBlogPosts(posts: BlogMeta[]): BlogMeta[] {
+  return [...posts].sort((a, b) => {
+    return new Date(b.date || "").getTime() - new Date(a.date || "").getTime();
+  });
+}
+
+/**
+ * Create and validate metadata for a content file.
+ * Returns an Effect that yields the metadata or fails with validation errors.
+ */
+function createAndValidateMetadata(
+  contentType: ContentType,
+  frontmatter: Record<string, unknown>,
+  contentPath: ContentPath,
+  filePath: string,
+): Effect.Effect<ContentMeta, MetadataValidationError | ContentError> {
+  return Effect.gen(function* () {
     // Start with collecting missing fields
     const missingFields: string[] = [];
 
@@ -335,7 +179,11 @@ export class ContentPreprocessor {
     if (!frontmatter.description) missingFields.push("description");
 
     // Generate route based on content type and path
-    const route = this.generateRouteFromPath(contentType, contentPath);
+    const route = yield* generateRouteFromPath(
+      contentType,
+      contentPath,
+      filePath,
+    );
 
     // Type-specific required fields and validation
     let metadata: Partial<ContentMeta> = {
@@ -353,36 +201,45 @@ export class ContentPreprocessor {
         if (!frontmatter.readTime) missingFields.push("readTime");
 
         // Validate date format
-        if (frontmatter.date && !/^\d{4}-\d{2}-\d{2}$/.test(frontmatter.date)) {
-          throw new Error(
-            `Invalid date format in ${filePath}. Date must be in YYYY-MM-DD format.`,
+        if (
+          frontmatter.date &&
+          !/^\d{4}-\d{2}-\d{2}$/.test(frontmatter.date as string)
+        ) {
+          return yield* Effect.fail(
+            new ContentError({
+              message: `Invalid date format in ${filePath}. Date must be in YYYY-MM-DD format.`,
+              path: filePath,
+            }),
           );
         }
 
         // Construct blog metadata
         metadata = {
           ...metadata,
-          title: frontmatter.title,
-          description: frontmatter.description,
-          date: frontmatter.date,
-          readTime: frontmatter.readTime,
-          author: frontmatter.author,
-          ...(frontmatter.lastUpdated && {
-            lastUpdated: frontmatter.lastUpdated,
-          }),
+          title: frontmatter.title as string,
+          description: frontmatter.description as string,
+          date: frontmatter.date as string,
+          readTime: frontmatter.readTime as string,
+          author: frontmatter.author as string,
         } as Partial<BlogMeta>;
+        if (frontmatter.lastUpdated) {
+          (metadata as Partial<BlogMeta>).lastUpdated =
+            frontmatter.lastUpdated as string;
+        }
         break;
 
-      case "docs":
-        // Extract product from path, assuming format: docs/product/...
-
+      case "docs": {
         // Find matching DocInfo from docRegistry to get section path and search weight
         const docInfo = docRegistry.getDocInfoByPath(contentPath.subpath);
 
         if (!docInfo) {
-          throw new Error(
-            `No DocInfo found for path: ${contentPath.subpath}. ` +
-              `Ensure this document is defined in the product's _meta.ts file.`,
+          return yield* Effect.fail(
+            new ContentError({
+              message:
+                `No DocInfo found for path: ${contentPath.subpath}. ` +
+                `Ensure this document is defined in the product's _meta.ts file.`,
+              path: filePath,
+            }),
           );
         }
         const product: Product = docInfo.product;
@@ -390,12 +247,13 @@ export class ContentPreprocessor {
         // Construct doc metadata with section path and search weight
         metadata = {
           ...metadata,
-          title: frontmatter.title,
-          description: frontmatter.description,
+          title: frontmatter.title as string,
+          description: frontmatter.description as string,
           product,
           searchWeight: docInfo.searchWeight,
         } as Partial<DocMeta>;
         break;
+      }
 
       case "policy":
         // Check required policy fields
@@ -404,9 +262,9 @@ export class ContentPreprocessor {
         // Construct policy metadata
         metadata = {
           ...metadata,
-          title: frontmatter.title,
-          description: frontmatter.description,
-          lastUpdated: frontmatter.lastUpdated,
+          title: frontmatter.title as string,
+          description: frontmatter.description as string,
+          lastUpdated: frontmatter.lastUpdated as string,
         } as Partial<PolicyMeta>;
         break;
 
@@ -414,181 +272,473 @@ export class ContentPreprocessor {
         // For other types, just use base fields
         metadata = {
           ...metadata,
-          title: frontmatter.title,
-          description: frontmatter.description,
+          title: frontmatter.title as string,
+          description: frontmatter.description as string,
         };
     }
 
-    // Throw error if any required fields are missing
+    // Return error if any required fields are missing
     if (missingFields.length > 0) {
-      throw new Error(
-        `Missing required fields in ${filePath}: ${missingFields.join(", ")}. ` +
-          `These fields must be provided in the frontmatter.`,
+      return yield* Effect.fail(
+        new MetadataValidationError({
+          message: `Missing required fields in ${filePath}: ${missingFields.join(", ")}. These fields must be provided in the frontmatter.`,
+          path: filePath,
+          missingFields,
+        }),
       );
     }
 
     return metadata as ContentMeta;
-  }
+  });
+}
 
-  /**
-   * Add metadata to the appropriate collection based on content type
-   */
-  private addToMetadataCollection(
-    contentType: ContentType,
-    metadata: ContentMeta,
-  ): void {
-    switch (contentType) {
-      case "blog":
-        this.blogMetadata.push(metadata as BlogMeta);
-        break;
-      case "docs":
-        this.docMetadata.push(metadata as DocMeta);
-        break;
-      case "policy":
-        this.policyMetadata.push(metadata as PolicyMeta);
-        break;
-      case "dev":
-        this.devMetadata.push(metadata);
-        break;
+// =============================================================================
+// Effect-based File Operations
+// =============================================================================
+
+/**
+ * Recursively find all MDX files in a directory.
+ */
+const findMdxFiles = (
+  dir: string,
+): Effect.Effect<string[], ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+
+    // Check if directory exists
+    const exists = yield* fs.exists(dir).pipe(
+      Effect.mapError(
+        (error) =>
+          new ContentError({
+            message: `Failed to check if directory exists ${dir}: ${error.message}`,
+            path: dir,
+            cause: error,
+          }),
+      ),
+    );
+    if (!exists) {
+      return [];
     }
-  }
 
-  /**
-   * Sort blog posts by date (newest first)
-   */
-  private sortBlogPosts(): void {
-    if (this.blogMetadata.length > 0) {
-      this.blogMetadata.sort((a, b) => {
-        return (
-          new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
-        );
-      });
+    // Read directory contents
+    const entries = yield* fs.readDirectory(dir).pipe(
+      Effect.mapError(
+        (error) =>
+          new ContentError({
+            message: `Failed to read directory ${dir}: ${error.message}`,
+            path: dir,
+            cause: error,
+          }),
+      ),
+    );
 
-      if (this.verbose) {
-        console.log(`Sorted ${this.blogMetadata.length} blog posts by date`);
-      }
+    // Process each entry
+    const results: string[][] = yield* Effect.all(
+      entries.map((entry) =>
+        Effect.gen(function* () {
+          const fullPath = path.join(dir, entry);
+          const stat = yield* fs.stat(fullPath).pipe(
+            Effect.mapError(
+              (error) =>
+                new ContentError({
+                  message: `Failed to stat ${fullPath}: ${error.message}`,
+                  path: fullPath,
+                  cause: error,
+                }),
+            ),
+          );
+
+          if (stat.type === "Directory") {
+            // Recursively find MDX files in subdirectory
+            return yield* findMdxFiles(fullPath);
+          } else if (entry.endsWith(".mdx")) {
+            return [fullPath];
+          }
+          return [] as string[];
+        }),
+      ),
+      { concurrency: "unbounded" },
+    );
+
+    return A.flatten(results);
+  });
+
+/**
+ * Ensure a directory exists, creating it if necessary.
+ */
+const ensureDir = (
+  dir: string,
+): Effect.Effect<void, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    yield* fs.makeDirectory(dir, { recursive: true }).pipe(
+      Effect.mapError(
+        (error) =>
+          new ContentError({
+            message: `Failed to create directory ${dir}: ${error.message}`,
+            path: dir,
+            cause: error,
+          }),
+      ),
+    );
+  });
+
+/**
+ * Write content to a file.
+ */
+const writeFile = (
+  filePath: string,
+  content: string,
+): Effect.Effect<void, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    yield* fs.writeFileString(filePath, content).pipe(
+      Effect.mapError(
+        (error) =>
+          new ContentError({
+            message: `Failed to write file ${filePath}: ${error.message}`,
+            path: filePath,
+            cause: error,
+          }),
+      ),
+    );
+  });
+
+// =============================================================================
+// Content Processing Effects
+// =============================================================================
+
+/**
+ * Initialize the directory structure for content preprocessing.
+ */
+const initializeDirectories = (
+  config: PreprocessConfig,
+): Effect.Effect<
+  { staticDir: string; contentDir: string; metaDir: string },
+  ContentError,
+  FileSystem.FileSystem
+> =>
+  Effect.gen(function* () {
+    const staticDir = path.join(config.baseDir, "public", "static");
+    const contentDir = path.join(staticDir, "content");
+    const metaDir = path.join(staticDir, "content-meta");
+
+    // Create base directories
+    yield* ensureDir(staticDir);
+    yield* ensureDir(contentDir);
+    yield* ensureDir(metaDir);
+
+    // Create content type directories
+    for (const contentType of CONTENT_TYPES) {
+      yield* ensureDir(path.join(contentDir, contentType));
+      yield* ensureDir(path.join(metaDir, contentType));
     }
-  }
 
-  /**
-   * Write metadata index files for each content type
-   */
-  private writeMetadataFiles(): void {
-    // Write blog metadata
-    if (this.blogMetadata.length > 0) {
-      fs.writeFileSync(
-        path.join(this.metaDir, "blog", "index.json"),
-        JSON.stringify(this.blogMetadata),
+    return { staticDir, contentDir, metaDir };
+  });
+
+/**
+ * Process a single MDX file and return its metadata.
+ */
+const processMdxFile = (
+  filePath: string,
+  srcDir: string,
+  contentType: ContentType,
+  outputBase: string,
+): Effect.Effect<
+  ContentMeta,
+  ContentError | MetadataValidationError,
+  FileSystem.FileSystem
+> =>
+  Effect.gen(function* () {
+    // Preprocess the MDX file (resolves code examples)
+    const { frontmatter, fullContent } = yield* preprocessMdx(filePath);
+
+    // Get the relative path from the source directory
+    const relativePath = path.relative(srcDir, filePath);
+
+    // Get the file name without extension
+    const filename = path.basename(filePath, ".mdx");
+
+    // Validate the filename is a valid slug
+    yield* validateSlug(filename, filePath);
+
+    // Create a consistent content path object
+    const contentPath = createContentPath(contentType, relativePath, filename);
+
+    // Create and validate metadata
+    const metadata = yield* createAndValidateMetadata(
+      contentType,
+      frontmatter,
+      contentPath,
+      filePath,
+    );
+
+    // Create content object that will be saved to JSON
+    const contentObject = {
+      meta: metadata,
+      content: fullContent,
+    };
+
+    // Ensure output directory exists
+    const outputDir = path.dirname(
+      path.join(outputBase, `${contentPath.subpath}.json`),
+    );
+    yield* ensureDir(outputDir);
+
+    // Write the content file
+    const outputPath = path.join(outputBase, `${contentPath.subpath}.json`);
+    yield* writeFile(outputPath, JSON.stringify(contentObject));
+
+    return metadata;
+  });
+
+/**
+ * Process all MDX files for a specific content type.
+ */
+const processContentType = (
+  contentType: ContentType,
+  config: PreprocessConfig,
+  contentDir: string,
+  errorsRef: Ref.Ref<string[]>,
+): Effect.Effect<ContentMeta[], never, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    if (config.verbose) {
+      yield* Console.log(`Processing ${contentType} content...`);
+    }
+
+    const srcDir = path.join(config.baseDir, "content", contentType);
+    const outputBase = path.join(contentDir, contentType);
+
+    // Find all MDX files
+    const mdxFiles = yield* findMdxFiles(srcDir).pipe(
+      Effect.catchAll((error) =>
+        Effect.gen(function* () {
+          yield* Ref.update(errorsRef, (errors) => [
+            ...errors,
+            `Error finding MDX files in ${srcDir}: ${error.message}`,
+          ]);
+          return [] as string[];
+        }),
+      ),
+    );
+
+    if (config.verbose && mdxFiles.length > 0) {
+      yield* Console.log(
+        `Found ${mdxFiles.length} MDX files for ${contentType}`,
       );
-      if (this.verbose) {
-        console.log(
-          `Created metadata index for blog with ${this.blogMetadata.length} items`,
+    }
+
+    // Process each MDX file, collecting metadata
+    const results = yield* Effect.all(
+      mdxFiles.map((filePath) =>
+        processMdxFile(filePath, srcDir, contentType, outputBase).pipe(
+          Effect.map((metadata) => ({ success: true as const, metadata })),
+          Effect.catchAll((error) =>
+            Effect.gen(function* () {
+              yield* Ref.update(errorsRef, (errors) => [
+                ...errors,
+                `Error processing ${filePath}: ${error.message}`,
+              ]);
+              return { success: false as const };
+            }),
+          ),
+        ),
+      ),
+      { concurrency: "unbounded" },
+    );
+
+    // Filter successful results
+    return results
+      .filter((r): r is { success: true; metadata: ContentMeta } => r.success)
+      .map((r) => r.metadata);
+  });
+
+/**
+ * Write metadata index files for each content type.
+ */
+const writeMetadataFiles = (
+  result: PreprocessResult,
+  metaDir: string,
+  config: PreprocessConfig,
+): Effect.Effect<void, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    // Write blog metadata
+    if (result.blog.length > 0) {
+      yield* writeFile(
+        path.join(metaDir, "blog", "index.json"),
+        JSON.stringify(result.blog),
+      );
+      if (config.verbose) {
+        yield* Console.log(
+          `Created metadata index for blog with ${result.blog.length} items`,
         );
       }
     }
 
     // Write docs metadata
-    if (this.docMetadata.length > 0) {
-      fs.writeFileSync(
-        path.join(this.metaDir, "docs", "index.json"),
-        JSON.stringify(this.docMetadata),
+    if (result.docs.length > 0) {
+      yield* writeFile(
+        path.join(metaDir, "docs", "index.json"),
+        JSON.stringify(result.docs),
       );
-      if (this.verbose) {
-        console.log(
-          `Created metadata index for docs with ${this.docMetadata.length} items`,
+      if (config.verbose) {
+        yield* Console.log(
+          `Created metadata index for docs with ${result.docs.length} items`,
         );
       }
     }
 
     // Write policy metadata
-    if (this.policyMetadata.length > 0) {
-      fs.writeFileSync(
-        path.join(this.metaDir, "policy", "index.json"),
-        JSON.stringify(this.policyMetadata),
+    if (result.policy.length > 0) {
+      yield* writeFile(
+        path.join(metaDir, "policy", "index.json"),
+        JSON.stringify(result.policy),
       );
-      if (this.verbose) {
-        console.log(
-          `Created metadata index for policy with ${this.policyMetadata.length} items`,
+      if (config.verbose) {
+        yield* Console.log(
+          `Created metadata index for policy with ${result.policy.length} items`,
         );
       }
     }
 
     // Write dev metadata
-    if (this.devMetadata.length > 0) {
-      fs.writeFileSync(
-        path.join(this.metaDir, "dev", "index.json"),
-        JSON.stringify(this.devMetadata),
+    if (result.dev.length > 0) {
+      yield* writeFile(
+        path.join(metaDir, "dev", "index.json"),
+        JSON.stringify(result.dev),
       );
-      if (this.verbose) {
-        console.log(
-          `Created metadata index for dev with ${this.devMetadata.length} items`,
+      if (config.verbose) {
+        yield* Console.log(
+          `Created metadata index for dev with ${result.dev.length} items`,
         );
       }
     }
-  }
 
-  /**
-   * Write a unified metadata file that combines metadata from all content types
-   * This is useful for search functionality, where we need to lookup metadata by URL route
-   */
-  private writeUnifiedMetaFile(): void {
-    // Combine all metadata arrays
+    // Write unified metadata
     const allMetadata = [
-      ...this.blogMetadata,
-      ...this.docMetadata,
-      ...this.policyMetadata,
-      ...this.devMetadata,
+      ...result.blog,
+      ...result.docs,
+      ...result.policy,
+      ...result.dev,
     ];
 
-    // Skip if there's no metadata
-    if (allMetadata.length === 0) {
-      return;
-    }
-
-    // Write to the unified metadata file
-    fs.writeFileSync(
-      path.join(this.metaDir, "unified.json"),
-      JSON.stringify(allMetadata),
-    );
-
-    if (this.verbose) {
-      console.log(
-        `Created unified metadata file with ${allMetadata.length} items`,
+    if (allMetadata.length > 0) {
+      yield* writeFile(
+        path.join(metaDir, "unified.json"),
+        JSON.stringify(allMetadata),
       );
+      if (config.verbose) {
+        yield* Console.log(
+          `Created unified metadata file with ${allMetadata.length} items`,
+        );
+      }
     }
-  }
+  });
 
-  /**
-   * Return the processed metadata by content type
-   */
-  getMetadataByType(): {
-    blog: BlogMeta[];
-    docs: DocMeta[];
-    policy: PolicyMeta[];
-    dev: ContentMeta[];
-  } {
-    return {
-      blog: this.blogMetadata,
-      docs: this.docMetadata,
-      policy: this.policyMetadata,
-      dev: this.devMetadata,
-    };
-  }
-}
+// =============================================================================
+// Main Entry Point
+// =============================================================================
 
 /**
- * Main preprocessing function that creates the ContentPreprocessor
- * and processes all content
+ * Process all content types and generate static JSON files.
+ * This is the main Effect-based entry point for content preprocessing.
+ *
+ * @param config - Configuration for preprocessing
+ * @returns Effect that yields the preprocessing result
  */
-export async function preprocessContent(
-  baseDir: string,
-  verbose = true,
-): Promise<void> {
-  try {
-    const preprocessor = new ContentPreprocessor(baseDir, verbose);
-    await preprocessor.processAllContent();
-  } catch (error) {
-    console.error("Error during preprocessing:", error);
-    throw error; // Let the caller handle the error
-  }
+export const processAllContent = (
+  config: PreprocessConfig,
+): Effect.Effect<PreprocessResult, ContentError, FileSystem.FileSystem> =>
+  Effect.gen(function* () {
+    if (config.verbose) {
+      yield* Console.log("Processing all content...");
+    }
+
+    // Initialize directory structure
+    const { contentDir, metaDir } = yield* initializeDirectories(config);
+
+    // Create a ref to track errors
+    const errorsRef = yield* Ref.make<string[]>([]);
+
+    // Process each content type
+    const blogMetadata = yield* processContentType(
+      "blog",
+      config,
+      contentDir,
+      errorsRef,
+    );
+    const docsMetadata = yield* processContentType(
+      "docs",
+      config,
+      contentDir,
+      errorsRef,
+    );
+    const policyMetadata = yield* processContentType(
+      "policy",
+      config,
+      contentDir,
+      errorsRef,
+    );
+    const devMetadata = yield* processContentType(
+      "dev",
+      config,
+      contentDir,
+      errorsRef,
+    );
+
+    // Sort blog posts by date
+    const sortedBlogMetadata = sortBlogPosts(blogMetadata as BlogMeta[]);
+
+    if (config.verbose && sortedBlogMetadata.length > 0) {
+      yield* Console.log(
+        `Sorted ${sortedBlogMetadata.length} blog posts by date`,
+      );
+    }
+
+    // Collect result
+    const result: PreprocessResult = {
+      blog: sortedBlogMetadata,
+      docs: docsMetadata as DocMeta[],
+      policy: policyMetadata as PolicyMeta[],
+      dev: devMetadata,
+    };
+
+    // Write metadata files
+    yield* writeMetadataFiles(result, metaDir, config);
+
+    // Check for errors
+    const errors = yield* Ref.get(errorsRef);
+    if (errors.length > 0) {
+      yield* Console.error("\n🚨 Content preprocessing failed with errors:");
+      for (const error of errors) {
+        yield* Console.error(`- ${error}`);
+      }
+      return yield* Effect.fail(
+        new ContentError({
+          message: "Content preprocessing failed. See errors above.",
+        }),
+      );
+    }
+
+    if (config.verbose) {
+      yield* Console.log("Content preprocessing complete!");
+    }
+
+    return result;
+  });
+
+/**
+ * Legacy function for backwards compatibility.
+ * Creates a ContentPreprocessor-like interface using the new Effect-based implementation.
+ *
+ * @deprecated Use processAllContent instead for new code
+ */
+export function getMetadataByType(result: PreprocessResult): {
+  blog: BlogMeta[];
+  docs: DocMeta[];
+  policy: PolicyMeta[];
+  dev: ContentMeta[];
+} {
+  return result;
 }

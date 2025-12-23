@@ -7,7 +7,7 @@ import type { Element, Root } from "hast";
 interface ElementWithData extends Element {
   data?: {
     meta?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -21,8 +21,10 @@ export function rehypeCodeMeta() {
       // Check for pre > code structure
       if (node.tagName === "pre") {
         const codeNode = node.children.find(
-          (child: any) => child.type === "element" && child.tagName === "code"
-        ) as ElementWithData | undefined;
+          (child): child is ElementWithData =>
+            (child as Element).type === "element" &&
+            (child as Element).tagName === "code",
+        );
 
         if (codeNode?.data?.meta) {
           // Ensure properties object exists

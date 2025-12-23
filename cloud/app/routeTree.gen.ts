@@ -17,8 +17,10 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TermsIndexRouteImport } from './routes/terms/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
-import { Route as TermsUseRouteImport } from './routes/terms.use'
+import { Route as TermsUseRouteImport } from './routes/terms/use'
+import { Route as TermsServiceRouteImport } from './routes/terms/service'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
@@ -71,6 +73,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsIndexRoute = TermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -79,6 +86,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const TermsUseRoute = TermsUseRouteImport.update({
   id: '/terms/use',
   path: '/terms/use',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsServiceRoute = TermsServiceRouteImport.update({
+  id: '/terms/service',
+  path: '/terms/service',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
@@ -150,8 +162,10 @@ export interface FileRoutesByFullPath {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/terms/service': typeof TermsServiceRoute
   '/terms/use': typeof TermsUseRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/terms': typeof TermsIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
@@ -173,8 +187,10 @@ export interface FileRoutesByTo {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/terms/service': typeof TermsServiceRoute
   '/terms/use': typeof TermsUseRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/terms': typeof TermsIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
@@ -197,8 +213,10 @@ export interface FileRoutesById {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/terms/service': typeof TermsServiceRoute
   '/terms/use': typeof TermsUseRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/terms/': typeof TermsIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
@@ -222,8 +240,10 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/dashboard/settings'
+    | '/terms/service'
     | '/terms/use'
     | '/dashboard'
+    | '/terms'
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
@@ -245,8 +265,10 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/dashboard/settings'
+    | '/terms/service'
     | '/terms/use'
     | '/dashboard'
+    | '/terms'
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
@@ -268,8 +290,10 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/dashboard/settings'
+    | '/terms/service'
     | '/terms/use'
     | '/dashboard/'
+    | '/terms/'
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
@@ -292,8 +316,10 @@ export interface RootRouteChildren {
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
   AuthMeRoute: typeof AuthMeRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  TermsServiceRoute: typeof TermsServiceRoute
   TermsUseRoute: typeof TermsUseRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  TermsIndexRoute: typeof TermsIndexRoute
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
   ApiV0HealthRoute: typeof ApiV0HealthRoute
@@ -357,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms/': {
+      id: '/terms/'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/dashboard'
@@ -369,6 +402,13 @@ declare module '@tanstack/react-router' {
       path: '/terms/use'
       fullPath: '/terms/use'
       preLoaderRoute: typeof TermsUseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms/service': {
+      id: '/terms/service'
+      path: '/terms/service'
+      fullPath: '/terms/service'
+      preLoaderRoute: typeof TermsServiceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/settings': {
@@ -492,8 +532,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  TermsServiceRoute: TermsServiceRoute,
   TermsUseRoute: TermsUseRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  TermsIndexRoute: TermsIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
   ApiV0HealthRoute: ApiV0HealthRoute,

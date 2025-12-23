@@ -4,9 +4,9 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import path from "path";
-import { optimizedImageMiddleware } from "./vite/optimized-image-middleware";
-import { defineConfig } from "vite";
 // import { contentPreprocessPlugin } from "./scripts/preprocess-content";
+import { optimizedImageMiddleware } from "./scripts/optimized-image-middleware";
+import { defineConfig } from "vite";
 
 export default defineConfig(() => {
   return {
@@ -22,8 +22,9 @@ export default defineConfig(() => {
         srcDirectory: "app",
       }),
       viteReact(),
-      tailwindcss(),
+      // todo(sebastian): why does this stumble over the @/ aliases but works in website?
       // contentPreprocessPlugin(),
+      tailwindcss(),
       optimizedImageMiddleware(),
     ],
     resolve: {

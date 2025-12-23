@@ -49,7 +49,9 @@ export function getStaticRoutes(): string[] {
   );
   if (manifestMatch && manifestMatch[1]) {
     try {
-      const manifest = JSON.parse(manifestMatch[1]);
+      const manifest = JSON.parse(manifestMatch[1]) as {
+        routes?: Record<string, unknown>;
+      };
 
       if (manifest.routes) {
         // Extract all routes from the manifest
@@ -72,7 +74,7 @@ export function getStaticRoutes(): string[] {
           })
           .sort();
       }
-    } catch (error) {
+    } catch {
       console.warn(
         "Failed to parse route manifest, falling back to regex extraction",
       );
@@ -116,14 +118,14 @@ export function getBlogRoutes(): string[] {
     const postsListPath = getPostsListPath();
     if (fs.existsSync(postsListPath)) {
       try {
-        const postsList: BlogMeta[] = JSON.parse(
+        const postsList = JSON.parse(
           fs.readFileSync(postsListPath, "utf8"),
-        );
+        ) as BlogMeta[];
         return postsList.map((post) => `/blog/${post.slug}`).sort();
       } catch (error) {
         // Fall through to the file system method if this fails
         console.warn(
-          `Failed to load posts list, falling back to file system: ${error}`,
+          `Failed to load posts list, falling back to file system: ${String(error)}`,
         );
       }
     }
@@ -142,7 +144,7 @@ export function getBlogRoutes(): string[] {
     // Convert filenames to routes by stripping the .mdx extension
     return postFiles.map((file) => `/blog/${file.replace(".mdx", "")}`).sort();
   } catch (error) {
-    throw new Error(`Failed to get blog routes: ${error}`);
+    throw new Error(`Failed to get blog routes: ${String(error)}`);
   }
 }
 
@@ -164,7 +166,7 @@ export function getDevRoutes(): string[] {
     // Convert filenames to routes by stripping the .mdx extension
     return devFiles.map((file) => `/dev/${file.replace(".mdx", "")}`).sort();
   } catch (error) {
-    throw new Error(`Failed to get dev routes: ${error}`);
+    throw new Error(`Failed to get dev routes: ${String(error)}`);
   }
 }
 
