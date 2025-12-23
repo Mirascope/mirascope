@@ -1,10 +1,10 @@
-"""Unified Azure client implementation."""
+"""Base class for Anthropic-compatible providers."""
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import ClassVar
 from typing_extensions import Unpack
 
-from openai import OpenAI
+from anthropic import Anthropic, AsyncAnthropic
 
 from ...context import Context, DepsT
 from ...formatting import Format, FormattableT
@@ -30,88 +30,40 @@ from ...tools import (
     Toolkit,
 )
 from ..base import BaseProvider, Params
-from .model_id import AzureModelId
-from .openai import AzureOpenAIProvider, AzureRoutedOpenAIProvider
-
-if TYPE_CHECKING:
-    from .anthropic import AzureRoutedAnthropicProvider
-
-CLAUDE_MODEL_PREFIXES = ("azure/claude-",)
+from . import _utils
+from .model_id import model_name
 
 
-class AzureProvider(BaseProvider[OpenAI]):
-    """Unified provider for Azure that routes to appropriate sub-providers based on model_id."""
+class BaseAnthropicProvider(BaseProvider[Anthropic]):
+    """Base class for providers that use Anthropic Messages API."""
 
-    id = "azure"
-    default_scope = "azure/"
+    id: ClassVar[str]
+    default_scope: ClassVar[str | list[str]]
+    api_key_env_var: ClassVar[str] = "ANTHROPIC_API_KEY"
+    api_key_required: ClassVar[bool] = True
+    provider_name: ClassVar[str | None] = None
 
-    def __init__(
-        self,
-        *,
-        api_key: str | None = None,
-        base_url: str | None = None,
-        anthropic_api_key: str | None = None,
-        anthropic_base_url: str | None = None,
-    ) -> None:
-        """Initialize the Azure provider with sub-providers.
+    client: Anthropic
+    async_client: "AsyncAnthropic"
 
-        Args:
-            api_key: API key for Azure OpenAI. Defaults to AZURE_OPENAI_API_KEY env var.
-            base_url: Azure OpenAI endpoint URL. Defaults to AZURE_OPENAI_ENDPOINT env var.
-            anthropic_api_key: API key for Azure Anthropic. Defaults to AZURE_ANTHROPIC_API_KEY env var.
-            anthropic_base_url: Azure Anthropic endpoint URL. Defaults to AZURE_AI_ANTHROPIC_ENDPOINT env var.
-        """
-        self._openai_provider = AzureRoutedOpenAIProvider(
-            api_key=api_key, base_url=base_url
-        )
-        self._anthropic_api_key = anthropic_api_key
-        self._anthropic_base_url = anthropic_base_url
-        self._anthropic_provider: AzureRoutedAnthropicProvider | None = None
-        # Use OpenAI provider's client as the main client
-        self.client = self._openai_provider.client
+    def _model_name(self, model_id: str) -> str:
+        """Extract the model name to send to the API."""
+        return model_name(model_id)
 
-    def _is_claude_model(self, model_id: str) -> bool:
-        """Check if the model ID is a Claude model."""
-        return any(model_id.startswith(prefix) for prefix in CLAUDE_MODEL_PREFIXES)
-
-    def _get_anthropic_provider(self) -> "AzureRoutedAnthropicProvider":
-        """Get the Anthropic provider, initializing it lazily if needed."""
-        if self._anthropic_provider is None:
-            # Lazy import to provide clear error message when anthropic not installed
-            from .anthropic import AzureRoutedAnthropicProvider
-
-            self._anthropic_provider = AzureRoutedAnthropicProvider(
-                api_key=self._anthropic_api_key,
-                base_url=self._anthropic_base_url,
-            )
-        return self._anthropic_provider
-
-    def _choose_subprovider(
-        self, model_id: AzureModelId, messages: Sequence[Message]
-    ) -> "AzureOpenAIProvider | AzureRoutedAnthropicProvider":
-        """Choose the appropriate provider based on model_id and messages.
-
-        Args:
-            model_id: The model identifier.
-            messages: The messages to send to the LLM.
-
-        Returns:
-            The appropriate sub-provider for the model.
-        """
-        if self._is_claude_model(model_id):
-            return self._get_anthropic_provider()
-        return self._openai_provider
+    def _provider_model_name(self, model_id: str) -> str:
+        """Get the model name for tracking in Response."""
+        return self._model_name(model_id)
 
     def _call(
         self,
         *,
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
-        """Generate an `llm.Response` by synchronously calling the Azure API.
+        """Generate an `llm.Response` by synchronously calling the Anthropic Messages API.
 
         Args:
             model_id: Model identifier to use.
@@ -123,20 +75,41 @@ class AzureProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        client = self._choose_subprovider(model_id, messages)
-        return client.call(
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_response = self.client.messages.create(**kwargs)
+        assistant_message, finish_reason, usage = _utils.decode_response(
+            anthropic_response,
+            model_id,
+            self.id,
+            self._provider_model_name(model_id),
+        )
+        return Response(
+            raw=anthropic_response,
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            usage=usage,
+            format=resolved_format,
         )
 
     def _context_call(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -144,7 +117,7 @@ class AzureProvider(BaseProvider[OpenAI]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.ContextResponse` by synchronously calling the Azure API.
+        """Generate an `llm.ContextResponse` by synchronously calling the Anthropic Messages API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -157,26 +130,46 @@ class AzureProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        client = self._choose_subprovider(model_id, messages)
-        return client.context_call(
-            ctx=ctx,
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_response = self.client.messages.create(**kwargs)
+        assistant_message, finish_reason, usage = _utils.decode_response(
+            anthropic_response,
+            model_id,
+            self.id,
+            self._provider_model_name(model_id),
+        )
+        return ContextResponse(
+            raw=anthropic_response,
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            usage=usage,
+            format=resolved_format,
         )
 
     async def _call_async(
         self,
         *,
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Generate an `llm.AsyncResponse` by asynchronously calling the Azure API.
+        """Generate an `llm.AsyncResponse` by asynchronously calling the Anthropic Messages API.
 
         Args:
             model_id: Model identifier to use.
@@ -188,19 +181,41 @@ class AzureProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        return await self._choose_subprovider(model_id, messages).call_async(
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_response = await self.async_client.messages.create(**kwargs)
+        assistant_message, finish_reason, usage = _utils.decode_response(
+            anthropic_response,
+            model_id,
+            self.id,
+            self._provider_model_name(model_id),
+        )
+        return AsyncResponse(
+            raw=anthropic_response,
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            usage=usage,
+            format=resolved_format,
         )
 
     async def _context_call_async(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -208,7 +223,7 @@ class AzureProvider(BaseProvider[OpenAI]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.AsyncContextResponse` by asynchronously calling the Azure API.
+        """Generate an `llm.AsyncContextResponse` by asynchronously calling the Anthropic Messages API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -221,25 +236,46 @@ class AzureProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        return await self._choose_subprovider(model_id, messages).context_call_async(
-            ctx=ctx,
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_response = await self.async_client.messages.create(**kwargs)
+        assistant_message, finish_reason, usage = _utils.decode_response(
+            anthropic_response,
+            model_id,
+            self.id,
+            self._provider_model_name(model_id),
+        )
+        return AsyncContextResponse(
+            raw=anthropic_response,
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            usage=usage,
+            format=resolved_format,
         )
 
     def _stream(
         self,
         *,
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Generate an `llm.StreamResponse` by synchronously streaming from the Azure API.
+        """Generate an `llm.StreamResponse` by synchronously streaming from the Anthropic Messages API.
 
         Args:
             model_id: Model identifier to use.
@@ -251,20 +287,33 @@ class AzureProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        client = self._choose_subprovider(model_id, messages)
-        return client.stream(
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_stream = self.client.messages.stream(**kwargs)
+        chunk_iterator = _utils.decode_stream(anthropic_stream)
+        return StreamResponse(
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format=resolved_format,
         )
 
     def _context_stream(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -272,7 +321,7 @@ class AzureProvider(BaseProvider[OpenAI]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
-        """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Azure API.
+        """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Anthropic Messages API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -285,26 +334,38 @@ class AzureProvider(BaseProvider[OpenAI]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        client = self._choose_subprovider(model_id, messages)
-        return client.context_stream(
-            ctx=ctx,
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_stream = self.client.messages.stream(**kwargs)
+        chunk_iterator = _utils.decode_stream(anthropic_stream)
+        return ContextStreamResponse(
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format=resolved_format,
         )
 
     async def _stream_async(
         self,
         *,
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Azure API.
+        """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Anthropic Messages API.
 
         Args:
             model_id: Model identifier to use.
@@ -314,21 +375,35 @@ class AzureProvider(BaseProvider[OpenAI]):
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
         Returns:
-            An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
+            An `llm.AsyncStreamResponse` object for iterating over the LLM-generated content.
         """
-        return await self._choose_subprovider(model_id, messages).stream_async(
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_stream = self.async_client.messages.stream(**kwargs)
+        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
+        return AsyncStreamResponse(
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format=resolved_format,
         )
 
     async def _context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AzureModelId,
+        model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -339,7 +414,7 @@ class AzureProvider(BaseProvider[OpenAI]):
         AsyncContextStreamResponse[DepsT]
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
-        """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the Azure API.
+        """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the Anthropic Messages API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -350,13 +425,26 @@ class AzureProvider(BaseProvider[OpenAI]):
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
         Returns:
-            An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
+            An `llm.AsyncContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        return await self._choose_subprovider(model_id, messages).context_stream_async(
-            ctx=ctx,
+        input_messages, resolved_format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            **params,
+            params=params,
+        )
+        kwargs["model"] = self._model_name(model_id)
+
+        anthropic_stream = self.async_client.messages.stream(**kwargs)
+        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
+        return AsyncContextStreamResponse(
+            provider_id=self.id,
+            model_id=model_id,
+            provider_model_name=self._provider_model_name(model_id),
+            params=params,
+            tools=tools,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format=resolved_format,
         )

@@ -1,6 +1,6 @@
 """Beta Anthropic message encoding and request preparation."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any, TypedDict, cast
 from typing_extensions import Required
 
@@ -142,6 +142,7 @@ def beta_encode_request(
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
+    model_name_fn: Callable[[str], str] = model_name,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""
 
@@ -151,7 +152,7 @@ def beta_encode_request(
 
     kwargs: BetaParseKwargs = BetaParseKwargs(
         {
-            "model": model_name(model_id),
+            "model": model_name_fn(model_id),
             "max_tokens": max_tokens,
             "betas": ["structured-outputs-2025-11-13"],
             **processed,
@@ -164,7 +165,7 @@ def beta_encode_request(
 
     if format is not None:
         if format.mode == "strict":
-            if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
+            if model_name_fn(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
                 raise FormattingModeNotSupportedError(
                     formatting_mode=format.mode,
                     provider_id="anthropic",

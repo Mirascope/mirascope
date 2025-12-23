@@ -35,6 +35,14 @@ def load_provider(
             return AnthropicProvider(api_key=api_key, base_url=base_url)
         case "azure":
             return AzureProvider(api_key=api_key, base_url=base_url)
+        case "azure:anthropic":
+            from .azure.anthropic import AzureAnthropicProvider
+
+            return AzureAnthropicProvider(api_key=api_key, base_url=base_url)
+        case "azure:anthropic-beta":
+            from .azure.anthropic.beta_provider import AzureAnthropicBetaProvider
+
+            return AzureAnthropicBetaProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)

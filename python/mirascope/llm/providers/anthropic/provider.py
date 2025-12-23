@@ -28,8 +28,9 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider, Params
+from ..base import Params
 from . import _utils
+from .base_provider import BaseAnthropicProvider
 from .beta_provider import AnthropicBetaProvider
 from .model_id import AnthropicModelId, model_name
 from .model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
@@ -50,8 +51,14 @@ def _should_use_beta(
     return model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 
 
-class AnthropicProvider(BaseProvider[Anthropic]):
-    """The client for the Anthropic LLM model."""
+class AnthropicProvider(BaseAnthropicProvider):
+    """The client for the Anthropic LLM model.
+
+    Note: Azure-hosted Claude models use AzureAnthropicProvider which also
+    inherits from BaseAnthropicProvider. Common logic (encode/decode, etc.)
+    is implemented in the base class. Do not add provider-specific logic here
+    that would break Azure routing.
+    """
 
     id = "anthropic"
     default_scope = "anthropic/"
@@ -83,30 +90,12 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return super()._call(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_response = self.client.messages.create(**kwargs)
-        assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
-        )
-        return Response(
-            raw=anthropic_response,
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            usage=usage,
-            format=resolved_format,
+            **params,
         )
 
     def _context_call(
@@ -131,30 +120,13 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return super()._context_call(
+            ctx=ctx,
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_response = self.client.messages.create(**kwargs)
-        assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
-        )
-        return ContextResponse(
-            raw=anthropic_response,
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            usage=usage,
-            format=resolved_format,
+            **params,
         )
 
     async def _call_async(
@@ -175,30 +147,12 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return await super()._call_async(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_response = await self.async_client.messages.create(**kwargs)
-        assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
-        )
-        return AsyncResponse(
-            raw=anthropic_response,
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            usage=usage,
-            format=resolved_format,
+            **params,
         )
 
     async def _context_call_async(
@@ -223,30 +177,13 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return await super()._context_call_async(
+            ctx=ctx,
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_response = await self.async_client.messages.create(**kwargs)
-        assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
-        )
-        return AsyncContextResponse(
-            raw=anthropic_response,
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            usage=usage,
-            format=resolved_format,
+            **params,
         )
 
     def _stream(
@@ -267,25 +204,12 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return super()._stream(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_stream = self.client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_stream(anthropic_stream)
-        return StreamResponse(
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format=resolved_format,
+            **params,
         )
 
     def _context_stream(
@@ -310,25 +234,13 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return super()._context_stream(
+            ctx=ctx,
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_stream = self.client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_stream(anthropic_stream)
-        return ContextStreamResponse(
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format=resolved_format,
+            **params,
         )
 
     async def _stream_async(
@@ -349,24 +261,12 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return await super()._stream_async(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
-        return AsyncStreamResponse(
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format=resolved_format,
+            **params,
         )
 
     async def _context_stream_async(
@@ -394,23 +294,11 @@ class AnthropicProvider(BaseProvider[Anthropic]):
                 format=format,
                 **params,
             )
-
-        input_messages, resolved_format, kwargs = _utils.encode_request(
+        return await super()._context_stream_async(
+            ctx=ctx,
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
-        )
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
-        return AsyncContextStreamResponse(
-            provider_id="anthropic",
-            model_id=model_id,
-            provider_model_name=model_name(model_id),
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format=resolved_format,
+            **params,
         )
