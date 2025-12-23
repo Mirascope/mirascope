@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Schema } from "effect";
 import { EffectDatabase, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
@@ -8,7 +8,20 @@ import {
   MissingCredentialsError,
   AuthenticationFailedError,
 } from "@/auth/errors";
-import type { AuthenticatedUserInfo, OAuthProviderConfig } from "@/auth/types";
+import type {
+  AuthenticatedUserInfo,
+  OAuthProviderConfig,
+  GitHubUser,
+  GitHubEmail,
+  GoogleUser,
+  TokenData,
+} from "@/auth/types";
+import {
+  TokenDataSchema,
+  GitHubUserSchema,
+  GitHubEmailSchema,
+  GoogleUserSchema,
+} from "@/auth/types";
 import {
   getOAuthStateFromCookie,
   clearOAuthStateCookie,
@@ -16,38 +29,19 @@ import {
   setOAuthStateCookie,
 } from "@/auth/utils";
 
-type GitHubUser = {
-  id: number;
-  login: string;
-  name: string | null;
-  email: string | null;
-  avatar_url: string;
-  bio: string | null;
-  created_at: string;
-  updated_at: string;
-};
+// =============================================================================
+// User Data Mappers
+// =============================================================================
 
-type GitHubEmail = {
-  email: string;
-  primary: boolean;
-  verified: boolean;
-  visibility: string | null;
-};
-
-type GoogleUser = {
-  id: string;
-  email: string;
-  verified_email: boolean;
-  name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-  locale: string;
-};
-
+/**
+ * Maps GitHub API user data to our internal user info format.
+ *
+ * Falls back to the primary email from the emails list if the user's
+ * public email is not set.
+ */
 function mapGitHubUserData(
   apiResponse: GitHubUser,
-  emails: GitHubEmail[],
+  emails: readonly GitHubEmail[],
 ): AuthenticatedUserInfo {
   let userEmail = apiResponse.email;
 
@@ -62,6 +56,9 @@ function mapGitHubUserData(
   };
 }
 
+/**
+ * Maps Google API user data to our internal user info format.
+ */
 function mapGoogleUserData(apiResponse: GoogleUser): AuthenticatedUserInfo {
   return {
     email: apiResponse.email,
@@ -69,6 +66,20 @@ function mapGoogleUserData(apiResponse: GoogleUser): AuthenticatedUserInfo {
   };
 }
 
+// =============================================================================
+// OAuth Provider Configuration
+// =============================================================================
+
+/**
+ * Creates a GitHub OAuth provider configuration from environment settings.
+ *
+ * Requires the following environment variables:
+ * - `GITHUB_CLIENT_ID` - GitHub OAuth app client ID
+ * - `GITHUB_CLIENT_SECRET` - GitHub OAuth app client secret
+ * - `GITHUB_CALLBACK_URL` - Callback URL registered with GitHub
+ *
+ * @throws MissingCredentialsError - If any required environment variable is missing
+ */
 export const createGitHubProvider = Effect.gen(function* () {
   const settings = yield* SettingsService;
 
@@ -97,6 +108,16 @@ export const createGitHubProvider = Effect.gen(function* () {
   };
 });
 
+/**
+ * Creates a Google OAuth provider configuration from environment settings.
+ *
+ * Requires the following environment variables:
+ * - `GOOGLE_CLIENT_ID` - Google OAuth client ID
+ * - `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
+ * - `GOOGLE_CALLBACK_URL` - Callback URL registered with Google
+ *
+ * @throws MissingCredentialsError - If any required environment variable is missing
+ */
 export const createGoogleProvider = Effect.gen(function* () {
   const settings = yield* SettingsService;
 
@@ -125,6 +146,18 @@ export const createGoogleProvider = Effect.gen(function* () {
   };
 });
 
+// =============================================================================
+// OAuth Validation Helpers
+// =============================================================================
+
+/**
+ * Validates the OAuth callback URL parameters.
+ *
+ * Extracts and validates the authorization code and state from the callback URL.
+ *
+ * @throws OAuthError - If the provider returned an error or no code
+ * @throws InvalidStateError - If no state parameter was received
+ */
 const validateOAuthParams = (
   url: URL,
   provider: OAuthProviderConfig,
@@ -138,7 +171,7 @@ const validateOAuthParams = (
 
   return Effect.gen(function* () {
     if (error) {
-      yield* Effect.fail(
+      return yield* Effect.fail(
         new OAuthError({
           message: `OAuth Error: ${error}`,
           provider: provider.name,
@@ -146,34 +179,41 @@ const validateOAuthParams = (
       );
     }
 
-    const validCode = yield* code
-      ? Effect.succeed(code)
-      : Effect.fail(
-          new OAuthError({
-            message: "No authorization code received",
-            provider: provider.name,
-          }),
-        );
+    if (!code) {
+      return yield* Effect.fail(
+        new OAuthError({
+          message: "No authorization code received",
+          provider: provider.name,
+        }),
+      );
+    }
 
-    const validState = yield* encodedState
-      ? Effect.succeed(encodedState)
-      : Effect.fail(
-          new InvalidStateError({
-            message: "No state received",
-          }),
-        );
+    if (!encodedState) {
+      return yield* Effect.fail(
+        new InvalidStateError({
+          message: "No state received",
+        }),
+      );
+    }
 
-    return { code: validCode, encodedState: validState };
+    return { code, encodedState };
   });
 };
 
+/**
+ * Decodes the base64-encoded OAuth state parameter.
+ *
+ * The state contains CSRF protection data and optional return URL.
+ *
+ * @throws InvalidStateError - If the state cannot be decoded
+ */
 const decodeState = (
   encodedState: string,
 ): Effect.Effect<
   { randomState: string; returnUrl?: string },
   InvalidStateError
-> => {
-  return Effect.try({
+> =>
+  Effect.try({
     try: () =>
       JSON.parse(atob(encodedState)) as {
         randomState: string;
@@ -184,8 +224,15 @@ const decodeState = (
         message: `Failed to decode state: ${String(e)}`,
       }),
   });
-};
 
+/**
+ * Validates that the state parameter matches the stored cookie value.
+ *
+ * This provides CSRF protection by ensuring the callback originated
+ * from a request we initiated.
+ *
+ * @throws InvalidStateError - If the states don't match
+ */
 const validateStateMatch = (
   storedState: string | null,
   randomState: string,
@@ -200,11 +247,13 @@ const validateStateMatch = (
   return Effect.void;
 };
 
+/**
+ * Validates the token exchange response from the OAuth provider.
+ *
+ * @throws OAuthError - If the token exchange failed or no token received
+ */
 const validateTokenResponse = (
-  tokenData: {
-    access_token?: string;
-    error?: string;
-  },
+  tokenData: TokenData,
   provider: OAuthProviderConfig,
 ): Effect.Effect<string, OAuthError> => {
   if (tokenData.error) {
@@ -228,54 +277,89 @@ const validateTokenResponse = (
   return Effect.succeed(tokenData.access_token);
 };
 
+// =============================================================================
+// Token Exchange
+// =============================================================================
+
+/**
+ * Exchanges an authorization code for an access token.
+ *
+ * Makes a POST request to the provider's token endpoint with the
+ * authorization code and client credentials.
+ *
+ * @throws OAuthError - If the token exchange fails
+ */
 const exchangeCodeForToken = (
   provider: OAuthProviderConfig,
   code: string,
-): Effect.Effect<string, OAuthError> => {
-  return Effect.tryPromise({
-    try: async () => {
-      const response = await fetch(provider.tokenUrl, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          grant_type: "authorization_code",
-          client_id: provider.clientId,
-          client_secret: provider.clientSecret,
-          code: code,
-          redirect_uri: provider.callbackUrl,
+): Effect.Effect<string, OAuthError> =>
+  Effect.gen(function* () {
+    const unknownData = yield* Effect.tryPromise({
+      try: async () => {
+        const response = await fetch(provider.tokenUrl, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            grant_type: "authorization_code",
+            client_id: provider.clientId,
+            client_secret: provider.clientSecret,
+            code: code,
+            redirect_uri: provider.callbackUrl,
+          }),
+        });
+        return await response.json();
+      },
+      catch: (e) =>
+        new OAuthError({
+          message: "Failed to exchange code for token",
+          provider: provider.name,
+          cause: e,
         }),
-      });
-      const json = await response.json();
-      return json as {
-        access_token?: string;
-        error?: string;
-      };
-    },
-    catch: (e) =>
-      new OAuthError({
-        message: "Failed to exchange code for token",
-        provider: provider.name,
-        cause: e,
-      }),
-  }).pipe(
-    Effect.flatMap((tokenData) => validateTokenResponse(tokenData, provider)),
-  );
-};
+    });
 
+    // Validate the response against the TokenData schema
+    const tokenData = yield* Schema.decodeUnknown(TokenDataSchema)(
+      unknownData,
+    ).pipe(
+      Effect.mapError(
+        (e) =>
+          new OAuthError({
+            message: `Invalid token response: ${e.message}`,
+            provider: provider.name,
+          }),
+      ),
+    );
+
+    return yield* validateTokenResponse(tokenData, provider);
+  });
+
+// =============================================================================
+// OAuth Flow - Initiation
+// =============================================================================
+
+/**
+ * Initiates the OAuth flow by redirecting to the provider's authorization URL.
+ *
+ * Generates a random state for CSRF protection, encodes it with the return URL,
+ * and redirects the user to the OAuth provider's authorization endpoint.
+ *
+ * The state is also stored in a cookie for validation during the callback.
+ *
+ * @param provider - The OAuth provider configuration
+ * @param currentUrl - The URL to return to after authentication
+ * @returns A redirect response to the OAuth provider
+ */
 export function initiateOAuth(
   provider: OAuthProviderConfig,
   currentUrl: string,
-) {
+): Effect.Effect<Response> {
   return Effect.sync(() => {
     const randomState = crypto.randomUUID();
 
-    const stateData = {
-      randomState,
-      returnUrl: currentUrl,
-    };
+    const stateData = { randomState, returnUrl: currentUrl };
     const encodedState = btoa(JSON.stringify(stateData));
 
     const authUrl = new URL(provider.authUrl);
@@ -295,6 +379,27 @@ export function initiateOAuth(
   });
 }
 
+/**
+ * Handles the OAuth callback from an external OAuth provider.
+ *
+ * This is the main callback handler for completing the OAuth flow:
+ *
+ * ## Flow
+ *
+ * 1. Validate OAuth params (code, state) from the callback URL
+ * 2. Decode and validate the state parameter (CSRF protection)
+ * 3. Exchange the authorization code for an access token
+ * 4. Fetch user info from the provider's API
+ * 5. Create or update the user and session in the database
+ * 6. Redirect to the return URL with a session cookie
+ *
+ * @param request - The incoming callback request from the OAuth provider
+ * @param provider - The OAuth provider configuration
+ * @returns A redirect response with session cookie set
+ * @throws OAuthError - If any OAuth step fails
+ * @throws InvalidStateError - If state validation fails (CSRF protection)
+ * @throws AuthenticationFailedError - If user processing fails
+ */
 export function handleOAuthCallback(
   request: Request,
   provider: OAuthProviderConfig,
@@ -302,101 +407,131 @@ export function handleOAuthCallback(
   const url = new URL(request.url);
   const storedState = getOAuthStateFromCookie(request);
 
-  return validateOAuthParams(url, provider).pipe(
-    Effect.flatMap(({ code, encodedState }) =>
-      decodeState(encodedState).pipe(
-        Effect.flatMap((stateData) =>
-          validateStateMatch(storedState, stateData.randomState).pipe(
-            Effect.map(() => ({ code, returnUrl: stateData.returnUrl })),
-          ),
-        ),
-      ),
-    ),
-    Effect.flatMap(({ code, returnUrl }) =>
-      exchangeCodeForToken(provider, code).pipe(
-        Effect.flatMap((accessToken) => fetchUserInfo(provider, accessToken)),
-        Effect.flatMap((userInfo) =>
-          Effect.gen(function* () {
-            const settings = yield* SettingsService;
-            const response = yield* processAuthenticatedUser(
-              userInfo,
-              returnUrl,
-              settings.SITE_URL || "http://localhost:3000",
-            );
-            response.headers.append("Set-Cookie", clearOAuthStateCookie());
-            return response;
-          }),
-        ),
-      ),
-    ),
-  );
+  return Effect.gen(function* () {
+    // 1. Validate OAuth params from callback URL
+    const { code, encodedState } = yield* validateOAuthParams(url, provider);
+
+    // 2. Decode and validate state (CSRF protection)
+    const stateData = yield* decodeState(encodedState);
+    yield* validateStateMatch(storedState, stateData.randomState);
+
+    // 3. Exchange authorization code for access token
+    const accessToken = yield* exchangeCodeForToken(provider, code);
+
+    // 4. Fetch user info from provider
+    const userInfo = yield* fetchUserInfo(provider, accessToken);
+
+    // 5. Create/update user and session
+    const settings = yield* SettingsService;
+    const response = yield* processAuthenticatedUser(
+      userInfo,
+      stateData.returnUrl,
+      settings.SITE_URL || "http://localhost:3000",
+    );
+
+    // 6. Clear OAuth state cookie and return redirect
+    response.headers.append("Set-Cookie", clearOAuthStateCookie());
+    return response;
+  });
 }
 
-function fetchJson<T>(
+// =============================================================================
+// User Info Fetching
+// =============================================================================
+
+/**
+ * Fetches JSON data from a URL with schema validation.
+ *
+ * @throws OAuthError - If the fetch fails, response is not OK, or validation fails
+ */
+function fetchJson<A, I, R>(
   url: string,
+  schema: Schema.Schema<A, I, R>,
   options: {
     headers: Record<string, string>;
     errorMessage: string;
     provider: string;
   },
-): Effect.Effect<T, OAuthError> {
-  return Effect.tryPromise({
-    try: async () => {
-      const response = await fetch(url, { headers: options.headers });
-      return response;
-    },
-    catch: (e) =>
-      new OAuthError({
-        message: options.errorMessage,
-        provider: options.provider,
-        cause: e,
-      }),
-  }).pipe(
-    Effect.flatMap((response) => {
-      if (!response.ok) {
-        return Effect.fail(
-          new OAuthError({
-            message: options.errorMessage,
-            provider: options.provider,
-          }),
-        );
-      }
+): Effect.Effect<A, OAuthError, R> {
+  return Effect.gen(function* () {
+    const response = yield* Effect.tryPromise({
+      try: () => fetch(url, { headers: options.headers }),
+      catch: (e) =>
+        new OAuthError({
+          message: options.errorMessage,
+          provider: options.provider,
+          cause: e,
+        }),
+    });
 
-      return Effect.tryPromise({
-        try: async () => response.json(),
-        catch: (e) =>
+    if (!response.ok) {
+      return yield* Effect.fail(
+        new OAuthError({
+          message: options.errorMessage,
+          provider: options.provider,
+        }),
+      );
+    }
+
+    const unknownData = yield* Effect.tryPromise({
+      try: () => response.json(),
+      catch: (e) =>
+        new OAuthError({
+          message: `Failed to parse ${options.errorMessage.toLowerCase()}`,
+          provider: options.provider,
+          cause: e,
+        }),
+    });
+
+    // Validate the response against the provided schema
+    return yield* Schema.decodeUnknown(schema)(unknownData).pipe(
+      Effect.mapError(
+        (e) =>
           new OAuthError({
-            message: `Failed to parse ${options.errorMessage.toLowerCase()}`,
+            message: `Invalid response format: ${e.message}`,
             provider: options.provider,
-            cause: e,
           }),
-      });
-    }),
-  );
+      ),
+    );
+  });
 }
 
+/**
+ * Fetches the user's email addresses from GitHub.
+ *
+ * Returns an empty array on failure (emails are optional fallback).
+ */
 function fetchGitHubEmails(
   accessToken: string,
   provider: string,
-): Effect.Effect<GitHubEmail[], OAuthError> {
-  return fetchJson<GitHubEmail[]>("https://api.github.com/user/emails", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "Mirascope/0.1",
+): Effect.Effect<readonly GitHubEmail[], OAuthError> {
+  return fetchJson(
+    "https://api.github.com/user/emails",
+    Schema.Array(GitHubEmailSchema),
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "Mirascope/0.1",
+      },
+      errorMessage: "Failed to fetch GitHub emails",
+      provider,
     },
-    errorMessage: "Failed to fetch GitHub emails",
-    provider,
-  }).pipe(Effect.catchAll(() => Effect.succeed([] as GitHubEmail[])));
+  ).pipe(Effect.catchAll(() => Effect.succeed([] as const)));
 }
 
+/**
+ * Fetches user info from GitHub's API.
+ *
+ * Also fetches emails separately as a fallback for users without public email.
+ */
 function fetchGitHubUserInfo(
   provider: OAuthProviderConfig & { name: "github" },
   accessToken: string,
 ): Effect.Effect<AuthenticatedUserInfo, OAuthError> {
   return Effect.gen(function* () {
-    const userData = yield* fetchJson<GitHubUser>(provider.userUrl, {
+    const userData = yield* fetchJson(provider.userUrl, GitHubUserSchema, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
@@ -411,12 +546,15 @@ function fetchGitHubUserInfo(
   });
 }
 
+/**
+ * Fetches user info from Google's API.
+ */
 function fetchGoogleUserInfo(
   provider: OAuthProviderConfig & { name: "google" },
   accessToken: string,
 ): Effect.Effect<AuthenticatedUserInfo, OAuthError> {
   return Effect.gen(function* () {
-    const userData = yield* fetchJson<GoogleUser>(provider.userUrl, {
+    const userData = yield* fetchJson(provider.userUrl, GoogleUserSchema, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
@@ -430,6 +568,11 @@ function fetchGoogleUserInfo(
   });
 }
 
+/**
+ * Fetches user info from the appropriate OAuth provider.
+ *
+ * Routes to the provider-specific implementation based on provider name.
+ */
 function fetchUserInfo(
   provider: OAuthProviderConfig,
   accessToken: string,
@@ -440,6 +583,23 @@ function fetchUserInfo(
   return fetchGoogleUserInfo(provider, accessToken);
 }
 
+// =============================================================================
+// User Processing
+// =============================================================================
+
+/**
+ * Processes an authenticated user from OAuth.
+ *
+ * Creates or updates the user in the database, creates a new session,
+ * and returns a redirect response with the session cookie.
+ *
+ * @param userInfo - The user info from the OAuth provider
+ * @param returnUrl - Optional URL to redirect to after authentication
+ * @param siteUrl - The default site URL if no return URL is provided
+ * @returns A redirect response with session cookie
+ * @throws AuthenticationFailedError - If no email is provided
+ * @throws DatabaseError - If user/session creation fails
+ */
 function processAuthenticatedUser(
   userInfo: AuthenticatedUserInfo,
   returnUrl: string | undefined,
@@ -452,76 +612,78 @@ function processAuthenticatedUser(
   | DatabaseError,
   EffectDatabase
 > {
-  const validateEmail = (email: string | null) => {
-    return Effect.filterOrFail(
-      Effect.succeed(email),
-      (e): e is string => e !== null,
-      () =>
+  return Effect.gen(function* () {
+    // 1. Validate email is present
+    if (!userInfo.email) {
+      return yield* Effect.fail(
         new AuthenticationFailedError({
           message: "Email is required to process an authenticated user",
         }),
-    );
-  };
-
-  const createUserAndSession = (email: string) => {
-    return Effect.gen(function* () {
-      const db = yield* EffectDatabase;
-
-      // Try to find existing user by email, or create if not found
-      const existingUser = yield* db.users.findByEmail(email).pipe(
-        Effect.map((user) => user as typeof user | null),
-        Effect.catchIf(
-          (e): e is NotFoundError => e instanceof NotFoundError,
-          () => Effect.succeed(null),
-        ),
       );
+    }
 
-      const user = existingUser
-        ? // User exists - update name if different
-          existingUser.name !== userInfo.name
-          ? yield* db.users.update({
-              userId: existingUser.id,
-              data: { name: userInfo.name },
-            })
-          : existingUser
-        : // User doesn't exist - create new user
-          yield* db.users.create({ data: { email, name: userInfo.name } });
+    const db = yield* EffectDatabase;
 
-      const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
-      const session = yield* db.sessions.create({
-        userId: user.id,
-        data: { userId: user.id, expiresAt },
-      });
+    // 2. Try to find existing user by email, or create if not found
+    const existingUser = yield* db.users.findByEmail(userInfo.email).pipe(
+      Effect.map((user) => user as typeof user | null),
+      Effect.catchIf(
+        (e): e is NotFoundError => e instanceof NotFoundError,
+        () => Effect.succeed(null),
+      ),
+    );
 
-      return session.id;
+    const user = existingUser
+      ? // User exists - update name if different
+        existingUser.name !== userInfo.name
+        ? yield* db.users.update({
+            userId: existingUser.id,
+            data: { name: userInfo.name },
+          })
+        : existingUser
+      : // User doesn't exist - create new user
+        yield* db.users.create({
+          data: { email: userInfo.email, name: userInfo.name },
+        });
+
+    // 3. Create a new session
+    const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
+    const session = yield* db.sessions.create({
+      userId: user.id,
+      data: { userId: user.id, expiresAt },
     });
-  };
 
-  const buildRedirectResponse = (sessionId: string) => {
-    return Effect.sync(() => {
-      const redirectUrl = new URL(returnUrl || siteUrl);
-      redirectUrl.searchParams.set("success", "true");
+    // 4. Build redirect response with session cookie
+    const redirectUrl = new URL(returnUrl || siteUrl);
+    redirectUrl.searchParams.set("success", "true");
 
-      return new Response(null, {
-        status: 302,
-        headers: {
-          Location: redirectUrl.toString(),
-          "Set-Cookie": setSessionCookie(sessionId),
-        },
-      });
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: redirectUrl.toString(),
+        "Set-Cookie": setSessionCookie(session.id),
+      },
     });
-  };
-
-  return validateEmail(userInfo.email).pipe(
-    Effect.flatMap(createUserAndSession),
-    Effect.flatMap(buildRedirectResponse),
-  );
+  });
 }
 
+// =============================================================================
+// OAuth Proxy Helpers (for preview/staging environments)
+// =============================================================================
+
+/**
+ * Validates that a URL is a valid preview or staging URL.
+ *
+ * Valid URLs are:
+ * - `*-pr-{number}.mirascope.workers.dev` (PR preview deployments)
+ * - `staging.mirascope.com`
+ *
+ * @throws InvalidStateError - If the URL is not a valid preview/staging URL
+ */
 const validatePreviewUrl = (
   url: string,
-): Effect.Effect<string, InvalidStateError> => {
-  return Effect.try({
+): Effect.Effect<string, InvalidStateError> =>
+  Effect.try({
     try: () => {
       const parsedUrl = new URL(url);
       const isValid =
@@ -538,8 +700,13 @@ const validatePreviewUrl = (
         message: "Invalid return URL",
       }),
   });
-};
 
+/**
+ * Validates OAuth callback parameters for proxy requests.
+ *
+ * @throws OAuthError - If the provider returned an error or no code
+ * @throws InvalidStateError - If no state parameter was received
+ */
 const validateProxyParams = (
   url: URL,
   providerName: string,
@@ -554,7 +721,7 @@ const validateProxyParams = (
 
   return Effect.gen(function* () {
     if (error) {
-      yield* Effect.fail(
+      return yield* Effect.fail(
         new OAuthError({
           message: `OAuth Error: ${error} - ${errorDescription || ""}`,
           provider: providerName,
@@ -562,39 +729,50 @@ const validateProxyParams = (
       );
     }
 
-    const validState = yield* encodedState
-      ? Effect.succeed(encodedState)
-      : Effect.fail(
-          new InvalidStateError({
-            message: "No state parameter received",
-          }),
-        );
+    if (!encodedState) {
+      return yield* Effect.fail(
+        new InvalidStateError({
+          message: "No state parameter received",
+        }),
+      );
+    }
 
-    const validCode = yield* code
-      ? Effect.succeed(code)
-      : Effect.fail(
-          new OAuthError({
-            message: "No authorization code received",
-            provider: providerName,
-          }),
-        );
+    if (!code) {
+      return yield* Effect.fail(
+        new OAuthError({
+          message: "No authorization code received",
+          provider: providerName,
+        }),
+      );
+    }
 
-    return { code: validCode, encodedState: validState };
+    return { code, encodedState };
   });
 };
 
+/**
+ * Validates that a return URL exists in the state.
+ *
+ * @throws InvalidStateError - If no return URL was found
+ */
 const validateReturnUrl = (
   returnUrl: string | undefined,
-): Effect.Effect<string, InvalidStateError> => {
-  return returnUrl
+): Effect.Effect<string, InvalidStateError> =>
+  returnUrl
     ? Effect.succeed(returnUrl)
     : Effect.fail(
         new InvalidStateError({
           message: "No return URL found in state",
         }),
       );
-};
 
+/**
+ * Validates that the state parameter matches the stored cookie value.
+ *
+ * This provides CSRF protection for proxy callbacks.
+ *
+ * @throws InvalidStateError - If the states don't match
+ */
 const validateProxyStateMatch = (
   storedState: string | null,
   randomState: string,
@@ -609,14 +787,20 @@ const validateProxyStateMatch = (
   return Effect.void;
 };
 
+/**
+ * Builds a redirect response to forward the OAuth callback to the preview/staging URL.
+ *
+ * The response redirects to the target's callback endpoint with the
+ * authorization code and state, and sets the OAuth state cookie.
+ */
 const buildProxyRedirectResponse = (
   returnUrl: string,
   code: string,
   encodedState: string,
   randomState: string,
   providerName: string,
-): Effect.Effect<Response> => {
-  return Effect.sync(() => {
+): Effect.Effect<Response> =>
+  Effect.sync(() => {
     const callbackUrl = new URL(
       `/auth/${providerName.toLowerCase()}/callback`,
       returnUrl,
@@ -632,8 +816,33 @@ const buildProxyRedirectResponse = (
       },
     });
   });
-};
 
+// =============================================================================
+// OAuth Flow - Proxy Callback
+// =============================================================================
+
+/**
+ * Handles the OAuth proxy callback from an external OAuth provider.
+ *
+ * This is used for preview/staging environments where OAuth callbacks are
+ * routed through a proxy. The proxy receives the OAuth callback, validates
+ * the state, and redirects to the actual preview/staging URL with the
+ * authorization code.
+ *
+ * ## Flow
+ *
+ * 1. Validate OAuth params (code, state) from the provider
+ * 2. Decode and validate the state parameter (contains return URL and random state)
+ * 3. Verify the return URL is a valid preview/staging URL
+ * 4. Verify the state matches the stored cookie value (CSRF protection)
+ * 5. Redirect to the preview/staging callback URL with the code and state
+ *
+ * @param request - The incoming callback request from the OAuth provider
+ * @param providerName - The OAuth provider name (e.g., "github", "google")
+ * @returns A redirect response to the preview/staging callback URL
+ * @throws OAuthError - If the OAuth provider returned an error or no code
+ * @throws InvalidStateError - If state validation fails (CSRF protection)
+ */
 export function handleOAuthProxyCallback(
   request: Request,
   providerName: string,
@@ -641,40 +850,32 @@ export function handleOAuthProxyCallback(
   const url = new URL(request.url);
   const storedState = getOAuthStateFromCookie(request);
 
-  return validateProxyParams(url, providerName).pipe(
-    Effect.flatMap(({ code, encodedState }) =>
-      decodeState(encodedState).pipe(
-        Effect.flatMap((stateData) =>
-          validateReturnUrl(stateData.returnUrl).pipe(
-            Effect.flatMap((returnUrl) =>
-              validatePreviewUrl(returnUrl).pipe(
-                Effect.flatMap(() =>
-                  validateProxyStateMatch(
-                    storedState,
-                    stateData.randomState,
-                  ).pipe(
-                    Effect.map(() => ({
-                      code,
-                      encodedState,
-                      returnUrl,
-                      randomState: stateData.randomState,
-                    })),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-    Effect.flatMap(({ code, encodedState, returnUrl, randomState }) =>
-      buildProxyRedirectResponse(
-        returnUrl,
-        code,
-        encodedState,
-        randomState,
-        providerName,
-      ),
-    ),
-  );
+  return Effect.gen(function* () {
+    // 1. Validate OAuth params from provider
+    const { code, encodedState } = yield* validateProxyParams(
+      url,
+      providerName,
+    );
+
+    // 2. Decode state to get return URL and random state
+    const stateData = yield* decodeState(encodedState);
+
+    // 3. Validate return URL exists
+    const returnUrl = yield* validateReturnUrl(stateData.returnUrl);
+
+    // 4. Verify return URL is a valid preview/staging URL
+    yield* validatePreviewUrl(returnUrl);
+
+    // 5. Verify state matches stored cookie (CSRF protection)
+    yield* validateProxyStateMatch(storedState, stateData.randomState);
+
+    // 6. Build redirect response to the actual callback URL
+    return yield* buildProxyRedirectResponse(
+      returnUrl,
+      code,
+      encodedState,
+      stateData.randomState,
+      providerName,
+    );
+  });
 }

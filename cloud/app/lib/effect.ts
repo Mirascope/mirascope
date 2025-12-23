@@ -11,7 +11,7 @@ export type AppServices = SettingsService | EffectDatabase | AuthService;
  * Runs an Effect that returns a Response object.
  * Use for auth flows that return HTTP responses (redirects, cookies, etc.).
  */
-export async function runEffectResponse<E>(
+export async function runEffectResponse<E extends { message: string }>(
   effect: Effect.Effect<Response, E, AppServices>,
 ): Promise<Response> {
   const databaseUrl = process.env.DATABASE_URL;
@@ -25,7 +25,23 @@ export async function runEffectResponse<E>(
     Layer.succeed(AuthService, createAuthService()),
   );
 
-  return await effect.pipe(Effect.provide(appServicesLayer), Effect.runPromise);
+  const result = await effect.pipe(
+    Effect.either,
+    Effect.provide(appServicesLayer),
+    Effect.runPromise,
+  );
+
+  if (Either.isRight(result)) {
+    return result.right;
+  } else {
+    // Return a proper error response instead of throwing
+    const settings = getSettings();
+    const siteUrl = settings.SITE_URL || "http://localhost:3000";
+    return Response.redirect(
+      `${siteUrl}/login?error=${encodeURIComponent(result.left.message)}`,
+      302,
+    );
+  }
 }
 
 export async function runEffect<A, E extends { message: string }>(

@@ -6,6 +6,7 @@
       "name": "@mirascope/cloud",
       "dependencies": {
         "@effect/platform": "^0.93.3",
+        "@effect/schema": "^0.75.5",
         "@effect/sql": "^0.48.6",
         "@effect/sql-drizzle": "^0.47.0",
         "@effect/sql-pg": "^0.49.7",
@@ -199,6 +200,8 @@
     "@effect/experimental": ["@effect/experimental@0.57.11", "", { "dependencies": { "uuid": "^11.0.3" }, "peerDependencies": { "@effect/platform": "^0.93.6", "effect": "^3.19.9", "ioredis": "^5", "lmdb": "^3" }, "optionalPeers": ["ioredis", "lmdb"] }, "sha512-M5uug3Drs/gyTHLfA+XzcIZQGUEV/Jn5yi1POki4oZswhpzNmsVTHl4THpxAordRKwa5lFvTSlsRP684YH7pSw=="],
 
     "@effect/platform": ["@effect/platform@0.93.8", "", { "dependencies": { "find-my-way-ts": "^0.1.6", "msgpackr": "^1.11.4", "multipasta": "^0.2.7" }, "peerDependencies": { "effect": "^3.19.12" } }, "sha512-xTEy6fyTy4ijmFC3afKgtvYtn/JyPoIov4ZSUWJZUv3VeOcUPNGrrqG6IJlWkXs3NhvSywKv7wc1kw3epCQVZw=="],
+
+    "@effect/schema": ["@effect/schema@0.75.5", "", { "dependencies": { "fast-check": "^3.21.0" }, "peerDependencies": { "effect": "^3.9.2" } }, "sha512-TQInulTVCuF+9EIbJpyLP6dvxbQJMphrnRqgexm/Ze39rSjfhJuufF7XvU3SxTgg3HnL7B/kpORTJbHhlE6thw=="],
 
     "@effect/sql": ["@effect/sql@0.48.6", "", { "dependencies": { "uuid": "^11.0.3" }, "peerDependencies": { "@effect/experimental": "^0.57.9", "@effect/platform": "^0.93.6", "effect": "^3.19.8" } }, "sha512-OBIG/DYFxYTA9EXXhqi6sAcX0YLz8Huu8L+wj3a0aOSRPpHm9HkL9a5lacRPPvrVl31rKcEteGa/lO6n26gIFg=="],
 
