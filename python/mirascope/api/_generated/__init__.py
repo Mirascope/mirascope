@@ -26,9 +26,16 @@ from .errors import (
     InternalServerError,
     NotFoundError,
 )
-from . import docs, health, organizations, projects, traces
+from . import api_keys, docs, environments, health, organizations, projects, traces
+from .api_keys import ApiKeysCreateResponse, ApiKeysGetResponse, ApiKeysListResponseItem
 from .client import AsyncMirascope, Mirascope
 from .environment import MirascopeEnvironment
+from .environments import (
+    EnvironmentsCreateResponse,
+    EnvironmentsGetResponse,
+    EnvironmentsListResponseItem,
+    EnvironmentsUpdateResponse,
+)
 from .health import HealthCheckResponse, HealthCheckResponseStatus
 from .organizations import (
     OrganizationsCreateResponse,
@@ -75,11 +82,18 @@ from .traces import (
 __all__ = [
     "AlreadyExistsError",
     "AlreadyExistsErrorTag",
+    "ApiKeysCreateResponse",
+    "ApiKeysGetResponse",
+    "ApiKeysListResponseItem",
     "AsyncMirascope",
     "BadRequestError",
     "ConflictError",
     "DatabaseError",
     "DatabaseErrorTag",
+    "EnvironmentsCreateResponse",
+    "EnvironmentsGetResponse",
+    "EnvironmentsListResponseItem",
+    "EnvironmentsUpdateResponse",
     "ForbiddenError",
     "HealthCheckResponse",
     "HealthCheckResponseStatus",
@@ -133,7 +147,9 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "api_keys",
     "docs",
+    "environments",
     "health",
     "organizations",
     "projects",
