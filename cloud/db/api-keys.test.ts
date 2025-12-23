@@ -3,10 +3,10 @@ import {
   it,
   expect,
   MockDrizzleORM,
-  TestEffectEnvironmentFixture,
+  TestEnvironmentFixture,
 } from "@/tests/db";
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db/database";
+import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -26,8 +26,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const apiKey =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -54,8 +54,8 @@ describe("ApiKeys", () => {
     it.effect("creates an API key (org ADMIN)", () =>
       Effect.gen(function* () {
         const { org, project, environment, admin } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const apiKey =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -74,8 +74,8 @@ describe("ApiKeys", () => {
     it.effect("creates an API key (project ADMIN)", () =>
       Effect.gen(function* () {
         const { org, project, environment, projectAdmin } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const apiKey =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -93,8 +93,8 @@ describe("ApiKeys", () => {
     it.effect("creates an API key (project DEVELOPER)", () =>
       Effect.gen(function* () {
         const { org, project, environment, projectDeveloper } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const apiKey =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -114,8 +114,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, projectViewer } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .create({
@@ -139,8 +139,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, projectAnnotator } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .create({
@@ -161,8 +161,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, nonMember } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .create({
@@ -183,8 +183,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           yield* db.organizations.projects.environments.apiKeys.create({
             userId: owner.id,
@@ -214,8 +214,8 @@ describe("ApiKeys", () => {
     it.effect("allows same API key name in different environments", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         // Create API key in first environment
         const key1 =
@@ -254,7 +254,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .create({
@@ -307,8 +307,8 @@ describe("ApiKeys", () => {
     it.effect("retrieves all API keys in an environment", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         // Create API keys
         yield* db.organizations.projects.environments.apiKeys.create({
@@ -346,8 +346,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, projectAnnotator } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .findAll({
@@ -367,8 +367,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, nonMember } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .findAll({
@@ -386,8 +386,8 @@ describe("ApiKeys", () => {
     it.effect("returns empty array when environment has no API keys", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const apiKeys =
           yield* db.organizations.projects.environments.apiKeys.findAll({
@@ -403,7 +403,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .findAll({
@@ -455,8 +455,8 @@ describe("ApiKeys", () => {
     it.effect("retrieves an API key by ID", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -486,8 +486,8 @@ describe("ApiKeys", () => {
     it.effect("returns `NotFoundError` when API key doesn't exist", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .findById({
@@ -511,8 +511,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner, projectAnnotator } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const created =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -542,8 +542,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner, nonMember } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const created =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -570,7 +570,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .findById({
@@ -623,8 +623,8 @@ describe("ApiKeys", () => {
     it.effect("updates an API key name", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -653,8 +653,8 @@ describe("ApiKeys", () => {
     it.effect("allows project DEVELOPER to update", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner, projectDeveloper } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -684,8 +684,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner, projectViewer } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const created =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -717,8 +717,8 @@ describe("ApiKeys", () => {
     it.effect("returns `NotFoundError` when API key doesn't exist", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .update({
@@ -738,8 +738,8 @@ describe("ApiKeys", () => {
     it.effect("returns `AlreadyExistsError` when new name conflicts", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         yield* db.organizations.projects.environments.apiKeys.create({
           userId: owner.id,
@@ -778,7 +778,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when update fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .update({
@@ -827,7 +827,7 @@ describe("ApiKeys", () => {
       "returns `NotFoundError` when update returns empty (defensive)",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .update({
@@ -881,8 +881,8 @@ describe("ApiKeys", () => {
     it.effect("deletes an API key", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -919,8 +919,8 @@ describe("ApiKeys", () => {
     it.effect("allows DEVELOPER to delete their own API key", () =>
       Effect.gen(function* () {
         const { org, project, environment, projectDeveloper } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -959,8 +959,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner, projectDeveloper } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const created =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -993,8 +993,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner, projectViewer } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const created =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -1024,8 +1024,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .delete({
@@ -1046,8 +1046,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, projectDeveloper } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .delete({
@@ -1070,7 +1070,7 @@ describe("ApiKeys", () => {
       "returns `DatabaseError` when DEVELOPER ownership check fails",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .delete({
@@ -1119,8 +1119,8 @@ describe("ApiKeys", () => {
       () =>
         Effect.gen(function* () {
           const { org, project, environment, owner, nonMember } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
 
           const created =
             yield* db.organizations.projects.environments.apiKeys.create({
@@ -1147,7 +1147,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when delete fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .delete({
@@ -1195,7 +1195,7 @@ describe("ApiKeys", () => {
       "returns `NotFoundError` when delete returns empty (defensive)",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.projects.environments.apiKeys
             .delete({
@@ -1248,8 +1248,8 @@ describe("ApiKeys", () => {
     it.effect("gets complete API key info including owner details", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -1279,8 +1279,8 @@ describe("ApiKeys", () => {
     it.effect("updates lastUsedAt timestamp when getting info", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         const created =
           yield* db.organizations.projects.environments.apiKeys.create({
@@ -1313,8 +1313,8 @@ describe("ApiKeys", () => {
     it.effect("returns `NotFoundError` for invalid API key", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         // Create a valid key first to ensure there's data in the table
         yield* db.organizations.projects.environments.apiKeys.create({
@@ -1337,8 +1337,8 @@ describe("ApiKeys", () => {
     it.effect("returns `NotFoundError` when owner doesn't exist", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         // Create an API key
         const created =
@@ -1365,7 +1365,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .getApiKeyInfo("mk_test_key")
@@ -1385,7 +1385,7 @@ describe("ApiKeys", () => {
 
     it.effect("returns `DatabaseError` when lastUsedAt update fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.projects.environments.apiKeys
           .getApiKeyInfo("mk_test_key")
@@ -1417,7 +1417,6 @@ describe("ApiKeys", () => {
     );
   });
 
-
   // ===========================================================================
   // getRole (delegation to project memberships)
   // ===========================================================================
@@ -1426,8 +1425,8 @@ describe("ApiKeys", () => {
     it.effect("delegates to projectMemberships.getRole", () =>
       Effect.gen(function* () {
         const { org, project, owner, projectDeveloper } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
 
         // Owner has implicit ADMIN
         const ownerRole =

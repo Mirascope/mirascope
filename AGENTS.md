@@ -61,7 +61,7 @@ The cloud application uses [Effect](https://effect.website/) for functional prog
 ```typescript
 // Example: Effect-based database call
 Effect.gen(function* () {
-  const db = yield* EffectDatabase;
+  const db = yield* Database;
   
   const user = yield* db.users.create({
     data: { email: "user@example.com", name: "User" },
@@ -92,7 +92,7 @@ Key characteristics:
 - Error types: `DatabaseError`, `NotFoundError`, `AlreadyExistsError`, `PermissionDeniedError`
 
 ```typescript
-// Service hierarchy via EffectDatabase
+// Service hierarchy via Database
 db.users.create(...)
 db.sessions.create(...)
 db.organizations.create(...)
@@ -185,15 +185,15 @@ Hierarchical fixtures for Effect-native database tests:
 
 ```typescript
 // Organization-level fixture
-const { org, owner, admin, member, nonMember } = yield* TestEffectOrganizationFixture;
+const { org, owner, admin, member, nonMember } = yield* TestOrganizationFixture;
 
 // Project-level fixture (includes organization fixture)
 const { org, project, owner, admin, member, nonMember, 
         projectAdmin, projectDeveloper, projectViewer, projectAnnotator } 
-  = yield* TestEffectProjectFixture;
+  = yield* TestProjectFixture;
 
 // Environment-level fixture (includes project fixture)
-const { org, project, environment, owner, ... } = yield* TestEffectEnvironmentFixture;
+const { org, project, environment, owner, ... } = yield* TestEnvironmentFixture;
 ```
 
 #### Testing with `it.effect`
@@ -201,7 +201,7 @@ const { org, project, environment, owner, ... } = yield* TestEffectEnvironmentFi
 Use the wrapped `it` from `@/tests/db` for both regular and Effect tests:
 
 ```typescript
-import { describe, it, expect, TestEffectProjectFixture } from "@/tests/db";
+import { describe, it, expect, TestProjectFixture } from "@/tests/db";
 
 describe("MyService", () => {
   // Regular vitest test
@@ -212,8 +212,8 @@ describe("MyService", () => {
   // Effect-native test with auto-provided database layer
   it.effect("should create a resource", () =>
     Effect.gen(function* () {
-      const { org, owner } = yield* TestEffectProjectFixture;
-      const db = yield* EffectDatabase;
+      const { org, owner } = yield* TestProjectFixture;
+      const db = yield* Database;
       
       const result = yield* db.organizations.projects.create({
         userId: owner.id,
@@ -232,7 +232,7 @@ describe("MyService", () => {
 ```typescript
 it.effect("returns NotFoundError for non-existent resource", () =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     
     const result = yield* db.users.findById({ userId: "non-existent" })
       .pipe(Effect.flip); // Converts failure to success for assertion
@@ -249,7 +249,7 @@ import { MockDrizzleORM } from "@/tests/db";
 
 it.effect("returns DatabaseError when query fails", () =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     
     const result = yield* db.users.findById({ userId: "any-id" })
       .pipe(Effect.flip);
@@ -333,7 +333,7 @@ Lessons learned from working on this codebase:
 
 ### Testing
 
-1. **Use appropriate fixtures**: `TestEffectOrganizationFixture` < `TestEffectProjectFixture` < `TestEffectEnvironmentFixture`. Each includes users with different role levels.
+1. **Use appropriate fixtures**: `TestOrganizationFixture` < `TestProjectFixture` < `TestEnvironmentFixture`. Each includes users with different role levels.
 
 2. **Test all role levels**: OWNER, ADMIN, DEVELOPER, VIEWER, ANNOTATOR have different permissions.
 

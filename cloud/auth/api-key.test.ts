@@ -1,5 +1,6 @@
 import { getApiKeyFromRequest, API_KEY_HEADER } from "@/auth/api-key";
-import { describe, it, expect } from "@/tests/db";
+import { describe, it, expect } from "@/tests/auth";
+
 
 describe("getApiKeyFromRequest", () => {
   it("should extract API key from X-API-Key header", () => {

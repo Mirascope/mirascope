@@ -33,7 +33,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Create an API key (returns plaintext key only at creation)
  * const { key, ...apiKey } = yield* db.organizations.projects.environments.apiKeys.create({

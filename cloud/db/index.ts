@@ -1,3 +1,7 @@
 export * from "@/db/schema";
-export * from "@/db/database";
-export type * from "@/db/database";
+export { Database } from "@/db/database";
+export type {
+  OrganizationsService,
+  ProjectsService,
+  EnvironmentsService,
+} from "@/db/database";

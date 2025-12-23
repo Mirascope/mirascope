@@ -27,7 +27,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Create an environment
  * const env = yield* db.organizations.projects.environments.create({

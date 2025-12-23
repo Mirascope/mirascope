@@ -2,10 +2,10 @@ import {
   describe,
   it,
   expect,
-  TestEffectOrganizationFixture,
+  TestOrganizationFixture,
   MockDrizzleORM,
 } from "@/tests/db";
-import { EffectDatabase } from "@/db/database";
+import { Database } from "@/db/database";
 import { Effect } from "effect";
 import {
   type PublicOrganizationMembership,
@@ -26,8 +26,8 @@ describe("OrganizationMemberships", () => {
   describe("create", () => {
     it.effect("creates a membership for a target user", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const membership = yield* db.organizations.memberships.create({
           userId: owner.id,
@@ -57,8 +57,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows ADMIN to create memberships", () =>
       Effect.gen(function* () {
-        const { org, admin, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, admin, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const membership = yield* db.organizations.memberships.create({
           userId: admin.id,
@@ -85,8 +85,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `PermissionDeniedError` when trying to add OWNER", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .create({
@@ -105,8 +105,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when trying to add yourself",
       () =>
         Effect.gen(function* () {
-          const { org, owner } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .create({
@@ -123,8 +123,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const testId = crypto.randomUUID().slice(0, 8);
         const anotherUser = yield* db.users.create({
@@ -151,9 +151,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when ADMIN tries to add ADMIN",
       () =>
         Effect.gen(function* () {
-          const { org, admin, nonMember } =
-            yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, admin, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .create({
@@ -172,9 +171,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when MEMBER tries to create",
       () =>
         Effect.gen(function* () {
-          const { org, member, nonMember } =
-            yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, member, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .create({
@@ -195,9 +193,8 @@ describe("OrganizationMemberships", () => {
       "returns `AlreadyExistsError` when user is already a member",
       () =>
         Effect.gen(function* () {
-          const { org, owner, nonMember } =
-            yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           // First add succeeds
           yield* db.organizations.memberships.create({
@@ -221,7 +218,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .create({
@@ -247,7 +244,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .create({
@@ -277,8 +274,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows adding a deleted user to an organization", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Delete the user
         yield* db.users.delete({ userId: nonMember.id });
@@ -305,8 +302,8 @@ describe("OrganizationMemberships", () => {
   describe("findAll", () => {
     it.effect("retrieves all memberships for an organization", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Fixture creates owner + admin + member = 3 members
         const memberships = yield* db.organizations.memberships.findAll({
@@ -325,8 +322,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows any member role to read memberships", () =>
       Effect.gen(function* () {
-        const { org, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const memberships = yield* db.organizations.memberships.findAll({
           userId: member.id,
@@ -339,8 +336,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .findAll({
@@ -356,7 +353,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .findAll({
@@ -381,8 +378,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns deleted users in the membership list", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Add the user to the organization
         const membership = yield* db.organizations.memberships.create({
@@ -414,8 +411,8 @@ describe("OrganizationMemberships", () => {
   describe("findById", () => {
     it.effect("retrieves a specific membership", () =>
       Effect.gen(function* () {
-        const { org, owner, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const membership = yield* db.organizations.memberships.findById({
           userId: owner.id,
@@ -429,8 +426,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows any member to read another member's info", () =>
       Effect.gen(function* () {
-        const { org, member, admin } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, member, admin } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const membership = yield* db.organizations.memberships.findById({
           userId: member.id,
@@ -444,8 +441,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when membership doesn't exist", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .findById({
@@ -461,8 +458,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .findById({
@@ -479,7 +476,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .findById({
@@ -505,8 +502,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns membership for a deleted user", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Add the user to the organization
         const membership = yield* db.organizations.memberships.create({
@@ -537,8 +534,8 @@ describe("OrganizationMemberships", () => {
   describe("update", () => {
     it.effect("updates a membership role", () =>
       Effect.gen(function* () {
-        const { org, owner, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const updated = yield* db.organizations.memberships.update({
           userId: owner.id,
@@ -569,8 +566,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows ADMIN to update memberships", () =>
       Effect.gen(function* () {
-        const { org, admin, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, admin, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const updated = yield* db.organizations.memberships.update({
           userId: admin.id,
@@ -602,8 +599,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when trying to change role to OWNER",
       () =>
         Effect.gen(function* () {
-          const { org, owner, member } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, member } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .update({
@@ -623,8 +620,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when trying to modify your own membership",
       () =>
         Effect.gen(function* () {
-          const { org, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .update({
@@ -644,8 +641,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when trying to change an owner's role",
       () =>
         Effect.gen(function* () {
-          const { org, admin, owner } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, admin, owner } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .update({
@@ -663,8 +660,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .update({
@@ -684,8 +681,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when ADMIN tries to update ADMIN",
       () =>
         Effect.gen(function* () {
-          const { org, owner, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           // Create a second ADMIN with unique email
           const testId = crypto.randomUUID().slice(0, 8);
@@ -717,8 +714,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when ADMIN tries to promote to ADMIN",
       () =>
         Effect.gen(function* () {
-          const { org, admin, member } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, admin, member } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           // ADMIN should not be able to promote MEMBER to ADMIN
           const result = yield* db.organizations.memberships
@@ -739,8 +736,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when MEMBER tries to update",
       () =>
         Effect.gen(function* () {
-          const { org, member, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, member, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const testId = crypto.randomUUID().slice(0, 8);
           const anotherMember = yield* db.users.create({
@@ -775,9 +772,8 @@ describe("OrganizationMemberships", () => {
       "returns `NotFoundError` when target membership doesn't exist",
       () =>
         Effect.gen(function* () {
-          const { org, owner, nonMember } =
-            yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .update({
@@ -799,7 +795,7 @@ describe("OrganizationMemberships", () => {
       "returns `DatabaseError` when getMembership for target fails",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .update({
@@ -826,7 +822,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when update fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .update({
@@ -855,7 +851,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .update({
@@ -888,8 +884,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows updating a deleted user's membership", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Add the user to the organization
         yield* db.organizations.memberships.create({
@@ -924,8 +920,8 @@ describe("OrganizationMemberships", () => {
   describe("delete", () => {
     it.effect("removes a member from an organization", () =>
       Effect.gen(function* () {
-        const { org, owner, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         yield* db.organizations.memberships.delete({
           userId: owner.id,
@@ -965,8 +961,8 @@ describe("OrganizationMemberships", () => {
       "allows a MEMBER to remove themself (leave the organization)",
       () =>
         Effect.gen(function* () {
-          const { org, owner, member } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, member } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           yield* db.organizations.memberships.delete({
             userId: member.id,
@@ -1005,8 +1001,8 @@ describe("OrganizationMemberships", () => {
       "allows an ADMIN to remove themself (leave the organization)",
       () =>
         Effect.gen(function* () {
-          const { org, owner, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           yield* db.organizations.memberships.delete({
             userId: admin.id,
@@ -1045,8 +1041,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when OWNER tries to remove themself",
       () =>
         Effect.gen(function* () {
-          const { org, owner } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .delete({
@@ -1063,8 +1059,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .delete({
@@ -1081,8 +1077,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows ADMIN to delete MEMBER", () =>
       Effect.gen(function* () {
-        const { org, admin, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, admin, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // ADMIN should be able to delete MEMBER
         yield* db.organizations.memberships.delete({
@@ -1123,8 +1119,8 @@ describe("OrganizationMemberships", () => {
       "returns `PermissionDeniedError` when ADMIN tries to delete ADMIN",
       () =>
         Effect.gen(function* () {
-          const { org, owner, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           // Create a second ADMIN with unique email
           const testId = crypto.randomUUID().slice(0, 8);
@@ -1155,9 +1151,8 @@ describe("OrganizationMemberships", () => {
       "returns `NotFoundError` when target membership doesn't exist",
       () =>
         Effect.gen(function* () {
-          const { org, owner, nonMember } =
-            yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, owner, nonMember } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .delete({
@@ -1178,7 +1173,7 @@ describe("OrganizationMemberships", () => {
       "returns `DatabaseError` when getMembership for target fails",
       () =>
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           const result = yield* db.organizations.memberships
             .delete({
@@ -1204,7 +1199,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when delete fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .delete({
@@ -1232,7 +1227,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .delete({
@@ -1262,8 +1257,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("allows removing a deleted user from an organization", () =>
       Effect.gen(function* () {
-        const { org, owner, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Add the user to the organization
         yield* db.organizations.memberships.create({
@@ -1275,9 +1270,11 @@ describe("OrganizationMemberships", () => {
         // Delete the user (soft delete)
         yield* db.users.delete({ userId: nonMember.id });
 
+
         // Should be able to remove the deleted user's membership
         yield* db.organizations.memberships.delete({
           userId: owner.id,
+
           organizationId: org.id,
           memberId: nonMember.id,
         });
@@ -1294,6 +1291,30 @@ describe("OrganizationMemberships", () => {
         expect(result).toBeInstanceOf(NotFoundError);
       }),
     );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.memberships
+          .findById({
+            userId: "user-id",
+            organizationId: "org-id",
+            memberId: "user-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get membership");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // getMembership: fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
   });
 
   // ===========================================================================
@@ -1303,8 +1324,8 @@ describe("OrganizationMemberships", () => {
   describe("getMembership", () => {
     it.effect("returns membership when user is a member", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const membership = yield* db.organizations.memberships.getMembership({
           userId: owner.id,
@@ -1317,8 +1338,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .getMembership({
@@ -1336,7 +1357,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .getMembership({
@@ -1365,8 +1386,8 @@ describe("OrganizationMemberships", () => {
   describe("getRole", () => {
     it.effect("returns role when user is a member", () =>
       Effect.gen(function* () {
-        const { org, admin } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, admin } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const role = yield* db.organizations.memberships.getRole({
           userId: admin.id,
@@ -1379,8 +1400,8 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns NotFoundError when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .getRole({
@@ -1398,8 +1419,8 @@ describe("OrganizationMemberships", () => {
       "returns NotFoundError when user is soft-deleted (lacks permissions)",
       () =>
         Effect.gen(function* () {
-          const { org, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           // Soft-delete the admin user
           yield* db.users.delete({ userId: admin.id });
@@ -1419,7 +1440,7 @@ describe("OrganizationMemberships", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships
           .getRole({
@@ -1448,7 +1469,7 @@ describe("OrganizationMemberships", () => {
   describe("audits", () => {
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations.memberships.audits
           .findAll({

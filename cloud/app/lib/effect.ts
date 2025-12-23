@@ -1,11 +1,11 @@
 import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { SettingsService, getSettings } from "@/settings";
 import type { Result } from "./types";
 export type { Result } from "./types";
 
-export type AppServices = SettingsService | EffectDatabase | AuthService;
+export type AppServices = SettingsService | Database | AuthService;
 
 /**
  * Runs an Effect that returns a Response object.
@@ -21,7 +21,7 @@ export async function runEffectResponse<E extends { message: string }>(
 
   const appServicesLayer = Layer.mergeAll(
     Layer.succeed(SettingsService, getSettings()),
-    EffectDatabase.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
   );
 
@@ -54,7 +54,7 @@ export async function runEffect<A, E extends { message: string }>(
 
   const appServicesLayer = Layer.mergeAll(
     Layer.succeed(SettingsService, getSettings()),
-    EffectDatabase.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
   );
 

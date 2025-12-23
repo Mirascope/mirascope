@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * const user = yield* db.users.create({
  *   data: { email: "user@example.com", name: "User" },

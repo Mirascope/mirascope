@@ -3,7 +3,7 @@ import { Context, Effect, Layer } from "effect";
 import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { SettingsService } from "@/settings";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser } from "@/db/schema";
 
@@ -14,7 +14,7 @@ export type HandleRequestOptions = {
 };
 
 type WebHandlerOptions = {
-  db: Context.Tag.Service<EffectDatabase>;
+  db: Context.Tag.Service<Database>;
   authenticatedUser: PublicUser;
   environment: string;
 };
@@ -23,7 +23,7 @@ function createWebHandler(options: WebHandlerOptions) {
   const services = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: options.environment }),
     Layer.succeed(AuthenticatedUser, options.authenticatedUser),
-    Layer.succeed(EffectDatabase, options.db),
+    Layer.succeed(Database, options.db),
   );
 
   const ApiWithDependencies = Layer.mergeAll(
@@ -37,7 +37,7 @@ function createWebHandler(options: WebHandlerOptions) {
 /**
  * Handle an API request using the Effect HTTP API.
  *
- * This is an Effect that depends on `EffectDatabase` to share the database
+ * This is an Effect that depends on `Database` to share the database
  * connection with authentication and API handlers.
  *
  * @param request - The incoming HTTP request
@@ -50,10 +50,10 @@ export const handleRequest = (
 ): Effect.Effect<
   { matched: boolean; response: Response },
   HandlerError,
-  EffectDatabase
+  Database
 > =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
 
     const webHandler = createWebHandler({
       db,

@@ -4,7 +4,7 @@ import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
 import { getAuthenticatedUser, type PathParameters } from "@/auth";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -79,9 +79,7 @@ export const Route = createFileRoute("/api/v0/$")({
 
           return result.response;
         }).pipe(
-          Effect.provide(
-            EffectDatabase.Live({ connectionString: databaseUrl }),
-          ),
+          Effect.provide(Database.Live({ connectionString: databaseUrl })),
           handleErrors,
           handleDefects,
         );

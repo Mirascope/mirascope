@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { UnauthorizedError } from "@/errors";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 import { getApiKeyFromRequest } from "@/auth/api-key";
@@ -107,9 +107,9 @@ export type PathParameters = {
 export const validateApiKey = (
   apiKey: string,
   pathParams?: PathParameters,
-): Effect.Effect<ApiKeyInfo, UnauthorizedError, EffectDatabase> =>
+): Effect.Effect<ApiKeyInfo, UnauthorizedError, Database> =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
 
     // Get the API key info (verifies key and ensures owner exists)
     const apiKeyInfo = yield* db.organizations.projects.environments.apiKeys
@@ -189,9 +189,9 @@ export const validateApiKey = (
 export const getAuthenticatedUser = (
   request: Request,
   pathParams?: PathParameters,
-): Effect.Effect<PublicUser, UnauthorizedError, EffectDatabase> =>
+): Effect.Effect<PublicUser, UnauthorizedError, Database> =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
 
     // 1. Try API key authentication first
     const apiKey = getApiKeyFromRequest(request);

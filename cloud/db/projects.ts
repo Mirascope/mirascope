@@ -28,7 +28,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Create a project (creator becomes project ADMIN)
  * const project = yield* db.organizations.projects.create({

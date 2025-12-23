@@ -27,7 +27,7 @@
  *   // Implement abstract methods...
  * }
  *
- * // In EffectDatabase:
+ * // In Database:
  * const client = yield* DrizzleORM;
  * return {
  *   users: makeReady(client, new Users()),
@@ -225,7 +225,7 @@ export const makeReady = <T extends object>(
  *
  * Services extend this class and implement all abstract methods using
  * `yield* DrizzleORM` for database operations. The DrizzleORM requirement
- * is then satisfied at the EffectDatabase layer via `madeReady`.
+ * is then satisfied at the Database layer via `madeReady`.
  *
  * ## Type Parameters
  *

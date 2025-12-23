@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type {
   CreateEnvironmentRequest,
@@ -13,7 +13,7 @@ export const listEnvironmentsHandler = (
   projectId: string,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.projects.environments.findAll({
       userId: user.id,
@@ -28,7 +28,7 @@ export const createEnvironmentHandler = (
   payload: CreateEnvironmentRequest,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.projects.environments.create({
       userId: user.id,
@@ -44,7 +44,7 @@ export const getEnvironmentHandler = (
   environmentId: string,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.projects.environments.findById({
       userId: user.id,
@@ -61,7 +61,7 @@ export const updateEnvironmentHandler = (
   payload: UpdateEnvironmentRequest,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     return yield* db.organizations.projects.environments.update({
       userId: user.id,
@@ -78,7 +78,7 @@ export const deleteEnvironmentHandler = (
   environmentId: string,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     yield* db.organizations.projects.environments.delete({
       userId: user.id,

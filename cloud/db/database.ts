@@ -1,17 +1,17 @@
 /**
- * @fileoverview Effect-native database service layer.
+ * @fileoverview Database service layer.
  *
- * This module provides the `EffectDatabase` service which aggregates all
+ * This module provides the `Database` service which aggregates all
  * individual database services (`Users`, `Sessions`, etc.) and provides them
  * through Effect's dependency injection system.
  *
  * ## Usage
  *
  * ```ts
- * import { EffectDatabase } from "@/db/database";
+ * import { Database } from "@/db/database";
  *
  * const createUser = Effect.gen(function* () {
- *   const db = yield* EffectDatabase;
+ *   const db = yield* Database;
  *
  *   const user = yield* db.users.create({
  *     data: { email: "user@example.com", name: "User" },
@@ -20,14 +20,14 @@
  *   return user;
  * });
  *
- * // Provide the EffectDatabase layer
- * createUser.pipe(Effect.provide(EffectDatabase.Live({ connectionString: "..." })));
+ * // Provide the Database layer
+ * createUser.pipe(Effect.provide(Database.Live({ connectionString: "..." })));
  * ```
  *
  * ## Architecture
  *
  * ```
- * EffectDatabase (service layer)
+ * Database (service layer)
  *   ├── users: Ready<Users>
  *   └── sessions: Ready<Sessions>
  *
@@ -35,9 +35,6 @@
  * provides the DrizzleORM client, so consumers see methods returning
  * Effect<T, E> with no additional dependencies.
  * ```
- *
- * NOTE: This is a transitional service that will eventually be renamed to `Database`
- * once the migration is complete.
  */
 
 import { Context, Layer, Effect } from "effect";
@@ -57,7 +54,7 @@ import { ApiKeys } from "@/db/api-keys";
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
  */
-export interface EffectEnvironments extends Ready<Environments> {
+export interface EnvironmentsService extends Ready<Environments> {
   readonly apiKeys: Ready<ApiKeys>;
 }
 
@@ -68,9 +65,9 @@ export interface EffectEnvironments extends Ready<Environments> {
  * Environments: `db.organizations.projects.environments.create(...)`
  * API Keys: `db.organizations.projects.environments.apiKeys.create(...)`
  */
-export interface EffectProjects extends Ready<Projects> {
+export interface ProjectsService extends Ready<Projects> {
   readonly memberships: Ready<ProjectMemberships>;
-  readonly environments: EffectEnvironments;
+  readonly environments: EnvironmentsService;
 }
 
 /**
@@ -79,31 +76,13 @@ export interface EffectProjects extends Ready<Projects> {
  * Access pattern: `db.organizations.create(...)` or `db.organizations.memberships.create(...)`
  * Projects: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
  */
-export interface EffectOrganizations extends Ready<Organizations> {
+export interface OrganizationsService extends Ready<Organizations> {
   readonly memberships: Ready<OrganizationMemberships>;
-  readonly projects: EffectProjects;
+  readonly projects: ProjectsService;
 }
 
 /**
- * Type definition for the EffectDatabase service.
- *
- * Each service is wrapped with `Ready` which removes the DrizzleORM
- * requirement from all methods. This means consumers only need to provide
- * EffectDatabase, not DrizzleORM.
- *
- * Adding a new method to a service class automatically adds it here via
- * the `Ready` type transformation. If the interface doesn't match
- * what's returned from `Default`, TypeScript will error.
- */
-// TODO: remove "Effect" prefix after refactor is complete
-export interface EffectDatabaseSchema {
-  readonly users: Ready<Users>;
-  readonly sessions: Ready<Sessions>;
-  readonly organizations: EffectOrganizations;
-}
-
-/**
- * Effect-native database service layer.
+ * Database service layer.
  *
  * Provides aggregated access to all database services through Effect's
  * dependency injection system. The DrizzleORM dependency is provided
@@ -112,7 +91,7 @@ export interface EffectDatabaseSchema {
  * @example
  * ```ts
  * const program = Effect.gen(function* () {
- *   const db = yield* EffectDatabase;
+ *   const db = yield* Database;
  *
  *   // Create a user - no DrizzleORM requirement leaked!
  *   const user = yield* db.users.create({
@@ -122,23 +101,26 @@ export interface EffectDatabaseSchema {
  *   return user;
  * });
  *
- * // Provide the EffectDatabase layer (includes DrizzleORM)
- * program.pipe(Effect.provide(EffectDatabase.Live({ connectionString: "..." })));
+ * // Provide the Database layer (includes DrizzleORM)
+ * program.pipe(Effect.provide(Database.Live({ connectionString: "..." })));
  * ```
  */
-// TODO: remove "Effect" prefix after refactor is complete
-export class EffectDatabase extends Context.Tag("EffectDatabase")<
-  EffectDatabase,
-  EffectDatabaseSchema
+export class Database extends Context.Tag("Database")<
+  Database,
+  {
+    readonly users: Ready<Users>;
+    readonly sessions: Ready<Sessions>;
+    readonly organizations: OrganizationsService;
+  }
 >() {
   /**
-   * Default layer that creates the EffectDatabase service.
+   * Default layer that creates the Database service.
    *
    * Requires DrizzleORM to be provided. The `makeReady` wrapper provides
    * the DrizzleORM client to each service, removing it from method signatures.
    */
   static Default = Layer.effect(
-    EffectDatabase,
+    Database,
     Effect.gen(function* () {
       const client = yield* DrizzleORM;
 
@@ -177,16 +159,16 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
   /**
    * Creates a fully configured layer with database connection.
    *
-   * This is the standard way to use EffectDatabase. Provide a connection
-   * configuration and get back a layer that provides both EffectDatabase
+   * This is the standard way to use Database. Provide a connection
+   * configuration and get back a layer that provides both Database
    * and its DrizzleORM dependency.
    *
    * @param config - Database connection configuration
-   * @returns A Layer providing EffectDatabase with no dependencies
+   * @returns A Layer providing Database with no dependencies
    *
    * @example
    * ```ts
-   * const DbLive = EffectDatabase.Live({
+   * const DbLive = Database.Live({
    *   connectionString: process.env.DATABASE_URL,
    * });
    *
@@ -194,5 +176,5 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
    * ```
    */
   static Live = (config: DrizzleORMConfig) =>
-    EffectDatabase.Default.pipe(Layer.provide(DrizzleORM.layer(config)));
+    Database.Default.pipe(Layer.provide(DrizzleORM.layer(config)));
 }

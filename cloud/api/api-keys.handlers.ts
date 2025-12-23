@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { CreateApiKeyRequest } from "@/api/api-keys.schemas";
 import type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema";
@@ -25,7 +25,7 @@ export const listApiKeysHandler = (
   environmentId: string,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const apiKeys =
       yield* db.organizations.projects.environments.apiKeys.findAll({
@@ -44,7 +44,7 @@ export const createApiKeyHandler = (
   payload: CreateApiKeyRequest,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const apiKey = yield* db.organizations.projects.environments.apiKeys.create(
       {
@@ -65,7 +65,7 @@ export const getApiKeyHandler = (
   apiKeyId: string,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const apiKey =
       yield* db.organizations.projects.environments.apiKeys.findById({
@@ -85,7 +85,7 @@ export const deleteApiKeyHandler = (
   apiKeyId: string,
 ) =>
   Effect.gen(function* () {
-    const db = yield* EffectDatabase;
+    const db = yield* Database;
     const user = yield* AuthenticatedUser;
     yield* db.organizations.projects.environments.apiKeys.delete({
       userId: user.id,

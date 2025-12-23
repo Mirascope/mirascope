@@ -2,10 +2,10 @@ import {
   describe,
   it,
   expect,
-  TestEffectOrganizationFixture,
+  TestOrganizationFixture,
   MockDrizzleORM,
 } from "@/tests/db";
-import { EffectDatabase } from "@/db/database";
+import { Database } from "@/db/database";
 import { Effect } from "effect";
 import {
   type PublicOrganizationWithMembership,
@@ -26,7 +26,7 @@ describe("Organizations", () => {
   describe("create", () => {
     it.effect("creates an organization with owner membership", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "create-org@example.com", name: "Create Org User" },
@@ -69,8 +69,8 @@ describe("Organizations", () => {
 
     it.effect("returns `AlreadyExistsError` when name is taken", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .create({ userId: owner.id, data: { name: org.name } })
@@ -85,7 +85,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .create({ userId: "user-id", data: { name: "Test Org" } })
@@ -102,7 +102,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when membership insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .create({ userId: "user-id", data: { name: "Test Org" } })
@@ -124,7 +124,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when audit log insert fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .create({ userId: "user-id", data: { name: "Test Org" } })
@@ -154,8 +154,8 @@ describe("Organizations", () => {
   describe("findAll", () => {
     it.effect("retrieves all organizations for a user", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         // Create a second organization
         const org2 = yield* db.organizations.create({
@@ -174,7 +174,7 @@ describe("Organizations", () => {
 
     it.effect("returns empty array for user with no organizations", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const user = yield* db.users.create({
           data: { email: "no-orgs@example.com", name: "No Orgs User" },
@@ -188,7 +188,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .findAll({ userId: "user-id" })
@@ -211,8 +211,8 @@ describe("Organizations", () => {
   describe("findById", () => {
     it.effect("retrieves organization when user is OWNER", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const found = yield* db.organizations.findById({
           userId: owner.id,
@@ -229,8 +229,8 @@ describe("Organizations", () => {
 
     it.effect("retrieves organization when user is ADMIN", () =>
       Effect.gen(function* () {
-        const { org, admin } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, admin } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const found = yield* db.organizations.findById({
           userId: admin.id,
@@ -247,8 +247,8 @@ describe("Organizations", () => {
 
     it.effect("retrieves organization when user is MEMBER", () =>
       Effect.gen(function* () {
-        const { org, member } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const found = yield* db.organizations.findById({
           userId: member.id,
@@ -265,8 +265,8 @@ describe("Organizations", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .findById({ userId: nonMember.id, organizationId: org.id })
@@ -279,7 +279,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when getRole fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .findById({ userId: "user-id", organizationId: "org-id" })
@@ -299,7 +299,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when fetching organization fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .findById({ userId: "user-id", organizationId: "org-id" })
@@ -328,7 +328,7 @@ describe("Organizations", () => {
 
     it.effect("returns `NotFoundError` when organization not found", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .findById({ userId: "user-id", organizationId: "org-id" })
@@ -365,8 +365,8 @@ describe("Organizations", () => {
   describe("update", () => {
     it.effect("updates organization when user is OWNER", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const newName = "Updated Organization Name";
         const updated = yield* db.organizations.update({
@@ -385,8 +385,8 @@ describe("Organizations", () => {
 
     it.effect("updates organization when user is ADMIN", () =>
       Effect.gen(function* () {
-        const { org, admin } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, admin } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const newName = "Admin Updated Name";
         const updated = yield* db.organizations.update({
@@ -405,8 +405,8 @@ describe("Organizations", () => {
 
     it.effect("persists updates correctly", () =>
       Effect.gen(function* () {
-        const { org, owner } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const newName = "Persisted Name";
         yield* db.organizations.update({
@@ -428,8 +428,8 @@ describe("Organizations", () => {
       "returns `PermissionDeniedError` when MEMBER tries to update",
       () =>
         Effect.gen(function* () {
-          const { org, member } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, member } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations
             .update({
@@ -448,8 +448,8 @@ describe("Organizations", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .update({
@@ -466,7 +466,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when getRole fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .update({
@@ -490,7 +490,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when update query fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .update({
@@ -533,7 +533,7 @@ describe("Organizations", () => {
 
     it.effect("returns `NotFoundError` when organization does not exist", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .update({
@@ -584,7 +584,7 @@ describe("Organizations", () => {
   describe("delete", () => {
     it.effect("deletes an organization", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         // Create a new organization to delete
         const user = yield* db.users.create({
@@ -614,8 +614,8 @@ describe("Organizations", () => {
       "returns `PermissionDeniedError` when ADMIN tries to delete",
       () =>
         Effect.gen(function* () {
-          const { org, admin } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, admin } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations
             .delete({ userId: admin.id, organizationId: org.id })
@@ -632,8 +632,8 @@ describe("Organizations", () => {
       "returns `PermissionDeniedError` when MEMBER tries to delete",
       () =>
         Effect.gen(function* () {
-          const { org, member } = yield* TestEffectOrganizationFixture;
-          const db = yield* EffectDatabase;
+          const { org, member } = yield* TestOrganizationFixture;
+          const db = yield* Database;
 
           const result = yield* db.organizations
             .delete({ userId: member.id, organizationId: org.id })
@@ -648,8 +648,8 @@ describe("Organizations", () => {
 
     it.effect("returns `NotFoundError` when user is not a member", () =>
       Effect.gen(function* () {
-        const { org, nonMember } = yield* TestEffectOrganizationFixture;
-        const db = yield* EffectDatabase;
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .delete({ userId: nonMember.id, organizationId: org.id })
@@ -662,7 +662,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when getRole fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .delete({ userId: "user-id", organizationId: "org-id" })
@@ -682,7 +682,7 @@ describe("Organizations", () => {
 
     it.effect("returns `DatabaseError` when delete fails", () =>
       Effect.gen(function* () {
-        const db = yield* EffectDatabase;
+        const db = yield* Database;
 
         const result = yield* db.organizations
           .delete({ userId: "user-id", organizationId: "org-id" })

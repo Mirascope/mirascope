@@ -1,6 +1,6 @@
 import { Effect } from "effect";
-import { describe, it, expect, TestEffectAuthFixture } from "@/tests/auth";
-import { EffectDatabase } from "@/db";
+import { describe, it, expect, TestAuthFixture } from "@/tests/auth";
+import { Database } from "@/db";
 import {
   getSessionIdFromCookie,
   getOAuthStateFromCookie,
@@ -177,7 +177,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
     "should authenticate with valid API key and matching environmentId",
     () =>
       Effect.gen(function* () {
-        const { owner, environment, apiKey } = yield* TestEffectAuthFixture;
+        const { owner, environment, apiKey } = yield* TestAuthFixture;
 
         const request = new Request("https://example.com/api/test", {
           headers: {
@@ -198,7 +198,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should reject API key with mismatched environmentId", () =>
     Effect.gen(function* () {
-      const { otherEnvironment, apiKey } = yield* TestEffectAuthFixture;
+      const { otherEnvironment, apiKey } = yield* TestAuthFixture;
 
       const request = new Request("https://example.com/api/test", {
         headers: {
@@ -225,7 +225,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
     "should authenticate with valid API key and matching projectId",
     () =>
       Effect.gen(function* () {
-        const { owner, project, apiKey } = yield* TestEffectAuthFixture;
+        const { owner, project, apiKey } = yield* TestAuthFixture;
 
         const request = new Request("https://example.com/api/test", {
           headers: {
@@ -246,7 +246,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should reject API key with mismatched projectId", () =>
     Effect.gen(function* () {
-      const { apiKey } = yield* TestEffectAuthFixture;
+      const { apiKey } = yield* TestAuthFixture;
 
       const request = new Request("https://example.com/api/test", {
         headers: {
@@ -273,7 +273,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
     "should authenticate with valid API key and matching organizationId",
     () =>
       Effect.gen(function* () {
-        const { owner, org, apiKey } = yield* TestEffectAuthFixture;
+        const { owner, org, apiKey } = yield* TestAuthFixture;
 
         const request = new Request("https://example.com/api/test", {
           headers: {
@@ -294,7 +294,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should reject API key with mismatched organizationId", () =>
     Effect.gen(function* () {
-      const { apiKey } = yield* TestEffectAuthFixture;
+      const { apiKey } = yield* TestAuthFixture;
 
       const request = new Request("https://example.com/api/test", {
         headers: {
@@ -322,7 +322,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
     () =>
       Effect.gen(function* () {
         const { owner, org, project, environment, apiKey } =
-          yield* TestEffectAuthFixture;
+          yield* TestAuthFixture;
 
         const request = new Request("https://example.com/api/test", {
           headers: {
@@ -346,7 +346,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
   it.effect("should reject API key when any parameter mismatches", () =>
     Effect.gen(function* () {
       const { org, project, otherEnvironment, apiKey } =
-        yield* TestEffectAuthFixture;
+        yield* TestAuthFixture;
 
       const request = new Request("https://example.com/api/test", {
         headers: {
@@ -376,7 +376,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
     "should authenticate with valid API key when no path parameters provided",
     () =>
       Effect.gen(function* () {
-        const { owner, apiKey } = yield* TestEffectAuthFixture;
+        const { owner, apiKey } = yield* TestAuthFixture;
 
         const request = new Request("https://example.com/api/test", {
           headers: {
@@ -393,7 +393,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should authenticate with Authorization Bearer header", () =>
     Effect.gen(function* () {
-      const { owner, environment, apiKey } = yield* TestEffectAuthFixture;
+      const { owner, environment, apiKey } = yield* TestAuthFixture;
 
       const request = new Request("https://example.com/api/test", {
         headers: {
@@ -455,8 +455,8 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should authenticate with valid session cookie", () =>
     Effect.gen(function* () {
-      const { owner } = yield* TestEffectAuthFixture;
-      const db = yield* EffectDatabase;
+      const { owner } = yield* TestAuthFixture;
+      const db = yield* Database;
 
       // Create a session
       const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
@@ -480,8 +480,8 @@ describe("getAuthenticatedUser - path parameter validation", () => {
 
   it.effect("should prefer API key over session", () =>
     Effect.gen(function* () {
-      const { apiKey, owner, admin } = yield* TestEffectAuthFixture;
-      const db = yield* EffectDatabase;
+      const { apiKey, owner, admin } = yield* TestAuthFixture;
+      const db = yield* Database;
 
       // Create a session for admin
       const expiresAt = new Date(Date.now() + 1000 * 60 * 60);

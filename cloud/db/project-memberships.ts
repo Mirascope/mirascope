@@ -29,7 +29,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Add a developer to a project
  * const membership = yield* db.organizations.projects.memberships.create({

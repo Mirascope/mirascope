@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * const db = yield* EffectDatabase;
+ * const db = yield* Database;
  *
  * // Create a session for a user
  * const session = yield* db.sessions.create({

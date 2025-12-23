@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { runEffectResponse } from "@/app/lib/effect";
 import { getSessionIdFromCookie, clearSessionCookie } from "@/auth/utils";
 
@@ -32,7 +32,7 @@ export const logout = createServerFn({ method: "POST" }).handler(async () => {
         });
       }
 
-      const db = yield* EffectDatabase;
+      const db = yield* Database;
       yield* db.sessions.deleteBySessionId(sessionId).pipe(
         Effect.catchAll(() => Effect.succeed(undefined)), // Ignore deletion errors
       );

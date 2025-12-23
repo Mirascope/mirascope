@@ -16,7 +16,7 @@ import {
   HttpServer,
 } from "@effect/platform";
 import { SettingsService } from "@/settings";
-import { EffectDatabase } from "@/db";
+import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser, PublicOrganization } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
@@ -25,27 +25,27 @@ import { TEST_DATABASE_URL } from "@/tests/db";
 export { expect };
 
 // ============================================================================
-// it.effect with automatic EffectDatabase layer provision
+// it.effect with automatic Database layer provision
 // ============================================================================
 
 /**
- * Layer that provides EffectDatabase for API handler tests.
+ * Layer that provides Database for API handler tests.
  */
-const TestEffectDatabaseLayer = EffectDatabase.Live({
+const TestDatabaseLayer = Database.Live({
   connectionString: TEST_DATABASE_URL,
 }).pipe(Layer.orDie);
 
 /**
- * Type for effect test functions that accept EffectDatabase as dependency.
+ * Type for effect test functions that accept Database as dependency.
  */
 type EffectTestFn = <A, E>(
   name: string,
-  fn: () => Effect.Effect<A, E, EffectDatabase>,
+  fn: () => Effect.Effect<A, E, Database>,
   timeout?: number,
 ) => void;
 
 /**
- * Wraps a test function to automatically provide EffectDatabase layer.
+ * Wraps a test function to automatically provide Database layer.
  */
 const wrapEffectTest =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,13 +54,13 @@ const wrapEffectTest =
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
       return original(
         name,
-        () => fn().pipe(Effect.provide(TestEffectDatabaseLayer)),
+        () => fn().pipe(Effect.provide(TestDatabaseLayer)),
         timeout,
       );
     };
 
 /**
- * Type-safe `it` with `it.effect` that automatically provides EffectDatabase.
+ * Type-safe `it` with `it.effect` that automatically provides Database.
  *
  * Use this for API handler tests that need database access.
  *
@@ -109,7 +109,7 @@ function createTestWebHandler(
   const services = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: "test" }),
     Layer.succeed(AuthenticatedUser, authenticatedUser),
-    EffectDatabase.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
   );
 
   const ApiWithDependencies = Layer.mergeAll(
@@ -241,12 +241,12 @@ function createSequentialDescribe(
       databaseUrl = TEST_DATABASE_URL;
 
       // Create database layer for setup operations
-      const dbLayer = EffectDatabase.Live({ connectionString: databaseUrl });
+      const dbLayer = Database.Live({ connectionString: databaseUrl });
 
       // Create user and organization
       const { owner, org } = await Effect.runPromise(
         Effect.gen(function* () {
-          const db = yield* EffectDatabase;
+          const db = yield* Database;
 
           // Create test user
           const owner = yield* db.users.create({
@@ -289,11 +289,11 @@ function createSequentialDescribe(
 
       // Clean up database - delete org first (cascades), then user
       if (ownerRef?.id) {
-        const dbLayer = EffectDatabase.Live({ connectionString: databaseUrl });
+        const dbLayer = Database.Live({ connectionString: databaseUrl });
 
         await Effect.runPromise(
           Effect.gen(function* () {
-            const db = yield* EffectDatabase;
+            const db = yield* Database;
 
             // Delete organization (cascades to projects, memberships)
             if (orgRef?.id) {
@@ -370,8 +370,8 @@ function createSimpleTestWebHandler() {
     Layer.succeed(AuthenticatedUser, mockUser),
   );
 
-  // EffectDatabase layer
-  const dbLayer = EffectDatabase.Live({ connectionString: databaseUrl }).pipe(
+  // Database layer
+  const dbLayer = Database.Live({ connectionString: databaseUrl }).pipe(
     Layer.orDie,
   );
 
