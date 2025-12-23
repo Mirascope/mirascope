@@ -767,6 +767,7 @@ export abstract class BaseAuthenticatedEffectService<
    * @throws NotFoundError - If resource doesn't exist or user has no access
    * @throws PermissionDeniedError - If user lacks update permission
    * @throws DatabaseError - If the database operation fails
+   * @throws StripeError - If Stripe operations fail (for resources synced with Stripe)
    */
   abstract update(
     args: { userId: string } & PathParams<TPath> & { data: TUpdate },
@@ -776,8 +777,9 @@ export abstract class BaseAuthenticatedEffectService<
     | PermissionDeniedError
     | AlreadyExistsError
     | DeletedUserError
-    | DatabaseError,
-    DrizzleORM
+    | DatabaseError
+    | StripeError,
+    DrizzleORM | Stripe
   >;
 
   /**

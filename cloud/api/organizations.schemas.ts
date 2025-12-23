@@ -94,7 +94,8 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addSuccess(OrganizationWithMembershipSchema)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(StripeError, { status: StripeError.status }),
   )
   .add(
     HttpApiEndpoint.del("delete", "/organizations/:id")

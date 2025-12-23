@@ -609,6 +609,28 @@ describe("Organizations", () => {
       }),
     );
 
+    it.effect("updates organization slug only", () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const newSlug = "updated-slug";
+        const updated = yield* db.organizations.update({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { slug: newSlug },
+        });
+
+        expect(updated).toEqual({
+          id: org.id,
+          name: org.name,
+          slug: newSlug,
+          stripeCustomerId: org.stripeCustomerId,
+          role: "OWNER",
+        } satisfies PublicOrganizationWithMembership);
+      }),
+    );
+
     it.effect(
       "returns `PermissionDeniedError` when MEMBER tries to update",
       () =>
@@ -759,6 +781,87 @@ describe("Organizations", () => {
             .build(),
         ),
       ),
+    );
+
+    it.effect(
+      "calls updateCustomer with correct parameters when name or slug changes",
+      () => {
+        // Capture the params passed to updateCustomer
+        type CapturedParams = {
+          customerId: string;
+          organizationName?: string;
+          organizationSlug?: string;
+        };
+
+        let capturedParams: CapturedParams | null = null;
+
+        return Effect.gen(function* () {
+          const db = yield* Database;
+
+          const user = yield* db.users.create({
+            data: {
+              email: "update-test@example.com",
+              name: "Update Test User",
+            },
+          });
+
+          const organization = yield* db.organizations.create({
+            userId: user.id,
+            data: { name: "Original Name", slug: "original-slug" },
+          });
+
+          // Update organization name and slug
+          const newName = "Updated Name";
+          const newSlug = "updated-slug";
+
+          yield* db.organizations.update({
+            userId: user.id,
+            organizationId: organization.id,
+            data: { name: newName, slug: newSlug },
+          });
+
+          // Verify updateCustomer was called with correct parameters
+          assert(capturedParams !== null);
+          expect(capturedParams.customerId).toBe(organization.stripeCustomerId);
+          expect(capturedParams.organizationName).toBe(newName);
+          expect(capturedParams.organizationSlug).toBe(newSlug);
+        }).pipe(
+          Effect.provide(
+            Database.Default.pipe(
+              Layer.provideMerge(TestDrizzleORM),
+              Layer.provide(
+                new MockStripe().customers
+                  .create(() => ({ id: "cus_mock" }))
+                  .customers.retrieve(() => ({
+                    id: "cus_mock",
+                    metadata: {
+                      organizationId: "org-id",
+                      organizationName: "Original Name",
+                      organizationSlug: "original-slug",
+                    },
+                  }))
+                  .customers.update(
+                    (
+                      id: string,
+                      params: {
+                        name?: string;
+                        metadata?: Record<string, string>;
+                      },
+                    ) => {
+                      capturedParams = {
+                        customerId: id,
+                        organizationName: params.name,
+                        organizationSlug: params.metadata?.organizationSlug,
+                      };
+                      return { id };
+                    },
+                  )
+                  .build(),
+              ),
+            ),
+          ),
+        );
+      },
     );
   });
 

@@ -74,6 +74,10 @@ export class MockStripe {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private createCustomerResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private retrieveCustomerResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private updateCustomerResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private deleteCustomerResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private createSubscriptionResult?: any;
@@ -94,6 +98,24 @@ export class MockStripe {
       create: (result: any) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.createCustomerResult = result;
+        return this;
+      },
+      /**
+       * Mock `customers.retrieve()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      retrieve: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.retrieveCustomerResult = result;
+        return this;
+      },
+      /**
+       * Mock `customers.update()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      update: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.updateCustomerResult = result;
         return this;
       },
       /**
@@ -161,6 +183,10 @@ export class MockStripe {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const createCustomerResult = this.createCustomerResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const retrieveCustomerResult = this.retrieveCustomerResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const updateCustomerResult = this.updateCustomerResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const deleteCustomerResult = this.deleteCustomerResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const createSubscriptionResult = this.createSubscriptionResult;
@@ -194,6 +220,60 @@ export class MockStripe {
             livemode: false,
             email: params.email || null,
             name: params.name || null,
+            metadata: params.metadata || {},
+          });
+        },
+        retrieve: (id: string) => {
+          if (retrieveCustomerResult !== undefined) {
+            // If it's a function, call it with id
+            if (typeof retrieveCustomerResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(retrieveCustomerResult(id));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(retrieveCustomerResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            id,
+            object: "customer" as const,
+            created: Date.now(),
+            livemode: false,
+            email: "mock@example.com",
+            name: "Mock Customer",
+            metadata: {
+              organizationId: "mock-org-id",
+              organizationName: "Mock Organization",
+              organizationSlug: "mock-organization",
+            },
+          });
+        },
+        update: (
+          id: string,
+          params: {
+            name?: string;
+            metadata?: Record<string, string>;
+          },
+        ) => {
+          if (updateCustomerResult !== undefined) {
+            // If it's a function, call it with id and params
+            if (typeof updateCustomerResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(updateCustomerResult(id, params));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(updateCustomerResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            id,
+            object: "customer" as const,
+            created: Date.now(),
+            livemode: false,
+            email: "mock@example.com",
+            name: params.name || "Mock Customer",
             metadata: params.metadata || {},
           });
         },

@@ -64,7 +64,12 @@ import {
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
-import { Stripe, createCustomer, deleteCustomer } from "@/payments";
+import {
+  Stripe,
+  createCustomer,
+  deleteCustomer,
+  updateCustomer,
+} from "@/payments";
 
 import {
   users,
@@ -447,7 +452,8 @@ export class Organizations extends BaseAuthenticatedEffectService<
   /**
    * Updates an organization.
    *
-   * Requires OWNER or ADMIN role.
+   * Requires OWNER or ADMIN role. If name or slug changes, the corresponding
+   * Stripe customer record is automatically updated to keep them in sync.
    *
    * @param args.userId - The authenticated user
    * @param args.organizationId - The organization to update
@@ -456,6 +462,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * @throws NotFoundError - If the organization doesn't exist or user isn't a member
    * @throws PermissionDeniedError - If the user lacks update permission
    * @throws DatabaseError - If the database operation fails
+   * @throws StripeError - If Stripe customer update fails
    */
   update({
     userId,
@@ -464,11 +471,11 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }: {
     userId: string;
     organizationId: string;
-    data: Partial<NewOrganization>;
+    data: Partial<Pick<NewOrganization, "id" | "name" | "slug">>;
   }): Effect.Effect<
     PublicOrganizationWithMembership,
-    NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    DrizzleORM | Stripe
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -503,6 +510,15 @@ export class Organizations extends BaseAuthenticatedEffectService<
             resource: this.getResourceName(),
           }),
         );
+      }
+
+      // Update Stripe customer if name or slug changed
+      if (data.name !== undefined || data.slug !== undefined) {
+        yield* updateCustomer({
+          customerId: updated.stripeCustomerId,
+          organizationName: data.name,
+          organizationSlug: data.slug,
+        });
       }
 
       return { ...updated, role };

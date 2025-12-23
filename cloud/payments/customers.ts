@@ -98,6 +98,81 @@ export function createCustomer(
 }
 
 /**
+ * Parameters for updating a Stripe customer.
+ */
+export interface UpdateCustomerParams {
+  /** Stripe customer ID */
+  customerId: string;
+  /** Updated organization name (optional) */
+  organizationName?: string;
+  /** Updated organization slug (optional) */
+  organizationSlug?: string;
+}
+
+/**
+ * Updates a Stripe customer's name and metadata to match organization changes.
+ *
+ * Updates both the customer's display name and metadata fields when organization
+ * details change. This ensures Stripe records stay in sync with the organization.
+ *
+ * @param params - Customer ID and optional organization details to update
+ * @returns Effect that succeeds when customer is updated
+ * @throws StripeError - If update fails
+ *
+ * @example
+ * ```ts
+ * yield* updateCustomer({
+ *   customerId: "cus_123",
+ *   organizationName: "New Acme Corp",
+ *   organizationSlug: "new-acme-corp",
+ * });
+ * ```
+ */
+export function updateCustomer(
+  params: UpdateCustomerParams,
+): Effect.Effect<void, StripeError, Stripe> {
+  return Effect.gen(function* () {
+    const stripe = yield* Stripe;
+
+    // Build update object with name and metadata
+    const updateData: {
+      name?: string;
+      metadata?: Record<string, string>;
+    } = {};
+
+    // Update name if provided
+    if (params.organizationName !== undefined) {
+      updateData.name = params.organizationName;
+    }
+
+    // Update metadata if any org details changed
+    if (
+      params.organizationName !== undefined ||
+      params.organizationSlug !== undefined
+    ) {
+      // Fetch current metadata to preserve organizationId
+      const customer = yield* stripe.customers.retrieve(params.customerId);
+      const currentMetadata = "metadata" in customer ? customer.metadata : {};
+
+      updateData.metadata = {
+        ...currentMetadata,
+        ...(params.organizationName !== undefined && {
+          organizationName: params.organizationName,
+        }),
+        ...(params.organizationSlug !== undefined && {
+          organizationSlug: params.organizationSlug,
+        }),
+      };
+    }
+
+    // Only update if there's something to change
+    if (Object.keys(updateData).length > 0) {
+      yield* stripe.customers.update(params.customerId, updateData);
+    }
+  });
+}
+
+/**
  * Deletes a Stripe customer (and all associated subscriptions).
  *
  * Use this for cleanup when organization creation fails after Stripe customer

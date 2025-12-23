@@ -2,6 +2,7 @@ import { describe, it, expect, DefaultMockStripe } from "@/tests/db";
 import { Effect, Layer, Context } from "effect";
 import {
   createCustomer,
+  updateCustomer,
   deleteCustomer,
   getCustomerBalance,
 } from "@/payments/customers";
@@ -162,6 +163,175 @@ describe("customers", () => {
           } as unknown as Context.Tag.Service<typeof Stripe>),
         ),
       ),
+    );
+  });
+
+  describe("updateCustomer", () => {
+    it.effect("updates customer name and metadata", () =>
+      Effect.gen(function* () {
+        yield* updateCustomer({
+          customerId: "cus_123",
+          organizationName: "New Name",
+          organizationSlug: "new-slug",
+        }).pipe(Effect.provide(DefaultMockStripe));
+
+        // Test passes if no errors thrown
+      }),
+    );
+
+    it.effect("updates only organization slug", () =>
+      Effect.gen(function* () {
+        let updatedCustomer:
+          | { name?: string; metadata?: Record<string, string> }
+          | undefined;
+
+        yield* updateCustomer({
+          customerId: "cus_123",
+          organizationSlug: "updated-slug-only",
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(Stripe, {
+              customers: {
+                create: () => Effect.void,
+                retrieve: (id: string) =>
+                  Effect.succeed({
+                    id,
+                    object: "customer" as const,
+                    created: Date.now(),
+                    livemode: false,
+                    email: "test@example.com",
+                    name: "Existing Name",
+                    metadata: {
+                      organizationId: "org-123",
+                      organizationName: "Existing Name",
+                      organizationSlug: "old-slug",
+                    },
+                  }),
+                update: (
+                  id: string,
+                  params: {
+                    name?: string;
+                    metadata?: Record<string, string>;
+                  },
+                ) => {
+                  updatedCustomer = params;
+                  return Effect.succeed({
+                    id,
+                    object: "customer" as const,
+                    created: Date.now(),
+                    livemode: false,
+                    email: "test@example.com",
+                    name: params.name || "Existing Name",
+                    metadata: params.metadata || {},
+                  });
+                },
+                del: () => Effect.void,
+              },
+              subscriptions: {
+                create: () => Effect.void,
+              },
+              config: {
+                apiKey: "sk_test_mock",
+                routerPriceId: "price_test",
+              },
+            } as unknown as Context.Tag.Service<typeof Stripe>),
+          ),
+        );
+
+        // Should update metadata with new slug, preserving existing metadata
+        expect(updatedCustomer?.metadata?.organizationSlug).toBe(
+          "updated-slug-only",
+        );
+        expect(updatedCustomer?.metadata?.organizationId).toBe("org-123");
+      }),
+    );
+
+    it.effect("handles deleted customer when updating metadata", () =>
+      Effect.gen(function* () {
+        let updatedMetadata: Record<string, string> | undefined;
+
+        yield* updateCustomer({
+          customerId: "cus_123",
+          organizationSlug: "new-slug",
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(Stripe, {
+              customers: {
+                create: () => Effect.void,
+                retrieve: (id: string) =>
+                  Effect.succeed({
+                    id,
+                    object: "customer" as const,
+                    deleted: true,
+                  }),
+                update: (
+                  id: string,
+                  params: {
+                    name?: string;
+                    metadata?: Record<string, string>;
+                  },
+                ) => {
+                  updatedMetadata = params.metadata;
+                  return Effect.succeed({
+                    id,
+                    object: "customer" as const,
+                    created: Date.now(),
+                    livemode: false,
+                    email: "test@example.com",
+                    name: "Name",
+                    metadata: params.metadata || {},
+                  });
+                },
+                del: () => Effect.void,
+              },
+              subscriptions: {
+                create: () => Effect.void,
+              },
+              config: {
+                apiKey: "sk_test_mock",
+                routerPriceId: "price_test",
+              },
+            } as unknown as Context.Tag.Service<typeof Stripe>),
+          ),
+        );
+
+        // Should create new metadata object when customer is deleted
+        expect(updatedMetadata?.organizationSlug).toBe("new-slug");
+      }),
+    );
+
+    it.effect("does not update if no changes provided", () =>
+      Effect.gen(function* () {
+        let updateCalled = false;
+
+        yield* updateCustomer({
+          customerId: "cus_123",
+        }).pipe(
+          Effect.provide(
+            Layer.succeed(Stripe, {
+              customers: {
+                create: () => Effect.void,
+                retrieve: () => Effect.void,
+                update: () => {
+                  updateCalled = true;
+                  return Effect.void;
+                },
+                del: () => Effect.void,
+              },
+              subscriptions: {
+                create: () => Effect.void,
+              },
+              config: {
+                apiKey: "sk_test_mock",
+                routerPriceId: "price_test",
+              },
+            } as unknown as Context.Tag.Service<typeof Stripe>),
+          ),
+        );
+
+        // Should not call update if nothing to change
+        expect(updateCalled).toBe(false);
+      }),
     );
   });
 
