@@ -43,7 +43,6 @@ from ....responses import (
     Usage,
     UsageDeltaChunk,
 )
-from ..model_id import model_name
 from .decode import decode_usage
 
 BETA_FINISH_REASON_MAP = {
@@ -74,13 +73,15 @@ def _decode_beta_assistant_content(content: BetaContentBlock) -> AssistantConten
 def beta_decode_response(
     response: ParsedBetaMessage[Any],
     model_id: str,
+    provider_id: str,
+    provider_model_name: str,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage]:
     """Convert Beta message to mirascope AssistantMessage and usage."""
     assistant_message = AssistantMessage(
         content=[_decode_beta_assistant_content(part) for part in response.content],
-        provider_id="anthropic",
+        provider_id=provider_id,
         model_id=model_id,
-        provider_model_name=model_name(model_id),
+        provider_model_name=provider_model_name,
         raw_message={
             "role": response.role,
             "content": [
