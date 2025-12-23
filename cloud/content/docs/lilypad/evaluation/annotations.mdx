@@ -1,0 +1,96 @@
+---
+title: Annotations
+description: Add labels and feedback to your LLM outputs
+---
+
+# Annotations
+
+When you are viewing a trace in the full view, the right sidebar contains a section for discussions and annotations.
+
+![Trace Annotation Sidebar](/assets/docs/lilypad/evaluation/annotations/annotation-sidebar.webp)
+
+## Discussion
+
+The discussion tab is a place for you to leave open-ended comments on the trace.
+Often this is the first step towards annotating the trace. When you aren't yet sure how to annotate or trace (or if you want to), open-ended discussions are a great way to start.
+
+You can use this to ask questions, leave feedback, discuss the trace with your team, or even just leave a note to yourself.
+
+![Trace Discussion](/assets/docs/lilypad/evaluation/annotations/trace-discussion.webp)
+
+## Assigning Traces For Annotation
+
+In the trace view, annotations are read only. You can annotate a trace by assigning to a user, which adds it to their annotation queue.
+
+![Click Assign Annotation](/assets/docs/lilypad/evaluation/annotations/click-assign-annotation.webp)
+
+![Assign Annotation](/assets/docs/lilypad/evaluation/annotations/assign-annotation.webp)
+
+Once added to the queue, you can annotate the trace by clicking the label, (optionally) providing a reason, and clicking submit.
+
+![Annotation Queue](/assets/docs/lilypad/evaluation/annotations/annotation-queue.webp)
+
+When annotating a trace, existing annotations are not shown to you. This is to prevent biasing your annotation.
+
+## Annotating In Code
+
+You can also annotate traces in code. This is useful when you want to annotate a trace using a custom script or UI.
+
+```python
+import os
+
+from lilypad import Lilypad
+
+client = Lilypad()
+
+client.ee.projects.annotations.create(
+    project_uuid=os.environ["LILYPAD_PROJECT_ID"],
+    body=[
+        {
+            "span_uuid": "...",
+            "project_uuid": os.environ["LILYPAD_PROJECT_ID"],
+            "function_uuid": "...",
+            "label": "pass",  # [!code highlight]
+            "reasoning": "this is a pass because...",  # [!code highlight]
+            "type": "manual",
+            "data": {},
+            "assigned_to": ["..."],
+            "assignee_email": ["e@mail.com"],
+        }
+    ],
+)
+```
+
+## Passthrough Annotations
+
+Setting `mode="wrap"` in the `trace` decorator converts the original return type of the decorated function into a `Traced[R]` that provides methods for operating on the corresponding trace directly.
+
+For example, you might want to enable passthrough annotation so that your users can annotate traces directly:
+
+```python
+from google.genai import Client
+import lilypad
+
+client = Client()
+lilypad.configure()
+
+@lilypad.trace(name="Answer Question", versioning="automatic", mode="wrap")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-001",
+        contents=f"Answer this question: {question}",
+    )
+    return response.text
+    
+trace: lilypad.Trace[str | None] = answer_question("What is the capital of France?")
+print(trace.response)  # original response
+# > The capital of France is Paris.
+
+annotation = lilypad.Annotation(  # [!code highlight]
+    label="pass",  # [!code highlight]
+    reasoning="The answer was correct",  # [!code highlight]
+    data=None,  # [!code highlight]
+    type=None,  # [!code highlight]
+)  # [!code highlight]
+trace.annotate(annotation)  # [!code highlight]
+```

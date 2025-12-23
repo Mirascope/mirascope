@@ -8,4 +8,12 @@ tsconfig.tsbuildinfo
 coverage
 dist
 
+# Generated files
+public/static/
+public/sitemap.xml
+public/social-cards/
+public/seo-metadata.json
+public/llms-full.txt
+public/docs
+
 docker/data

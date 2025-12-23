@@ -1,0 +1,85 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.cohere.stream
+description: API documentation for mirascope.core.cohere.stream
+---
+
+# mirascope.core.cohere.stream
+
+The `CohereStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams)
+
+</Info>
+
+## <ApiType type="Class" path="core/cohere/stream" symbolName="CohereStream" /> CohereStream
+
+A class for convenience around streaming Cohere LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.cohere import cohere_call
+
+
+@cohere_call("command-r-plus", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")  # returns `CohereStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[CohereCallResponse, CohereCallResponseChunk, ChatMessage, ChatMessage, ChatMessage, ChatMessage, CohereTool, Tool, AsyncCohereDynamicConfig | CohereDynamicConfig, CohereCallParams, ChatStreamEndEventFinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "CohereCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/cohere/call_response#coherecallresponse"}, {"type_str": "CohereCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/cohere/call_response_chunk#coherecallresponsechunk"}, {"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}, {"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}, {"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}, {"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}, {"type_str": "CohereTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/cohere/tool#coheretool"}, {"type_str": "Tool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/llm/tool#tool"}, {"type_str": "AsyncCohereDynamicConfig | CohereDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncCohereDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/cohere/dynamic_config#asynccoheredynamicconfig"}, {"type_str": "CohereDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/cohere/dynamic_config#coheredynamicconfig"}]}, {"type_str": "CohereCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/cohere/call_params#coherecallparams"}, {"type_str": "ChatStreamEndEventFinishReason", "description": null, "kind": "simple", "doc_identifier": "ChatStreamEndEventFinishReason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/cohere/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed CohereStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "CohereCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/cohere/call_response#coherecallresponse"
+  }
+}}
+/>
+
+
+

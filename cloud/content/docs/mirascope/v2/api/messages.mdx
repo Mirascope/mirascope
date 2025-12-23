@@ -1,0 +1,727 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: messages
+description: API documentation for messages
+---
+
+# messages
+
+## <ApiType type="Attribute" slug="assistant-content" symbolName="AssistantContent" /> AssistantContent
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+Type alias for content that can fit into an `AssistantMessage`.
+
+
+## <ApiType type="Class" slug="assistant-message" symbolName="AssistantMessage" /> AssistantMessage
+
+An assistant message containing the model's response.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "role",
+    "type_info": {
+      "type_str": "Literal['assistant']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'assistant'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'assistant'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The role of this message. Always \"assistant\"."
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Sequence[AssistantContentPart]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Sequence",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Sequence",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "AssistantContentPart",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AssistantContentPart",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The content of the assistant message."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "A name identifying the creator of this message."
+  },
+  {
+    "name": "provider_id",
+    "type_info": {
+      "type_str": "ProviderId | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "ProviderId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ProviderId",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The LLM provider that generated this assistant message, if available."
+  },
+  {
+    "name": "model_id",
+    "type_info": {
+      "type_str": "ModelId | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The model identifier of the LLM that generated this assistant message, if available."
+  },
+  {
+    "name": "provider_model_name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The provider-specific model identifier (e.g. \"gpt-5:responses\"), if available."
+  },
+  {
+    "name": "raw_message",
+    "type_info": {
+      "type_str": "Jsonable | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "Jsonable",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Jsonable",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The provider-specific raw representation of this assistant message, if available.\n\nIf raw_content is truthy, then it may be used for provider-specific behavior when\nresuming an LLM interaction that included this assistant message. For example, we can\nreuse the provider-specific raw encoding rather than re-encoding the message from it's\nMirascope content representation. This may also take advantage of server-side provider\ncontext, e.g. identifiers of reasoning context tokens that the provider generated.\n\nIf present, the content should be encoded as JSON-serializable data, and in a format\nthat matches representation the provider expects representing the Mirascope data.\nThis may involve e.g.  converting Pydantic `BaseModel`s into plain dicts via `model_dump`.\n\nRaw content is not required, as the Mirascope content can also be used to generate\na valid input to the provider (potentially without taking advantage of provider-specific\nreasoning caches, etc). In that case raw content should be left empty."
+  }
+]}
+/>
+
+
+## <ApiType type="Attribute" slug="message" symbolName="Message" /> Message
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+A message in an LLM interaction.
+
+Messages have a role (system, user, or assistant) and content that is a sequence
+of content parts. The content can include text, images, audio, documents, and
+tool interactions.
+
+For most use cases, prefer the convenience functions `system()`, `user()`, and
+`assistant()` instead of directly creating `Message` objects.
+
+Example:
+
+    ```python
+    from mirascope import llm
+
+    messages = [
+        llm.messages.system("You are a helpful assistant."),
+        llm.messages.user("Hello, how are you?"),
+    ]
+    ```
+
+
+## <ApiType type="Attribute" slug="system-content" symbolName="SystemContent" /> SystemContent
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+Type alias for content that can fit into a `SystemMessage`.
+
+
+## <ApiType type="Class" slug="system-message" symbolName="SystemMessage" /> SystemMessage
+
+A system message that sets context and instructions for the conversation.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "role",
+    "type_info": {
+      "type_str": "Literal['system']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'system'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'system'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The role of this message. Always \"system\"."
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Text",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Text",
+      "doc_url": null
+    },
+    "description": "The content of this `SystemMesssage`."
+  }
+]}
+/>
+
+
+## <ApiType type="Attribute" slug="user-content" symbolName="UserContent" /> UserContent
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+Type alias for content that can fit into a `UserMessage`.
+
+
+## <ApiType type="Class" slug="user-message" symbolName="UserMessage" /> UserMessage
+
+A user message containing input from the user.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "role",
+    "type_info": {
+      "type_str": "Literal['user']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'user'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'user'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The role of this message. Always \"user\"."
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Sequence[UserContentPart]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Sequence",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Sequence",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "UserContentPart",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "UserContentPart",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The content of the user message."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "A name identifying the creator of this message."
+  }
+]}
+/>
+
+
+## <ApiType type="Function" slug="assistant" symbolName="assistant" /> assistant
+
+Creates an assistant message.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "AssistantContent",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "AssistantContent",
+      "doc_url": "/docs/mirascope/v2/api/messages#assistant-content"
+    },
+    "description": "The content of the message, which can be `str` or any `AssistantContent`,\nor a sequence of assistant content pieces."
+  },
+  {
+    "name": "model_id",
+    "type_info": {
+      "type_str": "ModelId | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ModelId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ModelId",
+          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Optional id of the model that produced this message."
+  },
+  {
+    "name": "provider_id",
+    "type_info": {
+      "type_str": "ProviderId | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ProviderId",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ProviderId",
+          "doc_url": "/docs/mirascope/v2/api/providers#provider-id"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Optional identifier of the provider that produced this message."
+  },
+  {
+    "name": "provider_model_name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional provider-specific model name. May include\nprovider-specific additional info (like api mode in \"gpt-5:responses\")."
+  },
+  {
+    "name": "raw_message",
+    "type_info": {
+      "type_str": "Jsonable | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Jsonable",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Jsonable",
+          "doc_url": "/docs/mirascope/v2/api/types#jsonable"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional Jsonable object that contains the provider-specific\n\"raw\" data representation of the content for this assistant message."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional name to identify a specific assistant in multi-party conversations."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AssistantMessage",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "AssistantMessage",
+    "doc_url": "/docs/mirascope/v2/api/messages#assistant-message"
+  },
+  "description": "An `AssistantMessage`."
+}}
+/>
+
+
+## <ApiType type="Function" slug="system" symbolName="system" /> system
+
+Creates a system message.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "SystemContent",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "SystemContent",
+      "doc_url": "/docs/mirascope/v2/api/messages#system-content"
+    },
+    "description": "The content of the message, which must be a `str` or `Text` content."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "SystemMessage",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "SystemMessage",
+    "doc_url": "/docs/mirascope/v2/api/messages#system-message"
+  },
+  "description": "A `SystemMessage`."
+}}
+/>
+
+
+## <ApiType type="Function" slug="user" symbolName="user" /> user
+
+Creates a user message.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "UserContent",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "UserContent",
+      "doc_url": "/docs/mirascope/v2/api/messages#user-content"
+    },
+    "description": "The content of the message, which can be `str` or any `UserContent`,\nor a sequence of such user content pieces."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional name to identify a specific user in multi-party conversations."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "UserMessage",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "UserMessage",
+    "doc_url": "/docs/mirascope/v2/api/messages#user-message"
+  },
+  "description": "A `UserMessage`."
+}}
+/>
+
+

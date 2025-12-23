@@ -6,6 +6,7 @@ import viteReact from "@vitejs/plugin-react";
 import path from "path";
 import { optimizedImageMiddleware } from "./vite/optimized-image-middleware";
 import { defineConfig } from "vite";
+// import { contentPreprocessPlugin } from "./scripts/preprocess-content";
 
 export default defineConfig(() => {
   return {
@@ -22,6 +23,7 @@ export default defineConfig(() => {
       }),
       viteReact(),
       tailwindcss(),
+      // contentPreprocessPlugin(),
       optimizedImageMiddleware(),
     ],
     resolve: {

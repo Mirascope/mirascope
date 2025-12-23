@@ -1,0 +1,71 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.litellm.stream
+description: API documentation for mirascope.core.litellm.stream
+---
+
+# mirascope.core.litellm.stream
+
+The `LiteLLMStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams)
+
+</Info>
+
+## <ApiType type="Class" path="core/litellm/stream" symbolName="LiteLLMStream" /> LiteLLMStream
+
+A simple wrapper around `OpenAIStream`.
+
+Everything is the same except updates to the `construct_call_response` method and
+the `cost` property so that cost is properly calculated using LiteLLM's cost
+calculation method. This ensures cost calculation works for non-OpenAI models.
+
+**Bases:** 
+<TypeLink type={{"type_str": "OpenAIStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/stream#openaistream"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+    },
+    "description": "Returns metadata needed for cost calculation."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/litellm/stream" symbolName="construct_call_response" /> construct_call_response
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "LiteLLMCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/litellm/call_response#litellmcallresponse"
+  }
+}}
+/>
+
+
+

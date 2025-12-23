@@ -1,0 +1,312 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.bedrock.call_response_chunk
+description: API documentation for mirascope.core.bedrock.call_response_chunk
+---
+
+# mirascope.core.bedrock.call_response_chunk
+
+This module contains the `BedrockCallResponseChunk` class.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams#handling-streamed-responses)
+
+</Info>
+
+## <ApiType type="Class" path="core/bedrock/call_response_chunk" symbolName="BedrockCallResponseChunk" /> BedrockCallResponseChunk
+
+A convenience wrapper around the Bedrock `ChatCompletionChunk` streamed chunks.
+
+When calling the Bedrock API using a function decorated with `bedrock_call` and
+`stream` set to `True`, the stream will contain `BedrockResponseChunk` instances with
+properties that allow for more convenient access to commonly used attributes.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.bedrock import bedrock_call
+
+
+@bedrock_call("anthropic.claude-3-haiku-20240307-v1:0", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+stream = recommend_book("fantasy")  # response is an `BedrockStream`
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseCallResponseChunk[StreamOutputChunk | AsyncStreamOutputChunk, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/call_response_chunk#basecallresponsechunk"}, "parameters": [{"type_str": "StreamOutputChunk | AsyncStreamOutputChunk", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "StreamOutputChunk", "description": null, "kind": "simple", "doc_identifier": "StreamOutputChunk"}, {"type_str": "AsyncStreamOutputChunk", "description": null, "kind": "simple", "doc_identifier": "AsyncStreamOutputChunk"}]}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "chunk",
+    "type_info": {
+      "type_str": "SkipValidation[StreamOutputChunk | AsyncStreamOutputChunk]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipValidation",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.SkipValidation"
+      },
+      "parameters": [
+        {
+          "type_str": "StreamOutputChunk | AsyncStreamOutputChunk",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "StreamOutputChunk",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "StreamOutputChunk"
+            },
+            {
+              "type_str": "AsyncStreamOutputChunk",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "AsyncStreamOutputChunk"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the content for the 0th choice delta."
+  },
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[FinishReason]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "FinishReason",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"
+        }
+      ]
+    },
+    "description": "Returns the finish reasons of the response."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the name of the response model."
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the id of the response."
+  },
+  {
+    "name": "usage",
+    "type_info": {
+      "type_str": "TokenUsageTypeDef | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "TokenUsageTypeDef",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "TokenUsageTypeDef"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the usage of the chat completion."
+  },
+  {
+    "name": "input_tokens",
+    "type_info": {
+      "type_str": "int | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the number of input tokens."
+  },
+  {
+    "name": "cached_tokens",
+    "type_info": {
+      "type_str": "int | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the number of cached tokens."
+  },
+  {
+    "name": "output_tokens",
+    "type_info": {
+      "type_str": "int | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the number of output tokens."
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+    },
+    "description": "Returns the cost metadata."
+  },
+  {
+    "name": "common_finish_reasons",
+    "type_info": {
+      "type_str": "list[types.FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[types.FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "types.FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "types.FinishReason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+

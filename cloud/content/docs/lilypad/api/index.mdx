@@ -1,0 +1,62 @@
+---
+title: Lilypad API Reference
+description: API documentation for Lilypad
+---
+
+# Lilypad API Reference
+
+<Warning>
+  The Lilypad API reference is under active development during the beta period.
+
+  For now, please use the [Lilypad FastAPI Docs](https://lilypad-api.mirascope.com/v0/docs) for the most up-to-date reference of what's available.
+</Warning>
+
+
+
+You can use the `Lilypad` (or `AsyncLilypad`) client to interace with the Lilypad API in code:
+
+<TabbedSection>
+<Tab value="sync">
+```python
+import os
+
+from lilypad import Lilypad
+
+
+client = Lilypad(
+    base_url="https://lilypad-api.mirascope.com/v0",  # can be ommitted if set in env
+    api_key=os.environ["LILYPAD_API_KEY"],            # can be ommitted if set in env
+)
+
+traces = client.projects.traces.list(
+    project_uuid=os.environ["LILYPAD_PROJECT_ID"],
+)
+print(traces.items[0])
+# > {'span_id': '...', ...}
+```
+</Tab>
+<Tab value="async">
+```python
+import asyncio
+import os
+
+from lilypad import AsyncLilypad
+
+client = AsyncLilypad(
+    base_url="https://lilypad-api.mirascope.com/v0",  # can be ommitted if set in env
+    api_key=os.environ["LILYPAD_API_KEY"],            # can be ommitted if set in env
+)
+
+
+async def main():
+    traces = await client.projects.traces.list(
+        project_uuid=os.environ["LILYPAD_PROJECT_ID"],
+    )
+    print(traces.items[0])
+    # > {'span_id': '...', ...}
+
+
+asyncio.run(main())
+```
+</Tab>
+</TabbedSection>

@@ -1,0 +1,27 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.xai.call_response
+description: API documentation for mirascope.core.xai.call_response
+---
+
+# mirascope.core.xai.call_response
+
+This module contains the `XAICallResponse` class.
+
+<Info title="Usage">
+
+[Calls](/docs/mirascope/learn/calls#handling-responses)
+
+</Info>
+
+## <ApiType type="Class" path="core/xai/call_response" symbolName="XAICallResponse" /> XAICallResponse
+
+A simpler wrapper around `OpenAICallResponse`.
+
+Everything is the same except the `cost` property, which has been updated to use
+xAI's cost calculations so that cost tracking works for non-OpenAI models.
+
+**Bases:** 
+<TypeLink type={{"type_str": "OpenAICallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response#openaicallresponse"}} />
+
+
