@@ -302,7 +302,7 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
    * because role lookup only needs userId and organizationId, not the full
    * path parameters (memberId is the resource being acted on, not needed here).
    */
-  protected getRole({
+  getRole({
     userId,
     organizationId,
   }: {

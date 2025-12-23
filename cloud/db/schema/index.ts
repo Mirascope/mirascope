@@ -6,6 +6,7 @@ export * from "@/db/schema/organization-membership-audit";
 export * from "@/db/schema/projects";
 export * from "@/db/schema/project-memberships";
 export * from "@/db/schema/project-membership-audit";
+export * from "@/db/schema/environments";
 
 export type { PublicSession } from "@/db/schema/sessions";
 export type { PublicUser } from "@/db/schema/users";
@@ -25,6 +26,7 @@ export type {
   ProjectRole,
 } from "@/db/schema/project-memberships";
 export type { PublicProjectMembershipAudit } from "@/db/schema/project-membership-audit";
+export type { PublicEnvironment, NewEnvironment } from "@/db/schema/environments";
 
 import { users } from "@/db/schema/users";
 import { sessions } from "@/db/schema/sessions";
@@ -34,6 +36,7 @@ import { organizationMembershipAudit } from "@/db/schema/organization-membership
 import { projects } from "@/db/schema/projects";
 import { projectMemberships } from "@/db/schema/project-memberships";
 import { projectMembershipAudit } from "@/db/schema/project-membership-audit";
+import { environments } from "@/db/schema/environments";
 
 export type DatabaseTable =
   | typeof users
@@ -43,4 +46,5 @@ export type DatabaseTable =
   | typeof organizationMembershipAudit
   | typeof projects
   | typeof projectMemberships
-  | typeof projectMembershipAudit;
+  | typeof projectMembershipAudit
+  | typeof environments;

@@ -518,7 +518,7 @@ export abstract class BaseAuthenticatedEffectService<
    * }
    * ```
    */
-  protected abstract getRole(
+  abstract getRole(
     args: { userId: string } & AuthorizationParams<TPath>,
   ): Effect.Effect<
     TRole,
@@ -581,8 +581,8 @@ export abstract class BaseAuthenticatedEffectService<
    *   return Effect.gen(this, function* () {
    *     const role = yield* this.authorize({
    *       userId,
-   *       organizationId,
    *       action: "update",
+   *       organizationId,
    *     });
    *     // User is authorized - proceed with update
    *     // Can include `role` in response if needed
@@ -590,7 +590,7 @@ export abstract class BaseAuthenticatedEffectService<
    * }
    * ```
    */
-  protected authorize(
+  authorize(
     args: {
       userId: string;
       action: PermissionAction;
@@ -700,7 +700,11 @@ export abstract class BaseAuthenticatedEffectService<
     args: { userId: string } & PathParams<TPath> & { data: TUpdate },
   ): Effect.Effect<
     TPublic,
-    NotFoundError | PermissionDeniedError | DeletedUserError | DatabaseError,
+    | NotFoundError
+    | PermissionDeniedError
+    | AlreadyExistsError
+    | DeletedUserError
+    | DatabaseError,
     DrizzleORM
   >;
 

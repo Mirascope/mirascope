@@ -49,14 +49,17 @@ import { Organizations } from "@/db/organizations";
 import { OrganizationMemberships } from "@/db/organization-memberships";
 import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
+import { Environments } from "@/db/environments";
 
 /**
- * Type definition for the projects service with nested memberships.
+ * Type definition for the projects service with nested memberships and environments.
  *
  * Access pattern: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
+ * Environments: `db.organizations.projects.environments.create(...)`
  */
 export interface EffectProjects extends Ready<Projects> {
   readonly memberships: Ready<ProjectMemberships>;
+  readonly environments: Ready<Environments>;
 }
 
 /**
@@ -138,6 +141,7 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
         organizationMemberships,
         projectMemberships,
       );
+      const environmentsService = new Environments(projectMemberships);
 
       return {
         users: makeReady(client, new Users()),
@@ -148,6 +152,7 @@ export class EffectDatabase extends Context.Tag("EffectDatabase")<
           projects: {
             ...makeReady(client, projectsService),
             memberships: makeReady(client, projectMemberships),
+            environments: makeReady(client, environmentsService),
           },
         },
       };
