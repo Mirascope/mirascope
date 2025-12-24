@@ -814,3 +814,38 @@ def test_response_tools_initialization() -> None:
         assistant_message=assistant_message,
     )
     assert isinstance(response.toolkit, llm.AsyncContextToolkit)
+
+
+def test_response_format_mode_none_raises_error() -> None:
+    """Test that Response initialization raises RuntimeError when format.mode is None."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    # Create a format with mode=None
+    format_with_none_mode = llm.format(Book, mode=None)
+    assert format_with_none_mode is not None
+    assert format_with_none_mode.mode is None
+
+    text_content = [llm.Text(text='{"title": "The Hobbit", "author": "Tolkien"}')]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    with pytest.raises(
+        RuntimeError, match="When format is present, it must have non-None mode"
+    ):
+        llm.Response(
+            raw={"test": "response"},
+            usage=None,
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            tools=[],
+            input_messages=[],
+            assistant_message=assistant_message,
+            finish_reason=None,
+            format=format_with_none_mode,
+        )

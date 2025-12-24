@@ -195,6 +195,9 @@ class BaseStreamResponse(
         self.params = params
         self.toolkit = toolkit
         self.usage = usage
+
+        if format is not None and format.mode is None:
+            raise RuntimeError("When format is present, it must have non-None mode.")
         self.format = format
 
         # Internal-only lists which we mutate (append) during chunk processing

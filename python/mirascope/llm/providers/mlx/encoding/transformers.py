@@ -81,7 +81,7 @@ class TransformersEncoder(BaseEncoder):
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode a request into a format suitable for the model."""
         tool_schemas = tools.tools if isinstance(tools, BaseToolkit) else tools or []

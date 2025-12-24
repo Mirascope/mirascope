@@ -57,6 +57,9 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         self.toolkit = toolkit
         self.finish_reason = finish_reason
         self.usage = usage
+
+        if format is not None and format.mode is None:
+            raise RuntimeError("When format is present, it must have non-None mode.")
         self.format = format
 
         # Process content in the assistant message, organizing it by type and

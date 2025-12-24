@@ -133,7 +133,7 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         params: Params,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChunkIterator]:
         """Stream response chunks synchronously.
@@ -156,7 +156,7 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         params: Params,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, AsyncChunkIterator]:
         """Stream response chunks asynchronously.
@@ -180,7 +180,7 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         params: Params,
     ) -> tuple[
         Sequence[Message],
@@ -216,7 +216,7 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         params: Params,
     ) -> tuple[
         Sequence[Message],

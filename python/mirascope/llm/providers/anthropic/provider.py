@@ -6,7 +6,7 @@ from typing_extensions import Unpack
 from anthropic import Anthropic, AsyncAnthropic
 
 from ...context import Context, DepsT
-from ...formatting import Format, FormattableT, resolve_format
+from ...formatting import Format, FormattableT, ensure_format_has_mode
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -37,15 +37,17 @@ from .model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 
 def _should_use_beta(
     model_id: AnthropicModelId,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: Format[FormattableT] | None,
 ) -> bool:
     """Determine whether to use the beta API based on format mode.
 
     If the format resolves to strict mode, and the model plausibly has
     strict structured output support, then we will use the beta provider.
     """
-    resolved = resolve_format(format, default_mode=_utils.DEFAULT_FORMAT_MODE)
-    if resolved is None or resolved.mode != "strict":
+    if format is None:
+        return False
+    format = ensure_format_has_mode(format, default_mode=_utils.DEFAULT_FORMAT_MODE)
+    if format.mode != "strict":
         return False
     return model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 
@@ -76,7 +78,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling the Anthropic Messages API."""
@@ -123,7 +125,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling the Anthropic Messages API."""
@@ -168,7 +170,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling the Anthropic Messages API."""
@@ -215,7 +217,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling the Anthropic Messages API."""
@@ -260,7 +262,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from the Anthropic Messages API."""
@@ -302,7 +304,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Anthropic Messages API."""
@@ -342,7 +344,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Anthropic Messages API."""
@@ -383,7 +385,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT]

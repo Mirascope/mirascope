@@ -157,7 +157,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> Response[FormattableT]:
         """Generate an `llm.Response` with a response format."""
@@ -170,7 +170,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` with an optional response format."""
@@ -182,7 +182,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling this client's LLM provider.
@@ -213,7 +213,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Implementation for call(). Subclasses override this method."""
@@ -245,7 +245,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` with a response format."""
@@ -261,7 +261,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` with an optional response format."""
@@ -276,7 +276,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling this client's LLM provider.
@@ -312,7 +312,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Implementation for context_call(). Subclasses override this method."""
@@ -338,7 +338,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` with a response format."""
@@ -351,7 +351,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` with an optional response format."""
@@ -363,7 +363,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling this client's LLM provider.
@@ -394,7 +394,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Implementation for call_async(). Subclasses override this method."""
@@ -426,7 +426,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` with a response format."""
@@ -442,7 +442,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` with an optional response format."""
@@ -457,7 +457,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling this client's LLM provider.
@@ -493,7 +493,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Implementation for context_call_async(). Subclasses override this method."""
@@ -519,7 +519,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` with a response format."""
@@ -532,7 +532,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` with an optional response format."""
@@ -544,7 +544,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from this client's LLM provider.
@@ -579,7 +579,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Implementation for stream(). Subclasses override this method."""
@@ -611,7 +611,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT, FormattableT]:
         """Stream an `llm.ContextStreamResponse` with a response format."""
@@ -627,7 +627,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
@@ -644,7 +644,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
@@ -686,7 +686,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
@@ -714,7 +714,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` with a response format."""
@@ -727,7 +727,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` with an optional response format."""
@@ -739,7 +739,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from this client's LLM provider.
@@ -774,7 +774,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Implementation for stream_async(). Subclasses override this method."""
@@ -806,7 +806,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT],
+        format: Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
         """Stream an `llm.AsyncContextStreamResponse` with a response format."""
@@ -822,7 +822,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
@@ -840,7 +840,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
@@ -883,7 +883,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT, None]

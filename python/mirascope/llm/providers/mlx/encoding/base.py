@@ -22,7 +22,7 @@ class BaseEncoder(abc.ABC):
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: Format[FormattableT] | None,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode the request messages into a format suitable for the model.
 

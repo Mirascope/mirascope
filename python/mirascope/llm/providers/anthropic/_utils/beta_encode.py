@@ -21,7 +21,7 @@ from ....exceptions import FormattingModeNotSupportedError
 from ....formatting import (
     Format,
     FormattableT,
-    resolve_format,
+    ensure_format_has_mode,
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import AnyToolSchema, BaseToolkit
@@ -139,7 +139,7 @@ def beta_encode_request(
     model_id: str,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""
@@ -159,9 +159,9 @@ def beta_encode_request(
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_beta_convert_tool_to_tool_param(tool) for tool in tools]
-    format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
 
     if format is not None:
+        format = ensure_format_has_mode(format, default_mode=DEFAULT_FORMAT_MODE)
         if format.mode == "strict":
             if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
                 raise FormattingModeNotSupportedError(

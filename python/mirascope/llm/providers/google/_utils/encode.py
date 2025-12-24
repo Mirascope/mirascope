@@ -14,7 +14,7 @@ from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
     FormattableT,
-    resolve_format,
+    ensure_format_has_mode,
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
@@ -176,7 +176,7 @@ def encode_request(
     model_id: GoogleModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, GoogleKwargs]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
@@ -226,8 +226,8 @@ def encode_request(
     # Older google models do not allow strict mode when using tools; if so, we use tool
     # mode when tools are present by default for compatibility. Otherwise, prefer strict mode.
     default_mode = "tool" if tools and not allows_strict_mode_with_tools else "strict"
-    format = resolve_format(format, default_mode=default_mode)
     if format is not None:
+        format = ensure_format_has_mode(format, default_mode=default_mode)
         if (
             format.mode in ("strict", "json")
             and tools

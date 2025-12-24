@@ -150,7 +150,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by calling through the Mirascope Router."""
@@ -172,7 +172,7 @@ class MirascopeProvider(BaseProvider[None]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by calling through the Mirascope Router."""
@@ -192,7 +192,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by calling through the Mirascope Router."""
@@ -214,7 +214,7 @@ class MirascopeProvider(BaseProvider[None]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by calling through the Mirascope Router."""
@@ -234,7 +234,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` by calling through the Mirascope Router."""
@@ -256,7 +256,7 @@ class MirascopeProvider(BaseProvider[None]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
@@ -278,7 +278,7 @@ class MirascopeProvider(BaseProvider[None]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` by calling through the Mirascope Router."""
@@ -300,7 +300,7 @@ class MirascopeProvider(BaseProvider[None]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT, None]

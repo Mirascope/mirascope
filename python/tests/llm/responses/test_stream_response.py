@@ -1430,6 +1430,38 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.AsyncContextToolkit)
 
 
+def test_stream_response_format_mode_none_raises_error() -> None:
+    """Test that StreamResponse initialization raises RuntimeError when format.mode is None."""
+    from pydantic import BaseModel
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    # Create a format with mode=None
+    format_with_none_mode = llm.format(Book, mode=None)
+    assert format_with_none_mode is not None
+    assert format_with_none_mode.mode is None
+
+    def chunk_iter() -> llm.ChunkIterator:
+        yield llm.TextStartChunk()
+        yield llm.TextChunk(delta="Hello")
+        yield llm.TextEndChunk()
+
+    with pytest.raises(
+        RuntimeError, match="When format is present, it must have non-None mode"
+    ):
+        llm.StreamResponse(
+            provider_id="openai",
+            model_id="openai/gpt-5-mini",
+            provider_model_name="gpt-5-mini",
+            params={},
+            input_messages=[],
+            chunk_iterator=chunk_iter(),
+            format=format_with_none_mode,
+        )
+
+
 class TestUsageTracking:
     """Test usage tracking in streams."""
 

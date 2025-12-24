@@ -2,7 +2,7 @@
 
 import inspect
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Generic, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
@@ -48,10 +48,15 @@ class Format(Generic[FormattableT]):
     schema: dict[str, object]
     """JSON schema representation of the structured output format."""
 
-    mode: FormattingMode
-    """The decorator-provided mode of the response format. 
+    mode: FormattingMode | None
+    """The mode of the response format. 
     
-    Determines how the LLM call may be modified in order to extract the expected format.
+    Determines what strategy the LLM will use for decoding structured output (e.g. via
+    a special formatting tool, via formal strict mode, etc).
+
+    If this is set to `None`, then the provider will choose formatting mode based on its
+    capabilities. In this case, the provider must set a mode while encoding the request.
+    Once the Format is present on a `Response`, mode is guaranteed to be non-None.
     """
 
     formattable: type[FormattableT]
@@ -131,7 +136,7 @@ class Format(Generic[FormattableT]):
 def format(
     formattable: type[FormattableT] | None,
     *,
-    mode: FormattingMode,
+    mode: FormattingMode | None = None,
 ) -> Format[FormattableT] | None:
     """Returns a `Format` that describes structured output for a Formattable type.
 
@@ -208,12 +213,11 @@ def format(
     )
 
 
-def resolve_format(
-    formattable: type[FormattableT] | Format[FormattableT] | None,
+def ensure_format_has_mode(
+    format: Format[FormattableT],
     default_mode: FormattingMode,
-) -> Format[FormattableT] | None:
-    """Resolve a `Format` (or None) from a possible `Format` or Formattable."""
-    if isinstance(formattable, Format):
-        return formattable
-    else:
-        return format(formattable, mode=default_mode)
+) -> Format[FormattableT]:
+    """Ensure a format has a mode set, creating a new Format if necessary."""
+    if format.mode is not None:
+        return format
+    return replace(format, mode=default_mode)

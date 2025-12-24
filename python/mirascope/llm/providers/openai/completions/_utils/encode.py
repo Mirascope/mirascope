@@ -15,7 +15,7 @@ from .....exceptions import (
 from .....formatting import (
     Format,
     FormattableT,
-    resolve_format,
+    ensure_format_has_mode,
 )
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
@@ -280,7 +280,7 @@ def encode_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
@@ -325,8 +325,8 @@ def encode_request(
 
     model_supports_strict = base_model_name not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
-    format = resolve_format(format, default_mode=default_mode)
     if format is not None:
+        format = ensure_format_has_mode(format, default_mode=default_mode)
         if format.mode == "strict":
             if not model_supports_strict:
                 raise FormattingModeNotSupportedError(

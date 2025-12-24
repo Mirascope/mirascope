@@ -13,7 +13,7 @@ from ....exceptions import FeatureNotSupportedError, FormattingModeNotSupportedE
 from ....formatting import (
     Format,
     FormattableT,
-    resolve_format,
+    ensure_format_has_mode,
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
@@ -291,7 +291,7 @@ def encode_request(
     model_id: AnthropicModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the Anthropic messages.create method."""
@@ -306,8 +306,8 @@ def encode_request(
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [convert_tool_to_tool_param(tool) for tool in tools]
-    format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
     if format is not None:
+        format = ensure_format_has_mode(format, default_mode=DEFAULT_FORMAT_MODE)
         if format.mode == "strict":
             raise FormattingModeNotSupportedError(
                 formatting_mode="strict",

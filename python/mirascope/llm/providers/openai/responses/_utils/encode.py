@@ -33,7 +33,7 @@ from .....exceptions import FeatureNotSupportedError
 from .....formatting import (
     Format,
     FormattableT,
-    resolve_format,
+    ensure_format_has_mode,
 )
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
@@ -249,7 +249,7 @@ def encode_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
@@ -299,8 +299,8 @@ def encode_request(
     model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"
 
-    format = resolve_format(format, default_mode=default_mode)
     if format is not None:
+        format = ensure_format_has_mode(format, default_mode=default_mode)
         if format.mode == "strict":
             kwargs["text"] = {"format": _create_strict_response_format(format)}
         elif format.mode == "tool":
