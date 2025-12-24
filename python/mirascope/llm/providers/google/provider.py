@@ -47,7 +47,10 @@ class GoogleProvider(BaseProvider[Client]):
         """Initialize the Google client."""
         http_options = None
         if base_url:
-            http_options = HttpOptions(base_url=base_url)
+            http_options = HttpOptions(
+                base_url=base_url,
+                headers={"Authorization": f"Bearer {api_key}"},
+            )
 
         self.client = Client(api_key=api_key, http_options=http_options)
 
