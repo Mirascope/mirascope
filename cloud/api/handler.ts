@@ -89,11 +89,25 @@ export const handleRequest = (
           });
         }
 
-        const response = await webHandler.handler(modifiedRequest);
+        let response = await webHandler.handler(modifiedRequest);
         const contentType = response.headers.get("content-type") || "";
         const isJsonResponse = contentType
           .toLowerCase()
           .includes("application/json");
+
+        // Transform _tag to tag in JSON responses for Fern SDK compatibility
+        if (isJsonResponse && response.status >= 400) {
+          const body = await response.text();
+          if (body.includes('"_tag"')) {
+            const transformedBody = body.replace(/"_tag":/g, '"tag":');
+            response = new Response(transformedBody, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers,
+            });
+          }
+        }
+
         const matched = response.status !== 404 || isJsonResponse;
         return { matched, response };
       },
