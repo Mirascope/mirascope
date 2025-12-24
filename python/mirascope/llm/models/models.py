@@ -9,7 +9,7 @@ from typing import overload
 from typing_extensions import Unpack
 
 from ..context import Context, DepsT
-from ..formatting import Format, FormattableT
+from ..formatting import Format, FormattableT, format as format_fn
 from ..messages import Message, UserContent
 from ..providers import (
     ModelId,
@@ -203,6 +203,8 @@ class Model:
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return self.provider.call(
             model_id=self.model_id,
             messages=messages,
@@ -261,6 +263,8 @@ class Model:
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return await self.provider.call_async(
             model_id=self.model_id,
             messages=messages,
@@ -319,6 +323,8 @@ class Model:
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return self.provider.stream(
             model_id=self.model_id,
             messages=messages,
@@ -377,6 +383,8 @@ class Model:
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return await self.provider.stream_async(
             model_id=self.model_id,
             messages=messages,
@@ -448,6 +456,8 @@ class Model:
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return self.provider.context_call(
             ctx=ctx,
             model_id=self.model_id,
@@ -520,6 +530,8 @@ class Model:
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return await self.provider.context_call_async(
             ctx=ctx,
             model_id=self.model_id,
@@ -596,6 +608,8 @@ class Model:
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return self.provider.context_stream(
             ctx=ctx,
             model_id=self.model_id,
@@ -674,6 +688,8 @@ class Model:
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+        if not isinstance(format, Format) and format is not None:
+            format = format_fn(format)
         return await self.provider.context_stream_async(
             ctx=ctx,
             model_id=self.model_id,

@@ -2,7 +2,7 @@
 
 import inspect
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Generic, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
@@ -48,7 +48,7 @@ class Format(Generic[FormattableT]):
     schema: dict[str, object]
     """JSON schema representation of the structured output format."""
 
-    mode: FormattingMode
+    mode: FormattingMode | None
     """The decorator-provided mode of the response format. 
     
     Determines how the LLM call may be modified in order to extract the expected format.
@@ -131,7 +131,7 @@ class Format(Generic[FormattableT]):
 def format(
     formattable: type[FormattableT] | None,
     *,
-    mode: FormattingMode,
+    mode: FormattingMode | None = None,
 ) -> Format[FormattableT] | None:
     """Returns a `Format` that describes structured output for a Formattable type.
 
@@ -214,6 +214,8 @@ def resolve_format(
 ) -> Format[FormattableT] | None:
     """Resolve a `Format` (or None) from a possible `Format` or Formattable."""
     if isinstance(formattable, Format):
+        if not formattable.mode:
+            return replace(formattable, mode=default_mode)
         return formattable
     else:
         return format(formattable, mode=default_mode)

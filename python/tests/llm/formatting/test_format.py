@@ -147,3 +147,23 @@ def test_format_nested_models() -> None:
             "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         }
     )
+
+
+def test_resolve_format_sets_mode() -> None:
+    """Test that `resolve_format` sets format mode properly."""
+
+    class Empty(BaseModel):
+        pass
+
+    format = llm.format(Empty)
+    assert format is not None
+    assert format.mode is None
+
+    format_json = llm.formatting.resolve_format(format, "json")
+    assert format_json is not None
+    assert format_json.mode == "json"
+    assert format.mode is None  # Returned a replacement, not mutated original format
+
+    format_strict = llm.formatting.resolve_format(format, "strict")
+    assert format_strict is not None
+    assert format_strict.mode == "strict"

@@ -91,7 +91,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling the API.
@@ -147,7 +147,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling the API.
@@ -201,7 +201,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling the API.
@@ -257,7 +257,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling the API.
@@ -311,7 +311,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from the API.
@@ -363,7 +363,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from the API.
@@ -413,7 +413,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         model_id: str,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the API.
@@ -465,7 +465,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT]
