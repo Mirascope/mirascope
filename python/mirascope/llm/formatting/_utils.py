@@ -5,7 +5,8 @@ import json
 from typing import Any, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
-from .types import Format, FormattableT, FormattingMode
+from .format import Format
+from .types import FormattableT, FormattingMode
 
 TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
 
