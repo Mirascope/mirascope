@@ -14,7 +14,6 @@ from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
     FormattableT,
-    _utils as _formatting_utils,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -244,7 +243,7 @@ def encode_request(
             google_config["response_mime_type"] = "application/json"
             google_config["response_schema"] = format.schema
         elif format.mode == "tool":
-            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            format_tool_schema = format.create_tool_schema()
             format_tool = _convert_tool_to_function_declaration(format_tool_schema)
             google_tools.append(
                 genai_types.ToolDict(function_declarations=[format_tool])

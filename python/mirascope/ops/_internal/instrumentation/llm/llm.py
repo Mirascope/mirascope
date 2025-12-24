@@ -21,7 +21,6 @@ from opentelemetry.semconv.attributes import (
 
 from .....llm.context import Context, DepsT
 from .....llm.formatting import Format, FormattableT
-from .....llm.formatting._utils import create_tool_schema
 from .....llm.messages import Message
 from .....llm.models import Model
 from .....llm.providers import Params, ProviderId
@@ -230,7 +229,7 @@ def _serialize_tool_definitions(
         tool_schemas = _collect_tool_schemas(tools)
 
     if isinstance(format, Format) and format.mode == "tool":
-        tool_schemas.append(create_tool_schema(format))
+        tool_schemas.append(format.create_tool_schema())
 
     if not tool_schemas:
         return None
