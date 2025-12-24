@@ -22,7 +22,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(404);
     expect(await result.json()).toEqual({
-      _tag: "NotFoundError",
+      tag: "NotFoundError",
       message: "Resource not found",
     });
   });
@@ -36,7 +36,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(401);
     expect(await result.json()).toEqual({
-      _tag: "UnauthorizedError",
+      tag: "UnauthorizedError",
       message: "Not authorized",
     });
   });
@@ -50,7 +50,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "DatabaseError",
+      tag: "DatabaseError",
       message: "Database error",
     });
   });
@@ -62,7 +62,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "Something went wrong",
     });
   });
@@ -74,7 +74,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "Custom error message",
     });
   });
@@ -89,7 +89,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "CustomError",
+      tag: "CustomError",
       message: "Custom tagged error",
     });
   });
@@ -101,7 +101,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "An error occurred",
     });
   });
@@ -113,7 +113,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "An error occurred",
     });
   });
@@ -125,7 +125,7 @@ describe("handleErrors", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "An error occurred",
     });
   });
@@ -156,7 +156,7 @@ describe("handleDefects", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "Unexpected failure",
     });
   });
@@ -168,7 +168,7 @@ describe("handleDefects", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "An unexpected error occurred",
     });
   });
@@ -180,7 +180,7 @@ describe("handleDefects", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "An unexpected error occurred",
     });
   });
@@ -192,7 +192,7 @@ describe("handleDefects", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "An unexpected error occurred",
     });
   });
@@ -210,7 +210,7 @@ describe("handleErrors and handleDefects together", () => {
 
     expect(result.status).toBe(404);
     expect(await result.json()).toEqual({
-      _tag: "NotFoundError",
+      tag: "NotFoundError",
       message: "Not found",
     });
   });
@@ -226,7 +226,7 @@ describe("handleErrors and handleDefects together", () => {
 
     expect(result.status).toBe(500);
     expect(await result.json()).toEqual({
-      _tag: "InternalError",
+      tag: "InternalError",
       message: "boom",
     });
   });
