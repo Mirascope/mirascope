@@ -33,7 +33,6 @@ from .....exceptions import FeatureNotSupportedError
 from .....formatting import (
     Format,
     FormattableT,
-    _utils as _formatting_utils,
     resolve_format,
 )
 from .....messages import AssistantMessage, Message, UserMessage
@@ -305,9 +304,9 @@ def encode_request(
         if format.mode == "strict":
             kwargs["text"] = {"format": _create_strict_response_format(format)}
         elif format.mode == "tool":
-            format_tool_shared_utils = _formatting_utils.create_tool_schema(format)
+            format_tool_schema = format.create_tool_schema()
             openai_tools.append(
-                _convert_tool_to_function_tool_param(format_tool_shared_utils)
+                _convert_tool_to_function_tool_param(format_tool_schema)
             )
             if tools:
                 kwargs["tool_choice"] = ToolChoiceAllowedParam(

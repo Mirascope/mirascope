@@ -13,7 +13,6 @@ from ....exceptions import FeatureNotSupportedError, FormattingModeNotSupportedE
 from ....formatting import (
     Format,
     FormattableT,
-    _utils as _formatting_utils,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -316,7 +315,7 @@ def encode_request(
                 model_id=model_id,
             )
         if format.mode == "tool":
-            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            format_tool_schema = format.create_tool_schema()
             anthropic_tools.append(convert_tool_to_tool_param(format_tool_schema))
             if tools:
                 kwargs["tool_choice"] = {"type": "any"}
