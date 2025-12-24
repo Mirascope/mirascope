@@ -6,6 +6,7 @@ from .anthropic import (
 )
 from .base import BaseProvider, Params, Provider
 from .google import GoogleModelId, GoogleProvider
+from .mirascope import MirascopeProvider
 from .mlx import MLXModelId, MLXProvider
 from .model_id import ModelId
 from .ollama import OllamaProvider
@@ -32,6 +33,7 @@ __all__ = [
     "GoogleProvider",
     "MLXModelId",
     "MLXProvider",
+    "MirascopeProvider",
     "ModelId",
     "OllamaProvider",
     "OpenAIModelId",

@@ -146,7 +146,7 @@ interactions:
     body: '{"code":"from mirascope import llm\n\nctx = llm.Context(deps=\"As a librarian,\")\n\n\n@llm.call(\"openai/gpt-4o-mini\")\nasync
       def recommend(ctx: llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps}
       Recommend a {genre} book.\"\n","hash":"79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923","signature":"@llm.call(\"openai/gpt-4o-mini\")\nasync
-      def recommend(ctx: llm.Context[str], genre: str) -> str: ...","signatureHash":"ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96","name":"recommend","description":null,"tags":null,"metadata":null,"dependencies":{"mirascope":{"version":"2.0.0a4","extras":["all"]}}}'
+      def recommend(ctx: llm.Context[str], genre: str) -> str: ...","signatureHash":"ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96","name":"recommend","description":null,"tags":null,"metadata":null,"dependencies":{"mirascope":{"version":"2.0.0a5","extras":["all"]}}}'
     headers:
       accept:
       - '*/*'
@@ -172,7 +172,7 @@ interactions:
         mirascope import llm\n\nctx = llm.Context(deps=\"As a librarian,\")\n\n\n@llm.call(\"openai/gpt-4o-mini\")\nasync
         def recommend(ctx: llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps}
         Recommend a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\nasync
-        def recommend(ctx: llm.Context[str], genre: str) -> str: ...","dependencies":{"mirascope":{"version":"2.0.0a4","extras":["all"]}},"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:24:51.560Z","updatedAt":"2025-12-24T03:24:51.560Z","isNew":true}'
+        def recommend(ctx: llm.Context[str], genre: str) -> str: ...","dependencies":{"mirascope":{"version":"2.0.0a5","extras":["all"]}},"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:24:51.560Z","updatedAt":"2025-12-24T03:24:51.560Z","isNew":true}'
     headers:
       Connection:
       - keep-alive
@@ -318,7 +318,7 @@ interactions:
         mirascope import llm\n\nctx = llm.Context(deps=\"As a librarian,\")\n\n\n@llm.call(\"openai/gpt-4o-mini\")\nasync
         def recommend(ctx: llm.Context[str], genre: str) -> str:\n    return f\"{ctx.deps}
         Recommend a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\nasync
-        def recommend(ctx: llm.Context[str], genre: str) -> str: ...","dependencies":{"mirascope":{"version":"2.0.0a4","extras":["all"]}},"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:24:51.560Z","updatedAt":"2025-12-24T03:24:51.560Z"}'
+        def recommend(ctx: llm.Context[str], genre: str) -> str: ...","dependencies":{"mirascope":{"version":"2.0.0a5","extras":["all"]}},"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:24:51.560Z","updatedAt":"2025-12-24T03:24:51.560Z"}'
     headers:
       Connection:
       - keep-alive

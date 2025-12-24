@@ -7,6 +7,7 @@ from ..exceptions import NoRegisteredProviderError
 from .anthropic import AnthropicProvider
 from .base import Provider
 from .google import GoogleProvider
+from .mirascope import MirascopeProvider
 from .mlx import MLXProvider
 from .ollama import OllamaProvider
 from .openai import OpenAIProvider
@@ -60,6 +61,8 @@ def provider_singleton(
             return AnthropicProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
+        case "mirascope":
+            return MirascopeProvider(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return MLXProvider()
         case "ollama":

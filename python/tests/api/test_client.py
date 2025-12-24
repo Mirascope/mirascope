@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Generator
 
 import httpx
@@ -24,6 +25,17 @@ def reset_client_caches() -> Generator[None, None, None]:
     close_cached_clients()
     yield
     close_cached_clients()
+
+
+@pytest.fixture(autouse=True)
+def clear_mirascope_api_key_from_environment() -> Generator[None, None, None]:
+    """Ensure that the environment does not have a MIRASCOPE_API_KEY so tests pass."""
+    if "MIRASCOPE_API_KEY" in os.environ:
+        api_key = os.environ.pop("MIRASCOPE_API_KEY")
+        yield
+        os.environ["MIRASCOPE_API_KEY"] = api_key
+    else:
+        yield
 
 
 def test_sync_client_requires_api_key() -> None:

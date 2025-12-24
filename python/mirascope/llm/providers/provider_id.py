@@ -6,6 +6,7 @@ KnownProviderId: TypeAlias = Literal[
     "anthropic",  # Anthropic provider via AnthropicProvider
     "anthropic-beta",  # Anthropic beta provider via AnthropicBetaProvider
     "google",  # Google provider via GoogleProvider
+    "mirascope",  # Mirascope Router provider via MirascopeProvider
     "mlx",  # Local inference powered by `mlx-lm`, via MLXProvider
     "ollama",  # Ollama provider via OllamaProvider
     "openai",  # OpenAI provider via OpenAIProvider (prefers Responses routing when available)
