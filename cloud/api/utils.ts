@@ -25,7 +25,12 @@ function toErrorResponse(error: unknown): Response {
       ? String((error as { _tag: unknown })._tag)
       : "InternalError";
 
-  return new Response(JSON.stringify({ _tag: tag, message }), {
+  const resource =
+    typeof error === "object" && error !== null && "resource" in error
+      ? String((error as { resource: unknown }).resource)
+      : undefined;
+
+  return new Response(JSON.stringify({ _tag: tag, message, resource }), {
     status,
     headers: { "Content-Type": "application/json" },
   });
