@@ -1,12 +1,20 @@
 """The `llm.format` decorator for defining response formats as classes."""
 
 import inspect
+import json
 from dataclasses import dataclass
-from typing import Generic
+from typing import Any, Generic, cast
 
+from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from ..types import NoneType
-from ._utils import default_formatting_instructions
 from .types import FormattableT, FormattingMode, HasFormattingInstructions
+
+TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
+
+
+JSON_MODE_INSTRUCTIONS = (
+    "Respond only with valid JSON that matches this exact schema:\n{json_schema}"
+)
 
 
 @dataclass(kw_only=True)
@@ -46,14 +54,6 @@ class Format(Generic[FormattableT]):
     Determines how the LLM call may be modified in order to extract the expected format.
     """
 
-    formatting_instructions: str | None
-    """The formatting instructions that will be added to the LLM system prompt.
-
-    If the format type has a `formatting_instructions` class method, the output of that
-    call will be used for instructions. Otherwise, instructions may be auto-generated
-    based on the formatting mode.
-    """
-
     formattable: type[FormattableT]
     """The `Formattable` type that this `Format` describes.
     
@@ -61,6 +61,71 @@ class Format(Generic[FormattableT]):
     constructed when the `FormattableT` is `None`, so you may treat this as 
     a `RequiredFormattableT` in practice.
     """
+
+    @property
+    def formatting_instructions(self) -> str | None:
+        """The formatting instructions that will be added to the LLM system prompt.
+
+        If the format type has a `formatting_instructions` class method, the output of that
+        call will be used for instructions. Otherwise, instructions may be auto-generated
+        based on the formatting mode.
+        """
+        if isinstance(self.formattable, HasFormattingInstructions):
+            return self.formattable.formatting_instructions()
+        if self.mode == "tool":
+            return TOOL_MODE_INSTRUCTIONS
+        elif self.mode == "json":
+            json_schema = json.dumps(self.schema, indent=2)
+            instructions = JSON_MODE_INSTRUCTIONS.format(json_schema=json_schema)
+            return inspect.cleandoc(instructions)
+
+    def create_tool_schema(
+        self,
+    ) -> ToolSchema[ToolFn[..., None]]:
+        """Generate a `ToolSchema` for parsing this format.
+
+        Returns:
+            `ToolSchema` for the format tool
+        """
+
+        schema_dict: dict[str, Any] = self.schema.copy()
+        schema_dict["type"] = "object"
+
+        properties = schema_dict.get("properties")
+        if not properties or not isinstance(properties, dict):
+            properties = {}  # pragma: no cover
+        properties = cast(dict[str, Any], properties)
+        required: list[str] = list(properties.keys())
+
+        description = (
+            f"Use this tool to extract data in {self.name} format for a final response."
+        )
+        if self.description:
+            description += "\n" + self.description
+
+        parameters = ToolParameterSchema(
+            properties=properties,
+            required=required,
+            additionalProperties=False,
+        )
+        if "$defs" in schema_dict and isinstance(schema_dict["$defs"], dict):
+            parameters.defs = schema_dict["$defs"]
+
+        def _unused_format_fn() -> None:
+            raise TypeError(
+                "Format tool function should not be called."
+            )  # pragma: no cover
+
+        tool_schema = cast(
+            ToolSchema[ToolFn[..., None]], ToolSchema.__new__(ToolSchema)
+        )
+        tool_schema.fn = _unused_format_fn
+        tool_schema.name = FORMAT_TOOL_NAME
+        tool_schema.description = description
+        tool_schema.parameters = parameters
+        tool_schema.strict = True
+
+        return tool_schema
 
 
 def format(
@@ -133,18 +198,12 @@ def format(
         description = inspect.cleandoc(formattable.__doc__)
 
     schema = formattable.model_json_schema()
-    formatting_instructions = None
-    if isinstance(formattable, HasFormattingInstructions):
-        formatting_instructions = formattable.formatting_instructions()
-    else:
-        formatting_instructions = default_formatting_instructions(schema, mode)
 
     return Format[FormattableT](
         name=formattable.__name__,
         description=description,
         schema=schema,
         mode=mode,
-        formatting_instructions=formatting_instructions,
         formattable=formattable,
     )
 

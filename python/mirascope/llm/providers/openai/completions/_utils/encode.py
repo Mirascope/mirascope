@@ -15,7 +15,6 @@ from .....exceptions import (
 from .....formatting import (
     Format,
     FormattableT,
-    _utils as _formatting_utils,
     resolve_format,
 )
 from .....messages import AssistantMessage, Message, UserMessage
@@ -345,7 +344,7 @@ def encode_request(
                     "function": {"name": FORMAT_TOOL_NAME},
                 }
                 kwargs["parallel_tool_calls"] = False
-            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            format_tool_schema = format.create_tool_schema()
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
             format.mode == "json"
