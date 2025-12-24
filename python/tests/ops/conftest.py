@@ -3,14 +3,25 @@ from __future__ import annotations
 import os
 import re
 from collections.abc import Generator
+from copy import deepcopy
 from typing import get_args
 
 import pytest
+from dotenv import load_dotenv
 from opentelemetry import trace as otel_trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from vcr.request import Request as VcrRequest
 
+from mirascope.api.client import (
+    _async_singleton,  # pyright: ignore[reportPrivateUsage]
+    _sync_singleton,  # pyright: ignore[reportPrivateUsage]
+)
+from mirascope.api.settings import (
+    CURRENT_SETTINGS,
+    _default_settings,  # pyright: ignore[reportPrivateUsage]
+)
 from mirascope.ops._internal import configuration
 from mirascope.ops._internal.instrumentation import llm
 from mirascope.ops._internal.propagation import (
@@ -114,12 +125,34 @@ def valid_carrier() -> dict[str, str]:
     return {"traceparent": VALID_TRACEPARENT}
 
 
+MIRASCOPE_DUMMY_BASE_URL = "http://example.com"
+
+
+def sanitize_mirascope_request(request: VcrRequest) -> VcrRequest:
+    """Sanitize Mirascope API URL in VCR request before recording to cassette.
+
+    This hook is called AFTER the real HTTP request is sent,
+    but BEFORE it's written to the cassette file.
+
+    Args:
+        request: VCR request object to sanitize.
+
+    Returns:
+        Sanitized copy of the request safe for cassette storage.
+    """
+    request = deepcopy(request)
+    base_url = os.getenv("MIRASCOPE_BASE_URL", "")
+    if base_url and base_url in request.uri:
+        request.uri = request.uri.replace(base_url, MIRASCOPE_DUMMY_BASE_URL)
+    return request
+
+
 @pytest.fixture(scope="session")
 def vcr_config() -> dict[str, object]:
     """Return VCR.py configuration for ops tests."""
     return {
         "record_mode": "once",
-        "match_on": ["method", "uri", "body"],
+        "match_on": ["method", "path", "body"],
         "filter_headers": [
             "authorization",
             "cookie",
@@ -127,4 +160,27 @@ def vcr_config() -> dict[str, object]:
             "x-goog-api-key",
         ],
         "filter_post_data_parameters": [],
+        "before_record_request": sanitize_mirascope_request,
     }
+
+
+@pytest.fixture(autouse=True)
+def clear_mirascope_client_cache() -> Generator[None, None, None]:
+    """Clear cached Mirascope API clients and settings between tests."""
+    _sync_singleton.cache_clear()
+    _async_singleton.cache_clear()
+    _default_settings.cache_clear()
+    CURRENT_SETTINGS.set(None)
+    yield
+    _sync_singleton.cache_clear()
+    _async_singleton.cache_clear()
+    _default_settings.cache_clear()
+    CURRENT_SETTINGS.set(None)
+
+
+@pytest.fixture
+def mirascope_api_key() -> None:
+    """Ensure Mirascope API key and URL are set for VCR tests."""
+    load_dotenv()
+    os.environ.setdefault("MIRASCOPE_API_KEY", "test-api-key")
+    os.environ.setdefault("MIRASCOPE_BASE_URL", MIRASCOPE_DUMMY_BASE_URL)
