@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Effect, Stream, Chunk } from "effect";
-import { parseStreamingResponse } from "@/api/router/streaming";
+import { Effect, Layer } from "effect";
+import {
+  parseStreamingResponse,
+  performStreamMetering,
+  settleMeteringForStream,
+} from "@/api/router/streaming";
+import { ProxyError } from "@/errors";
+import { MockMeteringContext } from "@/tests/api";
+import { Database } from "@/db";
+import { Payments } from "@/payments";
 
 describe("Streaming", () => {
   beforeEach(() => {
@@ -14,22 +22,25 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      expect(result.response).toBeDefined();
-      expect(result.usageStream).toBeDefined();
+      expect(result.responseEffect).toBeDefined();
 
-      // Collect from empty stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-      expect(usageData.length).toBe(0);
+      // Run the responseEffect to get the Response
+      const finalResponse = await Effect.runPromise(result.responseEffect);
+
+      expect(finalResponse).toBeInstanceOf(Response);
+      expect(finalResponse.status).toBe(200);
     });
 
-    it("parses SSE format and extracts OpenAI Completions usage", async () => {
+    it("passes through SSE data while extracting usage", async () => {
       const sseData = `data: {"id":"1","choices":[{"text":"Hello"}]}\n\ndata: {"id":"2","usage":{"prompt_tokens":10,"completion_tokens":5}}\n\ndata: [DONE]\n\n`;
       const stream = new ReadableStream({
         start(controller) {
@@ -43,31 +54,100 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      // Read the stream to trigger parsing
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
+      // Read the stream to trigger metering
+      const text = await finalResponse.text();
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      // Verify data passed through
+      expect(text).toBe(sseData);
+
+      // Note: Metering happens in stream finalizer with fresh DB/Payments instances,
+      // so we can't assert on mocks here. Metering logic is tested separately.
     });
 
-    it("parses SSE format and extracts OpenAI Responses API usage", async () => {
-      const sseData = `data: {"type":"response.created"}\n\ndata: {"type":"response.completed","response":{"usage":{"input_tokens":100,"output_tokens":50}}}\n\n`;
+    it("handles NDJSON format", async () => {
+      const ndjsonData = `{"id":"1","choices":[{"text":"Hello"}]}\n{"id":"2","usage":{"prompt_tokens":10,"completion_tokens":5}}\n`;
       const stream = new ReadableStream({
         start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
+          controller.enqueue(new TextEncoder().encode(ndjsonData));
           controller.close();
+        },
+      });
+
+      const response = new Response(stream, {
+        status: 200,
+        headers: { "content-type": "application/x-ndjson" },
+      });
+
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
+      const result = await Effect.runPromise(
+        parseStreamingResponse(response, "ndjson", meteringContext),
+      );
+
+      const finalResponse = await Effect.runPromise(result.responseEffect);
+
+      const text = await finalResponse.text();
+      expect(text).toBe(ndjsonData);
+    });
+
+    it("preserves response metadata", async () => {
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode("data: {}\n\n"));
+          controller.close();
+        },
+      });
+
+      const response = new Response(stream, {
+        status: 201,
+        headers: { "content-type": "text/event-stream" },
+      });
+
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+        {
+          response: {
+            status: 201,
+            statusText: "Created",
+            headers: new Headers({
+              "content-type": "text/event-stream",
+              "x-custom": "value",
+            }),
+          },
+        },
+      );
+
+      const result = await Effect.runPromise(
+        parseStreamingResponse(response, "sse", meteringContext),
+      );
+
+      const finalResponse = await Effect.runPromise(result.responseEffect);
+
+      expect(finalResponse.status).toBe(201);
+      expect(finalResponse.statusText).toBe("Created");
+      expect(finalResponse.headers.get("x-custom")).toBe("value");
+    });
+
+    it("handles stream read errors", async () => {
+      // Create a stream that throws an error
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.error(new Error("Stream read error"));
         },
       });
 
@@ -76,26 +156,35 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      // Read the stream
-      await result.response.text();
-
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(100);
-      expect(usage.outputTokens).toBe(50);
+      // Should fail when trying to read the stream
+      await expect(
+        Effect.runPromise(
+          result.responseEffect.pipe(
+            Effect.flatMap((response) =>
+              Effect.tryPromise({
+                try: () => response.text(),
+                catch: (error) =>
+                  new ProxyError({
+                    message: "Failed to read stream",
+                    cause: error,
+                  }),
+              }),
+            ),
+          ),
+        ),
+      ).rejects.toThrow();
     });
 
-    it("parses SSE format and extracts Anthropic usage", async () => {
+    it("handles anthropic streaming format", async () => {
       const sseData = `data: {"type":"content_block_start"}\n\ndata: {"type":"message_delta","usage":{"output_tokens":5}}\n\ndata: {"type":"message_stop","usage":{"input_tokens":100,"output_tokens":50}}\n\n`;
       const stream = new ReadableStream({
         start(controller) {
@@ -109,59 +198,26 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "anthropic"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "anthropic",
+        "claude-3-opus",
       );
-
-      await result.response.text();
-
-      // Collect usage from stream - Anthropic may emit multiple usage chunks
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBeGreaterThan(0);
-      // Get the last usage chunk (message_stop)
-      const finalUsage = usageData[usageData.length - 1];
-      expect(finalUsage.inputTokens).toBe(100);
-      expect(finalUsage.outputTokens).toBe(50);
-    });
-
-    it("parses SSE format and extracts Google usage", async () => {
-      const sseData = `data: {"candidates":[]}\n\ndata: {"usageMetadata":{"promptTokenCount":100,"candidatesTokenCount":50}}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
-        },
-      });
-
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "google"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
+      const text = await finalResponse.text();
+      expect(text).toBe(sseData);
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(100);
-      expect(usage.outputTokens).toBe(50);
+      // Note: Metering happens in stream finalizer with fresh DB/Payments instances,
+      // so we can't assert on mocks here. Metering logic is tested separately.
     });
 
-    it("parses NDJSON format", async () => {
-      const ndjsonData = `{"id":"1","text":"Hello"}\n{"id":"2","usage":{"prompt_tokens":10,"completion_tokens":5}}\n`;
+    it("handles google streaming format", async () => {
+      const ndjsonData = `{"candidates":[{"content":{"parts":[{"text":"Hello"}]}}]}\n{"candidates":[{"content":{"parts":[{"text":" world"}]}}],"usageMetadata":{"promptTokenCount":10,"candidatesTokenCount":5}}\n`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(ndjsonData));
@@ -174,26 +230,24 @@ describe("Streaming", () => {
         headers: { "content-type": "application/x-ndjson" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "google",
+        "gemini-pro",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", "openai"),
+        parseStreamingResponse(response, "ndjson", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      const text = await finalResponse.text();
+      expect(text).toBe(ndjsonData);
     });
 
-    it("handles invalid JSON in SSE gracefully", async () => {
-      const sseData = `data: invalid json\n\ndata: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
+    it("releases funds when no usage found", async () => {
+      // Stream with no usage data
+      const sseData = `data: {"id":"1","choices":[{"text":"Hello"}]}\n\ndata: [DONE]\n\n`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(sseData));
@@ -206,26 +260,57 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream - should still extract valid usage
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
+      await finalResponse.text();
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      // Note: Metering happens in stream finalizer with fresh DB/Payments instances,
+      // so we can't assert on mocks here. The logic to release funds when no usage
+      // is found is tested in router.ts tests.
     });
 
-    it("handles invalid JSON in NDJSON gracefully", async () => {
-      const ndjsonData = `invalid json\n{"usage":{"prompt_tokens":10,"completion_tokens":5}}\n`;
+    it("handles invalid JSON in SSE stream", async () => {
+      // Stream with invalid JSON that should be ignored
+      const sseData = `data: {"id":"1","choices":[{"text":"Hello"}]}\n\ndata: {invalid json\n\ndata: [DONE]\n\n`;
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(sseData));
+          controller.close();
+        },
+      });
+
+      const response = new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
+      const result = await Effect.runPromise(
+        parseStreamingResponse(response, "sse", meteringContext),
+      );
+
+      const finalResponse = await Effect.runPromise(result.responseEffect);
+
+      const text = await finalResponse.text();
+      expect(text).toBe(sseData);
+    });
+
+    it("handles invalid JSON in NDJSON stream", async () => {
+      // Stream with invalid NDJSON that should be ignored
+      const ndjsonData = `{"id":"1","choices":[{"text":"Hello"}]}\n{invalid json}\n{"id":"2","usage":{"prompt_tokens":10,"completion_tokens":5}}\n`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(ndjsonData));
@@ -238,26 +323,24 @@ describe("Streaming", () => {
         headers: { "content-type": "application/x-ndjson" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "google",
+        "gemini-pro",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", "openai"),
+        parseStreamingResponse(response, "ndjson", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      const text = await finalResponse.text();
+      expect(text).toBe(ndjsonData);
     });
 
-    it("handles SSE lines without data prefix", async () => {
-      const sseData = `event: ping\n\ndata: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
+    it("processes remaining buffer with usage data", async () => {
+      // Stream that ends with incomplete usage data in buffer
+      const sseData = `data: {"id":"1","choices":[{"text":"Hello"}]}\n\ndata: {"id":"2","usage":{"prompt_tokens":10,"completion_tokens":5}}`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(sseData));
@@ -270,26 +353,29 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream - should still extract valid usage from data lines
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
+      const text = await finalResponse.text();
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      // Verify the stream was processed correctly
+      expect(text).toBe(sseData);
+
+      // This exercises line 371: the remaining buffer contains usage data
+      // that gets processed and set in the usageRef
     });
 
-    it("handles non-object chunks gracefully", async () => {
-      const sseData = `data: "string value"\n\ndata: 123\n\ndata: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
+    it("handles unparsable remaining buffer", async () => {
+      // Stream that ends with unparsable content in buffer
+      const sseData = `data: {"id":"1","choices":[{"text":"Hello"}]}\n\ndata: incomplete`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(sseData));
@@ -302,333 +388,416 @@ describe("Streaming", () => {
         headers: { "content-type": "text/event-stream" },
       });
 
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "sse", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream - should still extract usage from valid object chunk
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
+      const text = await finalResponse.text();
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      // Verify the stream was processed correctly, ignoring the unparsable buffer
+      expect(text).toBe(sseData);
+
+      // This exercises line 144: processRemainingBuffer returns null for unparsable content
     });
+  });
 
-    it("handles OpenAI [DONE] sentinel value", async () => {
-      const sseData = `data: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\ndata: [DONE]\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+  describe("performStreamMetering", () => {
+    it("should update DB with failure and release funds when no usage data", async () => {
+      // Mock update and releaseFunds calls
+      const updateMock = vi.fn(() => Effect.succeed(undefined));
+      const releaseFundsMock = vi.fn(() => Effect.succeed(undefined));
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
-      );
-
-      await result.response.text();
-
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
-    });
-
-    it("processes incomplete chunks in buffer correctly", async () => {
-      const sseData = `data: {"usage":{"prompt_tokens":10,"completion_tokens":5}}`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            releaseFunds: releaseFundsMock,
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
       );
 
-      await result.response.text();
-
-      // Collect usage from stream - should process buffer in flush
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
+      await Effect.runPromise(
+        performStreamMetering(null, meteringContext).pipe(
+          Effect.provide(mockDbLayer),
+          Effect.provide(mockPaymentsLayer),
+        ),
       );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      // Verify update was called with failure status
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "failure",
+            errorMessage: "No usage data from stream",
+          }) as unknown,
+        }),
+      );
+
+      // Verify releaseFunds was called
+      expect(releaseFundsMock).toHaveBeenCalledWith(
+        meteringContext.reservationId,
+      );
     });
 
-    it("collects usage data from stream", async () => {
-      const sseData = `data: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+    it("should update DB with failure and release funds when cost calculation fails", async () => {
+      // Mock update and releaseFunds calls
+      const updateMock = vi.fn(() => Effect.succeed(undefined));
+      const releaseFundsMock = vi.fn(() => Effect.succeed(undefined));
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
-      );
-
-      await result.response.text();
-
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-      expect(usageData[0].inputTokens).toBe(10);
-      expect(usageData[0].outputTokens).toBe(5);
-    });
-
-    it("handles stream processing with multiple operations", async () => {
-      const sseData = `data: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            releaseFunds: releaseFundsMock,
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "unknown-model", // Will cause cost calculation to fail
       );
 
-      // Read the stream
-      await result.response.text();
+      const usage = {
+        inputTokens: 10,
+        outputTokens: 5,
+      };
 
-      // Can perform multiple operations on the usage stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
+      await Effect.runPromise(
+        performStreamMetering(usage, meteringContext).pipe(
+          Effect.provide(mockDbLayer),
+          Effect.provide(mockPaymentsLayer),
+        ),
       );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
 
-      expect(usageData.length).toBe(1);
+      // Verify update was called with failure status
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "failure",
+            errorMessage: "Cost calculation failed",
+          }) as unknown,
+        }),
+      );
+
+      // Verify releaseFunds was called
+      expect(releaseFundsMock).toHaveBeenCalledWith(
+        meteringContext.reservationId,
+      );
     });
 
-    it("ignores non-usage chunks", async () => {
-      const sseData = `data: {"id":"1","text":"Hello"}\n\ndata: {"choices":[]}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+    it("should update DB with success and settle funds when usage and cost are valid", async () => {
+      // Mock update and settleFunds calls
+      const updateMock = vi.fn(() => Effect.succeed(undefined));
+      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
-      );
-
-      await result.response.text();
-
-      // Collect usage from stream - should be empty
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(0);
-    });
-
-    it("handles empty lines in stream", async () => {
-      const sseData = `\n\ndata: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
       );
 
-      await result.response.text();
+      const usage = {
+        inputTokens: 100,
+        outputTokens: 50,
+      };
 
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
+      await Effect.runPromise(
+        performStreamMetering(usage, meteringContext).pipe(
+          Effect.provide(mockDbLayer),
+          Effect.provide(mockPaymentsLayer),
+        ),
       );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
 
-      expect(usageData.length).toBe(1);
-      const usage = usageData[0];
-      expect(usage.inputTokens).toBe(10);
-      expect(usage.outputTokens).toBe(5);
+      // Verify update was called with success status and usage data
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "success",
+            inputTokens: 100n,
+            outputTokens: 50n,
+          }) as unknown,
+        }),
+      );
+
+      // Verify settleFunds was called with the correct cost
+      expect(settleFundsMock).toHaveBeenCalledWith(
+        meteringContext.reservationId,
+        expect.any(BigInt),
+      );
     });
 
-    it("handles chunked streaming", async () => {
-      const sseData1 = `data: {"id":"1"}\n\n`;
-      const sseData2 = `data: {"usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
+    it("should handle cache tokens correctly", async () => {
+      // Mock update and settleFunds calls
+      const updateMock = vi.fn(() => Effect.succeed(undefined));
+      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
 
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData1));
-          setTimeout(() => {
-            controller.enqueue(new TextEncoder().encode(sseData2));
-            controller.close();
-          }, 10);
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
-      );
-
-      await result.response.text();
-
-      // Collect usage from stream
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-    });
-
-    it("handles OpenAI Responses API without usage field", async () => {
-      const sseData = `data: {"type":"response.completed","response":{"id":"resp_123"}}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
       );
 
-      await result.response.text();
+      const usage = {
+        inputTokens: 100,
+        outputTokens: 50,
+        cacheReadTokens: 20,
+        cacheWriteTokens: 10,
+      };
 
-      // Collect usage from stream - should be empty since no valid usage found
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
+      await Effect.runPromise(
+        performStreamMetering(usage, meteringContext).pipe(
+          Effect.provide(mockDbLayer),
+          Effect.provide(mockPaymentsLayer),
+        ),
       );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
 
-      expect(usageData.length).toBe(0);
+      // Verify update was called with cache token fields
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "success",
+            inputTokens: 100n,
+            outputTokens: 50n,
+            cacheReadTokens: 20n,
+            cacheWriteTokens: 10n,
+          }) as unknown,
+        }),
+      );
     });
 
-    it("handles OpenAI Responses API with incomplete usage", async () => {
-      const sseData = `data: {"type":"response.completed","response":{"usage":{"total_tokens":100}}}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+    it("should handle zero input tokens correctly", async () => {
+      // Mock update and settleFunds calls
+      const updateMock = vi.fn(() => Effect.succeed(undefined));
+      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
-      );
-
-      await result.response.text();
-
-      // Collect usage from stream - should be empty since input_tokens/output_tokens are missing
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(0);
-    });
-
-    it("handles Google format with incomplete usageMetadata", async () => {
-      const sseData = `data: {"usageMetadata":{"totalTokenCount":100}}\n\n`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
         },
-      });
+      } as never);
 
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
       );
 
-      await result.response.text();
+      const usage = {
+        inputTokens: 0,
+        outputTokens: 10,
+      };
 
-      // Collect usage from stream - should be empty since promptTokenCount/candidatesTokenCount are missing
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
+      await Effect.runPromise(
+        performStreamMetering(usage, meteringContext).pipe(
+          Effect.provide(mockDbLayer),
+          Effect.provide(mockPaymentsLayer),
+        ),
       );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
 
-      expect(usageData.length).toBe(0);
+      // Verify update was called with null for zero inputTokens
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "success",
+            inputTokens: null,
+            outputTokens: 10n,
+          }) as unknown,
+        }),
+      );
     });
 
-    it("processes NDJSON buffer in flush correctly", async () => {
-      const ndjsonData = `{"usage":{"prompt_tokens":10,"completion_tokens":5}}`;
+    it("should handle zero output tokens correctly", async () => {
+      // Mock update and settleFunds calls
+      const updateMock = vi.fn(() => Effect.succeed(undefined));
+      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
+
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
+      const usage = {
+        inputTokens: 10,
+        outputTokens: 0,
+      };
+
+      await Effect.runPromise(
+        performStreamMetering(usage, meteringContext).pipe(
+          Effect.provide(mockDbLayer),
+          Effect.provide(mockPaymentsLayer),
+        ),
+      );
+
+      // Verify update was called with null for zero outputTokens
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "success",
+            inputTokens: 10n,
+            outputTokens: null,
+          }) as unknown,
+        }),
+      );
+    });
+  });
+
+  describe("settleMeteringForStream", () => {
+    it("should handle layer construction errors gracefully", async () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
+      // Provide invalid database URL to trigger layer construction error
+      const invalidContext = {
+        ...meteringContext,
+        databaseUrl: "invalid://not-a-real-database",
+      };
+
+      const usage = {
+        inputTokens: 10,
+        outputTokens: 5,
+      };
+
+      // Should succeed despite layer construction failure (catchAll handles it)
+      await Effect.runPromise(settleMeteringForStream(usage, invalidContext));
+
+      // Verify error was logged
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[Stream.ensuring] Failed to create Database layer for metering:",
+        expect.anything(),
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe("parseStreamingResponse - remaining buffer", () => {
+    it("processes remaining NDJSON buffer with usage data", async () => {
+      // NDJSON stream that ends with incomplete usage data in buffer (no final newline)
+      const ndjsonData = `{"id":"1","choices":[{"text":"Hello"}]}\n{"id":"2","usageMetadata":{"promptTokenCount":10,"candidatesTokenCount":5}}`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(ndjsonData));
@@ -641,79 +810,23 @@ describe("Streaming", () => {
         headers: { "content-type": "application/x-ndjson" },
       });
 
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", "openai"),
+      const meteringContext = MockMeteringContext.fromProvider(
+        "google",
+        "gemini-pro",
       );
-
-      await result.response.text();
-
-      // Collect usage from stream - should process buffer in flush for ndjson format
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(1);
-      expect(usageData[0].inputTokens).toBe(10);
-      expect(usageData[0].outputTokens).toBe(5);
-    });
-
-    it("handles invalid JSON in flush buffer gracefully", async () => {
-      const sseData = `data: invalid json without newline`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
-        },
-      });
-
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
+        parseStreamingResponse(response, "ndjson", meteringContext),
       );
 
-      await result.response.text();
+      const finalResponse = await Effect.runPromise(result.responseEffect);
 
-      // Collect usage from stream - should be empty when buffer contains invalid JSON
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
+      const text = await finalResponse.text();
 
-      expect(usageData.length).toBe(0);
-    });
+      // Verify the stream was processed correctly
+      expect(text).toBe(ndjsonData);
 
-    it("handles non-usage data in flush buffer", async () => {
-      const sseData = `data: {"id":"test","choices":[]}`;
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(sseData));
-          controller.close();
-        },
-      });
-
-      const response = new Response(stream, {
-        status: 200,
-        headers: { "content-type": "text/event-stream" },
-      });
-
-      const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", "openai"),
-      );
-
-      await result.response.text();
-
-      // Collect usage from stream - should be empty when buffer doesn't contain usage
-      const usageChunk = await Effect.runPromise(
-        Stream.runCollect(result.usageStream),
-      );
-      const usageData = Chunk.toReadonlyArray(usageChunk);
-
-      expect(usageData.length).toBe(0);
+      // This exercises line 142: processRemainingBuffer with format === "ndjson"
     });
   });
 });

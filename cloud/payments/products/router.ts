@@ -36,6 +36,14 @@ import type { TokenUsage } from "@/api/router/pricing";
 const GAS_FEE_PERCENTAGE = 0.05;
 
 /**
+ * Retry policy for meter charging operations.
+ * Uses exponential backoff starting at 100ms, retrying up to 3 times.
+ */
+const METER_RETRY_POLICY = Schedule.exponential("100 millis").pipe(
+  Schedule.compose(Schedule.recurs(3)),
+);
+
+/**
  * Comprehensive balance information for router billing.
  *
  * Contains all balance components needed for fund reservation checks:
@@ -67,17 +75,25 @@ export interface RouterBalanceInfo {
  * ```ts
  * const program = Effect.gen(function* () {
  *   const payments = yield* Payments;
- *   const db = yield* DrizzleORM;
+ *   const db = yield* Database;
  *
  *   // 1. Create router request in "pending" state (MUST be done first)
- *   const [routerRequest] = yield* db.insert(routerRequests).values({
- *     provider: "openai",
- *     model: "gpt-4",
- *     status: "pending",
- *     organizationId: "...",
- *     projectId: "...",
- *     environmentId: "...",
- *   }).returning({ id: routerRequests.id });
+ *   const routerRequest = yield* db.organizations.projects.environments.apiKeys.routerRequests.create({
+ *     userId: "user-123",
+ *     organizationId: "org-456",
+ *     projectId: "proj-789",
+ *     environmentId: "env-012",
+ *     data: {
+ *       provider: "openai",
+ *       model: "gpt-4",
+ *       status: "pending",
+ *       organizationId: "org-456",
+ *       projectId: "proj-789",
+ *       environmentId: "env-012",
+ *       apiKeyId: "key-345",
+ *       userId: "user-123",
+ *     },
+ *   });
  *
  *   // 2. Reserve funds (links to router request)
  *   const reservationId = yield* payments.products.router.reserveFunds({
@@ -88,7 +104,23 @@ export interface RouterBalanceInfo {
  *
  *   // 3. Make the actual provider request...
  *
- *   // 4. After successful request: settle funds (releases, charges meter)
+ *   // 4. Update router request with actual usage/cost (on success)
+ *   yield* db.organizations.projects.environments.apiKeys.routerRequests.update({
+ *     userId: "user-123",
+ *     organizationId: "org-456",
+ *     projectId: "proj-789",
+ *     environmentId: "env-012",
+ *     routerRequestId: routerRequest.id,
+ *     data: {
+ *       inputTokens: 100n,
+ *       outputTokens: 50n,
+ *       costCenticents: 450n,
+ *       status: "success",
+ *       completedAt: new Date(),
+ *     },
+ *   });
+ *
+ *   // 5. Settle funds (releases reservation, charges meter)
  *   yield* payments.products.router.settleFunds(reservationId, 450n);
  * });
  * ```
@@ -181,13 +213,14 @@ export class Router {
 
       // Meter value = charged centi-cents (since 1 meter unit = 1 centi-cent)
       const meterValue = chargedCenticents.round().toNumber();
+      const finalValue = Math.max(meterValue, 1);
 
       // Create meter event
       yield* stripe.billing.meterEvents.create({
         event_name: "use_credits",
         payload: {
           stripe_customer_id: stripeCustomerId,
-          value: Math.max(meterValue, 1).toString(),
+          value: finalValue.toString(),
         },
         timestamp: Math.floor(Date.now() / 1000),
       });
@@ -327,9 +360,10 @@ export class Router {
    * @param stripeCustomerId - Stripe customer ID
    * @param estimatedCostCenticents - Estimated cost in centi-cents (e.g., 500n for $0.05)
    * @param routerRequestId - ID of the router request (must be created in "pending" state first)
-   * @returns Reservation ID to use for release
+   * @returns Reservation ID to use for release/settlement
    * @throws DatabaseError - If reservation creation fails
    * @throws InsufficientFundsError - If customer has insufficient available funds
+   * @throws StripeError - If Stripe API calls fail
    */
   reserveFunds({
     stripeCustomerId,
@@ -469,9 +503,9 @@ export class Router {
     Stripe | DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      // Get customer ID from reservation before releasing
       const db = yield* DrizzleORM;
 
+      // Get customer ID from reservation before releasing
       const [reservation] = yield* db
         .select({ stripeCustomerId: creditReservations.stripeCustomerId })
         .from(creditReservations)
@@ -558,19 +592,7 @@ export class Router {
       const calculator = getCostCalculator(provider);
 
       // Calculate cost from TokenUsage
-      const costBreakdown = yield* calculator.calculate(model, usageData).pipe(
-        /* v8 ignore start */
-        // TODO: Add test case for calculation errors (e.g., network failure fetching pricing)
-        Effect.catchAll((error) => {
-          console.error("Cost calculation failed:", {
-            provider,
-            model,
-            error: error instanceof Error ? error.message : String(error),
-          });
-          return Effect.succeed(null);
-        }),
-        /* v8 ignore stop */
-      );
+      const costBreakdown = yield* calculator.calculate(model, usageData);
 
       // If pricing unavailable, log warning and skip charging
       if (!costBreakdown) {
@@ -584,23 +606,10 @@ export class Router {
         stripeCustomerId,
         costBreakdown.totalCost,
       ).pipe(
-        Effect.retry(
-          Schedule.exponential("100 millis").pipe(
-            Schedule.compose(Schedule.recurs(3)),
-          ),
-        ),
+        Effect.retry(METER_RETRY_POLICY),
         /* v8 ignore start */
         // TODO: Remove v8 ignore once queue-based async metering test is added
-        Effect.catchAll((error) => {
-          console.error("Failed to charge usage meter after retries:", {
-            stripeCustomerId,
-            provider,
-            model,
-            costCenticents: costBreakdown.totalCost.toString(),
-            error: error instanceof Error ? error.message : String(error),
-          });
-          return Effect.succeed(undefined);
-        }),
+        Effect.catchAll(() => Effect.succeed(undefined)),
         /* v8 ignore stop */
       );
     });

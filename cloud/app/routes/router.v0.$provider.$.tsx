@@ -1,18 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect } from "effect";
-import { authenticate } from "@/auth";
 import { Database } from "@/db";
 import { handleErrors, handleDefects } from "@/api/utils";
+import { InternalError } from "@/errors";
+import { getRouterConfig, validateRouterConfig } from "@/api/router/config";
+import { PROVIDER_CONFIGS, getProviderApiKey } from "@/api/router/providers";
 import { proxyToProvider } from "@/api/router/proxy";
 import {
-  PROVIDER_CONFIGS,
-  isValidProvider,
-  getProviderApiKey,
-  getCostCalculator,
-  extractModelId,
-} from "@/api/router/providers";
-import { InternalError } from "@/errors";
-import { formatCostForDisplay } from "@/api/router/cost-utils";
+  validateRouterRequest,
+  createPendingRouterRequest,
+  reserveRouterFunds,
+  handleRouterRequestFailure,
+  handleStreamingResponse,
+  handleNonStreamingResponse,
+} from "@/api/router/route-handlers";
 
 /**
  * Unified Provider Proxy Route
@@ -43,113 +44,115 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
         request: Request;
         params: { provider: string; "*"?: string };
       }) => {
-        const databaseUrl = process.env.DATABASE_URL;
         const provider = params.provider.toLowerCase();
 
+        // Validate configuration early
+        const configError = validateRouterConfig();
+        if (configError) {
+          return Effect.runPromise(
+            Effect.fail(new InternalError({ message: configError })).pipe(
+              handleErrors,
+              handleDefects,
+            ),
+          );
+        }
+
+        const config = getRouterConfig();
+
         const handler = Effect.gen(function* () {
-          if (!databaseUrl) {
-            return yield* new InternalError({
-              message: "Database not configured",
-            });
-          }
+          // Step 1: Validate request and authenticate user
+          const validated = yield* validateRouterRequest(request, provider);
 
-          // Validate provider
-          if (!isValidProvider(provider)) {
-            return yield* new InternalError({
-              message: `Unsupported provider: ${provider}`,
-            });
-          }
+          // Get database service
+          const db = yield* Database;
 
-          // Authenticate user via Mirascope API key
-          yield* authenticate(request);
-
-          // Get provider-specific API key from environment
-          const providerApiKey = getProviderApiKey(provider);
-
-          if (!providerApiKey) {
-            return yield* new InternalError({
-              message: `${provider} API key not configured`,
-            });
-          }
-
-          // Extract model ID using provider-specific logic
-          const requestBody = yield* Effect.tryPromise({
-            try: () => request.clone().text(),
-            catch: () => null as string | null,
+          // Get the organization for this API key
+          const organization = yield* db.organizations.findById({
+            organizationId: validated.apiKeyInfo.organizationId,
+            userId: validated.user.id,
           });
 
-          let parsedBody: unknown = null;
-          if (requestBody) {
-            try {
-              parsedBody = JSON.parse(requestBody);
-            } catch {
-              // Not JSON, that's ok
-            }
+          // Get provider-specific API key from environment
+          const providerApiKey = getProviderApiKey(validated.provider);
+          if (!providerApiKey) {
+            return yield* new InternalError({
+              message: `${validated.provider} API key not configured`,
+            });
           }
 
-          const modelId = extractModelId(provider, request, parsedBody);
+          // Step 2: Create pending router request
+          const routerRequestId = yield* createPendingRouterRequest(validated);
 
-          // Proxy to provider with internal API key
+          // Step 3: Reserve funds
+          const reservationId = yield* reserveRouterFunds(
+            validated,
+            routerRequestId,
+            organization.stripeCustomerId,
+          );
+
+          // Build request context for handlers
+          const requestContext = {
+            routerRequestId,
+            reservationId,
+            request: {
+              userId: validated.user.id,
+              organizationId: validated.apiKeyInfo.organizationId,
+              projectId: validated.apiKeyInfo.projectId,
+              environmentId: validated.apiKeyInfo.environmentId,
+              apiKeyId: validated.apiKeyInfo.apiKeyId,
+              routerRequestId,
+            },
+          };
+
+          // Step 4: Proxy request to provider with error handling
           const proxyResult = yield* proxyToProvider(
             request,
             {
-              ...PROVIDER_CONFIGS[provider],
+              ...PROVIDER_CONFIGS[validated.provider],
               apiKey: providerApiKey,
             },
-            provider,
+            validated.provider,
+          ).pipe(
+            Effect.catchAll((error) => {
+              // Handle proxy errors by updating request and releasing funds
+              return Effect.gen(function* () {
+                yield* handleRouterRequestFailure(
+                  routerRequestId,
+                  reservationId,
+                  requestContext.request,
+                  error instanceof Error ? error.message : String(error),
+                );
+                return yield* Effect.fail(error);
+              });
+            }),
           );
 
-          // Calculate usage and cost
-          if (proxyResult.body && modelId) {
-            const calculator = getCostCalculator(provider);
-            if (calculator) {
-              // Extract usage from response
-              const usage = calculator.extractUsage(proxyResult.body);
-
-              // Calculate cost if usage was extracted
-              const result = usage
-                ? yield* calculator
-                    .calculate(modelId, usage)
-                    .pipe(Effect.catchAll(() => Effect.succeed(null)))
-                : null;
-
-              if (usage && result) {
-                console.log({
-                  provider,
-                  model: modelId,
-                  usage: {
-                    inputTokens: usage.inputTokens,
-                    outputTokens: usage.outputTokens,
-                    cacheReadTokens: usage.cacheReadTokens || 0,
-                    cacheWriteTokens: usage.cacheWriteTokens || 0,
-                    totalTokens: usage.inputTokens + usage.outputTokens,
-                  },
-                  cost: {
-                    input: formatCostForDisplay(result.inputCost),
-                    output: formatCostForDisplay(result.outputCost),
-                    cacheRead: result.cacheReadCost
-                      ? formatCostForDisplay(result.cacheReadCost)
-                      : undefined,
-                    cacheWrite: result.cacheWriteCost
-                      ? formatCostForDisplay(result.cacheWriteCost)
-                      : undefined,
-                    total: formatCostForDisplay(result.totalCost),
-                  },
-                });
-              }
-            }
+          // Step 5: Handle response (streaming or non-streaming)
+          if (proxyResult.isStreaming) {
+            return yield* handleStreamingResponse(
+              proxyResult,
+              requestContext,
+              validated,
+              {
+                status: proxyResult.response.status,
+                statusText: proxyResult.response.statusText,
+                headers: proxyResult.response.headers,
+              },
+              config.databaseUrl,
+              config.stripe,
+            );
           }
 
-          return proxyResult.response;
+          return yield* handleNonStreamingResponse(
+            proxyResult,
+            requestContext,
+            validated,
+          );
         }).pipe(
           Effect.provide(
             Database.Live({
-              database: { connectionString: databaseUrl },
-              payments: {
-                apiKey: process.env.STRIPE_SECRET_KEY || "",
-                routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
-                routerMeterId: process.env.STRIPE_ROUTER_METER_ID || "",
-              },
+              database: { connectionString: config.databaseUrl },
+              payments: config.stripe,
             }),
           ),
           handleErrors,

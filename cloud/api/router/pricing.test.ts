@@ -285,6 +285,96 @@ describe("Pricing", () => {
 
       expect(result).toBeNull();
     });
+
+    it("should return null for model with invalid input pricing (NaN)", async () => {
+      const mockData = {
+        openai: {
+          id: "openai",
+          name: "OpenAI",
+          models: {
+            "invalid-model": {
+              id: "invalid-model",
+              name: "Invalid Model",
+              cost: {
+                input: NaN, // Invalid input pricing
+                output: 0.6,
+              },
+            },
+          },
+        },
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      }) as unknown as typeof fetch;
+
+      const result = await Effect.runPromise(
+        getModelPricing("openai", "invalid-model"),
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null for model with negative input pricing", async () => {
+      const mockData = {
+        openai: {
+          id: "openai",
+          name: "OpenAI",
+          models: {
+            "invalid-model": {
+              id: "invalid-model",
+              name: "Invalid Model",
+              cost: {
+                input: -0.5, // Negative input pricing
+                output: 0.6,
+              },
+            },
+          },
+        },
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      }) as unknown as typeof fetch;
+
+      const result = await Effect.runPromise(
+        getModelPricing("openai", "invalid-model"),
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null for model with invalid output pricing (Infinity)", async () => {
+      const mockData = {
+        openai: {
+          id: "openai",
+          name: "OpenAI",
+          models: {
+            "invalid-model": {
+              id: "invalid-model",
+              name: "Invalid Model",
+              cost: {
+                input: 0.15,
+                output: Infinity, // Invalid output pricing
+              },
+            },
+          },
+        },
+      };
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      }) as unknown as typeof fetch;
+
+      const result = await Effect.runPromise(
+        getModelPricing("openai", "invalid-model"),
+      );
+
+      expect(result).toBeNull();
+    });
   });
 
   describe("getPricingData", () => {

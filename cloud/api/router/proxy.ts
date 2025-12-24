@@ -6,11 +6,9 @@
  * Mirascope API key to internal provider keys.
  */
 
-import { Effect, Stream } from "effect";
+import { Effect } from "effect";
 import { ProxyError } from "@/errors";
 import type { ProxyConfig, ProviderName } from "@/api/router/providers";
-import { parseStreamingResponse } from "./streaming";
-import type { TokenUsage } from "@/api/router/pricing";
 
 /**
  * Extracts the path suffix after the provider prefix.
@@ -36,21 +34,59 @@ export function extractProviderPath(
 }
 
 /**
+ * Parses response body as JSON.
+ *
+ * Reads the response body and attempts to parse it as JSON.
+ * Returns null if body cannot be read or parsed.
+ *
+ * @param response - The response to parse (will be cloned)
+ * @returns Effect that resolves to parsed JSON or null
+ */
+function parseResponseBody(
+  response: Response,
+): Effect.Effect<unknown, ProxyError> {
+  return Effect.gen(function* () {
+    const responseClone = response.clone();
+    const bodyResult = yield* Effect.tryPromise({
+      try: () => responseClone.text(),
+      catch: (error) =>
+        new ProxyError({
+          message: `Failed to read response body: ${
+            error instanceof Error
+              ? error.message
+              : /* v8 ignore next */ String(error)
+          }`,
+          cause: error,
+        }),
+    }).pipe(Effect.catchAll(() => Effect.succeed(null as string | null)));
+
+    if (!bodyResult) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(bodyResult) as unknown;
+    } catch {
+      // Not JSON, that's ok
+      return null;
+    }
+  });
+}
+
+/**
  * Result of proxying a request to a provider.
  */
 export interface ProxyResult {
-  /** The provider's response */
+  /** The provider's response (may be streaming or non-streaming) */
   response: Response;
   /**
-   * Parsed JSON body if available, null otherwise.
-   * For non-streaming: Contains the full response body (type varies by provider/endpoint).
-   * For streaming: null (usage available via usageStream).
+   * Parsed JSON body if available (non-streaming only), null otherwise.
    */
   body: unknown;
-  /**
-   * For streaming responses only: Stream of usage data extracted from chunks.
-   */
-  usageStream?: Stream.Stream<TokenUsage, ProxyError>;
+  /** Whether the response is streaming (SSE or NDJSON) */
+  isStreaming: boolean;
+  /** The streaming format if isStreaming is true */
+  streamFormat?: "sse" | "ndjson";
 }
 
 /**
@@ -61,13 +97,13 @@ export interface ProxyResult {
  * 2. Copies request headers (excluding user auth and host)
  * 3. Sets provider authentication
  * 4. Forwards the request to the provider
- * 5. Clones and parses the response body for usage extraction
- * 6. Returns both the response and parsed body
+ * 5. For non-streaming: Clones and parses the response body
+ * 6. Returns the response with metadata
  *
  * @param request - The incoming HTTP request
  * @param config - Provider configuration including API key
  * @param providerName - Name of the provider (for path extraction and errors)
- * @returns Effect that resolves to ProxyResult with response and parsed body
+ * @returns Effect that resolves to ProxyResult with response and metadata
  *
  * @example
  * ```ts
@@ -134,49 +170,23 @@ export function proxyToProvider(
     const isNDJSON = contentType.includes("application/x-ndjson");
     const isStreaming = isSSE || isNDJSON;
 
-    // Parse streaming responses to extract usage
+    // For streaming responses, return immediately (caller handles metering)
     if (isStreaming) {
-      const format = isSSE ? "sse" : /* v8 ignore next */ "ndjson";
-      const streamResult = yield* parseStreamingResponse(
-        response,
-        format,
-        providerName,
-      );
       return {
-        response: streamResult.response,
-        body: null, // Body will be available via usageStream
-        usageStream: streamResult.usageStream,
+        response,
+        body: null,
+        isStreaming: true,
+        streamFormat: isSSE ? "sse" : "ndjson",
       };
     }
 
-    // For non-streaming responses, parse the body normally
-    const responseClone = response.clone();
-    const bodyResult = yield* Effect.tryPromise({
-      try: () => responseClone.text(),
-      catch: (error) =>
-        new ProxyError({
-          message: `Failed to read response body: ${
-            error instanceof Error
-              ? error.message
-              : /* v8 ignore next */ String(error)
-          }`,
-          cause: error,
-        }),
-    }).pipe(Effect.catchAll(() => Effect.succeed(null as string | null)));
-
-    let parsedBody: unknown = null;
-
-    if (bodyResult) {
-      try {
-        parsedBody = JSON.parse(bodyResult);
-      } catch {
-        // Not JSON, that's ok
-      }
-    }
+    // For non-streaming responses, parse the body
+    const parsedBody = yield* parseResponseBody(response);
 
     return {
       response,
       body: parsedBody,
+      isStreaming: false,
     };
   });
 }
