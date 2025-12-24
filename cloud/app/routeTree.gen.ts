@@ -171,8 +171,8 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
   '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
+  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -196,8 +196,8 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
   '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
+  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -222,8 +222,8 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
-  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
   '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
+  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -249,8 +249,8 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/router/v0/$provider/$'
     | '/docs/v1/placeholder'
+    | '/router/v0/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -274,8 +274,8 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/router/v0/$provider/$'
     | '/docs/v1/placeholder'
+    | '/router/v0/$provider/$'
   id:
     | '__root__'
     | '/'
@@ -299,8 +299,8 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
-    | '/router/v0/$provider/$'
     | '/docs/v1/placeholder'
+    | '/router/v0/$provider/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
