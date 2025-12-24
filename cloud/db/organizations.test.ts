@@ -6,10 +6,10 @@ import {
   TestOrganizationFixture,
   TestDrizzleORM,
   MockDrizzleORM,
-  MockStripe,
+  MockPayments,
 } from "@/tests/db";
 import { Database } from "@/db/database";
-import { Effect, Layer, Context } from "effect";
+import { Effect, Layer } from "effect";
 import {
   type PublicOrganizationWithMembership,
   type PublicOrganizationMembershipAudit,
@@ -21,7 +21,6 @@ import {
   PermissionDeniedError,
   StripeError,
 } from "@/errors";
-import { Stripe } from "@/payments/client";
 
 describe("Organizations", () => {
   // ===========================================================================
@@ -269,7 +268,7 @@ describe("Organizations", () => {
             Database.Default.pipe(
               Layer.provideMerge(TestDrizzleORM),
               Layer.provide(
-                new MockStripe().customers
+                new MockPayments().customers
                   .create((params: CapturedParams) => {
                     capturedParams = params;
                     return { id: "cus_mock" };
@@ -314,12 +313,12 @@ describe("Organizations", () => {
             // insert organization: fails (triggers rollback)
             .insert(new Error("Database connection failed"))
             .build(
-              new MockStripe().customers
+              new MockPayments().customers
                 .create(() => {
                   createdCustomerId = "cus_mock";
                   return { id: createdCustomerId };
                 })
-                .customers.del((id: CapturedCustomerId) => {
+                .customers.delete((id: CapturedCustomerId) => {
                   deletedCustomerId = id;
                   return { id };
                 })
@@ -832,7 +831,7 @@ describe("Organizations", () => {
             Database.Default.pipe(
               Layer.provideMerge(TestDrizzleORM),
               Layer.provide(
-                new MockStripe().customers
+                new MockPayments().customers
                   .create(() => ({ id: "cus_mock" }))
                   .customers.retrieve(() => ({
                     id: "cus_mock",
@@ -1111,7 +1110,7 @@ describe("Organizations", () => {
           Database.Default.pipe(
             Layer.provideMerge(TestDrizzleORM),
             Layer.provide(
-              new MockStripe().customers
+              new MockPayments().customers
                 .create(() => ({ id: "cus_mock" }))
                 .subscriptions.list(
                   (params?: { customer?: string; status?: string }) => {
@@ -1178,26 +1177,15 @@ describe("Organizations", () => {
               },
             ])
             .build(
-              Layer.succeed(Stripe, {
-                customers: {
-                  create: () => Effect.void,
-                  del: () => Effect.void,
-                },
-                subscriptions: {
-                  create: () => Effect.void,
-                  list: () =>
-                    Effect.fail(
-                      new StripeError({
-                        message: "Failed to list subscriptions",
-                      }),
-                    ),
-                  cancel: () => Effect.void,
-                },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test",
-                },
-              } as unknown as Context.Tag.Service<typeof Stripe>),
+              new MockPayments().subscriptions
+                .list(() =>
+                  Effect.fail(
+                    new StripeError({
+                      message: "Failed to list subscriptions",
+                    }),
+                  ),
+                )
+                .build(),
             ),
         ),
       ),

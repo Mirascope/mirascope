@@ -38,7 +38,7 @@
  */
 
 import { Context, Layer, Effect } from "effect";
-import { type Ready, makeReady } from "@/db/base";
+import { type Ready, dependencyProvider } from "@/utils";
 import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
 import { Users } from "@/db/users";
 import { Sessions } from "@/db/sessions";
@@ -48,7 +48,7 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
-import { Stripe, type StripeConfig } from "@/payments";
+import { Payments, type StripeConfig } from "@/payments";
 
 /**
  * Type definition for the environments service with nested API keys.
@@ -117,15 +117,19 @@ export class Database extends Context.Tag("Database")<
   /**
    * Default layer that creates the Database service.
    *
-   * Requires both DrizzleORM and Stripe to be provided. The `makeReady` and
-   * `makeReadyWithStripe` wrappers provide these dependencies to services,
-   * removing them from method signatures.
+   * Requires both DrizzleORM and Payments to be provided. The dependency provider
+   * automatically provides these dependencies to services, removing them from
+   * method signatures.
    */
   static Default = Layer.effect(
     Database,
     Effect.gen(function* () {
       const client = yield* DrizzleORM;
-      const stripe = yield* Stripe;
+      const payments = yield* Payments;
+      const provideDependencies = dependencyProvider([
+        { tag: DrizzleORM, instance: client },
+        { tag: Payments, instance: payments },
+      ]);
 
       // Create services with shared dependencies
       const organizationMemberships = new OrganizationMemberships();
@@ -141,17 +145,17 @@ export class Database extends Context.Tag("Database")<
       const apiKeysService = new ApiKeys(projectMemberships);
 
       return {
-        users: makeReady(client, stripe, new Users()),
-        sessions: makeReady(client, stripe, new Sessions()),
+        users: provideDependencies(new Users()),
+        sessions: provideDependencies(new Sessions()),
         organizations: {
-          ...makeReady(client, stripe, organizations),
-          memberships: makeReady(client, stripe, organizationMemberships),
+          ...provideDependencies(organizations),
+          memberships: provideDependencies(organizationMemberships),
           projects: {
-            ...makeReady(client, stripe, projectsService),
-            memberships: makeReady(client, stripe, projectMemberships),
+            ...provideDependencies(projectsService),
+            memberships: provideDependencies(projectMemberships),
             environments: {
-              ...makeReady(client, stripe, environmentsService),
-              apiKeys: makeReady(client, stripe, apiKeysService),
+              ...provideDependencies(environmentsService),
+              apiKeys: provideDependencies(apiKeysService),
             },
           },
         },
@@ -160,20 +164,20 @@ export class Database extends Context.Tag("Database")<
   );
 
   /**
-   * Creates a fully configured layer with database and Stripe connections.
+   * Creates a fully configured layer with database and Payments connections.
    *
-   * This is the standard way to use Database. Provide database and Stripe
-   * configurations and get back a layer that provides both Database and Stripe
+   * This is the standard way to use Database. Provide database and Payments
+   * configurations and get back a layer that provides both Database and Payments
    * services with no dependencies.
    *
-   * @param config - Database and Stripe configuration
-   * @returns A Layer providing both Database and Stripe with no dependencies
+   * @param config - Database and Payments configuration
+   * @returns A Layer providing both Database and Payments with no dependencies
    *
    * @example
    * ```ts
    * const DbLive = Database.Live({
    *   database: { connectionString: process.env.DATABASE_URL },
-   *   stripe: { apiKey: process.env.STRIPE_SECRET_KEY, routerPriceId: "price_..." },
+   *   payments: { apiKey: process.env.STRIPE_SECRET_KEY, routerPriceId: "price_..." },
    * });
    *
    * program.pipe(Effect.provide(DbLive));
@@ -181,17 +185,17 @@ export class Database extends Context.Tag("Database")<
    */
   static Live = (config: {
     database: DrizzleORMConfig;
-    stripe: StripeConfig;
+    payments: StripeConfig;
   }) => {
-    const stripeLayer = Stripe.layer(config.stripe);
+    const paymentsLayer = Payments.Live(config.payments);
     const drizzleLayer = DrizzleORM.layer(config.database);
 
     return Layer.mergeAll(
       Database.Default.pipe(
         Layer.provide(drizzleLayer),
-        Layer.provide(stripeLayer),
+        Layer.provide(paymentsLayer),
       ),
-      stripeLayer,
+      paymentsLayer,
     );
   };
 }

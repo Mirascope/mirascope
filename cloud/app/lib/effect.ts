@@ -25,7 +25,7 @@ function createAppServicesLayer(databaseUrl: string) {
     Layer.succeed(SettingsService, getSettings()),
     Database.Live({
       database: { connectionString: databaseUrl },
-      stripe: { apiKey: stripeApiKey, routerPriceId },
+      payments: { apiKey: stripeApiKey, routerPriceId },
     }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
   );

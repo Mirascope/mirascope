@@ -35,9 +35,9 @@
  * ```
  */
 
-import { Context, Effect } from "effect";
-import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
-import { Stripe } from "@/payments";
+import { Effect } from "effect";
+import { DrizzleORM } from "@/db/client";
+import { Payments } from "@/payments";
 import {
   type AlreadyExistsError,
   type DatabaseError,
@@ -128,164 +128,6 @@ export type ParentParams<T extends string> = Omit<
  */
 export type HasParentParams<T extends string> =
   keyof ParentParams<T> extends never ? false : true;
-
-// =============================================================================
-// Ready Service Types
-// =============================================================================
-
-/**
- * Transforms a service type by removing all dependencies from methods.
- *
- * This represents a "ready" service where all dependencies (DrizzleORM, Stripe, etc.)
- * have been provided. Methods return `Effect<A, E>` instead of `Effect<A, E, R>`.
- *
- * Handles services that depend on:
- * - DrizzleORM only
- * - Stripe only
- * - Both DrizzleORM and Stripe (DrizzleORM | Stripe)
- *
- * Also handles nested objects (like `audits`) by recursively applying the transformation.
- *
- * @example
- * ```ts
- * class Organizations {
- *   create(args): Effect<Org, Error, DrizzleORM | Stripe> { ... }
- * }
- *
- * type ReadyOrganizations = Ready<Organizations>;
- * // ReadyOrganizations.create returns Effect<Org, Error> (no requirements)
- * ```
- */
-export type Ready<T> = {
-  [K in keyof T]: T[K] extends (
-    ...args: infer A
-  ) => Effect.Effect<infer R, infer E, DrizzleORM | Stripe>
-    ? (...args: A) => Effect.Effect<R, E>
-    : T[K] extends (
-          ...args: infer A
-        ) => Effect.Effect<infer R, infer E, DrizzleORM>
-      ? (...args: A) => Effect.Effect<R, E>
-      : T[K] extends (
-            ...args: infer A
-          ) => Effect.Effect<infer R, infer E, Stripe>
-        ? (...args: A) => Effect.Effect<R, E>
-        : T[K] extends object
-          ? Ready<T[K]>
-          : never;
-};
-
-/**
- * Creates a "ready" version of a service with all dependencies pre-provided.
- *
- * Wraps all methods on the service instance to automatically provide
- * DrizzleORM and Stripe, so callers don't need to manage those dependencies.
- *
- * Also handles nested objects (like `audits`) by recursively wrapping their methods.
- *
- * @param client - The DrizzleORM client instance
- * @param stripe - The Stripe client instance
- * @param service - The service instance to wrap
- * @returns A new object with all methods wrapped to provide both clients
- *
- * @example
- * ```ts
- * const client = yield* DrizzleORM;
- * const stripe = yield* Stripe;
- * const organizations = makeReady(client, stripe, new Organizations(...));
- *
- * // Now methods return Effect<T, E> (no DrizzleORM or Stripe requirement)
- * ```
- */
-export const makeReady = <T extends object>(
-  client: DrizzleORMClient,
-  stripe: Context.Tag.Service<typeof Stripe>,
-  service: T,
-): Ready<T> => {
-  const proto = Object.getPrototypeOf(service) as object;
-
-  // Collect all method names from prototype
-  const methodNames = Object.getOwnPropertyNames(proto).filter(
-    (key) =>
-      key !== "constructor" &&
-      typeof (service as Record<string, unknown>)[key] === "function",
-  );
-
-  type WrappedMethod = (...args: unknown[]) => Effect.Effect<unknown, unknown>;
-
-  // Helper to wrap a method with both DrizzleORM and Stripe provision
-  const wrapMethod =
-    (method: (...args: unknown[]) => unknown): WrappedMethod =>
-    (...args: unknown[]) =>
-      (
-        method.apply(service, args) as Effect.Effect<
-          unknown,
-          unknown,
-          DrizzleORM | Stripe
-        >
-      ).pipe(
-        Effect.provideService(DrizzleORM, client),
-        Effect.provideService(Stripe, stripe),
-      );
-
-  // Cache wrapped methods to ensure consistent identity
-  const wrappedMethods = new Map<string | symbol, WrappedMethod>();
-  // Cache wrapped nested objects to preserve identity
-  const wrappedObjects = new Map<string | symbol, object>();
-
-  const getWrappedMethod = (prop: string | symbol): WrappedMethod => {
-    let wrapped = wrappedMethods.get(prop);
-    if (!wrapped) {
-      const method = (service as Record<string | symbol, unknown>)[prop];
-      if (typeof method === "function") {
-        wrapped = wrapMethod(method as (...args: unknown[]) => unknown);
-        wrappedMethods.set(prop, wrapped);
-      }
-    }
-    return wrapped!;
-  };
-
-  return new Proxy(service, {
-    get(target, prop, receiver) {
-      const value = Reflect.get(target, prop, receiver);
-
-      // Wrap functions to provide DrizzleORM
-      if (typeof value === "function") {
-        return getWrappedMethod(prop);
-      }
-
-      // Recursively wrap nested objects (with caching to preserve identity)
-      if (value && typeof value === "object" && !Array.isArray(value)) {
-        let wrapped = wrappedObjects.get(prop);
-        if (!wrapped) {
-          wrapped = makeReady(client, stripe, value as object);
-          wrappedObjects.set(prop, wrapped);
-        }
-        return wrapped;
-      }
-
-      /* v8 ignore next 1 - primitives pass through unchanged */
-      return value;
-    },
-
-    // Make prototype methods appear as own properties for spread operator
-    ownKeys() {
-      return [...methodNames, ...Object.keys(service)];
-    },
-
-    getOwnPropertyDescriptor(target, prop) {
-      // For prototype methods, make them enumerable
-      if (typeof prop === "string" && methodNames.includes(prop)) {
-        return {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: getWrappedMethod(prop),
-        };
-      }
-      return Object.getOwnPropertyDescriptor(target, prop);
-    },
-  }) as Ready<T>;
-};
 
 // =============================================================================
 // Base Effect Service
@@ -714,7 +556,7 @@ export abstract class BaseAuthenticatedEffectService<
     | DeletedUserError
     | DatabaseError
     | StripeError,
-    DrizzleORM | Stripe
+    DrizzleORM | Payments
   >;
 
   /**
@@ -779,7 +621,7 @@ export abstract class BaseAuthenticatedEffectService<
     | DeletedUserError
     | DatabaseError
     | StripeError,
-    DrizzleORM | Stripe
+    DrizzleORM | Payments
   >;
 
   /**
@@ -797,6 +639,6 @@ export abstract class BaseAuthenticatedEffectService<
   ): Effect.Effect<
     void,
     NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
-    DrizzleORM | Stripe
+    DrizzleORM | Payments
   >;
 }

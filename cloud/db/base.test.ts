@@ -1,12 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { Context, Effect } from "effect";
-import { makeReady } from "@/db/base";
-import type { DrizzleORMClient } from "@/db/client";
-import { Stripe } from "@/payments";
+import { dependencyProvider } from "@/utils";
+import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
+import { Payments } from "@/payments";
 
-describe("makeReady", () => {
+describe("dependencyProvider", () => {
   const mockClient = {} as DrizzleORMClient;
-  const mockStripe = {} as Context.Tag.Service<Stripe>;
+  const mockPayments = {} as Context.Tag.Service<Payments>;
+  const provideDependencies = dependencyProvider([
+    { tag: DrizzleORM, instance: mockClient },
+    { tag: Payments, instance: mockPayments },
+  ]);
 
   it("should preserve method identity", () => {
     class MockService {
@@ -15,7 +19,7 @@ describe("makeReady", () => {
       }
     }
 
-    const ready = makeReady(mockClient, mockStripe, new MockService());
+    const ready = provideDependencies(new MockService());
 
     // Access the same method twice
     const method1 = ready.method;
@@ -39,7 +43,7 @@ describe("makeReady", () => {
       }
     }
 
-    const ready = makeReady(mockClient, mockStripe, new MockService());
+    const ready = provideDependencies(new MockService());
 
     // Access the same nested object twice
     const nested1 = ready.nested;
@@ -60,7 +64,7 @@ describe("makeReady", () => {
       };
     }
 
-    const ready = makeReady(mockClient, mockStripe, new MockService());
+    const ready = provideDependencies(new MockService());
 
     // Access the same deeply nested objects multiple times
     const level1_a = ready.level1;
@@ -81,7 +85,7 @@ describe("makeReady", () => {
       };
     }
     const service = new MockService();
-    const ready = makeReady(mockClient, mockStripe, service);
+    const ready = provideDependencies(service);
 
     // WeakMaps require reference equality
     const weakMap = new WeakMap<object, string>();
@@ -106,7 +110,7 @@ describe("makeReady", () => {
     }
 
     const service = new MockService();
-    const ready = makeReady(mockClient, mockStripe, service);
+    const ready = provideDependencies(service);
 
     // First access wraps the object
     const firstAccess = ready.nested;
@@ -130,7 +134,7 @@ describe("makeReady", () => {
     }
 
     const service = new MockService();
-    const ready = makeReady(mockClient, mockStripe, service);
+    const ready = provideDependencies(service);
 
     // Arrays should pass through without wrapping
     const items = ready.items;
