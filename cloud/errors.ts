@@ -156,3 +156,34 @@ export class StripeError extends Schema.TaggedError<StripeError>()(
 ) {
   static readonly status = 500 as const;
 }
+
+// =============================================================================
+// Proxy Errors
+// =============================================================================
+
+/**
+ * Error that occurs during AI provider proxy operations.
+ *
+ * This error wraps failures when proxying requests to external AI providers
+ * (OpenAI, Anthropic, Google AI), including:
+ * - Network errors
+ * - Provider API errors
+ * - Configuration errors (missing API keys)
+ * - Timeout errors
+ *
+ * @example
+ * ```ts
+ * const response = yield* proxyToProvider({ ... }).pipe(
+ *   Effect.catchTag("ProxyError", (error) => {
+ *     console.error("Proxy failed:", error.message);
+ *     return Effect.fail(new InternalError({ message: "Provider unavailable" }));
+ *   })
+ * );
+ * ```
+ */
+export class ProxyError extends Schema.TaggedError<ProxyError>()("ProxyError", {
+  message: Schema.String,
+  cause: Schema.optional(Schema.Unknown),
+}) {
+  static readonly status = 502 as const;
+}

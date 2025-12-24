@@ -30,6 +30,7 @@ import { Route as AuthGithubCallbackRouteImport } from './routes/auth/github.cal
 import { Route as ApiV0HealthRouteImport } from './routes/api.v0.health'
 import { Route as ApiV0DocsRouteImport } from './routes/api.v0.docs'
 import { Route as ApiV0SplatRouteImport } from './routes/api.v0.$'
+import { Route as RouterV0ProviderSplatRouteImport } from './routes/router.v0.$provider.$'
 
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
@@ -136,6 +137,11 @@ const ApiV0SplatRoute = ApiV0SplatRouteImport.update({
   path: '/api/v0/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RouterV0ProviderSplatRoute = RouterV0ProviderSplatRouteImport.update({
+  id: '/router/v0/$provider/$',
+  path: '/router/v0/$provider/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -182,6 +189,7 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/router/v0/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/router/v0/$provider/$'
   id:
     | '__root__'
     | '/'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/router/v0/$provider/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
   ApiV0HealthRoute: typeof ApiV0HealthRoute
+  RouterV0ProviderSplatRoute: typeof RouterV0ProviderSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -448,6 +461,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV0SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/router/v0/$provider/$': {
+      id: '/router/v0/$provider/$'
+      path: '/router/v0/$provider/$'
+      fullPath: '/router/v0/$provider/$'
+      preLoaderRoute: typeof RouterV0ProviderSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -497,6 +517,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
   ApiV0HealthRoute: ApiV0HealthRoute,
+  RouterV0ProviderSplatRoute: RouterV0ProviderSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
