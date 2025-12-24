@@ -96,118 +96,150 @@ export class Functions {
     return Effect.gen(function* () {
       const client = yield* DrizzleORM;
 
-      return yield* Effect.tryPromise({
-        try: async () => {
-          // First, check if function with same hash already exists
-          const existing = await client
-            .select()
+      // First, check if function with same hash already exists
+      const existing = yield* client
+        .select()
+        .from(functions)
+        .where(
+          and(
+            eq(functions.hash, data.hash),
+            eq(functions.environmentId, context.environmentId),
+          ),
+        )
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: `Failed to check existing function: ${e.message}`,
+                cause: e,
+              }),
+          ),
+        );
+
+      if (existing[0]) {
+        return {
+          ...existing[0],
+          isNew: false,
+        };
+      }
+
+      // Compute version and insert in same transaction to prevent race conditions
+      return yield* client.withTransaction(
+        Effect.gen(function* () {
+          // Get the latest version for this function name with lock
+          const latestVersions = yield* client
+            .select({
+              version: functions.version,
+              signatureHash: functions.signatureHash,
+            })
             .from(functions)
             .where(
               and(
-                eq(functions.hash, data.hash),
+                eq(functions.name, data.name),
                 eq(functions.environmentId, context.environmentId),
               ),
             )
-            .limit(1);
+            .orderBy(desc(functions.createdAt))
+            .limit(1)
+            .for("update")
+            .pipe(
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: `Failed to get latest version: ${e.message}`,
+                    cause: e,
+                  }),
+              ),
+            );
 
-          if (existing[0]) {
+          let version: string;
+          if (latestVersions.length === 0) {
+            // No existing version for this name, start at 1.0
+            version = "1.0";
+          } else {
+            const latest = latestVersions[0];
+            const [major, minor] = latest.version.split(".").map(Number);
+
+            if (latest.signatureHash !== data.signatureHash) {
+              // Signature changed -> major version bump
+              version = `${major + 1}.0`;
+            } else {
+              // Same signature, different implementation -> minor version bump
+              version = `${major}.${minor + 1}`;
+            }
+          }
+
+          // Insert new function within the same transaction
+          const newFunction: NewFunction = {
+            hash: data.hash,
+            signatureHash: data.signatureHash,
+            name: data.name,
+            description: data.description ?? null,
+            version,
+            tags: data.tags ?? null,
+            metadata: data.metadata ?? null,
+            code: data.code,
+            signature: data.signature,
+            dependencies: data.dependencies ?? null,
+            environmentId: context.environmentId,
+            projectId: context.projectId,
+            organizationId: context.organizationId,
+          };
+
+          const insertResult = yield* client
+            .insert(functions)
+            .values(newFunction)
+            .onConflictDoNothing({
+              target: [functions.hash, functions.environmentId],
+            })
+            .returning()
+            .pipe(
+              Effect.mapError(
+                (e) =>
+                  new DatabaseError({
+                    message: `Failed to insert function: ${e.message}`,
+                    cause: e,
+                  }),
+              ),
+            );
+
+          const inserted = insertResult[0];
+
+          // If conflict occurred (race condition on hash), fetch the existing one
+          if (!inserted) {
+            const existingAfterConflict = yield* client
+              .select()
+              .from(functions)
+              .where(
+                and(
+                  eq(functions.hash, data.hash),
+                  eq(functions.environmentId, context.environmentId),
+                ),
+              )
+              .limit(1)
+              .pipe(
+                Effect.mapError(
+                  (e) =>
+                    new DatabaseError({
+                      message: `Failed to fetch existing function after conflict: ${e.message}`,
+                      cause: e,
+                    }),
+                ),
+              );
+
             return {
-              ...existing[0],
+              ...existingAfterConflict[0],
               isNew: false,
             };
           }
 
-          // Compute version and insert in same transaction to prevent race conditions
-          return await client.transaction(async (tx) => {
-            // Get the latest version for this function name with lock
-            const latestVersions = await tx
-              .select({
-                version: functions.version,
-                signatureHash: functions.signatureHash,
-              })
-              .from(functions)
-              .where(
-                and(
-                  eq(functions.name, data.name),
-                  eq(functions.environmentId, context.environmentId),
-                ),
-              )
-              .orderBy(desc(functions.createdAt))
-              .limit(1)
-              .for("update");
-
-            let version: string;
-            if (latestVersions.length === 0) {
-              // No existing version for this name, start at 1.0
-              version = "1.0";
-            } else {
-              const latest = latestVersions[0];
-              const [major, minor] = latest.version.split(".").map(Number);
-
-              if (latest.signatureHash !== data.signatureHash) {
-                // Signature changed -> major version bump
-                version = `${major + 1}.0`;
-              } else {
-                // Same signature, different implementation -> minor version bump
-                version = `${major}.${minor + 1}`;
-              }
-            }
-
-            // Insert new function within the same transaction
-            const newFunction: NewFunction = {
-              hash: data.hash,
-              signatureHash: data.signatureHash,
-              name: data.name,
-              description: data.description ?? null,
-              version,
-              tags: data.tags ?? null,
-              metadata: data.metadata ?? null,
-              code: data.code,
-              signature: data.signature,
-              dependencies: data.dependencies ?? null,
-              environmentId: context.environmentId,
-              projectId: context.projectId,
-              organizationId: context.organizationId,
-            };
-
-            const [inserted] = await tx
-              .insert(functions)
-              .values(newFunction)
-              .onConflictDoNothing({
-                target: [functions.hash, functions.environmentId],
-              })
-              .returning();
-
-            // If conflict occurred (race condition on hash), fetch the existing one
-            if (!inserted) {
-              const [existingAfterConflict] = await tx
-                .select()
-                .from(functions)
-                .where(
-                  and(
-                    eq(functions.hash, data.hash),
-                    eq(functions.environmentId, context.environmentId),
-                  ),
-                )
-                .limit(1);
-
-              return {
-                ...existingAfterConflict,
-                isNew: false,
-              };
-            }
-
-            return {
-              ...inserted,
-              isNew: true,
-            };
-          });
-        },
-        catch: (error) =>
-          new DatabaseError({
-            message: `Failed to register function: ${error instanceof Error ? error.message : "Unknown error"}`,
-          }),
-      });
+          return {
+            ...inserted,
+            isNew: true,
+          };
+        }),
+      );
     });
   }
 
