@@ -108,13 +108,14 @@ describe("Annotations", () => {
           data: { score: 0.95 },
         };
 
-        const annotation = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: input,
-        });
+        const annotation =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: input,
+          });
 
         expect(annotation).toBeDefined();
         expect(annotation.spanId).toBe(spanId);
@@ -147,13 +148,14 @@ describe("Annotations", () => {
           label: "negative",
         };
 
-        const annotation = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: input,
-        });
+        const annotation =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: input,
+          });
 
         expect(annotation.createdBy).toBe(owner.id);
       }),
@@ -276,13 +278,14 @@ describe("Annotations", () => {
           label: "annotator-created",
         };
 
-        const annotation = yield* db.organizations.projects.environments.annotations.create({
-          userId: projectAnnotator.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: input,
-        });
+        const annotation =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: projectAnnotator.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: input,
+          });
 
         expect(annotation.label).toBe("annotator-created");
         expect(annotation.createdBy).toBe(projectAnnotator.id);
@@ -344,21 +347,23 @@ describe("Annotations", () => {
           org.id,
         );
 
-        const created = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { spanId, traceId, label: "test" },
-        });
+        const created =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { spanId, traceId, label: "test" },
+          });
 
-        const found = yield* db.organizations.projects.environments.annotations.getById({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          annotationId: created.id,
-        });
+        const found =
+          yield* db.organizations.projects.environments.annotations.getById({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            annotationId: created.id,
+          });
 
         expect(found.id).toBe(created.id);
         expect(found.label).toBe("test");
@@ -443,23 +448,25 @@ describe("Annotations", () => {
           org.id,
         );
 
-        const created = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { spanId, traceId, label: "original" },
-        });
+        const created =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { spanId, traceId, label: "original" },
+          });
 
         const updateData: UpdateAnnotationInput = { label: "updated" };
-        const updated = yield* db.organizations.projects.environments.annotations.update({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          annotationId: created.id,
-          data: updateData,
-        });
+        const updated =
+          yield* db.organizations.projects.environments.annotations.update({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            annotationId: created.id,
+            data: updateData,
+          });
 
         expect(updated.label).toBe("updated");
         expect(updated.id).toBe(created.id);
@@ -479,22 +486,24 @@ describe("Annotations", () => {
           org.id,
         );
 
-        const created = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { spanId, traceId, reasoning: "original reasoning" },
-        });
+        const created =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { spanId, traceId, reasoning: "original reasoning" },
+          });
 
-        const updated = yield* db.organizations.projects.environments.annotations.update({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          annotationId: created.id,
-          data: { reasoning: "updated reasoning" },
-        });
+        const updated =
+          yield* db.organizations.projects.environments.annotations.update({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            annotationId: created.id,
+            data: { reasoning: "updated reasoning" },
+          });
 
         expect(updated.reasoning).toBe("updated reasoning");
       }),
@@ -513,22 +522,24 @@ describe("Annotations", () => {
           org.id,
         );
 
-        const created = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { spanId, traceId, data: { key: "original" } },
-        });
+        const created =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { spanId, traceId, data: { key: "original" } },
+          });
 
-        const updated = yield* db.organizations.projects.environments.annotations.update({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          annotationId: created.id,
-          data: { data: { key: "updated", extra: true } },
-        });
+        const updated =
+          yield* db.organizations.projects.environments.annotations.update({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            annotationId: created.id,
+            data: { data: { key: "updated", extra: true } },
+          });
 
         expect(updated.data).toEqual({ key: "updated", extra: true });
       }),
@@ -590,23 +601,25 @@ describe("Annotations", () => {
         );
 
         // Owner creates the annotation
-        const created = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { spanId, traceId, label: "original" },
-        });
+        const created =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { spanId, traceId, label: "original" },
+          });
 
         // Annotator updates it
-        const updated = yield* db.organizations.projects.environments.annotations.update({
-          userId: projectAnnotator.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          annotationId: created.id,
-          data: { label: "annotator-updated" },
-        });
+        const updated =
+          yield* db.organizations.projects.environments.annotations.update({
+            userId: projectAnnotator.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            annotationId: created.id,
+            data: { label: "annotator-updated" },
+          });
 
         expect(updated.label).toBe("annotator-updated");
       }),
@@ -650,13 +663,14 @@ describe("Annotations", () => {
           org.id,
         );
 
-        const created = yield* db.organizations.projects.environments.annotations.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { spanId, traceId, label: "to-delete" },
-        });
+        const created =
+          yield* db.organizations.projects.environments.annotations.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { spanId, traceId, label: "to-delete" },
+          });
 
         // Delete should succeed
         yield* db.organizations.projects.environments.annotations.delete({
@@ -791,36 +805,37 @@ describe("Annotations", () => {
         });
 
         // Create another span for second annotation
-        const result2 = yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: {
-            resourceSpans: [
-              {
-                resource: { attributes: [] },
-                scopeSpans: [
-                  {
-                    scope: { name: "test-scope" },
-                    spans: [
-                      {
-                        traceId,
-                        spanId: "abcdef0123456789",
-                        name: "test-span-2",
-                        kind: 1,
-                        startTimeUnixNano: "1700000002000000000",
-                        endTimeUnixNano: "1700000003000000000",
-                        attributes: [],
-                        status: {},
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        });
+        const result2 =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: {
+              resourceSpans: [
+                {
+                  resource: { attributes: [] },
+                  scopeSpans: [
+                    {
+                      scope: { name: "test-scope" },
+                      spans: [
+                        {
+                          traceId,
+                          spanId: "abcdef0123456789",
+                          name: "test-span-2",
+                          kind: 1,
+                          startTimeUnixNano: "1700000002000000000",
+                          endTimeUnixNano: "1700000003000000000",
+                          attributes: [],
+                          status: {},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          });
         expect(result2.acceptedSpans).toBe(1);
 
         yield* db.organizations.projects.environments.annotations.create({
@@ -831,12 +846,13 @@ describe("Annotations", () => {
           data: { spanId: "abcdef0123456789", traceId, label: "second" },
         });
 
-        const listResult = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-        });
+        const listResult =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          });
 
         expect(listResult.total).toBe(2);
         expect(listResult.annotations.length).toBe(2);
@@ -849,12 +865,13 @@ describe("Annotations", () => {
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
-        const result = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-        });
+        const result =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          });
 
         expect(result.total).toBe(0);
         expect(result.annotations).toEqual([]);
@@ -882,13 +899,14 @@ describe("Annotations", () => {
           data: { spanId, traceId, label: "matching" },
         });
 
-        const result = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          filters: { traceId },
-        });
+        const result =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            filters: { traceId },
+          });
 
         expect(result.total).toBe(1);
         expect(result.annotations[0].label).toBe("matching");
@@ -916,13 +934,14 @@ describe("Annotations", () => {
           data: { spanId, traceId, label: "matching" },
         });
 
-        const result = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          filters: { spanId },
-        });
+        const result =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            filters: { spanId },
+          });
 
         expect(result.total).toBe(1);
         expect(result.annotations[0].spanId).toBe(spanId);
@@ -950,22 +969,24 @@ describe("Annotations", () => {
           data: { spanId, traceId, label: "positive" },
         });
 
-        const positiveResult = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          filters: { label: "positive" },
-        });
+        const positiveResult =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            filters: { label: "positive" },
+          });
         expect(positiveResult.total).toBe(1);
 
-        const negativeResult = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          filters: { label: "negative" },
-        });
+        const negativeResult =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            filters: { label: "negative" },
+          });
         expect(negativeResult.total).toBe(0);
       }),
     );
@@ -1025,13 +1046,14 @@ describe("Annotations", () => {
           });
         }
 
-        const result = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          filters: { limit: 2 },
-        });
+        const result =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            filters: { limit: 2 },
+          });
 
         expect(result.total).toBe(3);
         expect(result.annotations.length).toBe(2);
@@ -1093,13 +1115,14 @@ describe("Annotations", () => {
           });
         }
 
-        const result = yield* db.organizations.projects.environments.annotations.list({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          filters: { limit: 10, offset: 2 },
-        });
+        const result =
+          yield* db.organizations.projects.environments.annotations.list({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            filters: { limit: 10, offset: 2 },
+          });
 
         expect(result.total).toBe(3);
         expect(result.annotations.length).toBe(1);

@@ -46,6 +46,11 @@ import {
   updateAnnotationHandler,
   deleteAnnotationHandler,
   listAnnotationsHandler,
+  sdkCreateAnnotationHandler,
+  sdkGetAnnotationHandler,
+  sdkUpdateAnnotationHandler,
+  sdkDeleteAnnotationHandler,
+  sdkListAnnotationsHandler,
 } from "@/api/annotations.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
@@ -69,13 +74,6 @@ const TracesHandlersLive = HttpApiBuilder.group(
         payload,
       ),
     ),
-);
-
-const SdkTracesHandlersLive = HttpApiBuilder.group(
-  MirascopeCloudApi,
-  "sdkTraces",
-  (handlers) =>
-    handlers.handle("create", ({ payload }) => sdkCreateTraceHandler(payload)),
 );
 
 const DocsHandlersLive = HttpApiBuilder.group(
@@ -294,11 +292,45 @@ const AnnotationsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+<<<<<<< HEAD
 >>>>>>> 32b4ddb13 (feat(api): add annotations API endpoints)
+=======
+const SdkTracesHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "sdkTraces",
+  (handlers) =>
+    handlers.handle("create", ({ payload }) => sdkCreateTraceHandler(payload)),
+);
+
+const SdkFunctionsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "sdkFunctions",
+  (handlers) =>
+    handlers
+      .handle("register", ({ payload }) => sdkRegisterFunctionHandler(payload))
+      .handle("get", ({ path }) => sdkGetFunctionHandler(path.id))
+      .handle("getByHash", ({ path }) => sdkGetFunctionByHashHandler(path.hash))
+      .handle("list", ({ urlParams }) => sdkListFunctionsHandler(urlParams)),
+);
+
+const SdkAnnotationsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "sdkAnnotations",
+  (handlers) =>
+    handlers
+      .handle("create", ({ payload }) => sdkCreateAnnotationHandler(payload))
+      .handle("get", ({ path }) => sdkGetAnnotationHandler(path.id))
+      .handle("update", ({ path, payload }) =>
+        sdkUpdateAnnotationHandler(path.id, payload),
+      )
+      .handle("delete", ({ path }) => sdkDeleteAnnotationHandler(path.id))
+      .handle("list", ({ urlParams }) => sdkListAnnotationsHandler(urlParams)),
+);
+
+>>>>>>> 6ccf2bf2e (feat(api): add SDK annotations flat endpoints)
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
-  Layer.provide(SdkTracesHandlersLive),
   Layer.provide(DocsHandlersLive),
   Layer.provide(OrganizationsHandlersLive),
   Layer.provide(ProjectsHandlersLive),
@@ -313,5 +345,12 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
 );
 =======
   Layer.provide(AnnotationsHandlersLive),
+<<<<<<< HEAD
 );
 >>>>>>> 32b4ddb13 (feat(api): add annotations API endpoints)
+=======
+  Layer.provide(SdkTracesHandlersLive),
+  Layer.provide(SdkFunctionsHandlersLive),
+  Layer.provide(SdkAnnotationsHandlersLive),
+);
+>>>>>>> 6ccf2bf2e (feat(api): add SDK annotations flat endpoints)

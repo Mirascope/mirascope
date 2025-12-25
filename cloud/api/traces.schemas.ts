@@ -5,6 +5,7 @@ import {
   PermissionDeniedError,
   DatabaseError,
   AlreadyExistsError,
+  UnauthorizedError,
 } from "@/errors";
 
 export const KeyValueSchema = Schema.Struct({
@@ -123,6 +124,21 @@ export class TracesApi extends HttpApiGroup.make("traces").add(
     )
     .setPayload(CreateTraceRequestSchema)
     .addSuccess(CreateTraceResponseSchema)
+    .addError(NotFoundError, { status: NotFoundError.status })
+    .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+    .addError(DatabaseError, { status: DatabaseError.status })
+    .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
+) {}
+
+/**
+ * SDK Traces API - Flat path for SDK usage with API key authentication
+ * organizationId, projectId, and environmentId are derived from the API key
+ */
+export class SdkTracesApi extends HttpApiGroup.make("sdkTraces").add(
+  HttpApiEndpoint.post("create", "/traces")
+    .setPayload(CreateTraceRequestSchema)
+    .addSuccess(CreateTraceResponseSchema)
+    .addError(UnauthorizedError, { status: UnauthorizedError.status })
     .addError(NotFoundError, { status: NotFoundError.status })
     .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
     .addError(DatabaseError, { status: DatabaseError.status })

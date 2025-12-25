@@ -1,9 +1,3 @@
-/**
- * SDK Flat API Schemas
- *
- * These endpoints provide flat paths for SDK usage with API key authentication.
- * The organizationId, projectId, and environmentId are derived from the API key.
- */
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 import {
@@ -13,32 +7,13 @@ import {
   AlreadyExistsError,
   UnauthorizedError,
 } from "@/errors";
-import {
-  CreateTraceRequestSchema,
-  CreateTraceResponseSchema,
-} from "@/api/traces.schemas";
 
-// Re-export request/response types from traces module
-export {
-  CreateTraceRequestSchema,
-  CreateTraceResponseSchema,
-  type CreateTraceRequest,
-  type CreateTraceResponse,
-} from "@/api/traces.schemas";
-
-// Re-export request/response types from functions module
-export {
-  type RegisterFunctionRequest,
-  type FunctionResponse,
-  type PublicFunction,
-  type ListFunctionsResponse,
-} from "@/api/functions.schemas";
-
-// Function schemas (redeclared for SDK endpoints)
 const DependencyInfoSchema = Schema.Struct({
   version: Schema.String,
   extras: Schema.NullOr(Schema.Array(Schema.String)),
 });
+
+export type DependencyInfo = typeof DependencyInfoSchema.Type;
 
 const RegisterFunctionRequestSchema = Schema.Struct({
   code: Schema.String,
@@ -57,6 +32,8 @@ const RegisterFunctionRequestSchema = Schema.Struct({
     ),
   ),
 });
+
+export type RegisterFunctionRequest = typeof RegisterFunctionRequestSchema.Type;
 
 const FunctionResponseSchema = Schema.Struct({
   id: Schema.String,
@@ -82,6 +59,8 @@ const FunctionResponseSchema = Schema.Struct({
   isNew: Schema.Boolean,
 });
 
+export type FunctionResponse = typeof FunctionResponseSchema.Type;
+
 const PublicFunctionSchema = Schema.Struct({
   id: Schema.String,
   hash: Schema.String,
@@ -105,27 +84,85 @@ const PublicFunctionSchema = Schema.Struct({
   updatedAt: Schema.NullOr(Schema.String),
 });
 
+export type PublicFunction = typeof PublicFunctionSchema.Type;
+
 const ListFunctionsResponseSchema = Schema.Struct({
   functions: Schema.Array(PublicFunctionSchema),
   total: Schema.Number,
 });
 
-/**
- * SDK Traces API - Flat paths for SDK usage
- */
-export class SdkTracesApi extends HttpApiGroup.make("sdkTraces").add(
-  HttpApiEndpoint.post("create", "/traces")
-    .setPayload(CreateTraceRequestSchema)
-    .addSuccess(CreateTraceResponseSchema)
-    .addError(UnauthorizedError, { status: UnauthorizedError.status })
-    .addError(NotFoundError, { status: NotFoundError.status })
-    .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-    .addError(DatabaseError, { status: DatabaseError.status })
-    .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
-) {}
+export type ListFunctionsResponse = typeof ListFunctionsResponseSchema.Type;
+
+const FunctionsPathParams = Schema.Struct({
+  organizationId: Schema.String,
+  projectId: Schema.String,
+  environmentId: Schema.String,
+});
+
+const FunctionsBasePath =
+  "/organizations/:organizationId/projects/:projectId/environments/:environmentId/functions";
+
+export class FunctionsApi extends HttpApiGroup.make("functions")
+  .add(
+    HttpApiEndpoint.post("register", FunctionsBasePath)
+      .setPath(FunctionsPathParams)
+      .setPayload(RegisterFunctionRequestSchema)
+      .addSuccess(FunctionResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getByHash", `${FunctionsBasePath}/by-hash/:hash`)
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+          hash: Schema.String,
+        }),
+      )
+      .addSuccess(PublicFunctionSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("get", `${FunctionsBasePath}/:id`)
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+          id: Schema.String,
+        }),
+      )
+      .addSuccess(PublicFunctionSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("list", FunctionsBasePath)
+      .setPath(FunctionsPathParams)
+      .setUrlParams(
+        Schema.Struct({
+          name: Schema.optional(Schema.String),
+          tags: Schema.optional(Schema.String),
+          limit: Schema.optional(Schema.NumberFromString),
+          offset: Schema.optional(Schema.NumberFromString),
+        }),
+      )
+      .addSuccess(ListFunctionsResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  ) {}
 
 /**
- * SDK Functions API - Flat paths for SDK usage
+ * SDK Functions API - Flat paths for SDK usage with API key authentication
+ * organizationId, projectId, and environmentId are derived from the API key
  */
 export class SdkFunctionsApi extends HttpApiGroup.make("sdkFunctions")
   .add(

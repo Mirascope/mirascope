@@ -2,52 +2,96 @@ import { Effect, Option } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser, AuthenticatedApiKey } from "@/auth";
 import { UnauthorizedError } from "@/errors";
-import type { PublicAnnotation as DbPublicAnnotation } from "@/db/schema/annotations";
+import type { PublicFunction as DbPublicFunction } from "@/db/schema/functions";
+import type { FunctionResponse as DbFunctionResponse } from "@/db/functions";
 import type {
-  CreateAnnotationRequest,
-  UpdateAnnotationRequest,
-  AnnotationResponse,
-} from "@/api/annotations.schemas";
+  RegisterFunctionRequest,
+  FunctionResponse,
+  PublicFunction,
+} from "@/api/functions.schemas";
 
-export * from "@/api/annotations.schemas";
+export * from "@/api/functions.schemas";
 
-export const toAnnotationResponse = (
-  ann: DbPublicAnnotation,
-): AnnotationResponse => ({
-  ...ann,
-  createdAt: ann.createdAt?.toISOString() ?? null,
-  updatedAt: ann.updatedAt?.toISOString() ?? null,
+export const toPublicFunction = (fn: DbPublicFunction): PublicFunction => ({
+  ...fn,
+  createdAt: fn.createdAt?.toISOString() ?? null,
+  updatedAt: fn.updatedAt?.toISOString() ?? null,
 });
 
-export const createAnnotationHandler = (
+export const toFunctionResponse = (
+  fn: DbFunctionResponse,
+): FunctionResponse => ({
+  ...fn,
+  createdAt: fn.createdAt?.toISOString() ?? null,
+  updatedAt: fn.updatedAt?.toISOString() ?? null,
+});
+
+export const registerFunctionHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,
-  payload: CreateAnnotationRequest,
+  payload: RegisterFunctionRequest,
 ) =>
   Effect.gen(function* () {
     const user = yield* AuthenticatedUser;
     const db = yield* Database;
 
+    const tags = payload.tags ? [...payload.tags] : null;
+    const metadata = payload.metadata ? { ...payload.metadata } : null;
+    const dependencies = payload.dependencies
+      ? Object.fromEntries(
+          Object.entries(payload.dependencies).map(([k, v]) => [
+            k,
+            { version: v.version, extras: v.extras ? [...v.extras] : null },
+          ]),
+        )
+      : null;
+
     const result =
-      yield* db.organizations.projects.environments.annotations.create({
+      yield* db.organizations.projects.environments.functions.create({
         userId: user.id,
         organizationId,
         projectId,
         environmentId,
         data: {
-          spanId: payload.spanId,
-          traceId: payload.traceId,
-          label: payload.label ?? null,
-          reasoning: payload.reasoning ?? null,
-          data: payload.data ?? null,
+          code: payload.code,
+          hash: payload.hash,
+          signature: payload.signature,
+          signatureHash: payload.signatureHash,
+          name: payload.name,
+          description: payload.description ?? null,
+          tags,
+          metadata,
+          dependencies,
         },
       });
 
-    return toAnnotationResponse(result);
+    return toFunctionResponse(result);
   });
 
-export const getAnnotationHandler = (
+export const getFunctionByHashHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+  hash: string,
+) =>
+  Effect.gen(function* () {
+    const user = yield* AuthenticatedUser;
+    const db = yield* Database;
+
+    const result =
+      yield* db.organizations.projects.environments.functions.getByHash({
+        userId: user.id,
+        organizationId,
+        projectId,
+        environmentId,
+        hash,
+      });
+
+    return toPublicFunction(result);
+  });
+
+export const getFunctionHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,
@@ -58,71 +102,24 @@ export const getAnnotationHandler = (
     const db = yield* Database;
 
     const result =
-      yield* db.organizations.projects.environments.annotations.getById({
+      yield* db.organizations.projects.environments.functions.getById({
         userId: user.id,
         organizationId,
         projectId,
         environmentId,
-        annotationId: id,
-      });
-    return toAnnotationResponse(result);
-  });
-
-export const updateAnnotationHandler = (
-  organizationId: string,
-  projectId: string,
-  environmentId: string,
-  id: string,
-  payload: UpdateAnnotationRequest,
-) =>
-  Effect.gen(function* () {
-    const user = yield* AuthenticatedUser;
-    const db = yield* Database;
-
-    const result =
-      yield* db.organizations.projects.environments.annotations.update({
-        userId: user.id,
-        organizationId,
-        projectId,
-        environmentId,
-        annotationId: id,
-        data: {
-          label: payload.label,
-          reasoning: payload.reasoning,
-          data: payload.data,
-        },
+        id,
       });
 
-    return toAnnotationResponse(result);
+    return toPublicFunction(result);
   });
 
-export const deleteAnnotationHandler = (
-  organizationId: string,
-  projectId: string,
-  environmentId: string,
-  id: string,
-) =>
-  Effect.gen(function* () {
-    const user = yield* AuthenticatedUser;
-    const db = yield* Database;
-
-    yield* db.organizations.projects.environments.annotations.delete({
-      userId: user.id,
-      organizationId,
-      projectId,
-      environmentId,
-      annotationId: id,
-    });
-  });
-
-export const listAnnotationsHandler = (
+export const listFunctionsHandler = (
   organizationId: string,
   projectId: string,
   environmentId: string,
   params: {
-    traceId?: string;
-    spanId?: string;
-    label?: string;
+    name?: string;
+    tags?: string;
     limit?: number;
     offset?: number;
   },
@@ -131,23 +128,25 @@ export const listAnnotationsHandler = (
     const user = yield* AuthenticatedUser;
     const db = yield* Database;
 
-    const result =
-      yield* db.organizations.projects.environments.annotations.list({
+    const tags = params.tags?.split(",").filter(Boolean);
+
+    const result = yield* db.organizations.projects.environments.functions.list(
+      {
         userId: user.id,
         organizationId,
         projectId,
         environmentId,
         filters: {
-          traceId: params.traceId,
-          spanId: params.spanId,
-          label: params.label,
+          name: params.name,
+          tags,
           limit: params.limit,
           offset: params.offset,
         },
-      });
+      },
+    );
 
     return {
-      annotations: result.annotations.map(toAnnotationResponse),
+      functions: result.functions.map(toPublicFunction),
       total: result.total,
     };
   });
@@ -171,10 +170,10 @@ export const requireApiKeyContext = Effect.gen(function* () {
   return maybeApiKey.value;
 });
 
-export const sdkCreateAnnotationHandler = (payload: CreateAnnotationRequest) =>
+export const sdkRegisterFunctionHandler = (payload: RegisterFunctionRequest) =>
   Effect.gen(function* () {
     const apiKeyInfo = yield* requireApiKeyContext;
-    return yield* createAnnotationHandler(
+    return yield* registerFunctionHandler(
       apiKeyInfo.organizationId,
       apiKeyInfo.projectId,
       apiKeyInfo.environmentId,
@@ -182,10 +181,21 @@ export const sdkCreateAnnotationHandler = (payload: CreateAnnotationRequest) =>
     );
   });
 
-export const sdkGetAnnotationHandler = (id: string) =>
+export const sdkGetFunctionByHashHandler = (hash: string) =>
   Effect.gen(function* () {
     const apiKeyInfo = yield* requireApiKeyContext;
-    return yield* getAnnotationHandler(
+    return yield* getFunctionByHashHandler(
+      apiKeyInfo.organizationId,
+      apiKeyInfo.projectId,
+      apiKeyInfo.environmentId,
+      hash,
+    );
+  });
+
+export const sdkGetFunctionHandler = (id: string) =>
+  Effect.gen(function* () {
+    const apiKeyInfo = yield* requireApiKeyContext;
+    return yield* getFunctionHandler(
       apiKeyInfo.organizationId,
       apiKeyInfo.projectId,
       apiKeyInfo.environmentId,
@@ -193,42 +203,15 @@ export const sdkGetAnnotationHandler = (id: string) =>
     );
   });
 
-export const sdkUpdateAnnotationHandler = (
-  id: string,
-  payload: UpdateAnnotationRequest,
-) =>
-  Effect.gen(function* () {
-    const apiKeyInfo = yield* requireApiKeyContext;
-    return yield* updateAnnotationHandler(
-      apiKeyInfo.organizationId,
-      apiKeyInfo.projectId,
-      apiKeyInfo.environmentId,
-      id,
-      payload,
-    );
-  });
-
-export const sdkDeleteAnnotationHandler = (id: string) =>
-  Effect.gen(function* () {
-    const apiKeyInfo = yield* requireApiKeyContext;
-    return yield* deleteAnnotationHandler(
-      apiKeyInfo.organizationId,
-      apiKeyInfo.projectId,
-      apiKeyInfo.environmentId,
-      id,
-    );
-  });
-
-export const sdkListAnnotationsHandler = (params: {
-  traceId?: string;
-  spanId?: string;
-  label?: string;
+export const sdkListFunctionsHandler = (params: {
+  name?: string;
+  tags?: string;
   limit?: number;
   offset?: number;
 }) =>
   Effect.gen(function* () {
     const apiKeyInfo = yield* requireApiKeyContext;
-    return yield* listAnnotationsHandler(
+    return yield* listFunctionsHandler(
       apiKeyInfo.organizationId,
       apiKeyInfo.projectId,
       apiKeyInfo.environmentId,

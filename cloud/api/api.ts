@@ -7,7 +7,7 @@ import { ProjectsApi } from "@/api/projects.schemas";
 import { EnvironmentsApi } from "@/api/environments.schemas";
 import { ApiKeysApi } from "@/api/api-keys.schemas";
 import { FunctionsApi, SdkFunctionsApi } from "@/api/functions.schemas";
-import { AnnotationsApi } from "@/api/annotations.schemas";
+import { AnnotationsApi, SdkAnnotationsApi } from "@/api/annotations.schemas";
 
 export * from "@/errors";
 export * from "@/api/health.schemas";
@@ -30,5 +30,6 @@ export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(EnvironmentsApi)
   .add(ApiKeysApi)
   .add(FunctionsApi)
+  .add(AnnotationsApi)
   .add(SdkFunctionsApi)
-  .add(AnnotationsApi) {}
+  .add(SdkAnnotationsApi) {}

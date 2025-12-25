@@ -2,7 +2,11 @@ import { describe as vitestDescribe, it as vitestIt, expect } from "vitest";
 import { Effect } from "effect";
 import { describe, expect as testApiExpect, TestApiContext } from "@/tests/api";
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
-import { toAnnotationResponse } from "@/api/annotations.handlers";
+import {
+  toAnnotationResponse,
+  requireApiKeyContext,
+} from "@/api/annotations.handlers";
+import { AuthenticatedUser, AuthenticatedApiKey } from "@/auth";
 
 // =============================================================================
 // API Route Tests (using TestApiContext with hierarchical paths)
@@ -350,6 +354,52 @@ vitestDescribe("Utility Functions", () => {
 
       expect(result.createdAt).toBeNull();
       expect(result.updatedAt).toBeNull();
+    });
+  });
+});
+
+// =============================================================================
+// SDK Handler Tests (testing auth context)
+// =============================================================================
+
+vitestDescribe("SDK Annotations Handlers", () => {
+  const mockOwner = {
+    id: "test-owner-id",
+    email: "test@example.com",
+    name: "Test Owner",
+    deletedAt: null,
+  };
+
+  vitestDescribe("requireApiKeyContext", () => {
+    vitestIt("fails without API key (UnauthorizedError)", async () => {
+      const result = await Effect.runPromise(
+        requireApiKeyContext.pipe(
+          Effect.provideService(AuthenticatedUser, mockOwner),
+          Effect.flip,
+        ),
+      );
+      expect(result._tag).toBe("UnauthorizedError");
+    });
+
+    vitestIt("succeeds with API key", async () => {
+      const apiKeyInfo = {
+        apiKeyId: "test-api-key-id",
+        organizationId: "test-org-id",
+        projectId: "test-project-id",
+        environmentId: "test-env-id",
+        ownerId: mockOwner.id,
+        ownerEmail: mockOwner.email,
+        ownerName: mockOwner.name,
+        ownerDeletedAt: mockOwner.deletedAt,
+      };
+
+      const result = await Effect.runPromise(
+        requireApiKeyContext.pipe(
+          Effect.provideService(AuthenticatedUser, mockOwner),
+          Effect.provideService(AuthenticatedApiKey, apiKeyInfo),
+        ),
+      );
+      expect(result).toEqual(apiKeyInfo);
     });
   });
 });

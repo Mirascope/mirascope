@@ -265,13 +265,14 @@ describe("Functions", () => {
             hash: "developer-hash-123",
           });
 
-          const result = yield* db.organizations.projects.environments.functions.create({
-            userId: projectDeveloper.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: input,
-          });
+          const result =
+            yield* db.organizations.projects.environments.functions.create({
+              userId: projectDeveloper.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: input,
+            });
 
           expect(result.isNew).toBe(true);
           expect(result.name).toBe("developer_func");

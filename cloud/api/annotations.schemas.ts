@@ -5,6 +5,7 @@ import {
   AlreadyExistsError,
   DatabaseError,
   PermissionDeniedError,
+  UnauthorizedError,
 } from "@/errors";
 
 const CreateAnnotationRequestSchema = Schema.Struct({
@@ -144,6 +145,77 @@ export class AnnotationsApi extends HttpApiGroup.make("annotations")
         }),
       )
       .addSuccess(ListAnnotationsResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      }),
+  ) {}
+
+/**
+ * SDK Annotations API - Flat paths for SDK usage with API key authentication
+ * organizationId, projectId, and environmentId are derived from the API key
+ */
+export class SdkAnnotationsApi extends HttpApiGroup.make("sdkAnnotations")
+  .add(
+    HttpApiEndpoint.post("create", "/annotations")
+      .setPayload(CreateAnnotationRequestSchema)
+      .addSuccess(AnnotationResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      }),
+  )
+  .add(
+    HttpApiEndpoint.get("get", "/annotations/:id")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(AnnotationResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      }),
+  )
+  .add(
+    HttpApiEndpoint.put("update", "/annotations/:id")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .setPayload(UpdateAnnotationRequestSchema)
+      .addSuccess(AnnotationResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      }),
+  )
+  .add(
+    HttpApiEndpoint.del("delete", "/annotations/:id")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(Schema.Void)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      }),
+  )
+  .add(
+    HttpApiEndpoint.get("list", "/annotations")
+      .setUrlParams(
+        Schema.Struct({
+          traceId: Schema.optional(Schema.String),
+          spanId: Schema.optional(Schema.String),
+          label: Schema.optional(Schema.String),
+          limit: Schema.optional(Schema.NumberFromString),
+          offset: Schema.optional(Schema.NumberFromString),
+        }),
+      )
+      .addSuccess(ListAnnotationsResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(DatabaseError, { status: DatabaseError.status })
       .addError(PermissionDeniedError, {
