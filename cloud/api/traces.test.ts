@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { describe, expect, TestApiContext, it } from "@/tests/api";
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
 import { AuthenticatedApiKey, AuthenticatedUser } from "@/auth";
-import { sdkCreateTraceHandler } from "@/api/sdk.handlers";
+import { sdkCreateTraceHandler } from "@/api/traces.handlers";
 import { Database } from "@/db";
 
 describe.sequential("Traces API", (it) => {

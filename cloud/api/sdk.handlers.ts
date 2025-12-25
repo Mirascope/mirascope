@@ -8,7 +8,13 @@ import { Effect, Option } from "effect";
 import { AuthenticatedUser, AuthenticatedApiKey } from "@/auth";
 import { UnauthorizedError } from "@/errors";
 import { createTraceHandler } from "@/api/traces.handlers";
-import type { CreateTraceRequest } from "@/api/sdk.schemas";
+import {
+  registerFunctionHandler,
+  getFunctionByHashHandler,
+  getFunctionHandler,
+  listFunctionsHandler,
+} from "@/api/functions.handlers";
+import type { CreateTraceRequest, RegisterFunctionRequest } from "@/api/sdk.schemas";
 
 export * from "@/api/sdk.schemas";
 
@@ -41,5 +47,70 @@ export const sdkCreateTraceHandler = (payload: CreateTraceRequest) =>
       apiKeyInfo.projectId,
       apiKeyInfo.environmentId,
       payload,
+    );
+  });
+
+/**
+ * SDK handler for registering functions.
+ * Derives org/project/env from API key context.
+ */
+export const sdkRegisterFunctionHandler = (payload: RegisterFunctionRequest) =>
+  Effect.gen(function* () {
+    const apiKeyInfo = yield* requireApiKeyContext;
+    return yield* registerFunctionHandler(
+      apiKeyInfo.organizationId,
+      apiKeyInfo.projectId,
+      apiKeyInfo.environmentId,
+      payload,
+    );
+  });
+
+/**
+ * SDK handler for getting function by hash.
+ * Derives org/project/env from API key context.
+ */
+export const sdkGetFunctionByHashHandler = (hash: string) =>
+  Effect.gen(function* () {
+    const apiKeyInfo = yield* requireApiKeyContext;
+    return yield* getFunctionByHashHandler(
+      apiKeyInfo.organizationId,
+      apiKeyInfo.projectId,
+      apiKeyInfo.environmentId,
+      hash,
+    );
+  });
+
+/**
+ * SDK handler for getting function by ID.
+ * Derives org/project/env from API key context.
+ */
+export const sdkGetFunctionHandler = (id: string) =>
+  Effect.gen(function* () {
+    const apiKeyInfo = yield* requireApiKeyContext;
+    return yield* getFunctionHandler(
+      apiKeyInfo.organizationId,
+      apiKeyInfo.projectId,
+      apiKeyInfo.environmentId,
+      id,
+    );
+  });
+
+/**
+ * SDK handler for listing functions.
+ * Derives org/project/env from API key context.
+ */
+export const sdkListFunctionsHandler = (params: {
+  name?: string;
+  tags?: string;
+  limit?: number;
+  offset?: number;
+}) =>
+  Effect.gen(function* () {
+    const apiKeyInfo = yield* requireApiKeyContext;
+    return yield* listFunctionsHandler(
+      apiKeyInfo.organizationId,
+      apiKeyInfo.projectId,
+      apiKeyInfo.environmentId,
+      params,
     );
   });

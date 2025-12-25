@@ -1,8 +1,7 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
 import { checkHealthHandler } from "@/api/health.handlers";
-import { createTraceHandler } from "@/api/traces.handlers";
-import { sdkCreateTraceHandler } from "@/api/sdk.handlers";
+import { createTraceHandler, sdkCreateTraceHandler } from "@/api/traces.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
   listOrganizationsHandler,
@@ -31,6 +30,16 @@ import {
   getApiKeyHandler,
   deleteApiKeyHandler,
 } from "@/api/api-keys.handlers";
+import {
+  registerFunctionHandler,
+  getFunctionHandler,
+  getFunctionByHashHandler,
+  listFunctionsHandler,
+  sdkRegisterFunctionHandler,
+  sdkGetFunctionHandler,
+  sdkGetFunctionByHashHandler,
+  sdkListFunctionsHandler,
+} from "@/api/functions.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -175,6 +184,59 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+<<<<<<< HEAD
+=======
+const FunctionsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "functions",
+  (handlers) =>
+    handlers
+      .handle("register", ({ path, payload }) =>
+        registerFunctionHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
+          payload,
+        ),
+      )
+      .handle("get", ({ path }) =>
+        getFunctionHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
+          path.id,
+        ),
+      )
+      .handle("getByHash", ({ path }) =>
+        getFunctionByHashHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
+          path.hash,
+        ),
+      )
+      .handle("list", ({ path, urlParams }) =>
+        listFunctionsHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
+          urlParams,
+        ),
+      ),
+);
+
+const SdkFunctionsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "sdkFunctions",
+  (handlers) =>
+    handlers
+      .handle("register", ({ payload }) => sdkRegisterFunctionHandler(payload))
+      .handle("get", ({ path }) => sdkGetFunctionHandler(path.id))
+      .handle("getByHash", ({ path }) => sdkGetFunctionByHashHandler(path.hash))
+      .handle("list", ({ urlParams }) => sdkListFunctionsHandler(urlParams)),
+);
+
+>>>>>>> 0edae451b (feat(api): add SDK functions flat endpoint with tests)
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -184,4 +246,9 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ProjectsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),
+<<<<<<< HEAD
+=======
+  Layer.provide(FunctionsHandlersLive),
+  Layer.provide(SdkFunctionsHandlersLive),
+>>>>>>> 0edae451b (feat(api): add SDK functions flat endpoint with tests)
 );
