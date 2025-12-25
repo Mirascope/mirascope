@@ -79,7 +79,11 @@ export const handleRequest = (
         }
 
         const response = await webHandler.handler(modifiedRequest);
-        const matched = response.status !== 404;
+        const contentType = response.headers.get("content-type") || "";
+        const isJsonResponse = contentType
+          .toLowerCase()
+          .includes("application/json");
+        const matched = response.status !== 404 || isJsonResponse;
         return { matched, response };
       },
       catch: (error) =>
