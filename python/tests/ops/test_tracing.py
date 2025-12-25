@@ -1312,7 +1312,7 @@ def test_sync_trace_annotate(
         trace = process.wrapped(5)
         trace.annotate(label="pass", reasoning="correct output", data={"score": 100})
 
-        mock_client.annotations.create.assert_called_once_with(
+        mock_client.sdk_annotations.sdk_annotations_create.assert_called_once_with(
             span_id=trace.span_id,
             trace_id=trace.trace_id,
             label="pass",
@@ -1327,7 +1327,7 @@ async def test_async_trace_annotate(
 ) -> None:
     """Test AsyncTrace.annotate sends annotation to API."""
     mock_client = MagicMock()
-    mock_client.annotations.create = AsyncMock()
+    mock_client.sdk_annotations.sdk_annotations_create = AsyncMock()
 
     with patch(
         "mirascope.ops._internal.traced_functions.get_async_client",
@@ -1343,7 +1343,7 @@ async def test_async_trace_annotate(
             label="fail", reasoning="wrong output", data={"expected": 10}
         )
 
-        mock_client.annotations.create.assert_called_once_with(
+        mock_client.sdk_annotations.sdk_annotations_create.assert_called_once_with(
             span_id=trace.span_id,
             trace_id=trace.trace_id,
             label="fail",

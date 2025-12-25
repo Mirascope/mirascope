@@ -15,17 +15,17 @@ from opentelemetry.sdk.trace import ReadableSpan
 from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
 from opentelemetry.util.types import AttributeValue
 
-from ....api._generated.traces.types import (
-    TracesCreateRequestResourceSpansItem,
-    TracesCreateRequestResourceSpansItemResource,
-    TracesCreateRequestResourceSpansItemResourceAttributesItem,
-    TracesCreateRequestResourceSpansItemResourceAttributesItemValue,
-    TracesCreateRequestResourceSpansItemScopeSpansItem,
-    TracesCreateRequestResourceSpansItemScopeSpansItemScope,
-    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
-    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
-    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue,
-    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
+from ....api._generated.sdk_traces.types import (
+    SdkTracesCreateRequestResourceSpansItem,
+    SdkTracesCreateRequestResourceSpansItemResource,
+    SdkTracesCreateRequestResourceSpansItemResourceAttributesItem,
+    SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue,
+    SdkTracesCreateRequestResourceSpansItemScopeSpansItem,
+    SdkTracesCreateRequestResourceSpansItemScopeSpansItemScope,
+    SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
+    SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
+    SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue,
+    SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
 )
 from ....api.client import Mirascope
 
@@ -49,9 +49,6 @@ class MirascopeOTLPExporter(SpanExporter):
     def __init__(
         self,
         client: Mirascope,
-        organization_id: str,
-        project_id: str,
-        environment_id: str,
         timeout: float = 30.0,
         max_retry_attempts: int = 3,
     ) -> None:
@@ -62,16 +59,10 @@ class MirascopeOTLPExporter(SpanExporter):
                 In the future, this will accept the enhanced client from
                 mirascope.api.client that provides error handling and caching
                 capabilities.
-            organization_id: The organization ID for API requests.
-            project_id: The project ID for API requests.
-            environment_id: The environment ID for API requests.
             timeout: Request timeout in seconds for telemetry operations.
             max_retry_attempts: Maximum number of retry attempts for failed exports.
         """
         self.client = client
-        self.organization_id = organization_id
-        self.project_id = project_id
-        self.environment_id = environment_id
         self.timeout = timeout
         self.max_retry_attempts = max_retry_attempts
         self._shutdown = False
@@ -103,10 +94,7 @@ class MirascopeOTLPExporter(SpanExporter):
 
             try:
                 otlp_data = self._convert_spans_to_otlp(spans)
-                response = self.client.traces.create(
-                    self.organization_id,
-                    self.project_id,
-                    self.environment_id,
+                response = self.client.sdk_traces.sdk_traces_create(
                     resource_spans=otlp_data,
                 )
 
@@ -137,7 +125,7 @@ class MirascopeOTLPExporter(SpanExporter):
 
     def _convert_spans_to_otlp(
         self, spans: Sequence[ReadableSpan]
-    ) -> list[TracesCreateRequestResourceSpansItem]:
+    ) -> list[SdkTracesCreateRequestResourceSpansItem]:
         """Convert OpenTelemetry spans to OTLP format.
 
         Args:
@@ -164,12 +152,12 @@ class MirascopeOTLPExporter(SpanExporter):
                     for key, value in span.resource.attributes.items():
                         attr_value = self._convert_resource_attribute_value(value)
                         resource_attrs.append(
-                            TracesCreateRequestResourceSpansItemResourceAttributesItem(
+                            SdkTracesCreateRequestResourceSpansItemResourceAttributesItem(
                                 key=key,
                                 value=attr_value,
                             )
                         )
-                    resource = TracesCreateRequestResourceSpansItemResource(
+                    resource = SdkTracesCreateRequestResourceSpansItemResource(
                         attributes=resource_attrs
                     )
 
@@ -187,7 +175,7 @@ class MirascopeOTLPExporter(SpanExporter):
             if scope_key not in resource_spans_map[resource_key]["scope_spans"]:
                 scope = None
                 if span.instrumentation_scope:
-                    scope = TracesCreateRequestResourceSpansItemScopeSpansItemScope(
+                    scope = SdkTracesCreateRequestResourceSpansItemScopeSpansItemScope(
                         name=span.instrumentation_scope.name,
                         version=span.instrumentation_scope.version,
                     )
@@ -206,14 +194,14 @@ class MirascopeOTLPExporter(SpanExporter):
             scope_spans = []
             for scope_data in resource_data["scope_spans"].values():
                 scope_spans.append(
-                    TracesCreateRequestResourceSpansItemScopeSpansItem(
+                    SdkTracesCreateRequestResourceSpansItemScopeSpansItem(
                         scope=scope_data["scope"],
                         spans=scope_data["spans"],
                     )
                 )
 
             result.append(
-                TracesCreateRequestResourceSpansItem(
+                SdkTracesCreateRequestResourceSpansItem(
                     resource=resource_data["resource"],
                     scope_spans=scope_spans,
                 )
@@ -223,7 +211,7 @@ class MirascopeOTLPExporter(SpanExporter):
 
     def _convert_span(
         self, span: ReadableSpan
-    ) -> TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem:
+    ) -> SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItem:
         """Convert a single ReadableSpan to OTLP format."""
         context = span.get_span_context()
         if not context or not context.is_valid:
@@ -234,7 +222,7 @@ class MirascopeOTLPExporter(SpanExporter):
             for key, value in span.attributes.items():
                 attr_value = self._convert_attribute_value(value)
                 attributes.append(
-                    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem(
+                    SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem(
                         key=key,
                         value=attr_value,
                     )
@@ -242,15 +230,17 @@ class MirascopeOTLPExporter(SpanExporter):
 
         status = None
         if span.status:
-            status = TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus(
-                code=span.status.status_code.value,
-                message=span.status.description or "",
+            status = (
+                SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus(
+                    code=span.status.status_code.value,
+                    message=span.status.description or "",
+                )
             )
 
         trace_id = format(context.trace_id, "032x")
         span_id = format(context.span_id, "016x")
 
-        return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
+        return SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
             trace_id=trace_id,
             span_id=span_id,
             parent_span_id=(
@@ -268,7 +258,7 @@ class MirascopeOTLPExporter(SpanExporter):
 
     def _convert_attribute_value(
         self, value: AttributeValue
-    ) -> TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue:
+    ) -> SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue:
         """Convert OpenTelemetry AttributeValue to Mirascope API's KeyValueValue.
 
         This conversion is necessary because the Fern-generated API client
@@ -282,29 +272,29 @@ class MirascopeOTLPExporter(SpanExporter):
         """
         match value:
             case str():
-                return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
+                return SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
                     string_value=value
                 )
             case bool():
-                return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
+                return SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
                     bool_value=value
                 )
             case int():
-                return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
+                return SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
                     int_value=str(value)
                 )
             case float():
-                return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
+                return SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
                     double_value=value
                 )
             case _:
-                return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
+                return SdkTracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
                     string_value=str(list(value))
                 )
 
     def _convert_resource_attribute_value(
         self, value: AttributeValue
-    ) -> TracesCreateRequestResourceSpansItemResourceAttributesItemValue:
+    ) -> SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue:
         """Convert OpenTelemetry AttributeValue to Mirascope API's resource KeyValueValue.
 
         This conversion is necessary because the Fern-generated API client
@@ -318,24 +308,34 @@ class MirascopeOTLPExporter(SpanExporter):
         """
         match value:
             case str():
-                return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
-                    string_value=value
+                return (
+                    SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue(
+                        string_value=value
+                    )
                 )
             case bool():
-                return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
-                    bool_value=value
+                return (
+                    SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue(
+                        bool_value=value
+                    )
                 )
             case int():
-                return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
-                    int_value=str(value)
+                return (
+                    SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue(
+                        int_value=str(value)
+                    )
                 )
             case float():
-                return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
-                    double_value=value
+                return (
+                    SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue(
+                        double_value=value
+                    )
                 )
             case _:
-                return TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
-                    string_value=str(list(value))
+                return (
+                    SdkTracesCreateRequestResourceSpansItemResourceAttributesItemValue(
+                        string_value=str(list(value))
+                    )
                 )
 
     def shutdown(self) -> None:

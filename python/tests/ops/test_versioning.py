@@ -1631,8 +1631,8 @@ def test_version_continues_when_api_fails(
     mock_client = patch(
         "mirascope.ops._internal.versioned_functions.get_sync_client"
     ).start()
-    mock_client.return_value.functions.getbyhash.side_effect = Exception(
-        "Connection error"
+    mock_client.return_value.sdk_functions.sdk_functions_get_by_hash.side_effect = (
+        Exception("Connection error")
     )
 
     try:
@@ -1721,7 +1721,7 @@ async def test_async_version_continues_when_api_fails(
     mock_client = patch(
         "mirascope.ops._internal.versioned_functions.get_async_client"
     ).start()
-    mock_client.return_value.functions.getbyhash = AsyncMock(
+    mock_client.return_value.sdk_functions.sdk_functions_get_by_hash = AsyncMock(
         side_effect=Exception("Connection error")
     )
 

@@ -10,8 +10,8 @@ from functools import cached_property, lru_cache
 from typing import Any, NewType, cast
 
 from ...api._generated.errors.not_found_error import NotFoundError
-from ...api._generated.functions.types.functions_register_request_dependencies_value import (
-    FunctionsRegisterRequestDependenciesValue,
+from ...api._generated.sdk_functions.types.sdk_functions_register_request_dependencies_value import (
+    SdkFunctionsRegisterRequestDependenciesValue,
 )
 from ...api.client import get_async_client, get_sync_client
 from ..exceptions import ClosureComputationError
@@ -254,19 +254,19 @@ class VersionedFunction(_BaseVersionedFunction[P, R], BaseSyncTracedFunction[P, 
             return None
 
         try:
-            existing = client.functions.getbyhash(self.closure.hash)
+            existing = client.sdk_functions.sdk_functions_get_by_hash(self.closure.hash)
             return existing.id
         except NotFoundError:
             dependencies: dict[
-                str, FunctionsRegisterRequestDependenciesValue | None
+                str, SdkFunctionsRegisterRequestDependenciesValue | None
             ] = {
-                name: FunctionsRegisterRequestDependenciesValue(
+                name: SdkFunctionsRegisterRequestDependenciesValue(
                     version=dep_info["version"],
                     extras=dep_info.get("extras"),
                 )
                 for name, dep_info in self.closure.dependencies.items()
             }
-            response = client.functions.register(
+            response = client.sdk_functions.sdk_functions_register(
                 code=self.closure.code,
                 hash=self.closure.hash,
                 signature=self.closure.signature,
@@ -330,19 +330,21 @@ class AsyncVersionedFunction(
             return None
 
         try:
-            existing = await client.functions.getbyhash(self.closure.hash)
+            existing = await client.sdk_functions.sdk_functions_get_by_hash(
+                self.closure.hash
+            )
             return existing.id
         except NotFoundError:
             dependencies: dict[
-                str, FunctionsRegisterRequestDependenciesValue | None
+                str, SdkFunctionsRegisterRequestDependenciesValue | None
             ] = {
-                name: FunctionsRegisterRequestDependenciesValue(
+                name: SdkFunctionsRegisterRequestDependenciesValue(
                     version=dep_info["version"],
                     extras=dep_info.get("extras"),
                 )
                 for name, dep_info in self.closure.dependencies.items()
             }
-            response = await client.functions.register(
+            response = await client.sdk_functions.sdk_functions_register(
                 code=self.closure.code,
                 hash=self.closure.hash,
                 signature=self.closure.signature,

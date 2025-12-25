@@ -95,7 +95,7 @@ class Trace(_BaseTrace[R]):
         trace_id = self.span.trace_id
         if span_id is None or trace_id is None:
             return
-        get_sync_client().annotations.create(
+        get_sync_client().sdk_annotations.sdk_annotations_create(
             span_id=span_id,
             trace_id=trace_id,
             label=label,
@@ -132,7 +132,7 @@ class AsyncTrace(_BaseTrace[R]):
         trace_id = self.span.trace_id
         if span_id is None or trace_id is None:
             return
-        await get_async_client().annotations.create(
+        await get_async_client().sdk_annotations.sdk_annotations_create(
             span_id=span_id,
             trace_id=trace_id,
             label=label,
