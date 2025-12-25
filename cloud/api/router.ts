@@ -2,6 +2,7 @@ import { HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
 import { checkHealthHandler } from "@/api/health.handlers";
 import { createTraceHandler } from "@/api/traces.handlers";
+import { sdkCreateTraceHandler } from "@/api/sdk.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
   listOrganizationsHandler,
@@ -52,6 +53,13 @@ const TracesHandlersLive = HttpApiBuilder.group(
         payload,
       ),
     ),
+);
+
+const SdkTracesHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "sdkTraces",
+  (handlers) =>
+    handlers.handle("create", ({ payload }) => sdkCreateTraceHandler(payload)),
 );
 
 const DocsHandlersLive = HttpApiBuilder.group(
@@ -170,6 +178,7 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
+  Layer.provide(SdkTracesHandlersLive),
   Layer.provide(DocsHandlersLive),
   Layer.provide(OrganizationsHandlersLive),
   Layer.provide(ProjectsHandlersLive),
