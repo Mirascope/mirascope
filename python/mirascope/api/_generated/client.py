@@ -13,6 +13,9 @@ from .functions.client import AsyncFunctionsClient, FunctionsClient
 from .health.client import AsyncHealthClient, HealthClient
 from .organizations.client import AsyncOrganizationsClient, OrganizationsClient
 from .projects.client import AsyncProjectsClient, ProjectsClient
+from .sdk_annotations.client import AsyncSdkAnnotationsClient, SdkAnnotationsClient
+from .sdk_functions.client import AsyncSdkFunctionsClient, SdkFunctionsClient
+from .sdk_traces.client import AsyncSdkTracesClient, SdkTracesClient
 from .traces.client import AsyncTracesClient, TracesClient
 
 
@@ -86,6 +89,9 @@ class Mirascope:
         self.api_keys = ApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
+        self.sdk_traces = SdkTracesClient(client_wrapper=self._client_wrapper)
+        self.sdk_functions = SdkFunctionsClient(client_wrapper=self._client_wrapper)
+        self.sdk_annotations = SdkAnnotationsClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -160,6 +166,13 @@ class AsyncMirascope:
         self.api_keys = AsyncApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
+        self.sdk_traces = AsyncSdkTracesClient(client_wrapper=self._client_wrapper)
+        self.sdk_functions = AsyncSdkFunctionsClient(
+            client_wrapper=self._client_wrapper
+        )
+        self.sdk_annotations = AsyncSdkAnnotationsClient(
+            client_wrapper=self._client_wrapper
+        )
 
 
 def _get_base_url(

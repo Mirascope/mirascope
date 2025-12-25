@@ -18,6 +18,8 @@ from .permission_denied_error_tag import PermissionDeniedErrorTag
 from .property_key import PropertyKey
 from .property_key_key import PropertyKeyKey
 from .property_key_key_tag import PropertyKeyKeyTag
+from .unauthorized_error_body import UnauthorizedErrorBody
+from .unauthorized_error_tag import UnauthorizedErrorTag
 
 __all__ = [
     "AlreadyExistsError",
@@ -36,4 +38,6 @@ __all__ = [
     "PropertyKey",
     "PropertyKeyKey",
     "PropertyKeyKeyTag",
+    "UnauthorizedErrorBody",
+    "UnauthorizedErrorTag",
 ]
