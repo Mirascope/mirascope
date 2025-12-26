@@ -163,17 +163,17 @@ export class Database extends Context.Tag("Database")<
    * Creates a fully configured layer with database and Stripe connections.
    *
    * This is the standard way to use Database. Provide database and Stripe
-   * configurations and get back a layer that provides Database with all
-   * its dependencies (DrizzleORM and Stripe).
+   * configurations and get back a layer that provides both Database and Stripe
+   * services with no dependencies.
    *
    * @param config - Database and Stripe configuration
-   * @returns A Layer providing Database with no dependencies
+   * @returns A Layer providing both Database and Stripe with no dependencies
    *
    * @example
    * ```ts
    * const DbLive = Database.Live({
    *   database: { connectionString: process.env.DATABASE_URL },
-   *   stripe: { apiKey: process.env.STRIPE_SECRET_KEY },
+   *   stripe: { apiKey: process.env.STRIPE_SECRET_KEY, routerPriceId: "price_..." },
    * });
    *
    * program.pipe(Effect.provide(DbLive));
@@ -182,9 +182,16 @@ export class Database extends Context.Tag("Database")<
   static Live = (config: {
     database: DrizzleORMConfig;
     stripe: StripeConfig;
-  }) =>
-    Database.Default.pipe(
-      Layer.provide(DrizzleORM.layer(config.database)),
-      Layer.provide(Stripe.layer(config.stripe)),
+  }) => {
+    const stripeLayer = Stripe.layer(config.stripe);
+    const drizzleLayer = DrizzleORM.layer(config.database);
+
+    return Layer.mergeAll(
+      Database.Default.pipe(
+        Layer.provide(drizzleLayer),
+        Layer.provide(stripeLayer),
+      ),
+      stripeLayer,
     );
+  };
 }

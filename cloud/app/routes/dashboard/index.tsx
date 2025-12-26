@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/app/components/dashboard-layout";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useEnvironment } from "@/app/contexts/environment";
+import { useOrganizationCredits } from "@/app/api/organizations";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardPage,
@@ -13,6 +14,10 @@ function DashboardContent() {
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { selectedEnvironment } = useEnvironment();
+
+  const { data: credits, isLoading: creditsLoading } = useOrganizationCredits(
+    selectedOrganization?.id,
+  );
 
   return (
     <div className="p-6">
@@ -26,6 +31,22 @@ function DashboardContent() {
             {selectedOrganization?.name || "No organization selected"}
           </p>
         </div>
+        {selectedOrganization && (
+          <div className="p-4 rounded-lg border border-border bg-card">
+            <h2 className="text-sm font-medium text-muted-foreground mb-1">
+              Router Credits
+            </h2>
+            <p className="text-lg font-semibold">
+              {creditsLoading ? (
+                <span className="text-muted-foreground">Loading...</span>
+              ) : credits ? (
+                `$${credits.balance.toFixed(2)}`
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )}
+            </p>
+          </div>
+        )}
         <div className="p-4 rounded-lg border border-border bg-card">
           <h2 className="text-sm font-medium text-muted-foreground mb-1">
             Project

@@ -120,3 +120,44 @@ export function deleteCustomer(
     yield* stripe.customers.del(customerId);
   });
 }
+
+/**
+ * Gets the router credit balance for a Stripe customer from billing credit grants.
+ *
+ * Fetches all credit grants for the customer and filters for those that are
+ * applicable to the router price (metered usage-based billing). Only counts
+ * grants that either have no scope restrictions or explicitly include the
+ * router price ID in their applicability scope.
+ *
+ * @param customerId - The Stripe customer ID
+ * @returns The router credit balance in dollars (e.g., 10.00 for $10 credit)
+ * @throws StripeError - If API call fails
+ *
+ * @example
+ * ```ts
+ * const balance = yield* getCustomerBalance("cus_123");
+ * console.log(balance); // 10.00 (if customer has $10 in router credit grants)
+ * ```
+ */
+export function getCustomerBalance(
+  customerId: string,
+): Effect.Effect<number, StripeError, Stripe> {
+  return Effect.gen(function* () {
+    const stripe = yield* Stripe;
+    const credit_grants = yield* stripe.billing.creditGrants.list({
+      customer: customerId,
+    });
+
+    return credit_grants.data
+      .filter(
+        (grant) =>
+          grant.amount.monetary &&
+          grant.applicability_config.scope?.prices?.some(
+            (price) => price.id === stripe.config.routerPriceId,
+          ),
+      )
+      .map((grant) => grant.amount.monetary!)
+      .filter((monetary) => monetary.currency === "usd")
+      .reduce((total, monetary) => total + monetary.value / 100, 0);
+  });
+}

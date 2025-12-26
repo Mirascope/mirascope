@@ -65,3 +65,19 @@ export const useDeleteOrganization = () => {
     },
   });
 };
+
+export const useOrganizationCredits = (organizationId: string | undefined) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["organizations", organizationId, "credits"],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.credits({
+            path: { id: organizationId! },
+          });
+        }),
+    }),
+    enabled: !!organizationId,
+  });
+};
