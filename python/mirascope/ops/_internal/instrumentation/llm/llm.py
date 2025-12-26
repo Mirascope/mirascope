@@ -475,6 +475,7 @@ def _instrumented_model_call(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> Response: ...
 
 
@@ -485,6 +486,7 @@ def _instrumented_model_call(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> Response[FormattableT]: ...
 
 
@@ -495,6 +497,7 @@ def _instrumented_model_call(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> Response | Response[FormattableT]: ...
 
 
@@ -505,6 +508,7 @@ def _instrumented_model_call(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> Response | Response[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.call`."""
     with _start_model_span(
@@ -518,6 +522,7 @@ def _instrumented_model_call(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         if span_ctx.span is not None:
             _attach_response(
@@ -554,6 +559,7 @@ async def _instrumented_model_call_async(
     messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncResponse: ...
 
 
@@ -564,6 +570,7 @@ async def _instrumented_model_call_async(
     messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncResponse[FormattableT]: ...
 
 
@@ -574,6 +581,7 @@ async def _instrumented_model_call_async(
     messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
 
 
@@ -584,6 +592,7 @@ async def _instrumented_model_call_async(
     messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncResponse | AsyncResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.call_async`."""
     with _start_model_span(
@@ -598,6 +607,7 @@ async def _instrumented_model_call_async(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         if span_ctx.span is not None:
             _attach_response(
@@ -635,6 +645,7 @@ def _instrumented_model_context_call(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextResponse[DepsT, None]: ...
 
 
@@ -646,6 +657,7 @@ def _instrumented_model_context_call(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextResponse[DepsT, FormattableT]: ...
 
 
@@ -657,6 +669,7 @@ def _instrumented_model_context_call(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
 
 
@@ -668,6 +681,7 @@ def _instrumented_model_context_call(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_call`."""
     with _start_model_span(
@@ -683,6 +697,7 @@ def _instrumented_model_context_call(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         if span_ctx.span is not None:
             _attach_response(
@@ -722,6 +737,7 @@ async def _instrumented_model_context_call_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncContextResponse[DepsT, None]: ...
 
 
@@ -735,6 +751,7 @@ async def _instrumented_model_context_call_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
 
@@ -748,6 +765,7 @@ async def _instrumented_model_context_call_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]: ...
 
 
@@ -761,6 +779,7 @@ async def _instrumented_model_context_call_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_call_async`."""
     with _start_model_span(
@@ -776,6 +795,7 @@ async def _instrumented_model_context_call_async(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         if span_ctx.span is not None:
             _attach_response(
@@ -812,6 +832,7 @@ def _instrumented_model_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> StreamResponse: ...
 
 
@@ -822,6 +843,7 @@ def _instrumented_model_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> StreamResponse[FormattableT]: ...
 
 
@@ -832,6 +854,7 @@ def _instrumented_model_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> StreamResponse | StreamResponse[FormattableT]: ...
 
 
@@ -842,6 +865,7 @@ def _instrumented_model_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> StreamResponse | StreamResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.stream`."""
     span_cm = _start_model_span(
@@ -858,6 +882,7 @@ def _instrumented_model_stream(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         span_cm.__exit__(None, None, None)
         return response
@@ -869,6 +894,7 @@ def _instrumented_model_stream(
                 messages=messages,
                 tools=tools,
                 format=format,
+                call_args=call_args,
             )
     except Exception as exc:
         span_cm.__exit__(type(exc), exc, exc.__traceback__)
@@ -963,6 +989,7 @@ def _instrumented_model_context_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextStreamResponse[DepsT, None]: ...
 
 
@@ -974,6 +1001,7 @@ def _instrumented_model_context_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
 
@@ -985,6 +1013,7 @@ def _instrumented_model_context_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> (
     ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
 ): ...
@@ -998,6 +1027,7 @@ def _instrumented_model_context_stream(
     messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_stream`."""
     span_cm = _start_model_span(
@@ -1015,6 +1045,7 @@ def _instrumented_model_context_stream(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         span_cm.__exit__(None, None, None)
         return response
@@ -1027,6 +1058,7 @@ def _instrumented_model_context_stream(
                 messages=messages,
                 tools=tools,
                 format=format,
+                call_args=call_args,
             )
     except Exception as exc:
         span_cm.__exit__(type(exc), exc, exc.__traceback__)
@@ -1122,6 +1154,7 @@ async def _instrumented_model_context_stream_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncContextStreamResponse[DepsT, None]: ...
 
 
@@ -1135,6 +1168,7 @@ async def _instrumented_model_context_stream_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: type[FormattableT] | Format[FormattableT],
+    call_args: dict[str, Jsonable] | None = None,
 ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
 
@@ -1148,6 +1182,7 @@ async def _instrumented_model_context_stream_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> (
     AsyncContextStreamResponse[DepsT, None]
     | AsyncContextStreamResponse[DepsT, FormattableT]
@@ -1164,6 +1199,7 @@ async def _instrumented_model_context_stream_async(
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: FormatParam = None,
+    call_args: dict[str, Jsonable] | None = None,
 ) -> (
     AsyncContextStreamResponse[DepsT, None]
     | AsyncContextStreamResponse[DepsT, FormattableT]
@@ -1184,6 +1220,7 @@ async def _instrumented_model_context_stream_async(
             messages=messages,
             tools=tools,
             format=format,
+            call_args=call_args,
         )
         span_cm.__exit__(None, None, None)
         return response
@@ -1196,6 +1233,7 @@ async def _instrumented_model_context_stream_async(
                 messages=messages,
                 tools=tools,
                 format=format,
+                call_args=call_args,
             )
     except Exception as exc:
         span_cm.__exit__(type(exc), exc, exc.__traceback__)

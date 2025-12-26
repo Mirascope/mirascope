@@ -24,6 +24,7 @@ sync_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=14, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=50, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=64)",
                 "total_tokens": 64,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -99,6 +100,7 @@ async_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=14, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=50, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=64)",
                 "total_tokens": 64,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(

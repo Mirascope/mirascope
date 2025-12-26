@@ -24,6 +24,7 @@ sync_snapshot = snapshot(
                 "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=15, output_tokens=50, server_tool_use=None, service_tier='standard')",
                 "total_tokens": 65,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -92,6 +93,7 @@ async_snapshot = snapshot(
                 "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=15, output_tokens=50, server_tool_use=None, service_tier='standard')",
                 "total_tokens": 65,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(

@@ -31,6 +31,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
 """,
                 "total_tokens": 154,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(

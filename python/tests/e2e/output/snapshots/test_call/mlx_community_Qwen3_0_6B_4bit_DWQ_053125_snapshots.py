@@ -23,6 +23,7 @@ sync_snapshot = snapshot(
                 "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=20, generation_tokens=711, finish_reason='stop')",
                 "total_tokens": 731,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
@@ -82,6 +83,7 @@ async_snapshot = snapshot(
                 "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=20, generation_tokens=711, finish_reason='stop')",
                 "total_tokens": 731,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(

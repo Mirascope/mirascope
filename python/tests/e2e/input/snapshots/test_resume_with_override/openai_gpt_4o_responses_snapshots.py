@@ -23,6 +23,7 @@ test_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=36, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=14, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=50)",
                 "total_tokens": 50,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="Who created you?")]),
                 AssistantMessage(

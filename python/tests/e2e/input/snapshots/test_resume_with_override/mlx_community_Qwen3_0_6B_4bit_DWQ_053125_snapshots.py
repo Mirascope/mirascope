@@ -23,6 +23,7 @@ test_snapshot = snapshot(
                 "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=39, generation_tokens=155, finish_reason='stop')",
                 "total_tokens": 194,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="Who created you?")]),
                 AssistantMessage(

@@ -23,6 +23,7 @@ test_snapshot = snapshot(
                 "raw": "MLXCassetteResponse(text='', token=151645, prompt_tokens=8, generation_tokens=351, finish_reason='stop')",
                 "total_tokens": 359,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="")]),
                 AssistantMessage(

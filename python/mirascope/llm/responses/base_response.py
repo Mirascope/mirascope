@@ -58,6 +58,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         self.finish_reason = finish_reason
         self.usage = usage
         self.format = format
+        self.from_call_args = None
 
         # Process content in the assistant message, organizing it by type and
         # transforming ToolCalls to the special format tool into text (as calls to the

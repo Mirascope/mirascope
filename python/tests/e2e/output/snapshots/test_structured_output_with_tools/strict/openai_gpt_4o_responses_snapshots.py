@@ -25,6 +25,7 @@ sync_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=197, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=66, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=263)",
                 "total_tokens": 263,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(
                     content=[
@@ -170,6 +171,7 @@ async_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=195, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=33, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=228)",
                 "total_tokens": 228,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(
                     content=[

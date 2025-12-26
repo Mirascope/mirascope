@@ -29,6 +29,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
 """,
                 "total_tokens": 232,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(
                     content=Text(

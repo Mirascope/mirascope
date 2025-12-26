@@ -38,6 +38,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
 """,
                     "total_tokens": 44,
                 },
+                "from_call_args": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(

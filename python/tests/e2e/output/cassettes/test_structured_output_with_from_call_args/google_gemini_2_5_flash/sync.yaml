@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Summarize the book The Name of the Wind
+      by Patrick Rothfuss."}], "role": "user"}], "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"description": "A book with title, author,
+      and summary.", "properties": {"summary": {"title": "Summary", "type": "STRING"}},
+      "required": ["summary"], "title": "Book", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '384'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VUTW/bRhC961cMeGkLyILrIjWSqxMgQdLGdZW0RV0UQ+6I3Gi5S8wOaROG/3tn
+        lpItozoIy/l87+3MPqwAqgaj8w6FcvUG/lYLwEP5N1+KQlHUcTSpcUCW59jl93By1hChe0uqHm6r
+        PPY98nxbvbmtth3Br9gTpB2Inv/w0a2hnuEahX2zh5sk3W7MeQ0+l4id5yxQp7QHH8HyP/rY7n0I
+        xHDVcYq+CQSZ2FPewAcBoRCW3CyJZ2v1cdKytAaEQC1Fp3C0cDuy2TJoKFOTxih61r4DaktJGt4c
+        GzBEhe3gLU0Y4VNqOiIFuY/pLlqJJyS8KSAjMqP4iWCMuxScAeI0tt0By3cZLPMusdMyjgR9UF6l
+        fdP54LqUnBXWbomHDqM2f+eoR7gZO/heGCcqGQPxLnFP/MO6ZIs3eeNBACZSUirBFrkmjMo3uhLH
+        Wov3WKt439LIkWajbFlfouLm7GVew11HTCZQJtrnwjeQa6mUYZootrSB96TCIscMPba+WZu4nfbt
+        Z+l8gwEaJhSVOy/9I06+tYGDJvVDoHvIqfEaZ84hBS8lK+hnbnAoaSEoGF+uGlklUurKuwAWHqWD
+        mtToiuFK9XLsja591qTRxjgPKWZvlC3VVNhh78Ost9GP7I6Xt8yNehF0KDsQgyDLKKFTzlIm58CV
+        U4+xoYVZP2chVuHqUS/RQBqAZeqeJ7FcrKrKyWZy0mFGf7galZRNNc3Uea9J7oji5rZ6rE4W7PHp
+        /M/6eS05BbKd65OjcAx/PAZUOx997m4Ic4oW9vv283X15FXp6F7N56tjg1K6GjO29IvOpz4Q+PQM
+        VIOyHmSb9hSvbHHU8+OrpdjJe/LSf/n6ECBJMLzwXVz+tP5f4fy2rMXpS3PyCClL1EGZjcr23Z/b
+        6kQJeYnrKMXqRLFKOltHeYnx8vXqINmi4lfbg0WulnoV8Oxi8+psFzB3pV91mCn64Czmryl8Rjr7
+        +f10EXvZX0/1v/X5b+fV6nH1H5bKA8pqBQAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 26 Dec 2025 21:08:50 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2053
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

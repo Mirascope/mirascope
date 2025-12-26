@@ -24,6 +24,7 @@ sync_snapshot = snapshot(
                 "raw": "MLXCassetteResponse(text=' start', token=1191, prompt_tokens=15, generation_tokens=50, finish_reason='length')",
                 "total_tokens": 65,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -63,6 +64,7 @@ async_snapshot = snapshot(
                 "raw": "MLXCassetteResponse(text=' start', token=1191, prompt_tokens=15, generation_tokens=50, finish_reason='length')",
                 "total_tokens": 65,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(

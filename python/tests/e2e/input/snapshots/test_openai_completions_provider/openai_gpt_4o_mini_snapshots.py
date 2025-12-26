@@ -23,6 +23,7 @@ test_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=9, prompt_tokens=9, total_tokens=18, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 18,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="Say hello")]),
                 AssistantMessage(

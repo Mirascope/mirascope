@@ -78,6 +78,7 @@ def test_model_context_stream_without_tracer_returns_response(
         messages: Sequence[llm.Message],
         tools: object | None = None,
         format: object | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> object:
         return dummy_response
 
@@ -107,6 +108,7 @@ def test_model_context_stream_records_error_on_exception(
         messages: Sequence[llm.Message],
         tools: object | None = None,
         format: object | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> object:
         raise ValueError("error")
 

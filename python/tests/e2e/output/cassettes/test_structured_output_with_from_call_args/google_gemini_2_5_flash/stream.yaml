@@ -1,0 +1,87 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Summarize the book The Name of the Wind
+      by Patrick Rothfuss."}], "role": "user"}], "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"description": "A book with title, author,
+      and summary.", "properties": {"summary": {"title": "Summary", "type": "STRING"}},
+      "required": ["summary"], "title": "Book", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '384'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"summary\\\":\\\"The
+        Name of the Wind by Patrick Rothfuss tells the story of Kvothe, a legendary
+        figure, as he recounts his early life to a chronicler named Devan Lochees\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 15,\"candidatesTokenCount\":
+        38,\"totalTokenCount\": 91,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        15}],\"thoughtsTokenCount\": 38},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"pPlOaeieHquUmtkPo7HEuQ0\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \". The narrative follows Kvothe from his childhood
+        as an orphaned arcanist traveling with a troupe of actors, through the tragic
+        loss of his family to a mythical group called the Chandrian, and his subsequent
+        years as a street urchin in the\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 15,\"candidatesTokenCount\": 87,\"totalTokenCount\":
+        140,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 15}],\"thoughtsTokenCount\":
+        38},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"pPlOaeieHquUmtkPo7HEuQ0\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" city of Tarbean.
+        He eventually gains admission to the prestigious University, a center of learning
+        and magic, where he navigates academic challenges, financial struggles, and
+        intense rivalries, all while pursuing knowledge and seeking answers about
+        the Chandrian and\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 15,\"candidatesTokenCount\": 135,\"totalTokenCount\":
+        188,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 15}],\"thoughtsTokenCount\":
+        38},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"pPlOaeieHquUmtkPo7HEuQ0\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" the mysterious
+        beings known as the Amyr.\\\"}\"}],\"role\": \"model\"},\"finishReason\":
+        \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 15,\"candidatesTokenCount\":
+        145,\"totalTokenCount\": 198,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        15}],\"thoughtsTokenCount\": 38},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"pPlOaeieHquUmtkPo7HEuQ0\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 26 Dec 2025 21:09:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=795
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

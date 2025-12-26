@@ -68,7 +68,7 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
-from .formatting import Format, FormattingMode, Partial, format
+from .formatting import Format, FormattingMode, FromCallArgs, Partial, format
 from .messages import (
     AssistantContent,
     AssistantMessage,
@@ -177,6 +177,7 @@ __all__ = [
     "Format",
     "FormattingMode",
     "FormattingModeNotSupportedError",
+    "FromCallArgs",
     "Image",
     "Message",
     "MirascopeLLMError",

@@ -24,6 +24,7 @@ sync_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=50, prompt_tokens=14, total_tokens=64, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 64,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -88,6 +89,7 @@ async_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=50, prompt_tokens=14, total_tokens=64, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 64,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(

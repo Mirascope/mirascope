@@ -26,6 +26,7 @@ sync_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=136, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=30, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=166)",
                 "total_tokens": 166,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -164,6 +165,7 @@ async_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=136, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=28, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=164)",
                 "total_tokens": 164,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(

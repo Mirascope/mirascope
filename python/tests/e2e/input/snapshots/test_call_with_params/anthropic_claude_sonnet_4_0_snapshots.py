@@ -33,6 +33,7 @@ test_snapshot = snapshot(
                     "raw": "Usage(cache_creation=CacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=17, output_tokens=12, server_tool_use=None, service_tier='standard')",
                     "total_tokens": 29,
                 },
+                "from_call_args": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(

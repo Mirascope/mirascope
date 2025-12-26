@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import overload
+from typing import Any, overload
 from typing_extensions import Unpack
 
 from ..context import Context, DepsT
@@ -38,6 +39,7 @@ from ..tools import (
     Tool,
     Toolkit,
 )
+from ..types import Jsonable
 
 MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
 
@@ -153,6 +155,49 @@ class Model:
             token = self._token_stack.pop()
             MODEL_CONTEXT.reset(token)
 
+    def _extract_from_call_args(
+        self,
+        format: Format[FormattableT] | None,
+        call_args: dict[str, Any] | None,
+    ) -> dict[str, Jsonable] | None:
+        """Extract and validate FromCallArgs fields from call_args.
+
+        Args:
+            format: The response format, if any.
+            call_args: The call arguments dict, if any.
+
+        Returns:
+            A dict of validated from_call_args data, or None if not applicable.
+
+        Raises:
+            ValueError: If required fields are missing or values are not JSON-serializable.
+        """
+        if format is None or not format.from_call_args_fields:
+            return None
+
+        call_args = call_args or {}
+
+        # Check that all required fields are present
+        missing_fields = format.from_call_args_fields - call_args.keys()
+        if missing_fields:
+            raise ValueError(
+                f"Missing required call arguments for FromCallArgs fields: {missing_fields}"
+            )
+
+        # Extract and validate JSON-serializability via round-trip
+        from_call_args_data: dict[str, Jsonable] = {}
+        for field_name in format.from_call_args_fields:
+            value = call_args[field_name]
+            try:
+                # Validate it's JSON-serializable via round-trip
+                from_call_args_data[field_name] = json.loads(json.dumps(value))
+            except (TypeError, ValueError) as e:
+                raise ValueError(
+                    f"Format call argument '{field_name}' is not JSON-serializable: {e}"
+                ) from e
+
+        return from_call_args_data
+
     @overload
     def call(
         self,
@@ -160,6 +205,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> Response:
         """Generate an `llm.Response` without a response format."""
         ...
@@ -171,6 +217,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> Response[FormattableT]:
         """Generate an `llm.Response` with a response format."""
         ...
@@ -182,6 +229,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` with an optional response format."""
         ...
@@ -192,6 +240,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling this model's LLM provider.
 
@@ -199,19 +248,31 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return self.provider.call(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = self.provider.call(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     async def call_async(
@@ -220,6 +281,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncResponse:
         """Generate an `llm.AsyncResponse` without a response format."""
         ...
@@ -231,6 +293,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` with a response format."""
         ...
@@ -242,6 +305,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` with an optional response format."""
         ...
@@ -252,6 +316,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling this model's LLM provider.
 
@@ -259,19 +324,31 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return await self.provider.call_async(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = await self.provider.call_async(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
             **self.params,
             format=format,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     def stream(
@@ -280,6 +357,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> StreamResponse:
         """Stream an `llm.StreamResponse` without a response format."""
         ...
@@ -291,6 +369,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` with a response format."""
         ...
@@ -302,6 +381,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Stream an `llm.StreamResponse` with an optional response format."""
         ...
@@ -312,6 +392,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from this model's LLM provider.
 
@@ -319,19 +400,30 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return self.provider.stream(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = self.provider.stream(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+        return response
 
     @overload
     async def stream_async(
@@ -340,6 +432,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncStreamResponse:
         """Stream an `llm.AsyncStreamResponse` without a response format."""
         ...
@@ -351,6 +444,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` with a response format."""
         ...
@@ -362,6 +456,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Stream an `llm.AsyncStreamResponse` with an optional response format."""
         ...
@@ -372,6 +467,7 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from this model's LLM provider.
 
@@ -379,19 +475,31 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return await self.provider.stream_async(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = await self.provider.stream_async(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     def context_call(
@@ -403,6 +511,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> ContextResponse[DepsT, None]:
         """Generate an `llm.ContextResponse` without a response format."""
         ...
@@ -417,6 +526,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` with a response format."""
         ...
@@ -431,6 +541,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` with an optional response format."""
         ...
@@ -444,6 +555,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling this model's LLM provider.
 
@@ -452,13 +564,17 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return self.provider.context_call(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = self.provider.context_call(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -466,6 +582,14 @@ class Model:
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     async def context_call_async(
@@ -477,6 +601,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncContextResponse[DepsT, None]:
         """Generate an `llm.AsyncContextResponse` without a response format."""
         ...
@@ -491,6 +616,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` with a response format."""
         ...
@@ -505,6 +631,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` with an optional response format."""
         ...
@@ -518,6 +645,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling this model's LLM provider.
 
@@ -526,13 +654,17 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return await self.provider.context_call_async(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = await self.provider.context_call_async(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -540,6 +672,14 @@ class Model:
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     def context_stream(
@@ -551,6 +691,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> ContextStreamResponse[DepsT, None]:
         """Stream an `llm.ContextStreamResponse` without a response format."""
         ...
@@ -565,6 +706,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> ContextStreamResponse[DepsT, FormattableT]:
         """Stream an `llm.ContextStreamResponse` with a response format."""
         ...
@@ -579,6 +721,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
@@ -594,6 +737,7 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
@@ -604,13 +748,17 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return self.provider.context_stream(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = self.provider.context_stream(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -618,6 +766,14 @@ class Model:
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     async def context_stream_async(
@@ -629,6 +785,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncContextStreamResponse[DepsT, None]:
         """Stream an `llm.AsyncContextStreamResponse` without a response format."""
         ...
@@ -643,6 +800,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
+        call_args: dict[str, Any] | None = None,
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
         """Stream an `llm.AsyncContextStreamResponse` with a response format."""
         ...
@@ -657,6 +815,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
+        call_args: dict[str, Any] | None = None,
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
@@ -673,6 +832,7 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
+        call_args: dict[str, Any] | None = None,
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
@@ -684,13 +844,17 @@ class Model:
             messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
+            call_args: Optional call arguments to populate FromCallArgs fields.
 
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
         if not isinstance(format, Format) and format is not None:
             format = format_fn(format)
-        return await self.provider.context_stream_async(
+
+        from_call_args_data = self._extract_from_call_args(format, call_args)
+
+        response = await self.provider.context_stream_async(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -698,6 +862,14 @@ class Model:
             format=format,
             **self.params,
         )
+
+        # TODO: Either move call args handling into provider.call (so they return fully
+        # fledged Responses), or make the provider.call methods private (so we do not
+        # expose something that is typed as though it returns a full response, but is
+        # actually missing call args)
+        response.from_call_args = from_call_args_data
+
+        return response
 
     @overload
     def resume(

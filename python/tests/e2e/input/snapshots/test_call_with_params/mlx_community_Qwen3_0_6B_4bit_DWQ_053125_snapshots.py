@@ -34,6 +34,7 @@ test_snapshot = snapshot(
                     "raw": "MLXCassetteResponse(text=' is', token=374, prompt_tokens=20, generation_tokens=500, finish_reason='length')",
                     "total_tokens": 520,
                 },
+                "from_call_args": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(

@@ -24,6 +24,7 @@ sync_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=13, prompt_tokens=64, total_tokens=77, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 77,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(
                     content=[
@@ -83,6 +84,7 @@ async_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=12, prompt_tokens=64, total_tokens=76, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 76,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(
                     content=[

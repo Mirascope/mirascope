@@ -215,6 +215,7 @@ class BaseStreamResponse(
         self.raw_stream_events = self._raw_stream_events
 
         self.finish_reason = None
+        self.from_call_args = None
 
         self._assistant_message = AssistantMessage(
             content=self._content,

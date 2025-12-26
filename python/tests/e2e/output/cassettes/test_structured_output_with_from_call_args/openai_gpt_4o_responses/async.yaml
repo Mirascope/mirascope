@@ -1,0 +1,124 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Summarize the book The Name of the Wind by Patrick
+      Rothfuss.","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"description":"A
+      book with title, author, and summary.","properties":{"summary":{"title":"Summary","type":"string"}},"required":["summary"],"title":"Book","type":"object","additionalProperties":false},"description":"A
+      book with title, author, and summary.","strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '453'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6RWS2/bOBC+51cQuvTiGPIzcW5tT4sCi2If2ENdCGNxJLGmONrh0KlR5L8vSNmW
+        lDanvdnzkd+8P+rHnVKZ0dmTyhh9V+RrKDew0evNZrFblus83+7WWO12i/VKl4+L3QMsVrvDdr3D
+        1Wa5K6sqm0UKOnzDUq405Dz29pIRBHUBEVs8bLcPj6vVw0PCvIAEH++U1HYWBXV/6QDlsWYKLsZV
+        gfXYm421xtXZk/pxp5RSWQdn5Hhf4wktdcjZnVIvveMr5SvXu4QiM8WbLlibDMZdLxQaBYz1U9QL
+        h1IMuYm9he8FBemCFEJH/BkUIluUYKd0LWm0Me66k/s13S/z5fo+f7zPt5diJsrsSX1JefbZ3vrU
+        +vrtNi3zw2Me23TY5BvEjV5tl6t8p5eJObHIucPEg95DjQPwVj8SWJITdENQ48AmtNd64He53U4H
+        wDkSuNbwy9cJaKnumA6/QBLRk8p+7DMf2hb4vM+e9tl+v8/+alD9Di0qqpQ0qP4xTke7Mj79rwx7
+        UQeiozJOfQZhUx7VHyRNFbzfh2W+2Hl1ZfpkXH001iKrjw2TM6XFxOaRDfq5+k1URdbSc8/uhfgc
+        XX86kTQ4U6As1ug08FlVpg6M0W1jvHomtnqmwKsGFWNJwYlPiDXVlUlo8MuR7WCoZuga5Lna791+
+        7z5gbZwzrlbPRpqL43delY2xuiHS0SEoYQpdXxWGE8alUR1yRdwi+1mK3gEziDlhPFNiH803Cuzw
+        rKRhCnWjGmDtG9MpcFqhDmVqnwJJFH87c0L2Rs4z9dwgY8zOIrDzqoXalHP13pKr0+FnOM8i7hGP
+        PuYaXEkn5AQKB2kUHCj0zO3ZC7Kh4NXHBpxmAy76IAUcC5gUxhwsqoo4RV5Ba+z5nVcaQZr5UBoB
+        i3EeqthZ3dcN9AmdBMaZ0sanMM6zlGOH7MmBVTXTszSzyN+aSwpVVKS+AlT13Uv9nu+zl+w2si+X
+        X7cpzphs2gzw3ngBJ/3heDAdyjpgsBbtVC6EQ697HeMp1qK4SmuRhOAmJx1T20lRQtlgccTzmxhj
+        XGFDbnyCETy5ia5iVRHL6FAUh373LsabzHqoUM6F0ZG4MjgRVY98MiUWYq4yXUGwvSxkcehxnKZg
+        2yFD7EsU7Hl+sab1v0QW2wHD/5HsfPPkCl822MIgWhp9yaa7pJy977UgzYAYsXFngzTEffMvKc6H
+        +w7aRP6B6DjSyd7L00j//q+nvlMdshj0E+ZJ6cfmmHtkju7+vJyYvcIvtfHCsb8j8GUY11EIjP8G
+        w6gnIj8K4GYbKfQQxKRI4weh/zQYIaC1iZUC+3mcdHrp716FlYJPXxZxUO5GWHZCPlCUn/410ya0
+        w/vfr1JDpux3LwhlN2B4ZjKhrhg9PvnN2I2HkIPrtS+NsfFwsNePlZAe0duEGjf5GnjYzn62jz4x
+        bnOcNlQPF/NJqq8/Mhbr/FfIr4hv+/0Wt5CAHcDlYnsrYvDThW5RQIOk2X+5e/kPAAD//wMAiMok
+        cz0KAAA=
+    headers:
+      CF-RAY:
+      - 9b438f697fec6dc4-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 26 Dec 2025 21:09:39 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=PSM7dNf1u8_74s3BMzOt_G4QtOfpXG2aDqINfMFt.R0-1766783379-1.0.1.1-Ia4OkA4tTBQiCcGuyVBacdfIVtKY5imkPdaLwdPc.kzk0quODmHMLuL3ZNCQpze6zwpXGrk15E2z4YpVpqXe4LTC9tX9RbWy8KjhjAYuAtE;
+        path=/; expires=Fri, 26-Dec-25 21:39:39 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=KBcBjlVgQ17Xh.P6daHVlSeV3iB6aySXdk0AnvKIp6I-1766783379514-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2237'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2242'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799905'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 7ms
+      x-request-id:
+      - req_ac557c06ab414f29b867885a7596db8a
+    status:
+      code: 200
+      message: OK
+version: 1

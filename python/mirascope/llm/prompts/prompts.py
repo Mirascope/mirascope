@@ -1,7 +1,9 @@
 """Concrete Prompt classes for generating messages with tools and formatting."""
 
+import inspect
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Generic, overload
+from typing import Any, Generic, overload
 
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
@@ -30,6 +32,16 @@ from .protocols import (
     ContextMessageTemplate,
     MessageTemplate,
 )
+
+
+def _build_call_args(
+    fn: Callable[P, Any], args: tuple[Any, ...], kwargs: dict[str, Any]
+) -> dict[str, Any]:
+    """Build call_args dict from function signature and arguments."""
+    sig = inspect.signature(fn)
+    bound = sig.bind(*args, **kwargs)
+    bound.apply_defaults()
+    return dict(bound.arguments)
 
 
 @dataclass
@@ -82,9 +94,15 @@ class Prompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> Response | Response[FormattableT]:
         """Generates a response using the provided model."""
+        call_args = _build_call_args(self.fn, args, kwargs)
         result = self.fn(*args, **kwargs)
         messages = _utils.promote_to_messages(result)
-        return model.call(messages=messages, tools=self.toolkit, format=self.format)
+        return model.call(
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
+        )
 
     @overload
     def stream(
@@ -100,9 +118,15 @@ class Prompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generates a streaming response using the provided model."""
+        call_args = _build_call_args(self.fn, args, kwargs)
         result = self.fn(*args, **kwargs)
         messages = _utils.promote_to_messages(result)
-        return model.stream(messages=messages, tools=self.toolkit, format=self.format)
+        return model.stream(
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
+        )
 
 
 @dataclass
@@ -161,10 +185,14 @@ class AsyncPrompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generates a response using the provided model asynchronously."""
+        call_args = _build_call_args(self.fn, args, kwargs)
         result = await self.fn(*args, **kwargs)
         messages = _utils.promote_to_messages(result)
         return await model.call_async(
-            messages=messages, tools=self.toolkit, format=self.format
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
         )
 
     @overload
@@ -184,10 +212,14 @@ class AsyncPrompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generates a streaming response using the provided model asynchronously."""
+        call_args = _build_call_args(self.fn, args, kwargs)
         result = await self.fn(*args, **kwargs)
         messages = _utils.promote_to_messages(result)
         return await model.stream_async(
-            messages=messages, tools=self.toolkit, format=self.format
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
         )
 
 
@@ -266,10 +298,15 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
         **kwargs: P.kwargs,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generates a response using the provided model."""
+        call_args = _build_call_args(self.fn, (ctx, *args), kwargs)
         result = self.fn(ctx, *args, **kwargs)
         messages = _utils.promote_to_messages(result)
         return model.context_call(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
         )
 
     @overload
@@ -300,10 +337,15 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the provided model."""
+        call_args = _build_call_args(self.fn, (ctx, *args), kwargs)
         result = self.fn(ctx, *args, **kwargs)
         messages = _utils.promote_to_messages(result)
         return model.context_stream(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
         )
 
 
@@ -382,10 +424,15 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
         **kwargs: P.kwargs,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generates a response using the provided model asynchronously."""
+        call_args = _build_call_args(self.fn, (ctx, *args), kwargs)
         result = await self.fn(ctx, *args, **kwargs)
         messages = _utils.promote_to_messages(result)
         return await model.context_call_async(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
         )
 
     @overload
@@ -417,8 +464,13 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the provided model asynchronously."""
+        call_args = _build_call_args(self.fn, (ctx, *args), kwargs)
         result = await self.fn(ctx, *args, **kwargs)
         messages = _utils.promote_to_messages(result)
         return await model.context_stream_async(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit,
+            format=self.format,
+            call_args=call_args,
         )

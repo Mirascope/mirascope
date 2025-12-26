@@ -26,6 +26,7 @@ test_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=23, prompt_tokens=91, total_tokens=114, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 114,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(

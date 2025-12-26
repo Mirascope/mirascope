@@ -26,6 +26,7 @@ test_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=84, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=24, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=108)",
                 "total_tokens": 108,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(

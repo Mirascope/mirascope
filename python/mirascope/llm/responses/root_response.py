@@ -1,5 +1,6 @@
 """Base interface for all LLM responses."""
 
+import json
 from abc import ABC
 from collections.abc import Sequence
 from types import NoneType
@@ -9,6 +10,7 @@ from ..content import AssistantContentPart, Text, Thought, ToolCall
 from ..formatting import Format, FormattableT, Partial
 from ..messages import Message
 from ..tools import ToolkitT
+from ..types import Jsonable
 from . import _utils
 from .finish_reason import FinishReason
 from .usage import Usage
@@ -67,6 +69,9 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
 
     format: Format[FormattableT] | None
     """The `Format` describing the structured response format, if available."""
+
+    from_call_args: dict[str, Jsonable] | None
+    """The FromCallArgs data to merge into parsed output, if available."""
 
     @overload
     def parse(self: "RootResponse[ToolkitT, None]", partial: Literal[True]) -> None:
@@ -131,7 +136,12 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
         text = "".join(text.text for text in self.texts)
         json_text = _utils.extract_serialized_json(text)
 
-        return formattable.model_validate_json(json_text)
+        llm_json = json.loads(json_text)
+
+        if self.from_call_args:
+            llm_json.update(self.from_call_args)
+
+        return formattable.model_validate(llm_json)
 
     def pretty(self) -> str:
         """Return a string representation of all response content.

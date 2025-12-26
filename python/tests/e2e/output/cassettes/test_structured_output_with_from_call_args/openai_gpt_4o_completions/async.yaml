@@ -1,0 +1,137 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Summarize the book The Name of the
+      Wind by Patrick Rothfuss."}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"description":"A
+      book with title, author, and summary.","properties":{"summary":{"title":"Summary","type":"string"}},"required":["summary"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book with title, author, and summary."}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '472'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      CF-RAY:
+      - 9b438f254f9bd7ae-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 26 Dec 2025 21:09:36 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=1qz5t9HPrIPTwjAkO.5BCZQPirP4ZuPX.eDfqAM_JQ8-1766783376-1.0.1.1-Ii5TKyJ6PwHqomH8PZ53nAGK4PvCWbAA9wobAQNMbV9w2d.uVcmCQOnVvNOYOzW.B7cz2ZpBpj05DY7XA09_8mqPdx1WbcdUnUmdxw3Gh28;
+        path=/; expires=Fri, 26-Dec-25 21:39:36 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=JXYvUGoqSKx_0SiIjyY92TNdCA9hUpCQZcH6q8kxy1s-1766783376794-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '10194'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '10399'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799983'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_8098aa1266154329b3c6560112d0a4d1
+    status:
+      code: 200
+      message: OK
+version: 1

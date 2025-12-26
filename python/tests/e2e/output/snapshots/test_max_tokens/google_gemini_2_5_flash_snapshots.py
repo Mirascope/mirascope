@@ -29,6 +29,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
 """,
                 "total_tokens": 57,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
@@ -82,6 +83,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
 """,
                 "total_tokens": 57,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(

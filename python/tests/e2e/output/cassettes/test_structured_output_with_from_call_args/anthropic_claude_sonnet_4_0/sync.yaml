@@ -1,0 +1,123 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Summarize the
+      book The Name of the Wind by Patrick Rothfuss."}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      title, author, and summary.","input_schema":{"properties":{"summary":{"title":"Summary","type":"string"}},"required":["summary"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '804'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VU227cNhD9lYFe2gJrw1cU8WPSFGiCFEbqtgGKQpgVRxKzFCnzslvB8L/3DLey
+        6wR5EUTO5cycM5yHZgpGXHPTdI6LkZMUvJd8cnVycXZxfXZ9ftVsGmtgn9LQnp3/tvzxYTaXJfvy
+        7tB36fXr/f3tK/jkZRb1kpR4EFzE4PSCU7Ips8+46oLPgr+bvx5W/xyCa0uSFUXPBTifJPz0c/dp
+        ++rzpUl8aeK7w/bDLbw8TxrXtpONnLowS9uHOHHOYtpQ8lxyW5O2mtLj2Nw8NKlME8cFgXej0K/I
+        QaGnjP8/rTdkU/3vbUyZtiHsyHq65Rxtt6OPIY99Sem7RO+tH3bWOYn0ZozB284JJYlW0in9kqkP
+        zoUD/PaIkQ0xORnEG0Aj+VCi0GEMCufDgZzdI59CjdboHydij7PficzA0F4NvQ9ZTknrTjkgEaL7
+        WC28IlEW5zTDCKOz/eqaA0ro1kojhT0+eYwiZHhJx6y1305Nazp02o3WmTGECjJzzMoXU468l4qU
+        YyhzZRGVqgIa3jG4MZXLt0Ympo9l3NQjAgfb0VSi0Tr6WmnPk3ULbRealpRBYyiJtoL0L1K9Gdmb
+        aNmDUIilkalsk9wXDBMtwjGtXCqD6B0NouA4j5XOmqSzeVHcO45bYX9Kb/eILkBZNiuLA1uPBGay
+        GNrglT69/t1bJQcJVNE5Ssp2qLXCPdtcsjqDA6jN0WsdaZlmzuNC37MaJkWelIEfNpgAwRxUOYvB
+        5FDxysnESkGC2epQ5ViGoTJ9sHmkWfVBB0rAxDu936JmQv2aQq/Fy1QH8Q6Cl2HEY6hcfQ4lennu
+        EsIE1B05I1D+6WTW+tlBnGRBO2V2oGZD90XHH/BH3ocYDopb+4Abb62zGYib/2quyhGUArMqqoJD
+        o5QrNzuMPBQdBIFa2gtln4Q1kizYAfOVy+rl//dcD/pcT+iZVRifioIHZ4qiEqEDPOpY5EivrqDj
+        G0P8HA7PjwHPHh6A8Ohb03agZUUL0ZnT5vHx702DFzW3URgL8uXeqobjNHZYTb44t2lK3YLYPHUF
+        YSPtxKfm5uriR6xB7kZpO+RS4tuXHmerHWbzLdsaqwAyj4LHx669nr72f7aej19aHzfN08I8Xl1c
+        ozzss73tpIW0EZ1W5jgasPAvn96gby0GAAA=
+    headers:
+      CF-RAY:
+      - 9b438e0c4a48d3b2-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 26 Dec 2025 21:08:48 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-26T21:08:41Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-26T21:08:48Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-26T21:08:41Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-26T21:08:41Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWVywrvd9HGRFrtc12tAv
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '7272'
+    status:
+      code: 200
+      message: OK
+version: 1

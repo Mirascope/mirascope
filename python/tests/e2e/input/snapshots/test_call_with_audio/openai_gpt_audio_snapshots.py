@@ -25,6 +25,7 @@ test_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=10, prompt_tokens=42, total_tokens=52, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0, text_tokens=10), prompt_tokens_details=PromptTokensDetails(audio_tokens=25, cached_tokens=0, text_tokens=17, image_tokens=0))",
                 "total_tokens": 52,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(
                     content=[

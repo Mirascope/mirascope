@@ -26,6 +26,7 @@ sync_snapshot = snapshot(
                 "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=721, output_tokens=49, server_tool_use=None, service_tier='standard')",
                 "total_tokens": 770,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(
                     content=Text(
@@ -234,6 +235,7 @@ async_snapshot = snapshot(
                 "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=721, output_tokens=49, server_tool_use=None, service_tier='standard')",
                 "total_tokens": 770,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(
                     content=Text(

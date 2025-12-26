@@ -25,6 +25,7 @@ test_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=269, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=20, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=289)",
                 "total_tokens": 289,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(
                     content=[

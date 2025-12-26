@@ -23,6 +23,7 @@ test_snapshot = snapshot(
                 "raw": "ResponseUsage(input_tokens=7, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=26, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=33)",
                 "total_tokens": 33,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="")]),
                 AssistantMessage(

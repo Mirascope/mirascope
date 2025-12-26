@@ -19,6 +19,7 @@ test_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=23, prompt_tokens=44, total_tokens=67, completion_tokens_details=None, prompt_tokens_details=None, cached_tokens=0)",
                 "total_tokens": 67,
             },
+            "from_call_args": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(

@@ -26,6 +26,7 @@ sync_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=32, prompt_tokens=149, total_tokens=181, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 181,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
@@ -155,6 +156,7 @@ async_snapshot = snapshot(
                 "raw": "CompletionUsage(completion_tokens=31, prompt_tokens=149, total_tokens=180, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
                 "total_tokens": 180,
             },
+            "from_call_args": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
                 UserMessage(
