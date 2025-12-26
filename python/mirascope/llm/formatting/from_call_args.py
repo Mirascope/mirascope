@@ -1,5 +1,7 @@
 """The `FromCallArgs` class annotation for marking a field as a call argument."""
 
+from pydantic.fields import FieldInfo
+
 
 class FromCallArgs:
     """A marker class for indicating that a field is a call argument.
@@ -28,3 +30,15 @@ class FromCallArgs:
         return f"Summarize {title} by {author}."
     ```
     """
+
+
+def is_from_call_args(field: FieldInfo) -> bool:
+    """Check if a field has `FromCallArgs` metadata.
+
+    Args:
+        field: The Pydantic field to check.
+
+    Returns:
+        True if the field is marked with `FromCallArgs`, False otherwise.
+    """
+    return any(isinstance(m, FromCallArgs) for m in field.metadata)

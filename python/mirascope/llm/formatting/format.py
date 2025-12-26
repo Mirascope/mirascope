@@ -5,8 +5,11 @@ import json
 from dataclasses import dataclass, replace
 from typing import Any, Generic, cast
 
+from pydantic import BaseModel
+
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from ..types import NoneType
+from .from_call_args import is_from_call_args
 from .types import FormattableT, FormattingMode, HasFormattingInstructions
 
 TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
@@ -53,6 +56,9 @@ class Format(Generic[FormattableT]):
     
     Determines how the LLM call may be modified in order to extract the expected format.
     """
+
+    from_call_args_fields: set[str]
+    """The field names in the model that are marked `FromCallArgs` (if any)."""
 
     formattable: type[FormattableT]
     """The `Formattable` type that this `Format` describes.
@@ -128,6 +134,36 @@ class Format(Generic[FormattableT]):
         return tool_schema
 
 
+def _validate_no_nested_from_call_args(model: type[Any], path: str = "") -> None:
+    """Recursively validate that nested models don't have FromCallArgs fields.
+
+    Args:
+        model: The model to validate
+        path: The current path for error messages (e.g., "inner.nested")
+
+    Raises:
+        ValueError: If a nested model has FromCallArgs fields
+    """
+    for name, field in model.model_fields.items():
+        field_path = f"{path}.{name}" if path else name
+
+        # Check if this field's annotation is a BaseModel
+        if (
+            field.annotation
+            and isinstance(field.annotation, type)
+            and issubclass(field.annotation, BaseModel)
+        ):
+            # Check if this nested model has FromCallArgs fields
+            for nested_name, nested_field in field.annotation.model_fields.items():
+                if is_from_call_args(nested_field):
+                    raise ValueError(
+                        f"FromCallArgs is not allowed on nested model fields. "
+                        f"Found on field '{nested_name}' in nested model at '{field_path}'"
+                    )
+            # Recursively check deeper nesting
+            _validate_no_nested_from_call_args(field.annotation, field_path)
+
+
 def format(
     formattable: type[FormattableT] | None,
     *,
@@ -199,12 +235,36 @@ def format(
 
     schema = formattable.model_json_schema()
 
+    _validate_no_nested_from_call_args(formattable)
+    from_call_args_fields = {
+        name
+        for name, field in formattable.model_fields.items()
+        if is_from_call_args(field)
+    }
+    # Remove FromCallArgs fields from the schema
+    if from_call_args_fields:
+        # Remove from properties
+        properties = schema.get("properties")
+        if isinstance(properties, dict):
+            properties_dict = cast(dict[str, Any], properties)
+            for field_name in from_call_args_fields:
+                properties_dict.pop(field_name, None)
+
+        # Remove from required
+        required = schema.get("required")
+        if isinstance(required, list):
+            required_list = cast(list[str], required)
+            schema["required"] = [
+                req for req in required_list if req not in from_call_args_fields
+            ]
+
     return Format[FormattableT](
         name=formattable.__name__,
         description=description,
         schema=schema,
         mode=mode,
         formattable=formattable,
+        from_call_args_fields=from_call_args_fields,
     )
 
 
