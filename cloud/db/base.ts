@@ -790,12 +790,13 @@ export abstract class BaseAuthenticatedEffectService<
    * @throws NotFoundError - If resource doesn't exist or user has no access
    * @throws PermissionDeniedError - If user lacks delete permission
    * @throws DatabaseError - If the database operation fails
+   * @throws StripeError - If Stripe operations fail (for resources synced with Stripe)
    */
   abstract delete(
     args: { userId: string } & PathParams<TPath>,
   ): Effect.Effect<
     void,
-    NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    DrizzleORM | Stripe
   >;
 }

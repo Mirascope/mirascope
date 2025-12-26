@@ -82,6 +82,10 @@ export class MockStripe {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private createSubscriptionResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private listSubscriptionsResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cancelSubscriptionResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private listCreditGrantsResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private configResult?: any;
@@ -144,6 +148,24 @@ export class MockStripe {
         this.createSubscriptionResult = result;
         return this;
       },
+      /**
+       * Mock `subscriptions.list()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      list: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.listSubscriptionsResult = result;
+        return this;
+      },
+      /**
+       * Mock `subscriptions.cancel()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cancel: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.cancelSubscriptionResult = result;
+        return this;
+      },
     };
   }
 
@@ -190,6 +212,10 @@ export class MockStripe {
     const deleteCustomerResult = this.deleteCustomerResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const createSubscriptionResult = this.createSubscriptionResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const listSubscriptionsResult = this.listSubscriptionsResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const cancelSubscriptionResult = this.cancelSubscriptionResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const listCreditGrantsResult = this.listCreditGrantsResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -328,6 +354,42 @@ export class MockStripe {
             },
             status: "active" as const,
             metadata: params.metadata || {},
+          });
+        },
+        list: (params?: { customer?: string; status?: string }) => {
+          if (listSubscriptionsResult !== undefined) {
+            // If it's a function, call it with params
+            if (typeof listSubscriptionsResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(listSubscriptionsResult(params));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(listSubscriptionsResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            object: "list" as const,
+            data: [],
+            has_more: false,
+          });
+        },
+        cancel: (id: string) => {
+          if (cancelSubscriptionResult !== undefined) {
+            // If it's a function, call it with id
+            if (typeof cancelSubscriptionResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(cancelSubscriptionResult(id));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(cancelSubscriptionResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            id,
+            object: "subscription" as const,
+            status: "canceled" as const,
           });
         },
       },

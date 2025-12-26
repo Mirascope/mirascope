@@ -1021,7 +1021,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    }
+                  ]
                 }
               }
             }

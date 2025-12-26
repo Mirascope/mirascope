@@ -3,6 +3,7 @@ import { Effect, Layer, Context } from "effect";
 import {
   createCustomer,
   updateCustomer,
+  cancelSubscriptions,
   deleteCustomer,
   getCustomerBalance,
 } from "@/payments/customers";
@@ -332,6 +333,140 @@ describe("customers", () => {
         // Should not call update if nothing to change
         expect(updateCalled).toBe(false);
       }),
+    );
+  });
+
+  describe("cancelSubscriptions", () => {
+    it.effect("cancels multiple active subscriptions", () =>
+      Effect.gen(function* () {
+        const subscriptionIds: string[] = [];
+
+        yield* cancelSubscriptions("cus_123").pipe(
+          Effect.provide(
+            Layer.succeed(Stripe, {
+              customers: {
+                create: () => Effect.void,
+                del: () => Effect.void,
+              },
+              subscriptions: {
+                create: () => Effect.void,
+                list: () =>
+                  Effect.succeed({
+                    object: "list" as const,
+                    data: [
+                      {
+                        id: "sub_1",
+                        object: "subscription" as const,
+                        status: "active" as const,
+                      },
+                      {
+                        id: "sub_2",
+                        object: "subscription" as const,
+                        status: "active" as const,
+                      },
+                    ],
+                    has_more: false,
+                  }),
+                cancel: (id: string) => {
+                  subscriptionIds.push(id);
+                  return Effect.succeed({
+                    id,
+                    object: "subscription" as const,
+                    status: "canceled" as const,
+                  });
+                },
+              },
+              config: {
+                apiKey: "sk_test_mock",
+                routerPriceId: "price_test",
+              },
+            } as unknown as Context.Tag.Service<typeof Stripe>),
+          ),
+        );
+
+        expect(subscriptionIds).toEqual(["sub_1", "sub_2"]);
+      }),
+    );
+
+    it.effect("handles customer with no active subscriptions", () =>
+      Effect.gen(function* () {
+        yield* cancelSubscriptions("cus_123").pipe(
+          Effect.provide(DefaultMockStripe),
+        );
+
+        // Test passes if no errors thrown
+      }),
+    );
+
+    it.effect("returns StripeError when listing subscriptions fails", () =>
+      Effect.gen(function* () {
+        const result = yield* cancelSubscriptions("cus_123").pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(StripeError);
+        expect(result.message).toBe("Failed to list subscriptions");
+      }).pipe(
+        Effect.provide(
+          Layer.succeed(Stripe, {
+            customers: {
+              create: () => Effect.void,
+              del: () => Effect.void,
+            },
+            subscriptions: {
+              create: () => Effect.void,
+              list: () =>
+                Effect.fail(
+                  new StripeError({ message: "Failed to list subscriptions" }),
+                ),
+              cancel: () => Effect.void,
+            },
+            config: {
+              apiKey: "sk_test_mock",
+              routerPriceId: "price_test",
+            },
+          } as unknown as Context.Tag.Service<typeof Stripe>),
+        ),
+      ),
+    );
+
+    it.effect("returns StripeError when cancelling subscription fails", () =>
+      Effect.gen(function* () {
+        const result = yield* cancelSubscriptions("cus_123").pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(StripeError);
+        expect(result.message).toBe("Failed to cancel subscription");
+      }).pipe(
+        Effect.provide(
+          Layer.succeed(Stripe, {
+            customers: {
+              create: () => Effect.void,
+              del: () => Effect.void,
+            },
+            subscriptions: {
+              create: () => Effect.void,
+              list: () =>
+                Effect.succeed({
+                  object: "list" as const,
+                  data: [
+                    {
+                      id: "sub_1",
+                      object: "subscription" as const,
+                      status: "active" as const,
+                    },
+                  ],
+                  has_more: false,
+                }),
+              cancel: () =>
+                Effect.fail(
+                  new StripeError({ message: "Failed to cancel subscription" }),
+                ),
+            },
+            config: {
+              apiKey: "sk_test_mock",
+              routerPriceId: "price_test",
+            },
+          } as unknown as Context.Tag.Service<typeof Stripe>),
+        ),
+      ),
     );
   });
 

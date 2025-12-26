@@ -173,6 +173,40 @@ export function updateCustomer(
 }
 
 /**
+ * Cancels all active subscriptions for a Stripe customer.
+ *
+ * Used when deleting an organization to properly clean up billing.
+ * Cancels subscriptions immediately without proration.
+ *
+ * @param customerId - The Stripe customer ID
+ * @returns Effect that succeeds when all subscriptions are cancelled
+ * @throws StripeError - If cancellation fails
+ *
+ * @example
+ * ```ts
+ * yield* cancelSubscriptions("cus_123");
+ * ```
+ */
+export function cancelSubscriptions(
+  customerId: string,
+): Effect.Effect<void, StripeError, Stripe> {
+  return Effect.gen(function* () {
+    const stripe = yield* Stripe;
+
+    // List all active subscriptions for the customer
+    const subscriptions = yield* stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+    });
+
+    // Cancel each subscription immediately
+    for (const subscription of subscriptions.data) {
+      yield* stripe.subscriptions.cancel(subscription.id);
+    }
+  });
+}
+
+/**
  * Deletes a Stripe customer (and all associated subscriptions).
  *
  * Use this for cleanup when organization creation fails after Stripe customer

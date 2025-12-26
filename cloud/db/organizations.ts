@@ -69,6 +69,7 @@ import {
   createCustomer,
   deleteCustomer,
   updateCustomer,
+  cancelSubscriptions,
 } from "@/payments";
 
 import {
@@ -528,14 +529,16 @@ export class Organizations extends BaseAuthenticatedEffectService<
   /**
    * Deletes an organization and all its memberships.
    *
-   * Requires OWNER role. This is a destructive operation that deletes
-   * the organization and all related data via cascade.
+   * Requires OWNER role. This is a destructive operation that:
+   * 1. Cancels all active Stripe subscriptions for the organization
+   * 2. Deletes the organization from the database (cascade handles related data)
    *
    * @param args.userId - The authenticated user (must be OWNER)
    * @param args.organizationId - The organization to delete
    * @throws NotFoundError - If the organization doesn't exist or user isn't a member
    * @throws PermissionDeniedError - If the user is not an OWNER
    * @throws DatabaseError - If the database operation fails
+   * @throws StripeError - If subscription cancellation fails
    */
   delete({
     userId,
@@ -545,8 +548,8 @@ export class Organizations extends BaseAuthenticatedEffectService<
     organizationId: string;
   }): Effect.Effect<
     void,
-    NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    DrizzleORM | Stripe
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -557,6 +560,34 @@ export class Organizations extends BaseAuthenticatedEffectService<
         action: "delete",
         organizationId,
       });
+
+      // Fetch organization to get stripeCustomerId
+      const [org] = yield* client
+        .select(publicFields)
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to fetch organization for deletion",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!org) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `organization with organizationId ${organizationId} not found`,
+            resource: this.getResourceName(),
+          }),
+        );
+      }
+
+      // Cancel all active subscriptions before deleting
+      yield* cancelSubscriptions(org.stripeCustomerId);
 
       // Delete the organization (cascade handles memberships and audits)
       yield* client

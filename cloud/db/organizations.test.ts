@@ -9,7 +9,7 @@ import {
   MockStripe,
 } from "@/tests/db";
 import { Database } from "@/db/database";
-import { Effect, Layer } from "effect";
+import { Effect, Layer, Context } from "effect";
 import {
   type PublicOrganizationWithMembership,
   type PublicOrganizationMembershipAudit,
@@ -19,7 +19,9 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  StripeError,
 } from "@/errors";
+import { Stripe } from "@/payments/client";
 
 describe("Organizations", () => {
   // ===========================================================================
@@ -1006,6 +1008,197 @@ describe("Organizations", () => {
             // delete: fails
             .delete(new Error("Connection failed"))
             .build(),
+        ),
+      ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when fetching organization for deletion fails",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations
+            .delete({ userId: "user-id", organizationId: "org-id" })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe(
+            "Failed to fetch organization for deletion",
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize -> getRole -> getMembership
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "user-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // Fetch organization for deletion: fails
+              .select(new Error("Connection failed"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when organization doesn't exist during deletion",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations
+            .delete({ userId: "user-id", organizationId: "org-id" })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe(
+            "organization with organizationId org-id not found",
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize -> getRole -> getMembership
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "user-id",
+                  createdAt: new Date(),
+                },
+              ])
+              // Fetch organization for deletion: returns empty
+              .select([])
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect("calls cancelSubscriptions with correct stripeCustomerId", () => {
+      // Capture the customerId passed to cancelSubscriptions (via subscriptions.list)
+      let capturedCustomerId: string | null = null;
+
+      return Effect.gen(function* () {
+        const db = yield* Database;
+
+        const user = yield* db.users.create({
+          data: {
+            email: "cancel-subs-test@example.com",
+            name: "Cancel Subs Test User",
+          },
+        });
+
+        const organization = yield* db.organizations.create({
+          userId: user.id,
+          data: { name: "Test Org", slug: "test-org" },
+        });
+
+        // Delete the organization
+        yield* db.organizations.delete({
+          userId: user.id,
+          organizationId: organization.id,
+        });
+
+        // Verify cancelSubscriptions was called with correct customerId
+        assert(capturedCustomerId !== null);
+        expect(capturedCustomerId).toBe(organization.stripeCustomerId);
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provideMerge(TestDrizzleORM),
+            Layer.provide(
+              new MockStripe().customers
+                .create(() => ({ id: "cus_mock" }))
+                .subscriptions.list(
+                  (params?: { customer?: string; status?: string }) => {
+                    // Capture the customer ID from subscriptions.list call
+                    if (params?.customer) {
+                      capturedCustomerId = params.customer;
+                    }
+                    return {
+                      object: "list" as const,
+                      data: [
+                        {
+                          id: "sub_1",
+                          object: "subscription" as const,
+                          status: "active" as const,
+                        },
+                      ],
+                      has_more: false,
+                    };
+                  },
+                )
+                .subscriptions.cancel((id: string) => {
+                  return {
+                    id,
+                    object: "subscription" as const,
+                    status: "canceled" as const,
+                  };
+                })
+                .build(),
+            ),
+          ),
+        ),
+      );
+    });
+
+    it.effect("returns `StripeError` when cancelSubscriptions fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations
+          .delete({ userId: "user-id", organizationId: "org-id" })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(StripeError);
+        expect(result.message).toBe("Failed to list subscriptions");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "user-id",
+                createdAt: new Date(),
+              },
+            ])
+            // Fetch organization for deletion
+            .select([
+              {
+                id: "org-id",
+                name: "Test Org",
+                slug: "test-org",
+                stripeCustomerId: "cus_123",
+              },
+            ])
+            .build(
+              Layer.succeed(Stripe, {
+                customers: {
+                  create: () => Effect.void,
+                  del: () => Effect.void,
+                },
+                subscriptions: {
+                  create: () => Effect.void,
+                  list: () =>
+                    Effect.fail(
+                      new StripeError({
+                        message: "Failed to list subscriptions",
+                      }),
+                    ),
+                  cancel: () => Effect.void,
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
         ),
       ),
     );

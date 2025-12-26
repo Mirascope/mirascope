@@ -103,7 +103,8 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addSuccess(Schema.Void)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(StripeError, { status: StripeError.status }),
   )
   .add(
     HttpApiEndpoint.get("credits", "/organizations/:id/credits")
