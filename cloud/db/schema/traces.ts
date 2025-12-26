@@ -29,7 +29,7 @@ export const traces = pgTable(
     serviceName: text("service_name"),
     serviceVersion: text("service_version"),
     resourceAttributes: jsonb("resource_attributes"),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     traceEnvUnique: unique().on(table.traceId, table.environmentId),

@@ -19,9 +19,9 @@ export const apiKeys = pgTable(
     ownerId: uuid("ownerId")
       .references(() => users.id)
       .notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     // Track last usage for auditing
-    lastUsedAt: timestamp("last_used_at"),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
   },
   (table) => ({
     environmentNameUnique: unique().on(table.environmentId, table.name),

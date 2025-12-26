@@ -44,7 +44,7 @@ export const spans = pgTable(
     droppedAttributesCount: integer("dropped_attributes_count"),
     droppedEventsCount: integer("dropped_events_count"),
     droppedLinksCount: integer("dropped_links_count"),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     spanTraceEnvUnique: unique().on(

@@ -16,8 +16,8 @@ export const projects = pgTable(
     createdByUserId: uuid("created_by_user_id")
       .references(() => users.id)
       .notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => ({
     uniqueOrgSlug: unique().on(table.organizationId, table.slug),
