@@ -7,6 +7,7 @@ from typing import Any, Generic, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from ..types import NoneType
+from .non_generated_field import is_non_generated_field
 from .types import FormattableT, FormattingMode, HasFormattingInstructions
 
 TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
@@ -58,6 +59,11 @@ class Format(Generic[FormattableT]):
     capabilities. In this case, the provider must set a mode while encoding the request.
     Once the Format is present on a `Response`, mode is guaranteed to be non-None.
     """
+
+    non_generated_fields: set[str]
+    """The field names in the model that are marked `NonGeneratedField` (if any).
+    
+    Non-generated fields must be provided manually when calling `Response.parse`."""
 
     formattable: type[FormattableT]
     """The `Formattable` type that this `Format` describes.
@@ -204,12 +210,35 @@ def format(
 
     schema = formattable.model_json_schema()
 
+    non_generated_fields = {
+        name
+        for name, field in formattable.model_fields.items()
+        if is_non_generated_field(field)
+    }
+    # Remove NonGeneratedField fields from the schema
+    if non_generated_fields:
+        # Remove from properties
+        properties = schema.get("properties")
+        if isinstance(properties, dict):
+            properties_dict = cast(dict[str, Any], properties)
+            for field_name in non_generated_fields:
+                properties_dict.pop(field_name, None)
+
+        # Remove from required
+        required = schema.get("required")
+        if isinstance(required, list):
+            required_list = cast(list[str], required)
+            schema["required"] = [
+                req for req in required_list if req not in non_generated_fields
+            ]
+
     return Format[FormattableT](
         name=formattable.__name__,
         description=description,
         schema=schema,
         mode=mode,
         formattable=formattable,
+        non_generated_fields=non_generated_fields,
     )
 
 

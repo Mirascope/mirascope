@@ -6,7 +6,7 @@ outputs should be structured and parsed.
 """
 
 from .format import Format, ensure_format_has_mode, format
-from .from_call_args import FromCallArgs
+from .non_generated_field import NonGeneratedField
 from .partial import Partial
 from .types import FormattableT, FormattingMode
 
@@ -15,7 +15,7 @@ __all__ = [
     "FormattableT",
     "FormattableT",
     "FormattingMode",
-    "FromCallArgs",
+    "NonGeneratedField",
     "Partial",
     "ensure_format_has_mode",
     "format",

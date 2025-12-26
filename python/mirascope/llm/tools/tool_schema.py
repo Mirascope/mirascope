@@ -211,7 +211,7 @@ class ToolSchema(Generic[ToolFnT]):
         context_param_skipped = False
         for param in inspect.signature(fn).parameters.values():
             # Skip args that are provided by Python or Mirascope, not LLM-generated.
-            # TODO: Handling of FromCallArgs
+            # TODO: Handling of NonGeneratedField
             if param.name in ("self", "cls"):
                 continue
 

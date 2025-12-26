@@ -1,5 +1,7 @@
 """Tests for the `format` function."""
 
+from typing import Annotated
+
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel
@@ -95,6 +97,8 @@ def test_format_empty_model() -> None:
         pass
 
     format = llm.format(Empty, mode="tool")
+    assert format is not None
+    assert not format.non_generated_fields
     assert utils.format_snapshot(format) == snapshot(
         {
             "name": "Empty",
@@ -167,3 +171,57 @@ def test_resolve_format_sets_mode() -> None:
     format_strict = llm.formatting.ensure_format_has_mode(format, "strict")
     assert format_strict is not None
     assert format_strict.mode == "strict"
+
+
+def test_call_args_fields_none() -> None:
+    """Test that call_args_fields returns empty set for None format."""
+    format = llm.format(None)
+    assert format is None
+
+
+def test_call_args_fields_simple_model() -> None:
+    """Test call_args_fields with a model containing NonGeneratedField field."""
+
+    class Book(BaseModel):
+        title: Annotated[str, llm.formatting.NonGeneratedField()]
+        author: Annotated[str, llm.formatting.NonGeneratedField()]
+        summary: str
+
+    format = llm.format(Book)
+    assert format is not None
+    assert format.non_generated_fields == {"title", "author"}
+    assert utils.format_snapshot(format) == snapshot(
+        {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {"summary": {"title": "Summary", "type": "string"}},
+                "required": ["summary"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": None,
+            "formatting_instructions": None,
+        }
+    )
+
+
+def test_call_args_fields_nested_model_errors() -> None:
+    """Test that nested models with NonGeneratedField fields raise an error."""
+
+    class Inner(BaseModel):
+        field_from_call: Annotated[str, llm.formatting.NonGeneratedField()]
+        normal_field: str
+
+    class Outer(BaseModel):
+        inner: Inner
+        outer_field: str
+
+    with pytest.raises(ValueError, match="NonGeneratedField.*nested"):
+        llm.format(Outer)
+
+    class Outermost(BaseModel):
+        outer: Outer
+
+    with pytest.raises(ValueError, match="NonGeneratedField.*nested"):
+        llm.format(Outermost)
