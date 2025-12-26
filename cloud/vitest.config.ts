@@ -15,7 +15,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["api", "auth", "db"],
+      include: ["api", "auth", "db", "payments"],
       exclude: ["**/index.ts", ...coverageConfigDefaults.exclude],
       thresholds: {
         global: {

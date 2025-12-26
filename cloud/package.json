@@ -75,6 +75,7 @@
     "recharts": "2.15.4",
     "shiki": "^3.4.2",
     "sonner": "^2.0.7",
+    "stripe": "^17.7.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.11",
     "tailwindcss-animate": "^1.0.7",
