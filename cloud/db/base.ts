@@ -35,14 +35,16 @@
  * ```
  */
 
-import { Effect } from "effect";
+import { Context, Effect } from "effect";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
+import { Stripe } from "@/payments";
 import {
   type AlreadyExistsError,
   type DatabaseError,
   type DeletedUserError,
   type NotFoundError,
   PermissionDeniedError,
+  StripeError,
 } from "@/errors";
 
 // =============================================================================
@@ -132,55 +134,71 @@ export type HasParentParams<T extends string> =
 // =============================================================================
 
 /**
- * Transforms a service type by removing the DrizzleORM requirement from all methods.
+ * Transforms a service type by removing all dependencies from methods.
  *
- * This represents a "ready" service where the DrizzleORM client has been provided.
- * Methods return `Effect<A, E>` instead of `Effect<A, E, DrizzleORM>`.
+ * This represents a "ready" service where all dependencies (DrizzleORM, Stripe, etc.)
+ * have been provided. Methods return `Effect<A, E>` instead of `Effect<A, E, R>`.
+ *
+ * Handles services that depend on:
+ * - DrizzleORM only
+ * - Stripe only
+ * - Both DrizzleORM and Stripe (DrizzleORM | Stripe)
  *
  * Also handles nested objects (like `audits`) by recursively applying the transformation.
  *
  * @example
  * ```ts
- * class Users extends BaseEffectService<...> {
- *   create(args): Effect<User, Error, DrizzleORM> { ... }
+ * class Organizations {
+ *   create(args): Effect<Org, Error, DrizzleORM | Stripe> { ... }
  * }
  *
- * type ReadyUsers = Ready<Users>;
- * // ReadyUsers.create returns Effect<User, Error> (no DrizzleORM requirement)
+ * type ReadyOrganizations = Ready<Organizations>;
+ * // ReadyOrganizations.create returns Effect<Org, Error> (no requirements)
  * ```
  */
 export type Ready<T> = {
   [K in keyof T]: T[K] extends (
     ...args: infer A
-  ) => Effect.Effect<infer R, infer E, DrizzleORM>
+  ) => Effect.Effect<infer R, infer E, DrizzleORM | Stripe>
     ? (...args: A) => Effect.Effect<R, E>
-    : T[K] extends object
-      ? Ready<T[K]>
-      : never;
+    : T[K] extends (
+          ...args: infer A
+        ) => Effect.Effect<infer R, infer E, DrizzleORM>
+      ? (...args: A) => Effect.Effect<R, E>
+      : T[K] extends (
+            ...args: infer A
+          ) => Effect.Effect<infer R, infer E, Stripe>
+        ? (...args: A) => Effect.Effect<R, E>
+        : T[K] extends object
+          ? Ready<T[K]>
+          : never;
 };
 
 /**
- * Creates a "ready" version of a service with DrizzleORM pre-provided.
+ * Creates a "ready" version of a service with all dependencies pre-provided.
  *
- * Wraps all methods on the service instance to automatically provide the
- * DrizzleORM client, so callers don't need to manage that dependency.
+ * Wraps all methods on the service instance to automatically provide
+ * DrizzleORM and Stripe, so callers don't need to manage those dependencies.
  *
  * Also handles nested objects (like `audits`) by recursively wrapping their methods.
  *
  * @param client - The DrizzleORM client instance
+ * @param stripe - The Stripe client instance
  * @param service - The service instance to wrap
- * @returns A new object with all methods wrapped to provide the client
+ * @returns A new object with all methods wrapped to provide both clients
  *
  * @example
  * ```ts
  * const client = yield* DrizzleORM;
- * const users = makeReady(client, new Users());
+ * const stripe = yield* Stripe;
+ * const organizations = makeReady(client, stripe, new Organizations(...));
  *
- * // Now users.create() returns Effect<User, Error> (no DrizzleORM requirement)
+ * // Now methods return Effect<T, E> (no DrizzleORM or Stripe requirement)
  * ```
  */
 export const makeReady = <T extends object>(
   client: DrizzleORMClient,
+  stripe: Context.Tag.Service<typeof Stripe>,
   service: T,
 ): Ready<T> => {
   const proto = Object.getPrototypeOf(service) as object;
@@ -194,7 +212,7 @@ export const makeReady = <T extends object>(
 
   type WrappedMethod = (...args: unknown[]) => Effect.Effect<unknown, unknown>;
 
-  // Helper to wrap a method with DrizzleORM provision
+  // Helper to wrap a method with both DrizzleORM and Stripe provision
   const wrapMethod =
     (method: (...args: unknown[]) => unknown): WrappedMethod =>
     (...args: unknown[]) =>
@@ -202,9 +220,12 @@ export const makeReady = <T extends object>(
         method.apply(service, args) as Effect.Effect<
           unknown,
           unknown,
-          DrizzleORM
+          DrizzleORM | Stripe
         >
-      ).pipe(Effect.provideService(DrizzleORM, client));
+      ).pipe(
+        Effect.provideService(DrizzleORM, client),
+        Effect.provideService(Stripe, stripe),
+      );
 
   // Cache wrapped methods to ensure consistent identity
   const wrappedMethods = new Map<string | symbol, WrappedMethod>();
@@ -236,7 +257,7 @@ export const makeReady = <T extends object>(
       if (value && typeof value === "object" && !Array.isArray(value)) {
         let wrapped = wrappedObjects.get(prop);
         if (!wrapped) {
-          wrapped = makeReady(client, value as object);
+          wrapped = makeReady(client, stripe, value as object);
           wrappedObjects.set(prop, wrapped);
         }
         return wrapped;
@@ -691,8 +712,9 @@ export abstract class BaseAuthenticatedEffectService<
     | NotFoundError
     | PermissionDeniedError
     | DeletedUserError
-    | DatabaseError,
-    DrizzleORM
+    | DatabaseError
+    | StripeError,
+    DrizzleORM | Stripe
   >;
 
   /**

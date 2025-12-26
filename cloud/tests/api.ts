@@ -17,9 +17,10 @@ import {
 } from "@effect/platform";
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
+import { DrizzleORM } from "@/db/client";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser, PublicOrganization } from "@/db/schema";
-import { TEST_DATABASE_URL } from "@/tests/db";
+import { TEST_DATABASE_URL, DefaultMockStripe } from "@/tests/db";
 
 // Re-export expect from vitest
 export { expect };
@@ -29,11 +30,19 @@ export { expect };
 // ============================================================================
 
 /**
+ * Creates a Database layer with MockStripe for testing.
+ */
+function createTestDatabaseLayer(connectionString: string) {
+  return Database.Default.pipe(
+    Layer.provide(DrizzleORM.layer({ connectionString }).pipe(Layer.orDie)),
+    Layer.provide(DefaultMockStripe),
+  ).pipe(Layer.orDie);
+}
+
+/**
  * Layer that provides Database for API handler tests.
  */
-const TestDatabaseLayer = Database.Live({
-  connectionString: TEST_DATABASE_URL,
-}).pipe(Layer.orDie);
+const TestDatabaseLayer = createTestDatabaseLayer(TEST_DATABASE_URL);
 
 /**
  * Type for effect test functions that accept Database as dependency.
@@ -109,7 +118,7 @@ function createTestWebHandler(
   const services = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: "test" }),
     Layer.succeed(AuthenticatedUser, authenticatedUser),
-    Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    createTestDatabaseLayer(databaseUrl),
   );
 
   const ApiWithDependencies = Layer.mergeAll(
@@ -241,7 +250,7 @@ function createSequentialDescribe(
       databaseUrl = TEST_DATABASE_URL;
 
       // Create database layer for setup operations
-      const dbLayer = Database.Live({ connectionString: databaseUrl });
+      const dbLayer = createTestDatabaseLayer(databaseUrl);
 
       // Create user and organization
       const { owner, org } = await Effect.runPromise(
@@ -292,7 +301,7 @@ function createSequentialDescribe(
 
       // Clean up database - delete org first (cascades), then user
       if (ownerRef?.id) {
-        const dbLayer = Database.Live({ connectionString: databaseUrl });
+        const dbLayer = createTestDatabaseLayer(databaseUrl);
 
         await Effect.runPromise(
           Effect.gen(function* () {
@@ -374,9 +383,7 @@ function createSimpleTestWebHandler() {
   );
 
   // Database layer
-  const dbLayer = Database.Live({ connectionString: databaseUrl }).pipe(
-    Layer.orDie,
-  );
+  const dbLayer = createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie);
 
   const allServices = Layer.merge(simpleServices, dbLayer);
 

@@ -8,6 +8,40 @@ export type { Result } from "./types";
 export type AppServices = SettingsService | Database | AuthService;
 
 /**
+ * Creates the application services layer with Database, Settings, and Auth.
+ */
+function createAppServicesLayer(databaseUrl: string) {
+  const stripeApiKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeApiKey) {
+    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
+  }
+
+  return Layer.mergeAll(
+    Layer.succeed(SettingsService, getSettings()),
+    Database.Live({
+      database: { connectionString: databaseUrl },
+      stripe: { apiKey: stripeApiKey },
+    }).pipe(Layer.orDie),
+    Layer.succeed(AuthService, createAuthService()),
+  );
+}
+
+/**
+ * Runs an effect with the application services layer and returns an Either result.
+ */
+async function runEffectWithServices<A, E>(
+  effect: Effect.Effect<A, E, AppServices>,
+  databaseUrl: string,
+): Promise<Either.Either<A, E>> {
+  const appServicesLayer = createAppServicesLayer(databaseUrl);
+  return effect.pipe(
+    Effect.either,
+    Effect.provide(appServicesLayer),
+    Effect.runPromise,
+  );
+}
+
+/**
  * Runs an Effect that returns a Response object.
  * Use for auth flows that return HTTP responses (redirects, cookies, etc.).
  */
@@ -19,17 +53,7 @@ export async function runEffectResponse<E extends { message: string }>(
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
-  const appServicesLayer = Layer.mergeAll(
-    Layer.succeed(SettingsService, getSettings()),
-    Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
-    Layer.succeed(AuthService, createAuthService()),
-  );
-
-  const result = await effect.pipe(
-    Effect.either,
-    Effect.provide(appServicesLayer),
-    Effect.runPromise,
-  );
+  const result = await runEffectWithServices(effect, databaseUrl);
 
   if (Either.isRight(result)) {
     return result.right;
@@ -52,17 +76,7 @@ export async function runEffect<A, E extends { message: string }>(
     return { success: false, error: "Database not configured" };
   }
 
-  const appServicesLayer = Layer.mergeAll(
-    Layer.succeed(SettingsService, getSettings()),
-    Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
-    Layer.succeed(AuthService, createAuthService()),
-  );
-
-  const result = await effect.pipe(
-    Effect.either,
-    Effect.provide(appServicesLayer),
-    Effect.runPromise,
-  );
+  const result = await runEffectWithServices(effect, databaseUrl);
 
   if (Either.isRight(result)) {
     return { success: true, data: result.right };

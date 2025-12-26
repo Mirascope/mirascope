@@ -60,11 +60,14 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  StripeError,
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
+import { Stripe } from "@/payments";
 
 import {
+  users,
   organizations,
   organizationMemberships,
   organizationMembershipAudit,
@@ -81,6 +84,7 @@ const publicFields = {
   id: organizations.id,
   name: organizations.name,
   slug: organizations.slug,
+  stripeCustomerId: organizations.stripeCustomerId,
 };
 
 /**
@@ -174,98 +178,159 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * no organization exists yet. The creating user automatically becomes
    * the organization's owner.
    *
-   * Performs an atomic transaction:
-   * 1. Insert the organization
-   * 2. Create an OWNER membership for the user
-   * 3. Create an audit log for the OWNER grant
+   * Creates a Stripe customer first, then performs an atomic database transaction:
+   * 1. Fetch the creating user's email
+   * 2. Generate UUID for the organization
+   * 3. Create Stripe customer with email, name, and metadata
+   * 4. Insert the organization with Stripe customer ID
+   * 5. Create an OWNER membership for the user
+   * 6. Create an audit log for the OWNER grant
+   *
+   * If the database transaction fails, the Stripe customer is automatically deleted
+   * to prevent stranded resources.
    *
    * @param args.userId - The user creating the organization (becomes OWNER)
-   * @param args.data - Organization data
+   * @param args.data - Organization data (must include name and slug)
    * @returns The created organization with the user's role
-   * @throws AlreadyExistsError - If an organization with this name exists
+   * @throws NotFoundError - If the user doesn't exist
+   * @throws AlreadyExistsError - If an organization with this slug exists
    * @throws DatabaseError - If the database operation fails
+   * @throws StripeError - If Stripe customer creation fails
    */
   create({
     userId,
     data,
   }: {
     userId: string;
-    data: NewOrganization;
+    data: Omit<NewOrganization, "stripeCustomerId">;
   }): Effect.Effect<
     PublicOrganizationWithMembership,
-    AlreadyExistsError | DatabaseError,
-    DrizzleORM
+    AlreadyExistsError | DatabaseError | NotFoundError | StripeError,
+    DrizzleORM | Stripe
   > {
     return Effect.gen(function* () {
       const client = yield* DrizzleORM;
+      const stripe = yield* Stripe;
 
-      return yield* client.withTransaction(
-        Effect.gen(function* () {
-          // Insert the organization
-          const results = yield* client
-            .insert(organizations)
-            .values({ name: data.name, slug: data.slug })
-            .returning(publicFields)
-            .pipe(
-              Effect.mapError((e): AlreadyExistsError | DatabaseError =>
-                isUniqueConstraintError(e.cause)
-                  ? new AlreadyExistsError({
-                      message: "An organization with this slug already exists",
-                      resource: "organization",
-                    })
-                  : new DatabaseError({
-                      message: "Failed to create organization",
+      // Fetch the creator's email for Stripe customer
+      const [user] = yield* client
+        .select({ email: users.email })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to fetch user for organization creation",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!user) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `User with id ${userId} not found`,
+            resource: "user",
+          }),
+        );
+      }
+
+      // Generate a UUID for the organization we can use for Stripe
+      const organizationId = crypto.randomUUID();
+
+      // Create Stripe customer with organization as the business
+      const { id: stripeCustomerId } = yield* stripe.customers.create({
+        email: user.email, // Primary contact email
+        name: data.name, // Shows as "Business Name" in Stripe UI
+        metadata: {
+          organizationId,
+          organizationName: data.name,
+          organizationSlug: data.slug,
+        },
+      });
+
+      // Create organization in transaction with membership creation
+      return yield* client
+        .withTransaction(
+          Effect.gen(function* () {
+            // Insert the organization with the same UUID
+            const [organization] = yield* client
+              .insert(organizations)
+              .values({
+                id: organizationId,
+                name: data.name,
+                slug: data.slug,
+                stripeCustomerId,
+              })
+              .returning(publicFields)
+              .pipe(
+                Effect.mapError((e): AlreadyExistsError | DatabaseError =>
+                  isUniqueConstraintError(e.cause)
+                    ? new AlreadyExistsError({
+                        message:
+                          "An organization with this slug already exists",
+                        resource: "organization",
+                      })
+                    : new DatabaseError({
+                        message: "Failed to create organization",
+                        cause: e,
+                      }),
+                ),
+              );
+
+            // Create OWNER membership
+            yield* client
+              .insert(organizationMemberships)
+              .values({
+                memberId: userId,
+                organizationId: organization.id,
+                role: "OWNER",
+              })
+              .pipe(
+                Effect.mapError(
+                  (e) =>
+                    new DatabaseError({
+                      message: "Failed to create organization membership",
                       cause: e,
                     }),
-              ),
-            );
+                ),
+              );
 
-          const organization = results[0] as PublicOrganization;
+            // Create audit log for OWNER grant
+            yield* client
+              .insert(organizationMembershipAudit)
+              .values({
+                organizationId: organization.id,
+                actorId: userId,
+                targetId: userId,
+                action: "GRANT",
+                newRole: "OWNER",
+              })
+              .pipe(
+                Effect.mapError(
+                  (e) =>
+                    new DatabaseError({
+                      message: "Failed to create audit log",
+                      cause: e,
+                    }),
+                ),
+              );
 
-          // Create OWNER membership
-          yield* client
-            .insert(organizationMemberships)
-            .values({
-              memberId: userId,
-              organizationId: organization.id,
-              role: "OWNER",
-            })
-            .pipe(
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to create organization membership",
-                    cause: e,
-                  }),
-              ),
-            );
-
-          // Create audit log for OWNER grant
-          yield* client
-            .insert(organizationMembershipAudit)
-            .values({
-              organizationId: organization.id,
-              actorId: userId,
-              targetId: userId,
-              action: "GRANT",
-              newRole: "OWNER",
-            })
-            .pipe(
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to create audit log",
-                    cause: e,
-                  }),
-              ),
-            );
-
-          return {
-            ...organization,
-            role: "OWNER" as OrganizationRole,
-          };
-        }),
-      );
+            return {
+              ...organization,
+              role: "OWNER" as OrganizationRole,
+            };
+          }),
+        )
+        .pipe(
+          Effect.onError(() =>
+            stripe.customers
+              .del(stripeCustomerId)
+              .pipe(Effect.catchAll(() => Effect.void)),
+          ),
+        );
     });
   }
 
@@ -296,6 +361,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
           id: organizations.id,
           name: organizations.name,
           slug: organizations.slug,
+          stripeCustomerId: organizations.stripeCustomerId,
           role: organizationMemberships.role,
         })
         .from(organizationMemberships)

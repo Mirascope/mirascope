@@ -1,14 +1,15 @@
-import { Effect, Layer, Config, Option } from "effect";
-import { it as vitestIt, describe, expect } from "@effect/vitest";
+import { Context, Effect, Layer, Config, Option } from "effect";
+import { it as vitestIt, describe, expect, assert } from "@effect/vitest";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
+import { Stripe } from "@/payments";
 import fs from "fs";
 
 // Re-export describe and expect for convenience
-export { describe, expect };
+export { describe, expect, assert };
 
 // Get the test database URL from the file written by global-setup.ts
 function getTestDatabaseUrl(): string {
@@ -41,6 +42,132 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
 /**
+ * Builder for creating mock Stripe layers that mirrors the Stripe API structure.
+ *
+ * @example Mock with static values
+ * ```ts
+ * const mockStripe = new MockStripe()
+ *   .customers.create({ id: "cus_123", email: "test@example.com", ... })
+ *   .build();
+ * ```
+ *
+ * @example Mock with function (for spying or dynamic values)
+ * ```ts
+ * const createSpy = vi.fn();
+ * const mockStripe = new MockStripe()
+ *   .customers.create((params) => {
+ *     createSpy(params);
+ *     return { id: "cus_123", email: params.email, ... };
+ *   })
+ *   .build();
+ * ```
+ *
+ * @example Mock multiple methods
+ * ```ts
+ * const mockStripe = new MockStripe()
+ *   .customers.create({ id: "cus_123", ... })
+ *   .customers.del({ id: "cus_123", deleted: true })
+ *   .build();
+ * ```
+ */
+export class MockStripe {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private createCustomerResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private deleteCustomerResult?: any;
+
+  /**
+   * Stripe customers resource mock.
+   */
+  get customers() {
+    return {
+      /**
+       * Mock `customers.create()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      create: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.createCustomerResult = result;
+        return this;
+      },
+      /**
+       * Mock `customers.del()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      del: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.deleteCustomerResult = result;
+        return this;
+      },
+    };
+  }
+
+  /**
+   * Builds a Layer<Stripe> with the configured mocks.
+   */
+  build(): Layer.Layer<Stripe> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const createCustomerResult = this.createCustomerResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const deleteCustomerResult = this.deleteCustomerResult;
+
+    return Layer.succeed(Stripe, {
+      customers: {
+        create: (params: {
+          email?: string;
+          name?: string;
+          metadata?: Record<string, string>;
+        }) => {
+          if (createCustomerResult !== undefined) {
+            // If it's a function, call it with params
+            if (typeof createCustomerResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(createCustomerResult(params));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(createCustomerResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            id: `cus_mock_${crypto.randomUUID()}`,
+            object: "customer" as const,
+            created: Date.now(),
+            livemode: false,
+            email: params.email || null,
+            name: params.name || null,
+            metadata: params.metadata || {},
+          });
+        },
+        del: (id: string) => {
+          if (deleteCustomerResult !== undefined) {
+            // If it's a function, call it with id
+            if (typeof deleteCustomerResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(deleteCustomerResult(id));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(deleteCustomerResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            id,
+            object: "customer" as const,
+            deleted: true,
+          });
+        },
+      },
+    } as unknown as Context.Tag.Service<typeof Stripe>);
+  }
+}
+
+/**
+ * Default MockStripe layer for tests that don't need spies.
+ */
+export const DefaultMockStripe = new MockStripe().build();
+
+/**
  * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
  * `SqlClient` services for tests.
  *
@@ -51,7 +178,10 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
  */
 export const TestDatabase: Layer.Layer<
   Database | DrizzleORM | SqlClient.SqlClient
-> = Database.Default.pipe(Layer.provideMerge(TestDrizzleORM));
+> = Database.Default.pipe(
+  Layer.provideMerge(TestDrizzleORM),
+  Layer.provide(DefaultMockStripe),
+);
 
 // =============================================================================
 // Rollback transaction wrapper
@@ -249,9 +379,11 @@ export class MockDrizzleORM {
   }
 
   /**
-   * Builds a Layer<Database> with the mocked DrizzleORM.
+   * Builds a Layer<Database> with the mocked DrizzleORM and optional custom Stripe layer.
+   *
+   * @param stripeLayer - Optional custom Stripe layer. If not provided, uses DefaultMockStripe.
    */
-  build(): Layer.Layer<Database> {
+  build(stripeLayer?: Layer.Layer<Stripe>): Layer.Layer<Database> {
     let selectIndex = 0;
     let insertIndex = 0;
     let updateIndex = 0;
@@ -323,7 +455,10 @@ export class MockDrizzleORM {
     } as unknown as DrizzleORMClient;
 
     const mockDrizzleORMLayer = Layer.succeed(DrizzleORM, drizzleMock);
-    return Database.Default.pipe(Layer.provide(mockDrizzleORMLayer));
+    return Database.Default.pipe(
+      Layer.provide(mockDrizzleORMLayer),
+      Layer.provide(stripeLayer ?? DefaultMockStripe),
+    );
   }
 }
 

@@ -5,6 +5,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  StripeError,
 } from "@/errors";
 import { createSlugSchema } from "@/db/slug";
 
@@ -18,12 +19,14 @@ export const OrganizationSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   slug: Schema.String,
+  stripeCustomerId: Schema.String,
 });
 
 export const OrganizationWithMembershipSchema = Schema.Struct({
   id: Schema.String,
   name: Schema.String,
   slug: Schema.String,
+  stripeCustomerId: Schema.String,
   role: OrganizationRoleSchema,
 });
 
@@ -66,8 +69,10 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
     HttpApiEndpoint.post("create", "/organizations")
       .setPayload(CreateOrganizationRequestSchema)
       .addSuccess(OrganizationWithMembershipSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
       .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(StripeError, { status: StripeError.status }),
   )
   .add(
     HttpApiEndpoint.get("get", "/organizations/:id")
