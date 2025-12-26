@@ -75,6 +75,10 @@ export class MockStripe {
   private createCustomerResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private deleteCustomerResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private createSubscriptionResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private configResult?: any;
 
   /**
    * Stripe customers resource mock.
@@ -103,6 +107,33 @@ export class MockStripe {
   }
 
   /**
+   * Stripe subscriptions resource mock.
+   */
+  get subscriptions() {
+    return {
+      /**
+       * Mock `subscriptions.create()` - accepts either a static value or a function.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      create: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.createSubscriptionResult = result;
+        return this;
+      },
+    };
+  }
+
+  /**
+   * Mock Stripe config - accepts a config object.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  config(result: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    this.configResult = result;
+    return this;
+  }
+
+  /**
    * Builds a Layer<Stripe> with the configured mocks.
    */
   build(): Layer.Layer<Stripe> {
@@ -110,6 +141,10 @@ export class MockStripe {
     const createCustomerResult = this.createCustomerResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const deleteCustomerResult = this.deleteCustomerResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const createSubscriptionResult = this.createSubscriptionResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const configResult = this.configResult;
 
     return Layer.succeed(Stripe, {
       customers: {
@@ -157,6 +192,46 @@ export class MockStripe {
             deleted: true,
           });
         },
+      },
+      subscriptions: {
+        create: (params: {
+          customer: string;
+          items: Array<{ price: string }>;
+          metadata?: Record<string, string>;
+        }) => {
+          if (createSubscriptionResult !== undefined) {
+            // If it's a function, call it with params
+            if (typeof createSubscriptionResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              return Effect.succeed(createSubscriptionResult(params));
+            }
+            // Otherwise return the static value
+            return Effect.succeed(createSubscriptionResult);
+          }
+
+          // Default implementation
+          return Effect.succeed({
+            id: `sub_mock_${crypto.randomUUID()}`,
+            object: "subscription" as const,
+            created: Date.now(),
+            customer: params.customer,
+            items: {
+              object: "list" as const,
+              data: params.items.map((item) => ({
+                id: `si_mock_${crypto.randomUUID()}`,
+                object: "subscription_item" as const,
+                price: { id: item.price },
+              })),
+            },
+            status: "active" as const,
+            metadata: params.metadata || {},
+          });
+        },
+      },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      config: configResult ?? {
+        apiKey: "sk_test_mock",
+        routerPriceId: "price_test_mock_for_testing",
       },
     } as unknown as Context.Tag.Service<typeof Stripe>);
   }

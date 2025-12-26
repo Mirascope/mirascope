@@ -12,6 +12,7 @@ export { describe, expect };
 const getTestStripe = () =>
   Stripe.layer({
     apiKey: "sk_test_123",
+    routerPriceId: "price_test_mock",
   });
 
 /**

@@ -64,7 +64,7 @@ import {
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
-import { Stripe } from "@/payments";
+import { Stripe, createCustomer, deleteCustomer } from "@/payments";
 
 import {
   users,
@@ -178,16 +178,17 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * no organization exists yet. The creating user automatically becomes
    * the organization's owner.
    *
-   * Creates a Stripe customer first, then performs an atomic database transaction:
+   * Creates a Stripe customer and subscription, then performs an atomic database transaction:
    * 1. Fetch the creating user's email
    * 2. Generate UUID for the organization
    * 3. Create Stripe customer with email, name, and metadata
-   * 4. Insert the organization with Stripe customer ID
-   * 5. Create an OWNER membership for the user
-   * 6. Create an audit log for the OWNER grant
+   * 4. Create Stripe subscription for usage-based credits
+   * 5. Insert the organization with Stripe customer ID
+   * 6. Create an OWNER membership for the user
+   * 7. Create an audit log for the OWNER grant
    *
-   * If the database transaction fails, the Stripe customer is automatically deleted
-   * to prevent stranded resources.
+   * If the database transaction fails, the Stripe customer (and its subscription) is
+   * automatically deleted to prevent stranded resources.
    *
    * @param args.userId - The user creating the organization (becomes OWNER)
    * @param args.data - Organization data (must include name and slug)
@@ -195,7 +196,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * @throws NotFoundError - If the user doesn't exist
    * @throws AlreadyExistsError - If an organization with this slug exists
    * @throws DatabaseError - If the database operation fails
-   * @throws StripeError - If Stripe customer creation fails
+   * @throws StripeError - If Stripe customer or subscription creation fails
    */
   create({
     userId,
@@ -210,7 +211,6 @@ export class Organizations extends BaseAuthenticatedEffectService<
   > {
     return Effect.gen(function* () {
       const client = yield* DrizzleORM;
-      const stripe = yield* Stripe;
 
       // Fetch the creator's email for Stripe customer
       const [user] = yield* client
@@ -240,15 +240,12 @@ export class Organizations extends BaseAuthenticatedEffectService<
       // Generate a UUID for the organization we can use for Stripe
       const organizationId = crypto.randomUUID();
 
-      // Create Stripe customer with organization as the business
-      const { id: stripeCustomerId } = yield* stripe.customers.create({
-        email: user.email, // Primary contact email
-        name: data.name, // Shows as "Business Name" in Stripe UI
-        metadata: {
-          organizationId,
-          organizationName: data.name,
-          organizationSlug: data.slug,
-        },
+      // Create Stripe customer and subscription for organization
+      const { customerId: stripeCustomerId } = yield* createCustomer({
+        organizationId,
+        organizationName: data.name,
+        organizationSlug: data.slug,
+        email: user.email,
       });
 
       // Create organization in transaction with membership creation
@@ -326,9 +323,9 @@ export class Organizations extends BaseAuthenticatedEffectService<
         )
         .pipe(
           Effect.onError(() =>
-            stripe.customers
-              .del(stripeCustomerId)
-              .pipe(Effect.catchAll(() => Effect.void)),
+            deleteCustomer(stripeCustomerId).pipe(
+              Effect.catchAll(() => Effect.void),
+            ),
           ),
         );
     });

@@ -82,6 +82,7 @@ describe("Stripe", () => {
     it("creates a layer with provided configuration", () => {
       const layer = Stripe.layer({
         apiKey: "sk_test_123",
+        routerPriceId: "price_test",
         apiVersion: "2023-10-16",
       });
 
@@ -92,6 +93,7 @@ describe("Stripe", () => {
     it("creates a layer with minimal configuration", () => {
       const layer = Stripe.layer({
         apiKey: "sk_test_123",
+        routerPriceId: "price_test",
       });
 
       expect(layer).toBeDefined();

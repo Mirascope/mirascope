@@ -54,6 +54,8 @@ import { StripeError } from "@/errors";
 export interface StripeConfig {
   /** Stripe secret API key (sk_test_... or sk_live_...) */
   apiKey: string;
+  /** Stripe price ID for usage-based credits (metered billing) */
+  routerPriceId: string;
   /** Optional API version (defaults to Stripe SDK default) */
   apiVersion?: string;
 }
@@ -251,23 +253,31 @@ export const wrapStripeClient = (
  * );
  * ```
  */
-export class Stripe extends Context.Tag("Stripe")<
-  Stripe,
-  WrapWithEffect<OriginalStripe>
->() {
+/**
+ * Stripe service interface that includes both the wrapped client and configuration.
+ */
+export interface StripeService extends WrapWithEffect<OriginalStripe> {
+  /** Stripe configuration (includes routerPriceId for metered billing) */
+  config: StripeConfig;
+}
+
+export class Stripe extends Context.Tag("Stripe")<Stripe, StripeService>() {
   /**
    * Creates a Layer that provides the Stripe service.
    *
    * This layer initializes the Stripe SDK with the provided configuration
-   * and wraps it to return Effects instead of Promises.
+   * and wraps it to return Effects instead of Promises. The config is also
+   * exposed via the service for accessing application-level settings like
+   * routerPriceId.
    *
-   * @param config - Stripe configuration (apiKey, optional apiVersion)
+   * @param config - Stripe configuration (apiKey, routerPriceId, optional apiVersion)
    * @returns A Layer providing Stripe with no dependencies
    *
    * @example
    * ```ts
    * const StripeLive = Stripe.layer({
    *   apiKey: process.env.STRIPE_SECRET_KEY!,
+   *   routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID!,
    *   apiVersion: "2023-10-16"
    * });
    *
@@ -285,9 +295,15 @@ export class Stripe extends Context.Tag("Stripe")<
     });
 
     // Wrap it to return Effects
-    const stripe = wrapStripeClient(originalStripe);
+    const wrappedStripe = wrapStripeClient(originalStripe);
 
-    // Return a Layer that provides the wrapped client
-    return Layer.succeed(Stripe, stripe);
+    // Create service with both client and config
+    const stripeService: StripeService = {
+      ...wrappedStripe,
+      config,
+    };
+
+    // Return a Layer that provides the service
+    return Layer.succeed(Stripe, stripeService);
   };
 }

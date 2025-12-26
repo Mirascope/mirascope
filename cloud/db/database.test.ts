@@ -7,7 +7,7 @@ describe("Database", () => {
     it("creates a Database layer from config", () => {
       const layer = Database.Live({
         database: { connectionString: "postgresql://test" },
-        stripe: { apiKey: "sk_test_key" },
+        stripe: { apiKey: "sk_test_key", routerPriceId: "price_test" },
       });
 
       // Verify it returns a Layer
