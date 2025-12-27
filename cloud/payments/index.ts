@@ -7,25 +7,28 @@
  * ## Quick Start
  *
  * ```ts
- * import { Stripe } from "@/payments";
- * import { StripeError } from "@/errors";
+ * import { Payments } from "@/payments";
  *
  * const program = Effect.gen(function* () {
- *   const stripe = yield* Stripe;
+ *   const payments = yield* Payments;
  *
- *   const customer = yield* stripe.customers.create({
- *     email: "user@example.com"
+ *   const result = yield* payments.customers.create({
+ *     organizationId: "org_123",
+ *     organizationName: "Acme Corp",
+ *     organizationSlug: "acme-corp",
+ *     email: "billing@acme.com",
  *   });
  *
- *   return customer;
+ *   return result;
  * });
  *
  * // Provide the layer
  * program.pipe(
- *   Effect.provide(Stripe.layer({ apiKey: "sk_test_..." }))
+ *   Effect.provide(Payments.Live({ apiKey: "sk_...", routerPriceId: "price_..." }))
  * );
  * ```
  */
 
 export * from "@/payments/client";
 export * from "@/payments/customers";
+export * from "@/payments/service";

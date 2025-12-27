@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
-import { getCustomerBalance } from "@/payments";
+import { Payments } from "@/payments";
 import type {
   CreateOrganizationRequest,
   UpdateOrganizationRequest,
@@ -60,6 +60,7 @@ export const getOrganizationCreditsHandler = (organizationId: string) =>
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
 
     // First verify user has access to this organization
     const organization = yield* db.organizations.findById({
@@ -68,7 +69,9 @@ export const getOrganizationCreditsHandler = (organizationId: string) =>
     });
 
     // Get the customer balance from Stripe
-    const balance = yield* getCustomerBalance(organization.stripeCustomerId);
+    const balance = yield* payments.customers.getBalance(
+      organization.stripeCustomerId,
+    );
 
     return { balance };
   });

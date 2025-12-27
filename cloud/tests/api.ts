@@ -18,10 +18,10 @@ import {
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
-import { Stripe } from "@/payments";
+import { Payments } from "@/payments";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicUser, PublicOrganization } from "@/db/schema";
-import { TEST_DATABASE_URL, DefaultMockStripe } from "@/tests/db";
+import { TEST_DATABASE_URL, DefaultMockPayments } from "@/tests/db";
 
 // Re-export expect from vitest
 export { expect };
@@ -31,16 +31,16 @@ export { expect };
 // ============================================================================
 
 /**
- * Creates a Database layer with MockStripe for testing.
- * Provides both Database and Stripe services.
+ * Creates a Database layer with MockPayments for testing.
+ * Provides both Database and Payments services.
  */
 function createTestDatabaseLayer(connectionString: string) {
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provide(DrizzleORM.layer({ connectionString }).pipe(Layer.orDie)),
-      Layer.provide(DefaultMockStripe),
+      Layer.provide(DefaultMockPayments),
     ).pipe(Layer.orDie),
-    DefaultMockStripe,
+    DefaultMockPayments,
   );
 }
 
@@ -50,16 +50,16 @@ function createTestDatabaseLayer(connectionString: string) {
 const TestDatabaseLayer = createTestDatabaseLayer(TEST_DATABASE_URL);
 
 /**
- * Type for effect test functions that accept Database and Stripe as dependencies.
+ * Type for effect test functions that accept Database and Payments as dependencies.
  */
 type EffectTestFn = <A, E>(
   name: string,
-  fn: () => Effect.Effect<A, E, Database | Stripe>,
+  fn: () => Effect.Effect<A, E, Database | Payments>,
   timeout?: number,
 ) => void;
 
 /**
- * Wraps a test function to automatically provide Database and Stripe layers.
+ * Wraps a test function to automatically provide Database and Payments layers.
  */
 const wrapEffectTest =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

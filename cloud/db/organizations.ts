@@ -64,13 +64,7 @@ import {
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
-import {
-  Stripe,
-  createCustomer,
-  deleteCustomer,
-  updateCustomer,
-  cancelSubscriptions,
-} from "@/payments";
+import { Payments } from "@/payments";
 
 import {
   users,
@@ -213,10 +207,11 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }): Effect.Effect<
     PublicOrganizationWithMembership,
     AlreadyExistsError | DatabaseError | NotFoundError | StripeError,
-    DrizzleORM | Stripe
+    DrizzleORM | Payments
   > {
     return Effect.gen(function* () {
       const client = yield* DrizzleORM;
+      const payments = yield* Payments;
 
       // Fetch the creator's email for Stripe customer
       const [user] = yield* client
@@ -247,12 +242,14 @@ export class Organizations extends BaseAuthenticatedEffectService<
       const organizationId = crypto.randomUUID();
 
       // Create Stripe customer and subscription for organization
-      const { customerId: stripeCustomerId } = yield* createCustomer({
-        organizationId,
-        organizationName: data.name,
-        organizationSlug: data.slug,
-        email: user.email,
-      });
+      const { customerId: stripeCustomerId } = yield* payments.customers.create(
+        {
+          organizationId,
+          organizationName: data.name,
+          organizationSlug: data.slug,
+          email: user.email,
+        },
+      );
 
       // Create organization in transaction with membership creation
       return yield* client
@@ -329,9 +326,9 @@ export class Organizations extends BaseAuthenticatedEffectService<
         )
         .pipe(
           Effect.onError(() =>
-            deleteCustomer(stripeCustomerId).pipe(
-              Effect.catchAll(() => Effect.void),
-            ),
+            payments.customers
+              .delete(stripeCustomerId)
+              .pipe(Effect.catchAll(() => Effect.void)),
           ),
         );
     });
@@ -476,10 +473,11 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }): Effect.Effect<
     PublicOrganizationWithMembership,
     NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
-    DrizzleORM | Stripe
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
+      const payments = yield* Payments;
 
       // Authorize and get role
       const role = yield* this.authorize({
@@ -515,7 +513,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
 
       // Update Stripe customer if name or slug changed
       if (data.name !== undefined || data.slug !== undefined) {
-        yield* updateCustomer({
+        yield* payments.customers.update({
           customerId: updated.stripeCustomerId,
           organizationName: data.name,
           organizationSlug: data.slug,
@@ -549,10 +547,11 @@ export class Organizations extends BaseAuthenticatedEffectService<
   }): Effect.Effect<
     void,
     NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
-    DrizzleORM | Stripe
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
+      const payments = yield* Payments;
 
       // Authorize (only OWNER can delete)
       yield* this.authorize({
@@ -587,7 +586,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
       }
 
       // Cancel all active subscriptions before deleting
-      yield* cancelSubscriptions(org.stripeCustomerId);
+      yield* payments.customers.cancelSubscriptions(org.stripeCustomerId);
 
       // Delete the organization (cascade handles memberships and audits)
       yield* client

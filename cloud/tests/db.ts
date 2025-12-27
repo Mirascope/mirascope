@@ -1,14 +1,16 @@
-import { Context, Effect, Layer, Config, Option } from "effect";
-import { it as vitestIt, describe, expect, assert } from "@effect/vitest";
+import { Effect, Layer, Config, Option } from "effect";
+import { it as vitestIt, describe, expect } from "@effect/vitest";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
-import { Stripe } from "@/payments";
+import { DefaultMockPayments } from "@/tests/payments";
+import { Payments } from "@/payments";
 import fs from "fs";
+import assert from "node:assert";
 
-// Re-export describe and expect for convenience
+// Re-export describe, expect, and assert for convenience
 export { describe, expect, assert };
 
 // Get the test database URL from the file written by global-setup.ts
@@ -41,472 +43,8 @@ const TestPgClient = PgClient.layerConfig({
 export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
-/**
- * Builder for creating mock Stripe layers that mirrors the Stripe API structure.
- *
- * @example Mock with static values
- * ```ts
- * const mockStripe = new MockStripe()
- *   .customers.create({ id: "cus_123", email: "test@example.com", ... })
- *   .build();
- * ```
- *
- * @example Mock with function (for spying or dynamic values)
- * ```ts
- * const createSpy = vi.fn();
- * const mockStripe = new MockStripe()
- *   .customers.create((params) => {
- *     createSpy(params);
- *     return { id: "cus_123", email: params.email, ... };
- *   })
- *   .build();
- * ```
- *
- * @example Mock multiple methods
- * ```ts
- * const mockStripe = new MockStripe()
- *   .customers.create({ id: "cus_123", ... })
- *   .customers.del({ id: "cus_123", deleted: true })
- *   .build();
- * ```
- */
-export class MockStripe {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private createCustomerResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private retrieveCustomerResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private updateCustomerResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private deleteCustomerResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private createSubscriptionResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private listSubscriptionsResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private cancelSubscriptionResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private listCreditGrantsResult?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private configResult?: any;
-
-  /**
-   * Stripe customers resource mock.
-   */
-  get customers() {
-    return {
-      /**
-       * Mock `customers.create()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      create: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.createCustomerResult = result;
-        return this;
-      },
-      /**
-       * Mock `customers.retrieve()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      retrieve: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.retrieveCustomerResult = result;
-        return this;
-      },
-      /**
-       * Mock `customers.update()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      update: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.updateCustomerResult = result;
-        return this;
-      },
-      /**
-       * Mock `customers.del()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      del: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.deleteCustomerResult = result;
-        return this;
-      },
-    };
-  }
-
-  /**
-   * Stripe subscriptions resource mock.
-   */
-  get subscriptions() {
-    return {
-      /**
-       * Mock `subscriptions.create()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      create: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.createSubscriptionResult = result;
-        return this;
-      },
-      /**
-       * Mock `subscriptions.list()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      list: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.listSubscriptionsResult = result;
-        return this;
-      },
-      /**
-       * Mock `subscriptions.cancel()` - accepts either a static value or a function.
-       */
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      cancel: (result: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.cancelSubscriptionResult = result;
-        return this;
-      },
-    };
-  }
-
-  /**
-   * Stripe billing resource mock.
-   */
-  get billing() {
-    return {
-      creditGrants: {
-        /**
-         * Mock `billing.creditGrants.list()` - accepts either a static value or a function.
-         */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        list: (result: any) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          this.listCreditGrantsResult = result;
-          return this;
-        },
-      },
-    };
-  }
-
-  /**
-   * Mock Stripe config - accepts a config object.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  config(result: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    this.configResult = result;
-    return this;
-  }
-
-  /**
-   * Builds a Layer<Stripe> with the configured mocks.
-   */
-  build(): Layer.Layer<Stripe> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const createCustomerResult = this.createCustomerResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const retrieveCustomerResult = this.retrieveCustomerResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const updateCustomerResult = this.updateCustomerResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const deleteCustomerResult = this.deleteCustomerResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const createSubscriptionResult = this.createSubscriptionResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const listSubscriptionsResult = this.listSubscriptionsResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const cancelSubscriptionResult = this.cancelSubscriptionResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const listCreditGrantsResult = this.listCreditGrantsResult;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const configResult = this.configResult;
-
-    return Layer.succeed(Stripe, {
-      customers: {
-        create: (params: {
-          email?: string;
-          name?: string;
-          metadata?: Record<string, string>;
-        }) => {
-          if (createCustomerResult !== undefined) {
-            // If it's a function, call it with params
-            if (typeof createCustomerResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(createCustomerResult(params));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(createCustomerResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            id: `cus_mock_${crypto.randomUUID()}`,
-            object: "customer" as const,
-            created: Date.now(),
-            livemode: false,
-            email: params.email || null,
-            name: params.name || null,
-            metadata: params.metadata || {},
-          });
-        },
-        retrieve: (id: string) => {
-          if (retrieveCustomerResult !== undefined) {
-            // If it's a function, call it with id
-            if (typeof retrieveCustomerResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(retrieveCustomerResult(id));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(retrieveCustomerResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            id,
-            object: "customer" as const,
-            created: Date.now(),
-            livemode: false,
-            email: "mock@example.com",
-            name: "Mock Customer",
-            metadata: {
-              organizationId: "mock-org-id",
-              organizationName: "Mock Organization",
-              organizationSlug: "mock-organization",
-            },
-          });
-        },
-        update: (
-          id: string,
-          params: {
-            name?: string;
-            metadata?: Record<string, string>;
-          },
-        ) => {
-          if (updateCustomerResult !== undefined) {
-            // If it's a function, call it with id and params
-            if (typeof updateCustomerResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(updateCustomerResult(id, params));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(updateCustomerResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            id,
-            object: "customer" as const,
-            created: Date.now(),
-            livemode: false,
-            email: "mock@example.com",
-            name: params.name || "Mock Customer",
-            metadata: params.metadata || {},
-          });
-        },
-        del: (id: string) => {
-          if (deleteCustomerResult !== undefined) {
-            // If it's a function, call it with id
-            if (typeof deleteCustomerResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(deleteCustomerResult(id));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(deleteCustomerResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            id,
-            object: "customer" as const,
-            deleted: true,
-          });
-        },
-      },
-      subscriptions: {
-        create: (params: {
-          customer: string;
-          items: Array<{ price: string }>;
-          metadata?: Record<string, string>;
-        }) => {
-          if (createSubscriptionResult !== undefined) {
-            // If it's a function, call it with params
-            if (typeof createSubscriptionResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(createSubscriptionResult(params));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(createSubscriptionResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            id: `sub_mock_${crypto.randomUUID()}`,
-            object: "subscription" as const,
-            created: Date.now(),
-            customer: params.customer,
-            items: {
-              object: "list" as const,
-              data: params.items.map((item) => ({
-                id: `si_mock_${crypto.randomUUID()}`,
-                object: "subscription_item" as const,
-                price: { id: item.price },
-              })),
-            },
-            status: "active" as const,
-            metadata: params.metadata || {},
-          });
-        },
-        list: (params?: { customer?: string; status?: string }) => {
-          if (listSubscriptionsResult !== undefined) {
-            // If it's a function, call it with params
-            if (typeof listSubscriptionsResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(listSubscriptionsResult(params));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(listSubscriptionsResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            object: "list" as const,
-            data: [],
-            has_more: false,
-          });
-        },
-        cancel: (id: string) => {
-          if (cancelSubscriptionResult !== undefined) {
-            // If it's a function, call it with id
-            if (typeof cancelSubscriptionResult === "function") {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              return Effect.succeed(cancelSubscriptionResult(id));
-            }
-            // Otherwise return the static value
-            return Effect.succeed(cancelSubscriptionResult);
-          }
-
-          // Default implementation
-          return Effect.succeed({
-            id,
-            object: "subscription" as const,
-            status: "canceled" as const,
-          });
-        },
-      },
-      billing: {
-        creditGrants: {
-          list: () => {
-            if (listCreditGrantsResult !== undefined) {
-              // If it's a function, call it
-              if (typeof listCreditGrantsResult === "function") {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                return Effect.succeed(listCreditGrantsResult());
-              }
-              // Otherwise return the static value
-              return Effect.succeed(listCreditGrantsResult);
-            }
-
-            // Default implementation
-            return Effect.succeed({
-              object: "list" as const,
-              data: [
-                // Valid grant #1: USD, router price - SHOULD BE COUNTED ($7)
-                {
-                  amount: {
-                    monetary: {
-                      value: 700, // $7.00 in cents
-                      currency: "usd",
-                    },
-                  },
-                  applicability_config: {
-                    scope: {
-                      prices: [
-                        { id: "price_test_mock_for_testing" },
-                        { id: "price_other" },
-                      ],
-                    },
-                  },
-                },
-                // Valid grant #2: USD, router price - SHOULD BE COUNTED ($11)
-                {
-                  amount: {
-                    monetary: {
-                      value: 1100, // $11.00 in cents
-                      currency: "usd",
-                    },
-                  },
-                  applicability_config: {
-                    scope: {
-                      prices: [{ id: "price_test_mock_for_testing" }],
-                    },
-                  },
-                },
-                // Invalid: EUR currency - should NOT be counted
-                {
-                  amount: {
-                    monetary: {
-                      value: 500, // €5.00 in cents
-                      currency: "eur",
-                    },
-                  },
-                  applicability_config: {
-                    scope: {
-                      prices: [{ id: "price_test_mock_for_testing" }],
-                    },
-                  },
-                },
-                // Invalid: No monetary amount - should NOT be counted
-                {
-                  amount: {},
-                  applicability_config: {
-                    scope: {
-                      prices: [{ id: "price_test_mock_for_testing" }],
-                    },
-                  },
-                },
-                // Invalid: Different price - should NOT be counted
-                {
-                  amount: {
-                    monetary: {
-                      value: 1900, // $19.00 in cents
-                      currency: "usd",
-                    },
-                  },
-                  applicability_config: {
-                    scope: {
-                      prices: [{ id: "price_different" }],
-                    },
-                  },
-                },
-                // Invalid: No scope - should NOT be counted
-                {
-                  amount: {
-                    monetary: {
-                      value: 2300, // $23.00 in cents
-                      currency: "usd",
-                    },
-                  },
-                  applicability_config: {},
-                },
-              ],
-              has_more: false,
-            });
-          },
-        },
-      },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      config: configResult ?? {
-        apiKey: "sk_test_mock",
-        routerPriceId: "price_test_mock_for_testing",
-      },
-    } as unknown as Context.Tag.Service<typeof Stripe>);
-  }
-}
-
-/**
- * Default MockStripe layer for tests that don't need spies.
- */
-export const DefaultMockStripe = new MockStripe().build();
+// Re-export MockPayments and DefaultMockPayments for convenience
+export { MockPayments, DefaultMockPayments } from "@/tests/payments";
 
 /**
  * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
@@ -521,7 +59,7 @@ export const TestDatabase: Layer.Layer<
   Database | DrizzleORM | SqlClient.SqlClient
 > = Database.Default.pipe(
   Layer.provideMerge(TestDrizzleORM),
-  Layer.provide(DefaultMockStripe),
+  Layer.provide(DefaultMockPayments),
 );
 
 // =============================================================================
@@ -720,11 +258,11 @@ export class MockDrizzleORM {
   }
 
   /**
-   * Builds a Layer<Database> with the mocked DrizzleORM and optional custom Stripe layer.
+   * Builds a Layer<Database> with the mocked DrizzleORM and optional custom Payments layer.
    *
-   * @param stripeLayer - Optional custom Stripe layer. If not provided, uses DefaultMockStripe.
+   * @param paymentsLayer - Optional custom Payments layer. If not provided, uses MockPayments.
    */
-  build(stripeLayer?: Layer.Layer<Stripe>): Layer.Layer<Database> {
+  build(paymentsLayer?: Layer.Layer<Payments>): Layer.Layer<Database> {
     let selectIndex = 0;
     let insertIndex = 0;
     let updateIndex = 0;
@@ -798,7 +336,7 @@ export class MockDrizzleORM {
     const mockDrizzleORMLayer = Layer.succeed(DrizzleORM, drizzleMock);
     return Database.Default.pipe(
       Layer.provide(mockDrizzleORMLayer),
-      Layer.provide(stripeLayer ?? DefaultMockStripe),
+      Layer.provide(paymentsLayer ?? DefaultMockPayments),
     );
   }
 }
