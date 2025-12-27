@@ -70,8 +70,11 @@ describe("Stripe", () => {
     // Mock Stripe constructor to return our mock instance.
     // We need `as any` here because vi.mock transforms OriginalStripe into a mock,
     // but TypeScript doesn't know about vitest's mock transformation at compile time.
+    // Note: Must use regular function in vitest v4 (not arrow) because it's called with `new`
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (OriginalStripe as any).mockImplementation(() => mockStripe);
+    (OriginalStripe as any).mockImplementation(function () {
+      return mockStripe;
+    });
   });
 
   // ===========================================================================
