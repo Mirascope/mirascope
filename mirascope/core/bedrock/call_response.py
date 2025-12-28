@@ -97,12 +97,21 @@ class BedrockCallResponse(
     @computed_field
     @property
     def content(self) -> str:
-        """Returns the content of the chat completion for the 0th choice."""
+        """Returns the content of the chat completion for the 0th choice.
+
+        When thinking is enabled, the response may contain multiple content blocks
+        including 'thinking' blocks. This property extracts and concatenates all
+        text content from 'text' blocks, ignoring 'thinking' and 'toolUse' blocks.
+        """
         if not self.message:
             return ""
-        if content := self.message.get("content", []):
-            return content[0].get("text", "")
-        return ""
+        content_blocks = self.message.get("content", [])
+        if not content_blocks:
+            return ""
+        # Extract text from all content blocks that have a 'text' field
+        # This handles both regular responses and responses with thinking enabled
+        text_parts = [block.get("text", "") for block in content_blocks if "text" in block]
+        return "".join(text_parts)
 
     @computed_field
     @property

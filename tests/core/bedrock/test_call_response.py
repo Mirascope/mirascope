@@ -361,3 +361,97 @@ def test_bedrock_call_response_no_tool_types() -> None:
     )
     tools = call_response.tools
     assert tools is None  # Should return None when no tool types are provided
+
+
+def test_bedrock_call_response_with_thinking() -> None:
+    """Test that thinking blocks are properly handled and text is extracted correctly.
+
+    When thinking is enabled, Bedrock may return a response with mixed content blocks
+    including 'thinking' blocks. The content property should extract only the text
+    from 'text' blocks, ignoring 'thinking' blocks.
+
+    This test verifies the fix for issue #963.
+    """
+    usage = TokenUsageTypeDef(inputTokens=100, outputTokens=200, totalTokens=300)
+    # Simulate a response with thinking enabled - thinking block comes first
+    message = MessageOutputTypeDef(
+        content=[  # pyright: ignore [reportCallIssue]
+            {"thinking": "Let me think about this..."},  # Thinking block
+            {"text": '{"author": "Patrick Rothfuss", "genre": "Fantasy"}'},  # Actual response
+        ],
+        role="assistant",
+    )
+    response = ConverseResponseTypeDef(  # pyright: ignore [reportCallIssue]
+        output={"message": message},
+        ResponseMetadata={"RequestId": "id"},  # pyright: ignore [reportArgumentType]
+        stopReason="end_turn",
+        usage=usage,
+        metrics={},  # pyright: ignore [reportArgumentType]
+        trace={},
+        additionalModelResponseFields={},
+    )
+    call_response = BedrockCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=BedrockCallParams(),
+        call_kwargs=cast(
+            BaseCallKwargs[ToolTypeDef],
+            {"modelId": "us.anthropic.claude-3-7-sonnet-20250219-v1:0"},
+        ),
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    # The content should be the text from the 'text' block, not empty
+    assert call_response.content == '{"author": "Patrick Rothfuss", "genre": "Fantasy"}'
+    # Verify it can be parsed as JSON
+    import json
+
+    parsed = json.loads(call_response.content)
+    assert parsed["author"] == "Patrick Rothfuss"
+    assert parsed["genre"] == "Fantasy"
+
+
+def test_bedrock_call_response_with_multiple_text_blocks() -> None:
+    """Test that multiple text blocks are concatenated correctly."""
+    usage = TokenUsageTypeDef(inputTokens=50, outputTokens=100, totalTokens=150)
+    message = MessageOutputTypeDef(
+        content=[  # pyright: ignore [reportCallIssue]
+            {"text": "Hello, "},
+            {"text": "world!"},
+        ],
+        role="assistant",
+    )
+    response = ConverseResponseTypeDef(  # pyright: ignore [reportCallIssue]
+        output={"message": message},
+        ResponseMetadata={"RequestId": "id"},  # pyright: ignore [reportArgumentType]
+        stopReason="end_turn",
+        usage=usage,
+        metrics={},  # pyright: ignore [reportArgumentType]
+        trace={},
+        additionalModelResponseFields={},
+    )
+    call_response = BedrockCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=BedrockCallParams(),
+        call_kwargs=cast(
+            BaseCallKwargs[ToolTypeDef],
+            {"modelId": "anthropic.claude-3-haiku-20240307-v1:0"},
+        ),
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    # Multiple text blocks should be concatenated
+    assert call_response.content == "Hello, world!"
