@@ -34,6 +34,7 @@ from ....responses import (
 )
 from ..model_id import GoogleModelId, model_name
 from .encode import UNKNOWN_TOOL_ID
+from .errors import wrap_google_errors
 
 GOOGLE_FINISH_REASON_MAP = {
     "MAX_TOKENS": FinishReason.MAX_TOKENS,
@@ -269,9 +270,10 @@ def decode_stream(
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from a Google stream."""
     processor = _GoogleChunkProcessor()
-    for chunk in google_stream:
-        yield from processor.process_chunk(chunk)
-    yield processor.raw_message_chunk()
+    with wrap_google_errors():
+        for chunk in google_stream:
+            yield from processor.process_chunk(chunk)
+        yield processor.raw_message_chunk()
 
 
 async def decode_async_stream(
@@ -279,7 +281,8 @@ async def decode_async_stream(
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from a Google async stream."""
     processor = _GoogleChunkProcessor()
-    async for chunk in google_stream:
-        for item in processor.process_chunk(chunk):
-            yield item
-    yield processor.raw_message_chunk()
+    with wrap_google_errors():
+        async for chunk in google_stream:
+            for item in processor.process_chunk(chunk):
+                yield item
+        yield processor.raw_message_chunk()
