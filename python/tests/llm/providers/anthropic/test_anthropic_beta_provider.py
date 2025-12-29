@@ -105,3 +105,56 @@ async def test_beta_async_stream_rate_limit_error() -> None:
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert "Rate limit exceeded" in str(exc_info.value)
         assert isinstance(exc_info.value.__cause__, AnthropicRateLimitError)
+
+
+def test_beta_call_rate_limit_error() -> None:
+    """Test that Anthropic RateLimitError is caught and re-wrapped during beta non-streaming calls."""
+    model = llm.Model("anthropic-beta/claude-sonnet-4-0")
+    provider = model.provider
+    assert isinstance(provider, AnthropicBetaProvider)
+
+    # Patch the client to raise RateLimitError
+    with patch.object(
+        provider.client.beta.messages,
+        "parse",
+        side_effect=AnthropicRateLimitError(
+            "Rate limit exceeded",
+            response=MagicMock(status_code=429),
+            body=None,
+        ),
+    ):
+        # Try to call and expect RateLimitError
+        with pytest.raises(llm.RateLimitError) as exc_info:
+            model.call(messages=[llm.messages.user("test")])
+
+        # Verify it's wrapped as mirascope RateLimitError and has proper chaining
+        assert isinstance(exc_info.value, llm.RateLimitError)
+        assert "Rate limit exceeded" in str(exc_info.value)
+        assert isinstance(exc_info.value.__cause__, AnthropicRateLimitError)
+
+
+@pytest.mark.asyncio
+async def test_beta_async_call_rate_limit_error() -> None:
+    """Test that Anthropic RateLimitError is caught and re-wrapped during beta async non-streaming calls."""
+    model = llm.Model("anthropic-beta/claude-sonnet-4-0")
+    provider = model.provider
+    assert isinstance(provider, AnthropicBetaProvider)
+
+    # Patch the async client to raise RateLimitError
+    with patch.object(
+        provider.async_client.beta.messages,
+        "parse",
+        side_effect=AnthropicRateLimitError(
+            "Rate limit exceeded",
+            response=MagicMock(status_code=429),
+            body=None,
+        ),
+    ):
+        # Try to call and expect RateLimitError
+        with pytest.raises(llm.RateLimitError) as exc_info:
+            await model.call_async(messages=[llm.messages.user("test")])
+
+        # Verify it's wrapped as mirascope RateLimitError and has proper chaining
+        assert isinstance(exc_info.value, llm.RateLimitError)
+        assert "Rate limit exceeded" in str(exc_info.value)
+        assert isinstance(exc_info.value.__cause__, AnthropicRateLimitError)

@@ -29,6 +29,7 @@ from ...tools import (
     Toolkit,
 )
 from ..base import BaseProvider, Params
+from . import _utils
 from ._utils import beta_decode, beta_encode
 from .model_id import model_name
 
@@ -63,7 +64,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        beta_response = self.client.beta.messages.parse(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            beta_response = self.client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
@@ -101,7 +103,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        beta_response = self.client.beta.messages.parse(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            beta_response = self.client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
@@ -136,7 +139,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        beta_response = await self.async_client.beta.messages.parse(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            beta_response = await self.async_client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
@@ -174,7 +178,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        beta_response = await self.async_client.beta.messages.parse(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            beta_response = await self.async_client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
