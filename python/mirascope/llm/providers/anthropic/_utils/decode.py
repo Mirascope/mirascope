@@ -3,7 +3,10 @@
 import json
 from typing import Any, TypeAlias, cast
 
-from anthropic import types as anthropic_types
+from anthropic import (
+    RateLimitError as AnthropicRateLimitError,
+    types as anthropic_types,
+)
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
 from anthropic.types.beta import BetaUsage
 
@@ -22,6 +25,7 @@ from ....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ....exceptions import RateLimitError
 from ....messages import AssistantMessage
 from ....responses import (
     AsyncChunkIterator,
@@ -259,10 +263,13 @@ def decode_stream(
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an Anthropic MessageStreamManager."""
     processor = _AnthropicChunkProcessor()
-    with anthropic_stream_manager as stream:
-        for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
-            yield from processor.process_event(event)
-    yield processor.raw_message_chunk()
+    try:
+        with anthropic_stream_manager as stream:
+            for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
+                yield from processor.process_event(event)
+        yield processor.raw_message_chunk()
+    except AnthropicRateLimitError as e:
+        raise RateLimitError(str(e)) from e
 
 
 async def decode_async_stream(
@@ -270,8 +277,11 @@ async def decode_async_stream(
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from an Anthropic MessageStreamManager."""
     processor = _AnthropicChunkProcessor()
-    async with anthropic_stream_manager as stream:
-        async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
-            for item in processor.process_event(event):
-                yield item
-    yield processor.raw_message_chunk()
+    try:
+        async with anthropic_stream_manager as stream:
+            async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
+                for item in processor.process_event(event):
+                    yield item
+        yield processor.raw_message_chunk()
+    except AnthropicRateLimitError as e:
+        raise RateLimitError(str(e)) from e

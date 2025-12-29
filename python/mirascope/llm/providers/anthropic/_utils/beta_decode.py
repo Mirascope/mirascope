@@ -3,6 +3,7 @@
 import json
 from typing import Any, TypeAlias, cast
 
+from anthropic import RateLimitError as AnthropicRateLimitError
 from anthropic.lib.streaming._beta_messages import (
     BetaAsyncMessageStreamManager,
     BetaMessageStreamManager,
@@ -32,6 +33,7 @@ from ....content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ....exceptions import RateLimitError
 from ....messages import AssistantMessage
 from ....responses import (
     AsyncChunkIterator,
@@ -253,10 +255,13 @@ def beta_decode_stream(
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from a Beta MessageStreamManager."""
     processor = _BetaChunkProcessor()
-    with beta_stream_manager as stream:
-        for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
-            yield from processor.process_event(event)
-    yield processor.raw_message_chunk()
+    try:
+        with beta_stream_manager as stream:
+            for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
+                yield from processor.process_event(event)
+        yield processor.raw_message_chunk()
+    except AnthropicRateLimitError as e:
+        raise RateLimitError(str(e)) from e
 
 
 async def beta_decode_async_stream(
@@ -264,8 +269,11 @@ async def beta_decode_async_stream(
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from a Beta MessageStreamManager."""
     processor = _BetaChunkProcessor()
-    async with beta_stream_manager as stream:
-        async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
-            for item in processor.process_event(event):
-                yield item
-    yield processor.raw_message_chunk()
+    try:
+        async with beta_stream_manager as stream:
+            async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
+                for item in processor.process_event(event):
+                    yield item
+        yield processor.raw_message_chunk()
+    except AnthropicRateLimitError as e:
+        raise RateLimitError(str(e)) from e
