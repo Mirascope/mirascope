@@ -78,7 +78,8 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             params=params,
         )
 
-        openai_response = self.client.responses.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = self.client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id
@@ -128,7 +129,8 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             params=params,
         )
 
-        openai_response = await self.async_client.responses.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = await self.async_client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id
@@ -282,7 +284,8 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             params=params,
         )
 
-        openai_response = self.client.responses.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = self.client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id
@@ -336,7 +339,8 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             params=params,
         )
 
-        openai_response = await self.async_client.responses.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = await self.async_client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id

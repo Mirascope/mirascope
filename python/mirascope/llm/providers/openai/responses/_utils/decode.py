@@ -33,6 +33,7 @@ from .....responses import (
     UsageDeltaChunk,
 )
 from ...model_id import OpenAIModelId, model_name
+from .errors import wrap_openai_errors
 
 INCOMPLETE_DETAILS_TO_FINISH_REASON = {
     "max_output_tokens": FinishReason.MAX_TOKENS,
@@ -233,8 +234,9 @@ def decode_stream(
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an OpenAI Stream[ResponseStreamEvent]"""
     processor = _OpenAIResponsesChunkProcessor()
-    for event in openai_stream:
-        yield from processor.process_chunk(event)
+    with wrap_openai_errors():
+        for event in openai_stream:
+            yield from processor.process_chunk(event)
 
 
 async def decode_async_stream(
@@ -242,6 +244,7 @@ async def decode_async_stream(
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from an OpenAI AsyncStream[ResponseStreamEvent]"""
     processor = _OpenAIResponsesChunkProcessor()
-    async for event in openai_stream:
-        for item in processor.process_chunk(event):
-            yield item
+    with wrap_openai_errors():
+        async for event in openai_stream:
+            for item in processor.process_chunk(event):
+                yield item
