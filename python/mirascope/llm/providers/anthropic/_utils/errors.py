@@ -4,11 +4,12 @@ from collections.abc import Generator
 from contextlib import contextmanager
 
 from anthropic import (
+    AuthenticationError as AnthropicAuthenticationError,
     NotFoundError as AnthropicNotFoundError,
     RateLimitError as AnthropicRateLimitError,
 )
 
-from ....exceptions import NotFoundError, RateLimitError
+from ....exceptions import AuthenticationError, NotFoundError, RateLimitError
 
 
 def handle_anthropic_error(e: Exception) -> None:
@@ -18,10 +19,13 @@ def handle_anthropic_error(e: Exception) -> None:
         e: The exception to handle.
 
     Raises:
+        AuthenticationError: If the error is an authentication error (401).
         RateLimitError: If the error is a rate limit error.
         NotFoundError: If the error is a not found error (404).
         Exception: Re-raises the original exception if not handled.
     """
+    if isinstance(e, AnthropicAuthenticationError):
+        raise AuthenticationError(str(e)) from e
     if isinstance(e, AnthropicRateLimitError):
         raise RateLimitError(str(e)) from e
     if isinstance(e, AnthropicNotFoundError):

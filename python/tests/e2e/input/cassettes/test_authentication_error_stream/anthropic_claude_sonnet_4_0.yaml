@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"This should fail
+      with AuthenticationError"}],"model":"claude-sonnet-4-0","stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '145'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: '{"type":"error","error":{"type":"authentication_error","message":"invalid
+        x-api-key"},"request_id":"req_011CWdMFGmmtqDd5uETFt98k"}'
+    headers:
+      CF-RAY:
+      - 9b639e467e9e75e0-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '130'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 30 Dec 2025 18:32:10 GMT
+      Server:
+      - cloudflare
+      X-Robots-Tag:
+      - none
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWdMFGmmtqDd5uETFt98k
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '20'
+      x-should-retry:
+      - 'false'
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

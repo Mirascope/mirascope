@@ -8,7 +8,7 @@ from google.genai.errors import (
     ServerError as GoogleServerError,
 )
 
-from ....exceptions import NotFoundError, RateLimitError
+from ....exceptions import AuthenticationError, NotFoundError, RateLimitError
 
 
 def handle_google_error(e: Exception) -> None:
@@ -18,10 +18,17 @@ def handle_google_error(e: Exception) -> None:
         e: The exception to handle.
 
     Raises:
+        AuthenticationError: If the error is an authentication error (HTTP 401 or 400 with invalid API key).
         RateLimitError: If the error is a rate limit error (HTTP 429).
         NotFoundError: If the error is a not found error (HTTP 404).
         Exception: Re-raises the original exception if not handled.
     """
+    # Google uses HTTP 401 for authentication errors (UNAUTHENTICATED)
+    # and HTTP 400 with INVALID_ARGUMENT for invalid API keys
+    if isinstance(e, GoogleClientError) and (
+        e.code == 401 or (e.code == 400 and "API key not valid" in str(e))
+    ):
+        raise AuthenticationError(str(e)) from e
     # Google uses HTTP 429 for rate limit errors (RESOURCE_EXHAUSTED)
     # The error code is stored in the .code attribute
     if isinstance(e, GoogleServerError) and e.code == 429:
