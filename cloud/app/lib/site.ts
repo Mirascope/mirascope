@@ -7,7 +7,7 @@ import githubStats from "./github-stats.json";
 
 // todo(seb): consolidate versions as part of posthog integration
 // Site version information
-export const SITE_VERSION = "2.0.0-alpha.4";
+export const SITE_VERSION = "2.0.0-alpha.5";
 
 // Base URL for absolute URLs
 export const BASE_URL = "https://mirascope.com";
