@@ -115,7 +115,8 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         )
         kwargs["model"] = self._model_name(model_id)
 
-        openai_response = self.client.chat.completions.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -172,7 +173,8 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         )
         kwargs["model"] = self._model_name(model_id)
 
-        openai_response = self.client.chat.completions.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -225,7 +227,8 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         )
         kwargs["model"] = self._model_name(model_id)
 
-        openai_response = await self.async_client.chat.completions.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -282,7 +285,8 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         )
         kwargs["model"] = self._model_name(model_id)
 
-        openai_response = await self.async_client.chat.completions.create(**kwargs)
+        with _utils.wrap_openai_errors():
+            openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
