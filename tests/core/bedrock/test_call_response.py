@@ -4,6 +4,7 @@ from typing import cast
 
 import pytest
 from mypy_boto3_bedrock_runtime.type_defs import (
+    ContentBlockOutputTypeDef,
     ConverseResponseTypeDef,
     MessageOutputTypeDef,
     TokenUsageTypeDef,
@@ -375,10 +376,13 @@ def test_bedrock_call_response_with_thinking() -> None:
     usage = TokenUsageTypeDef(inputTokens=100, outputTokens=200, totalTokens=300)
     # Simulate a response with thinking enabled - thinking block comes first
     message = MessageOutputTypeDef(
-        content=[  # pyright: ignore [reportCallIssue]
-            {"thinking": "Let me think about this..."},  # Thinking block
-            {"text": '{"author": "Patrick Rothfuss", "genre": "Fantasy"}'},  # Actual response
-        ],
+        content=cast(
+            list[ContentBlockOutputTypeDef],
+            [
+                {"thinking": "Let me think about this..."},  # Thinking block
+                {"text": '{"author": "Patrick Rothfuss", "genre": "Fantasy"}'},  # Actual response
+            ],
+        ),
         role="assistant",
     )
     response = ConverseResponseTypeDef(  # pyright: ignore [reportCallIssue]
@@ -421,10 +425,13 @@ def test_bedrock_call_response_with_multiple_text_blocks() -> None:
     """Test that multiple text blocks are concatenated correctly."""
     usage = TokenUsageTypeDef(inputTokens=50, outputTokens=100, totalTokens=150)
     message = MessageOutputTypeDef(
-        content=[  # pyright: ignore [reportCallIssue]
-            {"text": "Hello, "},
-            {"text": "world!"},
-        ],
+        content=cast(
+            list[ContentBlockOutputTypeDef],
+            [
+                {"text": "Hello, "},
+                {"text": "world!"},
+            ],
+        ),
         role="assistant",
     )
     response = ConverseResponseTypeDef(  # pyright: ignore [reportCallIssue]
