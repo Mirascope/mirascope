@@ -105,6 +105,12 @@ class TimeoutError(MirascopeLLMError):
     """Raised when requests timeout or deadline exceeded."""
 
 
+# This wraps the APIResponseValidationErrors that OpenAI and Anthropic both return.
+# TODO: Consider having `Response.parse` raise the same error (wrapping the Pydantic error)
+class ResponseValidationError(MirascopeLLMError):
+    """Raised when API response fails validation."""
+
+
 class NoRegisteredProviderError(MirascopeLLMError):
     """Raised when no provider is registered for a given model_id."""
 

@@ -4,12 +4,30 @@ from collections.abc import Generator
 from contextlib import contextmanager
 
 from anthropic import (
+    APIConnectionError as AnthropicAPIConnectionError,
+    APIResponseValidationError as AnthropicAPIResponseValidationError,
+    APITimeoutError as AnthropicAPITimeoutError,
     AuthenticationError as AnthropicAuthenticationError,
+    BadRequestError as AnthropicBadRequestError,
+    ConflictError as AnthropicConflictError,
+    InternalServerError as AnthropicInternalServerError,
     NotFoundError as AnthropicNotFoundError,
+    PermissionDeniedError as AnthropicPermissionDeniedError,
     RateLimitError as AnthropicRateLimitError,
+    UnprocessableEntityError as AnthropicUnprocessableEntityError,
 )
 
-from ....exceptions import AuthenticationError, NotFoundError, RateLimitError
+from ....exceptions import (
+    AuthenticationError,
+    BadRequestError,
+    ConnectionError,
+    NotFoundError,
+    PermissionError,
+    RateLimitError,
+    ResponseValidationError,
+    ServerError,
+    TimeoutError,
+)
 
 
 def handle_anthropic_error(e: Exception) -> None:
@@ -20,16 +38,56 @@ def handle_anthropic_error(e: Exception) -> None:
 
     Raises:
         AuthenticationError: If the error is an authentication error (401).
-        RateLimitError: If the error is a rate limit error.
+        PermissionError: If the error is a permission denied error (403).
+        BadRequestError: If the error is a bad request error (400, 422).
         NotFoundError: If the error is a not found error (404).
+        RateLimitError: If the error is a rate limit error (429).
+        ServerError: If the error is a server error (500+).
+        TimeoutError: If the error is a timeout error.
+        ConnectionError: If the error is a connection error.
+        ResponseValidationError: If the API response fails validation.
         Exception: Re-raises the original exception if not handled.
     """
+    # Authentication errors (401)
     if isinstance(e, AnthropicAuthenticationError):
         raise AuthenticationError(str(e)) from e
-    if isinstance(e, AnthropicRateLimitError):
-        raise RateLimitError(str(e)) from e
+
+    # Permission errors (403)
+    if isinstance(e, AnthropicPermissionDeniedError):
+        raise PermissionError(str(e)) from e
+
+    # Bad request errors (400, 422)
+    if isinstance(e, AnthropicBadRequestError | AnthropicUnprocessableEntityError):
+        raise BadRequestError(str(e)) from e
+
+    # Not found errors (404)
     if isinstance(e, AnthropicNotFoundError):
         raise NotFoundError(str(e)) from e
+
+    # Conflict errors (409) - treat as bad request
+    if isinstance(e, AnthropicConflictError):
+        raise BadRequestError(str(e)) from e
+
+    # Rate limit errors (429)
+    if isinstance(e, AnthropicRateLimitError):
+        raise RateLimitError(str(e)) from e
+
+    # Server errors (500+)
+    if isinstance(e, AnthropicInternalServerError):
+        raise ServerError(str(e)) from e
+
+    # Timeout errors
+    if isinstance(e, AnthropicAPITimeoutError):
+        raise TimeoutError(str(e)) from e
+
+    # Connection errors
+    if isinstance(e, AnthropicAPIConnectionError):
+        raise ConnectionError(str(e)) from e
+
+    # Validation errors
+    if isinstance(e, AnthropicAPIResponseValidationError):
+        raise ResponseValidationError(str(e)) from e
+
     raise e  # pragma: no cover
 
 

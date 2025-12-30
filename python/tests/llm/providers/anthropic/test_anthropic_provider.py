@@ -4,7 +4,9 @@ from typing import NoReturn
 from unittest.mock import MagicMock, patch
 
 import pytest
-from anthropic import RateLimitError as AnthropicRateLimitError
+from anthropic import (
+    RateLimitError as AnthropicRateLimitError,
+)
 
 from mirascope import llm
 from mirascope.llm.providers.anthropic.provider import AnthropicProvider
