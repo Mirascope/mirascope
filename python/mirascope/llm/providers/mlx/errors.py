@@ -20,7 +20,9 @@ def handle_mlx_error(e: Exception) -> None:
     """
     # HuggingFace Hub raises LocalEntryNotFoundError when model files are not found
     if isinstance(e, LocalEntryNotFoundError):
-        raise NotFoundError(str(e)) from e
+        error = NotFoundError(str(e))
+        error.original_exception = e
+        raise error from e
     raise e  # pragma: no cover
 
 

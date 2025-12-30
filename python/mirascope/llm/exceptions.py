@@ -18,6 +18,10 @@ class APIError(MirascopeLLMError):
 
     status_code: int | None
 
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+
 
 class ConnectionError(MirascopeLLMError):
     """Raised when unable to connect to the API (network issues, timeouts)."""
@@ -26,17 +30,29 @@ class ConnectionError(MirascopeLLMError):
 class AuthenticationError(APIError):
     """Raised for authentication failures (401, invalid API keys)."""
 
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message, status_code=status_code or 401)
+
 
 class PermissionError(APIError):
     """Raised for permission/authorization failures (403)."""
+
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message, status_code=status_code or 403)
 
 
 class BadRequestError(APIError):
     """Raised for malformed requests (400, 422)."""
 
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message, status_code=status_code or 400)
+
 
 class NotFoundError(APIError):
     """Raised when requested resource is not found (404)."""
+
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message, status_code=status_code or 404)
 
 
 class ToolNotFoundError(MirascopeLLMError):
@@ -96,9 +112,15 @@ class FormattingModeNotSupportedError(FeatureNotSupportedError):
 class RateLimitError(APIError):
     """Raised when rate limits are exceeded (429)."""
 
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message, status_code=status_code or 429)
+
 
 class ServerError(APIError):
     """Raised for server-side errors (500+)."""
+
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message, status_code=status_code or 500)
 
 
 class TimeoutError(MirascopeLLMError):
