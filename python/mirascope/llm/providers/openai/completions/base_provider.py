@@ -339,11 +339,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         )
         kwargs["model"] = self._model_name(model_id)
 
-        openai_stream = self.client.chat.completions.create(
-            **kwargs,
-            stream=True,
-            stream_options={"include_usage": True},
-        )
+        with _utils.wrap_openai_errors():
+            openai_stream = self.client.chat.completions.create(
+                **kwargs,
+                stream=True,
+                stream_options={"include_usage": True},
+            )
 
         chunk_iterator = _utils.decode_stream(openai_stream)
 
@@ -441,11 +442,12 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
         )
         kwargs["model"] = self._model_name(model_id)
 
-        openai_stream = await self.async_client.chat.completions.create(
-            **kwargs,
-            stream=True,
-            stream_options={"include_usage": True},
-        )
+        with _utils.wrap_openai_errors():
+            openai_stream = await self.async_client.chat.completions.create(
+                **kwargs,
+                stream=True,
+                stream_options={"include_usage": True},
+            )
 
         chunk_iterator = _utils.decode_async_stream(openai_stream)
 

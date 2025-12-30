@@ -180,10 +180,11 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             params=params,
         )
 
-        openai_stream = self.client.responses.create(
-            **kwargs,
-            stream=True,
-        )
+        with _utils.wrap_openai_errors():
+            openai_stream = self.client.responses.create(
+                **kwargs,
+                stream=True,
+            )
 
         chunk_iterator = _utils.decode_stream(
             openai_stream,
@@ -230,10 +231,11 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             params=params,
         )
 
-        openai_stream = await self.async_client.responses.create(
-            **kwargs,
-            stream=True,
-        )
+        with _utils.wrap_openai_errors():
+            openai_stream = await self.async_client.responses.create(
+                **kwargs,
+                stream=True,
+            )
 
         chunk_iterator = _utils.decode_async_stream(
             openai_stream,
