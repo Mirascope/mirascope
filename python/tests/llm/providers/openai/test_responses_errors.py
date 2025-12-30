@@ -12,12 +12,14 @@ from openai import (
     ConflictError as OpenAIConflictError,
     InternalServerError as OpenAIInternalServerError,
     NotFoundError as OpenAINotFoundError,
+    OpenAIError,
     PermissionDeniedError as OpenAIPermissionDeniedError,
     RateLimitError as OpenAIRateLimitError,
     UnprocessableEntityError as OpenAIUnprocessableEntityError,
 )
 
 from mirascope.llm.exceptions import (
+    APIError,
     AuthenticationError,
     BadRequestError,
     ConnectionError,
@@ -211,11 +213,23 @@ def test_handle_validation_error() -> None:
     assert exc_info.value.__cause__ is openai_error
 
 
-def test_handle_unknown_error() -> None:
-    """Test that unknown exceptions are re-raised as-is."""
-    unknown_error = ValueError("Some other error")
+def test_handle_unknown_openai_error() -> None:
+    """Test that unknown OpenAI SDK errors are wrapped as APIError."""
+    # Create a generic OpenAIError (not a specific subclass)
+    openai_error = OpenAIError("Unknown OpenAI error")
+
+    with pytest.raises(APIError) as exc_info:
+        handle_openai_error(openai_error)
+
+    assert "Unknown OpenAI error" in str(exc_info.value)
+    assert exc_info.value.__cause__ is openai_error
+
+
+def test_handle_non_provider_error() -> None:
+    """Test that non-OpenAI exceptions are re-raised as-is."""
+    non_provider_error = ValueError("Some other error")
 
     with pytest.raises(ValueError) as exc_info:
-        handle_openai_error(unknown_error)
+        handle_openai_error(non_provider_error)
 
-    assert exc_info.value is unknown_error
+    assert exc_info.value is non_provider_error
