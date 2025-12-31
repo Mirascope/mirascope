@@ -3,9 +3,12 @@
 from collections.abc import Generator
 from contextlib import contextmanager
 
-from google.genai.errors import ServerError as GoogleServerError
+from google.genai.errors import (
+    ClientError as GoogleClientError,
+    ServerError as GoogleServerError,
+)
 
-from ....exceptions import RateLimitError
+from ....exceptions import NotFoundError, RateLimitError
 
 
 def handle_google_error(e: Exception) -> None:
@@ -16,12 +19,16 @@ def handle_google_error(e: Exception) -> None:
 
     Raises:
         RateLimitError: If the error is a rate limit error (HTTP 429).
+        NotFoundError: If the error is a not found error (HTTP 404).
         Exception: Re-raises the original exception if not handled.
     """
     # Google uses HTTP 429 for rate limit errors (RESOURCE_EXHAUSTED)
     # The error code is stored in the .code attribute
     if isinstance(e, GoogleServerError) and e.code == 429:
         raise RateLimitError(str(e)) from e
+    # Google uses HTTP 404 for not found errors (NOT_FOUND)
+    if isinstance(e, GoogleClientError) and e.code == 404:
+        raise NotFoundError(str(e)) from e
     raise e  # pragma: no cover
 
 

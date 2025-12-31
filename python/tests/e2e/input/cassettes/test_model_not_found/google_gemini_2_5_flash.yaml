@@ -1,0 +1,120 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "This should fail with NotFoundError"}],
+      "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '92'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/this-model-does-not-exist-12345:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/02PT2sCQQzF7/spHnN2bLXrpbdiKRT800N7LmM3ugOzE5lkF0H87o2uBy8h75dH
+        XnKuAEelcHGvOJsw+ccNmaqf68kIOhIJhytznc2SPGkbxd963zCJz6yeTlHUz+Yv9QJRYAh77nNj
+        teDt6xMDFYmcMcx2pGECw3ef9McjF6XRe6BMJSgtOStlnWIZUsLKtq9v6VCGEEFbQjIK3iMMIaaw
+        S4TxQgQLNkMsD8s70pYbmbr7X6JBe7m+tdl+/35sfzbvziaX6lL9AwDPFc0YAQAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 30 Dec 2025 01:22:22 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=73
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"contents": [{"parts": [{"text": "This should fail with NotFoundError"}],
+      "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '92'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/this-model-does-not-exist-12345:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/02PT2sCQQzF7/spHnN2bLXrpbdiKRT800N7LmM3ugOzE5lkF0H87o2uBy8h75dH
+        XnKuAEelcHGvOJsw+ccNmaqf68kIOhIJhytznc2SPGkbxd963zCJz6yeTlHUz+Yv9QJRYAh77nNj
+        teDt6xMDFYmcMcx2pGECw3ef9McjF6XRe6BMJSgtOStlnWIZUsLKtq9v6VCGEEFbQjIK3iMMIaaw
+        S4TxQgQLNkMsD8s70pYbmbr7X6JBe7m+tdl+/35sfzbvziaX6lL9AwDPFc0YAQAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 30 Dec 2025 01:25:58 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=77
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 404
+      message: Not Found
+version: 1

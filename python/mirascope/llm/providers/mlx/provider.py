@@ -33,6 +33,7 @@ from ...tools import (
 from ..base import BaseProvider, Params
 from . import _utils
 from .encoding import TransformersEncoder
+from .errors import wrap_mlx_errors
 from .mlx import MLX
 from .model_id import MLXModelId
 
@@ -50,7 +51,10 @@ def client() -> "MLXProvider":
 
 @lru_cache(maxsize=16)
 def _get_mlx(model_id: MLXModelId) -> MLX:
-    model, tokenizer = cast(tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_id))
+    with wrap_mlx_errors():
+        model, tokenizer = cast(
+            tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_id)
+        )
     encoder = TransformersEncoder(tokenizer)
     return MLX(
         model_id,

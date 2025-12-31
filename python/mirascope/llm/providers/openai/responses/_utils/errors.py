@@ -1,11 +1,14 @@
-"OpenAI error handling utilities."
+"""OpenAI error handling utilities."""
 
 from collections.abc import Generator
 from contextlib import contextmanager
 
-from openai import RateLimitError as OpenAIRateLimitError
+from openai import (
+    BadRequestError as OpenAIBadRequestError,
+    RateLimitError as OpenAIRateLimitError,
+)
 
-from .....exceptions import RateLimitError
+from .....exceptions import NotFoundError, RateLimitError
 
 
 def handle_openai_error(e: Exception) -> None:
@@ -16,10 +19,18 @@ def handle_openai_error(e: Exception) -> None:
 
     Raises:
         RateLimitError: If the error is a rate limit error.
+        NotFoundError: If the error is a not found error (404 or 400 with model_not_found code).
         Exception: Re-raises the original exception if not handled.
     """
     if isinstance(e, OpenAIRateLimitError):
         raise RateLimitError(str(e)) from e
+    # OpenAI Responses API returns 400 BadRequestError with code 'model_not_found'
+    if (
+        isinstance(e, OpenAIBadRequestError)
+        and hasattr(e, "code")
+        and e.code == "model_not_found"
+    ):
+        raise NotFoundError(str(e)) from e
     raise e  # pragma: no cover
 
 

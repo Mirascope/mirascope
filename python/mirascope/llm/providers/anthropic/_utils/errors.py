@@ -3,9 +3,12 @@
 from collections.abc import Generator
 from contextlib import contextmanager
 
-from anthropic import RateLimitError as AnthropicRateLimitError
+from anthropic import (
+    NotFoundError as AnthropicNotFoundError,
+    RateLimitError as AnthropicRateLimitError,
+)
 
-from ....exceptions import RateLimitError
+from ....exceptions import NotFoundError, RateLimitError
 
 
 def handle_anthropic_error(e: Exception) -> None:
@@ -16,10 +19,13 @@ def handle_anthropic_error(e: Exception) -> None:
 
     Raises:
         RateLimitError: If the error is a rate limit error.
+        NotFoundError: If the error is a not found error (404).
         Exception: Re-raises the original exception if not handled.
     """
     if isinstance(e, AnthropicRateLimitError):
         raise RateLimitError(str(e)) from e
+    if isinstance(e, AnthropicNotFoundError):
+        raise NotFoundError(str(e)) from e
     raise e  # pragma: no cover
 
 

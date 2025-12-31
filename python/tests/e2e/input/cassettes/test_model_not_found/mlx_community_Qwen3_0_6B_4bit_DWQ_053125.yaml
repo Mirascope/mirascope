@@ -1,0 +1,130 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - d9cd9acf-b07a-43e9-86eb-776d01fd3c46
+      user-agent:
+      - unknown/None; hf_hub/0.36.0; python/3.10.16
+    method: GET
+    uri: https://huggingface.co/api/models/mlx-community/this-model-does-not-exist-12345/revision/main
+  response:
+    body:
+      string: '{"error":"Invalid username or password."}'
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Access-Control-Max-Age:
+      - '86400'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 30 Dec 2025 01:26:00 GMT
+      ETag:
+      - W/"29-dEMcHWfJi78ZR1aqzb1ELAhp3Us"
+      RateLimit:
+      - '"api";r=499;t=70'
+      RateLimit-Policy:
+      - '"fixed window";"api";q=500;w=300'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 7e9b06f0eb97ea1897f375ba6acd2a88.cloudfront.net (CloudFront)
+      WWW-Authenticate:
+      - Bearer realm="Authentication required", charset="UTF-8"
+      X-Amz-Cf-Id:
+      - _O-h28ZqBsg9IW0DmNMi6a2XPmqRDF4AtP-51ZN-GutOlEPer0YTXA==
+      X-Amz-Cf-Pop:
+      - SEA900-P6
+      X-Cache:
+      - Error from cloudfront
+      X-Error-Message:
+      - Invalid username or password.
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-69532a28-1d4a2fdd7dc0231f54398203;d9cd9acf-b07a-43e9-86eb-776d01fd3c46
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 667d5bbb-082c-4c15-a301-c39c14779f91
+      user-agent:
+      - unknown/None; hf_hub/0.36.0; python/3.10.16
+    method: GET
+    uri: https://huggingface.co/api/models/mlx-community/this-model-does-not-exist-12345/revision/main
+  response:
+    body:
+      string: '{"error":"Invalid username or password."}'
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Access-Control-Max-Age:
+      - '86400'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '41'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 30 Dec 2025 01:30:28 GMT
+      ETag:
+      - W/"29-dEMcHWfJi78ZR1aqzb1ELAhp3Us"
+      RateLimit:
+      - '"api";r=499;t=102'
+      RateLimit-Policy:
+      - '"fixed window";"api";q=500;w=300'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 4107064f564b3c9da0fb894a2abda114.cloudfront.net (CloudFront)
+      WWW-Authenticate:
+      - Bearer realm="Authentication required", charset="UTF-8"
+      X-Amz-Cf-Id:
+      - 9Asu1hHGkr8Uy4FkRw30F_FB7Li4F7GIjxCfAZ1j_7YImpO5XRrxqQ==
+      X-Amz-Cf-Pop:
+      - SEA900-P6
+      X-Cache:
+      - Error from cloudfront
+      X-Error-Message:
+      - Invalid username or password.
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-69532b34-6ae95def32f6336f10430d18;667d5bbb-082c-4c15-a301-c39c14779f91
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 401
+      message: Unauthorized
+version: 1
