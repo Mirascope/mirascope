@@ -4,12 +4,30 @@ from collections.abc import Generator
 from contextlib import contextmanager
 
 from openai import (
+    APIConnectionError as OpenAIAPIConnectionError,
+    APIResponseValidationError as OpenAIAPIResponseValidationError,
+    APITimeoutError as OpenAIAPITimeoutError,
     AuthenticationError as OpenAIAuthenticationError,
+    BadRequestError as OpenAIBadRequestError,
+    ConflictError as OpenAIConflictError,
+    InternalServerError as OpenAIInternalServerError,
     NotFoundError as OpenAINotFoundError,
+    PermissionDeniedError as OpenAIPermissionDeniedError,
     RateLimitError as OpenAIRateLimitError,
+    UnprocessableEntityError as OpenAIUnprocessableEntityError,
 )
 
-from .....exceptions import AuthenticationError, NotFoundError, RateLimitError
+from .....exceptions import (
+    AuthenticationError,
+    BadRequestError,
+    ConnectionError,
+    NotFoundError,
+    PermissionError,
+    RateLimitError,
+    ResponseValidationError,
+    ServerError,
+    TimeoutError,
+)
 
 
 def handle_openai_error(e: Exception) -> None:
@@ -20,16 +38,56 @@ def handle_openai_error(e: Exception) -> None:
 
     Raises:
         AuthenticationError: If the error is an authentication error (401).
-        RateLimitError: If the error is a rate limit error.
+        PermissionError: If the error is a permission denied error (403).
+        BadRequestError: If the error is a bad request error (400, 422).
         NotFoundError: If the error is a not found error (404).
+        RateLimitError: If the error is a rate limit error (429).
+        ServerError: If the error is a server error (500+).
+        TimeoutError: If the error is a timeout error.
+        ConnectionError: If the error is a connection error.
+        ResponseValidationError: If the API response fails validation.
         Exception: Re-raises the original exception if not handled.
     """
+    # Authentication errors (401)
     if isinstance(e, OpenAIAuthenticationError):
         raise AuthenticationError(str(e)) from e
-    if isinstance(e, OpenAIRateLimitError):
-        raise RateLimitError(str(e)) from e
+
+    # Permission errors (403)
+    if isinstance(e, OpenAIPermissionDeniedError):
+        raise PermissionError(str(e)) from e
+
+    # Bad request errors (400, 422)
+    if isinstance(e, OpenAIBadRequestError | OpenAIUnprocessableEntityError):
+        raise BadRequestError(str(e)) from e
+
+    # Not found errors (404)
     if isinstance(e, OpenAINotFoundError):
         raise NotFoundError(str(e)) from e
+
+    # Conflict errors (409) - treat as bad request
+    if isinstance(e, OpenAIConflictError):
+        raise BadRequestError(str(e)) from e
+
+    # Rate limit errors (429)
+    if isinstance(e, OpenAIRateLimitError):
+        raise RateLimitError(str(e)) from e
+
+    # Server errors (500+)
+    if isinstance(e, OpenAIInternalServerError):
+        raise ServerError(str(e)) from e
+
+    # Timeout errors
+    if isinstance(e, OpenAIAPITimeoutError):
+        raise TimeoutError(str(e)) from e
+
+    # Connection errors
+    if isinstance(e, OpenAIAPIConnectionError):
+        raise ConnectionError(str(e)) from e
+
+    # Validation errors
+    if isinstance(e, OpenAIAPIResponseValidationError):
+        raise ResponseValidationError(str(e)) from e
+
     raise e  # pragma: no cover
 
 
