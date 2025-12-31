@@ -7,11 +7,7 @@ export default defineConfig({
     environment: "node",
     globalSetup: "./tests/global-setup.ts",
     pool: "forks",
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    maxWorkers: 1,
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
