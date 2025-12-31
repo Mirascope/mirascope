@@ -25,7 +25,6 @@ from mirascope.llm.content import (
     Base64ImageSource,
     Image,
 )
-from mirascope.llm.providers.provider_registry import PROVIDER_REGISTRY
 from mirascope.llm.responses.finish_reason import FinishReason
 from mirascope.ops._internal import configuration as ops_configuration
 from mirascope.ops._internal.configuration import set_tracer
@@ -37,14 +36,6 @@ class Book(BaseModel):
 
     title: str
     author: str
-
-
-@pytest.fixture(autouse=True, scope="function")
-def reset_provider_registry() -> Generator[None, None, None]:
-    """Reset the provider registry before and after each test."""
-    PROVIDER_REGISTRY.clear()
-    yield
-    PROVIDER_REGISTRY.clear()
 
 
 @pytest.fixture(autouse=True, scope="function")

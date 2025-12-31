@@ -1,15 +1,30 @@
 """Provider registry for managing provider instances and scopes."""
 
+from functools import lru_cache
 from typing import overload
 
 from ..exceptions import NoRegisteredProviderError
+from .anthropic import AnthropicProvider
 from .base import Provider
-from .load_provider import load_provider
+from .google import GoogleProvider
+from .mlx import MLXProvider
+from .ollama import OllamaProvider
+from .openai import OpenAIProvider
+from .openai.completions.provider import OpenAICompletionsProvider
+from .openai.responses.provider import OpenAIResponsesProvider
 from .provider_id import ProviderId
+from .together import TogetherProvider
 
 # Global registry mapping scopes to providers
 # Scopes are matched by prefix (longest match wins)
 PROVIDER_REGISTRY: dict[str, Provider] = {}
+
+
+def reset_provider_registry() -> None:
+    """Resets the provider registry, clearing all registered providers."""
+    PROVIDER_REGISTRY.clear()
+    provider_singleton.cache_clear()
+
 
 # Default auto-registration mapping for built-in providers
 # These providers will be automatically registered on first use
@@ -21,6 +36,44 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, ProviderId] = {
     "openai/": "openai",
     "together/": "together",
 }
+
+
+@lru_cache(maxsize=256)
+def provider_singleton(
+    provider_id: ProviderId, *, api_key: str | None = None, base_url: str | None = None
+) -> Provider:
+    """Create a cached provider instance for the specified provider id.
+
+    Args:
+        provider_id: The provider name ("openai", "anthropic", or "google").
+        api_key: API key for authentication. If None, uses provider-specific env var.
+        base_url: Base URL for the API. If None, uses provider-specific env var.
+
+    Returns:
+        A cached provider instance for the specified provider with the given parameters.
+
+    Raises:
+        ValueError: If the provider_id is not supported.
+    """
+    match provider_id:
+        case "anthropic":
+            return AnthropicProvider(api_key=api_key, base_url=base_url)
+        case "google":
+            return GoogleProvider(api_key=api_key, base_url=base_url)
+        case "mlx":  # pragma: no cover (MLX is only available on macOS)
+            return MLXProvider()
+        case "ollama":
+            return OllamaProvider(api_key=api_key, base_url=base_url)
+        case "openai":
+            return OpenAIProvider(api_key=api_key, base_url=base_url)
+        case "openai:completions":
+            return OpenAICompletionsProvider(api_key=api_key, base_url=base_url)
+        case "openai:responses":
+            return OpenAIResponsesProvider(api_key=api_key, base_url=base_url)
+        case "together":
+            return TogetherProvider(api_key=api_key, base_url=base_url)
+        case _:  # pragma: no cover
+            raise ValueError(f"Unknown provider: '{provider_id}'")
 
 
 @overload
@@ -100,7 +153,7 @@ def register_provider(
     """
 
     if isinstance(provider, str):
-        provider = load_provider(provider, api_key=api_key, base_url=base_url)
+        provider = provider_singleton(provider, api_key=api_key, base_url=base_url)
 
     if scope is None:
         scope = provider.default_scope
@@ -160,7 +213,7 @@ def get_provider_for_model(model_id: str) -> Provider:
     if matching_defaults:
         best_scope = max(matching_defaults, key=len)
         provider_id = DEFAULT_AUTO_REGISTER_SCOPES[best_scope]
-        provider = load_provider(provider_id)
+        provider = provider_singleton(provider_id)
         # Auto-register for future calls
         PROVIDER_REGISTRY[best_scope] = provider
         return provider

@@ -10,15 +10,6 @@ from mirascope import llm
 from mirascope.llm.providers.anthropic.beta_provider import AnthropicBetaProvider
 
 
-@pytest.fixture(autouse=True)
-def setup_beta_provider() -> None:
-    """Register the beta provider for tests."""
-    _anthropic_provider = llm.load_provider("anthropic")
-    assert isinstance(_anthropic_provider, llm.providers.AnthropicProvider)
-    _beta_provider = _anthropic_provider._beta_provider  # pyright: ignore[reportPrivateUsage]
-    llm.register_provider(_beta_provider, "anthropic-beta/")
-
-
 def test_beta_stream_rate_limit_error() -> None:
     """Test that Anthropic RateLimitError is caught and re-wrapped during beta streaming."""
     # Mock the beta stream manager to raise RateLimitError during iteration

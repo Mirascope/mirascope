@@ -17,19 +17,10 @@ from pydantic import BaseModel, Field
 
 from mirascope import llm, ops
 from mirascope.llm.content.text import TextChunk, TextStartChunk
-from mirascope.llm.providers.provider_registry import PROVIDER_REGISTRY
 from mirascope.llm.responses import StreamResponseChunk
 from mirascope.llm.responses.stream_response import StreamResponse
 from mirascope.ops._internal.configuration import set_tracer
 from tests.ops.utils import span_snapshot
-
-
-@pytest.fixture(autouse=True, scope="function")
-def reset_provider_registry() -> Generator[None, None, None]:
-    """Reset the provider registry before and after each test."""
-    PROVIDER_REGISTRY.clear()
-    yield
-    PROVIDER_REGISTRY.clear()
 
 
 @pytest.fixture(autouse=True, scope="function")

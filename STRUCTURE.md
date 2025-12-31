@@ -58,7 +58,6 @@ python/
 │   │   │   │   └── completions/base_provider.py
 │   │   │   ├── together/
 │   │   │   ├── provider_registry.py
-│   │   │   └── load_provider.py
 │   │   ├── content/          # Content types (text, image, audio, etc.)
 │   │   │   ├── __init__.py
 │   │   │   ├── audio.py

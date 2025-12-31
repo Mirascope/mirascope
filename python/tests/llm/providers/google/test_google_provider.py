@@ -23,7 +23,7 @@ def test_custom_base_url() -> None:
         mock_client_instance = MagicMock()
         mock_client_class.return_value = mock_client_instance
 
-        google_client = llm.load_provider("google", base_url=example_url)
+        google_client = llm.register_provider("google", base_url=example_url)
 
         mock_client_class.assert_called_once()
         call_args = mock_client_class.call_args

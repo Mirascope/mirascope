@@ -11,7 +11,6 @@ from mirascope.llm.providers.provider_registry import (
 def test_auto_registered_providers() -> None:
     """Test that providers auto-register on first use and are cached."""
     openai = llm.providers.get_provider_for_model("openai/gpt-5")
-    assert openai is llm.load_provider("openai")
     assert openai is llm.providers.get_provider_for_model("openai/gpt-4")
 
 
@@ -19,6 +18,13 @@ def test_provider_registration() -> None:
     """Test explicit provider registration."""
     custom_openai = llm.register_provider("openai", api_key="foo-bar")
     assert llm.providers.get_provider_for_model("openai/gpt-5") is custom_openai
+
+
+def test_provider_registry_reset() -> None:
+    """Test resetting the provider registry."""
+    custom_openai = llm.register_provider("openai", api_key="foo-bar")
+    llm.reset_provider_registry()
+    assert llm.providers.get_provider_for_model("openai/gpt-5") is not custom_openai
 
 
 def test_provider_as_argument() -> None:
@@ -112,8 +118,7 @@ def test_empty_string_scope_loses_to_specific() -> None:
 
 def test_empty_array_scope_registers_nothing() -> None:
     """Test that registering with empty scope list doesn't register any scopes."""
-    custom_openai = llm.load_provider("openai", api_key="1234")
-    llm.register_provider(custom_openai, scope=[])
+    custom_openai = llm.register_provider("openai", api_key="1234", scope=[])
 
     actual = llm.providers.get_provider_for_model("openai/gpt-5")
     # Will use the default provider (via auto registration) since no scope was provided
