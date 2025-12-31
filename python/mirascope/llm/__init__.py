@@ -92,8 +92,8 @@ from .providers import (
     Params,
     Provider,
     ProviderId,
-    load_provider,
     register_provider,
+    reset_provider_registry,
 )
 from .responses import (
     AsyncChunkIterator,
@@ -232,7 +232,6 @@ __all__ = [
     "exceptions",
     "format",
     "formatting",
-    "load_provider",
     "mcp",
     "messages",
     "model",
@@ -242,6 +241,7 @@ __all__ = [
     "prompts",
     "providers",
     "register_provider",
+    "reset_provider_registry",
     "responses",
     "tool",
     "tools",
