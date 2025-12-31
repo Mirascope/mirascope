@@ -23,6 +23,7 @@ import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settin
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
+import { Route as DocsV1PlaceholderRouteImport } from './routes/docs.v1.placeholder'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -102,6 +103,11 @@ const AuthGithubRoute = AuthGithubRouteImport.update({
   path: '/auth/github',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsV1PlaceholderRoute = DocsV1PlaceholderRouteImport.update({
+  id: '/v1/placeholder',
+  path: '/v1/placeholder',
+  getParentRoute: () => DocsRoute,
+} as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
   path: '/proxy-callback',
@@ -146,7 +152,7 @@ const RouterV0ProviderSplatRoute = RouterV0ProviderSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
@@ -166,11 +172,12 @@ export interface FileRoutesByFullPath {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
+  '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
@@ -190,12 +197,13 @@ export interface FileRoutesByTo {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
+  '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/blog': typeof BlogRoute
-  '/docs': typeof DocsRoute
+  '/docs': typeof DocsRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
+  '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/router/v0/$provider/$'
+    | '/docs/v1/placeholder'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/router/v0/$provider/$'
+    | '/docs/v1/placeholder'
   id:
     | '__root__'
     | '/'
@@ -289,12 +300,13 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/router/v0/$provider/$'
+    | '/docs/v1/placeholder'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogRoute: typeof BlogRoute
-  DocsRoute: typeof DocsRoute
+  DocsRoute: typeof DocsRouteWithChildren
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   OrganizationsRoute: typeof OrganizationsRoute
@@ -412,6 +424,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGithubRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/v1/placeholder': {
+      id: '/docs/v1/placeholder'
+      path: '/v1/placeholder'
+      fullPath: '/docs/v1/placeholder'
+      preLoaderRoute: typeof DocsV1PlaceholderRouteImport
+      parentRoute: typeof DocsRoute
+    }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
       path: '/proxy-callback'
@@ -471,6 +490,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DocsRouteChildren {
+  DocsV1PlaceholderRoute: typeof DocsV1PlaceholderRoute
+}
+
+const DocsRouteChildren: DocsRouteChildren = {
+  DocsV1PlaceholderRoute: DocsV1PlaceholderRoute,
+}
+
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
+
 interface AuthGithubRouteChildren {
   AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute
   AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute
@@ -502,7 +531,7 @@ const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogRoute: BlogRoute,
-  DocsRoute: DocsRoute,
+  DocsRoute: DocsRouteWithChildren,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   OrganizationsRoute: OrganizationsRoute,
