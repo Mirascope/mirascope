@@ -53,31 +53,45 @@ def handle_openai_error(e: Exception) -> None:
     """
     # Authentication errors (401)
     if isinstance(e, OpenAIAuthenticationError):
-        raise AuthenticationError(str(e)) from e
+        error = AuthenticationError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Permission errors (403)
     if isinstance(e, OpenAIPermissionDeniedError):
-        raise PermissionError(str(e)) from e
+        error = PermissionError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Bad request errors (400, 422)
     if isinstance(e, OpenAIBadRequestError | OpenAIUnprocessableEntityError):
-        raise BadRequestError(str(e)) from e
+        error = BadRequestError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Not found errors (404)
     if isinstance(e, OpenAINotFoundError):
-        raise NotFoundError(str(e)) from e
+        error = NotFoundError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Conflict errors (409) - treat as bad request
     if isinstance(e, OpenAIConflictError):
-        raise BadRequestError(str(e)) from e
+        error = BadRequestError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Rate limit errors (429)
     if isinstance(e, OpenAIRateLimitError):
-        raise RateLimitError(str(e)) from e
+        error = RateLimitError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Server errors (500+)
     if isinstance(e, OpenAIInternalServerError):
-        raise ServerError(str(e)) from e
+        error = ServerError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Timeout errors
     if isinstance(e, OpenAIAPITimeoutError):
@@ -93,7 +107,9 @@ def handle_openai_error(e: Exception) -> None:
 
     # Unknown OpenAI SDK errors - wrap as generic APIError
     if isinstance(e, OpenAIError):
-        raise APIError(str(e)) from e
+        error = APIError(str(e), status_code=getattr(e, "status_code", None))
+        error.original_exception = e
+        raise error from e
 
     # Non-OpenAI errors - re-raise as-is
     raise e

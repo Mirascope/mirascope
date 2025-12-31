@@ -45,30 +45,44 @@ def handle_google_error(e: Exception) -> None:
     # Authentication errors (401)
     # Also check for 400 with "API key not valid" message (Google's pattern)
     if e.code == 401 or (e.code == 400 and "API key not valid" in str(e)):
-        raise AuthenticationError(str(e)) from e
+        error = AuthenticationError(str(e), status_code=e.code)
+        error.original_exception = e
+        raise error from e
 
     # Permission errors (403)
     if e.code == 403:
-        raise PermissionError(str(e)) from e
+        error = PermissionError(str(e), status_code=e.code)
+        error.original_exception = e
+        raise error from e
 
     # Not found errors (404)
     if e.code == 404:
-        raise NotFoundError(str(e)) from e
+        error = NotFoundError(str(e), status_code=e.code)
+        error.original_exception = e
+        raise error from e
 
     # Rate limit errors (429)
     if e.code == 429:
-        raise RateLimitError(str(e)) from e
+        error = RateLimitError(str(e), status_code=e.code)
+        error.original_exception = e
+        raise error from e
 
     # Bad request errors (400, 422)
     if e.code in (400, 422):
-        raise BadRequestError(str(e)) from e
+        error = BadRequestError(str(e), status_code=e.code)
+        error.original_exception = e
+        raise error from e
 
     # Server errors (500+) - map known ones to ServerError
     if isinstance(e, GoogleServerError) and e.code >= 500:
-        raise ServerError(str(e)) from e
+        error = ServerError(str(e), status_code=e.code)
+        error.original_exception = e
+        raise error from e
 
     # Unknown errors - wrap as generic APIError to preserve information
-    raise APIError(str(e)) from e
+    error = APIError(str(e), status_code=getattr(e, "code", None))
+    error.original_exception = e
+    raise error from e
 
 
 @contextmanager
