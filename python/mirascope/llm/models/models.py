@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator, Sequence
-from contextlib import contextmanager
+from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import cast, overload
+from typing import overload
 from typing_extensions import Unpack
 
 from ..context import Context, DepsT
-from ..exceptions import APIError, MirascopeLLMError
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
 from ..providers import (
@@ -21,12 +19,10 @@ from ..providers import (
     get_provider_for_model,
 )
 from ..responses import (
-    AsyncChunkIterator,
     AsyncContextResponse,
     AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
-    ChunkIterator,
     ContextResponse,
     ContextStreamResponse,
     Response,
@@ -157,51 +153,6 @@ class Model:
             token = self._token_stack.pop()
             MODEL_CONTEXT.reset(token)
 
-    @contextmanager
-    def _wrap_provider_errors(self) -> Generator[None, None, None]:
-        """Wrap provider API calls and convert errors to Mirascope exceptions.
-
-        Walks the exception's MRO to find the first matching error type in the
-        provider's error_map, allowing both specific error handling and fallback
-        to base SDK error types (e.g., AnthropicError -> APIError).
-        """
-        try:
-            yield
-        except Exception as e:
-            # Walk MRO to find first matching error type in provider's error_map
-            for error_class in type(e).__mro__:
-                if error_class in self.provider.error_map:
-                    error_type_or_fn = self.provider.error_map[error_class]
-
-                    if isinstance(error_type_or_fn, type):
-                        error_type = cast(type[MirascopeLLMError], error_type_or_fn)
-                    else:
-                        error_type = error_type_or_fn(e)
-
-                    # Construct Mirascope error with metadata
-                    error: MirascopeLLMError = error_type(str(e))
-                    if isinstance(error, APIError):
-                        error.status_code = self.provider.get_error_status(e)
-                    error.provider = self.provider_id
-                    error.original_exception = e
-                    raise error from e
-
-            # Not in error_map - not a provider error, re-raise as-is
-            raise
-
-    def _wrap_iterator_errors(self, iterator: ChunkIterator) -> ChunkIterator:
-        """Wrap sync chunk iterator to handle errors during iteration."""
-        with self._wrap_provider_errors():
-            yield from iterator
-
-    async def _wrap_async_iterator_errors(
-        self, iterator: AsyncChunkIterator
-    ) -> AsyncChunkIterator:
-        """Wrap async chunk iterator to handle errors during iteration."""
-        with self._wrap_provider_errors():
-            async for chunk in iterator:
-                yield chunk
-
     @overload
     def call(
         self,
@@ -252,14 +203,13 @@ class Model:
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            return self.provider.call(
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
+        return self.provider.call(
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
+        )
 
     @overload
     async def call_async(
@@ -311,14 +261,13 @@ class Model:
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            return await self.provider.call_async(
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                **self.params,
-                format=format,
-            )
+        return await self.provider.call_async(
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            **self.params,
+            format=format,
+        )
 
     @overload
     def stream(
@@ -370,18 +319,13 @@ class Model:
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            stream_response = self.provider.stream(
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return self.provider.stream(
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
         )
-        return stream_response
 
     @overload
     async def stream_async(
@@ -433,18 +377,13 @@ class Model:
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            stream_response = await self.provider.stream_async(
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_async_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return await self.provider.stream_async(
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
         )
-        return stream_response
 
     @overload
     def context_call(
@@ -509,15 +448,14 @@ class Model:
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            return self.provider.context_call(
-                ctx=ctx,
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
+        return self.provider.context_call(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
+        )
 
     @overload
     async def context_call_async(
@@ -582,15 +520,14 @@ class Model:
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            return await self.provider.context_call_async(
-                ctx=ctx,
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
+        return await self.provider.context_call_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
+        )
 
     @overload
     def context_stream(
@@ -659,19 +596,14 @@ class Model:
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            stream_response = self.provider.context_stream(
-                ctx=ctx,
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return self.provider.context_stream(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
         )
-        return stream_response
 
     @overload
     async def context_stream_async(
@@ -742,19 +674,14 @@ class Model:
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        with self._wrap_provider_errors():
-            stream_response = await self.provider.context_stream_async(
-                ctx=ctx,
-                model_id=self.model_id,
-                messages=messages,
-                tools=tools,
-                format=format,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_async_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return await self.provider.context_stream_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            **self.params,
         )
-        return stream_response
 
     @overload
     def resume(
@@ -807,13 +734,12 @@ class Model:
         Returns:
             A new `llm.Response` object containing the extended conversation.
         """
-        with self._wrap_provider_errors():
-            return self.provider.resume(
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
+        return self.provider.resume(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
+        )
 
     @overload
     async def resume_async(
@@ -866,13 +792,12 @@ class Model:
         Returns:
             A new `llm.AsyncResponse` object containing the extended conversation.
         """
-        with self._wrap_provider_errors():
-            return await self.provider.resume_async(
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
+        return await self.provider.resume_async(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
+        )
 
     @overload
     def context_resume(
@@ -930,14 +855,13 @@ class Model:
         Returns:
             A new `llm.ContextResponse` object containing the extended conversation.
         """
-        with self._wrap_provider_errors():
-            return self.provider.context_resume(
-                ctx=ctx,
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
+        return self.provider.context_resume(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
+        )
 
     @overload
     async def context_resume_async(
@@ -997,14 +921,13 @@ class Model:
         Returns:
             A new `llm.AsyncContextResponse` object containing the extended conversation.
         """
-        with self._wrap_provider_errors():
-            return await self.provider.context_resume_async(
-                ctx=ctx,
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
+        return await self.provider.context_resume_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
+        )
 
     @overload
     def resume_stream(
@@ -1057,17 +980,12 @@ class Model:
         Returns:
             A new `llm.StreamResponse` object for streaming the extended conversation.
         """
-        with self._wrap_provider_errors():
-            stream_response = self.provider.resume_stream(
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return self.provider.resume_stream(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
         )
-        return stream_response
 
     @overload
     async def resume_stream_async(
@@ -1120,17 +1038,12 @@ class Model:
         Returns:
             A new `llm.AsyncStreamResponse` object for asynchronously streaming the extended conversation.
         """
-        with self._wrap_provider_errors():
-            stream_response = await self.provider.resume_stream_async(
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_async_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return await self.provider.resume_stream_async(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
         )
-        return stream_response
 
     @overload
     def context_resume_stream(
@@ -1194,18 +1107,13 @@ class Model:
         Returns:
             A new `llm.ContextStreamResponse` object for streaming the extended conversation.
         """
-        with self._wrap_provider_errors():
-            stream_response = self.provider.context_resume_stream(
-                ctx=ctx,
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return self.provider.context_resume_stream(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
         )
-        return stream_response
 
     @overload
     async def context_resume_stream_async(
@@ -1271,18 +1179,13 @@ class Model:
         Returns:
             A new `llm.AsyncContextStreamResponse` object for asynchronously streaming the extended conversation.
         """
-        with self._wrap_provider_errors():
-            stream_response = await self.provider.context_resume_stream_async(
-                ctx=ctx,
-                model_id=self.model_id,
-                response=response,
-                content=content,
-                **self.params,
-            )
-        stream_response._chunk_iterator = self._wrap_async_iterator_errors(  # pyright: ignore[reportPrivateUsage]
-            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
+        return await self.provider.context_resume_stream_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            **self.params,
         )
-        return stream_response
 
 
 def model(
