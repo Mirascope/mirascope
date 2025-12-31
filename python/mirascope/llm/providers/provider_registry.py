@@ -23,6 +23,7 @@ PROVIDER_REGISTRY: dict[str, Provider] = {}
 def reset_provider_registry() -> None:
     """Resets the provider registry, clearing all registered providers."""
     PROVIDER_REGISTRY.clear()
+    provider_singleton.cache_clear()
 
 
 # Default auto-registration mapping for built-in providers
