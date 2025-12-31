@@ -4,11 +4,12 @@ from collections.abc import Generator
 from contextlib import contextmanager
 
 from openai import (
+    AuthenticationError as OpenAIAuthenticationError,
     NotFoundError as OpenAINotFoundError,
     RateLimitError as OpenAIRateLimitError,
 )
 
-from .....exceptions import NotFoundError, RateLimitError
+from .....exceptions import AuthenticationError, NotFoundError, RateLimitError
 
 
 def handle_openai_error(e: Exception) -> None:
@@ -18,10 +19,13 @@ def handle_openai_error(e: Exception) -> None:
         e: The exception to handle.
 
     Raises:
+        AuthenticationError: If the error is an authentication error (401).
         RateLimitError: If the error is a rate limit error.
         NotFoundError: If the error is a not found error (404).
         Exception: Re-raises the original exception if not handled.
     """
+    if isinstance(e, OpenAIAuthenticationError):
+        raise AuthenticationError(str(e)) from e
     if isinstance(e, OpenAIRateLimitError):
         raise RateLimitError(str(e)) from e
     if isinstance(e, OpenAINotFoundError):

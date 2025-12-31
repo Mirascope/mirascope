@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"This should fail with AuthenticationError"}],"model":"gpt-4o","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '155'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        invalid-*****2345. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-RAY:
+      - 9b639e6f69646e84-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '267'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 30 Dec 2025 18:32:16 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      vary:
+      - Origin
+      x-envoy-upstream-service-time:
+      - '1'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-request-id:
+      - req_e110441cdd4d4b489d1e949075fa96bc
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

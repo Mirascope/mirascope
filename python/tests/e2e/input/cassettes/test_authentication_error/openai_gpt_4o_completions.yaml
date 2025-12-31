@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"This should fail with AuthenticationError"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '101'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        invalid-*****2345. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-RAY:
+      - 9b639e449d766c89-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '267'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 30 Dec 2025 18:32:09 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=8FEd36bHWFTqVhOVCpTuR.ggMpX6fA8WIV7zqI2LebA-1767119529-1.0.1.1-Aj_9X33kQxPg8yq8KFHkQTkHOgL_NDrdegWNX5GzSvVHCLNplWW5eQcDNtJCN_UmUn14zrPtfBjdyLvbmLqAUL94fxCbHGTZyt9SG6vQQUU;
+        path=/; expires=Tue, 30-Dec-25 19:02:09 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=qTeEmqf1TcHHctE_ZgiJUFVZ4JFLFQM8uckBnnwk5dE-1767119529768-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      vary:
+      - Origin
+      x-envoy-upstream-service-time:
+      - '1'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-request-id:
+      - req_1963efc19b3b4865af98403581d580af
+    status:
+      code: 401
+      message: Unauthorized
+version: 1
