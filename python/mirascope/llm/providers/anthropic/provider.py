@@ -91,7 +91,8 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        anthropic_response = self.client.messages.create(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            anthropic_response = self.client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
@@ -139,7 +140,8 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        anthropic_response = self.client.messages.create(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            anthropic_response = self.client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
@@ -183,7 +185,8 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        anthropic_response = await self.async_client.messages.create(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            anthropic_response = await self.async_client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
@@ -231,7 +234,8 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        anthropic_response = await self.async_client.messages.create(**kwargs)
+        with _utils.wrap_anthropic_errors():
+            anthropic_response = await self.async_client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )

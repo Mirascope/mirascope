@@ -9,6 +9,7 @@ from .encode import (
     encode_request,
     process_params,
 )
+from .errors import wrap_anthropic_errors
 
 __all__ = [
     "DEFAULT_FORMAT_MODE",
@@ -20,4 +21,5 @@ __all__ = [
     "encode_image_mime_type",
     "encode_request",
     "process_params",
+    "wrap_anthropic_errors",
 ]
