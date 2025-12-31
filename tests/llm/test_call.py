@@ -583,3 +583,138 @@ async def test_context_in_async_function_with_gather():
         assert captured_args_list[1]["model"] == "claude-3-5-sonnet", (
             "Context model override was not applied when using asyncio.gather"
         )
+
+
+@pytest.mark.asyncio
+async def test_async_call_is_coroutine_callable():
+    """Test that async decorated functions are properly detected as coroutine callables.
+
+    This is important for compatibility with tenacity's @retry decorator,
+    which uses its is_coroutine_callable helper to determine if a function is async.
+    Tenacity checks the __call__ attribute for async functions.
+    """
+    import functools
+    import inspect
+
+    def is_coroutine_callable(call):
+        """Replicate tenacity's is_coroutine_callable logic."""
+        if inspect.isclass(call):
+            return False
+        if inspect.iscoroutinefunction(call):
+            return True
+        partial_call = isinstance(call, functools.partial) and call.func
+        # This replicates tenacity's exact logic which checks __call__ attribute
+        dunder_call = partial_call or getattr(call, "__call__", None)  # noqa: B004
+        return inspect.iscoroutinefunction(dunder_call)
+
+    def dummy_async_provider_call(
+        model,
+        stream,
+        tools,
+        response_model,
+        output_parser,
+        json_mode,
+        call_params,
+        client,
+    ):
+        def wrapper(fn):
+            async def inner(*args, **kwargs):
+                return ConcreteResponse(
+                    metadata=Metadata(),
+                    response={},
+                    tool_types=None,
+                    prompt_template=None,
+                    fn_args={},
+                    dynamic_config={},
+                    messages=[],
+                    call_params=DummyCallParams(),
+                    call_kwargs=BaseCallKwargs(),
+                    user_message_param=None,
+                    start_time=0,
+                    end_time=0,
+                )
+
+            return inner
+
+        return wrapper
+
+    with patch(
+        "mirascope.llm._call._get_provider_call",
+        return_value=dummy_async_provider_call,
+    ):
+
+        @call(provider="openai", model="gpt-4o-mini")
+        async def dummy_async_function(): ...
+
+        # The decorated function should be recognized as a coroutine callable
+        # by tenacity's is_coroutine_callable helper
+        assert is_coroutine_callable(dummy_async_function), (
+            "Async decorated function should be detected as a coroutine callable "
+            "for tenacity @retry compatibility"
+        )
+
+        # Verify it still works correctly
+        res = await dummy_async_function()
+        assert isinstance(res, CallResponse)
+
+
+@pytest.mark.asyncio
+async def test_tenacity_retry_with_async_call():
+    """Test that tenacity's @retry decorator works with async call functions.
+
+    This test verifies the fix for issue #989 where @retry with collect_errors
+    did not work with async methods.
+    """
+    from tenacity import retry, stop_after_attempt
+
+    call_count = 0
+
+    def dummy_async_provider_call(
+        model,
+        stream,
+        tools,
+        response_model,
+        output_parser,
+        json_mode,
+        call_params,
+        client,
+    ):
+        def wrapper(fn):
+            async def inner(*args, **kwargs):
+                nonlocal call_count
+                call_count += 1
+                # Fail the first 2 attempts, succeed on the 3rd
+                if call_count < 3:
+                    raise ValueError("Simulated failure")
+                return ConcreteResponse(
+                    metadata=Metadata(),
+                    response={},
+                    tool_types=None,
+                    prompt_template=None,
+                    fn_args={},
+                    dynamic_config={},
+                    messages=[],
+                    call_params=DummyCallParams(),
+                    call_kwargs=BaseCallKwargs(),
+                    user_message_param=None,
+                    start_time=0,
+                    end_time=0,
+                )
+
+            return inner
+
+        return wrapper
+
+    with patch(
+        "mirascope.llm._call._get_provider_call",
+        return_value=dummy_async_provider_call,
+    ):
+
+        @retry(stop=stop_after_attempt(3))
+        @call(provider="openai", model="gpt-4o-mini")
+        async def retry_async_function(): ...
+
+        # This should succeed on the 3rd attempt
+        res = await retry_async_function()
+        assert isinstance(res, CallResponse)
+        assert call_count == 3, "Function should have been called 3 times"
