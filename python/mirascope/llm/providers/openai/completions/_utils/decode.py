@@ -28,6 +28,7 @@ from .....responses import (
     UsageDeltaChunk,
 )
 from ...model_id import OpenAIModelId, model_name
+from .errors import wrap_openai_errors
 
 OPENAI_FINISH_REASON_MAP = {
     "length": FinishReason.MAX_TOKENS,
@@ -227,8 +228,9 @@ def decode_stream(
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an OpenAI Stream[ChatCompletionChunk]"""
     processor = _OpenAIChunkProcessor()
-    for chunk in openai_stream:
-        yield from processor.process_chunk(chunk)
+    with wrap_openai_errors():
+        for chunk in openai_stream:
+            yield from processor.process_chunk(chunk)
 
 
 async def decode_async_stream(
@@ -236,6 +238,7 @@ async def decode_async_stream(
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from an OpenAI AsyncStream[ChatCompletionChunk]"""
     processor = _OpenAIChunkProcessor()
-    async for chunk in openai_stream:
-        for item in processor.process_chunk(chunk):
-            yield item
+    with wrap_openai_errors():
+        async for chunk in openai_stream:
+            for item in processor.process_chunk(chunk):
+                yield item
