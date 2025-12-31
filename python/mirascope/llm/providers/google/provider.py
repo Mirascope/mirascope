@@ -39,6 +39,7 @@ class GoogleProvider(BaseProvider[Client]):
 
     id = "google"
     default_scope = "google/"
+    error_map = _utils.GOOGLE_ERROR_MAP
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
@@ -49,6 +50,10 @@ class GoogleProvider(BaseProvider[Client]):
             http_options = HttpOptions(base_url=base_url)
 
         self.client = Client(api_key=api_key, http_options=http_options)
+
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from Google exception."""
+        return getattr(e, "code", None)
 
     def _call(
         self,
@@ -78,9 +83,7 @@ class GoogleProvider(BaseProvider[Client]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_google_errors():
-            google_response = self.client.models.generate_content(**kwargs)
+        google_response = self.client.models.generate_content(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
@@ -132,9 +135,7 @@ class GoogleProvider(BaseProvider[Client]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_google_errors():
-            google_response = self.client.models.generate_content(**kwargs)
+        google_response = self.client.models.generate_content(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
@@ -182,9 +183,7 @@ class GoogleProvider(BaseProvider[Client]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_google_errors():
-            google_response = await self.client.aio.models.generate_content(**kwargs)
+        google_response = await self.client.aio.models.generate_content(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id
@@ -236,9 +235,7 @@ class GoogleProvider(BaseProvider[Client]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_google_errors():
-            google_response = await self.client.aio.models.generate_content(**kwargs)
+        google_response = await self.client.aio.models.generate_content(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             google_response, model_id

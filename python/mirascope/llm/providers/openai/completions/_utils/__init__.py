@@ -5,7 +5,6 @@ from .decode import (
     model_name,
 )
 from .encode import encode_request
-from .errors import wrap_openai_errors
 
 __all__ = [
     "decode_async_stream",
@@ -13,5 +12,4 @@ __all__ = [
     "decode_stream",
     "encode_request",
     "model_name",
-    "wrap_openai_errors",
 ]

@@ -260,6 +260,7 @@ def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
     # Create a mock provider that raises an error
     mock_provider = Mock()
     mock_provider.id = "openai"
+    mock_provider.error_map = {}  # Empty error map - errors pass through
     mock_provider.call.side_effect = openai.APIError(
         "Server error occurred",
         request=httpx.Request("POST", "https://example.com"),

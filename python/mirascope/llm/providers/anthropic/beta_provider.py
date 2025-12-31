@@ -39,6 +39,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
 
     id = "anthropic-beta"
     default_scope = "anthropic-beta/"
+    error_map = _utils.ANTHROPIC_ERROR_MAP
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
@@ -46,6 +47,10 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
         """Initialize the beta Anthropic client."""
         self.client = Anthropic(api_key=api_key, base_url=base_url)
         self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
+
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from Anthropic exception."""
+        return getattr(e, "status_code", None)
 
     def _call(
         self,
@@ -64,8 +69,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            beta_response = self.client.beta.messages.parse(**kwargs)
+        beta_response = self.client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
@@ -103,8 +107,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            beta_response = self.client.beta.messages.parse(**kwargs)
+        beta_response = self.client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
@@ -139,8 +142,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            beta_response = await self.async_client.beta.messages.parse(**kwargs)
+        beta_response = await self.async_client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )
@@ -178,8 +180,7 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            beta_response = await self.async_client.beta.messages.parse(**kwargs)
+        beta_response = await self.async_client.beta.messages.parse(**kwargs)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
             beta_response, model_id
         )

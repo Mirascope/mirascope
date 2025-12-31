@@ -55,6 +55,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
 
     id = "anthropic"
     default_scope = "anthropic/"
+    error_map = _utils.ANTHROPIC_ERROR_MAP
     _beta_provider: AnthropicBetaProvider
 
     def __init__(
@@ -64,6 +65,10 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         self.client = Anthropic(api_key=api_key, base_url=base_url)
         self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
         self._beta_provider = AnthropicBetaProvider(api_key=api_key, base_url=base_url)
+
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from Anthropic exception."""
+        return getattr(e, "status_code", None)
 
     def _call(
         self,
@@ -91,8 +96,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            anthropic_response = self.client.messages.create(**kwargs)
+        anthropic_response = self.client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
@@ -140,8 +144,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            anthropic_response = self.client.messages.create(**kwargs)
+        anthropic_response = self.client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
@@ -185,8 +188,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            anthropic_response = await self.async_client.messages.create(**kwargs)
+        anthropic_response = await self.async_client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )
@@ -234,8 +236,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             format=format,
             params=params,
         )
-        with _utils.wrap_anthropic_errors():
-            anthropic_response = await self.async_client.messages.create(**kwargs)
+        anthropic_response = await self.async_client.messages.create(**kwargs)
         assistant_message, finish_reason, usage = _utils.decode_response(
             anthropic_response, model_id
         )

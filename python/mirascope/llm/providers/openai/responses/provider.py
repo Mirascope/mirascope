@@ -3,9 +3,10 @@
 from collections.abc import Sequence
 from typing_extensions import Unpack
 
-from openai import AsyncOpenAI, OpenAI
+from openai import AsyncOpenAI, BadRequestError as OpenAIBadRequestError, OpenAI
 
 from ....context import Context, DepsT
+from ....exceptions import BadRequestError, NotFoundError
 from ....formatting import Format, FormattableT
 from ....messages import Message
 from ....responses import (
@@ -29,6 +30,7 @@ from ....tools import (
     Toolkit,
 )
 from ...base import BaseProvider, Params
+from .. import _utils as _shared_utils
 from ..model_id import OpenAIModelId, model_name
 from . import _utils
 
@@ -38,6 +40,12 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
 
     id = "openai:responses"
     default_scope = "openai/"
+    error_map = {
+        **_shared_utils.OPENAI_ERROR_MAP,
+        OpenAIBadRequestError: lambda e: NotFoundError
+        if hasattr(e, "code") and e.code == "model_not_found"  # pyright: ignore[reportAttributeAccessIssue,reportUnknownMemberType]
+        else BadRequestError,
+    }
 
     def __init__(
         self,
@@ -48,6 +56,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         """Initialize the OpenAI Responses client."""
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.async_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from OpenAI exception."""
+        return getattr(e, "status_code", None)
 
     def _call(
         self,
@@ -77,9 +89,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_openai_errors():
-            openai_response = self.client.responses.create(**kwargs)
+        openai_response = self.client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id
@@ -128,9 +138,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_openai_errors():
-            openai_response = await self.async_client.responses.create(**kwargs)
+        openai_response = await self.async_client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id
@@ -179,12 +187,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_openai_errors():
-            openai_stream = self.client.responses.create(
-                **kwargs,
-                stream=True,
-            )
+        openai_stream = self.client.responses.create(
+            **kwargs,
+            stream=True,
+        )
 
         chunk_iterator = _utils.decode_stream(
             openai_stream,
@@ -230,12 +236,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_openai_errors():
-            openai_stream = await self.async_client.responses.create(
-                **kwargs,
-                stream=True,
-            )
+        openai_stream = await self.async_client.responses.create(
+            **kwargs,
+            stream=True,
+        )
 
         chunk_iterator = _utils.decode_async_stream(
             openai_stream,
@@ -285,9 +289,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_openai_errors():
-            openai_response = self.client.responses.create(**kwargs)
+        openai_response = self.client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id
@@ -340,9 +342,7 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             format=format,
             params=params,
         )
-
-        with _utils.wrap_openai_errors():
-            openai_response = await self.async_client.responses.create(**kwargs)
+        openai_response = await self.async_client.responses.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response, model_id, self.id

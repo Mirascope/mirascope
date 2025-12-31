@@ -31,6 +31,7 @@ from ....tools import (
     Toolkit,
 )
 from ...base import BaseProvider, Params
+from .. import _utils as _shared_utils
 from ..model_id import model_name as openai_model_name
 from . import _utils
 
@@ -44,6 +45,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
     api_key_env_var: ClassVar[str]
     api_key_required: ClassVar[bool] = True
     provider_name: ClassVar[str | None] = None
+    error_map = _shared_utils.OPENAI_ERROR_MAP
 
     def __init__(
         self,
@@ -76,6 +78,10 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             api_key=effective_api_key,
             base_url=resolved_base_url,
         )
+
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from OpenAI exception."""
+        return getattr(e, "status_code", None)
 
     def _model_name(self, model_id: str) -> str:
         """Extract the model name to send to the API."""
@@ -114,9 +120,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             params=params,
         )
         kwargs["model"] = self._model_name(model_id)
-
-        with _utils.wrap_openai_errors():
-            openai_response = self.client.chat.completions.create(**kwargs)
+        openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -172,9 +176,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             params=params,
         )
         kwargs["model"] = self._model_name(model_id)
-
-        with _utils.wrap_openai_errors():
-            openai_response = self.client.chat.completions.create(**kwargs)
+        openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -226,9 +228,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             format=format,
         )
         kwargs["model"] = self._model_name(model_id)
-
-        with _utils.wrap_openai_errors():
-            openai_response = await self.async_client.chat.completions.create(**kwargs)
+        openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -284,9 +284,7 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             format=format,
         )
         kwargs["model"] = self._model_name(model_id)
-
-        with _utils.wrap_openai_errors():
-            openai_response = await self.async_client.chat.completions.create(**kwargs)
+        openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason, usage = _utils.decode_response(
             openai_response,
@@ -338,13 +336,11 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             params=params,
         )
         kwargs["model"] = self._model_name(model_id)
-
-        with _utils.wrap_openai_errors():
-            openai_stream = self.client.chat.completions.create(
-                **kwargs,
-                stream=True,
-                stream_options={"include_usage": True},
-            )
+        openai_stream = self.client.chat.completions.create(
+            **kwargs,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
         chunk_iterator = _utils.decode_stream(openai_stream)
 
@@ -441,13 +437,11 @@ class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):
             params=params,
         )
         kwargs["model"] = self._model_name(model_id)
-
-        with _utils.wrap_openai_errors():
-            openai_stream = await self.async_client.chat.completions.create(
-                **kwargs,
-                stream=True,
-                stream_options={"include_usage": True},
-            )
+        openai_stream = await self.async_client.chat.completions.create(
+            **kwargs,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
         chunk_iterator = _utils.decode_async_stream(openai_stream)
 
