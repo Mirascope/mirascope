@@ -355,6 +355,7 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
     # Create a mock provider that raises an error
     mock_provider = Mock()
     mock_provider.id = "openai"
+    mock_provider.error_map = {}  # Empty error map - errors pass through
     mock_provider.stream.side_effect = openai.APIError(
         "Server error occurred",
         request=httpx.Request("POST", "https://example.com"),
@@ -404,6 +405,7 @@ def test_model_stream_iterator_error_records_exception(
     # Create a mock provider that returns a failing stream
     mock_provider = Mock()
     mock_provider.id = "openai"
+    mock_provider.error_map = {}  # Empty error map - errors pass through
     mock_provider.stream.return_value = StreamResponse(
         provider_id="openai",
         model_id="openai/gpt-4o",

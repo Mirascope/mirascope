@@ -11,6 +11,7 @@ class MirascopeLLMError(Exception):
     """Base exception for all Mirascope LLM errors."""
 
     original_exception: Exception | None
+    provider: "ProviderId | None"
 
 
 class APIError(MirascopeLLMError):

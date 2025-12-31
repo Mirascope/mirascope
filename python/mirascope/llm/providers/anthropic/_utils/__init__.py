@@ -9,9 +9,10 @@ from .encode import (
     encode_request,
     process_params,
 )
-from .errors import wrap_anthropic_errors
+from .errors import ANTHROPIC_ERROR_MAP
 
 __all__ = [
+    "ANTHROPIC_ERROR_MAP",
     "DEFAULT_FORMAT_MODE",
     "DEFAULT_MAX_TOKENS",
     "AnthropicImageMimeType",
@@ -21,5 +22,4 @@ __all__ = [
     "encode_image_mime_type",
     "encode_request",
     "process_params",
-    "wrap_anthropic_errors",
 ]

@@ -45,7 +45,6 @@ from ....responses import (
 )
 from ..model_id import model_name
 from .decode import decode_usage
-from .errors import wrap_anthropic_errors
 
 BETA_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
@@ -254,11 +253,10 @@ def beta_decode_stream(
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from a Beta MessageStreamManager."""
     processor = _BetaChunkProcessor()
-    with wrap_anthropic_errors():
-        with beta_stream_manager as stream:
-            for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
-                yield from processor.process_event(event)
-        yield processor.raw_message_chunk()
+    with beta_stream_manager as stream:
+        for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
+            yield from processor.process_event(event)
+    yield processor.raw_message_chunk()
 
 
 async def beta_decode_async_stream(
@@ -266,9 +264,8 @@ async def beta_decode_async_stream(
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from a Beta MessageStreamManager."""
     processor = _BetaChunkProcessor()
-    with wrap_anthropic_errors():
-        async with beta_stream_manager as stream:
-            async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
-                for item in processor.process_event(event):
-                    yield item
-        yield processor.raw_message_chunk()
+    async with beta_stream_manager as stream:
+        async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
+            for item in processor.process_event(event):
+                yield item
+    yield processor.raw_message_chunk()

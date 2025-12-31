@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, overload
 from typing_extensions import TypeVar, Unpack
 
@@ -33,12 +33,25 @@ from ...tools import (
 from .params import Params
 
 if TYPE_CHECKING:
+    from ...exceptions import MirascopeLLMError
     from ..provider_id import ProviderId
 
 ProviderClientT = TypeVar("ProviderClientT")
 
 Provider: TypeAlias = "BaseProvider[Any]"
 """Type alias for `BaseProvider` with any client type."""
+
+ProviderErrorMap: TypeAlias = Mapping[
+    type[Exception],
+    "type[MirascopeLLMError] | Callable[[Exception], type[MirascopeLLMError]]",
+]
+"""Mapping from provider SDK exceptions to Mirascope error types.
+
+Keys are provider SDK exception types (e.g., OpenAIError, AnthropicError).
+Values can be:
+- Error type: Simple 1:1 mapping (e.g., RateLimitError)
+- Callable: Transform function returning error type based on exception details
+"""
 
 
 class BaseProvider(Generic[ProviderClientT], ABC):
@@ -57,6 +70,18 @@ class BaseProvider(Generic[ProviderClientT], ABC):
     Can be a single scope string or a list of scopes. For example:
     - "anthropic/" - Single scope
     - ["anthropic/", "openai/"] - Multiple scopes (e.g., for AWS Bedrock)
+    """
+
+    error_map: ClassVar[ProviderErrorMap]
+    """Mapping from provider SDK exceptions to Mirascope error types.
+
+    Values can be:
+    - Error type: Simple 1:1 mapping (e.g., AnthropicRateLimitError -> RateLimitError)
+    - Callable: Transform function returning error type based on exception details
+                (e.g., lambda e: NotFoundError if e.code == "model_not_found" else BadRequestError)
+
+    The mapping is walked via the exception's MRO, allowing both specific error handling
+    and fallback to base SDK error types (e.g., AnthropicError -> APIError).
     """
 
     client: ProviderClientT
@@ -1383,3 +1408,18 @@ class BaseProvider(Generic[ProviderClientT], ABC):
             format=response.format,
             **params,
         )
+
+    @abstractmethod
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from provider-specific exception.
+
+        Different SDKs store status codes differently (e.g., .status_code vs .code).
+        Each provider implements this to handle their SDK's convention.
+
+        Args:
+            e: The exception to extract status code from.
+
+        Returns:
+            The HTTP status code if available, None otherwise.
+        """
+        ...

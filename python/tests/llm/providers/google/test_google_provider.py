@@ -4,10 +4,14 @@ from collections.abc import AsyncIterator, Iterator
 from unittest.mock import MagicMock, patch
 
 import pytest
-from google.genai.errors import ServerError as GoogleServerError
+from google.genai.errors import (
+    ClientError as GoogleClientError,
+    ServerError as GoogleServerError,
+)
 from google.genai.types import GenerateContentResponse
 
 from mirascope import llm
+from mirascope.llm.providers.google._utils.errors import map_google_error
 from mirascope.llm.providers.google.provider import GoogleProvider
 
 
@@ -131,3 +135,65 @@ async def test_async_call_rate_limit_error() -> None:
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert isinstance(exc_info.value.__cause__, GoogleServerError)
+
+
+def test_map_google_error_not_google_error() -> None:
+    """Test that non-Google errors return APIError."""
+    from mirascope.llm.exceptions import APIError
+
+    result = map_google_error(Exception("test"))
+    assert result == APIError
+
+
+def test_map_google_error_permission_denied() -> None:
+    """Test that 403 errors map to PermissionError."""
+    from mirascope.llm.exceptions import PermissionError
+
+    error = GoogleClientError(403, {"error": {"message": "Permission denied"}})
+    result = map_google_error(error)
+    assert result == PermissionError
+
+
+def test_map_google_error_not_found() -> None:
+    """Test that 404 errors map to NotFoundError."""
+    from mirascope.llm.exceptions import NotFoundError
+
+    error = GoogleClientError(404, {"error": {"message": "Not found"}})
+    result = map_google_error(error)
+    assert result == NotFoundError
+
+
+def test_map_google_error_bad_request() -> None:
+    """Test that 400/422 errors map to BadRequestError."""
+    from mirascope.llm.exceptions import BadRequestError
+
+    error_400 = GoogleClientError(400, {"error": {"message": "Bad request"}})
+    result_400 = map_google_error(error_400)
+    assert result_400 == BadRequestError
+
+    error_422 = GoogleClientError(422, {"error": {"message": "Unprocessable"}})
+    result_422 = map_google_error(error_422)
+    assert result_422 == BadRequestError
+
+
+def test_map_google_error_server_error() -> None:
+    """Test that 5xx server errors map to ServerError."""
+    from mirascope.llm.exceptions import ServerError
+
+    error_500 = GoogleServerError(500, {"error": {"message": "Internal server error"}})
+    result_500 = map_google_error(error_500)
+    assert result_500 == ServerError
+
+    error_503 = GoogleServerError(503, {"error": {"message": "Service unavailable"}})
+    result_503 = map_google_error(error_503)
+    assert result_503 == ServerError
+
+
+def test_map_google_error_fallback() -> None:
+    """Test that unknown error codes fall back to APIError."""
+    from mirascope.llm.exceptions import APIError
+
+    # Test an unknown client error code
+    error = GoogleClientError(418, {"error": {"message": "I'm a teapot"}})
+    result = map_google_error(error)
+    assert result == APIError

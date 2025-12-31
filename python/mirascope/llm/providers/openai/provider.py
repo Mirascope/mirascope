@@ -3,9 +3,10 @@
 from collections.abc import Sequence
 from typing_extensions import Unpack
 
-from openai import OpenAI
+from openai import BadRequestError as OpenAIBadRequestError, OpenAI
 
 from ...context import Context, DepsT
+from ...exceptions import BadRequestError, NotFoundError
 from ...formatting import Format, FormattableT
 from ...messages import Message
 from ...responses import (
@@ -29,6 +30,7 @@ from ...tools import (
     Toolkit,
 )
 from ..base import BaseProvider, Params
+from . import _utils
 from .completions import OpenAICompletionsProvider
 from .model_id import OPENAI_KNOWN_MODELS, OpenAIModelId
 from .responses import OpenAIResponsesProvider
@@ -107,6 +109,13 @@ class OpenAIProvider(BaseProvider[OpenAI]):
 
     id = "openai"
     default_scope = "openai/"
+    # Include special handling for model_not_found from Responses API
+    error_map = {
+        **_utils.OPENAI_ERROR_MAP,
+        OpenAIBadRequestError: lambda e: NotFoundError
+        if hasattr(e, "code") and e.code == "model_not_found"  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        else BadRequestError,
+    }
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
@@ -120,6 +129,10 @@ class OpenAIProvider(BaseProvider[OpenAI]):
         )
         # Use completions client's underlying OpenAI client as the main one
         self.client = self._completions_provider.client
+
+    def get_error_status(self, e: Exception) -> int | None:
+        """Extract HTTP status code from OpenAI exception."""
+        return getattr(e, "status_code", None)
 
     def _choose_subprovider(
         self, model_id: OpenAIModelId, messages: Sequence[Message]

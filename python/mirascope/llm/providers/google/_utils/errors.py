@@ -1,8 +1,5 @@
 """Google error handling utilities."""
 
-from collections.abc import Generator
-from contextlib import contextmanager
-
 from google.genai.errors import (
     ClientError as GoogleClientError,
     ServerError as GoogleServerError,
@@ -17,83 +14,36 @@ from ....exceptions import (
     RateLimitError,
     ServerError,
 )
+from ...base import ProviderErrorMap
 
 
-def handle_google_error(e: Exception) -> None:
-    """Convert Google errors to Mirascope errors.
+def map_google_error(e: Exception) -> type[APIError]:
+    """Map Google error to appropriate Mirascope error type.
 
-    Note: Google's error system only provides ClientError (4xx) and ServerError (5xx)
-    with HTTP status codes. We do best-effort mapping based on status codes and
-    error message patterns.
-
-    Args:
-        e: The exception to handle.
-
-    Raises:
-        AuthenticationError: If the error is an authentication error (401).
-        PermissionError: If the error is a permission denied error (403).
-        BadRequestError: If the error is a bad request error (400, 422).
-        NotFoundError: If the error is a not found error (404).
-        RateLimitError: If the error is a rate limit error (429).
-        ServerError: If the error is a server error (500+).
-        APIError: If the error cannot be mapped to a specific error type.
-        Exception: Re-raises the original exception if not handled.
+    Google only provides ClientError (4xx) and ServerError (5xx) with status codes,
+    so we map based on status code and message patterns.
     """
     if not isinstance(e, GoogleClientError | GoogleServerError):
-        raise e
+        return APIError
 
-    # Authentication errors (401)
-    # Also check for 400 with "API key not valid" message (Google's pattern)
+    # Authentication errors (401) or 400 with "API key not valid"
     if e.code == 401 or (e.code == 400 and "API key not valid" in str(e)):
-        error = AuthenticationError(str(e), status_code=e.code)
-        error.original_exception = e
-        raise error from e
-
-    # Permission errors (403)
+        return AuthenticationError
     if e.code == 403:
-        error = PermissionError(str(e), status_code=e.code)
-        error.original_exception = e
-        raise error from e
-
-    # Not found errors (404)
+        return PermissionError
     if e.code == 404:
-        error = NotFoundError(str(e), status_code=e.code)
-        error.original_exception = e
-        raise error from e
-
-    # Rate limit errors (429)
+        return NotFoundError
     if e.code == 429:
-        error = RateLimitError(str(e), status_code=e.code)
-        error.original_exception = e
-        raise error from e
-
-    # Bad request errors (400, 422)
+        return RateLimitError
     if e.code in (400, 422):
-        error = BadRequestError(str(e), status_code=e.code)
-        error.original_exception = e
-        raise error from e
-
-    # Server errors (500+) - map known ones to ServerError
+        return BadRequestError
     if isinstance(e, GoogleServerError) and e.code >= 500:
-        error = ServerError(str(e), status_code=e.code)
-        error.original_exception = e
-        raise error from e
-
-    # Unknown errors - wrap as generic APIError to preserve information
-    error = APIError(str(e), status_code=getattr(e, "code", None))
-    error.original_exception = e
-    raise error from e
+        return ServerError
+    return APIError
 
 
-@contextmanager
-def wrap_google_errors() -> Generator[None, None, None]:
-    """Context manager that wraps Google API errors.
-
-    Usage:
-        with wrap_google_errors():
-            response = client.models.generate_content(...)
-    """
-    try:
-        yield
-    except Exception as e:
-        handle_google_error(e)
+# Shared error mapping for Google provider
+GOOGLE_ERROR_MAP: ProviderErrorMap = {
+    GoogleClientError: map_google_error,
+    GoogleServerError: map_google_error,
+}

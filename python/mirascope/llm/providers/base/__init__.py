@@ -1,7 +1,7 @@
 """Base client interfaces and types."""
 
 from . import _utils
-from .base_provider import BaseProvider, Provider
+from .base_provider import BaseProvider, Provider, ProviderErrorMap
 from .kwargs import BaseKwargs, KwargsT
 from .params import Params
 
@@ -11,5 +11,6 @@ __all__ = [
     "KwargsT",
     "Params",
     "Provider",
+    "ProviderErrorMap",
     "_utils",
 ]
