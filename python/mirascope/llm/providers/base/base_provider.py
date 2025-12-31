@@ -3,18 +3,22 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, overload
+from collections.abc import Callable, Generator, Mapping, Sequence
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, cast, overload
 from typing_extensions import TypeVar, Unpack
 
 from ...context import Context, DepsT
+from ...exceptions import APIError, MirascopeLLMError
 from ...formatting import Format, FormattableT
 from ...messages import Message, UserContent, user
 from ...responses import (
+    AsyncChunkIterator,
     AsyncContextResponse,
     AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
+    ChunkIterator,
     ContextResponse,
     ContextStreamResponse,
     Response,
@@ -86,6 +90,53 @@ class BaseProvider(Generic[ProviderClientT], ABC):
 
     client: ProviderClientT
 
+    @contextmanager
+    def _wrap_errors(self) -> Generator[None, None, None]:
+        """Wrap provider API calls and convert errors to Mirascope exceptions.
+
+        Walks the exception's MRO to find the first matching error type in the
+        provider's error_map, allowing both specific error handling and fallback
+        to base SDK error types (e.g., AnthropicError -> APIError).
+        """
+        try:
+            yield
+        except Exception as e:
+            # Walk MRO to find first matching error type in provider's error_map
+            for error_class in type(e).__mro__:
+                if error_class in self.error_map:
+                    error_type_or_fn = self.error_map[error_class]
+
+                    if isinstance(error_type_or_fn, type):
+                        error_type = cast(type[MirascopeLLMError], error_type_or_fn)
+                    else:
+                        error_type = error_type_or_fn(e)
+
+                    # Construct Mirascope error with metadata
+                    error: MirascopeLLMError = error_type(str(e))
+                    if isinstance(error, APIError):
+                        error.status_code = self.get_error_status(e)
+                    error.provider = self.id
+                    error.original_exception = e
+                    raise error from e
+
+            # Not in error_map - not a provider error, re-raise as-is
+            raise
+
+    def _wrap_iterator_errors(self, iterator: ChunkIterator) -> ChunkIterator:
+        """Wrap sync chunk iterator to handle errors during iteration."""
+        # TODO: Consider moving this logic into BaseSyncStreamResponse if appropriate.
+        with self._wrap_errors():
+            yield from iterator
+
+    async def _wrap_async_iterator_errors(
+        self, iterator: AsyncChunkIterator
+    ) -> AsyncChunkIterator:
+        """Wrap async chunk iterator to handle errors during iteration."""
+        # TODO: Consider moving this logic into BaseAsyncStreamResponse if appropriate.
+        with self._wrap_errors():
+            async for chunk in iterator:
+                yield chunk
+
     @overload
     def call(
         self,
@@ -146,13 +197,14 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        return self._call(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
-        )
+        with self._wrap_errors():
+            return self._call(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
     @abstractmethod
     def _call(
@@ -240,14 +292,15 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        return self._context_call(
-            ctx=ctx,
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
-        )
+        with self._wrap_errors():
+            return self._context_call(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
     @abstractmethod
     def _context_call(
@@ -325,13 +378,14 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        return await self._call_async(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
-        )
+        with self._wrap_errors():
+            return await self._call_async(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
     @abstractmethod
     async def _call_async(
@@ -419,14 +473,15 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        return await self._context_call_async(
-            ctx=ctx,
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
-        )
+        with self._wrap_errors():
+            return await self._context_call_async(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
 
     @abstractmethod
     async def _context_call_async(
@@ -504,13 +559,18 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        return self._stream(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
+        with self._wrap_errors():
+            stream_response = self._stream(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+        stream_response._chunk_iterator = self._wrap_iterator_errors(  # pyright: ignore[reportPrivateUsage]
+            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
         )
+        return stream_response
 
     @abstractmethod
     def _stream(
@@ -602,14 +662,19 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        return self._context_stream(
-            ctx=ctx,
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
+        with self._wrap_errors():
+            stream_response = self._context_stream(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+        stream_response._chunk_iterator = self._wrap_iterator_errors(  # pyright: ignore[reportPrivateUsage]
+            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
         )
+        return stream_response
 
     @abstractmethod
     def _context_stream(
@@ -689,13 +754,18 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        return await self._stream_async(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
+        with self._wrap_errors():
+            stream_response = await self._stream_async(
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+        stream_response._chunk_iterator = self._wrap_async_iterator_errors(  # pyright: ignore[reportPrivateUsage]
+            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
         )
+        return stream_response
 
     @abstractmethod
     async def _stream_async(
@@ -789,14 +859,19 @@ class BaseProvider(Generic[ProviderClientT], ABC):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        return await self._context_stream_async(
-            ctx=ctx,
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            **params,
+        with self._wrap_errors():
+            stream_response = await self._context_stream_async(
+                ctx=ctx,
+                model_id=model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                **params,
+            )
+        stream_response._chunk_iterator = self._wrap_async_iterator_errors(  # pyright: ignore[reportPrivateUsage]
+            stream_response._chunk_iterator  # pyright: ignore[reportPrivateUsage]
         )
+        return stream_response
 
     @abstractmethod
     async def _context_stream_async(

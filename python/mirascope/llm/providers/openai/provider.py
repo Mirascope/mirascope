@@ -132,7 +132,7 @@ class OpenAIProvider(BaseProvider[OpenAI]):
 
     def get_error_status(self, e: Exception) -> int | None:
         """Extract HTTP status code from OpenAI exception."""
-        return getattr(e, "status_code", None)
+        return getattr(e, "status_code", None)  # pragma: no cover
 
     def _choose_subprovider(
         self, model_id: OpenAIModelId, messages: Sequence[Message]

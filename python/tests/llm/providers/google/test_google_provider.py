@@ -139,61 +139,49 @@ async def test_async_call_rate_limit_error() -> None:
 
 def test_map_google_error_not_google_error() -> None:
     """Test that non-Google errors return APIError."""
-    from mirascope.llm.exceptions import APIError
-
     result = map_google_error(Exception("test"))
-    assert result == APIError
+    assert result == llm.APIError
 
 
 def test_map_google_error_permission_denied() -> None:
     """Test that 403 errors map to PermissionError."""
-    from mirascope.llm.exceptions import PermissionError
-
     error = GoogleClientError(403, {"error": {"message": "Permission denied"}})
     result = map_google_error(error)
-    assert result == PermissionError
+    assert result == llm.PermissionError
 
 
 def test_map_google_error_not_found() -> None:
     """Test that 404 errors map to NotFoundError."""
-    from mirascope.llm.exceptions import NotFoundError
-
     error = GoogleClientError(404, {"error": {"message": "Not found"}})
     result = map_google_error(error)
-    assert result == NotFoundError
+    assert result == llm.NotFoundError
 
 
 def test_map_google_error_bad_request() -> None:
     """Test that 400/422 errors map to BadRequestError."""
-    from mirascope.llm.exceptions import BadRequestError
-
     error_400 = GoogleClientError(400, {"error": {"message": "Bad request"}})
     result_400 = map_google_error(error_400)
-    assert result_400 == BadRequestError
+    assert result_400 == llm.BadRequestError
 
     error_422 = GoogleClientError(422, {"error": {"message": "Unprocessable"}})
     result_422 = map_google_error(error_422)
-    assert result_422 == BadRequestError
+    assert result_422 == llm.BadRequestError
 
 
 def test_map_google_error_server_error() -> None:
     """Test that 5xx server errors map to ServerError."""
-    from mirascope.llm.exceptions import ServerError
-
     error_500 = GoogleServerError(500, {"error": {"message": "Internal server error"}})
     result_500 = map_google_error(error_500)
-    assert result_500 == ServerError
+    assert result_500 == llm.ServerError
 
     error_503 = GoogleServerError(503, {"error": {"message": "Service unavailable"}})
     result_503 = map_google_error(error_503)
-    assert result_503 == ServerError
+    assert result_503 == llm.ServerError
 
 
 def test_map_google_error_fallback() -> None:
     """Test that unknown error codes fall back to APIError."""
-    from mirascope.llm.exceptions import APIError
-
     # Test an unknown client error code
     error = GoogleClientError(418, {"error": {"message": "I'm a teapot"}})
     result = map_google_error(error)
-    assert result == APIError
+    assert result == llm.APIError

@@ -129,7 +129,6 @@ class TimeoutError(MirascopeLLMError):
 
 
 # This wraps the APIResponseValidationErrors that OpenAI and Anthropic both return.
-# TODO: Consider having `Response.parse` raise the same error (wrapping the Pydantic error)
 class ResponseValidationError(MirascopeLLMError):
     """Raised when API response fails validation."""
 
