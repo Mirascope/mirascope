@@ -40,7 +40,7 @@ def handle_google_error(e: Exception) -> None:
         Exception: Re-raises the original exception if not handled.
     """
     if not isinstance(e, GoogleClientError | GoogleServerError):
-        raise e  # pragma: no cover
+        raise e
 
     # Authentication errors (401)
     # Also check for 400 with "API key not valid" message (Google's pattern)

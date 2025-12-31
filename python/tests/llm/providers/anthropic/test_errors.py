@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from anthropic import (
+    AnthropicError,
     APIConnectionError as AnthropicAPIConnectionError,
     APIResponseValidationError as AnthropicAPIResponseValidationError,
     APITimeoutError as AnthropicAPITimeoutError,
@@ -18,6 +19,7 @@ from anthropic import (
 )
 
 from mirascope.llm.exceptions import (
+    APIError,
     AuthenticationError,
     BadRequestError,
     ConnectionError,
@@ -193,11 +195,23 @@ def test_handle_validation_error() -> None:
     assert exc_info.value.__cause__ is anthropic_error
 
 
-def test_handle_unknown_error() -> None:
-    """Test that unknown exceptions are re-raised as-is."""
-    unknown_error = ValueError("Some other error")
+def test_handle_unknown_anthropic_error() -> None:
+    """Test that unknown Anthropic SDK errors are wrapped as APIError."""
+    # Create a generic AnthropicError (not a specific subclass)
+    anthropic_error = AnthropicError("Unknown Anthropic error")
+
+    with pytest.raises(APIError) as exc_info:
+        handle_anthropic_error(anthropic_error)
+
+    assert "Unknown Anthropic error" in str(exc_info.value)
+    assert exc_info.value.__cause__ is anthropic_error
+
+
+def test_handle_non_provider_error() -> None:
+    """Test that non-Anthropic exceptions are re-raised as-is."""
+    non_provider_error = ValueError("Some other error")
 
     with pytest.raises(ValueError) as exc_info:
-        handle_anthropic_error(unknown_error)
+        handle_anthropic_error(non_provider_error)
 
-    assert exc_info.value is unknown_error
+    assert exc_info.value is non_provider_error

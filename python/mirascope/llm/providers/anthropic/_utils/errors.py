@@ -4,6 +4,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 
 from anthropic import (
+    AnthropicError,
     APIConnectionError as AnthropicAPIConnectionError,
     APIResponseValidationError as AnthropicAPIResponseValidationError,
     APITimeoutError as AnthropicAPITimeoutError,
@@ -18,6 +19,7 @@ from anthropic import (
 )
 
 from ....exceptions import (
+    APIError,
     AuthenticationError,
     BadRequestError,
     ConnectionError,
@@ -46,7 +48,8 @@ def handle_anthropic_error(e: Exception) -> None:
         TimeoutError: If the error is a timeout error.
         ConnectionError: If the error is a connection error.
         ResponseValidationError: If the API response fails validation.
-        Exception: Re-raises the original exception if not handled.
+        APIError: For unknown Anthropic SDK errors that cannot be mapped.
+        Exception: Re-raises the original exception if not from Anthropic SDK.
     """
     # Authentication errors (401)
     if isinstance(e, AnthropicAuthenticationError):
@@ -88,7 +91,12 @@ def handle_anthropic_error(e: Exception) -> None:
     if isinstance(e, AnthropicAPIResponseValidationError):
         raise ResponseValidationError(str(e)) from e
 
-    raise e  # pragma: no cover
+    # Unknown Anthropic SDK errors - wrap as generic APIError
+    if isinstance(e, AnthropicError):
+        raise APIError(str(e)) from e
+
+    # Non-Anthropic errors - re-raise as-is
+    raise e
 
 
 @contextmanager

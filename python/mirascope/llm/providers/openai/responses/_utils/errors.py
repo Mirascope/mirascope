@@ -12,12 +12,14 @@ from openai import (
     ConflictError as OpenAIConflictError,
     InternalServerError as OpenAIInternalServerError,
     NotFoundError as OpenAINotFoundError,
+    OpenAIError,
     PermissionDeniedError as OpenAIPermissionDeniedError,
     RateLimitError as OpenAIRateLimitError,
     UnprocessableEntityError as OpenAIUnprocessableEntityError,
 )
 
 from .....exceptions import (
+    APIError,
     AuthenticationError,
     BadRequestError,
     ConnectionError,
@@ -46,7 +48,8 @@ def handle_openai_error(e: Exception) -> None:
         TimeoutError: If the error is a timeout error.
         ConnectionError: If the error is a connection error.
         ResponseValidationError: If the API response fails validation.
-        Exception: Re-raises the original exception if not handled.
+        APIError: For unknown OpenAI SDK errors that cannot be mapped.
+        Exception: Re-raises the original exception if not from OpenAI SDK.
     """
     # Authentication errors (401)
     if isinstance(e, OpenAIAuthenticationError):
@@ -96,7 +99,12 @@ def handle_openai_error(e: Exception) -> None:
     if isinstance(e, OpenAIAPIResponseValidationError):
         raise ResponseValidationError(str(e)) from e
 
-    raise e  # pragma: no cover
+    # Unknown OpenAI SDK errors - wrap as generic APIError
+    if isinstance(e, OpenAIError):
+        raise APIError(str(e)) from e
+
+    # Non-OpenAI errors - re-raise as-is
+    raise e
 
 
 @contextmanager
