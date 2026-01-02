@@ -94,10 +94,8 @@ export const handleRequest = (
       catch: (error) =>
         new HandlerError({
           message: `[Effect API] Error handling request: ${
-            error instanceof Error
-              ? /* v8 ignore next 2 */
-                error.message
-              : String(error)
+            /* v8 ignore next 3 */
+            error instanceof Error ? error.message : String(error)
           }`,
           cause: error,
         }),
@@ -105,13 +103,14 @@ export const handleRequest = (
 
     yield* Effect.tryPromise({
       try: () => webHandler.dispose(),
+      /* v8 ignore start - dispose failures are swallowed, so this error path is not easily testable */
       catch: (error) =>
-        /* v8 ignore next 4 - dispose failures are swallowed, so this error path is not easily testable */
         new HandlerError({
           message: "Failed to dispose web handler",
           cause: error,
         }),
     }).pipe(Effect.catchAll(() => Effect.void));
+    /* v8 ignore end */
 
     return result;
   });

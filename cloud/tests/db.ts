@@ -1,5 +1,6 @@
 import { Effect, Layer, Config, Option } from "effect";
-import { it as vitestIt, describe, expect } from "@effect/vitest";
+import { describe, expect } from "@effect/vitest";
+import { createCustomIt } from "@/tests/shared";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
@@ -123,27 +124,20 @@ const withRollback = <A, E, R>(
 export type TestServices = Database | DrizzleORM | SqlClient.SqlClient;
 
 /**
- * Type for effect test functions that accept TestServices as dependencies.
- */
-type EffectTestFn = <A, E>(
-  name: string,
-  fn: () => Effect.Effect<A, E, TestServices>,
-  timeout?: number,
-) => void;
-
-/**
  * Wraps a test function to automatically provide TestDatabase
  * and wrap in a transaction that rolls back.
  */
-
 const wrapEffectTest =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (original: any): EffectTestFn =>
-    (name, fn, timeout) => {
+  (original: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (name: any, fn: any, timeout?: any) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
       return original(
         name,
-        () => withRollback(fn()).pipe(Effect.provide(TestDatabase)),
+        () =>
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          fn().pipe(withRollback).pipe(Effect.provide(TestDatabase)),
         timeout,
       );
     };
@@ -170,27 +164,7 @@ const wrapEffectTest =
  * );
  * ```
  */
-// Create a callable `it` that works as both:
-// - it("test name", () => { ... }) for regular tests
-// - it.effect("test name", () => Effect.gen(...)) for Effect tests
-export const it = Object.assign(
-  // Base callable function for regular tests
-  ((name: string, fn: () => void) => vitestIt(name, fn)) as typeof vitestIt,
-  {
-    // Spread all properties from vitestIt (skip, only, etc.)
-    ...vitestIt,
-    // Override effect with our wrapped version
-    effect: Object.assign(wrapEffectTest(vitestIt.effect), {
-      skip: wrapEffectTest(vitestIt.effect.skip),
-      only: wrapEffectTest(vitestIt.effect.only),
-      fails: wrapEffectTest(vitestIt.effect.fails),
-      skipIf: (condition: unknown) =>
-        wrapEffectTest(vitestIt.effect.skipIf(condition)),
-      runIf: (condition: unknown) =>
-        wrapEffectTest(vitestIt.effect.runIf(condition)),
-    }),
-  },
-);
+export const it = createCustomIt<TestServices>(wrapEffectTest);
 
 // ============================================================================
 // Mock database builder

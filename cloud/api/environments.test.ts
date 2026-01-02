@@ -1,7 +1,37 @@
-import { Effect } from "effect";
-import { describe, expect, TestApiContext } from "@/tests/api";
+import { Effect, Schema } from "effect";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
+import { CreateEnvironmentRequestSchema } from "@/api/environments.schemas";
 import type { PublicEnvironment, PublicProject } from "@/db/schema";
 import { ParseError } from "effect/ParseResult";
+
+describe("CreateEnvironmentRequestSchema validation", () => {
+  it("rejects empty name", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreateEnvironmentRequestSchema)({
+        name: "",
+        slug: "test-env",
+      }),
+    ).toThrow("Environment name is required");
+  });
+
+  it("rejects name > 100 chars", () => {
+    const longName = "a".repeat(101);
+    expect(() =>
+      Schema.decodeUnknownSync(CreateEnvironmentRequestSchema)({
+        name: longName,
+        slug: "test-env",
+      }),
+    ).toThrow("Environment name must be at most 100 characters");
+  });
+
+  it("accepts valid name", () => {
+    const result = Schema.decodeUnknownSync(CreateEnvironmentRequestSchema)({
+      name: "Valid Environment Name",
+      slug: "valid-env",
+    });
+    expect(result.name).toBe("Valid Environment Name");
+  });
+});
 
 describe.sequential("Environments API", (it) => {
   let project: PublicProject;
@@ -68,6 +98,39 @@ describe.sequential("Environments API", (it) => {
         expect(String(result)).toContain(
           "Environment slug must start and end with a letter or number, and only contain lowercase letters, numbers, hyphens, and underscores",
         );
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects/:projectId/environments - rejects empty name",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.environments
+          .create({
+            path: { organizationId: org.id, projectId: project.id },
+            payload: { name: "", slug: "test-env" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("ParseError");
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects/:projectId/environments - rejects name > 100 chars",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const longName = "a".repeat(101);
+        const result = yield* client.environments
+          .create({
+            path: { organizationId: org.id, projectId: project.id },
+            payload: { name: longName, slug: "test-env" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("ParseError");
       }),
   );
 

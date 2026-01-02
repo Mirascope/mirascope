@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generateSlug, isValidSlug } from "@/db/slug";
+import { Schema } from "effect";
+import { generateSlug, isValidSlug, createSlugSchema } from "@/db/slug";
 
 describe("generateSlug", () => {
   it("should convert a simple name to lowercase", () => {
@@ -131,5 +132,48 @@ describe("isValidSlug", () => {
   it("should reject slugs with only special characters in middle", () => {
     expect(isValidSlug("a-_-b")).toBe(true); // This is valid - starts/ends with alphanumeric
     expect(isValidSlug("_a_")).toBe(false); // Invalid - starts/ends with underscore
+  });
+});
+
+describe("createSlugSchema", () => {
+  it("accepts valid slug", () => {
+    const TestSlugSchema = createSlugSchema("Test");
+    const result = Schema.decodeUnknownSync(TestSlugSchema)("valid-slug");
+    expect(result).toBe("valid-slug");
+  });
+
+  it("rejects slug shorter than 3 characters", () => {
+    const TestSlugSchema = createSlugSchema("Test");
+    expect(() => Schema.decodeUnknownSync(TestSlugSchema)("ab")).toThrow(
+      "Test slug must be at least 3 characters",
+    );
+  });
+
+  it("rejects slug longer than 100 characters", () => {
+    const TestSlugSchema = createSlugSchema("Test");
+    const longSlug = "a".repeat(101);
+    expect(() => Schema.decodeUnknownSync(TestSlugSchema)(longSlug)).toThrow(
+      "Test slug must be at most 100 characters",
+    );
+  });
+
+  it("rejects slug with invalid pattern", () => {
+    const TestSlugSchema = createSlugSchema("Test");
+    expect(() =>
+      Schema.decodeUnknownSync(TestSlugSchema)("Invalid-Slug"),
+    ).toThrow(/must start and end with a letter or number/);
+  });
+
+  it("accepts slug of exactly 3 characters", () => {
+    const TestSlugSchema = createSlugSchema("Test");
+    const result = Schema.decodeUnknownSync(TestSlugSchema)("abc");
+    expect(result).toBe("abc");
+  });
+
+  it("accepts slug of exactly 100 characters", () => {
+    const TestSlugSchema = createSlugSchema("Test");
+    const slug = "a".repeat(100);
+    const result = Schema.decodeUnknownSync(TestSlugSchema)(slug);
+    expect(result).toBe(slug);
   });
 });

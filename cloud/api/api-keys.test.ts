@@ -1,7 +1,7 @@
-import { Effect } from "effect";
-import { describe as vitestDescribe, it, expect as vitestExpect } from "vitest";
-import { describe, expect, TestApiContext } from "@/tests/api";
+import { Effect, Schema } from "effect";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
 import { toApiKey, toApiKeyCreateResponse } from "@/api/api-keys.handlers";
+import { CreateApiKeyRequestSchema } from "@/api/api-keys.schemas";
 import type {
   PublicApiKey,
   ApiKeyCreateResponse,
@@ -9,7 +9,7 @@ import type {
   PublicEnvironment,
 } from "@/db/schema";
 
-vitestDescribe("toApiKey helper", () => {
+describe("toApiKey helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
     const apiKey: PublicApiKey = {
@@ -24,9 +24,9 @@ vitestDescribe("toApiKey helper", () => {
 
     const result = toApiKey(apiKey);
 
-    vitestExpect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
-    vitestExpect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
-    vitestExpect(result.ownerId).toBe("user-id");
+    expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
+    expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
+    expect(result.ownerId).toBe("user-id");
   });
 
   it("should handle null dates", () => {
@@ -42,12 +42,12 @@ vitestDescribe("toApiKey helper", () => {
 
     const result = toApiKey(apiKey);
 
-    vitestExpect(result.createdAt).toBeNull();
-    vitestExpect(result.lastUsedAt).toBeNull();
+    expect(result.createdAt).toBeNull();
+    expect(result.lastUsedAt).toBeNull();
   });
 });
 
-vitestDescribe("toApiKeyCreateResponse helper", () => {
+describe("toApiKeyCreateResponse helper", () => {
   it("should convert dates to ISO strings", () => {
     const date = new Date("2025-01-01T00:00:00.000Z");
     const apiKey: ApiKeyCreateResponse = {
@@ -63,10 +63,10 @@ vitestDescribe("toApiKeyCreateResponse helper", () => {
 
     const result = toApiKeyCreateResponse(apiKey);
 
-    vitestExpect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
-    vitestExpect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
-    vitestExpect(result.ownerId).toBe("user-id");
-    vitestExpect(result.key).toBe("mk_secret_key");
+    expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
+    expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
+    expect(result.ownerId).toBe("user-id");
+    expect(result.key).toBe("mk_secret_key");
   });
 
   it("should handle null dates", () => {
@@ -83,9 +83,31 @@ vitestDescribe("toApiKeyCreateResponse helper", () => {
 
     const result = toApiKeyCreateResponse(apiKey);
 
-    vitestExpect(result.createdAt).toBeNull();
-    vitestExpect(result.lastUsedAt).toBeNull();
-    vitestExpect(result.key).toBe("mk_secret_key");
+    expect(result.createdAt).toBeNull();
+    expect(result.lastUsedAt).toBeNull();
+    expect(result.key).toBe("mk_secret_key");
+  });
+});
+
+describe("CreateApiKeyRequestSchema validation", () => {
+  it("rejects empty name", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreateApiKeyRequestSchema)({ name: "" }),
+    ).toThrow("API key name is required");
+  });
+
+  it("rejects name > 100 chars", () => {
+    const longName = "a".repeat(101);
+    expect(() =>
+      Schema.decodeUnknownSync(CreateApiKeyRequestSchema)({ name: longName }),
+    ).toThrow("API key name must be at most 100 characters");
+  });
+
+  it("accepts valid name", () => {
+    const result = Schema.decodeUnknownSync(CreateApiKeyRequestSchema)({
+      name: "valid-api-key-name",
+    });
+    expect(result.name).toBe("valid-api-key-name");
   });
 });
 
@@ -165,6 +187,47 @@ describe.sequential("API Keys API", (it) => {
         expect(apiKey.keyPrefix.endsWith("...")).toBe(true);
 
         createdApiKeyId = apiKey.id;
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects/:projectId/environments/:environmentId/api-keys - rejects empty name",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.apiKeys
+          .create({
+            path: {
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+            },
+            payload: { name: "" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("ParseError");
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects/:projectId/environments/:environmentId/api-keys - rejects name > 100 chars",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const longName = "a".repeat(101);
+        const result = yield* client.apiKeys
+          .create({
+            path: {
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+            },
+            payload: { name: longName },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("ParseError");
       }),
   );
 
