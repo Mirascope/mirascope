@@ -4,6 +4,7 @@ import { createCustomIt } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
+import StripeSDK from "stripe";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
@@ -201,6 +202,10 @@ export class MockPayments {
   private subscriptionsCancelResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private billingCreditGrantsListResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private billingCreditGrantsCreateResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private paymentIntentsCreateResult?: any;
 
   get customers() {
     return {
@@ -263,6 +268,23 @@ export class MockPayments {
           this.billingCreditGrantsListResult = result;
           return this;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        create: (result: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          this.billingCreditGrantsCreateResult = result;
+          return this;
+        },
+      },
+    };
+  }
+
+  get paymentIntents() {
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      create: (result: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this.paymentIntentsCreateResult = result;
+        return this;
       },
     };
   }
@@ -287,6 +309,11 @@ export class MockPayments {
     const subscriptionsCancelResult = this.subscriptionsCancelResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const billingCreditGrantsListResult = this.billingCreditGrantsListResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const billingCreditGrantsCreateResult =
+      this.billingCreditGrantsCreateResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentIntentsCreateResult = this.paymentIntentsCreateResult;
 
     const customStripe = Layer.succeed(Stripe, {
       customers: {
@@ -483,6 +510,25 @@ export class MockPayments {
               has_more: false,
             });
           },
+          create: (params: StripeSDK.Billing.CreditGrantCreateParams) => {
+            if (billingCreditGrantsCreateResult !== undefined) {
+              if (typeof billingCreditGrantsCreateResult === "function") {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+                const result = billingCreditGrantsCreateResult(params);
+                return Effect.isEffect(result)
+                  ? result
+                  : Effect.succeed(result);
+              }
+
+              return Effect.isEffect(billingCreditGrantsCreateResult)
+                ? billingCreditGrantsCreateResult
+                : Effect.succeed(billingCreditGrantsCreateResult);
+            }
+            // Default mock
+            return Effect.succeed({
+              id: `credgr_test_${crypto.randomUUID()}`,
+            });
+          },
         },
         meterEvents: {
           create: () =>
@@ -493,6 +539,26 @@ export class MockPayments {
               event_name: "use_credits",
               livemode: false,
             }),
+        },
+      },
+      paymentIntents: {
+        create: (params: StripeSDK.PaymentIntentCreateParams) => {
+          if (paymentIntentsCreateResult !== undefined) {
+            if (typeof paymentIntentsCreateResult === "function") {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+              const result = paymentIntentsCreateResult(params);
+              return Effect.isEffect(result) ? result : Effect.succeed(result);
+            }
+
+            return Effect.isEffect(paymentIntentsCreateResult)
+              ? paymentIntentsCreateResult
+              : Effect.succeed(paymentIntentsCreateResult);
+          }
+          // Default mock
+          return Effect.succeed({
+            id: `pi_test_${crypto.randomUUID()}`,
+            client_secret: `pi_test_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
+          });
         },
       },
       config: {
@@ -604,6 +670,10 @@ export const MockStripe = Layer.succeed(Stripe, {
           data: MOCK_CREDIT_GRANTS_DATA,
           has_more: false,
         }),
+      create: () =>
+        Effect.succeed({
+          id: `credgr_test_${crypto.randomUUID()}`,
+        }),
     },
     meterEvents: {
       create: () =>
@@ -615,6 +685,13 @@ export const MockStripe = Layer.succeed(Stripe, {
           livemode: false,
         }),
     },
+  },
+  paymentIntents: {
+    create: () =>
+      Effect.succeed({
+        id: `pi_test_${crypto.randomUUID()}`,
+        client_secret: `pi_test_${crypto.randomUUID()}_secret_${crypto.randomUUID()}`,
+      }),
   },
   config: {
     apiKey: "sk_test_mock",

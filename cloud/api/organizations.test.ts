@@ -1,7 +1,10 @@
 import { Effect, Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
-import { CreateOrganizationRequestSchema } from "@/api/organizations.schemas";
+import {
+  CreateOrganizationRequestSchema,
+  CreatePaymentIntentRequestSchema,
+} from "@/api/organizations.schemas";
 import type { PublicOrganizationWithMembership } from "@/db/schema";
 
 describe("CreateOrganizationRequestSchema validation", () => {
@@ -30,6 +33,31 @@ describe("CreateOrganizationRequestSchema validation", () => {
       slug: "valid-org",
     });
     expect(result.name).toBe("Valid Organization Name");
+  });
+});
+
+describe("CreatePaymentIntentRequestSchema validation", () => {
+  it("rejects negative amount", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreatePaymentIntentRequestSchema)({
+        amount: -10,
+      }),
+    ).toThrow("Amount must be positive");
+  });
+
+  it("rejects zero amount", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreatePaymentIntentRequestSchema)({
+        amount: 0,
+      }),
+    ).toThrow("Amount must be positive");
+  });
+
+  it("accepts valid request", () => {
+    const result = Schema.decodeUnknownSync(CreatePaymentIntentRequestSchema)({
+      amount: 50,
+    });
+    expect(result.amount).toBe(50);
   });
 });
 
@@ -147,6 +175,24 @@ describe.sequential("Organizations API", (it) => {
         // Balance is now in centi-cents: $18 = 180000 centi-cents
         expect(balance.balance).toBe(180000n);
         expect(typeof balance.balance).toBe("bigint");
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:id/credits/payment-intent - create payment intent",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const result = yield* client.organizations.createPaymentIntent({
+          path: { id: org.id },
+          payload: {
+            amount: 50,
+          },
+        });
+
+        expect(result.clientSecret).toBeDefined();
+        expect(result.clientSecret).toMatch(/^pi_test_/);
+        expect(result.amount).toBe(50);
       }),
   );
 

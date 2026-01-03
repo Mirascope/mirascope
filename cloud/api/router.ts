@@ -10,6 +10,7 @@ import {
   updateOrganizationHandler,
   deleteOrganizationHandler,
   getOrganizationRouterBalanceHandler,
+  createPaymentIntentHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectsHandler,
@@ -82,6 +83,9 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       .handle("delete", ({ path }) => deleteOrganizationHandler(path.id))
       .handle("routerBalance", ({ path }) =>
         getOrganizationRouterBalanceHandler(path.id),
+      )
+      .handle("createPaymentIntent", ({ path, payload }) =>
+        createPaymentIntentHandler(path.id, payload),
       ),
 );
 

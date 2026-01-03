@@ -30,6 +30,7 @@ import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/googl
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
 import { Route as AuthGithubCallbackRouteImport } from './routes/auth/github.callback'
+import { Route as ApiWebhooksStripeRouteImport } from './routes/api.webhooks.stripe'
 import { Route as ApiV0HealthRouteImport } from './routes/api.v0.health'
 import { Route as ApiV0DocsRouteImport } from './routes/api.v0.docs'
 import { Route as ApiV0SplatRouteImport } from './routes/api.v0.$'
@@ -140,6 +141,11 @@ const AuthGithubCallbackRoute = AuthGithubCallbackRouteImport.update({
   path: '/callback',
   getParentRoute: () => AuthGithubRoute,
 } as any)
+const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
+  id: '/api/webhooks/stripe',
+  path: '/api/webhooks/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV0HealthRoute = ApiV0HealthRouteImport.update({
   id: '/api/v0/health',
   path: '/api/v0/health',
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
+    | '/api/webhooks/stripe'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
+    | '/api/webhooks/stripe'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
+    | '/api/webhooks/stripe'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
@@ -343,6 +355,7 @@ export interface RootRouteChildren {
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
   ApiV0HealthRoute: typeof ApiV0HealthRoute
+  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   RouterV0ProviderSplatRoute: typeof RouterV0ProviderSplatRoute
 }
 
@@ -495,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGithubCallbackRouteImport
       parentRoute: typeof AuthGithubRoute
     }
+    '/api/webhooks/stripe': {
+      id: '/api/webhooks/stripe'
+      path: '/api/webhooks/stripe'
+      fullPath: '/api/webhooks/stripe'
+      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v0/health': {
       id: '/api/v0/health'
       path: '/api/v0/health'
@@ -594,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
   ApiV0HealthRoute: ApiV0HealthRoute,
+  ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   RouterV0ProviderSplatRoute: RouterV0ProviderSplatRoute,
 }
 export const routeTree = rootRouteImport

@@ -614,4 +614,72 @@ export class Router {
       );
     });
   }
+
+  /**
+   * Creates a paid credit grant for a Stripe customer.
+   *
+   * Credit grants allow customers to prepay for usage-based services. The
+   * credits will be automatically applied to future invoices for the router
+   * price. Grants are marked with category "paid" to distinguish them from
+   * promotional credits.
+   *
+   * @param params.customerId - The Stripe customer ID
+   * @param params.amountInDollars - The credit amount in dollars (e.g., 50 for $50)
+   * @param params.expiresAt - Optional expiration date for the credits
+   * @param params.metadata - Optional metadata to attach to the credit grant
+   * @returns The created credit grant ID
+   * @throws StripeError - If credit grant creation fails
+   *
+   * @example
+   * ```ts
+   * const creditGrantId = yield* payments.products.router.createCreditGrant({
+   *   customerId: "cus_123",
+   *   amountInDollars: 50,
+   *   metadata: { source: "payment_intent" }
+   * });
+   * ```
+   */
+  createCreditGrant({
+    customerId,
+    amountInDollars,
+    expiresAt,
+    metadata,
+  }: {
+    customerId: string;
+    amountInDollars: number;
+    expiresAt?: Date;
+    metadata?: Record<string, string>;
+  }): Effect.Effect<string, StripeError, Stripe> {
+    return Effect.gen(function* () {
+      const stripe = yield* Stripe;
+
+      // Convert dollars to cents
+      const amountInCents = Math.round(amountInDollars * 100);
+
+      // Create the credit grant scoped to the router price
+      const creditGrant = yield* stripe.billing.creditGrants.create({
+        customer: customerId,
+        amount: {
+          type: "monetary",
+          monetary: {
+            currency: "usd",
+            value: amountInCents,
+          },
+        },
+        category: "paid",
+        name: "Prepurchased Router Credits",
+        applicability_config: {
+          scope: {
+            prices: [{ id: stripe.config.routerPriceId }],
+          },
+        },
+        ...(expiresAt && {
+          expires_at: Math.floor(expiresAt.getTime() / 1000),
+        }),
+        ...(metadata && { metadata }),
+      });
+
+      return creditGrant.id;
+    });
+  }
 }

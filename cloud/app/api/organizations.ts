@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
 import { ApiClient, eq } from "@/app/api/client";
-import type { CreateOrganizationRequest } from "@/api/organizations.schemas";
+import type {
+  CreateOrganizationRequest,
+  CreatePaymentIntentRequest,
+} from "@/api/organizations.schemas";
 
 export const useOrganizations = () => {
   return useQuery(
@@ -81,5 +84,30 @@ export const useOrganizationRouterBalance = (
         }),
     }),
     enabled: !!organizationId,
+  });
+};
+
+export const useCreatePaymentIntent = () => {
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organizations", "createPaymentIntent"],
+      mutationFn: ({
+        organizationId,
+        data,
+      }: {
+        organizationId: string;
+        data: CreatePaymentIntentRequest;
+      }) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.organizations.createPaymentIntent({
+            path: { id: organizationId },
+            payload: data,
+          });
+        }),
+    }),
+    // NOTE: no `onSuccess` handler since we need to invalidate in the dialogue.
+    // If we do query invalidation here, we invalidate after creating intent, not
+    // after confirmation of a successful payment (which require the webhook)
   });
 };

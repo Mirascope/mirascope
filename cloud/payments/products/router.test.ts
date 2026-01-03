@@ -13,6 +13,7 @@ import { assert } from "@/tests/db";
 import { DrizzleORM } from "@/db/client";
 import { clearPricingCache } from "@/api/router/pricing";
 import type { ProviderName } from "@/api/router/providers";
+import type StripeSDK from "stripe";
 
 describe("Router Product", () => {
   describe("getUsageMeterBalance", () => {
@@ -1508,6 +1509,143 @@ describe("Router Product", () => {
         );
       },
       15000,
+    );
+  });
+
+  describe("createCreditGrant", () => {
+    it.effect("creates credit grant with correct parameters", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const creditGrantId = yield* payments.products.router.createCreditGrant(
+          {
+            customerId: "cus_test123",
+            amountInDollars: 50,
+          },
+        );
+
+        expect(creditGrantId).toBeDefined();
+        expect(creditGrantId).toMatch(/^credgr_test_/);
+      }).pipe(
+        Effect.provide(
+          Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                billing: {
+                  creditGrants: {
+                    create: (
+                      params: StripeSDK.Billing.CreditGrantCreateParams,
+                    ) => {
+                      expect(params.customer).toBe("cus_test123");
+                      expect(params.amount.monetary?.value).toBe(5000);
+                      expect(params.amount.monetary?.currency).toBe("usd");
+                      expect(params.category).toBe("paid");
+                      expect(params.name).toBe("Prepurchased Router Credits");
+                      expect(
+                        params.applicability_config?.scope?.prices,
+                      ).toEqual([{ id: "price_test" }]);
+                      return Effect.succeed({
+                        id: `credgr_test_${crypto.randomUUID()}`,
+                      });
+                    },
+                  },
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("includes expiration date when provided", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+        const expiresAt = new Date("2026-01-01T00:00:00Z");
+
+        yield* payments.products.router.createCreditGrant({
+          customerId: "cus_test123",
+          amountInDollars: 50,
+          expiresAt,
+        });
+      }).pipe(
+        Effect.provide(
+          Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                billing: {
+                  creditGrants: {
+                    create: (
+                      params: StripeSDK.Billing.CreditGrantCreateParams,
+                    ) => {
+                      expect(params.expires_at).toBe(
+                        Math.floor(
+                          new Date("2026-01-01T00:00:00Z").getTime() / 1000,
+                        ),
+                      );
+                      return Effect.succeed({
+                        id: `credgr_test_${crypto.randomUUID()}`,
+                      });
+                    },
+                  },
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("includes metadata when provided", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        yield* payments.products.router.createCreditGrant({
+          customerId: "cus_test123",
+          amountInDollars: 50,
+          metadata: {
+            paymentIntentId: "pi_123",
+          },
+        });
+      }).pipe(
+        Effect.provide(
+          Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                billing: {
+                  creditGrants: {
+                    create: (
+                      params: StripeSDK.Billing.CreditGrantCreateParams,
+                    ) => {
+                      expect(params.metadata?.paymentIntentId).toBe("pi_123");
+                      return Effect.succeed({
+                        id: `credgr_test_${crypto.randomUUID()}`,
+                      });
+                    },
+                  },
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
+        ),
+      ),
     );
   });
 });
