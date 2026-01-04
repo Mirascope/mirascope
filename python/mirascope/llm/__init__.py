@@ -20,6 +20,7 @@ from . import (
     prompts,
     providers,
     responses,
+    serialization,
     tools,
     types,
 )
@@ -120,6 +121,11 @@ from .responses import (
     Usage,
     UsageDeltaChunk,
 )
+from .serialization import (
+    IncompatibleVersionError,
+    InvalidSerializedDataError,
+    SerializationError,
+)
 from .tools import (
     AsyncContextTool,
     AsyncContextToolkit,
@@ -178,6 +184,8 @@ __all__ = [
     "FormattingMode",
     "FormattingModeNotSupportedError",
     "Image",
+    "IncompatibleVersionError",
+    "InvalidSerializedDataError",
     "Message",
     "MirascopeLLMError",
     "Model",
@@ -194,6 +202,7 @@ __all__ = [
     "RateLimitError",
     "RawMessageChunk",
     "Response",
+    "SerializationError",
     "ServerError",
     "Stream",
     "StreamResponse",
@@ -243,6 +252,7 @@ __all__ = [
     "register_provider",
     "reset_provider_registry",
     "responses",
+    "serialization",
     "tool",
     "tools",
     "types",
