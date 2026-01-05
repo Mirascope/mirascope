@@ -2,10 +2,8 @@
 # Exclude modules from coverage tracking until they have full test coverage
 # Remove items from this list as we add comprehensive tests for each module
 # Goal: When this exclude list is empty, we have 100% coverage across the entire codebase
-omit = 
+omit =
     # LLM modules to exclude (remove as we add full test coverage)
-    mirascope/llm/mcp/__init__.py
-    mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
 
     # NOTE: MLX modules are excluded because the `mlx` package is macOS-only (Apple Silicon).
