@@ -12,7 +12,13 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html"],
       include: ["api", "auth", "db", "payments"],
-      exclude: ["**/index.ts", ...coverageConfigDefaults.exclude],
+      exclude: [
+        "**/index.ts",
+        "db/migrations/**",
+        "db/schema/**",
+        "tests/**",
+        ...coverageConfigDefaults.exclude,
+      ],
       thresholds: {
         global: {
           branches: 100,

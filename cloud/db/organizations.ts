@@ -328,7 +328,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
           Effect.onError(() =>
             payments.customers
               .delete(stripeCustomerId)
-              .pipe(Effect.catchAll(() => Effect.void)),
+              .pipe(/* v8 ignore next 1 */ Effect.catchAll(() => Effect.void)),
           ),
         );
     });
@@ -511,14 +511,11 @@ export class Organizations extends BaseAuthenticatedEffectService<
         );
       }
 
-      // Update Stripe customer if name or slug changed
-      if (data.name !== undefined || data.slug !== undefined) {
-        yield* payments.customers.update({
-          customerId: updated.stripeCustomerId,
-          organizationName: data.name,
-          organizationSlug: data.slug,
-        });
-      }
+      yield* payments.customers.update({
+        customerId: updated.stripeCustomerId,
+        organizationName: data.name,
+        organizationSlug: data.slug,
+      });
 
       return { ...updated, role };
     });

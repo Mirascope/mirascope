@@ -1,10 +1,11 @@
 import {
   describe as vitestDescribe,
+  it as vitestIt,
   expect,
   beforeAll,
   afterAll,
-} from "vitest";
-import { it as vitestIt } from "@effect/vitest";
+} from "@effect/vitest";
+import { createCustomIt } from "@/tests/shared";
 import { Context, Effect, Layer } from "effect";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import {
@@ -50,25 +51,22 @@ function createTestDatabaseLayer(connectionString: string) {
 const TestDatabaseLayer = createTestDatabaseLayer(TEST_DATABASE_URL);
 
 /**
- * Type for effect test functions that accept Database and Payments as dependencies.
- */
-type EffectTestFn = <A, E>(
-  name: string,
-  fn: () => Effect.Effect<A, E, Database | Payments>,
-  timeout?: number,
-) => void;
-
-/**
  * Wraps a test function to automatically provide Database and Payments layers.
+ *
+ * Takes a test function that requires Database | Payments, automatically provides
+ * those dependencies via TestDatabaseLayer, resulting in an effect compatible with
+ * @effect/vitest's expectations.
  */
 const wrapEffectTest =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (original: any): EffectTestFn =>
-    (name, fn, timeout) => {
+  (original: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (name: any, fn: any, timeout?: any) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
       return original(
         name,
-        () => fn().pipe(Effect.provide(TestDatabaseLayer)),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+        () => (fn() as any).pipe(Effect.provide(TestDatabaseLayer)),
         timeout,
       );
     };
@@ -76,36 +74,31 @@ const wrapEffectTest =
 /**
  * Type-safe `it` with `it.effect` that automatically provides Database.
  *
- * Use this for API handler tests that need database access.
+ * Works as a regular `it` for synchronous tests, and provides `it.effect`
+ * for Effect-based tests with automatic Database layer provision.
  *
  * @example
  * ```ts
  * import { describe, it, expect } from "@/tests/api";
  * import { Effect } from "effect";
- * import { handleRequest } from "@/api/handler";
  *
- * describe("handleRequest", () => {
+ * describe("MyComponent", () => {
+ *   // Regular synchronous test
+ *   it("does something", () => {
+ *     expect(true).toBe(true);
+ *   });
+ *
+ *   // Effect-based test with auto-provided Database
  *   it.effect("handles requests", () =>
  *     Effect.gen(function* () {
- *       const result = yield* handleRequest(req, options);
- *       expect(result.matched).toBe(true);
+ *       const db = yield* Database;
+ *       // ... test code
  *     })
  *   );
  * });
  * ```
  */
-export const it = {
-  ...vitestIt,
-  effect: Object.assign(wrapEffectTest(vitestIt.effect), {
-    skip: wrapEffectTest(vitestIt.effect.skip),
-    only: wrapEffectTest(vitestIt.effect.only),
-    fails: wrapEffectTest(vitestIt.effect.fails),
-    skipIf: (condition: unknown) =>
-      wrapEffectTest(vitestIt.effect.skipIf(condition)),
-    runIf: (condition: unknown) =>
-      wrapEffectTest(vitestIt.effect.runIf(condition)),
-  }),
-};
+export const it = createCustomIt<Database | Payments>(wrapEffectTest);
 
 // ============================================================================
 // API Client Creation

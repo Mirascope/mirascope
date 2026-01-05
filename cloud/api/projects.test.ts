@@ -1,7 +1,37 @@
-import { Effect } from "effect";
-import { describe, expect, TestApiContext } from "@/tests/api";
+import { Effect, Schema } from "effect";
+import { describe, it, expect, TestApiContext } from "@/tests/api";
+import { CreateProjectRequestSchema } from "@/api/projects.schemas";
 import type { PublicProject } from "@/db/schema";
 import { ParseError } from "effect/ParseResult";
+
+describe("CreateProjectRequestSchema validation", () => {
+  it("rejects empty name", () => {
+    expect(() =>
+      Schema.decodeUnknownSync(CreateProjectRequestSchema)({
+        name: "",
+        slug: "test-project",
+      }),
+    ).toThrow("Project name is required");
+  });
+
+  it("rejects name > 100 chars", () => {
+    const longName = "a".repeat(101);
+    expect(() =>
+      Schema.decodeUnknownSync(CreateProjectRequestSchema)({
+        name: longName,
+        slug: "test-project",
+      }),
+    ).toThrow("Project name must be at most 100 characters");
+  });
+
+  it("accepts valid name", () => {
+    const result = Schema.decodeUnknownSync(CreateProjectRequestSchema)({
+      name: "Valid Project Name",
+      slug: "valid-project",
+    });
+    expect(result.name).toBe("Valid Project Name");
+  });
+});
 
 describe.sequential("Projects API", (it) => {
   let project: PublicProject;
@@ -53,6 +83,39 @@ describe.sequential("Projects API", (it) => {
         expect(result.message).toContain(
           "Project slug must start and end with a letter or number, and only contain lowercase letters, numbers, hyphens, and underscores",
         );
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects - rejects empty name",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.projects
+          .create({
+            path: { organizationId: org.id },
+            payload: { name: "", slug: "test-project" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("ParseError");
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:organizationId/projects - rejects name > 100 chars",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const longName = "a".repeat(101);
+        const result = yield* client.projects
+          .create({
+            path: { organizationId: org.id },
+            payload: { name: longName, slug: "test-project" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("ParseError");
       }),
   );
 

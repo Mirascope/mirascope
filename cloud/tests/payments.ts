@@ -1,5 +1,6 @@
 import { Context, Effect, Layer } from "effect";
-import { it as vitestIt, describe, expect } from "@effect/vitest";
+import { describe, expect } from "@effect/vitest";
+import { createCustomIt } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
 
@@ -22,30 +23,21 @@ const getTestStripe = () =>
 export type TestServices = Stripe;
 
 /**
- * Type for effect test functions that accept TestServices as dependencies.
- */
-type EffectTestFn = <A, E>(
-  name: string,
-  fn: () => Effect.Effect<A, E, TestServices>,
-  timeout?: number,
-) => void;
-
-/**
- * Type for vitest's effect test function (from @effect/vitest).
- */
-type VitestEffectTestFn = <A, E, R>(
-  name: string,
-  fn: () => Effect.Effect<A, E, R>,
-  timeout?: number,
-) => void;
-
-/**
  * Wraps a test function to automatically provide TestStripe layer.
  */
 const wrapEffectTest =
-  (original: VitestEffectTestFn): EffectTestFn =>
-  (name, fn, timeout) =>
-    original(name, () => fn().pipe(Effect.provide(getTestStripe())), timeout);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (original: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (name: any, fn: any, timeout?: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      return original(
+        name,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+        () => (fn() as any).pipe(Effect.provide(getTestStripe())),
+        timeout,
+      );
+    };
 
 /**
  * Type-safe `it` with `it.effect` that automatically provides Stripe layer.
@@ -67,31 +59,7 @@ const wrapEffectTest =
  * );
  * ```
  */
-export const it = Object.assign(
-  // Base callable function for regular tests
-  ((name: string, fn: () => void) => vitestIt(name, fn)) as typeof vitestIt,
-  {
-    // Spread all properties from vitestIt (skip, only, etc.)
-    ...vitestIt,
-    // Override effect with our wrapped version
-    effect: Object.assign(
-      wrapEffectTest(vitestIt.effect as VitestEffectTestFn),
-      {
-        skip: wrapEffectTest(vitestIt.effect.skip as VitestEffectTestFn),
-        only: wrapEffectTest(vitestIt.effect.only as VitestEffectTestFn),
-        fails: wrapEffectTest(vitestIt.effect.fails as VitestEffectTestFn),
-        skipIf: (condition: unknown) =>
-          wrapEffectTest(
-            vitestIt.effect.skipIf(condition) as VitestEffectTestFn,
-          ),
-        runIf: (condition: unknown) =>
-          wrapEffectTest(
-            vitestIt.effect.runIf(condition) as VitestEffectTestFn,
-          ),
-      },
-    ),
-  },
-);
+export const it = createCustomIt<TestServices>(wrapEffectTest);
 
 // =============================================================================
 // Mock Stripe and Payments for Integration Testing
