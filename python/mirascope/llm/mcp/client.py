@@ -1,16 +1,13 @@
 import contextlib
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator
 from datetime import timedelta
 
-import httpx
 from mcp import ClientSession
-from mcp.client.session import ListRootsFnT, SamplingFnT
 from mcp.client.sse import sse_client as mcp_sse_client
-from mcp.client.stdio import StdioServerParameters
+from mcp.client.stdio import StdioServerParameters, stdio_client as mcp_stdio_client
 from mcp.client.streamable_http import (
     streamablehttp_client as mcp_streamablehttp_client,
 )
-from mcp.shared._httpx_utils import McpHttpClientFactory
 
 from ..tools import AsyncTool
 
@@ -44,52 +41,26 @@ class MCPClient:
 @contextlib.asynccontextmanager
 async def streamablehttp_client(
     url: str,
-    headers: dict[str, str] | None = None,
-    timeout: float | timedelta | None = None,
-    sse_read_timeout: float | timedelta | None = None,
-    terminate_on_close: bool = True,
-    httpx_client_factory: McpHttpClientFactory | None = None,
-    auth: httpx.Auth | None = None,
 ) -> AsyncIterator[MCPClient]:
     """Create a Mirascope MCPClient using StreamableHTTP."""
-    kwargs = {}
-    if headers is not None:
-        kwargs["headers"] = headers
-    if timeout is not None:
-        kwargs["timeout"] = timeout
-    if sse_read_timeout is not None:
-        kwargs["sse_read_timeout"] = sse_read_timeout
-    if httpx_client_factory is not None:
-        kwargs["httpx_client_factory"] = httpx_client_factory
-    if auth is not None:
-        kwargs["auth"] = auth
-
     async with (
-        mcp_streamablehttp_client(
-            url,
-            terminate_on_close=terminate_on_close,
-            **kwargs,
-        ) as (read, write, get_session_id),
-        ClientSession(
-            read,
-            write,
-        ) as session,
+        mcp_streamablehttp_client(url) as (read, write, _),
+        ClientSession(read, write) as session,
     ):
         await session.initialize()
-        yield MCPClient(session)
+        # TODO: Add e2e test with a real HTTP server
+        yield MCPClient(session)  # pragma: no cover
 
 
 @contextlib.asynccontextmanager
 async def stdio_client(
     server_parameters: StdioServerParameters,
-    read_stream_exception_handler: Callable[[Exception], None] | None = None,
 ) -> AsyncIterator[MCPClient]:
     """Create a Mirascope MCPClient using stdio."""
-
     async with (
-        ClientSession(None, None) as session,  # pyright: ignore [reportArgumentType]
+        mcp_stdio_client(server_parameters) as (read, write),
+        ClientSession(read, write) as session,
     ):
-        raise NotImplementedError()
         await session.initialize()
         yield MCPClient(session)
 
@@ -97,22 +68,15 @@ async def stdio_client(
 @contextlib.asynccontextmanager
 async def sse_client(
     url: str,
-    list_roots_callback: ListRootsFnT | None = None,
     read_timeout_seconds: timedelta | None = None,
-    sampling_callback: SamplingFnT | None = None,
-    session: ClientSession | None = None,
 ) -> AsyncIterator[MCPClient]:
     """Create a Mirascope MCPClient using sse."""
-
     async with (
         mcp_sse_client(url) as (read, write),
         ClientSession(
-            read,
-            write,
-            read_timeout_seconds=read_timeout_seconds,
-            sampling_callback=sampling_callback,
-            list_roots_callback=list_roots_callback,
+            read, write, read_timeout_seconds=read_timeout_seconds
         ) as session,
     ):
-        await session.initialize()
-        yield MCPClient(session)
+        # TODO: Add e2e test with a real sse client
+        await session.initialize()  # pragma: no cover
+        yield MCPClient(session)  # pragma: no cover
