@@ -1,4 +1,4 @@
-"""Example: function versioning against local Mirascope Cloud server.
+"""Example: function versioning and annotation against local Mirascope Cloud server.
 
 Prerequisites:
 1. Start cloud server: `bun run cloud:dev` (from repo root)
@@ -20,7 +20,6 @@ from mirascope import llm, ops
 from mirascope.api.client import create_export_client
 from mirascope.ops._internal.exporters import MirascopeOTLPExporter
 
-# Configuration
 BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v0")
 API_KEY = os.getenv("MIRASCOPE_API_KEY")
 
@@ -32,17 +31,14 @@ if not API_KEY:
 print(f"Using base URL: {BASE_URL}")
 print(f"Using API key: {API_KEY[:10]}...")
 
-# Create Mirascope client for export
 client = create_export_client(base_url=BASE_URL, api_key=API_KEY)
 
-# Configure tracer with Mirascope exporter
 provider = TracerProvider()
 exporter = MirascopeOTLPExporter(
     client=client,
 )
 provider.add_span_processor(BatchSpanProcessor(exporter))
 
-# Enable GenAI instrumentation
 ops.configure(tracer_provider=provider)
 ops.instrument_llm()
 
@@ -57,14 +53,33 @@ def recommend_book(genre: str):
     ]
 
 
-print("\n=== Testing versioned LLM call ===")
-try:
-    response = recommend_book("fantasy")
-    print(f"Response: {response.content[:100]}...")
-    print(f"\nVersion info: {recommend_book.version_info}")
-    print("\nVersioned trace sent successfully! Check your Mirascope Cloud dashboard.")
-except Exception as e:
-    print(f"Error: {e}")
+@ops.trace
+def judge_recommendation(recommendation: str) -> str:
+    """Judge if a book recommendation is appropriate."""
+    keywords = ["kid", "child", "young", "family", "adventure", "magic"]
+    return (
+        "appropriate"
+        if any(kw in recommendation.lower() for kw in keywords)
+        else "needs_review"
+    )
 
-# Shutdown to flush spans
+
+response = recommend_book("fantasy")
+print(f"Response: {response.content[:100]}...")
+if recommend_book.version_info:
+    print(f"Version: {recommend_book.version_info.version}")
+else:
+    print("Version: (not available)")
+
+trace = judge_recommendation.wrapped("The Hobbit - a magical adventure")
+print(f"Judgment: {trace.result}")
+
+provider.force_flush()
+trace.annotate(
+    label="pass",
+    reasoning="Includes kid-friendly adventure themes",
+    metadata={"confidence": 0.95, "reviewer": "automated"},
+)
+print("Annotation sent!")
+
 provider.shutdown()

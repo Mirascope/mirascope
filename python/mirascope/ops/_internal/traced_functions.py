@@ -15,6 +15,7 @@ from typing import (
 
 from opentelemetry.util.types import AttributeValue
 
+from ...api.client import get_async_client, get_sync_client
 from ...llm.context import Context, DepsT
 from ...llm.responses.root_response import RootResponse
 from .protocols import (
@@ -91,7 +92,16 @@ class Trace(_BaseTrace[R]):
         metadata: dict[str, Jsonable] | None = None,
     ) -> None:
         """Annotates the current trace span."""
-        raise NotImplementedError("Trace.annotate not yet implemented")
+        if self.span.span_id is None or self.span.trace_id is None:
+            return
+
+        get_sync_client().annotations.create(
+            otel_span_id=self.span.span_id,
+            otel_trace_id=self.span.trace_id,
+            label=label,
+            reasoning=reasoning,
+            metadata=metadata,
+        )
 
     def tag(self, *tags: str) -> None:
         """Adds given tags to the current trace span."""
@@ -113,12 +123,21 @@ class AsyncTrace(_BaseTrace[R]):
     async def annotate(
         self,
         *,
-        label: str | None = None,
-        data: dict[str, Jsonable] | None = None,
+        label: Literal["pass", "fail"],
         reasoning: str | None = None,
+        metadata: dict[str, Jsonable] | None = None,
     ) -> None:
         """Annotates the current trace span."""
-        raise NotImplementedError("AsyncTrace.annotate not yet implemented")
+        if self.span.span_id is None or self.span.trace_id is None:
+            return
+
+        await get_async_client().annotations.create(
+            otel_span_id=self.span.span_id,
+            otel_trace_id=self.span.trace_id,
+            label=label,
+            reasoning=reasoning,
+            metadata=metadata,
+        )
 
     async def tag(self, *tags: str) -> None:
         """Adds given tags to the current trace span."""
