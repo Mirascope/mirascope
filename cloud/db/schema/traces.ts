@@ -39,6 +39,10 @@ export const traces = pgTable(
       table.traceId,
       table.environmentId,
     ),
+    // Composite unique constraint for spans org consistency foreign key
+    idProjectOrgUnique: unique(
+      "traces_id_project_id_organization_id_unique",
+    ).on(table.id, table.projectId, table.organizationId),
     envCreatedAtIdx: index("traces_env_created_at_idx").on(
       table.environmentId,
       table.createdAt,
