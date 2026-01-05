@@ -23,9 +23,7 @@ class HealthClient:
         """
         return self._raw_client
 
-    def check(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HealthCheckResponse:
+    def check(self, *, request_options: typing.Optional[RequestOptions] = None) -> HealthCheckResponse:
         """
         Parameters
         ----------
@@ -63,9 +61,7 @@ class AsyncHealthClient:
         """
         return self._raw_client
 
-    async def check(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HealthCheckResponse:
+    async def check(self, *, request_options: typing.Optional[RequestOptions] = None) -> HealthCheckResponse:
         """
         Parameters
         ----------

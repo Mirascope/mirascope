@@ -111,11 +111,7 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_create(
-            organization_id,
-            project_id,
-            environment_id,
-            name=name,
-            request_options=request_options,
+            organization_id, project_id, environment_id, name=name, request_options=request_options
         )
         return _response.data
 
@@ -160,11 +156,7 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_get(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data
 
@@ -208,11 +200,7 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_delete(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data
 
@@ -331,11 +319,7 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_create(
-            organization_id,
-            project_id,
-            environment_id,
-            name=name,
-            request_options=request_options,
+            organization_id, project_id, environment_id, name=name, request_options=request_options
         )
         return _response.data
 
@@ -388,11 +372,7 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_get(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data
 
@@ -444,10 +424,6 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_delete(
-            organization_id,
-            project_id,
-            environment_id,
-            api_key_id,
-            request_options=request_options,
+            organization_id, project_id, environment_id, api_key_id, request_options=request_options
         )
         return _response.data

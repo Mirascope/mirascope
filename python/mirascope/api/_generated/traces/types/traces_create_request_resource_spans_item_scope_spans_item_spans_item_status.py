@@ -6,16 +6,12 @@ import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus(
-    UniversalBaseModel
-):
+class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus(UniversalBaseModel):
     code: typing.Optional[float] = None
     message: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

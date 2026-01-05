@@ -7,38 +7,15 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .database_error_tag import DatabaseErrorTag
-from .not_found_error_tag import NotFoundErrorTag
-from .permission_denied_error_tag import PermissionDeniedErrorTag
 
 
-class InternalServerErrorBody_NotFoundError(UniversalBaseModel):
-    tag: typing.Literal["NotFoundError"] = "NotFoundError"
+class InternalServerErrorBody_StripeError(UniversalBaseModel):
+    tag: typing.Literal["StripeError"] = "StripeError"
     message: str
-    resource: typing.Optional[str] = None
-    tag: NotFoundErrorTag
+    cause: typing.Optional[typing.Optional[typing.Any]] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
-
-
-class InternalServerErrorBody_PermissionDeniedError(UniversalBaseModel):
-    tag: typing.Literal["PermissionDeniedError"] = "PermissionDeniedError"
-    message: str
-    resource: typing.Optional[str] = None
-    tag: PermissionDeniedErrorTag
-
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -54,9 +31,7 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
     tag: DatabaseErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -65,8 +40,4 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-InternalServerErrorBody = typing.Union[
-    InternalServerErrorBody_NotFoundError,
-    InternalServerErrorBody_PermissionDeniedError,
-    InternalServerErrorBody_DatabaseError,
-]
+InternalServerErrorBody = typing.Union[InternalServerErrorBody_StripeError, InternalServerErrorBody_DatabaseError]

@@ -5,6 +5,7 @@
 from .types import (
     OrganizationsCreateResponse,
     OrganizationsCreateResponseRole,
+    OrganizationsCreditsResponse,
     OrganizationsGetResponse,
     OrganizationsGetResponseRole,
     OrganizationsListResponseItem,
@@ -16,6 +17,7 @@ from .types import (
 __all__ = [
     "OrganizationsCreateResponse",
     "OrganizationsCreateResponseRole",
+    "OrganizationsCreditsResponse",
     "OrganizationsGetResponse",
     "OrganizationsGetResponseRole",
     "OrganizationsListResponseItem",

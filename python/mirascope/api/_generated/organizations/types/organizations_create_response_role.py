@@ -2,6 +2,4 @@
 
 import typing
 
-OrganizationsCreateResponseRole = typing.Union[
-    typing.Literal["OWNER", "ADMIN", "MEMBER"], typing.Any
-]
+OrganizationsCreateResponseRole = typing.Union[typing.Literal["OWNER", "ADMIN", "MEMBER"], typing.Any]

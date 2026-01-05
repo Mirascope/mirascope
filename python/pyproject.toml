@@ -116,6 +116,7 @@ exclude = [
     "build",
     "venv",
     ".coveragerc",
+    "mirascope/api/_generated",
 ]
 line-length = 88
 target-version = "py310"

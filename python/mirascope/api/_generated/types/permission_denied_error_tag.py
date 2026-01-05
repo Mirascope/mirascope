@@ -2,6 +2,4 @@
 
 import typing
 
-PermissionDeniedErrorTag = typing.Union[
-    typing.Literal["PermissionDeniedError"], typing.Any
-]
+PermissionDeniedErrorTag = typing.Union[typing.Literal["PermissionDeniedError"], typing.Any]

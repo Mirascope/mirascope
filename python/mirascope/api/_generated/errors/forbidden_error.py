@@ -7,9 +7,5 @@ from ..types.permission_denied_error import PermissionDeniedError
 
 
 class ForbiddenError(ApiError):
-    def __init__(
-        self,
-        body: PermissionDeniedError,
-        headers: typing.Optional[typing.Dict[str, str]] = None,
-    ):
+    def __init__(self, body: PermissionDeniedError, headers: typing.Optional[typing.Dict[str, str]] = None):
         super().__init__(status_code=403, headers=headers, body=body)

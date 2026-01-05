@@ -7,9 +7,4 @@ from .projects_get_response import ProjectsGetResponse
 from .projects_list_response_item import ProjectsListResponseItem
 from .projects_update_response import ProjectsUpdateResponse
 
-__all__ = [
-    "ProjectsCreateResponse",
-    "ProjectsGetResponse",
-    "ProjectsListResponseItem",
-    "ProjectsUpdateResponse",
-]
+__all__ = ["ProjectsCreateResponse", "ProjectsGetResponse", "ProjectsListResponseItem", "ProjectsUpdateResponse"]

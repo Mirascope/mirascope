@@ -73,10 +73,14 @@ def mirascope_client(mirascope_api_key: str, mirascope_base_url: str) -> Mirasco
 
 
 @pytest.fixture
-def otlp_exporter(mirascope_client: Mirascope) -> MirascopeOTLPExporter:
+def otlp_exporter(
+    mirascope_client: Mirascope,
+) -> MirascopeOTLPExporter:
     """Create MirascopeOTLPExporter with transport."""
     return MirascopeOTLPExporter(
-        client=mirascope_client, timeout=30.0, max_retry_attempts=3
+        client=mirascope_client,
+        timeout=30.0,
+        max_retry_attempts=3,
     )
 
 

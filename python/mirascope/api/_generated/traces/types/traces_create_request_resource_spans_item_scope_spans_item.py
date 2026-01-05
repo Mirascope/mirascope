@@ -15,18 +15,12 @@ from .traces_create_request_resource_spans_item_scope_spans_item_spans_item impo
 
 
 class TracesCreateRequestResourceSpansItemScopeSpansItem(UniversalBaseModel):
-    scope: typing.Optional[TracesCreateRequestResourceSpansItemScopeSpansItemScope] = (
-        None
-    )
+    scope: typing.Optional[TracesCreateRequestResourceSpansItemScopeSpansItemScope] = None
     spans: typing.List[TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem]
-    schema_url: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="schemaUrl")
-    ] = None
+    schema_url: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="schemaUrl")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

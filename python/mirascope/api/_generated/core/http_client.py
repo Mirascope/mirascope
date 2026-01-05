@@ -77,9 +77,7 @@ def _retry_timeout(response: httpx.Response, retries: int) -> float:
         return retry_after
 
     # Apply exponential backoff, capped at MAX_RETRY_DELAY_SECONDS.
-    retry_delay = min(
-        INITIAL_RETRY_DELAY_SECONDS * pow(2.0, retries), MAX_RETRY_DELAY_SECONDS
-    )
+    retry_delay = min(INITIAL_RETRY_DELAY_SECONDS * pow(2.0, retries), MAX_RETRY_DELAY_SECONDS)
 
     # Add a randomness / jitter to the retry delay to avoid overwhelming the server with retries.
     timeout = retry_delay * (1 - 0.25 * random())
@@ -111,8 +109,7 @@ def maybe_filter_request_body(
 ) -> typing.Optional[typing.Any]:
     if data is None:
         return (
-            jsonable_encoder(request_options.get("additional_body_parameters", {}))
-            or {}
+            jsonable_encoder(request_options.get("additional_body_parameters", {})) or {}
             if request_options is not None
             else None
         )
@@ -122,8 +119,7 @@ def maybe_filter_request_body(
         data_content = {
             **(jsonable_encoder(remove_omit_from_dict(data, omit))),  # type: ignore
             **(
-                jsonable_encoder(request_options.get("additional_body_parameters", {}))
-                or {}
+                jsonable_encoder(request_options.get("additional_body_parameters", {})) or {}
                 if request_options is not None
                 else {}
             ),
@@ -148,9 +144,7 @@ def get_request_body(
         json_body = maybe_filter_request_body(json, request_options, omit)
 
     # If you have an empty JSON body, you should just send None
-    return (
-        json_body if json_body != {} else None
-    ), data_body if data_body != {} else None
+    return (json_body if json_body != {} else None), data_body if data_body != {} else None
 
 
 class HttpClient:
@@ -173,9 +167,7 @@ class HttpClient:
             base_url = self.base_url()
 
         if base_url is None:
-            raise ValueError(
-                "A base_url is required to make this request, please provide one and try again."
-            )
+            raise ValueError("A base_url is required to make this request, please provide one and try again.")
         return base_url
 
     def request(
@@ -187,14 +179,10 @@ class HttpClient:
         params: typing.Optional[typing.Dict[str, typing.Any]] = None,
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
-        content: typing.Optional[
-            typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]
-        ] = None,
+        content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
         files: typing.Optional[
             typing.Union[
-                typing.Dict[
-                    str, typing.Optional[typing.Union[File, typing.List[File]]]
-                ],
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
                 typing.List[typing.Tuple[str, File]],
             ]
         ] = None,
@@ -207,19 +195,14 @@ class HttpClient:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
-            if request_options is not None
-            and request_options.get("timeout_in_seconds") is not None
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
             else self.base_timeout()
         )
 
-        json_body, data_body = get_request_body(
-            json=json, data=data, request_options=request_options, omit=omit
-        )
+        json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
         request_files: typing.Optional[RequestFiles] = (
-            convert_file_dict_to_httpx_tuples(
-                remove_omit_from_dict(remove_none_from_dict(files), omit)
-            )
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
             if (files is not None and files is not omit and isinstance(files, dict))
             else None
         )
@@ -235,11 +218,7 @@ class HttpClient:
                     {
                         **self.base_headers(),
                         **(headers if headers is not None else {}),
-                        **(
-                            request_options.get("additional_headers", {}) or {}
-                            if request_options is not None
-                            else {}
-                        ),
+                        **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
                     }
                 )
             ),
@@ -250,10 +229,7 @@ class HttpClient:
                             {
                                 **(params if params is not None else {}),
                                 **(
-                                    request_options.get(
-                                        "additional_query_parameters", {}
-                                    )
-                                    or {}
+                                    request_options.get("additional_query_parameters", {}) or {}
                                     if request_options is not None
                                     else {}
                                 ),
@@ -270,9 +246,7 @@ class HttpClient:
             timeout=timeout,
         )
 
-        max_retries: int = (
-            request_options.get("max_retries", 0) if request_options is not None else 0
-        )
+        max_retries: int = request_options.get("max_retries", 0) if request_options is not None else 0
         if _should_retry(response=response):
             if max_retries > retries:
                 time.sleep(_retry_timeout(response=response, retries=retries))
@@ -302,14 +276,10 @@ class HttpClient:
         params: typing.Optional[typing.Dict[str, typing.Any]] = None,
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
-        content: typing.Optional[
-            typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]
-        ] = None,
+        content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
         files: typing.Optional[
             typing.Union[
-                typing.Dict[
-                    str, typing.Optional[typing.Union[File, typing.List[File]]]
-                ],
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
                 typing.List[typing.Tuple[str, File]],
             ]
         ] = None,
@@ -322,15 +292,12 @@ class HttpClient:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
-            if request_options is not None
-            and request_options.get("timeout_in_seconds") is not None
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
             else self.base_timeout()
         )
 
         request_files: typing.Optional[RequestFiles] = (
-            convert_file_dict_to_httpx_tuples(
-                remove_omit_from_dict(remove_none_from_dict(files), omit)
-            )
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
             if (files is not None and files is not omit and isinstance(files, dict))
             else None
         )
@@ -338,9 +305,7 @@ class HttpClient:
         if (request_files is None or len(request_files) == 0) and force_multipart:
             request_files = FORCE_MULTIPART
 
-        json_body, data_body = get_request_body(
-            json=json, data=data, request_options=request_options, omit=omit
-        )
+        json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
         with self.httpx_client.stream(
             method=method,
@@ -350,11 +315,7 @@ class HttpClient:
                     {
                         **self.base_headers(),
                         **(headers if headers is not None else {}),
-                        **(
-                            request_options.get("additional_headers", {})
-                            if request_options is not None
-                            else {}
-                        ),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
                     }
                 )
             ),
@@ -365,9 +326,7 @@ class HttpClient:
                             {
                                 **(params if params is not None else {}),
                                 **(
-                                    request_options.get(
-                                        "additional_query_parameters", {}
-                                    )
+                                    request_options.get("additional_query_parameters", {})
                                     if request_options is not None
                                     else {}
                                 ),
@@ -406,9 +365,7 @@ class AsyncHttpClient:
             base_url = self.base_url()
 
         if base_url is None:
-            raise ValueError(
-                "A base_url is required to make this request, please provide one and try again."
-            )
+            raise ValueError("A base_url is required to make this request, please provide one and try again.")
         return base_url
 
     async def request(
@@ -420,14 +377,10 @@ class AsyncHttpClient:
         params: typing.Optional[typing.Dict[str, typing.Any]] = None,
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
-        content: typing.Optional[
-            typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]
-        ] = None,
+        content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
         files: typing.Optional[
             typing.Union[
-                typing.Dict[
-                    str, typing.Optional[typing.Union[File, typing.List[File]]]
-                ],
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
                 typing.List[typing.Tuple[str, File]],
             ]
         ] = None,
@@ -440,15 +393,12 @@ class AsyncHttpClient:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
-            if request_options is not None
-            and request_options.get("timeout_in_seconds") is not None
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
             else self.base_timeout()
         )
 
         request_files: typing.Optional[RequestFiles] = (
-            convert_file_dict_to_httpx_tuples(
-                remove_omit_from_dict(remove_none_from_dict(files), omit)
-            )
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
             if (files is not None and files is not omit and isinstance(files, dict))
             else None
         )
@@ -456,9 +406,7 @@ class AsyncHttpClient:
         if (request_files is None or len(request_files) == 0) and force_multipart:
             request_files = FORCE_MULTIPART
 
-        json_body, data_body = get_request_body(
-            json=json, data=data, request_options=request_options, omit=omit
-        )
+        json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
         # Add the input to each of these and do None-safety checks
         response = await self.httpx_client.request(
@@ -469,11 +417,7 @@ class AsyncHttpClient:
                     {
                         **self.base_headers(),
                         **(headers if headers is not None else {}),
-                        **(
-                            request_options.get("additional_headers", {}) or {}
-                            if request_options is not None
-                            else {}
-                        ),
+                        **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
                     }
                 )
             ),
@@ -484,10 +428,7 @@ class AsyncHttpClient:
                             {
                                 **(params if params is not None else {}),
                                 **(
-                                    request_options.get(
-                                        "additional_query_parameters", {}
-                                    )
-                                    or {}
+                                    request_options.get("additional_query_parameters", {}) or {}
                                     if request_options is not None
                                     else {}
                                 ),
@@ -504,9 +445,7 @@ class AsyncHttpClient:
             timeout=timeout,
         )
 
-        max_retries: int = (
-            request_options.get("max_retries", 0) if request_options is not None else 0
-        )
+        max_retries: int = request_options.get("max_retries", 0) if request_options is not None else 0
         if _should_retry(response=response):
             if max_retries > retries:
                 await asyncio.sleep(_retry_timeout(response=response, retries=retries))
@@ -535,14 +474,10 @@ class AsyncHttpClient:
         params: typing.Optional[typing.Dict[str, typing.Any]] = None,
         json: typing.Optional[typing.Any] = None,
         data: typing.Optional[typing.Any] = None,
-        content: typing.Optional[
-            typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]
-        ] = None,
+        content: typing.Optional[typing.Union[bytes, typing.Iterator[bytes], typing.AsyncIterator[bytes]]] = None,
         files: typing.Optional[
             typing.Union[
-                typing.Dict[
-                    str, typing.Optional[typing.Union[File, typing.List[File]]]
-                ],
+                typing.Dict[str, typing.Optional[typing.Union[File, typing.List[File]]]],
                 typing.List[typing.Tuple[str, File]],
             ]
         ] = None,
@@ -555,15 +490,12 @@ class AsyncHttpClient:
         base_url = self.get_base_url(base_url)
         timeout = (
             request_options.get("timeout_in_seconds")
-            if request_options is not None
-            and request_options.get("timeout_in_seconds") is not None
+            if request_options is not None and request_options.get("timeout_in_seconds") is not None
             else self.base_timeout()
         )
 
         request_files: typing.Optional[RequestFiles] = (
-            convert_file_dict_to_httpx_tuples(
-                remove_omit_from_dict(remove_none_from_dict(files), omit)
-            )
+            convert_file_dict_to_httpx_tuples(remove_omit_from_dict(remove_none_from_dict(files), omit))
             if (files is not None and files is not omit and isinstance(files, dict))
             else None
         )
@@ -571,9 +503,7 @@ class AsyncHttpClient:
         if (request_files is None or len(request_files) == 0) and force_multipart:
             request_files = FORCE_MULTIPART
 
-        json_body, data_body = get_request_body(
-            json=json, data=data, request_options=request_options, omit=omit
-        )
+        json_body, data_body = get_request_body(json=json, data=data, request_options=request_options, omit=omit)
 
         async with self.httpx_client.stream(
             method=method,
@@ -583,11 +513,7 @@ class AsyncHttpClient:
                     {
                         **self.base_headers(),
                         **(headers if headers is not None else {}),
-                        **(
-                            request_options.get("additional_headers", {})
-                            if request_options is not None
-                            else {}
-                        ),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
                     }
                 )
             ),
@@ -598,9 +524,7 @@ class AsyncHttpClient:
                             {
                                 **(params if params is not None else {}),
                                 **(
-                                    request_options.get(
-                                        "additional_query_parameters", {}
-                                    )
+                                    request_options.get("additional_query_parameters", {})
                                     if request_options is not None
                                     else {}
                                 ),
