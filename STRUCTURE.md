@@ -227,6 +227,7 @@ cloud/
 │   │   └── globals.css
 │   ├── router.tsx
 │   └── routeTree.gen.ts           # Auto-generated route tree
+├── server-entry.ts                # Worker entry (fetch + queue handlers)
 ├── api/                           # Backend API handlers
 │   ├── api.ts
 │   ├── docs.handlers.ts           # Documentation handlers

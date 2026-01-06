@@ -3,9 +3,24 @@
   "compatibility_date": "2025-06-17",
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": "@tanstack/react-start/server-entry",
+  "main": "server-entry.ts",
   "observability": {
     "enabled": true,
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "SPANS_OUTBOX_QUEUE",
+        "queue": "spans-outbox"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "spans-outbox",
+        "max_batch_size": 100,
+        "max_batch_timeout": 5
+      }
+    ]
   },
   //   "triggers": {
   //     "crons": ["0 0 * * 7"]
