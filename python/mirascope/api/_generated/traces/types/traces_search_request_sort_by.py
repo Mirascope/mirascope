@@ -2,6 +2,4 @@
 
 import typing
 
-TracesSearchRequestSortBy = typing.Union[
-    typing.Literal["start_time", "duration_ms", "total_tokens"], typing.Any
-]
+TracesSearchRequestSortBy = typing.Union[typing.Literal["start_time", "duration_ms", "total_tokens"], typing.Any]

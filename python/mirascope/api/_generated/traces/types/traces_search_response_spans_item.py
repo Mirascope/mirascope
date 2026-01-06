@@ -14,25 +14,15 @@ class TracesSearchResponseSpansItem(UniversalBaseModel):
     span_id: typing_extensions.Annotated[str, FieldMetadata(alias="spanId")]
     name: str
     start_time: typing_extensions.Annotated[str, FieldMetadata(alias="startTime")]
-    duration_ms: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="durationMs")
-    ] = None
+    duration_ms: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="durationMs")] = None
     model: typing.Optional[str] = None
     provider: typing.Optional[str] = None
-    total_tokens: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="totalTokens")
-    ] = None
-    function_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="functionId")
-    ] = None
-    function_name: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="functionName")
-    ] = None
+    total_tokens: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="totalTokens")] = None
+    function_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="functionId")] = None
+    function_name: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="functionName")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

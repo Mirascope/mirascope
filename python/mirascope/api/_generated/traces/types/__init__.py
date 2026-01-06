@@ -2,12 +2,8 @@
 
 # isort: skip_file
 
-from .traces_create_request_resource_spans_item import (
-    TracesCreateRequestResourceSpansItem,
-)
-from .traces_create_request_resource_spans_item_resource import (
-    TracesCreateRequestResourceSpansItemResource,
-)
+from .traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
+from .traces_create_request_resource_spans_item_resource import TracesCreateRequestResourceSpansItemResource
 from .traces_create_request_resource_spans_item_resource_attributes_item import (
     TracesCreateRequestResourceSpansItemResourceAttributesItem,
 )
@@ -68,22 +64,12 @@ from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_stat
 from .traces_create_response import TracesCreateResponse
 from .traces_create_response_partial_success import TracesCreateResponsePartialSuccess
 from .traces_get_analytics_summary_response import TracesGetAnalyticsSummaryResponse
-from .traces_get_analytics_summary_response_top_functions_item import (
-    TracesGetAnalyticsSummaryResponseTopFunctionsItem,
-)
-from .traces_get_analytics_summary_response_top_models_item import (
-    TracesGetAnalyticsSummaryResponseTopModelsItem,
-)
+from .traces_get_analytics_summary_response_top_functions_item import TracesGetAnalyticsSummaryResponseTopFunctionsItem
+from .traces_get_analytics_summary_response_top_models_item import TracesGetAnalyticsSummaryResponseTopModelsItem
 from .traces_get_trace_detail_response import TracesGetTraceDetailResponse
-from .traces_get_trace_detail_response_spans_item import (
-    TracesGetTraceDetailResponseSpansItem,
-)
-from .traces_search_request_attribute_filters_item import (
-    TracesSearchRequestAttributeFiltersItem,
-)
-from .traces_search_request_attribute_filters_item_operator import (
-    TracesSearchRequestAttributeFiltersItemOperator,
-)
+from .traces_get_trace_detail_response_spans_item import TracesGetTraceDetailResponseSpansItem
+from .traces_search_request_attribute_filters_item import TracesSearchRequestAttributeFiltersItem
+from .traces_search_request_attribute_filters_item_operator import TracesSearchRequestAttributeFiltersItemOperator
 from .traces_search_request_sort_by import TracesSearchRequestSortBy
 from .traces_search_request_sort_order import TracesSearchRequestSortOrder
 from .traces_search_response import TracesSearchResponse

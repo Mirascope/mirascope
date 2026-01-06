@@ -13,75 +13,39 @@ class TracesGetTraceDetailResponseSpansItem(UniversalBaseModel):
     trace_db_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceDbId")]
     trace_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceId")]
     span_id: typing_extensions.Annotated[str, FieldMetadata(alias="spanId")]
-    parent_span_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="parentSpanId")
-    ] = None
-    environment_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="environmentId")
-    ]
+    parent_span_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="parentSpanId")] = None
+    environment_id: typing_extensions.Annotated[str, FieldMetadata(alias="environmentId")]
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId")]
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
     start_time: typing_extensions.Annotated[str, FieldMetadata(alias="startTime")]
     end_time: typing_extensions.Annotated[str, FieldMetadata(alias="endTime")]
-    duration_ms: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="durationMs")
-    ] = None
+    duration_ms: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="durationMs")] = None
     name: str
     kind: float
-    status_code: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="statusCode")
-    ] = None
-    status_message: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="statusMessage")
-    ] = None
+    status_code: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="statusCode")] = None
+    status_message: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="statusMessage")] = None
     model: typing.Optional[str] = None
     provider: typing.Optional[str] = None
-    input_tokens: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="inputTokens")
-    ] = None
-    output_tokens: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="outputTokens")
-    ] = None
-    total_tokens: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="totalTokens")
-    ] = None
-    cost_usd: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="costUsd")
-    ] = None
-    function_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="functionId")
-    ] = None
-    function_name: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="functionName")
-    ] = None
-    function_version: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="functionVersion")
-    ] = None
-    error_type: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="errorType")
-    ] = None
-    error_message: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="errorMessage")
-    ] = None
+    input_tokens: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="inputTokens")] = None
+    output_tokens: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="outputTokens")] = None
+    total_tokens: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="totalTokens")] = None
+    cost_usd: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="costUsd")] = None
+    function_id: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="functionId")] = None
+    function_name: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="functionName")] = None
+    function_version: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="functionVersion")] = None
+    error_type: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="errorType")] = None
+    error_message: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="errorMessage")] = None
     attributes: str
     events: typing.Optional[str] = None
     links: typing.Optional[str] = None
-    service_name: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="serviceName")
-    ] = None
-    service_version: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="serviceVersion")
-    ] = None
+    service_name: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="serviceName")] = None
+    service_version: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="serviceVersion")] = None
     resource_attributes: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="resourceAttributes")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

@@ -35,17 +35,7 @@ from .errors import (
     NotFoundError,
     UnauthorizedError,
 )
-from . import (
-    annotations,
-    api_keys,
-    docs,
-    environments,
-    functions,
-    health,
-    organizations,
-    projects,
-    traces,
-)
+from . import annotations, api_keys, docs, environments, functions, health, organizations, projects, traces
 from .annotations import (
     AnnotationsCreateRequestLabel,
     AnnotationsCreateResponse,
@@ -93,12 +83,7 @@ from .organizations import (
     OrganizationsUpdateResponse,
     OrganizationsUpdateResponseRole,
 )
-from .projects import (
-    ProjectsCreateResponse,
-    ProjectsGetResponse,
-    ProjectsListResponseItem,
-    ProjectsUpdateResponse,
-)
+from .projects import ProjectsCreateResponse, ProjectsGetResponse, ProjectsListResponseItem, ProjectsUpdateResponse
 from .traces import (
     TracesCreateRequestResourceSpansItem,
     TracesCreateRequestResourceSpansItemResource,

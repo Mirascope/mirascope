@@ -15,9 +15,7 @@ class InternalServerErrorBody_StripeError(UniversalBaseModel):
     cause: typing.Optional[typing.Optional[typing.Any]] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -33,9 +31,7 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
     tag: DatabaseErrorTag
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
@@ -44,6 +40,4 @@ class InternalServerErrorBody_DatabaseError(UniversalBaseModel):
             extra = pydantic.Extra.allow
 
 
-InternalServerErrorBody = typing.Union[
-    InternalServerErrorBody_StripeError, InternalServerErrorBody_DatabaseError
-]
+InternalServerErrorBody = typing.Union[InternalServerErrorBody_StripeError, InternalServerErrorBody_DatabaseError]

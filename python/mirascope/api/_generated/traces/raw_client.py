@@ -21,17 +21,11 @@ from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.unauthorized_error_body import UnauthorizedErrorBody
-from .types.traces_create_request_resource_spans_item import (
-    TracesCreateRequestResourceSpansItem,
-)
+from .types.traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
 from .types.traces_create_response import TracesCreateResponse
-from .types.traces_get_analytics_summary_response import (
-    TracesGetAnalyticsSummaryResponse,
-)
+from .types.traces_get_analytics_summary_response import TracesGetAnalyticsSummaryResponse
 from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
-from .types.traces_search_request_attribute_filters_item import (
-    TracesSearchRequestAttributeFiltersItem,
-)
+from .types.traces_search_request_attribute_filters_item import TracesSearchRequestAttributeFiltersItem
 from .types.traces_search_request_sort_by import TracesSearchRequestSortBy
 from .types.traces_search_request_sort_order import TracesSearchRequestSortOrder
 from .types.traces_search_response import TracesSearchResponse
@@ -157,16 +151,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def search(
         self,
@@ -185,9 +171,7 @@ class RawTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
@@ -333,16 +317,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def gettracedetail(
         self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -432,16 +408,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def getanalyticssummary(
         self,
@@ -534,16 +502,8 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
 class AsyncRawTracesClient:
@@ -663,16 +623,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def search(
         self,
@@ -691,9 +643,7 @@ class AsyncRawTracesClient:
         max_tokens: typing.Optional[float] = OMIT,
         min_duration: typing.Optional[float] = OMIT,
         max_duration: typing.Optional[float] = OMIT,
-        attribute_filters: typing.Optional[
-            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
-        ] = OMIT,
+        attribute_filters: typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]] = OMIT,
         limit: typing.Optional[float] = OMIT,
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
@@ -839,16 +789,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def gettracedetail(
         self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -938,16 +880,8 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def getanalyticssummary(
         self,
@@ -1040,13 +974,5 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(
-                status_code=_response.status_code,
-                headers=dict(_response.headers),
-                body=_response.text,
-            )
-        raise ApiError(
-            status_code=_response.status_code,
-            headers=dict(_response.headers),
-            body=_response_json,
-        )
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
