@@ -249,20 +249,20 @@ cloud/
 ├── clickhouse/                    # ClickHouse analytics services
 │   ├── client.ts                  # Effect service for ClickHouse access
 │   ├── search.ts                  # Analytics/search queries and transforms
+│   ├── migrate.sh                 # Schema migration runner (run: bun run clickhouse:migrate)
+│   ├── migrations/                # SQL migration files (versioned, applied on startup)
+│   │   ├── *.up.sql
+│   │   └── *.down.sql
 │   └── [other files]              # utils.ts, tests, etc.
-├── workers/                       # Cloudflare Workers (queues/cron/polling)
-│   ├── clickhouseQueueConsumer.ts # Queue consumer for outbox sync
-│   ├── clickhouseCron.ts          # Cron trigger for re-enqueue
-│   ├── clickhouseSyncLocal.ts     # Local polling worker
+├── workers/                       # Cloudflare Workers (cron)
+│   ├── clickhouseCron.ts          # Cron trigger for outbox sync
 │   └── outboxProcessor.ts         # Shared processing logic
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
 │   └── db.ts                      # Database test utilities
 ├── docker/                        # Docker configuration
 │   ├── compose.yml
-│   ├── clickhouse/                # ClickHouse init SQL
-│   │   └── init/                  # Schema + index creation scripts
-│   └── data/                      # Docker data directory
+│   └── data/                      # Docker data directory (gitignored)
 ├── dist/                          # Build output
 │   ├── client/                    # Client build artifacts
 │   └── server/                    # Server build artifacts
@@ -283,10 +283,7 @@ cloud/
 ```text
 PostgreSQL (OLTP)
   └── spans_outbox (insert)
-        ├── Cloudflare Queue (prod)
-        │     └── Queue Consumer (Workers)
-        ├── Cron (re-enqueue pending)
-        └── Local Polling Worker (dev)
+        └── Cron (Cloudflare scheduled event)
               └── ClickHouse (analytics)
 ```
 
@@ -295,8 +292,8 @@ PostgreSQL (OLTP)
 ```text
 1) spans_outbox row is created when a span is inserted (db/traces.ts)
 2) Worker picks up the outbox row:
-   - Production: Cloudflare Queue -> clickhouseQueueConsumer.ts
-   - Local dev: polling loop -> clickhouseSyncLocal.ts
+   - Production: Cloudflare scheduled event -> clickhouseCron.ts
+   - Local dev: run cron via `bun run cron:dev` + `bun run cron:trigger`
 3) processOutboxMessages (outboxProcessor.ts):
    - lock row (status=processing, lockedAt/lockedBy)
    - load span + trace from Postgres
@@ -304,7 +301,7 @@ PostgreSQL (OLTP)
    - bulk insert into ClickHouse
 4) Success -> mark completed + processedAt
 5) Failure -> increment retryCount + backoff via processAfter
-6) Cron (clickhouseCron.ts) re-enqueues pending/stale rows
+6) Cron (clickhouseCron.ts) reprocesses pending/stale rows
 ```
 
 **Tooling Choices**:

@@ -5,7 +5,7 @@
 -- spans_analytics table
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS spans_analytics (
+CREATE TABLE IF NOT EXISTS {{database}}.spans_analytics (
     -- Core identifiers (id/trace_db_id for reference, not used for dedupe)
     id UUID,                  -- PostgreSQL span.id (reference)
     trace_db_id UUID,         -- PostgreSQL trace.id (reference)
@@ -64,17 +64,17 @@ ORDER BY (environment_id, start_time, trace_id, span_id, organization_id, projec
 SETTINGS index_granularity = 8192;
 
 -- Bloom filter indexes for spans_analytics
-ALTER TABLE spans_analytics ADD INDEX IF NOT EXISTS idx_trace_id trace_id TYPE bloom_filter GRANULARITY 1;
-ALTER TABLE spans_analytics ADD INDEX IF NOT EXISTS idx_span_id span_id TYPE bloom_filter GRANULARITY 1;
-ALTER TABLE spans_analytics ADD INDEX IF NOT EXISTS idx_model model TYPE bloom_filter GRANULARITY 1;
-ALTER TABLE spans_analytics ADD INDEX IF NOT EXISTS idx_function_id function_id TYPE bloom_filter GRANULARITY 1;
-ALTER TABLE spans_analytics ADD INDEX IF NOT EXISTS idx_name_lower name_lower TYPE tokenbf_v1(10240, 3, 0) GRANULARITY 4;
+ALTER TABLE {{database}}.spans_analytics ADD INDEX IF NOT EXISTS idx_trace_id trace_id TYPE bloom_filter GRANULARITY 1;
+ALTER TABLE {{database}}.spans_analytics ADD INDEX IF NOT EXISTS idx_span_id span_id TYPE bloom_filter GRANULARITY 1;
+ALTER TABLE {{database}}.spans_analytics ADD INDEX IF NOT EXISTS idx_model model TYPE bloom_filter GRANULARITY 1;
+ALTER TABLE {{database}}.spans_analytics ADD INDEX IF NOT EXISTS idx_function_id function_id TYPE bloom_filter GRANULARITY 1;
+ALTER TABLE {{database}}.spans_analytics ADD INDEX IF NOT EXISTS idx_name_lower name_lower TYPE tokenbf_v1(10240, 3, 0) GRANULARITY 4;
 
 -- =============================================================================
 -- annotations_analytics table
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS annotations_analytics (
+CREATE TABLE IF NOT EXISTS {{database}}.annotations_analytics (
     id UUID,
     span_db_id UUID,          -- PostgreSQL span.id
     trace_db_id UUID,         -- PostgreSQL trace.id
@@ -97,5 +97,5 @@ PARTITION BY toYYYYMM(created_at)
 ORDER BY (environment_id, otel_trace_id, otel_span_id, organization_id, project_id);
 
 -- Bloom filter indexes for annotations_analytics
-ALTER TABLE annotations_analytics ADD INDEX IF NOT EXISTS idx_otel_trace_id otel_trace_id TYPE bloom_filter GRANULARITY 1;
-ALTER TABLE annotations_analytics ADD INDEX IF NOT EXISTS idx_environment_id environment_id TYPE bloom_filter GRANULARITY 1;
+ALTER TABLE {{database}}.annotations_analytics ADD INDEX IF NOT EXISTS idx_otel_trace_id otel_trace_id TYPE bloom_filter GRANULARITY 1;
+ALTER TABLE {{database}}.annotations_analytics ADD INDEX IF NOT EXISTS idx_environment_id environment_id TYPE bloom_filter GRANULARITY 1;
