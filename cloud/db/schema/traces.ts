@@ -86,3 +86,9 @@ export type PublicTrace = Pick<
   | "resourceAttributes"
   | "createdAt"
 >;
+
+// Type for the create response (includes ingestion stats)
+export type CreateTraceResponse = PublicTrace & {
+  acceptedSpans: number;
+  rejectedSpans: number;
+};

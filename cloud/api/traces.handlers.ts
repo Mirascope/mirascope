@@ -9,6 +9,10 @@ import {
 
 export * from "@/api/traces.schemas";
 
+/**
+ * Handler for creating traces from OTLP trace data.
+ * Accepts OpenTelemetry trace data and stores it in the database.
+ */
 export const createTraceHandler = (payload: CreateTraceRequest) =>
   Effect.gen(function* () {
     const serviceName =

@@ -48,15 +48,18 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
+import { Traces } from "@/db/traces";
 import { Payments, type StripeConfig } from "@/payments";
 
 /**
- * Type definition for the environments service with nested API keys.
+ * Type definition for the environments service with nested API keys and traces.
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
+ * Traces: `db.organizations.projects.environments.traces.create(...)`
  */
 export interface EnvironmentsService extends Ready<Environments> {
   readonly apiKeys: Ready<ApiKeys>;
+  readonly traces: Ready<Traces>;
 }
 
 /**
@@ -143,6 +146,7 @@ export class Database extends Context.Tag("Database")<
       );
       const environmentsService = new Environments(projectMemberships);
       const apiKeysService = new ApiKeys(projectMemberships);
+      const tracesService = new Traces(projectMemberships);
 
       return {
         users: provideDependencies(new Users()),
@@ -156,6 +160,7 @@ export class Database extends Context.Tag("Database")<
             environments: {
               ...provideDependencies(environmentsService),
               apiKeys: provideDependencies(apiKeysService),
+              traces: provideDependencies(tracesService),
             },
           },
         },
