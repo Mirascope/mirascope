@@ -1,7 +1,7 @@
 /**
  * @fileoverview Outbox processor for ClickHouse sync.
  *
- * Shared processing logic for both Queue Consumer and local polling worker.
+ * Shared processing logic for the Queue Consumer.
  * Handles span extraction from PostgreSQL, transformation to ClickHouse format,
  * and batch insertion with retry logic.
  */
@@ -247,7 +247,7 @@ export const transformSpanForClickHouse = (
 /**
  * Process a batch of outbox messages.
  *
- * Shared between Queue Consumer and local polling worker.
+ * Shared between Queue Consumer and outbox handling utilities.
  * Handles locking, transformation, ClickHouse insertion, and status updates.
  *
  * @param messages - Array of outbox messages to process

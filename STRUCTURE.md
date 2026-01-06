@@ -257,7 +257,6 @@ cloud/
 ├── workers/                       # Cloudflare Workers (queues/cron/polling)
 │   ├── clickhouseQueueConsumer.ts # Queue consumer for outbox sync
 │   ├── clickhouseCron.ts          # Cron trigger for re-enqueue
-│   ├── clickhouseSyncLocal.ts     # Local polling worker
 │   └── outboxProcessor.ts         # Shared processing logic
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
@@ -298,7 +297,7 @@ PostgreSQL (OLTP)
 1) spans_outbox row is created when a span is inserted (db/traces.ts)
 2) Worker picks up the outbox row:
    - Production: Cloudflare Queue -> clickhouseQueueConsumer.ts
-   - Local dev: polling loop -> clickhouseSyncLocal.ts
+   - Local dev: run Queue Consumer via `bun run dev` (Workers)
 3) processOutboxMessages (outboxProcessor.ts):
    - lock row (status=processing, lockedAt/lockedBy)
    - load span + trace from Postgres
