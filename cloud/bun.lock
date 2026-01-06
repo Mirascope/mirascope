@@ -4,6 +4,7 @@
     "": {
       "name": "@mirascope/cloud",
       "dependencies": {
+        "@clickhouse/client-web": "^1.16.0",
         "@effect/platform": "^0.93.3",
         "@effect/schema": "^0.75.5",
         "@effect/sql": "^0.48.6",
@@ -149,6 +150,10 @@
     "@balena/dockerignore": ["@balena/dockerignore@1.0.2", "", {}, "sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q=="],
 
     "@bcoe/v8-coverage": ["@bcoe/v8-coverage@1.0.2", "", {}, "sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA=="],
+
+    "@clickhouse/client-common": ["@clickhouse/client-common@1.16.0", "", {}, "sha512-qMzkI1NmV29ZjFkNpVSvGNfA0c7sCExlufAQMv+V+5xtNeYXnRfdqzmBLIQoq6Pf1ij0kw/wGLD3HQrl7pTFLA=="],
+
+    "@clickhouse/client-web": ["@clickhouse/client-web@1.16.0", "", { "dependencies": { "@clickhouse/client-common": "1.16.0" } }, "sha512-47+H8GsXXlultL3HFkTu94M7BGXJF8FOwiOUafPpvgCFoqra3o82I0YbWs3vTRqHIOuFjCvuOzrBNFvcT732eg=="],
 
     "@cloudflare/kv-asset-handler": ["@cloudflare/kv-asset-handler@0.4.1", "", { "dependencies": { "mime": "^3.0.0" } }, "sha512-Nu8ahitGFFJztxUml9oD/DLb7Z28C8cd8F46IVQ7y5Btz575pvMY8AqZsXkX7Gds29eCKdMgIHjIvzskHgPSFg=="],
 

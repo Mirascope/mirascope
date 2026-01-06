@@ -1,49 +1,48 @@
 /**
  * @fileoverview ClickHouse client service for analytics data access.
  *
- * Provides Effect-based ClickHouse client implementations for both
- * Node.js and Cloudflare Workers environments.
+ * Provides an Effect-based ClickHouse client using @clickhouse/client-web
+ * (Fetch + Web Streams) compatible with Cloudflare Workers.
  *
  * ## Architecture
  *
  * ```
- * ClickHouseClient (Effect Service Tag)
- *   ├── ClickHouseClientNodeLive (@clickhouse/client for Node.js)
- *   └── ClickHouseClientWorkersLive (fetch + HTTP API for Workers)
+ * ClickHouse.layer (HTTP connection)
+ *   └── ClickHouse (Effect Service)
  * ```
  *
  * ## Usage
  *
- * - Node.js (local dev, API handlers): Use `ClickHouseClientNodeLive`
- * - Workers (Queue Consumer, Cron): Use `ClickHouseClientWorkersLive`
+ * - Local dev / CI: Use `ClickHouseLive`
+ * - Workers (production): Use `ClickHouseLive`
  *
  * ## TLS Constraints
  *
- * - Node.js: Full TLS configuration support (custom CA, hostname verify, etc.)
- * - Workers: System CA only (Cloudflare-managed), no custom CA support
+ * - System CA only (no custom CA support)
  *
  * @example
  * ```ts
- * import { ClickHouseClient, ClickHouseClientNodeLive } from "@/clickhouse/client";
+ * import { ClickHouse, ClickHouseLive } from "@/clickhouse/client";
  *
  * const program = Effect.gen(function* () {
- *   const client = yield* ClickHouseClient;
- *   const spans = yield* client.query<SpanRow>("SELECT * FROM spans_analytics LIMIT 10");
+ *   const client = yield* ClickHouse;
+ *   const spans = yield* client.unsafeQuery<SpanRow>(
+ *     "SELECT * FROM spans_analytics LIMIT 10"
+ *   );
  *   return spans;
  * });
  *
  * await Effect.runPromise(
- *   program.pipe(Effect.provide(ClickHouseClientNodeLive))
+ *   program.pipe(Effect.provide(ClickHouseLive))
  * );
  * ```
  */
 
+import { Context, Effect, Layer } from "effect";
 import {
   createClient,
-  type ClickHouseClient as CHClient,
-} from "@clickhouse/client";
-import { Context, Effect, Layer } from "effect";
-import * as fs from "node:fs";
+  type ClickHouseClient as WebClickHouseClient,
+} from "@clickhouse/client-web";
 import { ClickHouseError } from "@/errors";
 import { SettingsService, type Settings } from "@/settings";
 
@@ -52,114 +51,137 @@ import { SettingsService, type Settings } from "@/settings";
 // =============================================================================
 
 /**
- * ClickHouseClient configuration options.
+ * ClickHouse configuration options.
  */
 export interface ClickHouseConfig {
   /** ClickHouse HTTP URL (e.g., http://localhost:8123) */
-  url?: string;
+  url: string;
+
   /** ClickHouse username */
-  user?: string;
+  user: string;
+
   /** ClickHouse password */
   password?: string;
+
   /** ClickHouse database name */
-  database?: string;
+  database: string;
 }
 
 /**
- * ClickHouseClient service interface type.
+ * ClickHouse service interface type.
+ *
+ * Provides convenience methods for query, insert, and command operations.
  */
-export interface ClickHouseClientService {
-  /** Execute a SELECT query and return typed results. */
-  readonly query: <T>(
+export interface ClickHouseClient {
+  /**
+   * Execute a raw SQL query without parameterization.
+   * WARNING: This method is unsafe and should only be used for trusted SQL.
+   */
+  readonly unsafeQuery: <T extends object>(
     sql: string,
     params?: Record<string, unknown>,
-  ) => Effect.Effect<T[], ClickHouseError>;
+  ) => Effect.Effect<readonly T[], ClickHouseError>;
+
   /** Insert rows into a table in JSONEachRow format. */
   readonly insert: <T extends Record<string, unknown>>(
     table: string,
     rows: T[],
   ) => Effect.Effect<void, ClickHouseError>;
+
   /** Execute a DDL/DML command (CREATE, ALTER, etc.). */
   readonly command: (sql: string) => Effect.Effect<void, ClickHouseError>;
 }
 
 /**
- * ClickHouseClient service.
- *
- * Provides query, insert, and command operations for ClickHouse.
- * Implementations differ between Node.js and Workers environments.
- *
- * @example
- * ```ts
- * // Using with direct config
- * const program = Effect.gen(function* () {
- *   const client = yield* ClickHouseClient;
- *   return yield* client.query<Row>("SELECT * FROM table");
- * }).pipe(
- *   Effect.provide(ClickHouseClient.layer({ url: "http://localhost:8123" }))
- * );
- * ```
+ * ClickHouse service.
  */
-export class ClickHouseClient extends Context.Tag("ClickHouseClient")<
-  ClickHouseClient,
-  ClickHouseClientService
+export class ClickHouse extends Context.Tag("ClickHouse")<
+  ClickHouse,
+  ClickHouseClient
 >() {
   /**
    * Default layer using SettingsService for configuration.
    * Requires SettingsService to be provided.
+   *
+   * Uses @clickhouse/client-web over the ClickHouse HTTP interface.
    */
   static Default = Layer.effect(
-    ClickHouseClient,
+    ClickHouse,
     Effect.gen(function* () {
       const settings = yield* SettingsService;
-      const client = createNodeClickHouseClient(settings);
+      const client = createWebClickHouseClient(settings);
+
+      const toClickHouseError = (error: unknown): ClickHouseError => {
+        if (error instanceof ClickHouseError) return error;
+        if (
+          error &&
+          typeof error === "object" &&
+          "_tag" in error &&
+          error._tag === "SqlError"
+        ) {
+          return new ClickHouseError({
+            message: "ClickHouse operation failed",
+            cause: error,
+          });
+        }
+        return new ClickHouseError({
+          message: `ClickHouse operation failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          cause: error instanceof Error ? error : undefined,
+        });
+      };
+
+      const mapClickHouseError = <A, E, R>(
+        effect: Effect.Effect<A, E, R>,
+      ): Effect.Effect<A, ClickHouseError, R> =>
+        effect.pipe(Effect.mapError((error) => toClickHouseError(error)));
 
       return {
-        query: <T>(sql: string, params?: Record<string, unknown>) =>
-          Effect.tryPromise({
-            try: async (): Promise<T[]> => {
-              const result = await client.query({
-                query: sql,
-                query_params: params,
-                format: "JSONEachRow",
-              });
-              return result.json();
-            },
-            catch: (e) =>
-              new ClickHouseError({
-                message: `Query failed: ${e instanceof Error ? e.message : String(e)}`,
-                cause: e,
-              }),
-          }),
-
-        insert: <T extends Record<string, unknown>>(table: string, rows: T[]) =>
-          Effect.tryPromise({
-            try: async () => {
-              if (rows.length === 0) return;
-              await client.insert({
-                table,
-                values: rows,
-                format: "JSONEachRow",
-              });
-            },
-            catch: (e) =>
-              new ClickHouseError({
-                message: `Insert failed: ${e instanceof Error ? e.message : String(e)}`,
-                cause: e,
-              }),
-          }),
-
-        command: (sql: string) =>
-          Effect.tryPromise({
-            try: async () => {
-              await client.command({ query: sql });
-            },
-            catch: (e) =>
-              new ClickHouseError({
-                message: `Command failed: ${e instanceof Error ? e.message : String(e)}`,
-                cause: e,
-              }),
-          }),
+        unsafeQuery: <T extends object>(
+          query: string,
+          params?: Record<string, unknown>,
+        ): Effect.Effect<readonly T[], ClickHouseError> =>
+          mapClickHouseError(
+            Effect.tryPromise({
+              try: async () => {
+                const result = await client.query({
+                  query,
+                  format: "JSONEachRow",
+                  query_params: params,
+                });
+                return result.json<T>();
+              },
+              catch: (error) => error,
+            }),
+          ),
+        insert: <T extends Record<string, unknown>>(
+          table: string,
+          rows: T[],
+        ): Effect.Effect<void, ClickHouseError> => {
+          if (rows.length === 0) return Effect.void;
+          return mapClickHouseError(
+            Effect.tryPromise({
+              try: async () => {
+                await client.insert({
+                  table,
+                  values: rows,
+                  format: "JSONEachRow",
+                });
+              },
+              catch: (error) => error,
+            }),
+          );
+        },
+        command: (query: string): Effect.Effect<void, ClickHouseError> =>
+          mapClickHouseError(
+            Effect.tryPromise({
+              try: async () => {
+                await client.command({ query });
+              },
+              catch: (error) => error,
+            }),
+          ),
       };
     }),
   );
@@ -170,233 +192,106 @@ export class ClickHouseClient extends Context.Tag("ClickHouseClient")<
    *
    * @param config - ClickHouse connection configuration
    */
-  static layer = (config: ClickHouseConfig = {}) => {
+  static layer = (config: ClickHouseConfig, env: Settings["env"] = "local") => {
     const settings: Settings = {
-      env: "local",
-      CLICKHOUSE_URL: config.url ?? "http://localhost:8123",
-      CLICKHOUSE_USER: config.user ?? "default",
+      env,
+
+      CLICKHOUSE_URL: config.url,
+
+      CLICKHOUSE_USER: config.user,
+
       CLICKHOUSE_PASSWORD: config.password,
-      CLICKHOUSE_DATABASE: config.database ?? "mirascope_analytics",
+
+      CLICKHOUSE_DATABASE: config.database,
     };
 
-    return ClickHouseClient.Default.pipe(
+    return ClickHouse.Default.pipe(
       Layer.provide(Layer.succeed(SettingsService, settings)),
     );
   };
 }
 
-// =============================================================================
-// Node.js Implementation (@clickhouse/client)
-// =============================================================================
-
-const createNodeClickHouseClient = (settings: Settings): CHClient => {
-  // TLS CA certificate loading with explicit error handling
-  let caCert: Buffer | undefined;
-  if (settings.CLICKHOUSE_TLS_ENABLED && settings.CLICKHOUSE_TLS_CA) {
-    try {
-      caCert = fs.readFileSync(settings.CLICKHOUSE_TLS_CA);
-    } catch (error) {
+/**
+ * Validates TLS settings for compatibility with @clickhouse/client-web.
+ *
+ * @param settings - Application settings including ClickHouse configuration
+ * @throws Error if unsupported TLS settings are configured
+ */
+const validateTLSSettings = (settings: Settings): void => {
+  if (settings.CLICKHOUSE_TLS_ENABLED) {
+    if (settings.CLICKHOUSE_TLS_SKIP_VERIFY) {
       throw new Error(
-        `Failed to read ClickHouse TLS CA certificate: ${error instanceof Error ? error.message : String(error)}`,
+        "CLICKHOUSE_TLS_SKIP_VERIFY=true is not supported by @clickhouse/client-web. " +
+          "The client always verifies certificates when TLS is enabled.",
+      );
+    }
+
+    if (settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY === false) {
+      throw new Error(
+        "CLICKHOUSE_TLS_HOSTNAME_VERIFY=false is not supported by @clickhouse/client-web. " +
+          "The client always performs hostname verification.",
+      );
+    }
+
+    if (settings.CLICKHOUSE_TLS_CA) {
+      throw new Error(
+        "CLICKHOUSE_TLS_CA is not supported by @clickhouse/client-web. " +
+          "Custom CA certificates are not available in Fetch-based environments.",
+      );
+    }
+
+    if (
+      settings.CLICKHOUSE_TLS_MIN_VERSION &&
+      settings.CLICKHOUSE_TLS_MIN_VERSION !== "TLSv1.2"
+    ) {
+      console.warn(
+        `CLICKHOUSE_TLS_MIN_VERSION=${settings.CLICKHOUSE_TLS_MIN_VERSION} is not supported by @clickhouse/client-web.`,
+      );
+      throw new Error(
+        "CLICKHOUSE_TLS_MIN_VERSION is not supported by @clickhouse/client-web.",
       );
     }
   }
-
-  // Build TLS options only if explicitly enabled with CA cert
-  const tlsOptions =
-    settings.CLICKHOUSE_TLS_ENABLED && caCert ? { ca_cert: caCert } : undefined;
-
-  return createClient({
-    url: settings.CLICKHOUSE_URL,
-    username: settings.CLICKHOUSE_USER,
-    password: settings.CLICKHOUSE_PASSWORD,
-    database: settings.CLICKHOUSE_DATABASE,
-    tls: tlsOptions,
-    max_open_connections: 10,
-    request_timeout: 30000,
-  });
 };
 
 /**
- * ClickHouseClient implementation for Node.js environment.
- * Alias for ClickHouseClient.Default.
+ * Creates a ClickHouse web client from Settings.
  *
- * Uses `@clickhouse/client` for native TCP/HTTP connections with
- * full TLS configuration support.
+ * @param settings - Application settings including ClickHouse configuration
+ * @returns ClickHouse web client
  */
-export const ClickHouseClientNodeLive = ClickHouseClient.Default;
+const createWebClickHouseClient = (settings: Settings): WebClickHouseClient => {
+  validateTLSSettings(settings);
 
-// =============================================================================
-// Cloudflare Workers Implementation (fetch + HTTP API)
-// =============================================================================
-
-/**
- * Internal Workers HTTP client for ClickHouse.
- *
- * Uses fetch API with ClickHouse HTTP interface.
- * TLS is handled by Cloudflare's system CA (no custom CA support).
- */
-const createWorkersClickHouseClient = (settings: Settings) => {
-  const baseUrl = settings.CLICKHOUSE_URL;
-
-  // Production validation: require HTTPS
-  if (settings.env === "production" && !baseUrl?.startsWith("https://")) {
+  if (
+    settings.env === "production" &&
+    !settings.CLICKHOUSE_URL?.startsWith("https://")
+  ) {
     throw new Error(
       "CLICKHOUSE_URL must use https:// in production (Workers environment)",
     );
   }
 
-  const database = settings.CLICKHOUSE_DATABASE ?? "default";
-  const authHeader = `Basic ${btoa(`${settings.CLICKHOUSE_USER ?? "default"}:${settings.CLICKHOUSE_PASSWORD ?? ""}`)}`;
+  return createClient({
+    url: settings.CLICKHOUSE_URL,
 
-  return {
-    query: async <T>(
-      sql: string,
-      params?: Record<string, unknown>,
-    ): Promise<T[]> => {
-      const urlParams = new URLSearchParams({
-        database,
-        default_format: "JSONEachRow",
-      });
+    username: settings.CLICKHOUSE_USER,
 
-      // Add query parameters
-      if (params) {
-        for (const [key, value] of Object.entries(params)) {
-          urlParams.set(`param_${key}`, String(value));
-        }
-      }
+    password: settings.CLICKHOUSE_PASSWORD,
 
-      const response = await fetch(`${baseUrl}/?${urlParams}`, {
-        method: "POST",
-        headers: {
-          Authorization: authHeader,
-          "Content-Type": "text/plain",
-        },
-        body: sql,
-      });
+    database: settings.CLICKHOUSE_DATABASE,
 
-      if (!response.ok) {
-        throw new Error(
-          `ClickHouse query failed: ${response.status} ${await response.text()}`,
-        );
-      }
+    request_timeout: 30000,
 
-      const text = await response.text();
-      if (!text.trim()) return [];
-
-      // Parse JSONEachRow format (one JSON object per line)
-      return text
-        .trim()
-        .split("\n")
-        .map((line) => JSON.parse(line) as T);
-    },
-
-    insert: async <T extends Record<string, unknown>>(
-      table: string,
-      rows: T[],
-    ): Promise<void> => {
-      if (rows.length === 0) return;
-
-      const urlParams = new URLSearchParams({
-        database,
-        query: `INSERT INTO ${table} FORMAT JSONEachRow`,
-      });
-
-      const body = rows.map((row) => JSON.stringify(row)).join("\n");
-
-      const response = await fetch(`${baseUrl}/?${urlParams}`, {
-        method: "POST",
-        headers: {
-          Authorization: authHeader,
-          "Content-Type": "text/plain",
-        },
-        body,
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `ClickHouse insert failed: ${response.status} ${await response.text()}`,
-        );
-      }
-    },
-
-    command: async (sql: string): Promise<void> => {
-      const urlParams = new URLSearchParams({ database });
-
-      const response = await fetch(`${baseUrl}/?${urlParams}`, {
-        method: "POST",
-        headers: {
-          Authorization: authHeader,
-          "Content-Type": "text/plain",
-        },
-        body: sql,
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `ClickHouse command failed: ${response.status} ${await response.text()}`,
-        );
-      }
-    },
-  };
+    max_open_connections: 10,
+  });
 };
 
-/**
- * ClickHouseClient implementation for Cloudflare Workers environment.
- *
- * Uses fetch API with ClickHouse HTTP interface.
- *
- * TLS Constraints:
- * - System CA only (Cloudflare-managed root certificates)
- * - Custom CA certificates are NOT supported
- * - ClickHouse must have a public CA signed certificate in production
- */
-export const ClickHouseClientWorkersLive = Layer.effect(
-  ClickHouseClient,
-  Effect.gen(function* () {
-    const settings = yield* SettingsService;
-    const client = createWorkersClickHouseClient(settings);
-
-    return {
-      query: <T>(sql: string, params?: Record<string, unknown>) =>
-        Effect.tryPromise({
-          try: () => client.query<T>(sql, params),
-          catch: (e) =>
-            new ClickHouseError({
-              message: `Query failed: ${e instanceof Error ? e.message : String(e)}`,
-              cause: e,
-            }),
-        }),
-
-      insert: <T extends Record<string, unknown>>(table: string, rows: T[]) =>
-        Effect.tryPromise({
-          try: () => client.insert(table, rows),
-          catch: (e) =>
-            new ClickHouseError({
-              message: `Insert failed: ${e instanceof Error ? e.message : String(e)}`,
-              cause: e,
-            }),
-        }),
-
-      command: (sql: string) =>
-        Effect.tryPromise({
-          try: () => client.command(sql),
-          catch: (e) =>
-            new ClickHouseError({
-              message: `Command failed: ${e instanceof Error ? e.message : String(e)}`,
-              cause: e,
-            }),
-        }),
-    };
-  }),
-);
-
 // =============================================================================
-// Default Export (Node.js)
+// Default Export
 // =============================================================================
 
 /**
- * Default ClickHouseClient layer for local development and testing.
- * Uses Node.js implementation with `@clickhouse/client`.
+ * Default ClickHouse layer for local development and testing.
  */
-export const ClickHouseClientLive = ClickHouseClientNodeLive;
+export const ClickHouseLive = ClickHouse.Default;

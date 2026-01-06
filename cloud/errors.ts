@@ -267,7 +267,7 @@ export class ProxyError extends Schema.TaggedError<ProxyError>()("ProxyError", {
  *
  * @example
  * ```ts
- * const result = yield* clickhouse.query<Span>("SELECT * FROM spans").pipe(
+ * const result = yield* clickhouse.unsafeQuery<Span>("SELECT * FROM spans").pipe(
  *   Effect.catchTag("ClickHouseError", (error) => {
  *     console.error("ClickHouse operation failed:", error.message);
  *     return Effect.succeed([]);
