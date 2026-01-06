@@ -188,6 +188,43 @@ export class ProxyError extends Schema.TaggedError<ProxyError>()("ProxyError", {
   static readonly status = 502 as const;
 }
 
+// =============================================================================
+// Analytics Errors
+// =============================================================================
+
+/**
+ * Error that occurs during ClickHouse operations.
+ *
+ * This error wraps any failures from ClickHouse client operations, including:
+ * - Connection errors
+ * - Query execution errors
+ * - Insert failures
+ * - Timeout errors
+ *
+ * @example
+ * ```ts
+ * const result = yield* clickhouse.query<Span>("SELECT * FROM spans").pipe(
+ *   Effect.catchTag("ClickHouseError", (error) => {
+ *     console.error("ClickHouse operation failed:", error.message);
+ *     return Effect.succeed([]);
+ *   })
+ * );
+ * ```
+ */
+export class ClickHouseError extends Schema.TaggedError<ClickHouseError>()(
+  "ClickHouseError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
+
+// =============================================================================
+// Pricing Errors
+// =============================================================================
+
 /**
  * Error that occurs when pricing data is unavailable for cost estimation.
  *
