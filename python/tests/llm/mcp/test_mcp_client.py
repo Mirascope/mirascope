@@ -7,7 +7,8 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from tests.fixtures import mcp_server
+
+from .example_mcp_client import example_mcp_client
 
 
 @pytest.mark.asyncio
@@ -16,12 +17,12 @@ class TestMCPClient:
 
     async def test_mcp_session(self) -> None:
         """Test that the session is correctly setup."""
-        async with mcp_server("stdio") as client:
+        async with example_mcp_client("stdio") as client:
             assert client.session is not None
 
     async def test_list_tools(self) -> None:
         """Test that list_tools returns Mirascope AsyncTools with correct schemas."""
-        async with mcp_server("stdio") as client:
+        async with example_mcp_client("stdio") as client:
             tools = await client.list_tools()
             assert len(tools) == 3
 
@@ -154,7 +155,7 @@ Returns:
 
     async def test_tool_execution(self) -> None:
         """Test that MCP tools can be executed via ToolCall."""
-        async with mcp_server("stdio") as client:
+        async with example_mcp_client("stdio") as client:
             tools = await client.list_tools()
 
             # Test greet tool execution
@@ -239,7 +240,7 @@ Returns:
 
     async def test_tool_execution_after_client_closed(self) -> None:
         """Test the failure case when calling mcp tools after the client connection is closed."""
-        async with mcp_server("stdio") as client:
+        async with example_mcp_client("stdio") as client:
             tools = await client.list_tools()
 
         greet_tool = next(t for t in tools if t.name == "greet")
@@ -265,18 +266,18 @@ class TestTransportModes:
 
     async def test_stdio_transport(self) -> None:
         """Test that stdio transport successfully connects to MCP server."""
-        async with mcp_server("stdio") as client:
+        async with example_mcp_client("stdio") as client:
             assert isinstance(client, llm.mcp.MCPClient)
             assert client.session is not None
 
     async def test_sse_transport(self) -> None:
         """Test that SSE transport successfully connects to MCP server."""
-        async with mcp_server("sse") as client:
+        async with example_mcp_client("sse") as client:
             assert isinstance(client, llm.mcp.MCPClient)
             assert client.session is not None
 
     async def test_http_transport(self) -> None:
         """Test that HTTP transport successfully connects to MCP server."""
-        async with mcp_server("http") as client:
+        async with example_mcp_client("http") as client:
             assert isinstance(client, llm.mcp.MCPClient)
             assert client.session is not None

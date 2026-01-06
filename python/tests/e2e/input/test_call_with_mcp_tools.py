@@ -3,7 +3,7 @@
 import pytest
 
 from mirascope import llm
-from tests.fixtures import mcp_server
+from tests.llm.mcp.example_mcp_client import example_mcp_client
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -27,7 +27,7 @@ async def test_call_with_mcp_tools(
 
     # Connect to MCP server and get available tools
     # Use stdio for reliability and to avoid interactions with vcr
-    async with mcp_server("stdio") as mcp_client:
+    async with example_mcp_client("stdio") as mcp_client:
         mcp_tools = await mcp_client.list_tools()
 
         @llm.call(model_id, tools=mcp_tools)
