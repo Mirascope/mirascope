@@ -30,6 +30,7 @@
     "lint:eslint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@clickhouse/client-web": "^1.16.0",
     "@effect/platform": "^0.93.3",
     "@effect/schema": "^0.75.5",
     "@effect/sql": "^0.48.6",

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   getSettings,
-  getSettingsFromEnv,
-  type CloudflareEnv,
+  getSettingsFromEnvironment,
+  type CloudflareEnvironment,
 } from "@/settings";
 
 describe("settings", () => {
@@ -83,7 +83,7 @@ describe("settings", () => {
       process.env.CLICKHOUSE_TLS_ENABLED = "false";
 
       expect(() => getSettings()).toThrow(
-        "CLICKHOUSE_TLS_ENABLED=true is required in production"
+        "CLICKHOUSE_TLS_ENABLED=true is required in production",
       );
     });
 
@@ -93,7 +93,7 @@ describe("settings", () => {
       process.env.CLICKHOUSE_TLS_SKIP_VERIFY = "true";
 
       expect(() => getSettings()).toThrow(
-        "CLICKHOUSE_TLS_SKIP_VERIFY=true is not allowed in production"
+        "CLICKHOUSE_TLS_SKIP_VERIFY=true is not allowed in production",
       );
     });
 
@@ -104,7 +104,7 @@ describe("settings", () => {
       process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY = "false";
 
       expect(() => getSettings()).toThrow(
-        "CLICKHOUSE_TLS_HOSTNAME_VERIFY=true is required in production"
+        "CLICKHOUSE_TLS_HOSTNAME_VERIFY=true is required in production",
       );
     });
 
@@ -121,29 +121,29 @@ describe("settings", () => {
     });
   });
 
-  describe("getSettingsFromEnv", () => {
+  describe("getSettingsFromEnvironment", () => {
     it("defaults env to 'local' when ENVIRONMENT is not set", () => {
-      const env: CloudflareEnv = {};
-      const settings = getSettingsFromEnv(env);
+      const env: CloudflareEnvironment = {};
+      const settings = getSettingsFromEnvironment(env);
 
       expect(settings.env).toBe("local");
     });
 
     it("uses ENVIRONMENT from env bindings", () => {
-      const env: CloudflareEnv = { ENVIRONMENT: "production" };
-      const settings = getSettingsFromEnv(env);
+      const env: CloudflareEnvironment = { ENVIRONMENT: "production" };
+      const settings = getSettingsFromEnvironment(env);
 
       expect(settings.env).toBe("production");
     });
 
     it("maps all ClickHouse settings from env", () => {
-      const env: CloudflareEnv = {
+      const env: CloudflareEnvironment = {
         CLICKHOUSE_URL: "https://ch.example.com",
         CLICKHOUSE_USER: "user",
         CLICKHOUSE_PASSWORD: "pass",
         CLICKHOUSE_DATABASE: "analytics",
       };
-      const settings = getSettingsFromEnv(env);
+      const settings = getSettingsFromEnvironment(env);
 
       expect(settings.CLICKHOUSE_URL).toBe("https://ch.example.com");
       expect(settings.CLICKHOUSE_USER).toBe("user");
@@ -152,8 +152,8 @@ describe("settings", () => {
     });
 
     it("returns default ClickHouse values when not set", () => {
-      const env: CloudflareEnv = {};
-      const settings = getSettingsFromEnv(env);
+      const env: CloudflareEnvironment = {};
+      const settings = getSettingsFromEnvironment(env);
 
       expect(settings.CLICKHOUSE_URL).toBe("http://localhost:8123");
       expect(settings.CLICKHOUSE_USER).toBe("default");
@@ -161,13 +161,13 @@ describe("settings", () => {
     });
 
     it("maps TLS settings from env", () => {
-      const env: CloudflareEnv = {
+      const env: CloudflareEnvironment = {
         CLICKHOUSE_TLS_ENABLED: "true",
         CLICKHOUSE_TLS_CA: "/path/to/ca.pem",
         CLICKHOUSE_TLS_SKIP_VERIFY: "true",
         CLICKHOUSE_TLS_HOSTNAME_VERIFY: "false",
       };
-      const settings = getSettingsFromEnv(env);
+      const settings = getSettingsFromEnvironment(env);
 
       expect(settings.CLICKHOUSE_TLS_ENABLED).toBe(true);
       expect(settings.CLICKHOUSE_TLS_CA).toBe("/path/to/ca.pem");
@@ -176,8 +176,8 @@ describe("settings", () => {
     });
 
     it("defaults TLS_HOSTNAME_VERIFY to true when not set", () => {
-      const env: CloudflareEnv = {};
-      const settings = getSettingsFromEnv(env);
+      const env: CloudflareEnvironment = {};
+      const settings = getSettingsFromEnvironment(env);
 
       expect(settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY).toBe(true);
     });
