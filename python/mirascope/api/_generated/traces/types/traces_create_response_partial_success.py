@@ -9,17 +9,11 @@ from ...core.serialization import FieldMetadata
 
 
 class TracesCreateResponsePartialSuccess(UniversalBaseModel):
-    rejected_spans: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="rejectedSpans")
-    ] = None
-    error_message: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="errorMessage")
-    ] = None
+    rejected_spans: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="rejectedSpans")] = None
+    error_message: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="errorMessage")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

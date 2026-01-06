@@ -6,9 +6,7 @@ import pydantic
 import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
-from .traces_create_request_resource_spans_item_resource import (
-    TracesCreateRequestResourceSpansItemResource,
-)
+from .traces_create_request_resource_spans_item_resource import TracesCreateRequestResourceSpansItemResource
 from .traces_create_request_resource_spans_item_scope_spans_item import (
     TracesCreateRequestResourceSpansItemScopeSpansItem,
 )
@@ -17,17 +15,12 @@ from .traces_create_request_resource_spans_item_scope_spans_item import (
 class TracesCreateRequestResourceSpansItem(UniversalBaseModel):
     resource: typing.Optional[TracesCreateRequestResourceSpansItemResource] = None
     scope_spans: typing_extensions.Annotated[
-        typing.List[TracesCreateRequestResourceSpansItemScopeSpansItem],
-        FieldMetadata(alias="scopeSpans"),
+        typing.List[TracesCreateRequestResourceSpansItemScopeSpansItem], FieldMetadata(alias="scopeSpans")
     ]
-    schema_url: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="schemaUrl")
-    ] = None
+    schema_url: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="schemaUrl")] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

@@ -11,14 +11,11 @@ from .traces_create_response_partial_success import TracesCreateResponsePartialS
 
 class TracesCreateResponse(UniversalBaseModel):
     partial_success: typing_extensions.Annotated[
-        typing.Optional[TracesCreateResponsePartialSuccess],
-        FieldMetadata(alias="partialSuccess"),
+        typing.Optional[TracesCreateResponsePartialSuccess], FieldMetadata(alias="partialSuccess")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

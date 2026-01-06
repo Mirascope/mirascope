@@ -12,17 +12,11 @@ class ProjectsListResponseItem(UniversalBaseModel):
     id: str
     name: str
     slug: str
-    organization_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="organizationId")
-    ]
-    created_by_user_id: typing_extensions.Annotated[
-        str, FieldMetadata(alias="createdByUserId")
-    ]
+    organization_id: typing_extensions.Annotated[str, FieldMetadata(alias="organizationId")]
+    created_by_user_id: typing_extensions.Annotated[str, FieldMetadata(alias="createdByUserId")]
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

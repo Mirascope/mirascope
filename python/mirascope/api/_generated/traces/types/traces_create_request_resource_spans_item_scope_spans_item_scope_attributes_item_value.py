@@ -14,38 +14,22 @@ from .traces_create_request_resource_spans_item_scope_spans_item_scope_attribute
 )
 
 
-class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue(
-    UniversalBaseModel
-):
-    string_value: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="stringValue")
-    ] = None
-    int_value: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="intValue")
-    ] = None
-    double_value: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="doubleValue")
-    ] = None
-    bool_value: typing_extensions.Annotated[
-        typing.Optional[bool], FieldMetadata(alias="boolValue")
-    ] = None
+class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue(UniversalBaseModel):
+    string_value: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="stringValue")] = None
+    int_value: typing_extensions.Annotated[typing.Optional[str], FieldMetadata(alias="intValue")] = None
+    double_value: typing_extensions.Annotated[typing.Optional[float], FieldMetadata(alias="doubleValue")] = None
+    bool_value: typing_extensions.Annotated[typing.Optional[bool], FieldMetadata(alias="boolValue")] = None
     array_value: typing_extensions.Annotated[
-        typing.Optional[
-            TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue
-        ],
+        typing.Optional[TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue],
         FieldMetadata(alias="arrayValue"),
     ] = None
     kvlist_value: typing_extensions.Annotated[
-        typing.Optional[
-            TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue
-        ],
+        typing.Optional[TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue],
         FieldMetadata(alias="kvlistValue"),
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

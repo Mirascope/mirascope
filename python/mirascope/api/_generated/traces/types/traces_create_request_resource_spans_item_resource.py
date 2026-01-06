@@ -12,17 +12,13 @@ from .traces_create_request_resource_spans_item_resource_attributes_item import 
 
 
 class TracesCreateRequestResourceSpansItemResource(UniversalBaseModel):
-    attributes: typing.Optional[
-        typing.List[TracesCreateRequestResourceSpansItemResourceAttributesItem]
-    ] = None
+    attributes: typing.Optional[typing.List[TracesCreateRequestResourceSpansItemResourceAttributesItem]] = None
     dropped_attributes_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedAttributesCount")
     ] = None
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

@@ -3,7 +3,9 @@
 import typing
 
 import pydantic
+import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
 from .organizations_get_response_role import OrganizationsGetResponseRole
 
 
@@ -11,12 +13,11 @@ class OrganizationsGetResponse(UniversalBaseModel):
     id: str
     name: str
     slug: str
+    stripe_customer_id: typing_extensions.Annotated[str, FieldMetadata(alias="stripeCustomerId")]
     role: OrganizationsGetResponseRole
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

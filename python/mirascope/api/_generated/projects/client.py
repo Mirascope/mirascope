@@ -30,10 +30,7 @@ class ProjectsClient:
         return self._raw_client
 
     def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[ProjectsListResponseItem]:
         """
         Parameters
@@ -57,18 +54,11 @@ class ProjectsClient:
             organization_id="organizationId",
         )
         """
-        _response = self._raw_client.list(
-            organization_id, request_options=request_options
-        )
+        _response = self._raw_client.list(organization_id, request_options=request_options)
         return _response.data
 
     def create(
-        self,
-        organization_id: str,
-        *,
-        name: str,
-        slug: str,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
     ) -> ProjectsCreateResponse:
         """
         Parameters
@@ -100,17 +90,11 @@ class ProjectsClient:
             slug="slug",
         )
         """
-        _response = self._raw_client.create(
-            organization_id, name=name, slug=slug, request_options=request_options
-        )
+        _response = self._raw_client.create(organization_id, name=name, slug=slug, request_options=request_options)
         return _response.data
 
     def get(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ProjectsGetResponse:
         """
         Parameters
@@ -137,9 +121,7 @@ class ProjectsClient:
             project_id="projectId",
         )
         """
-        _response = self._raw_client.get(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = self._raw_client.get(organization_id, project_id, request_options=request_options)
         return _response.data
 
     def update(
@@ -183,20 +165,12 @@ class ProjectsClient:
         )
         """
         _response = self._raw_client.update(
-            organization_id,
-            project_id,
-            name=name,
-            slug=slug,
-            request_options=request_options,
+            organization_id, project_id, name=name, slug=slug, request_options=request_options
         )
         return _response.data
 
     def delete(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -222,9 +196,7 @@ class ProjectsClient:
             project_id="projectId",
         )
         """
-        _response = self._raw_client.delete(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = self._raw_client.delete(organization_id, project_id, request_options=request_options)
         return _response.data
 
 
@@ -244,10 +216,7 @@ class AsyncProjectsClient:
         return self._raw_client
 
     async def list(
-        self,
-        organization_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[ProjectsListResponseItem]:
         """
         Parameters
@@ -279,18 +248,11 @@ class AsyncProjectsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(
-            organization_id, request_options=request_options
-        )
+        _response = await self._raw_client.list(organization_id, request_options=request_options)
         return _response.data
 
     async def create(
-        self,
-        organization_id: str,
-        *,
-        name: str,
-        slug: str,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
     ) -> ProjectsCreateResponse:
         """
         Parameters
@@ -336,11 +298,7 @@ class AsyncProjectsClient:
         return _response.data
 
     async def get(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ProjectsGetResponse:
         """
         Parameters
@@ -375,9 +333,7 @@ class AsyncProjectsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = await self._raw_client.get(organization_id, project_id, request_options=request_options)
         return _response.data
 
     async def update(
@@ -429,20 +385,12 @@ class AsyncProjectsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            organization_id,
-            project_id,
-            name=name,
-            slug=slug,
-            request_options=request_options,
+            organization_id, project_id, name=name, slug=slug, request_options=request_options
         )
         return _response.data
 
     async def delete(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> None:
         """
         Parameters
@@ -476,7 +424,5 @@ class AsyncProjectsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.delete(
-            organization_id, project_id, request_options=request_options
-        )
+        _response = await self._raw_client.delete(organization_id, project_id, request_options=request_options)
         return _response.data

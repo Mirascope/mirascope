@@ -4,14 +4,7 @@ import typing
 
 IssueTag = typing.Union[
     typing.Literal[
-        "Pointer",
-        "Unexpected",
-        "Missing",
-        "Composite",
-        "Refinement",
-        "Transformation",
-        "Type",
-        "Forbidden",
+        "Pointer", "Unexpected", "Missing", "Composite", "Refinement", "Transformation", "Type", "Forbidden"
     ],
     typing.Any,
 ]

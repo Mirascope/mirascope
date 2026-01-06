@@ -22,9 +22,7 @@ class DocsClient:
         """
         return self._raw_client
 
-    def openapi(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.Optional[typing.Any]:
+    def openapi(self, *, request_options: typing.Optional[RequestOptions] = None) -> typing.Optional[typing.Any]:
         """
         Parameters
         ----------
@@ -62,9 +60,7 @@ class AsyncDocsClient:
         """
         return self._raw_client
 
-    async def openapi(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> typing.Optional[typing.Any]:
+    async def openapi(self, *, request_options: typing.Optional[RequestOptions] = None) -> typing.Optional[typing.Any]:
         """
         Parameters
         ----------

@@ -2,12 +2,8 @@
 
 # isort: skip_file
 
-from .traces_create_request_resource_spans_item import (
-    TracesCreateRequestResourceSpansItem,
-)
-from .traces_create_request_resource_spans_item_resource import (
-    TracesCreateRequestResourceSpansItemResource,
-)
+from .traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
+from .traces_create_request_resource_spans_item_resource import TracesCreateRequestResourceSpansItemResource
 from .traces_create_request_resource_spans_item_resource_attributes_item import (
     TracesCreateRequestResourceSpansItemResourceAttributesItem,
 )

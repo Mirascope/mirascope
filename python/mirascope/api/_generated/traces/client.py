@@ -5,9 +5,7 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawTracesClient, RawTracesClient
-from .types.traces_create_request_resource_spans_item import (
-    TracesCreateRequestResourceSpansItem,
-)
+from .types.traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
 from .types.traces_create_response import TracesCreateResponse
 
 # this is used as the default value for optional parameters
@@ -78,9 +76,7 @@ class TracesClient:
             ],
         )
         """
-        _response = self._raw_client.create(
-            resource_spans=resource_spans, request_options=request_options
-        )
+        _response = self._raw_client.create(resource_spans=resource_spans, request_options=request_options)
         return _response.data
 
 
@@ -156,7 +152,5 @@ class AsyncTracesClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create(
-            resource_spans=resource_spans, request_options=request_options
-        )
+        _response = await self._raw_client.create(resource_spans=resource_spans, request_options=request_options)
         return _response.data

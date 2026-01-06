@@ -9,16 +9,12 @@ from .traces_create_request_resource_spans_item_scope_spans_item_scope_attribute
 )
 
 
-class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem(
-    UniversalBaseModel
-):
+class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem(UniversalBaseModel):
     key: str
     value: TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:

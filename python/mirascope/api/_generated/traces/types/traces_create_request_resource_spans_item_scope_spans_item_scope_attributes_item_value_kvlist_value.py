@@ -9,17 +9,11 @@ from .traces_create_request_resource_spans_item_scope_spans_item_scope_attribute
 )
 
 
-class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue(
-    UniversalBaseModel
-):
-    values: typing.List[
-        TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem
-    ]
+class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue(UniversalBaseModel):
+    values: typing.List[TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem]
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            extra="allow", frozen=True
-        )  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:
 
         class Config:
