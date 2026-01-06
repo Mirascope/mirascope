@@ -9,6 +9,7 @@ export * from "@/db/schema/project-membership-audit";
 export * from "@/db/schema/environments";
 export * from "@/db/schema/api-keys";
 export * from "@/db/schema/functions";
+export * from "@/db/schema/annotations";
 export * from "@/db/schema/traces";
 export * from "@/db/schema/spans";
 
@@ -36,6 +37,7 @@ export type {
 } from "@/db/schema/environments";
 export type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema/api-keys";
 export type { PublicFunction } from "@/db/schema/functions";
+export type { PublicAnnotation } from "@/db/schema/annotations";
 export type { PublicTrace } from "@/db/schema/traces";
 export type { PublicSpan } from "@/db/schema/spans";
 
@@ -50,6 +52,7 @@ import { projectMembershipAudit } from "@/db/schema/project-membership-audit";
 import { environments } from "@/db/schema/environments";
 import { apiKeys } from "@/db/schema/api-keys";
 import { functions } from "@/db/schema/functions";
+import { annotations } from "@/db/schema/annotations";
 import { traces } from "@/db/schema/traces";
 import { spans } from "@/db/schema/spans";
 
@@ -65,5 +68,6 @@ export type DatabaseTable =
   | typeof environments
   | typeof apiKeys
   | typeof functions
+  | typeof annotations
   | typeof traces
   | typeof spans;

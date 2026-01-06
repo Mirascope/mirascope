@@ -336,7 +336,7 @@ export class Traces extends BaseAuthenticatedEffectService<
           for (const span of scopeSpan.spans) {
             const result = yield* Effect.gen(function* () {
               const traceData: NewTrace = {
-                traceId: span.traceId,
+                otelTraceId: span.traceId,
                 environmentId,
                 projectId,
                 organizationId,
@@ -350,7 +350,7 @@ export class Traces extends BaseAuthenticatedEffectService<
                 .insert(traces)
                 .values(traceData)
                 .onConflictDoUpdate({
-                  target: [traces.traceId, traces.environmentId],
+                  target: [traces.otelTraceId, traces.environmentId],
                   set: {
                     serviceName: traceData.serviceName,
                     serviceVersion: traceData.serviceVersion,
@@ -373,9 +373,9 @@ export class Traces extends BaseAuthenticatedEffectService<
               }
 
               const spanData: NewSpan = {
-                traceDbId: upsertedTrace.id,
-                traceId: span.traceId,
-                spanId: span.spanId,
+                traceId: upsertedTrace.id,
+                otelTraceId: span.traceId,
+                otelSpanId: span.spanId,
                 parentSpanId: span.parentSpanId,
                 environmentId,
                 projectId,
@@ -402,7 +402,11 @@ export class Traces extends BaseAuthenticatedEffectService<
                 .insert(spans)
                 .values(spanData)
                 .onConflictDoNothing({
-                  target: [spans.spanId, spans.traceId, spans.environmentId],
+                  target: [
+                    spans.otelSpanId,
+                    spans.otelTraceId,
+                    spans.environmentId,
+                  ],
                 })
                 .returning({ id: spans.id })
                 .pipe(
@@ -430,7 +434,7 @@ export class Traces extends BaseAuthenticatedEffectService<
       // Return first trace info with ingestion stats
       const traceInfo: PublicTrace = firstTrace ?? {
         id: "",
-        traceId: "",
+        otelTraceId: "",
         environmentId,
         projectId,
         organizationId,
@@ -554,7 +558,7 @@ export class Traces extends BaseAuthenticatedEffectService<
         .from(traces)
         .where(
           and(
-            eq(traces.traceId, traceId),
+            eq(traces.otelTraceId, traceId),
             eq(traces.environmentId, environmentId),
           ),
         )
@@ -680,7 +684,7 @@ export class Traces extends BaseAuthenticatedEffectService<
             .delete(spans)
             .where(
               and(
-                eq(spans.traceId, traceId),
+                eq(spans.otelTraceId, traceId),
                 eq(spans.environmentId, environmentId),
               ),
             )
@@ -699,7 +703,7 @@ export class Traces extends BaseAuthenticatedEffectService<
             .delete(traces)
             .where(
               and(
-                eq(traces.traceId, traceId),
+                eq(traces.otelTraceId, traceId),
                 eq(traces.environmentId, environmentId),
               ),
             )

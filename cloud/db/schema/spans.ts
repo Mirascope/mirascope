@@ -20,9 +20,9 @@ export const spans = pgTable(
   "spans",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    traceDbId: uuid("trace_db_id").notNull(),
-    traceId: text("trace_id").notNull(),
-    spanId: text("span_id").notNull(),
+    traceId: uuid("trace_id").notNull(),
+    otelTraceId: text("otel_trace_id").notNull(),
+    otelSpanId: text("otel_span_id").notNull(),
     parentSpanId: text("parent_span_id"),
     environmentId: uuid("environment_id")
       .references(() => environments.id, { onDelete: "cascade" })
@@ -47,30 +47,38 @@ export const spans = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => ({
-    spanTraceEnvUnique: unique().on(
-      table.spanId,
-      table.traceId,
+    uniqueOtelSpanTraceEnvironment: unique().on(
+      table.otelSpanId,
+      table.otelTraceId,
       table.environmentId,
     ),
-    // Composite foreign key to ensure trace_id and environment_id match the referenced trace
+    // Composite unique constraints for annotations foreign key references
+    uniqueOtelSpanId: unique("spans_id_span_id_unique").on(
+      table.id,
+      table.otelSpanId,
+    ),
+    uniqueOrgProjectSpanId: unique(
+      "spans_id_project_id_organization_id_unique",
+    ).on(table.organizationId, table.projectId, table.id),
+    // Composite foreign key to ensure otel_trace_id and environment_id match the referenced trace
     traceConsistencyFk: foreignKey({
-      columns: [table.traceDbId, table.traceId, table.environmentId],
-      foreignColumns: [traces.id, traces.traceId, traces.environmentId],
+      columns: [table.traceId, table.otelTraceId, table.environmentId],
+      foreignColumns: [traces.id, traces.otelTraceId, traces.environmentId],
       name: "spans_trace_consistency_fk",
     }).onDelete("cascade"),
     // Composite foreign key to ensure project_id and organization_id match the referenced trace
     traceOrgConsistencyFk: foreignKey({
-      columns: [table.traceDbId, table.projectId, table.organizationId],
-      foreignColumns: [traces.id, traces.projectId, traces.organizationId],
+      columns: [table.organizationId, table.projectId, table.traceId],
+      foreignColumns: [traces.organizationId, traces.projectId, traces.id],
       name: "spans_trace_org_consistency_fk",
     }).onDelete("cascade"),
-    envCreatedAtIdx: index("spans_env_created_at_idx").on(
+    environmentCreatedAtIndex: index("spans_env_created_at_idx").on(
       table.environmentId,
       table.createdAt,
     ),
-    traceDbIdIdx: index("spans_trace_db_id_idx").on(table.traceDbId),
-    startTimeIdx: index("spans_start_time_idx").on(table.startTimeUnixNano),
-    envStartTimeIdx: index("spans_env_start_time_idx").on(
+    traceIdIndex: index("spans_trace_id_idx").on(table.traceId),
+    startTimeIndex: index("spans_start_time_idx").on(table.startTimeUnixNano),
+    environmentStartTimeIndex: index("spans_env_start_time_idx").on(
       table.environmentId,
       table.startTimeUnixNano,
     ),
@@ -79,7 +87,7 @@ export const spans = pgTable(
 
 export const spansRelations = relations(spans, ({ one }) => ({
   trace: one(traces, {
-    fields: [spans.traceDbId],
+    fields: [spans.traceId],
     references: [traces.id],
   }),
   environment: one(environments, {
@@ -104,9 +112,9 @@ export type NewSpan = typeof spans.$inferInsert;
 export type PublicSpan = Pick<
   Span,
   | "id"
-  | "traceDbId"
   | "traceId"
-  | "spanId"
+  | "otelTraceId"
+  | "otelSpanId"
   | "parentSpanId"
   | "environmentId"
   | "projectId"

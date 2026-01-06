@@ -57,7 +57,7 @@ export const functions = pgTable(
       table.environmentId,
       table.signatureHash,
     ),
-    envProjectFk: foreignKey({
+    environmentProjectFk: foreignKey({
       columns: [table.projectId, table.environmentId],
       foreignColumns: [environments.projectId, environments.id],
       name: "functions_env_project_fk",
