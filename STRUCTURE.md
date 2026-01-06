@@ -246,11 +246,22 @@ cloud/
 │   │   └── [other files]          # users.ts, organizations.ts, tests, etc.
 │   ├── errors.ts                  # Database errors
 │   └── utils.ts                   # Database utilities
+├── clickhouse/                    # ClickHouse analytics services
+│   ├── client.ts                  # Effect service for ClickHouse access
+│   ├── search.ts                  # Analytics/search queries and transforms
+│   └── [other files]              # utils.ts, tests, etc.
+├── workers/                       # Cloudflare Workers (queues/cron/polling)
+│   ├── clickhouseQueueConsumer.ts # Queue consumer for outbox sync
+│   ├── clickhouseCron.ts          # Cron trigger for re-enqueue
+│   ├── clickhouseSyncLocal.ts     # Local polling worker
+│   └── outboxProcessor.ts         # Shared processing logic
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
 │   └── db.ts                      # Database test utilities
 ├── docker/                        # Docker configuration
 │   ├── compose.yml
+│   ├── clickhouse/                # ClickHouse init SQL
+│   │   └── init/                  # Schema + index creation scripts
 │   └── data/                      # Docker data directory
 ├── dist/                          # Build output
 │   ├── client/                    # Client build artifacts
@@ -265,6 +276,35 @@ cloud/
 │   └── robots.txt
 ├── components.json                # Shadcn-ui components configuration
 ├── [other files]                  # e.g. package.json, tsconfig.json, vite.config.ts, etc.
+```
+
+**ClickHouse Analytics Flow (Cloud)**:
+
+```text
+PostgreSQL (OLTP)
+  └── spans_outbox (insert)
+        ├── Cloudflare Queue (prod)
+        │     └── Queue Consumer (Workers)
+        ├── Cron (re-enqueue pending)
+        └── Local Polling Worker (dev)
+              └── ClickHouse (analytics)
+```
+
+**ClickHouse Outbox Processing (Detailed)**:
+
+```text
+1) spans_outbox row is created when a span is inserted (db/traces.ts)
+2) Worker picks up the outbox row:
+   - Production: Cloudflare Queue -> clickhouseQueueConsumer.ts
+   - Local dev: polling loop -> clickhouseSyncLocal.ts
+3) processOutboxMessages (outboxProcessor.ts):
+   - lock row (status=processing, lockedAt/lockedBy)
+   - load span + trace from Postgres
+   - transform to ClickHouse row
+   - bulk insert into ClickHouse
+4) Success -> mark completed + processedAt
+5) Failure -> increment retryCount + backoff via processAfter
+6) Cron (clickhouseCron.ts) re-enqueues pending/stale rows
 ```
 
 **Tooling Choices**:

@@ -184,6 +184,28 @@ jobs:
     defaults:
       run:
         working-directory: cloud
+    services:
+      clickhouse:
+        image: clickhouse/clickhouse-server:24.10
+        ports:
+          - 8123:8123
+          - 9000:9000
+        env:
+          CLICKHOUSE_DB: mirascope_analytics
+          CLICKHOUSE_USER: ci
+          CLICKHOUSE_PASSWORD: ci_pass
+          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+        options: >-
+          --health-cmd "wget --spider -q http://localhost:8123/ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CLICKHOUSE_URL: http://localhost:8123
+      CLICKHOUSE_USER: ci
+      CLICKHOUSE_PASSWORD: ci_pass
+      CLICKHOUSE_DATABASE: mirascope_analytics
+      CLICKHOUSE_MIGRATE_NATIVE_PORT: "9000"
     steps:
       - uses: actions/checkout@v4
 
@@ -192,6 +214,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Initialize ClickHouse
+        run: bun run clickhouse:migrate
 
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
