@@ -116,16 +116,13 @@ class Format(Generic[FormattableT]):
                 "Format tool function should not be called."
             )  # pragma: no cover
 
-        tool_schema = cast(
-            ToolSchema[ToolFn[..., None]], ToolSchema.__new__(ToolSchema)
+        return ToolSchema(
+            fn=cast(ToolFn[..., None], _unused_format_fn),
+            name=FORMAT_TOOL_NAME,
+            description=description,
+            parameters=parameters,
+            strict=True,
         )
-        tool_schema.fn = _unused_format_fn
-        tool_schema.name = FORMAT_TOOL_NAME
-        tool_schema.description = description
-        tool_schema.parameters = parameters
-        tool_schema.strict = True
-
-        return tool_schema
 
 
 def format(
