@@ -40,10 +40,27 @@ class Tool(
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    def __init__(
-        self, fn: ToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
-    ) -> None:
-        super().__init__(fn, strict=strict, is_context_tool=False)
+    @classmethod
+    def from_function(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, fn: ToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
+    ) -> Tool[AnyP, JsonableCovariantT]:
+        """Create a `Tool` by inspecting a function and its docstring.
+
+        Args:
+            fn: The function to extract schema from
+            strict: Whether the tool should use strict mode when supported
+
+        Returns:
+            a `Tool` representing the function
+        """
+        schema = ToolSchema.from_function(fn, strict=strict, is_context_tool=False)
+        return cls(
+            fn=cast(ToolFn[AnyP, JsonableCovariantT], schema.fn),
+            name=schema.name,
+            description=schema.description,
+            parameters=schema.parameters,
+            strict=schema.strict,
+        )
 
     def __call__(self, *args: AnyP.args, **kwargs: AnyP.kwargs) -> JsonableCovariantT:
         """Call the underlying function directly."""
@@ -69,10 +86,27 @@ class AsyncTool(
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    def __init__(
-        self, fn: AsyncToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
-    ) -> None:
-        super().__init__(fn, strict=strict, is_context_tool=False)
+    @classmethod
+    def from_function(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, fn: AsyncToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
+    ) -> AsyncTool[AnyP, JsonableCovariantT]:
+        """Create an `AsyncTool` by inspecting a function and its docstring.
+
+        Args:
+            fn: The function to extract schema from
+            strict: Whether the tool should use strict mode when supported
+
+        Returns:
+            an `AsyncTool` representing the function
+        """
+        schema = ToolSchema.from_function(fn, strict=strict, is_context_tool=False)
+        return cls(
+            fn=cast(AsyncToolFn[AnyP, JsonableCovariantT], schema.fn),
+            name=schema.name,
+            description=schema.description,
+            parameters=schema.parameters,
+            strict=schema.strict,
+        )
 
     def __call__(
         self, *args: AnyP.args, **kwargs: AnyP.kwargs
@@ -100,13 +134,30 @@ class ContextTool(
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    def __init__(
-        self,
+    @classmethod
+    def from_function(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls,
         fn: ContextToolFn[DepsT, AnyP, JsonableCovariantT],
         *,
         strict: bool = False,
-    ) -> None:
-        super().__init__(fn, strict=strict, is_context_tool=True)
+    ) -> ContextTool[DepsT, JsonableCovariantT, AnyP]:
+        """Create a `ContextTool` by inspecting a function and its docstring.
+
+        Args:
+            fn: The function to extract schema from
+            strict: Whether the tool should use strict mode when supported
+
+        Returns:
+            a `ContextTool` representing the function
+        """
+        schema = ToolSchema.from_function(fn, strict=strict, is_context_tool=True)
+        return cls(
+            fn=cast(ContextToolFn[DepsT, AnyP, JsonableCovariantT], schema.fn),
+            name=schema.name,
+            description=schema.description,
+            parameters=schema.parameters,
+            strict=schema.strict,
+        )
 
     def __call__(
         self,
@@ -141,13 +192,30 @@ class AsyncContextTool(
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    def __init__(
-        self,
+    @classmethod
+    def from_function(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls,
         fn: AsyncContextToolFn[DepsT, AnyP, JsonableCovariantT],
         *,
         strict: bool = False,
-    ) -> None:
-        super().__init__(fn, strict=strict, is_context_tool=True)
+    ) -> AsyncContextTool[DepsT, JsonableCovariantT, AnyP]:
+        """Create an `AsyncContextTool` by inspecting a function and its docstring.
+
+        Args:
+            fn: The function to extract schema from
+            strict: Whether the tool should use strict mode when supported
+
+        Returns:
+            an `AsyncContextTool` representing the function
+        """
+        schema = ToolSchema.from_function(fn, strict=strict, is_context_tool=True)
+        return cls(
+            fn=cast(AsyncContextToolFn[DepsT, AnyP, JsonableCovariantT], schema.fn),
+            name=schema.name,
+            description=schema.description,
+            parameters=schema.parameters,
+            strict=schema.strict,
+        )
 
     def __call__(
         self,
