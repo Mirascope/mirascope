@@ -6,7 +6,9 @@ from typing import cast
 from mcp import ClientSession
 from mcp.client.sse import sse_client as mcp_sse_client
 from mcp.client.stdio import StdioServerParameters, stdio_client as mcp_stdio_client
-from mcp.client.streamable_http import streamable_http_client
+from mcp.client.streamable_http import (
+    streamable_http_client as mcp_streamable_http_client,
+)
 from mcp.types import CallToolResult, Tool as MCPTool
 
 from ..tools import AsyncTool
@@ -88,13 +90,13 @@ class MCPClient:
 
 
 @contextlib.asynccontextmanager
-async def streamablehttp_client(
+async def streamable_http_client(
     url: str,
     name: str | None = None,
 ) -> AsyncIterator[MCPClient]:
     """Create a Mirascope MCPClient using StreamableHTTP."""
     async with (
-        streamable_http_client(url) as (read, write, _),
+        mcp_streamable_http_client(url) as (read, write, _),
         ClientSession(read, write) as session,
     ):
         await session.initialize()

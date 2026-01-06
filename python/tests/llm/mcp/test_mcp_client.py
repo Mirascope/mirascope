@@ -6,7 +6,6 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm.mcp import MCPClient, sse_client, stdio_client, streamablehttp_client
 from tests.fixtures import mcp_server
 
 
@@ -18,7 +17,7 @@ class TestMCPClient:
         """Test that list_tools returns Mirascope AsyncTools with correct schemas."""
         async with (
             mcp_server("http") as server_url,
-            streamablehttp_client(server_url, name="test-server") as client,
+            llm.mcp.streamable_http_client(server_url, name="test-server") as client,
         ):
             tools = await client.list_tools()
             assert len(tools) == 2
@@ -76,7 +75,7 @@ Returns:
         """Test that MCP tools can be executed via ToolCall."""
         async with (
             mcp_server("http") as server_url,
-            streamablehttp_client(server_url, name="test-server") as client,
+            llm.mcp.streamable_http_client(server_url, name="test-server") as client,
         ):
             tools = await client.list_tools()
 
@@ -142,9 +141,9 @@ class TestTransportModes:
         """Test that stdio transport successfully connects to MCP server."""
         async with (
             mcp_server("stdio") as server_params,
-            stdio_client(server_params, name="stdio-test") as client,
+            llm.mcp.stdio_client(server_params, name="stdio-test") as client,
         ):
-            assert isinstance(client, MCPClient)
+            assert isinstance(client, llm.mcp.MCPClient)
             assert client.session is not None
             assert client.name == "stdio-test"
 
@@ -153,9 +152,9 @@ class TestTransportModes:
         """Test that SSE transport successfully connects to MCP server."""
         async with (
             mcp_server("sse") as sse_url,
-            sse_client(sse_url, name="sse-test") as client,
+            llm.mcp.sse_client(sse_url, name="sse-test") as client,
         ):
-            assert isinstance(client, MCPClient)
+            assert isinstance(client, llm.mcp.MCPClient)
             assert client.session is not None
             assert client.name == "sse-test"
 
@@ -164,8 +163,8 @@ class TestTransportModes:
         """Test that HTTP transport successfully connects to MCP server."""
         async with (
             mcp_server("http") as http_url,
-            streamablehttp_client(http_url, name="http-test") as client,
+            llm.mcp.streamable_http_client(http_url, name="http-test") as client,
         ):
-            assert isinstance(client, MCPClient)
+            assert isinstance(client, llm.mcp.MCPClient)
             assert client.session is not None
             assert client.name == "http-test"
