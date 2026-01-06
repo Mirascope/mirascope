@@ -3,12 +3,13 @@
 import typing
 
 from ..core.api_error import ApiError
+from ..types.unauthorized_error_body import UnauthorizedErrorBody
 
 
-class InternalServerError(ApiError):
+class UnauthorizedError(ApiError):
     def __init__(
         self,
-        body: typing.Optional[typing.Any],
+        body: UnauthorizedErrorBody,
         headers: typing.Optional[typing.Dict[str, str]] = None,
     ):
-        super().__init__(status_code=500, headers=headers, body=body)
+        super().__init__(status_code=401, headers=headers, body=body)
