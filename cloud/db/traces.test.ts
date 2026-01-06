@@ -541,6 +541,69 @@ describe("Traces", () => {
       ),
     );
 
+    it.effect("rejects span when outbox insert fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: "trace-outbox-error",
+                    spanId: "span-outbox-error",
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            data: { resourceSpans },
+          });
+
+        expect(result.rejectedSpans).toBe(1);
+        expect(result.acceptedSpans).toBe(0);
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .insert([{ id: "trace-id" }]) // Trace upsert succeeds
+            .insert([{ id: "span-id" }]) // Span insert succeeds
+            .insert(new Error("Outbox insert failed")) // Outbox insert fails
+            .build(),
+        ),
+      ),
+    );
+
     it.effect("handles empty resourceSpans", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
