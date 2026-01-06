@@ -518,3 +518,71 @@ export const TestEnvironmentFixture = Effect.gen(function* () {
     environment,
   };
 });
+
+/**
+ * Effect-native test fixture for spans.
+ *
+ * Creates a test span within an environment using the Effect-native
+ * `Database` service.
+ *
+ * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.
+ *
+ * Returns all properties from TestEnvironmentFixture plus:
+ * - traceId: the OTLP trace ID
+ * - spanId: the OTLP span ID
+ *
+ * Requires Database - call `yield* Database` in your test
+ * if you need to perform additional database operations.
+ */
+export const TestSpanFixture = Effect.gen(function* () {
+  const envFixture = yield* TestEnvironmentFixture;
+  const db = yield* Database;
+
+  const traceId = "0123456789abcdef0123456789abcdef";
+  const spanId = "0123456789abcdef";
+
+  const result = yield* db.organizations.projects.environments.traces.create({
+    userId: envFixture.owner.id,
+    organizationId: envFixture.org.id,
+    projectId: envFixture.project.id,
+    environmentId: envFixture.environment.id,
+    data: {
+      resourceSpans: [
+        {
+          resource: {
+            attributes: [
+              { key: "service.name", value: { stringValue: "test-service" } },
+            ],
+          },
+          scopeSpans: [
+            {
+              scope: { name: "test-scope" },
+              spans: [
+                {
+                  traceId,
+                  spanId,
+                  name: "test-span",
+                  kind: 1,
+                  startTimeUnixNano: "1700000000000000000",
+                  endTimeUnixNano: "1700000001000000000",
+                  attributes: [],
+                  status: {},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  if (result.acceptedSpans !== 1) {
+    throw new Error("Failed to create test span");
+  }
+
+  return {
+    ...envFixture,
+    traceId,
+    spanId,
+  };
+});
