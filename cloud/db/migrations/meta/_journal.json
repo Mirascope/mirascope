@@ -15,6 +15,13 @@
       "when": 1767856411068,
       "tag": "0001_glossy_unus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767860710000,
+      "tag": "0002_pink_peter_parker",
+      "breakpoints": true
     }
   ]
 }
