@@ -174,3 +174,7 @@ cython_debug/
 database.db
 
 node_modules
+
+# Generated responsive images
+cloud/public/assets/**/*-medium.webp
+cloud/public/assets/**/*-small.webp
