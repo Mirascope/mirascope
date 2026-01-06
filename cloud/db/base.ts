@@ -42,6 +42,7 @@ import {
   type AlreadyExistsError,
   type DatabaseError,
   type DeletedUserError,
+  type ImmutableResourceError,
   type NotFoundError,
   PermissionDeniedError,
   StripeError,
@@ -608,6 +609,7 @@ export abstract class BaseAuthenticatedEffectService<
    * @returns The updated resource
    * @throws NotFoundError - If resource doesn't exist or user has no access
    * @throws PermissionDeniedError - If user lacks update permission
+   * @throws ImmutableResourceError - If the resource cannot be modified after creation
    * @throws DatabaseError - If the database operation fails
    * @throws StripeError - If Stripe operations fail (for resources synced with Stripe)
    */
@@ -617,6 +619,7 @@ export abstract class BaseAuthenticatedEffectService<
     TPublic,
     | NotFoundError
     | PermissionDeniedError
+    | ImmutableResourceError
     | AlreadyExistsError
     | DeletedUserError
     | DatabaseError
