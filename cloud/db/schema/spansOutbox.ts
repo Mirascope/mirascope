@@ -61,16 +61,16 @@ export const spansOutbox = pgTable(
   },
   (table) => ({
     // Idempotency: prevent duplicate operations for the same span
-    spanOperationUnique: unique().on(table.spanId, table.operation),
+    uniqueSpanOperation: unique().on(table.spanId, table.operation),
     // Efficient query for processable rows
-    processableIdx: index("spans_outbox_processable_idx").on(
+    processableIndex: index("spans_outbox_processable_idx").on(
       table.status,
       table.processAfter,
-      table.retryCount
+      table.retryCount,
     ),
     // Lookup by spanId
-    spanIdIdx: index("spans_outbox_span_id_idx").on(table.spanId),
-  })
+    spanIdIndex: index("spans_outbox_span_id_idx").on(table.spanId),
+  }),
 );
 
 // Internal types
