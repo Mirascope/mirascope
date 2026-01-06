@@ -7,8 +7,13 @@ from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from functools import cached_property, lru_cache
-from typing import Any, NewType
+from typing import Any, NewType, cast
 
+from ...api._generated.errors.not_found_error import NotFoundError
+from ...api._generated.functions.types.functions_create_request_dependencies_value import (
+    FunctionsCreateRequestDependenciesValue,
+)
+from ...api.client import get_async_client, get_sync_client
 from ..exceptions import ClosureComputationError
 from .closure import Closure
 from .spans import Span
@@ -239,40 +244,43 @@ class VersionedFunction(_BaseVersionedFunction[P, R], BaseSyncTracedFunction[P, 
         raise NotImplementedError("VersionedFunction.get_version not yet implemented")
 
     def _ensure_registration(self) -> str | None:
-        """Returns function UUID after ensuring registration with API.
-
-        TODO: Implement API client integration to:
-        1. Get sync client via `get_sync_client()`
-        2. Check if function exists by hash: `client.functions.get_function_by_hash(self.closure.hash)`
-        3. If not found, create new version: `client.functions.create_a_new_function_version(...)`
-        4. Return the function UUID
-
-        Example implementation (from lilypad):
-        ```python
+        """Returns function UUID after ensuring registration with API."""
         if self.closure is None:
             return None
         try:
             client = get_sync_client()
         except Exception as e:
-            logger.warning(f"Failed to get client for function registration: {e}")
+            logger.warning("Failed to get client for function registration: %s", e)
             return None
 
         try:
-            existing = client.functions.get_function_by_hash(self.closure.hash)
-            return existing.uuid_
+            existing = client.functions.findbyhash(self.closure.hash)
+            return existing.id
         except NotFoundError:
-            response = client.functions.create_a_new_function_version(
+            dependencies: dict[str, FunctionsCreateRequestDependenciesValue | None] = {
+                name: FunctionsCreateRequestDependenciesValue(
+                    version=dep_info["version"],
+                    extras=dep_info.get("extras"),
+                )
+                for name, dep_info in self.closure.dependencies.items()
+            }
+            response = client.functions.create(
                 code=self.closure.code,
                 hash=self.closure.hash,
-                name=self.closure.name,
                 signature=self.closure.signature,
-                dependencies=self.closure.dependencies,
+                signature_hash=self.closure.signature_hash,
+                name=self.name or self.closure.name,
+                description=self.closure.docstring,
+                tags=list(self.tags) if self.tags else None,
+                metadata=cast(dict[str, str | None], self.metadata)
+                if self.metadata
+                else None,
+                dependencies=dependencies if dependencies else None,
             )
-            return response.uuid_
-        ```
-        """
-        # TODO: Implement when API client is available
-        return None
+            return response.id
+        except Exception as e:
+            logger.warning("Failed to register function: %s", e)
+            return None
 
 
 @dataclass(kw_only=True)
@@ -310,37 +318,40 @@ class AsyncVersionedFunction(
         )
 
     async def _ensure_registration(self) -> str | None:
-        """Returns function UUID after ensuring registration with API.
-
-        TODO: Implement API client integration to:
-        1. Get async client via `get_async_client()`
-        2. Check if function exists by hash: `await client.functions.get_function_by_hash(self.closure.hash)`
-        3. If not found, create new version: `await client.functions.create_a_new_function_version(...)`
-        4. Return the function UUID
-
-        Example implementation (from lilypad):
-        ```python
+        """Returns function UUID after ensuring registration with API."""
         if self.closure is None:
             return None
         try:
             client = get_async_client()
         except Exception as e:
-            logger.warning(f"Failed to get client for function registration: {e}")
+            logger.warning("Failed to get client for function registration: %s", e)
             return None
 
         try:
-            existing = await client.functions.get_function_by_hash(self.closure.hash)
-            return existing.uuid_
+            existing = await client.functions.findbyhash(self.closure.hash)
+            return existing.id
         except NotFoundError:
-            response = await client.functions.create_a_new_function_version(
+            dependencies: dict[str, FunctionsCreateRequestDependenciesValue | None] = {
+                name: FunctionsCreateRequestDependenciesValue(
+                    version=dep_info["version"],
+                    extras=dep_info.get("extras"),
+                )
+                for name, dep_info in self.closure.dependencies.items()
+            }
+            response = await client.functions.create(
                 code=self.closure.code,
                 hash=self.closure.hash,
-                name=self.closure.name,
                 signature=self.closure.signature,
-                dependencies=self.closure.dependencies,
+                signature_hash=self.closure.signature_hash,
+                name=self.name or self.closure.name,
+                description=self.closure.docstring,
+                tags=list(self.tags) if self.tags else None,
+                metadata=cast(dict[str, str | None], self.metadata)
+                if self.metadata
+                else None,
+                dependencies=dependencies if dependencies else None,
             )
-            return response.uuid_
-        ```
-        """
-        # TODO: Implement when API client is available
-        return None
+            return response.id
+        except Exception as e:
+            logger.warning("Failed to register function: %s", e)
+            return None

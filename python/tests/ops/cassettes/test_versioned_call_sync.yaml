@@ -111,4 +111,348 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: GET
+    uri: http://example.com/functions/hash/2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e
+  response:
+    body:
+      string: '{"message":"Function with hash 2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e
+        not found","resource":"function","tag":"NotFoundError"}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:24:17 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '151'
+      content-type:
+      - application/json
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"code":"from mirascope import llm\n\n\n@llm.call(\"openai/gpt-4o-mini\")\ndef
+      recommend(genre: str) -> str:\n    return f\"Recommend a {genre} book.\"\n","hash":"2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e","signature":"@llm.call(\"openai/gpt-4o-mini\")\ndef
+      recommend(genre: str) -> str: ...","signatureHash":"d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2","name":"recommend","description":null,"tags":null,"metadata":null,"dependencies":{"mirascope":{"version":"2.0.0a4","extras":["all"]}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '533'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: POST
+    uri: http://example.com/functions
+  response:
+    body:
+      string: '{"id":"f90e3dcd-5907-4822-aa74-f051a60e37de","hash":"2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e","signatureHash":"d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2","name":"recommend","description":null,"version":"1.0","tags":null,"metadata":null,"code":"from
+        mirascope import llm\n\n\n@llm.call(\"openai/gpt-4o-mini\")\ndef recommend(genre:
+        str) -> str:\n    return f\"Recommend a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\ndef
+        recommend(genre: str) -> str: ...","dependencies":{"mirascope":{"version":"2.0.0a4","extras":["all"]}},"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:24:17.295Z","updatedAt":"2025-12-24T03:24:17.295Z","isNew":true}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:24:17 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '846'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"Recommend a fantasy book.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '87'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RUwW7jOAy99yu4viwQNIWTSZO61z0NBlgsFgvsYbowaJlyNJFFQ6LSMQb994Xk
+        xElm2lMcPvKJ5CP54w6gMG3xDIWnMNTltmraXVlqLD9VpKuy3Fabpm12K6oa9bSqHp+apql2j3qz
+        K3f4SW+K+0TBzTdScqZhF2iyK08o1NaYsNVuu33cVeXjLmNBUGJIMYr7wZJQOwU1qA6d5+hSXhpt
+        oMlsrDWuK57hxx0AQDHgSD7Ft3QkywP54g7gbXr4TPnT01VGyXtOkS5amw3GnQPqlgSNDbdoEB+V
+        GHY39h6/1xxliFILH+hXUJhtrdDe0vXckk15d4MsN7zsjTPLdbneLMvdcvV06mjmLZ7hay52KnkW
+        qw/dx1qtt1vaZK2q9VOzrbRa681GVVVmziwyDpR5KATs6AJ8JEoGFTshd0nqOrEb2nNT6LvM0dkB
+        nWPBcyO//ncDWu4Gz807SCZ6huIzeFLc9+RaWCxein/2BH9iT8AaZE/wr3HtS7FYQDPCXyjeqAP8
+        zbLXMYQH+CwvcV2uqpB9tfFBoGE+gHHZsvhiXHcw1pKHP/aenVGWFhDIGwqArgXN1vLrFB+E/Zge
+        /nJk2dM9IHRGC7UwcnQd9Ojgdc/QpIxTPFjqyLXoR9Cmi54eIOXv0HsUcyR4JTxSgD4Go+6hxy79
+        pGexPZKT6OkeWGvyxnXgjdrDK3vbLptobJtsybclGkDt0aMS8nBajZ6cpAb8nvJIylLeJfCEqSoP
+        6EZ2lBO2nLLQ6ATD+Fsx6/B2+pqlKTzbLDeGYIKgk8k5OWanYkCP1pK9XQTxcdrowdPRcAz1+WjU
+        ebrnRRk894PUCtWe6gONH2Ke0lwadtcenjCwu7kYpDV7uXJKEx/7Hv2Zez4gATXJWJs2EWtDN+ci
+        kD8aRbWY8wHSGO0060UaDLouU6gfyGMSMJ2ih/JkzTN9ykyz7/Hy/2qXst/U11PGR/INByPjtMGt
+        if3l8E2d3rNRkzRRuJiBy2oVwkN9tXDlbByuc/TRKTw1tmhNwMaer3TMh2MuwLibM7ha3/9qv7qt
+        c5lZwPYSWN6U+vN13VXvAe/xzup/RC0saC9gtZpbGMOt2j0JtiiY6N/u3v4HAAD//wMA9TNCTjQH
+        AAA=
+    headers:
+      CF-RAY:
+      - 9b3013254bb7354b-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Dec 2025 12:24:19 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=jPL2FdGKx7wRFV694mNaMt6eeD5lu8QWqUjMGksXbuQ-1766579059-1.0.1.1-t9JfhuMF0Q1ft0HOAhde4cs5aypNbfCGRd9e9TAv4zkM2xvQ1eBTLkqksLm3eEVwGU8McmNK1aJqQkjEx1Q7PGPNY1VO75ZXzAXPa_yIKN8;
+        path=/; expires=Wed, 24-Dec-25 12:54:19 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=NCPR75kYzYzPl5iaHr7tI79SV.qqrhflTh6GPBGKBhw-1766579059606-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1629'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1632'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999969'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_538049cdf3ab4d0f882dc5fe117b1afa
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: GET
+    uri: http://example.com/functions/hash/2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e
+  response:
+    body:
+      string: '{"id":"f90e3dcd-5907-4822-aa74-f051a60e37de","hash":"2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e","signatureHash":"d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2","name":"recommend","description":null,"version":"1.0","tags":null,"metadata":null,"code":"from
+        mirascope import llm\n\n\n@llm.call(\"openai/gpt-4o-mini\")\ndef recommend(genre:
+        str) -> str:\n    return f\"Recommend a {genre} book.\"\n","signature":"@llm.call(\"openai/gpt-4o-mini\")\ndef
+        recommend(genre: str) -> str: ...","dependencies":{"mirascope":{"version":"2.0.0a4","extras":["all"]}},"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:24:17.295Z","updatedAt":"2025-12-24T03:24:17.295Z"}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:33:21 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '833'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"Recommend a fantasy book.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '87'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RU227kNgx9z1ewfgxmAnuSueUPggJFURTow25h0BJtayOLrkRN1ljk3wvZM57x
+        bvJm85BHh9cfdwCZ0dkzZJ5CX+ab/PBYbKt9UanqcbPL893xqdL6WFTFIT8Ux/3hcasKtS+q7XaX
+        q3qbrRIFV99IyYWGXaDJrjyhkC4xYcV+t9vuj7u8GLEgKDGkGMVdb0lIT0EVqtfGc3RJV4020GQ2
+        1hrXZM/w4w4AIOtxIJ/iNZ3Ick8+uwN4nx6+UP709HZEyXtOkS5aOxqMuwSUmgSNDUs0iI9KDLuF
+        vcPvJUfpo5TCr/QrKMy2VGiXdB1rskl308v6idedcWa9yTdP63y/Lg7nio682TN8GZOdUp6b1YXm
+        816lT5V6dTzs880THrFSFVb6ODKPLDL0NPJQCNjQFfisKSOo2Am5q6hbYQvaS1Hou8zRowM6x4KX
+        Qn75dwFabnrP1QfISPQM2Qt4Utx15DTc33/N/m4J/sCOgGuQluAf4/TXDKoB/kTxRr3CXyxtHUO4
+        v3+AF4GareW3MDoHYT+kyN9PLC2tAKExtZCGgaNroEMHby1DlZ6kAAiWGnIa/QC1aaKnB0gCKuZX
+        MAG8US0YB9MAraAmlOiNawAhOvNfJOiwMQrCEIS6FRiXNKIQvLG3el1FY7VxzQrQaUBQ2Is5oSQK
+        h96jmFOSPVh6gJc6yQRy33gA1aJHJeTX2psTuTE3QyHJwVGYHcCk1x1pqNEJhmF6dQXSmgDsKOWA
+        0MUga0+of8vmDryfv+amZJ7t2GgMwQRBJ5Nzchydsh49Wkt2uQLi47TLvaeT4RjKy7kox7meV6T3
+        3PVSKlQtla80fIp5ShNp2N16eMLAbnErqK7Zy41TmvXYdegv3PPpCFiTDKXRibg2tDgUgfzJKCrF
+        XE5PjdFOU56lqtNtmkJdTz6NQTIXD/nZOk7zWVnNvsPr/80WjX5TXc+KT+QrDkaGaXe1id315E2V
+        btmoqTVROJuB61Jlwn15s2r5bOxvNfroFJ4Lm2kTsLKX+xzHkzEnYNziABab1a/2m6s6pzk2UF8D
+        80WqP9/V/fEj4CPeufufUQsL2it4LOYSxrDsdkeCGgUT/fvd+/8AAAD//wMAYBgyvC4HAAA=
+    headers:
+      CF-RAY:
+      - 9b30206d9dd5734a-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Dec 2025 12:33:26 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=X7sebFuouItvoRRrcEbe9Ow2mhCOkteXn48cDbJXzFo-1766579606-1.0.1.1-fSbd5ITq9qyikoL06H4CYUT8Ipp.aFgUey3dmZaboqYjYuhEl3HlsayDR8J5I2iToMm7NdJGF0anss3ZXDtj4EvBXLj.Dxscigr9cqAaGVE;
+        path=/; expires=Wed, 24-Dec-25 13:03:26 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=oFRk0a_kIONBdJceukkFiJU3WbRzx6sbTLv__C4y8Ho-1766579606175-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '4431'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '4441'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999969'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_35a86c61fa1a462ca6ac05ef4455b1c4
+    status:
+      code: 200
+      message: OK
 version: 1

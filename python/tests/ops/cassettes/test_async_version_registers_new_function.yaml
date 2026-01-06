@@ -1,0 +1,158 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: GET
+    uri: http://example.com/functions/hash/e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450
+  response:
+    body:
+      string: '{"message":"Function with hash e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450
+        not found","resource":"function","tag":"NotFoundError"}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:21:36 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '151'
+      content-type:
+      - application/json
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"code":"async def async_compute_new(x: int) -> int:\n    return x * 2\n","hash":"e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450","signature":"async
+      def async_compute_new(x: int) -> int: ...","signatureHash":"e895135474979165e8f95c8c3616326d740ad66821238ab65f8b0506645fce3e","name":"test_async_register_fn","description":null,"tags":["async-test"],"metadata":null,"dependencies":null}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '402'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: POST
+    uri: http://example.com/functions
+  response:
+    body:
+      string: '{"id":"8373d50e-b7bf-440d-beaf-743681eb5ea1","hash":"e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450","signatureHash":"e895135474979165e8f95c8c3616326d740ad66821238ab65f8b0506645fce3e","name":"test_async_register_fn","description":null,"version":"1.0","tags":["async-test"],"metadata":null,"code":"async
+        def async_compute_new(x: int) -> int:\n    return x * 2\n","signature":"async
+        def async_compute_new(x: int) -> int: ...","dependencies":null,"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:21:36.341Z","updatedAt":"2025-12-24T03:21:36.341Z","isNew":true}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:21:36 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '715'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: GET
+    uri: http://example.com/functions/hash/e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450
+  response:
+    body:
+      string: '{"id":"8373d50e-b7bf-440d-beaf-743681eb5ea1","hash":"e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450","signatureHash":"e895135474979165e8f95c8c3616326d740ad66821238ab65f8b0506645fce3e","name":"test_async_register_fn","description":null,"version":"1.0","tags":["async-test"],"metadata":null,"code":"async
+        def async_compute_new(x: int) -> int:\n    return x * 2\n","signature":"async
+        def async_compute_new(x: int) -> int: ...","dependencies":null,"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:21:36.341Z","updatedAt":"2025-12-24T03:21:36.341Z"}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:25:27 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '702'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: GET
+    uri: http://example.com/functions/hash/e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450
+  response:
+    body:
+      string: '{"id":"8373d50e-b7bf-440d-beaf-743681eb5ea1","hash":"e29e925666db867702c08edf6cda0d34414d5284b34779efb6def7cddf39d450","signatureHash":"e895135474979165e8f95c8c3616326d740ad66821238ab65f8b0506645fce3e","name":"test_async_register_fn","description":null,"version":"1.0","tags":["async-test"],"metadata":null,"code":"async
+        def async_compute_new(x: int) -> int:\n    return x * 2\n","signature":"async
+        def async_compute_new(x: int) -> int: ...","dependencies":null,"environmentId":"5e8c6ab2-3b1a-4ec0-a1f1-e4d01c5e1f18","projectId":"100bf0f4-7503-4524-bd4b-ddec75d8a346","organizationId":"ad201cf0-4185-4952-9608-95ad50080360","createdAt":"2025-12-24T03:21:36.341Z","updatedAt":"2025-12-24T03:21:36.341Z"}'
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 24 Dec 2025 12:34:36 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-length:
+      - '702'
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1
