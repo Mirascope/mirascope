@@ -38,7 +38,10 @@
  * ```
  */
 
-import { createClient, type ClickHouseClient as CHClient } from "@clickhouse/client";
+import {
+  createClient,
+  type ClickHouseClient as CHClient,
+} from "@clickhouse/client";
 import { Context, Effect, Layer } from "effect";
 import * as fs from "node:fs";
 import { ClickHouseError } from "@/errors";
@@ -49,28 +52,138 @@ import { SettingsService, type Settings } from "@/settings";
 // =============================================================================
 
 /**
- * ClickHouseClient service interface.
+ * ClickHouseClient configuration options.
+ */
+export interface ClickHouseConfig {
+  /** ClickHouse HTTP URL (e.g., http://localhost:8123) */
+  url?: string;
+  /** ClickHouse username */
+  user?: string;
+  /** ClickHouse password */
+  password?: string;
+  /** ClickHouse database name */
+  database?: string;
+}
+
+/**
+ * ClickHouseClient service interface type.
+ */
+export interface ClickHouseClientService {
+  /** Execute a SELECT query and return typed results. */
+  readonly query: <T>(
+    sql: string,
+    params?: Record<string, unknown>,
+  ) => Effect.Effect<T[], ClickHouseError>;
+  /** Insert rows into a table in JSONEachRow format. */
+  readonly insert: <T extends Record<string, unknown>>(
+    table: string,
+    rows: T[],
+  ) => Effect.Effect<void, ClickHouseError>;
+  /** Execute a DDL/DML command (CREATE, ALTER, etc.). */
+  readonly command: (sql: string) => Effect.Effect<void, ClickHouseError>;
+}
+
+/**
+ * ClickHouseClient service.
  *
  * Provides query, insert, and command operations for ClickHouse.
  * Implementations differ between Node.js and Workers environments.
+ *
+ * @example
+ * ```ts
+ * // Using with direct config
+ * const program = Effect.gen(function* () {
+ *   const client = yield* ClickHouseClient;
+ *   return yield* client.query<Row>("SELECT * FROM table");
+ * }).pipe(
+ *   Effect.provide(ClickHouseClient.layer({ url: "http://localhost:8123" }))
+ * );
+ * ```
  */
 export class ClickHouseClient extends Context.Tag("ClickHouseClient")<
   ClickHouseClient,
-  {
-    /** Execute a SELECT query and return typed results. */
-    readonly query: <T>(
-      sql: string,
-      params?: Record<string, unknown>
-    ) => Effect.Effect<T[], ClickHouseError>;
-    /** Insert rows into a table in JSONEachRow format. */
-    readonly insert: <T extends Record<string, unknown>>(
-      table: string,
-      rows: T[]
-    ) => Effect.Effect<void, ClickHouseError>;
-    /** Execute a DDL/DML command (CREATE, ALTER, etc.). */
-    readonly command: (sql: string) => Effect.Effect<void, ClickHouseError>;
-  }
->() {}
+  ClickHouseClientService
+>() {
+  /**
+   * Default layer using SettingsService for configuration.
+   * Requires SettingsService to be provided.
+   */
+  static Default = Layer.effect(
+    ClickHouseClient,
+    Effect.gen(function* () {
+      const settings = yield* SettingsService;
+      const client = createNodeClickHouseClient(settings);
+
+      return {
+        query: <T>(sql: string, params?: Record<string, unknown>) =>
+          Effect.tryPromise({
+            try: async (): Promise<T[]> => {
+              const result = await client.query({
+                query: sql,
+                query_params: params,
+                format: "JSONEachRow",
+              });
+              return result.json();
+            },
+            catch: (e) =>
+              new ClickHouseError({
+                message: `Query failed: ${e instanceof Error ? e.message : String(e)}`,
+                cause: e,
+              }),
+          }),
+
+        insert: <T extends Record<string, unknown>>(table: string, rows: T[]) =>
+          Effect.tryPromise({
+            try: async () => {
+              if (rows.length === 0) return;
+              await client.insert({
+                table,
+                values: rows,
+                format: "JSONEachRow",
+              });
+            },
+            catch: (e) =>
+              new ClickHouseError({
+                message: `Insert failed: ${e instanceof Error ? e.message : String(e)}`,
+                cause: e,
+              }),
+          }),
+
+        command: (sql: string) =>
+          Effect.tryPromise({
+            try: async () => {
+              await client.command({ query: sql });
+            },
+            catch: (e) =>
+              new ClickHouseError({
+                message: `Command failed: ${e instanceof Error ? e.message : String(e)}`,
+                cause: e,
+              }),
+          }),
+      };
+    }),
+  );
+
+  /**
+   * Creates a layer with direct configuration.
+   * Does not require SettingsService.
+   *
+   * @param config - ClickHouse connection configuration
+   */
+  static layer = (config: ClickHouseConfig = {}) => {
+    const settings: Settings = {
+      env: "local",
+      CLICKHOUSE_URL: config.url ?? "http://localhost:8123",
+      CLICKHOUSE_USER: config.user ?? "default",
+      CLICKHOUSE_PASSWORD: config.password,
+      CLICKHOUSE_DATABASE: config.database ?? "mirascope_analytics",
+    };
+
+    return ClickHouseClient.Default.pipe(
+      Layer.provide(Layer.succeed(SettingsService, settings)),
+    );
+  };
+}
 
 // =============================================================================
 // Node.js Implementation (@clickhouse/client)
@@ -84,16 +197,14 @@ const createNodeClickHouseClient = (settings: Settings): CHClient => {
       caCert = fs.readFileSync(settings.CLICKHOUSE_TLS_CA);
     } catch (error) {
       throw new Error(
-        `Failed to read ClickHouse TLS CA certificate: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to read ClickHouse TLS CA certificate: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
 
   // Build TLS options only if explicitly enabled with CA cert
   const tlsOptions =
-    settings.CLICKHOUSE_TLS_ENABLED && caCert
-      ? { ca_cert: caCert }
-      : undefined;
+    settings.CLICKHOUSE_TLS_ENABLED && caCert ? { ca_cert: caCert } : undefined;
 
   return createClient({
     url: settings.CLICKHOUSE_URL,
@@ -108,65 +219,12 @@ const createNodeClickHouseClient = (settings: Settings): CHClient => {
 
 /**
  * ClickHouseClient implementation for Node.js environment.
+ * Alias for ClickHouseClient.Default.
  *
  * Uses `@clickhouse/client` for native TCP/HTTP connections with
  * full TLS configuration support.
  */
-export const ClickHouseClientNodeLive = Layer.effect(
-  ClickHouseClient,
-  Effect.gen(function* () {
-    const settings = yield* SettingsService;
-    const client = createNodeClickHouseClient(settings);
-
-    return {
-      query: <T>(sql: string, params?: Record<string, unknown>) =>
-        Effect.tryPromise({
-          try: async () => {
-            const result = await client.query({
-              query: sql,
-              query_params: params,
-              format: "JSONEachRow",
-            });
-            return await result.json<T[]>();
-          },
-          catch: (e) =>
-            new ClickHouseError({
-              message: `Query failed: ${e instanceof Error ? e.message : String(e)}`,
-              cause: e,
-            }),
-        }),
-
-      insert: <T extends Record<string, unknown>>(table: string, rows: T[]) =>
-        Effect.tryPromise({
-          try: async () => {
-            if (rows.length === 0) return;
-            await client.insert({
-              table,
-              values: rows,
-              format: "JSONEachRow",
-            });
-          },
-          catch: (e) =>
-            new ClickHouseError({
-              message: `Insert failed: ${e instanceof Error ? e.message : String(e)}`,
-              cause: e,
-            }),
-        }),
-
-      command: (sql: string) =>
-        Effect.tryPromise({
-          try: async () => {
-            await client.command({ query: sql });
-          },
-          catch: (e) =>
-            new ClickHouseError({
-              message: `Command failed: ${e instanceof Error ? e.message : String(e)}`,
-              cause: e,
-            }),
-        }),
-    };
-  })
-);
+export const ClickHouseClientNodeLive = ClickHouseClient.Default;
 
 // =============================================================================
 // Cloudflare Workers Implementation (fetch + HTTP API)
@@ -184,7 +242,7 @@ const createWorkersClickHouseClient = (settings: Settings) => {
   // Production validation: require HTTPS
   if (settings.env === "production" && !baseUrl?.startsWith("https://")) {
     throw new Error(
-      "CLICKHOUSE_URL must use https:// in production (Workers environment)"
+      "CLICKHOUSE_URL must use https:// in production (Workers environment)",
     );
   }
 
@@ -194,7 +252,7 @@ const createWorkersClickHouseClient = (settings: Settings) => {
   return {
     query: async <T>(
       sql: string,
-      params?: Record<string, unknown>
+      params?: Record<string, unknown>,
     ): Promise<T[]> => {
       const urlParams = new URLSearchParams({
         database,
@@ -219,7 +277,7 @@ const createWorkersClickHouseClient = (settings: Settings) => {
 
       if (!response.ok) {
         throw new Error(
-          `ClickHouse query failed: ${response.status} ${await response.text()}`
+          `ClickHouse query failed: ${response.status} ${await response.text()}`,
         );
       }
 
@@ -235,7 +293,7 @@ const createWorkersClickHouseClient = (settings: Settings) => {
 
     insert: async <T extends Record<string, unknown>>(
       table: string,
-      rows: T[]
+      rows: T[],
     ): Promise<void> => {
       if (rows.length === 0) return;
 
@@ -257,7 +315,7 @@ const createWorkersClickHouseClient = (settings: Settings) => {
 
       if (!response.ok) {
         throw new Error(
-          `ClickHouse insert failed: ${response.status} ${await response.text()}`
+          `ClickHouse insert failed: ${response.status} ${await response.text()}`,
         );
       }
     },
@@ -276,7 +334,7 @@ const createWorkersClickHouseClient = (settings: Settings) => {
 
       if (!response.ok) {
         throw new Error(
-          `ClickHouse command failed: ${response.status} ${await response.text()}`
+          `ClickHouse command failed: ${response.status} ${await response.text()}`,
         );
       }
     },
@@ -330,7 +388,7 @@ export const ClickHouseClientWorkersLive = Layer.effect(
             }),
         }),
     };
-  })
+  }),
 );
 
 // =============================================================================
