@@ -249,20 +249,21 @@ cloud/
 ├── clickhouse/                    # ClickHouse analytics services
 │   ├── client.ts                  # Effect service for ClickHouse access
 │   ├── search.ts                  # Analytics/search queries and transforms
+│   ├── migrate.sh                 # Schema migration runner (run: bun run clickhouse:migrate)
+│   ├── migrations/                # SQL migration files (versioned, applied on startup)
+│   │   ├── *.up.sql
+│   │   └── *.down.sql
 │   └── [other files]              # utils.ts, tests, etc.
 ├── workers/                       # Cloudflare Workers (queues/cron/polling)
 │   ├── clickhouseQueueConsumer.ts # Queue consumer for outbox sync
 │   ├── clickhouseCron.ts          # Cron trigger for re-enqueue
-│   ├── clickhouseSyncLocal.ts     # Local polling worker
 │   └── outboxProcessor.ts         # Shared processing logic
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
 │   └── db.ts                      # Database test utilities
 ├── docker/                        # Docker configuration
 │   ├── compose.yml
-│   ├── clickhouse/                # ClickHouse init SQL
-│   │   └── init/                  # Schema + index creation scripts
-│   └── data/                      # Docker data directory
+│   └── data/                      # Docker data directory (gitignored)
 ├── dist/                          # Build output
 │   ├── client/                    # Client build artifacts
 │   └── server/                    # Server build artifacts
@@ -296,7 +297,7 @@ PostgreSQL (OLTP)
 1) spans_outbox row is created when a span is inserted (db/traces.ts)
 2) Worker picks up the outbox row:
    - Production: Cloudflare Queue -> clickhouseQueueConsumer.ts
-   - Local dev: polling loop -> clickhouseSyncLocal.ts
+   - Local dev: run Queue Consumer via `bun run dev` (Workers)
 3) processOutboxMessages (outboxProcessor.ts):
    - lock row (status=processing, lockedAt/lockedBy)
    - load span + trace from Postgres
