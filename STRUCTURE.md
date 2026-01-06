@@ -249,6 +249,9 @@ cloud/
 ├── clickhouse/                    # ClickHouse analytics services
 │   ├── client.ts                  # Effect service for ClickHouse access
 │   ├── search.ts                  # Analytics/search queries and transforms
+│   ├── migrator.ts                # Schema migration runner (run: bun run clickhouse:migrate)
+│   ├── migrations/                # SQL migration files (versioned, applied on startup)
+│   │   └── *.sql
 │   └── [other files]              # utils.ts, tests, etc.
 ├── workers/                       # Cloudflare Workers (queues/cron/polling)
 │   ├── clickhouseQueueConsumer.ts # Queue consumer for outbox sync
@@ -260,9 +263,7 @@ cloud/
 │   └── db.ts                      # Database test utilities
 ├── docker/                        # Docker configuration
 │   ├── compose.yml
-│   ├── clickhouse/                # ClickHouse init SQL
-│   │   └── init/                  # Schema + index creation scripts
-│   └── data/                      # Docker data directory
+│   └── data/                      # Docker data directory (gitignored)
 ├── dist/                          # Build output
 │   ├── client/                    # Client build artifacts
 │   └── server/                    # Server build artifacts

@@ -211,11 +211,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Initialize ClickHouse
-        run: |
-          for script in docker/clickhouse/init/*.sql; do
-            echo "Running $script..."
-            curl -s "http://${CLICKHOUSE_USER}:${CLICKHOUSE_PASSWORD}@localhost:8123/" --data-binary @"$script"
-          done
+        run: bun run clickhouse:migrate
 
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
