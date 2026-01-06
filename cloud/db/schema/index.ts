@@ -14,6 +14,7 @@ export * from "@/db/schema/traces";
 export * from "@/db/schema/spans";
 export * from "@/db/schema/router-requests";
 export * from "@/db/schema/credit-reservations";
+export * from "@/db/schema/spansOutbox";
 
 export type { PublicSession } from "@/db/schema/sessions";
 export type { PublicUser } from "@/db/schema/users";
@@ -52,6 +53,7 @@ export type {
   NewCreditReservation,
   ReservationStatus,
 } from "@/db/schema/credit-reservations";
+export type { PublicSpansOutbox } from "@/db/schema/spansOutbox";
 
 import { users } from "@/db/schema/users";
 import { sessions } from "@/db/schema/sessions";
@@ -69,6 +71,7 @@ import { traces } from "@/db/schema/traces";
 import { spans } from "@/db/schema/spans";
 import { routerRequests } from "@/db/schema/router-requests";
 import { creditReservations } from "@/db/schema/credit-reservations";
+import { spansOutbox } from "@/db/schema/spansOutbox";
 
 export type DatabaseTable =
   | typeof users
@@ -86,4 +89,6 @@ export type DatabaseTable =
   | typeof traces
   | typeof spans
   | typeof routerRequests
-  | typeof creditReservations;
+  | typeof routerRequests
+  | typeof creditReservations
+  | typeof spansOutbox;
