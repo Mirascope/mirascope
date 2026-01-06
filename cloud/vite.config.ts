@@ -31,10 +31,19 @@ export default defineConfig(() => {
           retryDelay: 1000,
           maxRedirects: 5,
           failOnError: true,
-          filter: ({ path }) => path.startsWith("/docs"),
+          filter: (page) => page.path.startsWith("/docs"),
+          // todo(sebastian): Consider post-processing sitemap/pages to set the changefreq.
+          // When using autoStaticPathsDiscovery, you can't set the sitemap changefreq or
+          // other sitemap options per page—frequency can only be set on a per-page basis if you provide
+          // an explicit pages array. For auto-discovered pages, control over frequency is not available.
           onSuccess: ({ page }) => {
             console.log(`Rendered ${page.path}!`);
+            return { sitemap: { changefreq: "daily" } };
           },
+        },
+        sitemap: {
+          enabled: true,
+          host: "https://mirascope.com",
         },
       }),
       viteReact(),
