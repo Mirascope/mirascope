@@ -52,7 +52,7 @@ import { Traces } from "@/db/traces";
 import { Payments, type StripeConfig } from "@/payments";
 
 /**
- * Type definition for the environments service with nested API keys and traces.
+ * Type definition for the environments service with nested API keys.
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
  * Traces: `db.organizations.projects.environments.traces.create(...)`
