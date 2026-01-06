@@ -2,114 +2,132 @@
 
 from __future__ import annotations
 
-import asyncio
-import socket
-import subprocess
-import sys
-from collections.abc import AsyncGenerator
-from contextlib import AbstractAsyncContextManager, asynccontextmanager
-from typing import Literal, overload
-
 import pytest
-from mcp.client.stdio import StdioServerParameters
+from inline_snapshot import snapshot
 
+from mirascope import llm
 from mirascope.llm.mcp import MCPClient, sse_client, stdio_client, streamablehttp_client
-
-
-@overload
-def mcp_server(
-    transport: Literal["stdio"],
-) -> AbstractAsyncContextManager[StdioServerParameters]: ...
-@overload
-def mcp_server(
-    transport: Literal["http", "sse"],
-) -> AbstractAsyncContextManager[str]: ...
-@asynccontextmanager
-async def mcp_server(
-    transport: Literal["http", "sse", "stdio"],
-) -> AsyncGenerator[str | StdioServerParameters, None]:
-    """Start an MCP test server with the specified transport.
-
-    Args:
-        transport: The transport type to use (http, sse, or stdio)
-
-    Yields:
-        For http/sse: The URL to connect to the server
-        For stdio: StdioServerParameters to connect to the server
-    """
-    if transport == "stdio":
-        # Stdio doesn't need a subprocess - it's handled by the client
-        server_params = StdioServerParameters(
-            command=sys.executable,
-            args=["-m", "tests.fixtures.example_mcp_server"],
-            env=None,
-        )
-        yield server_params
-        return
-
-    # Find an available port for http/sse
-    with socket.socket() as s:
-        s.bind(("", 0))
-        port = s.getsockname()[1]
-
-    # Start server in subprocess for proper isolation
-    proc = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "tests.fixtures.example_mcp_server",
-            "--transport",
-            transport,
-            "--port",
-            str(port),
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-
-    try:
-        # Wait for server to be ready
-        for _ in range(20):
-            try:
-                _, writer = await asyncio.open_connection("127.0.0.1", port)
-                writer.close()
-                await writer.wait_closed()
-                break
-            except (ConnectionRefusedError, OSError):
-                await asyncio.sleep(0.1)
-
-        # Return appropriate URL based on transport
-        if transport == "sse":
-            yield f"http://127.0.0.1:{port}/sse"
-        else:  # http
-            yield f"http://127.0.0.1:{port}/mcp"
-    finally:
-        proc.terminate()
-        proc.wait(timeout=2)
+from tests.fixtures import mcp_server
 
 
 class TestMCPClient:
     """Integration tests for MCPClient basic functionality."""
 
     @pytest.mark.asyncio
-    async def test_init_and_session_property(self) -> None:
-        """Test MCPClient initialization and session property access."""
+    async def test_list_tools(self) -> None:
+        """Test that list_tools returns Mirascope AsyncTools with correct schemas."""
         async with (
             mcp_server("http") as server_url,
-            streamablehttp_client(server_url) as client,
+            streamablehttp_client(server_url, name="test-server") as client,
         ):
-            assert isinstance(client, MCPClient)
-            assert client.session is not None
+            tools = await client.list_tools()
+            assert len(tools) == 2
+
+            # Check we got the expected tools
+            tool_names = {tool.name for tool in tools}
+            assert tool_names == {"greet", "answer_ultimate_question"}
+
+            # Verify greet tool schema with snapshot
+            greet_tool = next(t for t in tools if t.name == "greet")
+            assert greet_tool.description == snapshot(
+                """\
+Greet a user with very special welcome.
+
+Args:
+    name: The name of the person to greet
+
+Returns:
+    A personalized welcome message\
+"""
+            )
+            assert greet_tool.parameters.model_dump(
+                by_alias=True, exclude_none=True
+            ) == snapshot(
+                {
+                    "properties": {
+                        "name": {
+                            "title": "Name",
+                            "type": "string",
+                        }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": False,
+                }
+            )
+
+            # Verify answer_ultimate_question tool schema with snapshot
+            answer_tool = next(t for t in tools if t.name == "answer_ultimate_question")
+            assert answer_tool.description == snapshot(
+                """\
+Answer the ultimate question of life, the universe, and everything.
+
+Returns:
+    A structured answer with metadata about the computation\
+"""
+            )
+            assert answer_tool.parameters.model_dump(
+                by_alias=True, exclude_none=True
+            ) == snapshot(
+                {"properties": {}, "required": [], "additionalProperties": False}
+            )
 
     @pytest.mark.asyncio
-    async def test_list_tools_not_implemented(self) -> None:
-        """Test that list_tools raises NotImplementedError."""
+    async def test_tool_execution(self) -> None:
+        """Test that MCP tools can be executed via ToolCall."""
         async with (
             mcp_server("http") as server_url,
-            streamablehttp_client(server_url) as client,
+            streamablehttp_client(server_url, name="test-server") as client,
         ):
-            with pytest.raises(NotImplementedError):
-                await client.list_tools()
+            tools = await client.list_tools()
+
+            # Test greet tool execution
+            greet_tool = next(t for t in tools if t.name == "greet")
+            greet_call = llm.ToolCall(
+                id="call_123", name="greet", args='{"name": "Alice"}'
+            )
+            greet_output = await greet_tool.execute(greet_call)
+
+            assert greet_output.id == "call_123"
+            assert greet_output.name == "greet"
+            assert greet_output.value == snapshot(
+                [
+                    {
+                        "type": "text",
+                        "text": "Welcome to Zombo.com, Alice",
+                        "annotations": None,
+                        "meta": None,
+                    }
+                ]
+            )
+
+            # Test answer_ultimate_question tool execution
+            answer_tool = next(t for t in tools if t.name == "answer_ultimate_question")
+            answer_call = llm.ToolCall(
+                id="call_456", name="answer_ultimate_question", args="{}"
+            )
+            answer_output = await answer_tool.execute(answer_call)
+
+            assert answer_output.id == "call_456"
+            assert answer_output.name == "answer_ultimate_question"
+            assert answer_output.value == snapshot(
+                [
+                    {
+                        "type": "text",
+                        "text": """\
+{
+  "answer": 42,
+  "question": "What is the answer to life, the universe, and everything?",
+  "computed_by": {
+    "name": "Deep Thought",
+    "years_computed": 7500000
+  }
+}\
+""",
+                        "annotations": None,
+                        "meta": None,
+                    }
+                ]
+            )
 
 
 class TestTransportModes:
@@ -124,24 +142,30 @@ class TestTransportModes:
         """Test that stdio transport successfully connects to MCP server."""
         async with (
             mcp_server("stdio") as server_params,
-            stdio_client(server_params) as client,
+            stdio_client(server_params, name="stdio-test") as client,
         ):
             assert isinstance(client, MCPClient)
             assert client.session is not None
+            assert client.name == "stdio-test"
 
     @pytest.mark.asyncio
     async def test_sse_transport(self) -> None:
         """Test that SSE transport successfully connects to MCP server."""
-        async with mcp_server("sse") as sse_url, sse_client(sse_url) as client:
+        async with (
+            mcp_server("sse") as sse_url,
+            sse_client(sse_url, name="sse-test") as client,
+        ):
             assert isinstance(client, MCPClient)
             assert client.session is not None
+            assert client.name == "sse-test"
 
     @pytest.mark.asyncio
     async def test_http_transport(self) -> None:
         """Test that HTTP transport successfully connects to MCP server."""
         async with (
             mcp_server("http") as http_url,
-            streamablehttp_client(http_url) as client,
+            streamablehttp_client(http_url, name="http-test") as client,
         ):
             assert isinstance(client, MCPClient)
             assert client.session is not None
+            assert client.name == "http-test"
