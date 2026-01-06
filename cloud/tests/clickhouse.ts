@@ -14,7 +14,7 @@ const CLICKHOUSE_PASSWORD = process.env.CLICKHOUSE_PASSWORD ?? "clickhouse";
 const CLICKHOUSE_DATABASE =
   process.env.CLICKHOUSE_DATABASE ?? "mirascope_analytics";
 
-const isClickHouseAvailable = async (): Promise<boolean> => {
+export const checkClickHouseAvailable = async (): Promise<boolean> => {
   try {
     const response = await fetch(`${CLICKHOUSE_URL}/ping`, {
       method: "GET",
@@ -26,7 +26,7 @@ const isClickHouseAvailable = async (): Promise<boolean> => {
   }
 };
 
-const clickhouseAvailable = await isClickHouseAvailable();
+export const clickHouseAvailable = await checkClickHouseAvailable();
 
 /**
  * Test settings for ClickHouse.
@@ -67,7 +67,7 @@ const wrapEffectTest =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (name: any, fn: any, timeout?: any) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const runner = clickhouseAvailable ? original : vitestIt.effect.skip;
+      const runner = clickHouseAvailable ? original : vitestIt.effect.skip;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
       return runner(
         name,
