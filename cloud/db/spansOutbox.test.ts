@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { spansOutbox, outboxStatusEnum } from "./spansOutbox";
+import { spansOutbox, outboxStatusEnum } from "@/db/schema/spansOutbox";
 import { getTableName } from "drizzle-orm";
 
 describe("spansOutbox schema", () => {

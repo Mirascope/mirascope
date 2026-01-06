@@ -89,6 +89,5 @@ export type DatabaseTable =
   | typeof traces
   | typeof spans
   | typeof routerRequests
-  | typeof routerRequests
   | typeof creditReservations
   | typeof spansOutbox;
