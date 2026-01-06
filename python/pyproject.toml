@@ -85,6 +85,7 @@ dev = [
     "pytest-vcr>=1.0.2",
     "pytest-httpserver>=1.1.0",
     "datamodel-code-generator>=0.39.0",
+    "fastmcp>=0.3.0",
 ]
 
 
