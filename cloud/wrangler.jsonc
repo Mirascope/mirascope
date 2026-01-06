@@ -3,13 +3,13 @@
   "compatibility_date": "2025-06-17",
   "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": "@tanstack/react-start/server-entry",
+  "main": "server-entry.ts",
   "observability": {
     "enabled": true,
   },
-  //   "triggers": {
-  //     "crons": ["0 0 * * 7"]
-  //   }
+  "triggers": {
+    "crons": ["*/1 * * * *"],
+  },
   //   "env": {
   //     "production": {
   //       "name": "mirascope",

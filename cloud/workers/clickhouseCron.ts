@@ -1,16 +1,15 @@
 /**
  * @fileoverview Cloudflare Cron Trigger for outbox re-enqueue.
  *
- * Periodically re-enqueues pending outbox rows that failed to be
- * sent to the queue or were not processed within the timeout.
+ * Periodically processes pending outbox rows that failed to be
+ * synced or were not processed within the timeout.
  *
  * ## Responsibilities
  *
  * 1. **Lock Recovery**: Reclaims stale processing rows where the worker
  *    died mid-processing (lockedAt > LOCK_TIMEOUT)
  *
- * 2. **Re-enqueue**: Sends pending rows to Cloudflare Queue for processing
- *    by the Queue Consumer
+ * 2. **Process**: Polls pending rows and syncs them to ClickHouse
  *
  * ## Trigger Configuration
  *
@@ -21,12 +20,14 @@ import { Effect, Layer } from "effect";
 import { DrizzleORM } from "@/db/client";
 import { spansOutbox } from "@/db/schema";
 import { and, eq, lt, or, isNull, lte } from "drizzle-orm";
+import { ClickHouse } from "@/clickhouse/client";
 import {
   SettingsService,
   getSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
 import { DatabaseError } from "@/errors";
+import { processOutboxMessages } from "@/workers/outboxProcessor";
 
 // =============================================================================
 // Constants
@@ -62,20 +63,9 @@ interface ScheduledEvent {
 }
 
 /**
- * Cloudflare Queue binding type.
- */
-interface Queue {
-  sendBatch(
-    messages: Array<{ body: { spanId: string; operation: string } }>,
-  ): Promise<void>;
-}
-
-/**
  * Extended Cloudflare environment bindings for Cron Trigger.
  */
 export interface CronTriggerEnv extends CloudflareEnvironment {
-  /** Cloudflare Queue binding for spans outbox */
-  readonly SPANS_OUTBOX_QUEUE?: Queue;
   /** Hyperdrive binding for PostgreSQL connection pooling */
   readonly HYPERDRIVE?: {
     readonly connectionString: string;
@@ -96,12 +86,6 @@ export default {
    * @param env - Cloudflare Workers environment bindings
    */
   async scheduled(_event: ScheduledEvent, env: CronTriggerEnv): Promise<void> {
-    // Check required bindings
-    if (!env.SPANS_OUTBOX_QUEUE) {
-      console.warn("SPANS_OUTBOX_QUEUE binding not configured, skipping cron");
-      return;
-    }
-
     // Database connection string from Hyperdrive or direct URL
     const databaseUrl = env.HYPERDRIVE?.connectionString ?? env.DATABASE_URL;
     if (!databaseUrl) {
@@ -111,10 +95,9 @@ export default {
       return;
     }
 
-    const queue = env.SPANS_OUTBOX_QUEUE;
-
     const program = Effect.gen(function* () {
       const client = yield* DrizzleORM;
+      const workerId = `workers-cron-${Date.now()}`;
 
       const staleTime = new Date(Date.now() - LOCK_TIMEOUT_MS);
       const now = new Date();
@@ -190,27 +173,20 @@ export default {
         return;
       }
 
-      console.log(`Re-enqueuing ${pendingRows.length} pending outbox rows`);
+      console.log(`Processing ${pendingRows.length} pending outbox rows`);
 
-      // =====================================================================
-      // 3. Send to Cloudflare Queue
-      // =====================================================================
-      yield* Effect.tryPromise({
-        try: () =>
-          queue.sendBatch(
-            pendingRows.map((row) => ({
-              body: {
-                spanId: row.spanId,
-                operation: row.operation,
-              },
-            })),
-          ),
-        catch: (e) =>
-          new DatabaseError({
-            message: `Failed to send batch to queue: ${e instanceof Error ? e.message : String(e)}`,
-            cause: e,
-          }),
-      });
+      const messages = pendingRows.map((row) => ({
+        spanId: row.spanId,
+        operation: row.operation as "INSERT" | "UPDATE" | "DELETE",
+        messageKey: `${row.spanId}:${row.operation}`,
+      }));
+
+      yield* processOutboxMessages(
+        messages,
+        () => {},
+        () => {},
+        workerId,
+      );
     });
 
     // Build layers
@@ -219,11 +195,15 @@ export default {
       getSettingsFromEnvironment(env),
     );
     const drizzleLayer = DrizzleORM.layer({ connectionString: databaseUrl });
+    const clickhouseLayer = ClickHouse.Default.pipe(
+      Layer.provide(settingsLayer),
+    );
 
     // Run the program
     await Effect.runPromise(
       program.pipe(
         Effect.provide(drizzleLayer),
+        Effect.provide(clickhouseLayer),
         Effect.provide(settingsLayer),
         Effect.catchAll((error) => {
           console.error("Cron trigger error:", error);

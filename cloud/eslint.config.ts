@@ -19,6 +19,9 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+        // Cloudflare Workers globals
+        ExportedHandlerFetchHandler: "readonly",
+        ExecutionContext: "readonly",
       },
     },
     plugins: {

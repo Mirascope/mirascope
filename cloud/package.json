@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "bun run build && wrangler deploy",
+    "cron:dev": "bun run build && wrangler dev --test-scheduled --config dist/server/wrangler.json --port 8787",
+    "cron:trigger": "curl -s -o /dev/null -w \"%{http_code}\\n\" http://localhost:8787/__scheduled",
     "cf-typegen": "wrangler types",
     "db:start": "docker compose -f docker/compose.yml up -d",
     "db:stop": "docker compose -f docker/compose.yml down",
