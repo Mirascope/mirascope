@@ -45,6 +45,11 @@ import {
   updateAnnotationHandler,
   deleteAnnotationHandler,
 } from "@/api/annotations.handlers";
+import {
+  searchHandler,
+  getTraceDetailHandler,
+  getAnalyticsSummaryHandler,
+} from "@/api/search.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -202,6 +207,20 @@ const AnnotationsHandlersLive = HttpApiBuilder.group(
       .handle("delete", ({ path }) => deleteAnnotationHandler(path.id)),
 );
 
+const SearchHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "search",
+  (handlers) =>
+    handlers
+      .handle("search", ({ payload }) => searchHandler(payload))
+      .handle("getTraceDetail", ({ path }) =>
+        getTraceDetailHandler(path.traceId),
+      )
+      .handle("getAnalyticsSummary", ({ urlParams }) =>
+        getAnalyticsSummaryHandler(urlParams),
+      ),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -212,4 +231,5 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
+  Layer.provide(SearchHandlersLive),
 );

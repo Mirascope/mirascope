@@ -16,11 +16,13 @@ import {
   HttpApiBuilder,
   HttpServer,
 } from "@effect/platform";
-import { SettingsService } from "@/settings";
+import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouseSearchService } from "@/clickhouse/search";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
@@ -117,11 +119,25 @@ function createTestWebHandler(
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
 ) {
+  // ClickHouse services layer for test environment
+  const settings = getSettings();
+  const settingsLayer = Layer.succeed(SettingsService, {
+    ...settings,
+    env: "test",
+  });
+  const clickHouseClientLayer = ClickHouse.Default.pipe(
+    Layer.provide(settingsLayer),
+  );
+  const clickHouseSearchLayer = ClickHouseSearchService.Default.pipe(
+    Layer.provide(clickHouseClientLayer),
+  );
+
   const services = Layer.mergeAll(
-    Layer.succeed(SettingsService, { env: "test" }),
+    settingsLayer,
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl),
+    clickHouseSearchLayer,
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -388,11 +404,25 @@ function createSimpleTestWebHandler() {
   const databaseUrl = TEST_DATABASE_URL;
   const authResult: AuthResult = { user: mockUser };
 
+  // ClickHouse services layer for test environment
+  const settings = getSettings();
+  const settingsLayer = Layer.succeed(SettingsService, {
+    ...settings,
+    env: "test",
+  });
+  const clickHouseClientLayer = ClickHouse.Default.pipe(
+    Layer.provide(settingsLayer),
+  );
+  const clickHouseSearchLayer = ClickHouseSearchService.Default.pipe(
+    Layer.provide(clickHouseClientLayer),
+  );
+
   const services = Layer.mergeAll(
-    Layer.succeed(SettingsService, { env: "test" }),
+    settingsLayer,
     Layer.succeed(AuthenticatedUser, mockUser),
     Layer.succeed(Authentication, authResult),
     createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie),
+    clickHouseSearchLayer,
   );
 
   const ApiWithDependencies = Layer.mergeAll(
