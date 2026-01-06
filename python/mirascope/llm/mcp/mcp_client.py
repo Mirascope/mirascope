@@ -48,8 +48,7 @@ async def streamablehttp_client(
         ClientSession(read, write) as session,
     ):
         await session.initialize()
-        # TODO: Add e2e test with a real HTTP server
-        yield MCPClient(session)  # pragma: no cover
+        yield MCPClient(session)
 
 
 @contextlib.asynccontextmanager
@@ -77,6 +76,5 @@ async def sse_client(
             read, write, read_timeout_seconds=read_timeout_seconds
         ) as session,
     ):
-        # TODO: Add e2e test with a real sse client
-        await session.initialize()  # pragma: no cover
-        yield MCPClient(session)  # pragma: no cover
+        await session.initialize()
+        yield MCPClient(session)

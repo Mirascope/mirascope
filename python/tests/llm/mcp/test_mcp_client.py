@@ -3,104 +3,145 @@
 from __future__ import annotations
 
 import asyncio
+import socket
+import subprocess
 import sys
-from unittest.mock import Mock
+from collections.abc import AsyncGenerator
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
+from typing import Literal, overload
 
 import pytest
 from mcp.client.stdio import StdioServerParameters
-from mcp.server import Server
-from mcp.server.lowlevel.server import NotificationOptions
-from mcp.server.models import InitializationOptions
-from mcp.server.stdio import stdio_server
 
 from mirascope.llm.mcp import MCPClient, sse_client, stdio_client, streamablehttp_client
 
 
-class MinimalMCPServer:
-    """Minimal MCP server for testing."""
+@overload
+def mcp_server(
+    transport: Literal["stdio"],
+) -> AbstractAsyncContextManager[StdioServerParameters]: ...
+@overload
+def mcp_server(
+    transport: Literal["http", "sse"],
+) -> AbstractAsyncContextManager[str]: ...
+@asynccontextmanager
+async def mcp_server(
+    transport: Literal["http", "sse", "stdio"],
+) -> AsyncGenerator[str | StdioServerParameters, None]:
+    """Start an MCP test server with the specified transport.
 
-    def __init__(self) -> None:
-        """Initialize the minimal MCP server."""
-        self.server = Server("minimal-test-server")
+    Args:
+        transport: The transport type to use (http, sse, or stdio)
 
-    async def run(self) -> None:
-        """Run the server using stdio."""
+    Yields:
+        For http/sse: The URL to connect to the server
+        For stdio: StdioServerParameters to connect to the server
+    """
+    if transport == "stdio":
+        # Stdio doesn't need a subprocess - it's handled by the client
+        server_params = StdioServerParameters(
+            command=sys.executable,
+            args=["-m", "tests.fixtures.example_mcp_server"],
+            env=None,
+        )
+        yield server_params
+        return
 
-        async with stdio_server() as (read, write):
-            init_options = InitializationOptions(
-                server_name="minimal-test-server",
-                server_version="0.1.0",
-                capabilities=self.server.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
-                ),
-            )
-            await self.server.run(
-                read,
-                write,
-                init_options,
-                raise_exceptions=True,
-            )
+    # Find an available port for http/sse
+    with socket.socket() as s:
+        s.bind(("", 0))
+        port = s.getsockname()[1]
 
-
-async def main() -> None:
-    """Entry point for running the server."""
-    server = MinimalMCPServer()
-    await server.run()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
-
-def test_mcp_client_init_and_session_property() -> None:
-    """Test MCPClient initialization and session property access."""
-    mock_session = Mock()
-    client = MCPClient(mock_session)
-    assert client.session is mock_session
-
-
-@pytest.mark.asyncio
-async def test_mcp_client_list_tools_not_implemented() -> None:
-    """Test that list_tools raises NotImplementedError."""
-    mock_session = Mock()
-    client = MCPClient(mock_session)
-    with pytest.raises(NotImplementedError):
-        await client.list_tools()
-
-
-@pytest.mark.asyncio
-async def test_stdio_client_connects_to_server() -> None:
-    """Test that stdio_client successfully connects to MCP server."""
-    server_params = StdioServerParameters(
-        command=sys.executable,
-        args=["-m", "tests.llm.mcp.test_mcp_client"],
-        env=None,
+    # Start server in subprocess for proper isolation
+    proc = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "tests.fixtures.example_mcp_server",
+            "--transport",
+            transport,
+            "--port",
+            str(port),
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
 
-    async with stdio_client(server_params) as client:
-        # Verify we got a valid MCPClient instance with an active session
-        assert isinstance(client, MCPClient)
-        assert client.session is not None
+    try:
+        # Wait for server to be ready
+        for _ in range(20):
+            try:
+                _, writer = await asyncio.open_connection("127.0.0.1", port)
+                writer.close()
+                await writer.wait_closed()
+                break
+            except (ConnectionRefusedError, OSError):
+                await asyncio.sleep(0.1)
+
+        # Return appropriate URL based on transport
+        if transport == "sse":
+            yield f"http://127.0.0.1:{port}/sse"
+        else:  # http
+            yield f"http://127.0.0.1:{port}/mcp"
+    finally:
+        proc.terminate()
+        proc.wait(timeout=2)
 
 
-@pytest.mark.asyncio
-async def test_sse_client_creates_client() -> None:
-    """Test that sse_client attempts connection (will fail without real server)."""
-    # This test will fail to connect since there's no real SSE server
-    # but it validates the function signature and basic behavior
-    with pytest.raises((OSError, ConnectionError, TimeoutError, Exception)):  # noqa: B017
-        async with sse_client("http://localhost:9999/sse"):
-            # Should never get here due to connection failure
-            pass
+class TestMCPClient:
+    """Integration tests for MCPClient basic functionality."""
+
+    @pytest.mark.asyncio
+    async def test_init_and_session_property(self) -> None:
+        """Test MCPClient initialization and session property access."""
+        async with (
+            mcp_server("http") as server_url,
+            streamablehttp_client(server_url) as client,
+        ):
+            assert isinstance(client, MCPClient)
+            assert client.session is not None
+
+    @pytest.mark.asyncio
+    async def test_list_tools_not_implemented(self) -> None:
+        """Test that list_tools raises NotImplementedError."""
+        async with (
+            mcp_server("http") as server_url,
+            streamablehttp_client(server_url) as client,
+        ):
+            with pytest.raises(NotImplementedError):
+                await client.list_tools()
 
 
-@pytest.mark.asyncio
-async def test_streamablehttp_client_creates_client() -> None:
-    """Test that streamablehttp_client attempts connection (will fail without real server)."""
-    # This test will fail to connect since there's no real HTTP server
-    # but it validates the function signature and basic behavior
-    with pytest.raises((OSError, ConnectionError, TimeoutError, Exception)):  # noqa: B017
-        async with streamablehttp_client("http://localhost:9999"):
-            # Should never get here due to connection failure
-            pass
+class TestTransportModes:
+    """Tests for different MCP transport modes (stdio, SSE, HTTP).
+
+    These tests verify that each transport mode can successfully establish
+    a connection to an MCP server.
+    """
+
+    @pytest.mark.asyncio
+    async def test_stdio_transport(self) -> None:
+        """Test that stdio transport successfully connects to MCP server."""
+        async with (
+            mcp_server("stdio") as server_params,
+            stdio_client(server_params) as client,
+        ):
+            assert isinstance(client, MCPClient)
+            assert client.session is not None
+
+    @pytest.mark.asyncio
+    async def test_sse_transport(self) -> None:
+        """Test that SSE transport successfully connects to MCP server."""
+        async with mcp_server("sse") as sse_url, sse_client(sse_url) as client:
+            assert isinstance(client, MCPClient)
+            assert client.session is not None
+
+    @pytest.mark.asyncio
+    async def test_http_transport(self) -> None:
+        """Test that HTTP transport successfully connects to MCP server."""
+        async with (
+            mcp_server("http") as http_url,
+            streamablehttp_client(http_url) as client,
+        ):
+            assert isinstance(client, MCPClient)
+            assert client.session is not None
