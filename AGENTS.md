@@ -175,7 +175,7 @@ export const useEnvironments = (organizationId: string | null, projectId: string
 - **API Key-based**: Via `X-API-Key` header with `authenticateApiKeyWithUser()`
 - API keys are scoped to their creator via `createdById` column
 - Use `getCreator(apiKeyId)` to resolve the user who created an API key
-- `getAuthenticatedUser()` tries session auth first, then API key auth
+- `authenticate(...)` tries session auth first, then API key auth
 
 ### Testing Patterns
 
