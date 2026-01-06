@@ -97,7 +97,6 @@ export interface QueueConsumerEnvironment extends CloudflareEnvironment {
  * - uuid8: First 8 characters of a UUID for uniqueness
  *
  * Note: In Workers environment, os.hostname() and process.pid are not available.
- * This format is consistent with clickhouseSyncLocal.ts but adapted for Workers.
  */
 const generateWorkerId = (queueName: string): string => {
   const uuid = crypto.randomUUID().slice(0, 8);
