@@ -24,11 +24,13 @@ export default defineConfig(() => {
         srcDirectory: "app",
         prerender: {
           enabled: true,
+          crawlLinks: true,
           autoSubfolderIndex: true,
           autoStaticPathsDiscovery: true,
           concurrency: 14,
-          retryCount: 2,
-          retryDelay: 1000,
+          // NOTE: Bug in TanStack Start that explicit retries will let 404 errors slip through.
+          retryCount: 0,
+          retryDelay: 0,
           maxRedirects: 5,
           failOnError: true,
           filter: (page) => page.path.startsWith("/docs"),
