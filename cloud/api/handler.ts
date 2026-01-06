@@ -2,9 +2,11 @@ import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Context, Effect, Layer } from "effect";
 import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
-import { SettingsService } from "@/settings";
+import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
+import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouseSearchService } from "@/clickhouse/search";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
@@ -24,8 +26,19 @@ type WebHandlerOptions = {
 };
 
 function createWebHandler(options: WebHandlerOptions) {
+  const settings = getSettings();
+  const settingsLayer = Layer.succeed(SettingsService, {
+    ...settings,
+    env: options.environment,
+  });
+  const clickHouseClientLayer = ClickHouse.Default.pipe(
+    Layer.provide(settingsLayer),
+  );
+  const clickHouseSearchLayer = ClickHouseSearchService.Default.pipe(
+    Layer.provide(clickHouseClientLayer),
+  );
   const services = Layer.mergeAll(
-    Layer.succeed(SettingsService, { env: options.environment }),
+    settingsLayer,
     Layer.succeed(AuthenticatedUser, options.user),
     Layer.succeed(Authentication, {
       user: options.user,
@@ -33,6 +46,7 @@ function createWebHandler(options: WebHandlerOptions) {
     }),
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
+    clickHouseSearchLayer,
   );
 
   const ApiWithDependencies = Layer.merge(
