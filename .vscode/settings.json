@@ -30,7 +30,8 @@
   "search.exclude": {
     "**/cassettes": true,
     "**/mlx_lm_cassettes": true,
-    "**/snapshots": true
+    "**/snapshots": true,
+    "**/api/_generated": true,
   },
   "css.validate": false,
   "tailwindCSS.files.exclude": [
