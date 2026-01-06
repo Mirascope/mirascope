@@ -181,6 +181,26 @@ jobs:
     defaults:
       run:
         working-directory: cloud
+    services:
+      clickhouse:
+        image: clickhouse/clickhouse-server:24.10
+        ports:
+          - 8123:8123
+        env:
+          CLICKHOUSE_DB: mirascope_analytics
+          CLICKHOUSE_USER: ci
+          CLICKHOUSE_PASSWORD: ci_pass
+          CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+        options: >-
+          --health-cmd "wget --spider -q http://localhost:8123/ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CLICKHOUSE_URL: http://localhost:8123
+      CLICKHOUSE_USER: ci
+      CLICKHOUSE_PASSWORD: ci_pass
+      CLICKHOUSE_DATABASE: mirascope_analytics
     steps:
       - uses: actions/checkout@v4
 
@@ -189,6 +209,13 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Initialize ClickHouse
+        run: |
+          for script in docker/clickhouse/init/*.sql; do
+            echo "Running $script..."
+            curl -s "http://${CLICKHOUSE_USER}:${CLICKHOUSE_PASSWORD}@localhost:8123/" --data-binary @"$script"
+          done
 
       - name: Run `vitest` with code coverage
         run: bun run test:coverage
