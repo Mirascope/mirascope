@@ -56,6 +56,26 @@ def answer_ultimate_question() -> UltimateAnswer:
     )
 
 
+@test_server.tool()
+def process_answer(answer_data: UltimateAnswer) -> str:
+    """Process and format an ultimate answer.
+
+    This tool demonstrates complex schema with $defs by accepting
+    a nested Pydantic model as input.
+
+    Args:
+        answer_data: The answer data to process
+
+    Returns:
+        A formatted string describing the answer
+    """
+    return (
+        f"The answer {answer_data.answer} to '{answer_data.question}' "
+        f"was computed by {answer_data.computed_by.name} "
+        f"over {answer_data.computed_by.years_computed:,} years"
+    )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the example MCP test server")
     parser.add_argument(
