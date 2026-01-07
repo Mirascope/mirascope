@@ -22,6 +22,7 @@ def load_api_keys() -> None:
     # Set dummy keys if not present so that tests pass in CI.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
+    os.environ.setdefault("MIRASCOPE_API_KEY", "dummy-mirascope-key")
     os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
     os.environ.setdefault("TOGETHER_API_KEY", "dummy-together-key")
 
