@@ -223,6 +223,33 @@ describe.sequential("Functions API", (it) => {
     }),
   );
 
+  it.effect("DELETE /functions/:functionId - deletes function", () =>
+    Effect.gen(function* () {
+      const created = yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def delete_me(): pass",
+          hash: `delete-test-hash-${Date.now()}`,
+          signature: "def delete_me() -> None",
+          signatureHash: "delete-sig-hash",
+          name: "delete_me",
+        },
+      });
+
+      yield* apiKeyClient.functions.delete({
+        path: { id: created.id },
+      });
+
+      // Verify function is deleted by trying to get it
+      const result = yield* apiKeyClient.functions
+        .get({
+          path: { id: created.id },
+        })
+        .pipe(Effect.flip);
+
+      expect(result._tag).toBe("NotFoundError");
+    }),
+  );
+
   it.effect("Dispose API key client", () =>
     Effect.gen(function* () {
       if (disposeApiKeyClient) {

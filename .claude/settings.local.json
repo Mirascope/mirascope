@@ -28,7 +28,10 @@
       "WebFetch(domain:ai.google.dev)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:mirascope.com)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(bun run test:coverage:*)",
+      "Bash(bun run test:*)",
+      "Bash(/dev/null)"
     ],
     "deny": []
   }

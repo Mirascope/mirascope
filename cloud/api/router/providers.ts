@@ -103,7 +103,8 @@ export function getProviderApiKey(provider: ProviderName): string | undefined {
       return process.env.ANTHROPIC_API_KEY;
     case "google":
       return process.env.GEMINI_API_KEY;
-    default: /* v8 ignore next */ {
+    /* v8 ignore next 4 */
+    default: {
       const exhaustiveCheck: never = provider;
       throw new Error(`Unsupported provider: ${exhaustiveCheck as string}`);
     }
@@ -114,11 +115,10 @@ export function getProviderApiKey(provider: ProviderName): string | undefined {
  * Gets the provider IDs used in models.dev for a given provider.
  *
  * @param provider - The provider name
- * @returns Array of provider IDs, or [provider] as fallback
+ * @returns Array of provider IDs
  */
 export function getModelsDotDevProviderIds(provider: ProviderName): string[] {
-  const config = PROVIDER_CONFIGS[provider];
-  return config?.modelsDotDevIds || [provider];
+  return PROVIDER_CONFIGS[provider].modelsDotDevIds;
 }
 
 /**
@@ -135,7 +135,8 @@ export function getCostCalculator(provider: ProviderName): BaseCostCalculator {
       return new AnthropicCostCalculator();
     case "google":
       return new GoogleCostCalculator();
-    default: /* v8 ignore next */ {
+    /* v8 ignore next 4 */
+    default: {
       const exhaustiveCheck: never = provider;
       throw new Error(`Unsupported provider: ${exhaustiveCheck as string}`);
     }

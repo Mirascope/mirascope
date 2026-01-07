@@ -14,9 +14,9 @@ import {
 import { Database } from "@/db/database";
 import {
   NotFoundError,
-  AlreadyExistsError,
   DatabaseError,
   PermissionDeniedError,
+  AlreadyExistsError,
 } from "@/errors";
 
 // =============================================================================
@@ -111,49 +111,6 @@ describe("Annotations", () => {
       }),
     );
 
-    // TODO: Fix stack overflow issue in Effect error handling
-    it.effect.skip("returns AlreadyExistsError for duplicate annotation", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner, traceId, spanId } =
-          yield* TestSpanFixture;
-        const db = yield* Database;
-
-        // First annotation should succeed
-        yield* db.organizations.projects.environments.traces.annotations.create(
-          {
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              otelSpanId: spanId,
-              otelTraceId: traceId,
-              label: "pass",
-            },
-          },
-        );
-
-        // Second annotation for same span should fail
-        const result =
-          yield* db.organizations.projects.environments.traces.annotations
-            .create({
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              data: {
-                otelSpanId: spanId,
-                otelTraceId: traceId,
-                label: "pass",
-              },
-            })
-            .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(AlreadyExistsError);
-        expect((result as AlreadyExistsError).resource).toBe("annotation");
-      }),
-    );
-
     it.effect("returns PermissionDeniedError when user lacks permission", () =>
       Effect.gen(function* () {
         const { environment, project, org, projectViewer } =
@@ -205,12 +162,10 @@ describe("Annotations", () => {
       }),
     );
 
-    // TODO: Fix stack overflow issue in Effect error handling
-    it.effect.skip("returns DatabaseError on insert failure", () =>
+    it.effect("returns AlreadyExistsError for duplicate annotation", () =>
       Effect.gen(function* () {
         const db = yield* Database;
 
-        // Mock select to return a valid span, but insert to fail
         const result =
           yield* db.organizations.projects.environments.traces.annotations
             .create({
@@ -219,25 +174,184 @@ describe("Annotations", () => {
               projectId: "00000000-0000-0000-0000-000000000002",
               environmentId: "00000000-0000-0000-0000-000000000001",
               data: {
-                otelSpanId: "0123456789abcdef",
-                otelTraceId: "0123456789abcdef0123456789abcdef",
+                otelSpanId: "testspan",
+                otelTraceId: "testtrace",
+                label: "pass",
+              },
+            })
+            .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(AlreadyExistsError);
+        expect(result.message).toBe(
+          "Annotation for span testspan already exists",
+        );
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // span query (succeed)
+            .select([
+              {
+                id: "span-id",
+                traceId: "trace-id",
+                otelSpanId: "testspan",
+                otelTraceId: "testtrace",
+              },
+            ])
+            // annotation insert (unique constraint violation)
+            .insert(
+              Object.assign(new Error("duplicate key"), { code: "23505" }),
+            )
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns DatabaseError when span query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.annotations
+            .create({
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "testspan",
+                otelTraceId: "testtrace",
                 label: "pass",
               },
             })
             .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find span");
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // span query (fail)
+            .select(new Error("Span query failed"))
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns DatabaseError when annotation insert fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.annotations
+            .create({
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "testspan",
+                otelTraceId: "testtrace",
+                label: "pass",
+              },
+            })
+            .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create annotation");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // span query (succeed)
             .select([
               {
                 id: "span-id",
-                traceDbId: "trace-id",
-                otelSpanId: "0123456789abcdef",
-                otelTraceId: "0123456789abcdef0123456789abcdef",
+                traceId: "trace-id",
+                otelSpanId: "testspan",
+                otelTraceId: "testtrace",
               },
             ])
+            // annotation insert (fail)
             .insert(new Error("Insert failed"))
             .build(),
         ),
@@ -338,9 +452,40 @@ describe("Annotations", () => {
             .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get annotation");
       }).pipe(
         Effect.provide(
-          new MockDrizzleORM().select(new Error("Query failed")).build(),
+          new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // annotation query (fail)
+            .select(new Error("Query failed"))
+            .build(),
         ),
       ),
     );
@@ -558,9 +703,40 @@ describe("Annotations", () => {
             .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to update annotation");
       }).pipe(
         Effect.provide(
-          new MockDrizzleORM().update(new Error("Update failed")).build(),
+          new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // update query (fail)
+            .update(new Error("Update failed"))
+            .build(),
         ),
       ),
     );
@@ -692,9 +868,40 @@ describe("Annotations", () => {
             .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to delete annotation");
       }).pipe(
         Effect.provide(
-          new MockDrizzleORM().delete(new Error("Delete failed")).build(),
+          new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // delete query (fail)
+            .delete(new Error("Delete failed"))
+            .build(),
         ),
       ),
     );
@@ -1086,9 +1293,40 @@ describe("Annotations", () => {
             .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to list annotations");
       }).pipe(
         Effect.provide(
-          new MockDrizzleORM().select(new Error("Query failed")).build(),
+          new MockDrizzleORM()
+            // organizationMemberships.getRole (inside authorize)
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById result
+            .select([
+              {
+                role: "MEMBER",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // projectMemberships.getMembership (authorization)
+            .select([
+              {
+                role: "ADMIN",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+                createdAt: new Date(),
+              },
+            ])
+            // annotations query (fail)
+            .select(new Error("Query failed"))
+            .build(),
         ),
       ),
     );
