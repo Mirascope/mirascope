@@ -6,7 +6,7 @@ from mcp import ClientSession
 from mcp.client.sse import sse_client as mcp_sse_client
 from mcp.client.stdio import StdioServerParameters, stdio_client as mcp_stdio_client
 from mcp.client.streamable_http import (
-    streamablehttp_client as mcp_streamablehttp_client,
+    streamable_http_client as mcp_streamable_http_client,
 )
 
 from ..tools import AsyncTool
@@ -39,17 +39,18 @@ class MCPClient:
 
 
 @contextlib.asynccontextmanager
-async def streamablehttp_client(
+async def streamable_http_client(
     url: str,
-) -> AsyncIterator[MCPClient]:
+) -> AsyncIterator[MCPClient]:  # pragma: no cover
     """Create a Mirascope MCPClient using StreamableHTTP."""
+    # NOTE: If updating this function, unskip and manually run the TestTransportModes
+    # tests in test_mcp_client.py. (Skipped because they are flaky)
     async with (
-        mcp_streamablehttp_client(url) as (read, write, _),
+        mcp_streamable_http_client(url) as (read, write, _),
         ClientSession(read, write) as session,
     ):
         await session.initialize()
-        # TODO: Add e2e test with a real HTTP server
-        yield MCPClient(session)  # pragma: no cover
+        yield MCPClient(session)
 
 
 @contextlib.asynccontextmanager
@@ -69,14 +70,15 @@ async def stdio_client(
 async def sse_client(
     url: str,
     read_timeout_seconds: timedelta | None = None,
-) -> AsyncIterator[MCPClient]:
+) -> AsyncIterator[MCPClient]:  # pragma: no cover
     """Create a Mirascope MCPClient using sse."""
+    # NOTE: If updating this function, unskip and manually run the TestTransportModes
+    # tests in test_mcp_client.py. (Skipped because they are flaky)
     async with (
         mcp_sse_client(url) as (read, write),
         ClientSession(
             read, write, read_timeout_seconds=read_timeout_seconds
         ) as session,
     ):
-        # TODO: Add e2e test with a real sse client
-        await session.initialize()  # pragma: no cover
-        yield MCPClient(session)  # pragma: no cover
+        await session.initialize()
+        yield MCPClient(session)
