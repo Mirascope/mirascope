@@ -5,10 +5,12 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import path from "path";
 import { viteMDX } from "./vite-plugins/mdx";
+import { viteContent } from "./vite-plugins/content";
 import { viteImages } from "./vite-plugins/images";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
+  const contentDir = path.resolve(process.cwd(), "content");
   return {
     server: {
       port: 3000,
@@ -17,6 +19,7 @@ export default defineConfig(() => {
       tsConfigPaths({
         projects: ["./tsconfig.json"],
       }),
+      viteContent({ contentDir }),
       viteMDX(),
       viteImages({ viteEnvironments: ["client"] }),
       cloudflare({ viteEnvironment: { name: "ssr" } }),
@@ -33,12 +36,13 @@ export default defineConfig(() => {
           retryDelay: 0,
           maxRedirects: 5,
           failOnError: true,
-          filter: (page) => page.path.startsWith("/docs"),
+          filter: (page: { path: string }) =>
+            page.path.startsWith("/docs") || page.path.startsWith("/blog"),
           // todo(sebastian): Consider post-processing sitemap/pages to set the changefreq.
           // When using autoStaticPathsDiscovery, you can't set the sitemap changefreq or
           // other sitemap options per page—frequency can only be set on a per-page basis if you provide
           // an explicit pages array. For auto-discovered pages, control over frequency is not available.
-          onSuccess: ({ page }) => {
+          onSuccess: ({ page }: { page: { path: string } }) => {
             console.log(`Rendered ${page.path}!`);
             return { sitemap: { changefreq: "daily" } };
           },

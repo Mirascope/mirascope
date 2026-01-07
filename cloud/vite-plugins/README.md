@@ -19,7 +19,7 @@ Transforms `.mdx` files into importable ES modules at build time.
 Import MDX files directly in your components:
 
 ```typescript
-import { mdx } from "@/content/docs/v1/getting-started.mdx";
+import { mdx } from "@/content/docs/v1/placeholder.mdx";
 
 // mdx is a React component with metadata attached
 console.log(mdx.frontmatter.title); // Access frontmatter
@@ -40,12 +40,17 @@ description: Learn how to use Mirascope
 Your content here...
 ```
 
-### Adding New MDX Files
+For blog posts, include additional frontmatter:
 
-1. Create a new `.mdx` file in `content/docs/v1/`
-2. Add frontmatter (optional but recommended)
-3. Import and use it in your route components
-4. The plugin automatically handles compilation and metadata extraction
+```mdx
+---
+title: My Blog Post
+description: A description of the post
+date: "2024-01-15"
+author: "Author Name"
+readTime: "5 min read"
+---
+```
 
 ### Build-time vs Runtime
 
@@ -55,7 +60,64 @@ Your content here...
 
 ### Type Safety
 
-TypeScript types are provided in `app/types/mdx.d.ts` for proper autocomplete and type checking.
+TypeScript types are provided in:
+- `app/types/mdx.d.ts` - types for MDX imports
+
+## Content Plugin (`content.ts`)
+
+Scans the content directory and maintains metadata about all MDX files for listing and querying.
+
+### Features
+
+- **Directory scanning**: Scans `content/` on startup with parallel processing
+- **Metadata extraction**: Builds metadata for all MDX files (title, description, slug, route, etc.)
+- **Virtual module**: Exposes meta via `virtual:content-meta`
+- **Hot Module Replacement**: Meta is automatically updated when files change
+
+### Usage
+
+Access content metadata via the virtual module:
+
+```typescript
+// @ts-expect-error - virtual module resolved by vite plugin
+import { blogPosts, allContent } from "virtual:content-meta";
+
+// blogPosts: BlogMeta[] - blog posts sorted by date (newest first)
+// allContent: ContentMeta[] - all MDX content entries
+
+blogPosts.forEach(post => {
+  console.log(post.title, post.date, post.route);
+});
+```
+
+### Content Types
+
+The plugin recognizes content types based on directory structure:
+- `content/blog/` → type: "blog"
+- `content/docs/` → type: "docs"
+- `content/policy/` → type: "policy"
+- `content/dev/` → type: "dev"
+
+### Blog Metadata
+
+Blog posts include additional fields:
+- `date`: Publication date
+- `author`: Author name
+- `readTime`: Estimated reading time
+- `lastUpdated`: Last update date
+
+### Adding New Content
+
+1. Create a new `.mdx` file in the appropriate `content/` subdirectory
+2. Add frontmatter with required fields
+3. The meta is automatically updated during development (HMR)
+4. Use `blogPosts` or `allContent` to list and query content
+
+### Type Safety
+
+TypeScript types are provided in:
+- `app/types/virtual-content-meta.d.ts` - types for the virtual module
+- `app/lib/content/types.ts` - `ContentMeta` and `BlogMeta` interfaces
 
 ## Images Plugin (`images.ts`)
 

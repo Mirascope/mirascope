@@ -27,77 +27,8 @@ import { compile } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 import rehypePrettyCode from "rehype-pretty-code";
 import fs from "node:fs";
-
-/**
- * Parse frontmatter from MDX content
- */
-function parseFrontmatter(content: string): {
-  frontmatter: Record<string, string>;
-  content: string;
-} {
-  if (!content.startsWith("---")) {
-    return { frontmatter: {}, content };
-  }
-
-  const parts = content.split("---");
-
-  if (parts.length >= 3 && parts[1].trim() === "") {
-    return {
-      frontmatter: {},
-      content: parts.slice(2).join("---").trimStart(),
-    };
-  }
-
-  if (parts.length >= 3) {
-    const frontmatterStr = parts[1].trim();
-    const contentParts = parts.slice(2).join("---");
-    const cleanContent = contentParts.trimStart();
-
-    const frontmatter: Record<string, string> = {};
-
-    frontmatterStr.split("\n").forEach((line) => {
-      const trimmedLine = line.trim();
-      if (!trimmedLine) return;
-
-      const colonIndex = trimmedLine.indexOf(":");
-      if (colonIndex > 0) {
-        const key = trimmedLine.slice(0, colonIndex).trim();
-        const value = trimmedLine.slice(colonIndex + 1).trim();
-        frontmatter[key] = value.replace(/^["'](.*)["']$/, "$1");
-      }
-    });
-
-    return { frontmatter, content: cleanContent };
-  }
-
-  return { frontmatter: {}, content };
-}
-
-/**
- * Extract table of contents from MDX content
- */
-function extractTOC(content: string): Array<{
-  id: string;
-  text: string;
-  level: number;
-}> {
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-  const toc: Array<{ id: string; text: string; level: number }> = [];
-  let match;
-
-  while ((match = headingRegex.exec(content)) !== null) {
-    const level = match[1].length;
-    const text = match[2].trim();
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    toc.push({ id, text, level });
-  }
-
-  return toc;
-}
+import { parseFrontmatter } from "../app/lib/content/frontmatter";
+import { extractTOC } from "../app/lib/content/toc";
 
 export function viteMDX(): Plugin {
   return {
