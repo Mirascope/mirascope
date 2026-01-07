@@ -60,6 +60,19 @@ export abstract class BaseCostCalculator {
   }
 
   /**
+   * Extracts token usage from a streaming chunk.
+   *
+   * Must be implemented by each provider-specific calculator to handle
+   * streaming-specific formats (e.g., OpenAI Responses API, Anthropic deltas).
+   *
+   * @param chunk - A parsed chunk from the streaming response
+   * @returns Token usage if found, null otherwise
+   */
+  public abstract extractUsageFromStreamChunk(
+    chunk: unknown,
+  ): TokenUsage | null;
+
+  /**
    * Main entry point: calculates usage and cost for a request.
    *
    * @param modelId - The model ID from the request
@@ -183,6 +196,30 @@ export class OpenAICostCalculator extends BaseCostCalculator {
 
     return null;
   }
+
+  /**
+   * Extracts usage from streaming chunks, handling OpenAI Responses API format.
+   *
+   * OpenAI Responses API sends usage in a special wrapper:
+   * { type: "response.completed", response: { usage: { ... } } }
+   */
+  public extractUsageFromStreamChunk(chunk: unknown): TokenUsage | null {
+    if (typeof chunk !== "object" || chunk === null) return null;
+
+    const obj = chunk as Record<string, unknown>;
+
+    // Handle OpenAI Responses API format
+    if (obj.type === "response.completed" && obj.response) {
+      const response = obj.response as Record<string, unknown>;
+      if (response.usage) {
+        // Extract from nested response.usage
+        return this.extractUsage(response);
+      }
+    }
+
+    // Fall back to standard extraction (handles Completions API)
+    return this.extractUsage(chunk);
+  }
 }
 
 /**
@@ -289,6 +326,16 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
     // Defensive: fallback for API versions without detailed breakdown
     return (BigInt(cacheWriteTokens) * cacheWritePrice) / 1_000_000n;
   }
+
+  /**
+   * Extracts usage from streaming chunks.
+   *
+   * Anthropic streams usage in the final message_stop or message_delta event.
+   */
+  public extractUsageFromStreamChunk(chunk: unknown): TokenUsage | null {
+    // Delegate to standard extraction - Anthropic format is the same for streaming
+    return this.extractUsage(chunk);
+  }
 }
 
 /**
@@ -330,5 +377,15 @@ export class GoogleCostCalculator extends BaseCostCalculator {
       outputTokens: metadata.candidatesTokenCount,
       cacheReadTokens: metadata.cachedContentTokenCount,
     };
+  }
+
+  /**
+   * Extracts usage from streaming chunks.
+   *
+   * Google streams usage in the final chunk with usageMetadata.
+   */
+  public extractUsageFromStreamChunk(chunk: unknown): TokenUsage | null {
+    // Delegate to standard extraction - Google format is the same for streaming
+    return this.extractUsage(chunk);
   }
 }

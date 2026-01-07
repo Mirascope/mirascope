@@ -3,12 +3,13 @@ import { Effect } from "effect";
 import { authenticate } from "@/auth";
 import { Database } from "@/db";
 import { handleErrors, handleDefects } from "@/api/utils";
-import { proxyToProvider, extractModelFromRequest } from "@/api/router/proxy";
+import { proxyToProvider } from "@/api/router/proxy";
 import {
   PROVIDER_CONFIGS,
   isValidProvider,
   getProviderApiKey,
   getCostCalculator,
+  extractModelId,
 } from "@/api/router/providers";
 import { InternalError } from "@/errors";
 import { formatCostForDisplay } from "@/api/router/cost-utils";
@@ -71,21 +72,22 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
             });
           }
 
-          // Extract model from request body for cost calculation
+          // Extract model ID using provider-specific logic
           const requestBody = yield* Effect.tryPromise({
             try: () => request.clone().text(),
             catch: () => null as string | null,
           });
 
-          let modelId: string | null = null;
+          let parsedBody: unknown = null;
           if (requestBody) {
             try {
-              const parsed: unknown = JSON.parse(requestBody);
-              modelId = extractModelFromRequest(parsed);
+              parsedBody = JSON.parse(requestBody);
             } catch {
               // Not JSON, that's ok
             }
           }
+
+          const modelId = extractModelId(provider, request, parsedBody);
 
           // Proxy to provider with internal API key
           const proxyResult = yield* proxyToProvider(
