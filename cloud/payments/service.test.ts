@@ -53,6 +53,9 @@ describe("Payments", () => {
           expect(typeof payments.products.router.chargeUsageMeter).toBe(
             "function",
           );
+          expect(typeof payments.products.router.chargeForUsage).toBe(
+            "function",
+          );
           expect(typeof payments.products.router.reserveFunds).toBe("function");
           expect(typeof payments.products.router.settleFunds).toBe("function");
           expect(typeof payments.products.router.releaseFunds).toBe("function");

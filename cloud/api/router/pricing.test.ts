@@ -4,7 +4,6 @@ import {
   fetchModelsDotDevPricingData,
   getModelsDotDevPricingData,
   getModelPricing,
-  calculateCost,
   clearPricingCache,
 } from "@/api/router/pricing";
 
@@ -224,93 +223,67 @@ describe("Pricing", () => {
 
       expect(result).toBeNull();
     });
-  });
 
-  describe("calculateCost", () => {
-    it("should calculate cost correctly for basic usage in centi-cents", () => {
-      // Pricing in centi-cents per million tokens
-      // $0.15 per million = 1500cc, $0.60 per million = 6000cc
-      const pricing = {
-        input: 1500n,
-        output: 6000n,
+    it("should return null for model with invalid cache pricing (NaN)", async () => {
+      const mockData = {
+        openai: {
+          id: "openai",
+          name: "OpenAI",
+          models: {
+            "invalid-model": {
+              id: "invalid-model",
+              name: "Invalid Model",
+              cost: {
+                input: 0.15,
+                output: 0.6,
+                cache_read: NaN, // Invalid cache pricing
+              },
+            },
+          },
+        },
       };
 
-      const usage = {
-        inputTokens: 1000,
-        outputTokens: 500,
-      };
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      }) as unknown as typeof fetch;
 
-      const result = calculateCost(pricing, usage);
+      const result = await Effect.runPromise(
+        getModelPricing("openai", "invalid-model"),
+      );
 
-      // 1000 tokens / 1M * 1500cc = 1.5cc (rounds to 1)
-      expect(result.inputCost).toBe(1n);
-      // 500 tokens / 1M * 6000cc = 3cc
-      expect(result.outputCost).toBe(3n);
-      expect(result.totalCost).toBe(4n);
-      expect(result.cacheReadCost).toBeUndefined();
-      expect(result.cacheWriteCost).toBeUndefined();
+      expect(result).toBeNull();
     });
 
-    it("should calculate cost with cache tokens in centi-cents", () => {
-      const pricing = {
-        input: 1500n,
-        output: 6000n,
-        cache_read: 750n,
-        cache_write: 1875n,
+    it("should return null for model with negative cache pricing", async () => {
+      const mockData = {
+        openai: {
+          id: "openai",
+          name: "OpenAI",
+          models: {
+            "invalid-model": {
+              id: "invalid-model",
+              name: "Invalid Model",
+              cost: {
+                input: 0.15,
+                output: 0.6,
+                cache_write: -0.5, // Negative cache pricing
+              },
+            },
+          },
+        },
       };
 
-      const usage = {
-        inputTokens: 1000,
-        outputTokens: 500,
-        cacheReadTokens: 200,
-        cacheWriteTokens: 100,
-      };
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      }) as unknown as typeof fetch;
 
-      const result = calculateCost(pricing, usage);
+      const result = await Effect.runPromise(
+        getModelPricing("openai", "invalid-model"),
+      );
 
-      expect(result.inputCost).toBe(1n); // 1000 / 1M * 1500cc = 1.5cc -> 1cc
-      expect(result.outputCost).toBe(3n); // 500 / 1M * 6000cc = 3cc
-      expect(result.cacheReadCost).toBe(0n); // 200 / 1M * 750cc = 0.15cc -> 0cc
-      expect(result.cacheWriteCost).toBe(0n); // 100 / 1M * 1875cc = 0.1875cc -> 0cc
-      expect(result.totalCost).toBe(4n); // 1 + 3 + 0 + 0
-    });
-
-    it("should handle missing cache pricing", () => {
-      const pricing = {
-        input: 1500n,
-        output: 6000n,
-      };
-
-      const usage = {
-        inputTokens: 1000,
-        outputTokens: 500,
-        cacheReadTokens: 200,
-        cacheWriteTokens: 100,
-      };
-
-      const result = calculateCost(pricing, usage);
-
-      expect(result.cacheReadCost).toBeUndefined();
-      expect(result.cacheWriteCost).toBeUndefined();
-      expect(result.totalCost).toBe(4n);
-    });
-
-    it("should handle zero tokens", () => {
-      const pricing = {
-        input: 1500n,
-        output: 6000n,
-      };
-
-      const usage = {
-        inputTokens: 0,
-        outputTokens: 0,
-      };
-
-      const result = calculateCost(pricing, usage);
-
-      expect(result.inputCost).toBe(0n);
-      expect(result.outputCost).toBe(0n);
-      expect(result.totalCost).toBe(0n);
+      expect(result).toBeNull();
     });
   });
 

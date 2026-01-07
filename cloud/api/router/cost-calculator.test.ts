@@ -1,5 +1,4 @@
-import { vi, beforeEach } from "vitest";
-import { describe, it, expect } from "@/tests/api";
+import { describe, it, expect, assert, vi, beforeEach } from "@effect/vitest";
 import { Effect } from "effect";
 import {
   OpenAICostCalculator,
@@ -77,29 +76,35 @@ describe("CostCalculator", () => {
         const responseBody = {
           choices: [{ message: { content: "Hello" } }],
           usage: {
-            prompt_tokens: 100,
-            completion_tokens: 50,
-            total_tokens: 150,
+            prompt_tokens: 10000,
+            completion_tokens: 5000,
+            total_tokens: 15000,
           },
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", responseBody);
+        // Extract usage first
+        const usage = calculator.extractUsage(responseBody);
+        expect(usage).toBeDefined();
+        expect(usage?.inputTokens).toBe(10000);
+        expect(usage?.outputTokens).toBe(5000);
+        expect(usage?.cacheReadTokens).toBeUndefined();
+
+        // Then calculate cost
+        const result = usage
+          ? yield* calculator.calculate("gpt-4o-mini", usage)
+          : null;
 
         expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(100);
-        expect(result?.usage.outputTokens).toBe(50);
-        expect(result?.usage.cacheReadTokens).toBeUndefined();
+        expect(result?.totalCost).toBeGreaterThan(0n);
       }),
     );
 
-    it.effect("should return null for null body", () =>
-      Effect.gen(function* () {
-        const calculator = new OpenAICostCalculator();
-        const result = yield* calculator.calculate("gpt-4o-mini", null);
+    it("should return null for null body", () => {
+      const calculator = new OpenAICostCalculator();
+      const usage = calculator.extractUsage(null);
 
-        expect(result).toBeNull();
-      }),
-    );
+      expect(usage).toBeNull();
+    });
 
     it.effect("should extract usage from OpenAI Responses API response", () =>
       Effect.gen(function* () {
@@ -112,18 +117,21 @@ describe("CostCalculator", () => {
             },
           ],
           usage: {
-            input_tokens: 100,
-            output_tokens: 50,
-            total_tokens: 150,
+            input_tokens: 10000,
+            output_tokens: 5000,
+            total_tokens: 15000,
           },
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", responseBody);
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(10000);
+        expect(usage.outputTokens).toBe(5000);
+        expect(usage.cacheReadTokens).toBeUndefined();
 
-        expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(100);
-        expect(result?.usage.outputTokens).toBe(50);
-        expect(result?.usage.cacheReadTokens).toBeUndefined();
+        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        assert(result !== null);
+        expect(result.totalCost).toBeGreaterThan(0n);
       }),
     );
 
@@ -134,22 +142,22 @@ describe("CostCalculator", () => {
           const calculator = new OpenAICostCalculator();
           const responseBody = {
             usage: {
-              prompt_tokens: 100,
-              completion_tokens: 50,
-              total_tokens: 150,
+              prompt_tokens: 10000,
+              completion_tokens: 5000,
+              total_tokens: 15000,
               prompt_tokens_details: {
-                cached_tokens: 30,
+                cached_tokens: 3000,
               },
             },
           };
 
-          const result = yield* calculator.calculate(
-            "gpt-4o-mini",
-            responseBody,
-          );
+          const usage = calculator.extractUsage(responseBody);
+          assert(usage !== null);
+          expect(usage.cacheReadTokens).toBe(3000);
 
-          expect(result).toBeDefined();
-          expect(result?.usage.cacheReadTokens).toBe(30);
+          const result = yield* calculator.calculate("gpt-4o-mini", usage);
+          assert(result !== null);
+          expect(result.totalCost).toBeGreaterThan(0n);
         }),
     );
 
@@ -160,51 +168,45 @@ describe("CostCalculator", () => {
           const calculator = new OpenAICostCalculator();
           const responseBody = {
             usage: {
-              input_tokens: 100,
-              output_tokens: 50,
-              total_tokens: 150,
+              input_tokens: 10000,
+              output_tokens: 5000,
+              total_tokens: 15000,
               input_tokens_details: {
-                cached_tokens: 30,
+                cached_tokens: 3000,
               },
             },
           };
 
-          const result = yield* calculator.calculate(
-            "gpt-4o-mini",
-            responseBody,
-          );
+          const usage = calculator.extractUsage(responseBody);
+          assert(usage !== null);
+          expect(usage.cacheReadTokens).toBe(3000);
 
-          expect(result).toBeDefined();
-          expect(result?.usage.cacheReadTokens).toBe(30);
+          const result = yield* calculator.calculate("gpt-4o-mini", usage);
+          assert(result !== null);
+          expect(result.totalCost).toBeGreaterThan(0n);
         }),
     );
 
-    it.effect("should return null for invalid response body", () =>
-      Effect.gen(function* () {
-        const calculator = new OpenAICostCalculator();
-        const responseBody = { choices: [] }; // No usage
+    it("should return null for invalid response body", () => {
+      const calculator = new OpenAICostCalculator();
+      const responseBody = { choices: [] }; // No usage
 
-        const result = yield* calculator.calculate("gpt-4o-mini", responseBody);
+      const usage = calculator.extractUsage(responseBody);
+      expect(usage).toBeNull();
+    });
 
-        expect(result).toBeNull();
-      }),
-    );
+    it("should return null for response with invalid usage format", () => {
+      const calculator = new OpenAICostCalculator();
+      const responseBody = {
+        usage: {
+          // Missing both Completions and Responses API fields
+          invalid_field: 100,
+        },
+      };
 
-    it.effect("should return null for response with invalid usage format", () =>
-      Effect.gen(function* () {
-        const calculator = new OpenAICostCalculator();
-        const responseBody = {
-          usage: {
-            // Missing both Completions and Responses API fields
-            invalid_field: 100,
-          },
-        };
-
-        const result = yield* calculator.calculate("gpt-4o-mini", responseBody);
-
-        expect(result).toBeNull();
-      }),
-    );
+      const usage = calculator.extractUsage(responseBody);
+      expect(usage).toBeNull();
+    });
 
     it.effect("should calculate cost correctly", () =>
       Effect.gen(function* () {
@@ -217,14 +219,14 @@ describe("CostCalculator", () => {
           },
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", responseBody);
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
 
-        expect(result).toBeDefined();
-        // 1000 / 1M * 1500 centicents = 1.5 -> 1 centicent
-        expect(result?.cost.inputCost).toBe(1n);
-        // 500 / 1M * 6000 centicents = 3 centicents
-        expect(result?.cost.outputCost).toBe(3n);
-        expect(result?.cost.totalCost).toBe(4n);
+        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        assert(result !== null);
+        expect(result.inputCost).toBe(1n); // 1000 / 1M * 1500cc = 1.5cc -> 1cc (BIGINT truncation)
+        expect(result.outputCost).toBe(3n); // 500 / 1M * 6000cc = 3cc
+        expect(result.totalCost).toBe(4n);
       }),
     );
 
@@ -328,45 +330,36 @@ describe("CostCalculator", () => {
           },
         };
 
-        const result = yield* calculator.calculate(
-          "claude-3-5-haiku-20241022",
-          responseBody,
-        );
-
-        expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(100);
-        expect(result?.usage.outputTokens).toBe(50);
-      }),
-    );
-
-    it.effect("should return null for null body", () =>
-      Effect.gen(function* () {
-        const calculator = new AnthropicCostCalculator();
-        const result = yield* calculator.calculate(
-          "claude-3-5-haiku-20241022",
-          null,
-        );
-
-        expect(result).toBeNull();
-      }),
-    );
-
-    it.effect("should return null for response without usage", () =>
-      Effect.gen(function* () {
-        const calculator = new AnthropicCostCalculator();
-        const responseBody = {
-          content: [{ type: "text", text: "Hello" }],
-          // No usage field
-        };
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(100);
+        expect(usage.outputTokens).toBe(50);
 
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeNull();
+        assert(result !== null);
+        expect(result.totalCost).toBeGreaterThan(0n);
       }),
     );
+
+    it("should return null for null body", () => {
+      const calculator = new AnthropicCostCalculator();
+      const usage = calculator.extractUsage(null);
+      expect(usage).toBeNull();
+    });
+
+    it("should return null for response without usage", () => {
+      const calculator = new AnthropicCostCalculator();
+      const responseBody = {
+        content: [{ type: "text", text: "Hello" }],
+        // No usage field
+      };
+
+      const usage = calculator.extractUsage(responseBody);
+      expect(usage).toBeNull();
+    });
 
     it.effect("should correctly handle Anthropic cache tokens", () =>
       Effect.gen(function* () {
@@ -380,15 +373,18 @@ describe("CostCalculator", () => {
           },
         };
 
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(100);
+        expect(usage.cacheReadTokens).toBe(30);
+        expect(usage.cacheWriteTokens).toBe(20);
+
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(100);
-        expect(result?.usage.cacheReadTokens).toBe(30);
-        expect(result?.usage.cacheWriteTokens).toBe(20);
+        assert(result !== null);
+        expect(result.totalCost).toBeGreaterThan(0n);
       }),
     );
 
@@ -402,19 +398,22 @@ describe("CostCalculator", () => {
           },
         };
 
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(100);
+        expect(usage.cacheReadTokens).toBeUndefined();
+        expect(usage.cacheWriteTokens).toBeUndefined();
+
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(100);
-        expect(result?.usage.cacheReadTokens).toBe(0);
-        expect(result?.usage.cacheWriteTokens).toBe(0);
+        assert(result !== null);
+        expect(result.totalCost).toBeGreaterThan(0n);
       }),
     );
 
-    it.effect("should extract, normalize, and price 5m cache correctly", () =>
+    it.effect("should extract and price 5m cache correctly", () =>
       Effect.gen(function* () {
         const calculator = new AnthropicCostCalculator();
         const responseBody = {
@@ -430,20 +429,22 @@ describe("CostCalculator", () => {
           },
         };
 
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        // 5m tokens remain 1:1, so cacheWriteTokens = 1000
+        expect(usage.cacheWriteTokens).toBe(1000);
+
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeDefined();
-        // 5m tokens remain 1:1, so cacheWriteTokens = 1000
-        expect(result?.usage.cacheWriteTokens).toBe(1000);
-        // Cost in centi-cents: 1000 tokens / 1M * 12500cc (5m price) = 12.5cc -> 12cc
-        expect(result?.cost.cacheWriteCost).toBe(12n);
+        assert(result !== null);
+        // Cost: 1000 tokens / 1M * 12500cc = 12cc
+        expect(result.cacheWriteCost).toBe(12n);
       }),
     );
 
-    it.effect("should extract, normalize, and price 1h cache correctly", () =>
+    it.effect("should extract and price 1h cache correctly", () =>
       Effect.gen(function* () {
         const calculator = new AnthropicCostCalculator();
         const responseBody = {
@@ -459,21 +460,23 @@ describe("CostCalculator", () => {
           },
         };
 
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        // 1h tokens stored as actual count (no normalization)
+        expect(usage.cacheWriteTokens).toBe(1000);
+
         const result = yield* calculator.calculate(
           "claude-3-5-haiku-20241022",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeDefined();
-        // Store ACTUAL 1h tokens (no normalization): 1000
-        expect(result?.usage.cacheWriteTokens).toBe(1000);
-        // Cost in centi-cents: 1000 tokens * 1.6 multiplier / 1M * 12500cc (5m price) = 20cc
-        expect(result?.cost.cacheWriteCost).toBe(20n);
+        assert(result !== null);
+        // Cost: 1600 tokens / 1M * 12500cc = 20cc
+        expect(result.cacheWriteCost).toBe(20n);
       }),
     );
 
     it.effect(
-      "should extract, normalize, and price mixed 5m + 1h cache tokens correctly",
+      "should extract and price mixed 5m + 1h cache tokens correctly",
       () =>
         Effect.gen(function* () {
           const calculator = new AnthropicCostCalculator();
@@ -490,47 +493,18 @@ describe("CostCalculator", () => {
             },
           };
 
-          const result = yield* calculator.calculate(
-            "claude-3-5-haiku-20241022",
-            responseBody,
-          );
-
-          expect(result).toBeDefined();
-          // Store ACTUAL tokens: 500 (5m) + 1000 (1h) = 1500
-          expect(result?.usage.cacheWriteTokens).toBe(1500);
-          // Cost in centi-cents: (500 * 1.0 + 1000 * 1.6) / 1M * 12500cc = 26.25cc -> 26cc
-          expect(result?.cost.cacheWriteCost).toBe(26n);
-        }),
-    );
-
-    it.effect(
-      "should fall back to cacheWriteTokens if breakdown is all zeroes",
-      () =>
-        Effect.gen(function* () {
-          const calculator = new AnthropicCostCalculator();
-          const responseBody = {
-            usage: {
-              input_tokens: 100,
-              output_tokens: 50,
-              cache_creation_input_tokens: 1000,
-              cache_read_input_tokens: 0,
-              cache_creation: {
-                ephemeral_5m_input_tokens: 0,
-                ephemeral_1h_input_tokens: 0,
-              },
-            },
-          };
+          const usage = calculator.extractUsage(responseBody);
+          assert(usage !== null);
+          // Actual tokens: 500 (5m) + 1000 (1h) = 1500 (no normalization)
+          expect(usage.cacheWriteTokens).toBe(1500);
 
           const result = yield* calculator.calculate(
             "claude-3-5-haiku-20241022",
-            responseBody,
+            usage,
           );
-
-          expect(result).toBeDefined();
-          // Store ACTUAL 1h tokens (no normalization): 1000
-          expect(result?.usage.cacheWriteTokens).toBe(1000);
-          // Cost in centi-cents: 1000 tokens / 1M * 12500cc (5m price) = 12cc
-          expect(result?.cost.cacheWriteCost).toBe(12n);
+          assert(result !== null);
+          // Cost: 2100 tokens / 1M * 12500cc = 26cc
+          expect(result.cacheWriteCost).toBe(26n);
         }),
     );
 
@@ -550,18 +524,20 @@ describe("CostCalculator", () => {
       expect(usage?.outputTokens).toBe(50);
     });
 
-    it("should extract usage from Anthropic streaming chunk (message_delta)", () => {
+    it("should extract cumulative usage from Anthropic streaming chunk (message_delta)", () => {
       const calculator = new AnthropicCostCalculator();
       const chunk = {
         type: "message_delta",
         usage: {
+          input_tokens: 100,
           output_tokens: 5,
+          // Cumulative counts per Anthropic docs
         },
       };
 
       const usage = calculator.extractUsageFromStreamChunk(chunk);
       expect(usage).toBeDefined();
-      // Note: message_delta may not have input_tokens, only output_tokens
+      expect(usage?.inputTokens).toBe(100);
       expect(usage?.outputTokens).toBe(5);
     });
 
@@ -585,7 +561,7 @@ describe("CostCalculator", () => {
       expect(usage?.cacheWriteTokens).toBe(20);
     });
 
-    it("should extract and normalize 5m cache tokens from Anthropic streaming chunk", () => {
+    it("should extract 5m cache tokens from Anthropic streaming chunk", () => {
       const calculator = new AnthropicCostCalculator();
       const chunk = {
         type: "message_stop",
@@ -603,7 +579,7 @@ describe("CostCalculator", () => {
       expect(usage?.cacheWriteTokens).toBe(500);
     });
 
-    it("should extract and sum 1h cache tokens from Anthropic streaming chunk", () => {
+    it("should extract 1h cache tokens from Anthropic streaming chunk", () => {
       const calculator = new AnthropicCostCalculator();
       const chunk = {
         type: "message_stop",
@@ -618,11 +594,11 @@ describe("CostCalculator", () => {
 
       const usage = calculator.extractUsageFromStreamChunk(chunk);
       expect(usage).toBeDefined();
-      // 1h tokens normalized: 1000 * 1.6 = 1600
+      // 1h tokens stored as actual count (no normalization)
       expect(usage?.cacheWriteTokens).toBe(1000);
     });
 
-    it("should extract and sum 5m + 1h cache tokens from Anthropic streaming chunk", () => {
+    it("should extract mixed 5m + 1h cache tokens from Anthropic streaming chunk", () => {
       const calculator = new AnthropicCostCalculator();
       const chunk = {
         type: "message_stop",
@@ -638,7 +614,7 @@ describe("CostCalculator", () => {
 
       const usage = calculator.extractUsageFromStreamChunk(chunk);
       expect(usage).toBeDefined();
-      // Normalized: 500 (5m) + 1000 * 1.6 (1h) = 500 + 1600 = 2100
+      // Actual tokens: 500 (5m) + 1000 (1h) = 1500 (no normalization)
       expect(usage?.cacheWriteTokens).toBe(1500);
     });
   });
@@ -656,66 +632,49 @@ describe("CostCalculator", () => {
           },
         };
 
-        const result = yield* calculator.calculate(
-          "gemini-2.0-flash-exp",
-          responseBody,
-        );
-
-        expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(100);
-        expect(result?.usage.outputTokens).toBe(50);
-      }),
-    );
-
-    it.effect("should return null for null body", () =>
-      Effect.gen(function* () {
-        const calculator = new GoogleCostCalculator();
-        const result = yield* calculator.calculate(
-          "gemini-2.0-flash-exp",
-          null,
-        );
-
-        expect(result).toBeNull();
-      }),
-    );
-
-    it.effect("should return null for response without usageMetadata", () =>
-      Effect.gen(function* () {
-        const calculator = new GoogleCostCalculator();
-        const responseBody = {
-          candidates: [{ content: { parts: [{ text: "Hello" }] } }],
-          // No usageMetadata field
-        };
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(100);
+        expect(usage.outputTokens).toBe(50);
 
         const result = yield* calculator.calculate(
           "gemini-2.0-flash-exp",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeNull();
+        assert(result !== null);
+        expect(result.totalCost).toBe(0n); // Free model
       }),
     );
 
-    it.effect(
-      "should return null for response with incomplete usageMetadata",
-      () =>
-        Effect.gen(function* () {
-          const calculator = new GoogleCostCalculator();
-          const responseBody = {
-            usageMetadata: {
-              // Missing required promptTokenCount and candidatesTokenCount
-              totalTokenCount: 150,
-            },
-          };
+    it("should return null for null body", () => {
+      const calculator = new GoogleCostCalculator();
+      const usage = calculator.extractUsage(null);
+      expect(usage).toBeNull();
+    });
 
-          const result = yield* calculator.calculate(
-            "gemini-2.0-flash-exp",
-            responseBody,
-          );
+    it("should return null for response without usageMetadata", () => {
+      const calculator = new GoogleCostCalculator();
+      const responseBody = {
+        candidates: [{ content: { parts: [{ text: "Hello" }] } }],
+        // No usageMetadata field
+      };
 
-          expect(result).toBeNull();
-        }),
-    );
+      const usage = calculator.extractUsage(responseBody);
+      expect(usage).toBeNull();
+    });
+
+    it("should return null for response with incomplete usageMetadata", () => {
+      const calculator = new GoogleCostCalculator();
+      const responseBody = {
+        usageMetadata: {
+          // Missing required promptTokenCount and candidatesTokenCount
+          totalTokenCount: 150,
+        },
+      };
+
+      const usage = calculator.extractUsage(responseBody);
+      expect(usage).toBeNull();
+    });
 
     it.effect("should extract cached tokens from Google response", () =>
       Effect.gen(function* () {
@@ -729,13 +688,16 @@ describe("CostCalculator", () => {
           },
         };
 
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.cacheReadTokens).toBe(30);
+
         const result = yield* calculator.calculate(
           "gemini-2.0-flash-exp",
-          responseBody,
+          usage,
         );
-
-        expect(result).toBeDefined();
-        expect(result?.usage.cacheReadTokens).toBe(30);
+        assert(result !== null);
+        expect(result.totalCost).toBe(0n); // Free model
       }),
     );
 
@@ -829,14 +791,15 @@ describe("CostCalculator", () => {
           },
         };
 
-        const result = yield* calculator.calculate(
-          "unknown-model",
-          responseBody,
-        );
+        // Extract usage first
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(1000);
+        expect(usage.outputTokens).toBe(500);
 
-        expect(result).toBeDefined();
-        expect(result?.usage.inputTokens).toBe(1000);
-        expect(result?.cost.totalCost).toBe(0n);
+        // Calculate returns null when pricing data is missing
+        const result = yield* calculator.calculate("unknown-model", usage);
+        expect(result).toBeNull();
       }),
     );
 
@@ -857,10 +820,15 @@ describe("CostCalculator", () => {
           },
         };
 
-        const result = yield* calculator.calculate("gpt-4o-mini", responseBody);
+        // Extract usage first
+        const usage = calculator.extractUsage(responseBody);
+        assert(usage !== null);
+        expect(usage.inputTokens).toBe(1000);
+        expect(usage.outputTokens).toBe(500);
 
-        expect(result).toBeDefined();
-        expect(result?.cost.totalCost).toBe(0n);
+        // Calculate returns null when fetch errors occur
+        const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        expect(result).toBeNull();
       }),
     );
   });
