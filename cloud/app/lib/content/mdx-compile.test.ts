@@ -15,7 +15,7 @@ describe("compileMDXContent", () => {
     expect(result.content).toBe(content);
     expect(result.frontmatter).toEqual({});
     expect(result.tableOfContents).toEqual([
-      { id: "hello-world", text: "Hello World", level: 1 },
+      { id: "hello-world", content: "Hello World", level: 1 },
     ]);
     expect(result.jsxCode).toContain("Hello World");
     expect(result.jsxCode).toContain("MDXContent");
@@ -41,7 +41,7 @@ This is the body.`;
     });
     expect(result.content).toBe("# Test Content\n\nThis is the body.");
     expect(result.tableOfContents).toEqual([
-      { id: "test-content", text: "Test Content", level: 1 },
+      { id: "test-content", content: "Test Content", level: 1 },
     ]);
     expect(result.jsxCode).toContain("Test Content");
     expect(result.jsxCode).toContain("MDXContent");
@@ -63,12 +63,12 @@ This is the body.`;
     const result = await compileMDXContent(content);
 
     expect(result.tableOfContents).toEqual([
-      { id: "main-title", text: "Main Title", level: 1 },
-      { id: "section-one", text: "Section One", level: 2 },
-      { id: "subsection-1-1", text: "Subsection 1.1", level: 3 },
-      { id: "section-two", text: "Section Two", level: 2 },
-      { id: "subsection-2-1", text: "Subsection 2.1", level: 3 },
-      { id: "sub-subsection-2-1-1", text: "Sub-subsection 2.1.1", level: 4 },
+      { id: "main-title", content: "Main Title", level: 1 },
+      { id: "section-one", content: "Section One", level: 2 },
+      { id: "subsection-1-1", content: "Subsection 1.1", level: 3 },
+      { id: "section-two", content: "Section Two", level: 2 },
+      { id: "subsection-2-1", content: "Subsection 2.1", level: 3 },
+      { id: "sub-subsection-2-1-1", content: "Sub-subsection 2.1.1", level: 4 },
     ]);
   });
 
@@ -135,7 +135,7 @@ More text.`;
 
     expect(result.content).toBe(content);
     expect(result.tableOfContents).toEqual([
-      { id: "code-example", text: "Code Example", level: 1 },
+      { id: "code-example", content: "Code Example", level: 1 },
     ]);
     expect(result.jsxCode).toContain("Code Example");
   });
@@ -153,7 +153,7 @@ More text.`;
     const result = await compileMDXContent(content);
 
     expect(result.tableOfContents).toEqual([
-      { id: "list-example", text: "List Example", level: 1 },
+      { id: "list-example", content: "List Example", level: 1 },
     ]);
     expect(result.jsxCode).toContain("List Example");
   });
@@ -168,7 +168,7 @@ More text.`;
     const result = await compileMDXContent(content);
 
     expect(result.tableOfContents).toEqual([
-      { id: "links", text: "Links", level: 1 },
+      { id: "links", content: "Links", level: 1 },
     ]);
     expect(result.jsxCode).toContain("Links");
   });
@@ -245,9 +245,9 @@ tags: test, mdx
     const result = await compileMDXContent(content);
 
     expect(result.tableOfContents).toEqual([
-      { id: "hello-world", text: "Hello, World!", level: 1 },
-      { id: "test-example", text: "Test & Example", level: 2 },
-      { id: "what-s-next", text: "What's Next?", level: 3 },
+      { id: "hello-world", content: "Hello, World!", level: 1 },
+      { id: "test-example", content: "Test & Example", level: 2 },
+      { id: "what-s-next", content: "What's Next?", level: 3 },
     ]);
   });
 
@@ -261,7 +261,7 @@ tags: test, mdx
     const result = await compileMDXContent(content);
 
     expect(result.tableOfContents).toEqual([
-      { id: "table-example", text: "Table Example", level: 1 },
+      { id: "table-example", content: "Table Example", level: 1 },
     ]);
     expect(result.jsxCode).toContain("Table Example");
   });
@@ -274,7 +274,7 @@ tags: test, mdx
     const result = await compileMDXContent(content);
 
     expect(result.tableOfContents).toEqual([
-      { id: "strikethrough", text: "Strikethrough", level: 1 },
+      { id: "strikethrough", content: "Strikethrough", level: 1 },
     ]);
   });
 
@@ -321,7 +321,7 @@ describe("createProcessedMDX", () => {
       description: "A test",
     };
     const tableOfContents: TOCItem[] = [
-      { id: "test-content", text: "Test Content", level: 1 },
+      { id: "test-content", content: "Test Content", level: 1 },
     ];
 
     const processed = createProcessedMDX(content, frontmatter, tableOfContents);
@@ -373,9 +373,9 @@ describe("createProcessedMDX", () => {
     const toc: TOCItem[] = [
       {
         id: "main",
-        text: "Main",
+        content: "Main",
         level: 1,
-        children: [{ id: "sub", text: "Sub", level: 2 }],
+        children: [{ id: "sub", content: "Sub", level: 2 }],
       },
     ];
 

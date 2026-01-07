@@ -1,13 +1,13 @@
-import { ButtonLink } from "@/app/components/ui/button-link";
 import { ChevronLeft } from "lucide-react";
-// import { MDXRenderer } from "@/app/components/mdx/renderer";
-// import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
+import { ButtonLink } from "@/app/components/ui/button-link";
+import { MDXRenderer } from "@/app/components/mdx/renderer";
+import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
 import LoadingContent from "@/app/components/blocks/loading-content";
-// import { TableOfContents } from "@/app/components/table-of-contents";
+import { PageTOC } from "@/app/components/page-toc";
 // import { PagefindMeta } from "@/app/components/pagefind-meta";
 import type { BlogContent } from "@/app/lib/content/types";
 import PageLayout from "@/app/components/page-layout";
-import { MDXRenderer } from "./mdx/renderer";
+import { useEffect, useState } from "react";
 
 // Reusable component for "Back to Blog" button
 function BackToBlogLink() {
@@ -29,40 +29,38 @@ type BlogPostPageProps = {
 
 export function BlogPostPage({
   post,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  slug: _slug, // Temporarily unused - will be used for PageMeta/CopyMarkdownButton
+  slug,
   isLoading = false,
 }: BlogPostPageProps) {
-  // TODO: Re-enable when PageMeta is implemented
-  // const [ogImage, setOgImage] = useState<string | undefined>(undefined);
+  // todo(sebastian): disabled - did this work before?
+  const [, setOgImage] = useState<string | undefined>(undefined);
 
   // Find the first available image in the blog post directory
-  // TODO: Re-enable when PageMeta is implemented
-  // useEffect(() => {
-  //   if (isLoading) return;
+  useEffect(() => {
+    if (isLoading) return;
 
-  //   const findOgImage = async () => {
-  //     try {
-  //       const response = await fetch(`/assets/blog/${slug}/`);
-  //       if (response.ok) {
-  //         const text = await response.text();
-  //         const parser = new DOMParser();
-  //         const doc = parser.parseFromString(text, "text/html");
-  //         const links = Array.from(doc.querySelectorAll("a"))
-  //           .map((a) => a.getAttribute("href"))
-  //           .filter((href) => href && /\.(png|jpg|jpeg|gif)$/i.test(href));
+    const findOgImage = async () => {
+      try {
+        const response = await fetch(`/assets/blog/${slug}/`);
+        if (response.ok) {
+          const text = await response.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, "text/html");
+          const links = Array.from(doc.querySelectorAll("a"))
+            .map((a) => a.getAttribute("href"))
+            .filter((href) => href && /\.(png|jpg|jpeg|gif)$/i.test(href));
 
-  //         if (links.length > 0) {
-  //           setOgImage(`/assets/blog/${slug}/${links[0]}`);
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.error("Error finding OG image:", err);
-  //     }
-  //   };
+          if (links.length > 0) {
+            setOgImage(`/assets/blog/${slug}/${links[0]}`);
+          }
+        }
+      } catch (err) {
+        console.error("Error finding OG image:", err);
+      }
+    };
 
-  //   findOgImage();
-  // }, [slug, isLoading]);
+    void findOgImage();
+  }, [slug, isLoading]);
 
   // Extract metadata for easier access
   const { title, date, readTime, author, lastUpdated } = post.meta;
@@ -88,10 +86,14 @@ export function BlogPostPage({
         </div>
         <div id="blog-content" className="bg-background blog-content">
           {post.mdx ? (
-            <MDXRenderer mdx={post.mdx} />
+            <MDXRenderer
+              className="mdx-content overflow-y-auto"
+              mdx={post.mdx}
+            />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
           )}
+          {/* todo(sebastian): re-enable when PagefindMeta is implemented */}
           {/* {post.mdx ? (
             <PagefindMeta
               title={post.meta.title}
@@ -116,11 +118,11 @@ export function BlogPostPage({
   ) : (
     <div className="flex h-full flex-col">
       <div className="px-4 pt-4 lg:pt-0">
-        {/* <CopyMarkdownButton
+        <CopyMarkdownButton
           content={post.content}
           itemId={slug}
           contentType="blog_markdown"
-        /> */}
+        />
 
         <h4 className="text-muted-foreground mt-3 mb-3 text-sm font-medium">
           On this page
@@ -128,10 +130,11 @@ export function BlogPostPage({
       </div>
 
       <div className="grow overflow-y-auto pr-4 pb-6 pl-4">
-        {/* <TableOfContents
+        {/* todo(sebastian): Make sure the headings have IDs in the mdx content */}
+        <PageTOC
           headings={post.mdx?.tableOfContents || []}
           observeHeadings={true}
-        /> */}
+        />
       </div>
     </div>
   );
