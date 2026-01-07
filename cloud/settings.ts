@@ -10,6 +10,10 @@ export type Settings = {
   readonly GITHUB_CLIENT_SECRET?: string;
   readonly GITHUB_CALLBACK_URL?: string;
   readonly SITE_URL?: string;
+  // ROUTER KEYS
+  readonly ANTHROPIC_API_KEY?: string;
+  readonly GEMINI_API_KEY?: string;
+  readonly OPENAI_API_KEY?: string;
 };
 
 export class SettingsService extends Context.Tag("SettingsService")<
@@ -28,5 +32,9 @@ export function getSettings(): Settings {
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
     SITE_URL: process.env.SITE_URL,
+    // ROUTER KEYS
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   };
 }
