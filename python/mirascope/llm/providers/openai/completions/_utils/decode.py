@@ -117,6 +117,7 @@ class _OpenAIChunkProcessor:
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call"] | None = None
         self.current_tool_index: int | None = None
+        self.current_tool_id: str | None = None
         self.refusal_encountered = False
 
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
@@ -180,7 +181,9 @@ class _OpenAIChunkProcessor:
                     self.current_tool_index is not None
                     and self.current_tool_index < index
                 ):
-                    yield ToolCallEndChunk()
+                    if self.current_tool_id is None:  # pragma: no cover
+                        raise RuntimeError("No current_tool_id for ToolCallChunk")
+                    yield ToolCallEndChunk(id=self.current_tool_id)
                     self.current_tool_index = None
 
                 if self.current_tool_index is None:
@@ -201,15 +204,23 @@ class _OpenAIChunkProcessor:
                         id=tool_id,
                         name=name,
                     )
+                    self.current_tool_id = tool_id
 
                 if tool_call_delta.function and tool_call_delta.function.arguments:
-                    yield ToolCallChunk(delta=tool_call_delta.function.arguments)
+                    if self.current_tool_id is None:  # pragma: no cover
+                        raise RuntimeError("No current_tool_id for ToolCallChunk")
+                    yield ToolCallChunk(
+                        id=self.current_tool_id,
+                        delta=tool_call_delta.function.arguments,
+                    )
 
         if choice.finish_reason:
             if self.current_content_type == "text":
                 yield TextEndChunk()
             elif self.current_content_type == "tool_call":
-                yield ToolCallEndChunk()
+                if self.current_tool_id is None:  # pragma: no cover
+                    raise RuntimeError("No current_tool_id for ToolCallChunk")
+                yield ToolCallEndChunk(id=self.current_tool_id)
             elif self.current_content_type is not None:  # pragma: no cover
                 raise NotImplementedError()
 

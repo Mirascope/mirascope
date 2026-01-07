@@ -227,7 +227,8 @@ class BaseStreamResponse(
         self.messages = list(input_messages) + [self._assistant_message]
 
         self._chunk_iterator = chunk_iterator
-        self._current_content: Text | Thought | ToolCall | None = None
+        self._current_content: Text | Thought | None = None
+        self._current_tool_calls: dict[str, ToolCall] = {}
 
         self._processing_format_tool: bool = False
 
@@ -269,7 +270,7 @@ class BaseStreamResponse(
         self, chunk: TextStartChunk | TextChunk | TextEndChunk
     ) -> None:
         if chunk.type == "text_start_chunk":
-            if self._current_content:
+            if self._current_content or self._current_tool_calls:
                 raise RuntimeError(
                     "Received text_start_chunk while processing another chunk"
                 )
@@ -292,7 +293,7 @@ class BaseStreamResponse(
         self, chunk: ThoughtStartChunk | ThoughtChunk | ThoughtEndChunk
     ) -> None:
         if chunk.type == "thought_start_chunk":
-            if self._current_content:
+            if self._current_content or self._current_tool_calls:
                 raise RuntimeError(
                     "Received thought_start_chunk while processing another chunk"
                 )
@@ -323,35 +324,38 @@ class BaseStreamResponse(
                 raise RuntimeError(
                     "Received tool_call_start_chunk while processing another chunk"
                 )
-            self._current_content = ToolCall(
+            if chunk.id in self._current_tool_calls:
+                raise RuntimeError("Got tool_call_start_chunk with conflicting id")
+            # Create a new tool call and track it by ID
+            # Multiple tool calls can be in progress simultaneously (interleaved)
+            tool_call = ToolCall(
                 id=chunk.id,
                 name=chunk.name,
                 args="",
             )
+            self._current_tool_calls[chunk.id] = tool_call
 
         elif chunk.type == "tool_call_chunk":
-            if (
-                self._current_content is None
-                or self._current_content.type != "tool_call"
-            ):
+            # Look up the tool call by ID
+            tool_call = self._current_tool_calls.get(chunk.id)
+            if tool_call is None:
                 raise RuntimeError(
-                    "Received tool_call_chunk while not processing tool call."
+                    f"Received tool_call_chunk for unknown tool call ID: {chunk.id}"
                 )
-            self._current_content.args += chunk.delta
+            tool_call.args += chunk.delta
 
         elif chunk.type == "tool_call_end_chunk":
-            if (
-                self._current_content is None
-                or self._current_content.type != "tool_call"
-            ):
+            # Finalize the tool call
+            tool_call = self._current_tool_calls.get(chunk.id)
+            if tool_call is None:
                 raise RuntimeError(
-                    "Received tool_call_end_chunk while not processing tool call."
+                    f"Received tool_call_end_chunk for unknown tool call ID: {chunk.id}"
                 )
-            if not self._current_content.args:
-                self._current_content.args = "{}"
-            self._content.append(self._current_content)
-            self._tool_calls.append(self._current_content)
-            self._current_content = None
+            if not tool_call.args:
+                tool_call.args = "{}"
+            self._content.append(tool_call)
+            self._tool_calls.append(tool_call)
+            del self._current_tool_calls[chunk.id]
 
     def _pretty_chunk(self, chunk: AssistantContentChunk, spacer: str) -> str:
         match chunk.type:
