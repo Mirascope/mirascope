@@ -6,6 +6,7 @@ import {
   getProviderApiKey,
   getModelsDotDevProviderIds,
   getCostCalculator,
+  extractModelId,
 } from "@/api/router/providers";
 import {
   OpenAICostCalculator,
@@ -144,6 +145,86 @@ describe("Providers", () => {
     it("should return Google cost calculator", () => {
       const calculator = getCostCalculator("google");
       expect(calculator).toBeInstanceOf(GoogleCostCalculator);
+    });
+  });
+
+  describe("extractModelId", () => {
+    describe("OpenAI provider", () => {
+      it("should extract model from request body", () => {
+        const request = new Request(
+          "https://api.example.com/v1/chat/completions",
+        );
+        const parsedBody = { model: "gpt-4" };
+        const modelId = extractModelId("openai", request, parsedBody);
+        expect(modelId).toBe("gpt-4");
+      });
+
+      it("should return null when model field is missing", () => {
+        const request = new Request(
+          "https://api.example.com/v1/chat/completions",
+        );
+        const parsedBody = { messages: [] };
+        const modelId = extractModelId("openai", request, parsedBody);
+        expect(modelId).toBeNull();
+      });
+
+      it("should return null when body is not an object", () => {
+        const request = new Request(
+          "https://api.example.com/v1/chat/completions",
+        );
+        const modelId = extractModelId("openai", request, null);
+        expect(modelId).toBeNull();
+      });
+    });
+
+    describe("Anthropic provider", () => {
+      it("should extract model from request body", () => {
+        const request = new Request("https://api.anthropic.com/v1/messages");
+        const parsedBody = { model: "claude-3-opus-20240229" };
+        const modelId = extractModelId("anthropic", request, parsedBody);
+        expect(modelId).toBe("claude-3-opus-20240229");
+      });
+
+      it("should return null when model field is missing", () => {
+        const request = new Request("https://api.anthropic.com/v1/messages");
+        const parsedBody = { messages: [] };
+        const modelId = extractModelId("anthropic", request, parsedBody);
+        expect(modelId).toBeNull();
+      });
+    });
+
+    describe("Google provider", () => {
+      it("should extract model from URL path with generateContent", () => {
+        const request = new Request(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        );
+        const modelId = extractModelId("google", request, null);
+        expect(modelId).toBe("gemini-2.0-flash");
+      });
+
+      it("should extract model from URL path with streamGenerateContent", () => {
+        const request = new Request(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent",
+        );
+        const modelId = extractModelId("google", request, null);
+        expect(modelId).toBe("gemini-pro");
+      });
+
+      it("should extract model from URL path without action suffix", () => {
+        const request = new Request(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash",
+        );
+        const modelId = extractModelId("google", request, null);
+        expect(modelId).toBe("gemini-flash");
+      });
+
+      it("should return null when URL format is invalid", () => {
+        const request = new Request(
+          "https://generativelanguage.googleapis.com/v1beta/invalid",
+        );
+        const modelId = extractModelId("google", request, null);
+        expect(modelId).toBeNull();
+      });
     });
   });
 });

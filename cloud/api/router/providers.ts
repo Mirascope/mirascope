@@ -53,7 +53,7 @@ export const PROVIDER_CONFIGS: Record<
     authFormat: (key: string) => `Bearer ${key}`,
     modelsDotDevIds: ["openai"],
   },
-} as const;
+};
 
 /**
  * Supported provider names.
@@ -141,4 +141,50 @@ export function getCostCalculator(provider: ProviderName): BaseCostCalculator {
       throw new Error(`Unsupported provider: ${exhaustiveCheck as string}`);
     }
   }
+}
+
+/**
+ * Extracts the model ID from a request based on the provider.
+ *
+ * Different providers pass the model ID in different ways:
+ * - OpenAI/Anthropic: In the request body's "model" field
+ * - Google: In the URL path as /models/{model}:generateContent
+ *
+ * @param provider - The provider name
+ * @param request - The incoming HTTP request
+ * @param parsedBody - The parsed request body (if available)
+ * @returns The model ID or null if not found
+ *
+ * @example
+ * ```ts
+ * // OpenAI/Anthropic
+ * const modelId = extractModelId("openai", request, { model: "gpt-4" });
+ * // Returns: "gpt-4"
+ *
+ * // Google
+ * const modelId = extractModelId("google", request, null);
+ * // Returns: "gemini-2.5-flash" (extracted from URL)
+ * ```
+ */
+export function extractModelId(
+  provider: ProviderName,
+  request: Request,
+  parsedBody: unknown,
+): string | null {
+  if (provider === "google") {
+    // For Google, model comes from URL path
+    const url = new URL(request.url);
+    const match = url.pathname.match(
+      /\/models\/([^/:]+)(?::(?:generate|streamGenerate)Content)?/,
+    );
+    return match ? match[1] : null;
+  }
+
+  // For OpenAI/Anthropic, model comes from request body
+  if (typeof parsedBody === "object" && parsedBody !== null) {
+    const model = (parsedBody as { model?: string }).model;
+    return typeof model === "string" ? model : null;
+  }
+
+  return null;
 }
