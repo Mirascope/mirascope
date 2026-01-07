@@ -175,10 +175,35 @@ class ToolSchema(Generic[ToolFnT]):
     def __init__(
         self,
         fn: ToolFnT,
+        name: str,
+        description: str,
+        parameters: ToolParameterSchema,
+        *,
+        strict: bool = False,
+    ) -> None:
+        """Create a `ToolSchema` with the provided values.
+
+        Args:
+            fn: The function that implements the tool's functionality
+            name: The name of the tool
+            description: Description of what the tool does
+            parameters: JSON Schema describing the parameters accepted by the tool
+            strict: Whether the tool should use strict mode when supported
+        """
+        self.fn = fn
+        self.name = name
+        self.description = description
+        self.parameters = parameters
+        self.strict = strict
+
+    @classmethod
+    def from_function(
+        cls,
+        fn: AnyToolFn,
         *,
         strict: bool = False,
         is_context_tool: bool = False,
-    ) -> None:
+    ) -> ToolSchema[AnyToolFn]:
         """Create a `ToolSchema` by inspecting a function and its docstring.
 
         Uses Pydantic's create_model to dynamically build a model from the function
@@ -264,11 +289,13 @@ class ToolSchema(Generic[ToolFnT]):
         if "$defs" in schema:
             parameters.defs = schema["$defs"]
 
-        self.fn = fn
-        self.name = name
-        self.description = description
-        self.parameters = parameters
-        self.strict = strict
+        return cls(
+            fn=cast(ToolFnT, fn),
+            name=name,
+            description=description,
+            parameters=parameters,
+            strict=strict,
+        )
 
     def can_execute(self, tool_call: ToolCall) -> bool:
         """Check if a `ToolCall` can be executed by tools with this `ToolSchema`.
