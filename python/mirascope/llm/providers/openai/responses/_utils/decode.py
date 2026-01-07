@@ -173,9 +173,9 @@ class _OpenAIResponsesChunkProcessor:
                     )
                     self.current_content_type = "tool_call"
             elif event.type == "response.function_call_arguments.delta":
-                yield ToolCallChunk(delta=event.delta)
+                yield ToolCallChunk(id=self.current_tool_call_id, delta=event.delta)
             elif event.type == "response.function_call_arguments.done":
-                yield ToolCallEndChunk()
+                yield ToolCallEndChunk(id=self.current_tool_call_id)
                 self.current_content_type = None
             elif (
                 event.type == "response.reasoning_text.delta"
