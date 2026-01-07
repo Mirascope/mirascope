@@ -18,8 +18,10 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsUseRouteImport } from './routes/terms.use'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
@@ -78,6 +80,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BlogRoute,
+} as any)
 const TermsUseRoute = TermsUseRouteImport.update({
   id: '/terms/use',
   path: '/terms/use',
@@ -87,6 +94,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/dashboard/settings',
   path: '/dashboard/settings',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const AuthMeRoute = AuthMeRouteImport.update({
   id: '/auth/me',
@@ -151,7 +163,7 @@ const RouterV0ProviderSplatRoute = RouterV0ProviderSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
+  '/blog': typeof BlogRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
@@ -161,8 +173,10 @@ export interface FileRoutesByFullPath {
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/terms/use': typeof TermsUseRoute
+  '/blog/': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -176,7 +190,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
   '/docs': typeof DocsRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
@@ -186,8 +199,10 @@ export interface FileRoutesByTo {
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/terms/use': typeof TermsUseRoute
+  '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -202,7 +217,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
+  '/blog': typeof BlogRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
@@ -212,8 +227,10 @@ export interface FileRoutesById {
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/terms/use': typeof TermsUseRoute
+  '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -239,8 +256,10 @@ export interface FileRouteTypes {
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
+    | '/blog/$slug'
     | '/dashboard/settings'
     | '/terms/use'
+    | '/blog/'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -254,7 +273,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/blog'
     | '/docs'
     | '/home'
     | '/login'
@@ -264,8 +282,10 @@ export interface FileRouteTypes {
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
+    | '/blog/$slug'
     | '/dashboard/settings'
     | '/terms/use'
+    | '/blog'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -289,8 +309,10 @@ export interface FileRouteTypes {
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
+    | '/blog/$slug'
     | '/dashboard/settings'
     | '/terms/use'
+    | '/blog/'
     | '/dashboard/'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -305,7 +327,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BlogRoute: typeof BlogRoute
+  BlogRoute: typeof BlogRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
@@ -389,6 +411,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof BlogRoute
+    }
     '/terms/use': {
       id: '/terms/use'
       path: '/terms/use'
@@ -402,6 +431,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/settings'
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/auth/me': {
       id: '/auth/me'
@@ -490,6 +526,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 interface DocsRouteChildren {
   DocsV1PlaceholderRoute: typeof DocsV1PlaceholderRoute
 }
@@ -530,7 +578,7 @@ const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BlogRoute: BlogRoute,
+  BlogRoute: BlogRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,

@@ -1,7 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { TempPage } from "@/app/components/temp-page";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/blog")({
-  // todo(sebastian): temp route ahead of porting md/mdx files
-  component: () => <TempPage name="Blog" />,
+  component: BlogLayout,
 });
+
+function BlogLayout() {
+  return <Outlet />;
+}
