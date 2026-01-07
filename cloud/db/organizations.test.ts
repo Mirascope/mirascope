@@ -6,8 +6,8 @@ import {
   TestOrganizationFixture,
   TestDrizzleORM,
   MockDrizzleORM,
-  MockPayments,
 } from "@/tests/db";
+import { MockPayments } from "@/tests/payments";
 import { Database } from "@/db/database";
 import { Effect, Layer } from "effect";
 import {

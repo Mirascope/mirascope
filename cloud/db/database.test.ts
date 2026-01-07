@@ -7,7 +7,11 @@ describe("Database", () => {
     it("creates a Database layer from config", () => {
       const layer = Database.Live({
         database: { connectionString: "postgresql://test" },
-        payments: { apiKey: "sk_test_key", routerPriceId: "price_test" },
+        payments: {
+          apiKey: "sk_test_key",
+          routerPriceId: "price_test",
+          routerMeterId: "meter_test",
+        },
       });
 
       // Verify it returns a Layer

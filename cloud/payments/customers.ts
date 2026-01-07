@@ -223,48 +223,4 @@ export class Customers {
       yield* stripe.customers.del(customerId);
     });
   }
-
-  /**
-   * Gets the router credit balance for a Stripe customer from billing credit grants.
-   *
-   * Fetches all credit grants for the customer and filters for those that are
-   * applicable to the router price (metered usage-based billing). Only counts
-   * grants that explicitly include the router price ID in their applicability
-   * scope.
-   *
-   * @param customerId - The Stripe customer ID
-   * @returns The router credit balance in dollars (e.g., 10.00 for $10 credit)
-   * @throws StripeError - If API call fails
-   */
-  getBalance(customerId: string): Effect.Effect<number, StripeError, Stripe> {
-    return Effect.gen(function* () {
-      const stripe = yield* Stripe;
-
-      const credit_grants = yield* stripe.billing.creditGrants.list({
-        customer: customerId,
-      });
-
-      let totalCredits = 0;
-
-      for (const grant of credit_grants.data) {
-        if (!grant.amount.monetary) continue;
-
-        const config = grant.applicability_config;
-        if (
-          !config.scope ||
-          !config.scope.prices?.some(
-            (price) => price.id === stripe.config.routerPriceId,
-          )
-        )
-          continue;
-
-        const { value, currency } = grant.amount.monetary;
-        if (currency === "usd") {
-          totalCredits += value / 100;
-        }
-      }
-
-      return totalCredits;
-    });
-  }
 }

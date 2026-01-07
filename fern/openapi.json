@@ -1093,12 +1093,12 @@
         }
       }
     },
-    "/organizations/{id}/credits": {
+    "/organizations/{id}/router-balance": {
       "get": {
         "tags": [
           "organizations"
         ],
-        "operationId": "organizations.credits",
+        "operationId": "organizations.routerBalance",
         "parameters": [
           {
             "name": "id",
@@ -1122,7 +1122,8 @@
                   ],
                   "properties": {
                     "balance": {
-                      "type": "number"
+                      "type": "string",
+                      "description": "Balance in centi-cents (1/10000 of a dollar)"
                     }
                   },
                   "additionalProperties": false

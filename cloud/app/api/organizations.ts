@@ -66,14 +66,16 @@ export const useDeleteOrganization = () => {
   });
 };
 
-export const useOrganizationCredits = (organizationId: string | undefined) => {
+export const useOrganizationRouterBalance = (
+  organizationId: string | undefined,
+) => {
   return useQuery({
     ...eq.queryOptions({
-      queryKey: ["organizations", organizationId, "credits"],
+      queryKey: ["organizations", organizationId, "router-balance"],
       queryFn: () =>
         Effect.gen(function* () {
           const client = yield* ApiClient;
-          return yield* client.organizations.credits({
+          return yield* client.organizations.routerBalance({
             path: { id: organizationId! },
           });
         }),

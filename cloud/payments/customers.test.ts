@@ -58,6 +58,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -110,6 +111,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -151,6 +153,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -187,6 +190,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -276,6 +280,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -336,6 +341,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -376,6 +382,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -435,6 +442,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -485,6 +493,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),
@@ -536,112 +545,7 @@ describe("customers", () => {
                 config: {
                   apiKey: "sk_test_mock",
                   routerPriceId: "price_test",
-                },
-              } as unknown as Context.Tag.Service<typeof Stripe>),
-            ),
-          ),
-        ),
-      ),
-    );
-  });
-
-  describe("getBalance", () => {
-    it.effect(
-      "correctly filters and sums credits from various grant types",
-      () =>
-        Effect.gen(function* () {
-          const payments = yield* Payments;
-
-          // MockStripe includes:
-          // - Valid: $7 USD with router price ✓
-          // - Valid: $11 USD with router price ✓
-          // - Invalid: €5 EUR with router price (wrong currency) ✗
-          // - Invalid: no monetary amount ✗
-          // - Invalid: $19 USD with different price (wrong price) ✗
-          // - Invalid: $23 USD with no scope (no explicit scope) ✗
-          // Expected total: $7 + $11 = $18
-          // No other combination of grants equals $18
-          const balance = yield* payments.customers.getBalance("cus_123");
-
-          expect(balance).toBe(18);
-        }).pipe(Effect.provide(DefaultMockPayments)),
-    );
-
-    it.effect("returns 0 for customer with no credit grants", () =>
-      Effect.gen(function* () {
-        const payments = yield* Payments;
-
-        const balance = yield* payments.customers.getBalance("cus_123");
-
-        expect(balance).toBe(0);
-      }).pipe(
-        Effect.provide(
-          Payments.Default.pipe(
-            Layer.provide(
-              Layer.succeed(Stripe, {
-                customers: {
-                  create: () => Effect.void,
-                  del: () => Effect.void,
-                },
-                subscriptions: {
-                  create: () => Effect.void,
-                },
-                billing: {
-                  creditGrants: {
-                    list: () =>
-                      Effect.succeed({
-                        object: "list" as const,
-                        data: [],
-                        has_more: false,
-                      }),
-                  },
-                },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test_mock_for_testing",
-                },
-              } as unknown as Context.Tag.Service<typeof Stripe>),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    it.effect("returns StripeError when API call fails", () =>
-      Effect.gen(function* () {
-        const payments = yield* Payments;
-
-        const result = yield* payments.customers
-          .getBalance("cus_123")
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(StripeError);
-        expect(result.message).toBe("Failed to fetch credit grants");
-      }).pipe(
-        Effect.provide(
-          Payments.Default.pipe(
-            Layer.provide(
-              Layer.succeed(Stripe, {
-                customers: {
-                  create: () => Effect.void,
-                  del: () => Effect.void,
-                },
-                subscriptions: {
-                  create: () => Effect.void,
-                },
-                billing: {
-                  creditGrants: {
-                    list: () =>
-                      Effect.fail(
-                        new StripeError({
-                          message: "Failed to fetch credit grants",
-                        }),
-                      ),
-                  },
-                },
-                config: {
-                  apiKey: "sk_test_mock",
-                  routerPriceId: "price_test_mock_for_testing",
+                  routerMeterId: "meter_test",
                 },
               } as unknown as Context.Tag.Service<typeof Stripe>),
             ),

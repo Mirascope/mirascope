@@ -141,6 +141,7 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
               payments: {
                 apiKey: process.env.STRIPE_SECRET_KEY || "",
                 routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
+                routerMeterId: process.env.STRIPE_ROUTER_METER_ID || "",
               },
             }),
           ),

@@ -6,8 +6,8 @@ import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
-import { DefaultMockPayments } from "@/tests/payments";
 import { Payments } from "@/payments";
+import { DefaultMockPayments } from "@/tests/payments";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -44,9 +44,6 @@ const TestPgClient = PgClient.layerConfig({
 export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
-// Re-export MockPayments and DefaultMockPayments for convenience
-export { MockPayments, DefaultMockPayments } from "@/tests/payments";
-
 /**
  * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
  * `SqlClient` services for tests.
@@ -58,10 +55,16 @@ export { MockPayments, DefaultMockPayments } from "@/tests/payments";
  */
 export const TestDatabase: Layer.Layer<
   Database | DrizzleORM | SqlClient.SqlClient
-> = Database.Default.pipe(
-  Layer.provideMerge(TestDrizzleORM),
-  Layer.provide(DefaultMockPayments),
-);
+> = Effect.gen(function* () {
+  // Lazy import to avoid circular dependency
+  const { DefaultMockPayments } = yield* Effect.promise(
+    () => import("@/tests/payments"),
+  );
+  return Database.Default.pipe(
+    Layer.provideMerge(TestDrizzleORM),
+    Layer.provide(DefaultMockPayments),
+  );
+}).pipe(Layer.unwrapEffect);
 
 // =============================================================================
 // Rollback transaction wrapper

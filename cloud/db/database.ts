@@ -213,8 +213,10 @@ export class Database extends Context.Tag("Database")<
     database: DrizzleORMConfig;
     payments: StripeConfig;
   }) => {
-    const paymentsLayer = Payments.Live(config.payments);
     const drizzleLayer = DrizzleORM.layer(config.database);
+    const paymentsLayer = Payments.Live(config.payments).pipe(
+      Layer.provide(drizzleLayer),
+    );
 
     return Layer.mergeAll(
       Database.Default.pipe(

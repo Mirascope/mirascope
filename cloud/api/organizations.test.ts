@@ -133,18 +133,21 @@ describe.sequential("Organizations API", (it) => {
     }),
   );
 
-  it.effect("GET /organizations/:id/credits - get organization credits", () =>
-    Effect.gen(function* () {
-      const { client } = yield* TestApiContext;
-      const credits = yield* client.organizations.credits({
-        path: { id: org.id },
-      });
+  it.effect(
+    "GET /organizations/:id/router-balance - get organization router balance",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const balance = yield* client.organizations.routerBalance({
+          path: { id: org.id },
+        });
 
-      // MockStripe includes various grant types totaling $18
-      // (see tests/db.ts MockStripe for details)
-      expect(credits.balance).toBe(18);
-      expect(typeof credits.balance).toBe("number");
-    }),
+        // MockStripe includes various grant types totaling $18
+        // (see tests/db.ts MockStripe for details)
+        // Balance is now in centi-cents: $18 = 180000 centi-cents
+        expect(balance.balance).toBe(180000n);
+        expect(typeof balance.balance).toBe("bigint");
+      }),
   );
 
   it.effect("DELETE /organizations/:id - delete organization", () =>

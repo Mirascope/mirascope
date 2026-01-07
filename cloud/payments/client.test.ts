@@ -86,6 +86,7 @@ describe("Stripe", () => {
       const layer = Stripe.layer({
         apiKey: "sk_test_123",
         routerPriceId: "price_test",
+        routerMeterId: "meter_test",
         apiVersion: "2023-10-16",
       });
 
@@ -97,6 +98,7 @@ describe("Stripe", () => {
       const layer = Stripe.layer({
         apiKey: "sk_test_123",
         routerPriceId: "price_test",
+        routerMeterId: "meter_test",
       });
 
       expect(layer).toBeDefined();
