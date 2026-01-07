@@ -5,7 +5,6 @@ import {
   getModelsDotDevPricingData,
   getModelPricing,
   calculateCost,
-  formatCostBreakdown,
   clearPricingCache,
 } from "@/api/router/pricing";
 
@@ -93,7 +92,7 @@ describe("Pricing", () => {
   });
 
   describe("getModelPricing", () => {
-    it("should return pricing for OpenAI model", async () => {
+    it("should return pricing for OpenAI model in centi-cents", async () => {
       const mockData = {
         openai: {
           id: "openai",
@@ -122,15 +121,17 @@ describe("Pricing", () => {
         getModelPricing("openai", "gpt-4o-mini"),
       );
 
+      // Pricing is converted from dollars to centi-cents
+      // $0.15 = 1500cc, $0.6 = 6000cc, $0.075 = 750cc, $0.1875 = 1875cc
       expect(result).toMatchObject({
-        input: 0.15,
-        output: 0.6,
-        cache_read: 0.075,
-        cache_write: 0.1875,
+        input: 1500n,
+        output: 6000n,
+        cache_read: 750n,
+        cache_write: 1875n,
       });
     });
 
-    it("should return pricing for Anthropic model", async () => {
+    it("should return pricing for Anthropic model in centi-cents", async () => {
       const mockData = {
         anthropic: {
           id: "anthropic",
@@ -159,11 +160,12 @@ describe("Pricing", () => {
         getModelPricing("anthropic", "claude-3-5-haiku-20241022"),
       );
 
+      // $1.0 = 10000cc, $5.0 = 50000cc, $0.1 = 1000cc, $1.25 = 12500cc
       expect(result).toMatchObject({
-        input: 1.0,
-        output: 5.0,
-        cache_read: 0.1,
-        cache_write: 1.25,
+        input: 10000n,
+        output: 50000n,
+        cache_read: 1000n,
+        cache_write: 12500n,
       });
     });
 
@@ -195,8 +197,8 @@ describe("Pricing", () => {
       );
 
       expect(result).toMatchObject({
-        input: 0.0,
-        output: 0.0,
+        input: 0n,
+        output: 0n,
       });
       expect(result?.cache_read).toBeUndefined();
       expect(result?.cache_write).toBeUndefined();
@@ -225,10 +227,12 @@ describe("Pricing", () => {
   });
 
   describe("calculateCost", () => {
-    it("should calculate cost correctly for basic usage", () => {
+    it("should calculate cost correctly for basic usage in centi-cents", () => {
+      // Pricing in centi-cents per million tokens
+      // $0.15 per million = 1500cc, $0.60 per million = 6000cc
       const pricing = {
-        input: 0.15, // per million tokens
-        output: 0.6,
+        input: 1500n,
+        output: 6000n,
       };
 
       const usage = {
@@ -238,19 +242,21 @@ describe("Pricing", () => {
 
       const result = calculateCost(pricing, usage);
 
-      expect(result.inputCost).toBe(0.00015); // 1000 / 1M * 0.15
-      expect(result.outputCost).toBe(0.0003); // 500 / 1M * 0.6
-      expect(result.totalCost).toBe(0.00045);
+      // 1000 tokens / 1M * 1500cc = 1.5cc (rounds to 1)
+      expect(result.inputCost).toBe(1n);
+      // 500 tokens / 1M * 6000cc = 3cc
+      expect(result.outputCost).toBe(3n);
+      expect(result.totalCost).toBe(4n);
       expect(result.cacheReadCost).toBeUndefined();
       expect(result.cacheWriteCost).toBeUndefined();
     });
 
-    it("should calculate cost with cache tokens", () => {
+    it("should calculate cost with cache tokens in centi-cents", () => {
       const pricing = {
-        input: 0.15,
-        output: 0.6,
-        cache_read: 0.075,
-        cache_write: 0.1875,
+        input: 1500n,
+        output: 6000n,
+        cache_read: 750n,
+        cache_write: 1875n,
       };
 
       const usage = {
@@ -262,20 +268,17 @@ describe("Pricing", () => {
 
       const result = calculateCost(pricing, usage);
 
-      expect(result.inputCost).toBeCloseTo(0.00015, 10);
-      expect(result.outputCost).toBeCloseTo(0.0003, 10);
-      expect(result.cacheReadCost).toBeCloseTo(0.000015, 10); // 200 / 1M * 0.075
-      expect(result.cacheWriteCost).toBeCloseTo(0.00001875, 10); // 100 / 1M * 0.1875
-      expect(result.totalCost).toBeCloseTo(
-        0.00015 + 0.0003 + 0.000015 + 0.00001875,
-        10,
-      );
+      expect(result.inputCost).toBe(1n); // 1000 / 1M * 1500cc = 1.5cc -> 1cc
+      expect(result.outputCost).toBe(3n); // 500 / 1M * 6000cc = 3cc
+      expect(result.cacheReadCost).toBe(0n); // 200 / 1M * 750cc = 0.15cc -> 0cc
+      expect(result.cacheWriteCost).toBe(0n); // 100 / 1M * 1875cc = 0.1875cc -> 0cc
+      expect(result.totalCost).toBe(4n); // 1 + 3 + 0 + 0
     });
 
     it("should handle missing cache pricing", () => {
       const pricing = {
-        input: 0.15,
-        output: 0.6,
+        input: 1500n,
+        output: 6000n,
       };
 
       const usage = {
@@ -289,13 +292,13 @@ describe("Pricing", () => {
 
       expect(result.cacheReadCost).toBeUndefined();
       expect(result.cacheWriteCost).toBeUndefined();
-      expect(result.totalCost).toBe(0.00045);
+      expect(result.totalCost).toBe(4n);
     });
 
     it("should handle zero tokens", () => {
       const pricing = {
-        input: 0.15,
-        output: 0.6,
+        input: 1500n,
+        output: 6000n,
       };
 
       const usage = {
@@ -305,45 +308,9 @@ describe("Pricing", () => {
 
       const result = calculateCost(pricing, usage);
 
-      expect(result.inputCost).toBe(0);
-      expect(result.outputCost).toBe(0);
-      expect(result.totalCost).toBe(0);
-    });
-  });
-
-  describe("formatCostBreakdown", () => {
-    it("should format cost breakdown with 6 decimal places", () => {
-      const breakdown = {
-        inputCost: 0.00015,
-        outputCost: 0.0003,
-        cacheReadCost: 0.000075,
-        cacheWriteCost: 0.0001,
-        totalCost: 0.000525,
-      };
-
-      const formatted = formatCostBreakdown(breakdown);
-
-      expect(formatted.input).toBe("$0.000150");
-      expect(formatted.output).toBe("$0.000300");
-      expect(formatted.cacheRead).toBe("$0.000075");
-      expect(formatted.cacheWrite).toBe("$0.000100");
-      expect(formatted.total).toBe("$0.000525");
-    });
-
-    it("should handle undefined cache costs", () => {
-      const breakdown = {
-        inputCost: 0.00015,
-        outputCost: 0.0003,
-        totalCost: 0.00045,
-      };
-
-      const formatted = formatCostBreakdown(breakdown);
-
-      expect(formatted.input).toBe("$0.000150");
-      expect(formatted.output).toBe("$0.000300");
-      expect(formatted.cacheRead).toBeUndefined();
-      expect(formatted.cacheWrite).toBeUndefined();
-      expect(formatted.total).toBe("$0.000450");
+      expect(result.inputCost).toBe(0n);
+      expect(result.outputCost).toBe(0n);
+      expect(result.totalCost).toBe(0n);
     });
   });
 

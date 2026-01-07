@@ -3,6 +3,9 @@
  *
  * Fetches pricing data from models.dev/api.json and provides cost calculation
  * utilities for tracking usage costs across providers.
+ *
+ * All costs are stored and calculated in centi-cents (BIGINT).
+ * Pricing data from models.dev (in dollars) is converted to centi-cents immediately.
  */
 
 import { Effect } from "effect";
@@ -10,11 +13,16 @@ import {
   getModelsDotDevProviderIds,
   type ProviderName,
 } from "@/api/router/providers";
+import {
+  type CostInCenticents,
+  dollarsToCenticents,
+} from "@/api/router/cost-utils";
 
 /**
- * Pricing information for a model.
+ * Pricing information for a model (fetched from models.dev in dollars).
+ * Internal use only - immediately converted to ModelPricingCenticents.
  */
-export interface ModelPricing {
+interface ModelPricingDollars {
   /** Cost per million input tokens in USD */
   input: number;
   /** Cost per million output tokens in USD */
@@ -26,7 +34,22 @@ export interface ModelPricing {
 }
 
 /**
- * Provider API structure from models.dev
+ * Pricing information for a model in centi-cents.
+ * Use this type throughout the system.
+ */
+export interface ModelPricing {
+  /** Cost per million input tokens in centi-cents */
+  input: CostInCenticents;
+  /** Cost per million output tokens in centi-cents */
+  output: CostInCenticents;
+  /** Optional: Cost per million cache read tokens in centi-cents */
+  cache_read?: CostInCenticents;
+  /** Optional: Cost per million cache write tokens in centi-cents */
+  cache_write?: CostInCenticents;
+}
+
+/**
+ * Provider API structure from models.dev (raw format with dollar pricing)
  */
 interface ProviderData {
   id: string;
@@ -36,7 +59,7 @@ interface ProviderData {
     {
       id: string;
       name: string;
-      cost?: ModelPricing;
+      cost?: ModelPricingDollars;
     }
   >;
 }
@@ -107,14 +130,33 @@ export function getModelsDotDevPricingData() {
 }
 
 /**
+ * Converts dollar-based pricing to centi-cent pricing.
+ */
+function convertPricingToCenticents(
+  pricing: ModelPricingDollars,
+): ModelPricing {
+  return {
+    input: dollarsToCenticents(pricing.input),
+    output: dollarsToCenticents(pricing.output),
+    cache_read: pricing.cache_read
+      ? dollarsToCenticents(pricing.cache_read)
+      : undefined,
+    cache_write: pricing.cache_write
+      ? dollarsToCenticents(pricing.cache_write)
+      : undefined,
+  };
+}
+
+/**
  * Looks up pricing for a specific model.
  *
  * This uses the data fetched from models.dev/api.json for accurate,
- * current pricing data.
+ * current pricing data. Pricing is immediately converted from dollars
+ * to centi-cents for use throughout the system.
  *
  * @param provider - Our provider name (openai, anthropic, google)
  * @param modelId - The model ID used in the request
- * @returns Pricing info or null if not found
+ * @returns Pricing info in centi-cents or null if not found
  */
 export function getModelPricing(
   provider: ProviderName,
@@ -128,9 +170,10 @@ export function getModelPricing(
 
     for (const providerId of providerIds) {
       const providerData = data[providerId];
-      const modelPricing = providerData?.models[modelId]?.cost;
-      if (modelPricing) {
-        return modelPricing;
+      const modelPricingDollars = providerData?.models[modelId]?.cost;
+      if (modelPricingDollars) {
+        // Convert from dollars to centi-cents immediately
+        return convertPricingToCenticents(modelPricingDollars);
       }
     }
 
@@ -146,57 +189,59 @@ export interface TokenUsage {
   outputTokens: number;
   cacheReadTokens?: number;
   cacheWriteTokens?: number;
+  /**
+   * Provider-specific cache write breakdown for accurate record-keeping.
+   * Stored as JSONB in the database to support any provider's cache structure.
+   *
+   * Examples:
+   * - Anthropic: { ephemeral5m: 100, ephemeral1h: 50 }
+   * - OpenAI/Google: Not needed (no breakdown required)
+   */
+  cacheWriteBreakdown?: Record<string, number>;
 }
 
 /**
- * Calculated cost breakdown
+ * Calculated cost breakdown in centi-cents
  */
 export interface CostBreakdown {
-  inputCost: number;
-  outputCost: number;
-  cacheReadCost?: number;
-  cacheWriteCost?: number;
-  totalCost: number;
-}
-
-/**
- * Formatted cost breakdown with string representations
- */
-export interface FormattedCostBreakdown {
-  input: string;
-  output: string;
-  cacheRead?: string;
-  cacheWrite?: string;
-  total: string;
+  inputCost: CostInCenticents;
+  outputCost: CostInCenticents;
+  cacheReadCost?: CostInCenticents;
+  cacheWriteCost?: CostInCenticents;
+  totalCost: CostInCenticents;
 }
 
 /**
  * Calculates the cost for a request based on usage and pricing.
  *
- * @param pricing - The model's pricing information
+ * All calculations are performed in centi-cents using BIGINT arithmetic.
+ * Pricing is in centi-cents per million tokens.
+ *
+ * @param pricing - The model's pricing information in centi-cents
  * @param usage - Token usage from the response
- * @returns Cost breakdown in USD
+ * @returns Cost breakdown in centi-cents
  */
 export function calculateCost(
   pricing: ModelPricing,
   usage: TokenUsage,
 ): CostBreakdown {
-  // All costs in models.dev are per million tokens
-  const inputCost = (usage.inputTokens / 1_000_000) * pricing.input;
-  const outputCost = (usage.outputTokens / 1_000_000) * pricing.output;
+  // Pricing is in centi-cents per million tokens
+  // Calculate: (tokens * price_per_million) / 1_000_000
+  const inputCost = (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
+  const outputCost = (BigInt(usage.outputTokens) * pricing.output) / 1_000_000n;
 
   const cacheReadCost =
     usage.cacheReadTokens && pricing.cache_read
-      ? (usage.cacheReadTokens / 1_000_000) * pricing.cache_read
+      ? (BigInt(usage.cacheReadTokens) * pricing.cache_read) / 1_000_000n
       : undefined;
 
   const cacheWriteCost =
     usage.cacheWriteTokens && pricing.cache_write
-      ? (usage.cacheWriteTokens / 1_000_000) * pricing.cache_write
+      ? (BigInt(usage.cacheWriteTokens) * pricing.cache_write) / 1_000_000n
       : undefined;
 
   const totalCost =
-    inputCost + outputCost + (cacheReadCost || 0) + (cacheWriteCost || 0);
+    inputCost + outputCost + (cacheReadCost || 0n) + (cacheWriteCost || 0n);
 
   return {
     inputCost,
@@ -204,34 +249,5 @@ export function calculateCost(
     cacheReadCost,
     cacheWriteCost,
     totalCost,
-  };
-}
-
-/**
- * Formats a single cost value in USD as a string.
- */
-function formatCostValue(cost: number): string {
-  return `$${cost.toFixed(6)}`;
-}
-
-/**
- * Formats a cost breakdown into string representations.
- *
- * @param breakdown - The cost breakdown to format
- * @returns Formatted cost breakdown with all values as strings
- */
-export function formatCostBreakdown(
-  breakdown: CostBreakdown,
-): FormattedCostBreakdown {
-  return {
-    input: formatCostValue(breakdown.inputCost),
-    output: formatCostValue(breakdown.outputCost),
-    cacheRead: breakdown.cacheReadCost
-      ? formatCostValue(breakdown.cacheReadCost)
-      : undefined,
-    cacheWrite: breakdown.cacheWriteCost
-      ? formatCostValue(breakdown.cacheWriteCost)
-      : undefined,
-    total: formatCostValue(breakdown.totalCost),
   };
 }

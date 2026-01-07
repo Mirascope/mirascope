@@ -3,23 +3,22 @@
  *
  * Provides a unified interface for extracting usage from provider responses
  * and calculating costs using models.dev pricing data.
+ *
+ * All costs are calculated and returned in centi-cents (BIGINT).
  */
 
 import { Effect } from "effect";
 import {
   getModelPricing,
-  calculateCost,
-  formatCostBreakdown,
   type TokenUsage,
   type CostBreakdown,
-  type FormattedCostBreakdown,
 } from "@/api/router/pricing";
 import type { ProviderName } from "@/api/router/providers";
 
 /**
  * Base cost calculator that handles shared logic for all providers.
  *
- * Subclasses implement provider-specific usage extraction.
+ * Subclasses implement provider-specific usage extraction and cache cost calculation.
  */
 export abstract class BaseCostCalculator {
   protected readonly provider: ProviderName;
@@ -36,11 +35,36 @@ export abstract class BaseCostCalculator {
   protected abstract extractUsage(body: unknown): TokenUsage | null;
 
   /**
+   * Calculates cache write cost from provider-specific breakdown.
+   *
+   * This allows each provider to handle their own cache pricing logic
+   * without corrupting the actual token counts stored in the database.
+   *
+   * Must be implemented by each provider-specific calculator.
+   *
+   * @param cacheWriteTokens - Total cache write tokens
+   * @param breakdown - Provider-specific cache write breakdown (for complex pricing)
+   * @param cacheWritePrice - Cache write price per million tokens (in centicents)
+   * @returns Cache write cost in centicents
+   */
+  protected calculateCacheWriteCost(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _cacheWriteTokens: number | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _breakdown: Record<string, number> | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _cacheWritePrice: bigint,
+  ): CostBreakdown["cacheWriteCost"] {
+    // Providers like Anthropic that charge for cache writes should overwrite this method
+    return undefined;
+  }
+
+  /**
    * Main entry point: calculates usage and cost for a request.
    *
    * @param modelId - The model ID from the request
    * @param responseBody - The parsed provider response body
-   * @returns Effect with usage and cost data, or null if usage unavailable
+   * @returns Effect with usage and cost data (in centi-cents), or null if usage unavailable
    */
   public calculate(
     modelId: string,
@@ -49,50 +73,65 @@ export abstract class BaseCostCalculator {
     {
       usage: TokenUsage;
       cost: CostBreakdown;
-      formattedCost: FormattedCostBreakdown;
     } | null,
     Error
   > {
-    return Effect.gen(
-      function* (this: BaseCostCalculator) {
-        // Extract usage from response
-        const usage = this.extractUsage(responseBody);
-        if (!usage) {
-          return null;
-        }
+    return Effect.gen(this, function* () {
+      // Extract usage from response
+      const usage = this.extractUsage(responseBody);
+      if (!usage) {
+        return null;
+      }
 
-        // Get pricing data (null if unavailable)
-        const pricing = yield* getModelPricing(this.provider, modelId).pipe(
-          Effect.catchAll(() => Effect.succeed(null)),
-        );
+      // Get pricing data (null if unavailable)
+      const pricing = yield* getModelPricing(this.provider, modelId).pipe(
+        Effect.catchAll(() => Effect.succeed(null)),
+      );
 
-        if (!pricing) {
-          // Return usage without cost data
-          return {
-            usage,
-            cost: {
-              inputCost: 0,
-              outputCost: 0,
-              totalCost: 0,
-            },
-            formattedCost: {
-              input: "N/A",
-              output: "N/A",
-              total: "N/A",
-            },
-          };
-        }
-
-        // Calculate cost
-        const cost = calculateCost(pricing, usage);
-
+      if (!pricing) {
+        // Return usage without cost data
         return {
           usage,
-          cost,
-          formattedCost: formatCostBreakdown(cost),
+          cost: {
+            inputCost: 0n,
+            outputCost: 0n,
+            totalCost: 0n,
+          },
         };
-      }.bind(this),
-    );
+      }
+
+      // Calculate cost in centi-cents
+      const inputCost =
+        (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
+      const outputCost =
+        (BigInt(usage.outputTokens) * pricing.output) / 1_000_000n;
+
+      const cacheReadCost =
+        usage.cacheReadTokens && pricing.cache_read
+          ? (BigInt(usage.cacheReadTokens) * pricing.cache_read) / 1_000_000n
+          : undefined;
+
+      // Use provider-specific cache write cost calculation
+      const cacheWriteCost = this.calculateCacheWriteCost(
+        usage.cacheWriteTokens,
+        usage.cacheWriteBreakdown,
+        pricing.cache_write || 0n,
+      );
+
+      const totalCost =
+        inputCost + outputCost + (cacheReadCost || 0n) + (cacheWriteCost || 0n);
+
+      return {
+        usage,
+        cost: {
+          inputCost,
+          outputCost,
+          cacheReadCost,
+          cacheWriteCost,
+          totalCost,
+        },
+      };
+    });
   }
 }
 
@@ -152,27 +191,22 @@ export class OpenAICostCalculator extends BaseCostCalculator {
  * IMPORTANT: Anthropic's input_tokens does NOT include cache tokens.
  * Total input = input_tokens + cache_creation_input_tokens + cache_read_input_tokens
  *
- * CACHE PRICING NORMALIZATION:
+ * CACHE PRICING:
  * Anthropic provides detailed cache breakdown via usage.cache_creation:
  * - ephemeral_5m_input_tokens: 5-minute TTL caches (cost 1.25x input price)
- * - ephemeral_1h_input_tokens: 1-hour TTL caches (cost 2.0x input price per Anthropic docs)
+ * - ephemeral_1h_input_tokens: 1-hour TTL caches (cost 2.0x input price)
  *
- * We normalize these to a single cacheWriteTokens value by converting 1h tokens to
- * 5m-equivalent: 1h_normalized = 1h_tokens × (2.0 / 1.25) = 1h_tokens × 1.6
- *
- * This allows calculateCost() to use models.dev's 5m pricing (1.25x) for all cache writes,
- * while ensuring correct costs: 5m stays 1:1, 1h effectively costs 2.0x input price.
- *
- * TODO: At some point we will likely want to display the per-request cost-breakdown for users.
- * We'll need to update the cost calculators to store this information at that time.
+ * We store the ACTUAL token counts (not normalized) in cacheWriteTokens and
+ * cacheWriteBreakdown for accurate record-keeping. The cost calculation happens
+ * in calculateCacheWriteCost() using the provider-specific pricing logic.
  */
 export class AnthropicCostCalculator extends BaseCostCalculator {
   constructor() {
     super("anthropic");
   }
 
-  // Normalize: 5m tokens stay 1:1, 1h tokens scaled by 1.6
-  static readonly EPHEMERAL_1H_CACHE_INPUT_TOKENS_MULTIPLIER = 1.6;
+  // Pricing multiplier: 1h / 5m = 2.0 / 1.25 = 1.6
+  static readonly EPHEMERAL_1H_MULTIPLIER = 1.6;
 
   protected extractUsage(body: unknown): TokenUsage | null {
     if (typeof body !== "object" || body === null) return null;
@@ -184,7 +218,6 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
           output_tokens: number;
           cache_creation_input_tokens?: number;
           cache_read_input_tokens?: number;
-          // Detailed cache breakdown (available in recent API versions)
           cache_creation?: {
             ephemeral_5m_input_tokens?: number;
             ephemeral_1h_input_tokens?: number;
@@ -197,33 +230,64 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
 
     const cacheReadTokens = usage.cache_read_input_tokens || 0;
 
-    // Normalize cache write tokens for accurate pricing
-    // If detailed breakdown is available, normalize 1h tokens to 5m-equivalent
-    // Since 1h costs 2.0x input and 5m costs 1.25x input:
-    //   1h_normalized = 1h_tokens * (2.0 / 1.25) = 1h_tokens * 1.6
-    // This way, multiplying total by 5m price gives correct cost for both
-    let cacheWriteTokens: number;
-    const ephemeral5mTokens =
-      usage.cache_creation?.ephemeral_5m_input_tokens || 0;
-    const ephemeral1hTokens =
-      usage.cache_creation?.ephemeral_1h_input_tokens || 0;
+    // Extract raw token counts and breakdown
+    const ephemeral5m = usage.cache_creation?.ephemeral_5m_input_tokens || 0;
+    const ephemeral1h = usage.cache_creation?.ephemeral_1h_input_tokens || 0;
 
-    if (ephemeral5mTokens > 0 || ephemeral1hTokens > 0) {
-      cacheWriteTokens =
-        ephemeral5mTokens +
-        ephemeral1hTokens *
-          AnthropicCostCalculator.EPHEMERAL_1H_CACHE_INPUT_TOKENS_MULTIPLIER;
-    } else {
-      // Fallback to aggregate value (backwards compatibility)
-      cacheWriteTokens = usage.cache_creation_input_tokens || 0;
-    }
+    // Store ACTUAL total tokens (no normalization)
+    // If detailed breakdown is available, use it; otherwise fall back to aggregate field
+    const cacheWriteTokens =
+      ephemeral5m + ephemeral1h || usage.cache_creation_input_tokens || 0;
+
+    // Store breakdown for accurate cost calculation (only if detailed breakdown exists)
+    const cacheWriteBreakdown =
+      ephemeral5m > 0 || ephemeral1h > 0
+        ? { ephemeral5m, ephemeral1h }
+        : undefined;
 
     return {
       inputTokens: usage.input_tokens,
       outputTokens: usage.output_tokens,
       cacheReadTokens,
       cacheWriteTokens,
+      cacheWriteBreakdown,
     };
+  }
+
+  protected override calculateCacheWriteCost(
+    cacheWriteTokens: number | undefined,
+    breakdown: Record<string, number> | undefined,
+    cacheWritePrice: bigint,
+  ): CostBreakdown["cacheWriteCost"] {
+    // Try to use detailed breakdown first (preferred for accuracy)
+    if (breakdown) {
+      // At this point, we know one or the other is >0 since breakdown would otherwise be undefined
+      const { ephemeral5m, ephemeral1h } = breakdown;
+      // Anthropic cache pricing:
+      // - 5m ephemeral: 1.25x input price (which is what cacheWritePrice represents from models.dev)
+      // - 1h ephemeral: 2.0x input price
+      // Cost calculation:
+      //   cost_5m = ephemeral5m * cacheWritePrice / 1M
+      //   cost_1h = ephemeral1h * cacheWritePrice * 1.6 / 1M  (because 2.0 / 1.25 = 1.6)
+
+      const cost5m = (BigInt(ephemeral5m) * cacheWritePrice) / 1_000_000n;
+      const cost1h =
+        (BigInt(ephemeral1h) *
+          cacheWritePrice *
+          BigInt(
+            Math.round(AnthropicCostCalculator.EPHEMERAL_1H_MULTIPLIER * 10),
+          )) /
+        (1_000_000n * 10n);
+
+      return cost5m + cost1h;
+    }
+
+    // Fallback to simple token count (for older API versions or missing breakdown)
+    if (!cacheWriteTokens) {
+      return undefined;
+    }
+    // Defensive: fallback for API versions without detailed breakdown
+    return (BigInt(cacheWriteTokens) * cacheWritePrice) / 1_000_000n;
   }
 }
 

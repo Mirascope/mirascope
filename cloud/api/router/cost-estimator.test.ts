@@ -12,8 +12,8 @@ describe("cost-estimator", () => {
 
     it("should estimate cost for OpenAI request with messages", async () => {
       const mockPricing = {
-        input: 10, // $10 per million
-        output: 30, // $30 per million
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -44,8 +44,8 @@ describe("cost-estimator", () => {
 
     it("should estimate cost for Anthropic request with multimodal content", async () => {
       const mockPricing = {
-        input: 15,
-        output: 75,
+        input: 150000n, // $15 per million = 150000cc
+        output: 750000n, // $75 per million = 750000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -82,8 +82,8 @@ describe("cost-estimator", () => {
 
     it("should estimate cost for Google request with contents", async () => {
       const mockPricing = {
-        input: 5,
-        output: 15,
+        input: 50000n, // $5 per million = 50000cc
+        output: 150000n, // $15 per million = 150000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -118,8 +118,8 @@ describe("cost-estimator", () => {
 
     it("should use default output tokens when max_tokens not specified", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -186,8 +186,8 @@ describe("cost-estimator", () => {
 
     it("should handle empty request body", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -209,8 +209,8 @@ describe("cost-estimator", () => {
 
     it("should handle null request body", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -232,8 +232,8 @@ describe("cost-estimator", () => {
 
     it("should handle Google request with null body", async () => {
       const mockPricing = {
-        input: 5,
-        output: 15,
+        input: 50000n, // $5 per million = 50000cc
+        output: 150000n, // $15 per million = 150000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -255,8 +255,8 @@ describe("cost-estimator", () => {
 
     it("should handle Google request with no contents or generationConfig", async () => {
       const mockPricing = {
-        input: 5,
-        output: 15,
+        input: 50000n, // $5 per million = 50000cc
+        output: 150000n, // $15 per million = 150000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -278,8 +278,8 @@ describe("cost-estimator", () => {
 
     it("should handle Anthropic request with null body", async () => {
       const mockPricing = {
-        input: 15,
-        output: 75,
+        input: 150000n, // $15 per million = 150000cc
+        output: 750000n, // $75 per million = 750000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -301,8 +301,8 @@ describe("cost-estimator", () => {
 
     it("should handle Anthropic request with no messages", async () => {
       const mockPricing = {
-        input: 15,
-        output: 75,
+        input: 150000n, // $15 per million = 150000cc
+        output: 750000n, // $75 per million = 750000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -324,8 +324,8 @@ describe("cost-estimator", () => {
 
     it("should handle OpenAI request with no messages", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -347,8 +347,8 @@ describe("cost-estimator", () => {
 
     it("should handle OpenAI request with non-object body", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -370,8 +370,8 @@ describe("cost-estimator", () => {
 
     it("should handle Anthropic request with non-object body", async () => {
       const mockPricing = {
-        input: 15,
-        output: 75,
+        input: 150000n, // $15 per million = 150000cc
+        output: 750000n, // $75 per million = 750000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -393,8 +393,8 @@ describe("cost-estimator", () => {
 
     it("should handle Google request with non-object body", async () => {
       const mockPricing = {
-        input: 5,
-        output: 15,
+        input: 50000n, // $5 per million = 50000cc
+        output: 150000n, // $15 per million = 150000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -416,8 +416,8 @@ describe("cost-estimator", () => {
 
     it("should handle OpenAI request with non-string/non-array content", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -443,8 +443,8 @@ describe("cost-estimator", () => {
 
     it("should handle message without role field", async () => {
       const mockPricing = {
-        input: 10,
-        output: 30,
+        input: 100000n, // $10 per million = 100000cc
+        output: 300000n, // $30 per million = 300000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
@@ -470,8 +470,8 @@ describe("cost-estimator", () => {
 
     it("should handle Google request with invalid maxOutputTokens", async () => {
       const mockPricing = {
-        input: 5,
-        output: 15,
+        input: 50000n, // $5 per million = 50000cc
+        output: 150000n, // $15 per million = 150000cc
       };
 
       vi.spyOn(pricing, "getModelPricing").mockReturnValue(
