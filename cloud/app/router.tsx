@@ -10,6 +10,10 @@ export function getRouter() {
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
     scrollRestoration: true,
+    // Configure scroll to top selectors to manage nested scrollable areas
+    scrollToTopSelectors: [
+      "#mdx-container", // Main MDX content container
+    ],
   });
 
   return router;

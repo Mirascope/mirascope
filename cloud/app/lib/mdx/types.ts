@@ -24,10 +24,8 @@ export interface Frontmatter {
  * This is a React component with metadata attached as properties
  */
 export type ProcessedMDX = React.ComponentType<{
-  components?: Record<
-    string,
-    React.ComponentType<React.HTMLAttributes<unknown>>
-  >;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  components?: Record<string, React.ComponentType<any>>;
 }> & {
   /** Extracted frontmatter metadata */
   frontmatter: Frontmatter;
