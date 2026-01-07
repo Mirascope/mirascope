@@ -219,6 +219,54 @@ describe.sequential("Annotations API", (it) => {
     }),
   );
 
+  it.effect(
+    "POST /annotations - creates annotation without optional label",
+    () =>
+      Effect.gen(function* () {
+        const noLabelTraceId = "abcdef0123456789abcdef0123456789";
+        const noLabelSpanId = "abcdef0123456789";
+
+        // Create a new span for this test
+        yield* apiKeyClient.traces.create({
+          payload: {
+            resourceSpans: [
+              {
+                resource: {
+                  attributes: [
+                    { key: "service.name", value: { stringValue: "test-svc" } },
+                  ],
+                },
+                scopeSpans: [
+                  {
+                    scope: { name: "test-scope" },
+                    spans: [
+                      {
+                        traceId: noLabelTraceId,
+                        spanId: noLabelSpanId,
+                        name: "no-label-span",
+                        startTimeUnixNano: "1700000000000000002",
+                        endTimeUnixNano: "1700000001000000002",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        });
+
+        const result = yield* apiKeyClient.annotations.create({
+          payload: {
+            otelTraceId: noLabelTraceId,
+            otelSpanId: noLabelSpanId,
+            // No label provided - should default to null
+          },
+        });
+        expect(result.id).toBeDefined();
+        expect(result.label).toBeNull();
+      }),
+  );
+
   it.effect("GET /annotations/:id - gets annotation by ID", () =>
     Effect.gen(function* () {
       const result = yield* apiKeyClient.annotations.get({

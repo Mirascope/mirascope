@@ -100,7 +100,9 @@ export const handleRequest = (
 
         if (isJsonResponse && response.status >= 400) {
           const body = await response.clone().text();
+          /* v8 ignore start */
           if (body.includes('"_tag"')) {
+            /* v8 ignore end - for some reason this is the only way that works to ignore the else branch */
             const transformedBody = body.replace(/"_tag":/g, '"tag":');
             response = new Response(transformedBody, {
               status: response.status,

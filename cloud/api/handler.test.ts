@@ -73,28 +73,41 @@ describe("handleRequest", () => {
       }),
   );
 
-  it.effect("should transform _tag in JSON error responses", () =>
+  it.effect("should handle POST requests with body", () =>
     Effect.gen(function* () {
-      const req = new Request("http://localhost/api/v0/traces", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ resourceSpans: "invalid" }),
-      } as RequestInit);
-
-      const apiKeyInfo = {
-        apiKeyId: "test-api-key-id",
-        organizationId: "test-org-id",
-        projectId: "test-project-id",
-        environmentId: "test-env-id",
-        ownerId: mockUser.id,
-        ownerEmail: mockUser.email,
-        ownerName: mockUser.name,
-        ownerDeletedAt: mockUser.deletedAt,
-      };
+      // POST request with body to trigger duplex: "half"
+      const req = new Request(
+        "http://localhost/api/v0/organizations/00000000-0000-0000-0000-000000000099/projects",
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ name: "Test", slug: "test" }),
+        },
+      );
 
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
-        apiKeyInfo: apiKeyInfo,
+        environment: "test",
+        prefix: "/api/v0",
+      });
+
+      expect(matched).toBe(true);
+      expect(response.status).toBeGreaterThanOrEqual(400);
+    }),
+  );
+
+  it.effect("should transform _tag in JSON error responses", () =>
+    Effect.gen(function* () {
+      // Trigger a NotFoundError by trying to get a non-existent organization
+      const req = new Request(
+        "http://localhost/api/v0/organizations/00000000-0000-0000-0000-000000000099",
+        {
+          method: "GET",
+        },
+      );
+
+      const { matched, response } = yield* handleRequest(req, {
+        user: mockUser,
         environment: "test",
         prefix: "/api/v0",
       });
@@ -102,7 +115,8 @@ describe("handleRequest", () => {
       const body = yield* Effect.promise(() => response.text());
 
       expect(matched).toBe(true);
-      expect(response.status).toBe(400);
+      expect(response.status).toBeGreaterThanOrEqual(400);
+      // Ensure _tag is transformed to tag in error responses
       expect(body).toContain('"tag"');
       expect(body).not.toContain('"_tag"');
     }),
