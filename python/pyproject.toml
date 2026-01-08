@@ -243,7 +243,7 @@ target-python-version = "3.10"
 type-mappings = ["binary=string"]
 
 [tool.codespell]
-skip = [".git", "*.lock"]
+skip = [".git", "*.lock", "cloud/docker/data"]
 
 [tool.coverage.run]
 omit = []
