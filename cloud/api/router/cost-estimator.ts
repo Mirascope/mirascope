@@ -3,12 +3,15 @@
  *
  * Provides utilities for estimating the cost of AI provider requests before they're made.
  * This is used by the reservation system to lock sufficient funds for concurrent requests.
+ *
+ * All cost estimates are returned in centi-cents (BIGINT).
  */
 
 import { Effect } from "effect";
 import { getModelPricing } from "@/api/router/pricing";
 import type { ProviderName } from "@/api/router/providers";
 import { PricingUnavailableError } from "@/errors";
+import type { CostInCenticents } from "@/api/router/cost-utils";
 
 /**
  * Default estimate for output tokens when not specified.
@@ -38,8 +41,8 @@ export interface EstimateCostParams {
  * Result of cost estimation.
  */
 export interface EstimatedCost {
-  /** Estimated cost in dollars (e.g., 0.05 for $0.05) */
-  cost: number;
+  /** Estimated cost in centi-cents */
+  cost: CostInCenticents;
   /** Estimated input tokens */
   inputTokens: number;
   /** Estimated output tokens */
@@ -191,14 +194,14 @@ export abstract class BaseCostEstimator {
    * This function:
    * 1. Estimates input/output token counts from the request body
    * 2. Fetches pricing data for the model
-   * 3. Calculates estimated cost
+   * 3. Calculates estimated cost in centi-cents
    *
    * The estimate is intentionally conservative (tends to overestimate) to ensure
    * sufficient funds are reserved. The actual cost will be charged on settlement.
    *
    * @param model - Model ID
    * @param requestBody - Parsed request body
-   * @returns Estimated cost
+   * @returns Estimated cost in centi-cents
    * @throws PricingUnavailableError if pricing data cannot be fetched
    *
    * @example
@@ -208,7 +211,7 @@ export abstract class BaseCostEstimator {
    *   "gpt-4",
    *   { messages: [...], max_tokens: 1024 }
    * );
-   * console.log(`Estimated cost: $${estimate.cost.toFixed(4)}`);
+   * console.log(`Estimated cost: ${estimate.cost} centi-cents`);
    * ```
    */
   public estimate(
@@ -234,9 +237,10 @@ export abstract class BaseCostEstimator {
         ),
       );
 
-      // Calculate cost (convert from per-million to actual tokens)
-      const inputCost = (inputTokens / 1_000_000) * pricing.input;
-      const outputCost = (outputTokens / 1_000_000) * pricing.output;
+      // Calculate cost in centi-cents
+      // Pricing is in centi-cents per million tokens
+      const inputCost = (BigInt(inputTokens) * pricing.input) / 1_000_000n;
+      const outputCost = (BigInt(outputTokens) * pricing.output) / 1_000_000n;
       const totalCost = inputCost + outputCost;
 
       return {

@@ -11,6 +11,7 @@ import {
   getCostCalculator,
 } from "@/api/router/providers";
 import { InternalError } from "@/errors";
+import { formatCostForDisplay } from "@/api/router/cost-utils";
 
 /**
  * Unified Provider Proxy Route
@@ -117,11 +118,15 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
                       result.usage.inputTokens + result.usage.outputTokens,
                   },
                   cost: {
-                    input: result.formattedCost.input,
-                    output: result.formattedCost.output,
-                    cacheRead: result.formattedCost.cacheRead,
-                    cacheWrite: result.formattedCost.cacheWrite,
-                    total: result.formattedCost.total,
+                    input: formatCostForDisplay(result.cost.inputCost),
+                    output: formatCostForDisplay(result.cost.outputCost),
+                    cacheRead: result.cost.cacheReadCost
+                      ? formatCostForDisplay(result.cost.cacheReadCost)
+                      : undefined,
+                    cacheWrite: result.cost.cacheWriteCost
+                      ? formatCostForDisplay(result.cost.cacheWriteCost)
+                      : undefined,
+                    total: formatCostForDisplay(result.cost.totalCost),
                   },
                 });
               }
