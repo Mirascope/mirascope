@@ -4,8 +4,8 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import path from "path";
-import { optimizedImageMiddleware } from "./vite/optimized-image-middleware";
 import { viteMDX } from "./vite-plugins/mdx";
+import { viteImages } from "./vite-plugins/images";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
@@ -18,6 +18,7 @@ export default defineConfig(() => {
         projects: ["./tsconfig.json"],
       }),
       viteMDX(),
+      viteImages({ viteEnvironments: ["client"] }),
       cloudflare({ viteEnvironment: { name: "ssr" } }),
       tanstackStart({
         srcDirectory: "app",
@@ -38,7 +39,6 @@ export default defineConfig(() => {
       }),
       viteReact(),
       tailwindcss(),
-      optimizedImageMiddleware(),
     ],
     resolve: {
       alias: {
