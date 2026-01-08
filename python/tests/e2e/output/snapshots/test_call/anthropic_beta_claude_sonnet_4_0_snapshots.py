@@ -80,8 +80,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "anthropic",
-            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -115,8 +115,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "anthropic",
-            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),

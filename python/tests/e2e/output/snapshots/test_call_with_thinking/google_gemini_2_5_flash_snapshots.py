@@ -13,21 +13,21 @@ sync_snapshot = snapshot(
             "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
-            "params": {"thinking": False},
+            "params": {"thinking": {"level": "minimal"}},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 1766,
+                "input_tokens": 792,
                 "output_tokens": 18,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": """\
-cache_tokens_details=None cached_content_token_count=None candidates_token_count=18 candidates_tokens_details=None prompt_token_count=1766 prompt_tokens_details=[ModalityTokenCount(
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=18 candidates_tokens_details=None prompt_token_count=792 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
-  token_count=1766
-)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=1784 traffic_type=None\
+  token_count=792
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=810 traffic_type=None\
 """,
-                "total_tokens": 1784,
+                "total_tokens": 810,
             },
             "messages": [
                 UserMessage(
@@ -41,62 +41,30 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     content=[
                         Thought(
                             thought="""\
-**Problem Decomposition and Prime Number Generation**
+**Prime Number Search with Substring Check**
 
-Alright, I'm being asked to find primes less than 400 that have "79" as a substring. My immediate thought is to break this into two parts. First, I need to generate the list of all prime numbers below 400. There are standard algorithms for this – I could use the Sieve of Eratosthenes or a prime number generator function I have in my toolbox. Then, for each prime in that list, I'll need to check if its string representation contains the consecutive digits "79."
+Okay, so I'm being asked to find the number of primes less than 400 that have "79" as a substring. My mind immediately goes to breaking this down into a few clear steps.
 
-**Prime Number Identification and Substring Search**
+First, I need to generate all the prime numbers below 400.  I could do this by hand, but since I am trying to be efficient, I can use the Sieve of Eratosthenes. I'll need to create a boolean array, `is_prime`, and mark all the multiples of each prime as not prime. I will stop when I reach the square root of 400, which is 20. Then, I can simply go through the boolean array and collect the prime numbers.
 
-Let's begin by generating the list of primes. I'll use a method I'm familiar with, probably starting with the numbers 2, 3, 5, 7, and working my way up. It's important to be systematic to avoid errors and omissions. I'll generate the primes to 100, 200, 300, and 400.
+Next, I need to iterate through this list and, for each prime, convert it into a string and check if it has "79" as a substring. This is a pretty straightforward string operation. I'm going to have to remember to check for three and two-digit primes.
 
-Okay, I've got the prime list, now, for each prime, I can convert it to a string and use a simple string search function. I'll iterate through the list, checking for "79" as a substring within each number. I can optimize this process, but for this size of a dataset, a straightforward approach is fine. I'll initialize a count variable to zero.
+Then, I'll just count how many primes have this substring. Easy peasy.
 
-**Systematic Prime and Substring Check**
-
-I start checking.
-For primes less than 100, I found that only 79 satisfies this. Count = 1.
-For primes between 100 and 199, I found only 179. Count = 2.
-For primes between 200 and 299, I did not find any.
-For primes between 300 and 399, I found 379. Count = 3.
-
-**Verification and Solution**
-
-Let me confirm the prime generation. I'll go through and check the primes. So the three numbers 79, 179, and 379, satisfy the conditions, and I am fairly certain that there are no others less than 400. I can also verify each number:
-*   79 is prime.
-*   179 appears prime, so I check divisibility: not divisible by 2, 3, 5, 7 (25\\*7+4), 11 (16\\*11+3), 13 (13\\*13+10), and then I need to get the next primes. It is prime.
-*   379 appears prime: not divisible by 2, 3 (19\\*3=57), 5, 7, 11, 13, 17, 19.
-
-Now, I'm confident in my answer.
-The total number of primes below 400 with the substring "79" is 3.
+I just went through and systematically checked all the primes less than 400. In the end, there are three primes less than 400 that contain the substring "79": 79, 179 and 379.
 """
                         ),
                         Text(
                             text="""\
-To find the number of primes below 400 that contain "79" as a substring, we follow these steps:
+The primes below 400 are:
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397.
 
-1.  **List all prime numbers below 400.**
-    The primes below 400 are:
-    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
-    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
-    211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
-    307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397.
+Now we check which of these primes contain "79" as a substring:
+1.  **79** (contains "79")
+2.  **179** (contains "79")
+3.  **379** (contains "79")
 
-2.  **Check each prime number to see if its digits contain "79" as a substring.**
-    *   **Single-digit primes (2, 3, 5, 7):** None contain "79".
-    *   **Two-digit primes:**
-        *   **79**: Yes, it contains "79". (Count = 1)
-        *   All other two-digit primes (e.g., 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 83, 89, 97) do not contain "79".
-    *   **Three-digit primes (100-399):**
-        *   **100-199:**
-            *   **179**: Yes, it contains "79". (Count = 2)
-            *   Other primes in this range (e.g., 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 181, 191, 193, 197, 199) do not contain "79".
-        *   **200-299:**
-            *   None of the primes in this range (211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293) contain "79".
-        *   **300-399:**
-            *   **379**: Yes, it contains "79". (Count = 3)
-            *   Other primes in this range (e.g., 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 383, 389, 397) do not contain "79".
-
-The primes below 400 that contain "79" as a substring are 79, 179, and 379. There are 3 such primes.
+There are 3 such primes.
 
 3\
 """
@@ -115,33 +83,17 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Problem Decomposition and Prime Number Generation**
+**Prime Number Search with Substring Check**
 
-Alright, I'm being asked to find primes less than 400 that have "79" as a substring. My immediate thought is to break this into two parts. First, I need to generate the list of all prime numbers below 400. There are standard algorithms for this – I could use the Sieve of Eratosthenes or a prime number generator function I have in my toolbox. Then, for each prime in that list, I'll need to check if its string representation contains the consecutive digits "79."
+Okay, so I'm being asked to find the number of primes less than 400 that have "79" as a substring. My mind immediately goes to breaking this down into a few clear steps.
 
-**Prime Number Identification and Substring Search**
+First, I need to generate all the prime numbers below 400.  I could do this by hand, but since I am trying to be efficient, I can use the Sieve of Eratosthenes. I'll need to create a boolean array, `is_prime`, and mark all the multiples of each prime as not prime. I will stop when I reach the square root of 400, which is 20. Then, I can simply go through the boolean array and collect the prime numbers.
 
-Let's begin by generating the list of primes. I'll use a method I'm familiar with, probably starting with the numbers 2, 3, 5, 7, and working my way up. It's important to be systematic to avoid errors and omissions. I'll generate the primes to 100, 200, 300, and 400.
+Next, I need to iterate through this list and, for each prime, convert it into a string and check if it has "79" as a substring. This is a pretty straightforward string operation. I'm going to have to remember to check for three and two-digit primes.
 
-Okay, I've got the prime list, now, for each prime, I can convert it to a string and use a simple string search function. I'll iterate through the list, checking for "79" as a substring within each number. I can optimize this process, but for this size of a dataset, a straightforward approach is fine. I'll initialize a count variable to zero.
+Then, I'll just count how many primes have this substring. Easy peasy.
 
-**Systematic Prime and Substring Check**
-
-I start checking.
-For primes less than 100, I found that only 79 satisfies this. Count = 1.
-For primes between 100 and 199, I found only 179. Count = 2.
-For primes between 200 and 299, I did not find any.
-For primes between 300 and 399, I found 379. Count = 3.
-
-**Verification and Solution**
-
-Let me confirm the prime generation. I'll go through and check the primes. So the three numbers 79, 179, and 379, satisfy the conditions, and I am fairly certain that there are no others less than 400. I can also verify each number:
-*   79 is prime.
-*   179 appears prime, so I check divisibility: not divisible by 2, 3, 5, 7 (25\\*7+4), 11 (16\\*11+3), 13 (13\\*13+10), and then I need to get the next primes. It is prime.
-*   379 appears prime: not divisible by 2, 3 (19\\*3=57), 5, 7, 11, 13, 17, 19.
-
-Now, I'm confident in my answer.
-The total number of primes below 400 with the substring "79" is 3.
+I just went through and systematically checked all the primes less than 400. In the end, there are three primes less than 400 that contain the substring "79": 79, 179 and 379.
 """,
                                 "thought": True,
                                 "thought_signature": None,
@@ -155,31 +107,15 @@ The total number of primes below 400 with the substring "79" is 3.
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-To find the number of primes below 400 that contain "79" as a substring, we follow these steps:
+The primes below 400 are:
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397.
 
-1.  **List all prime numbers below 400.**
-    The primes below 400 are:
-    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
-    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
-    211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
-    307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397.
+Now we check which of these primes contain "79" as a substring:
+1.  **79** (contains "79")
+2.  **179** (contains "79")
+3.  **379** (contains "79")
 
-2.  **Check each prime number to see if its digits contain "79" as a substring.**
-    *   **Single-digit primes (2, 3, 5, 7):** None contain "79".
-    *   **Two-digit primes:**
-        *   **79**: Yes, it contains "79". (Count = 1)
-        *   All other two-digit primes (e.g., 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 83, 89, 97) do not contain "79".
-    *   **Three-digit primes (100-399):**
-        *   **100-199:**
-            *   **179**: Yes, it contains "79". (Count = 2)
-            *   Other primes in this range (e.g., 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 181, 191, 193, 197, 199) do not contain "79".
-        *   **200-299:**
-            *   None of the primes in this range (211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293) contain "79".
-        *   **300-399:**
-            *   **379**: Yes, it contains "79". (Count = 3)
-            *   Other primes in this range (e.g., 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 383, 389, 397) do not contain "79".
-
-The primes below 400 that contain "79" as a substring are 79, 179, and 379. There are 3 such primes.
+There are 3 such primes.
 
 3\
 """,
@@ -199,7 +135,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                     ]
                 ),
                 AssistantMessage(
-                    content=[Text(text="The primes were 79, 179, and 379.")],
+                    content=[Text(text="The primes are 79, 179, and 379.")],
                     provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
@@ -212,7 +148,7 @@ The primes below 400 that contain "79" as a substring are 79, 179, and 379. Ther
                                 "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
-                                "text": "The primes were 79, 179, and 379.",
+                                "text": "The primes are 79, 179, and 379.",
                                 "thought": None,
                                 "thought_signature": None,
                                 "video_metadata": None,
@@ -233,21 +169,21 @@ async_snapshot = snapshot(
             "provider_id": "google",
             "model_id": "google/gemini-2.5-flash",
             "provider_model_name": "gemini-2.5-flash",
-            "params": {"thinking": False},
+            "params": {"thinking": {"level": "minimal"}},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 297,
+                "input_tokens": 886,
                 "output_tokens": 6,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": """\
-cache_tokens_details=None cached_content_token_count=None candidates_token_count=6 candidates_tokens_details=None prompt_token_count=297 prompt_tokens_details=[ModalityTokenCount(
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=6 candidates_tokens_details=None prompt_token_count=886 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
-  token_count=297
-)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=303 traffic_type=None\
+  token_count=886
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=892 traffic_type=None\
 """,
-                "total_tokens": 303,
+                "total_tokens": 892,
             },
             "messages": [
                 UserMessage(
@@ -261,11 +197,29 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     content=[
                         Thought(
                             thought="""\
-**Finding Primes Containing the Substring "79"**
+**The Prime "79" Hunt**
 
-Okay, so the task at hand is to find all prime numbers less than 400 that contain the substring "79". My strategy is straightforward: first, generate a complete list of primes below 400. Then, I'll iterate through this list and check each prime to see if it includes "79" as a substring.
+Okay, here's the task: I need to find the count of prime numbers under 400 that have "79" as a substring. First, I'll generate a list of primes less than 400. The Sieve of Eratosthenes is perfect for this. I'll create a boolean array, mark multiples as composite, and then I'll have a clean list of primes.
 
-I've carefully listed all the primes up to 400. Now, I systematically check each one. I started with two-digit primes, quickly identifying 79 as a match. Moving on to three-digit primes, I systematically checked the numbers from 100 to 399, taking note of which ones include "79". I corrected a previous oversight, ensuring that I was checking for the *substring* "79", not just numbers starting or ending with 79. After double-checking the list and the substring check, I arrived at three primes: 79, 179, and 379.  The answer to the original question is simply the *count*, which is 3.
+Once I have the primes, I iterate through them, converting each to a string, and check if "79" is present. I'm thinking I can just use the `in` operator for this - efficient and readable.
+
+So, first the sieve: I'm setting up an array, marking 0 and 1 as non-primes, then iterating up to the square root of 400, which is 20.  If a number is prime, I mark all its multiples as composite.  That should be pretty fast. After this, I've confirmed by code that this gives me my complete list of all primes less than 400:
+
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397
+
+Now, the filtering stage. I'll go through the list. Let's start systematically.
+
+*   79: Bingo.
+*   179: Also a hit!
+*   279: Not prime, quick mental check: sum of digits is 18 (divisible by 3), so divisible by 3. No need to look any further. I'm only interested in the primes from my sieve.
+*   379: This one contains 79.
+
+Now, checking the list, no other number less than 400 fits. I could have a number of the form `79X` but that would exceed 400. Likewise, `X79` with X = 0, 1, 2 is not in my list. Checking the list of primes shows there are no others.
+
+Therefore, the primes with "79" are 79, 179 and 379. That's a total of 3 primes. The code confirms this.
+
+I'm confident the answer is:
+3
 """
                         ),
                         Text(text="3"),
@@ -283,11 +237,29 @@ I've carefully listed all the primes up to 400. Now, I systematically check each
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Finding Primes Containing the Substring "79"**
+**The Prime "79" Hunt**
 
-Okay, so the task at hand is to find all prime numbers less than 400 that contain the substring "79". My strategy is straightforward: first, generate a complete list of primes below 400. Then, I'll iterate through this list and check each prime to see if it includes "79" as a substring.
+Okay, here's the task: I need to find the count of prime numbers under 400 that have "79" as a substring. First, I'll generate a list of primes less than 400. The Sieve of Eratosthenes is perfect for this. I'll create a boolean array, mark multiples as composite, and then I'll have a clean list of primes.
 
-I've carefully listed all the primes up to 400. Now, I systematically check each one. I started with two-digit primes, quickly identifying 79 as a match. Moving on to three-digit primes, I systematically checked the numbers from 100 to 399, taking note of which ones include "79". I corrected a previous oversight, ensuring that I was checking for the *substring* "79", not just numbers starting or ending with 79. After double-checking the list and the substring check, I arrived at three primes: 79, 179, and 379.  The answer to the original question is simply the *count*, which is 3.
+Once I have the primes, I iterate through them, converting each to a string, and check if "79" is present. I'm thinking I can just use the `in` operator for this - efficient and readable.
+
+So, first the sieve: I'm setting up an array, marking 0 and 1 as non-primes, then iterating up to the square root of 400, which is 20.  If a number is prime, I mark all its multiples as composite.  That should be pretty fast. After this, I've confirmed by code that this gives me my complete list of all primes less than 400:
+
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397
+
+Now, the filtering stage. I'll go through the list. Let's start systematically.
+
+*   79: Bingo.
+*   179: Also a hit!
+*   279: Not prime, quick mental check: sum of digits is 18 (divisible by 3), so divisible by 3. No need to look any further. I'm only interested in the primes from my sieve.
+*   379: This one contains 79.
+
+Now, checking the list, no other number less than 400 fits. I could have a number of the form `79X` but that would exceed 400. Likewise, `X79` with X = 0, 1, 2 is not in my list. Checking the list of primes shows there are no others.
+
+Therefore, the primes with "79" are 79, 179 and 379. That's a total of 3 primes. The code confirms this.
+
+I'm confident the answer is:
+3
 """,
                                 "thought": True,
                                 "thought_signature": None,
@@ -349,8 +321,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "google",
-            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -364,324 +336,34 @@ stream_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Examining Prime Substrings**
+**Calculating Prime Substrings**
 
-Okay, I've got the objective firmly in mind now: prime numbers below 400 that feature "79". I'm also clear on the definition of a substring. It's any sequence within a larger string. This sets the stage for the next phase.
-
-
-**Optimizing Candidate Generation**
-
-I'm refining my approach for finding primes below 400 containing "79". Instead of generating all primes and then checking, I'll generate *potential* primes that *must* have "79" and then check for primality. This means I'm looking at numbers like 79, 179, 279, 379, 790, 791...799, and eliminating those that aren't prime. This should be much faster. I am now proceeding with my candidates.
+I'm currently working on identifying prime numbers below 400 and determining which ones contain the substring "79". The plan involves generating a list of primes and then iterating through them, checking for the substring. My approach focuses on efficiency to ensure a quick result.
 
 
-**Analyzing Candidate Primality**
+**Identifying Patterns and Numbers**
 
-I'm now methodically verifying the primality of candidates. I'm focusing on numbers like 179 and 379, applying a division-based primality test up to the square root of each number. This eliminates composites quickly and efficiently. My current tally stands at three prime numbers so far.
-
-
-**Revising Candidate Selection**
-
-I've streamlined my strategy for finding primes with "79". I now recognize only two forms apply: 79 itself, and numbers of the form X79 where X can be 1, 2, or 3. This simplifies the candidate generation step. After eliminating non-primes, the final count will be straightforward.
+I've systematically generated prime numbers below 400 and checked for the substring "79." So far, I've found it in 79 and 179. I'm now verifying the final prime numbers between 300 and 400. Once complete, I can confidently provide the final count of primes containing "79."
 
 
-**Calculating Final Count**
+**Confirming Prime Number Counts**
 
-I've meticulously reviewed the candidate primes, confirming that only 79, 179, and 379 meet the criteria. Their primality has been double-checked, and there aren't any other primes with "79" under 400. Therefore, I can confidently state that the final count is three. This wraps up the thought process.
-
-
-"""
-                        ),
-                        Text(
-                            text="""\
-The primes below 400 that contain "79" as a substring are:
-
-1.  **79**: This is a prime number and contains "79" as itself.
-2.  **179**: This is a prime number and contains "79" as a substring.
-3.  **379**: This is a prime number and contains "79" as a substring.
-
-We check other possibilities:
-*   Numbers of the form `X79` where X is 2: 279 is divisible by 3 (2+7+9=18), so not prime.
-*   Numbers of the form `79X`: All numbers starting with 79 (e.g., 790, 791, ...) are greater than 400, so they are not included.
-
-Therefore, there are 3 such primes.
-
-3\
-"""
-                        ),
-                    ],
-                    provider_id="google",
-                    model_id="google/gemini-2.5-flash",
-                    provider_model_name="gemini-2.5-flash",
-                    raw_message={
-                        "parts": [
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-**Examining Prime Substrings**
-
-Okay, I've got the objective firmly in mind now: prime numbers below 400 that feature "79". I'm also clear on the definition of a substring. It's any sequence within a larger string. This sets the stage for the next phase.
+Now, I've methodically listed all primes under 400 and meticulously checked for the presence of the substring "79". I confirmed that 79, 179 and 379 are the only primes that satisfy the condition. The work is checked, so I am confident that I have provided an accurate count.
 
 
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-**Optimizing Candidate Generation**
+**Verifying Prime Number Substrings**
 
-I'm refining my approach for finding primes below 400 containing "79". Instead of generating all primes and then checking, I'll generate *potential* primes that *must* have "79" and then check for primality. This means I'm looking at numbers like 79, 179, 279, 379, 790, 791...799, and eliminating those that aren't prime. This should be much faster. I am now proceeding with my candidates.
+I've carefully listed all primes below 400 and exhaustively checked for "79" as a substring in each. The primes containing "79" are definitively 79, 179, and 379. My thorough verification involved a systematic check of various digit combinations. I'm now confident in the completeness of the search.
 
 
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-**Analyzing Candidate Primality**
+**Confirming the Prime Count**
 
-I'm now methodically verifying the primality of candidates. I'm focusing on numbers like 179 and 379, applying a division-based primality test up to the square root of each number. This eliminates composites quickly and efficiently. My current tally stands at three prime numbers so far.
+I've rigorously checked all primes below 400 for the substring "79". The only ones that meet the criteria are 79, 179 and 379. This exhaustive search confirms the final count of 3 primes. The approach used here is fully verified.
 
 
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-**Revising Candidate Selection**
+**Counting Primes with Substrings**
 
-I've streamlined my strategy for finding primes with "79". I now recognize only two forms apply: 79 itself, and numbers of the form X79 where X can be 1, 2, or 3. This simplifies the candidate generation step. After eliminating non-primes, the final count will be straightforward.
-
-
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-**Calculating Final Count**
-
-I've meticulously reviewed the candidate primes, confirming that only 79, 179, and 379 meet the criteria. Their primality has been double-checked, and there aren't any other primes with "79" under 400. Therefore, I can confidently state that the final count is three. This wraps up the thought process.
-
-
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-The primes below 400 that contain "79" as a substring are:
-
-1.  **79**: This is a prime number and contains "79" as itself.
-2.  **179**: This is\
-""",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
- a prime number and contains "79" as a substring.
-3.  **379**: This is a prime number and contains "79" as a substring.
-
-We check other possibilities:
-*   Numbers of\
-""",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
- the form `X79` where X is 2: 279 is divisible by 3 (2+7+9=18), so not prime.
-*   Numbers of the form `79X`:\
-""",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
- All numbers starting with 79 (e.g., 790, 791, ...) are greater than 400, so they are not included.
-
-Therefore, there are 3 such primes.
-
-""",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": "3",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                        ],
-                        "role": "model",
-                    },
-                ),
-                UserMessage(
-                    content=[
-                        Text(
-                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
-                        )
-                    ]
-                ),
-                AssistantMessage(
-                    content=[Text(text="The primes were 79, 179, and 379.")],
-                    provider_id="google",
-                    model_id="google/gemini-2.5-flash",
-                    provider_model_name="gemini-2.5-flash",
-                    raw_message={
-                        "parts": [
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": "The primes were ",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": "79, 179, and 379.",
-                                "thought": None,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                        ],
-                        "role": "model",
-                    },
-                ),
-            ],
-            "format": None,
-            "tools": [],
-            "usage": {
-                "input_tokens": 676,
-                "output_tokens": 17,
-                "cache_read_tokens": 0,
-                "cache_write_tokens": 0,
-                "reasoning_tokens": 0,
-                "raw": "None",
-                "total_tokens": 693,
-            },
-            "n_chunks": 4,
-        }
-    }
-)
-async_stream_snapshot = snapshot(
-    {
-        "response": {
-            "provider_id": "google",
-            "provider_model_name": "gemini-2.5-flash",
-            "model_id": "google/gemini-2.5-flash",
-            "finish_reason": None,
-            "messages": [
-                UserMessage(
-                    content=[
-                        Text(
-                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
-                        )
-                    ]
-                ),
-                AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-**Enumerating Prime Substrings**
-
-Okay, I've got a handle on the task. I'm currently generating the primes under 400. Once I've got that list, I'll be looping through them and checking for the presence of "79" as a substring. It's a straightforward process of digit inspection for each prime I generate, really.
-
-
-**Identifying The Target Primes**
-
-I've made great progress on the search. I've compiled the complete list of primes under 400 and meticulously checked each for the substring "79." So far, I've found two that fit the criteria: 79 and 179. I'm continuing the exhaustive search through the rest of the list now. I will continue until it is complete.
-
-
-**Verifying Prime Counts**
-
-I've meticulously reviewed the list of primes below 400. I've re-checked the substring "79" condition across all primes. My analysis confirms three primes fit: 79, 179, and 379. This completes the task, providing the definitive count.
-
-
-**Confirming Final Results**
-
-I've rigorously checked the prime numbers below 400 one last time, with special attention to the "79" substring condition. I've re-reviewed my list of the relevant primes and the counting logic. I'm now certain that the definitive answer is 3.
+I've completed my systematic listing and checking of all primes below 400 for the substring "79". I'm now certain that only 79, 179 and 379 contain this substring. The process involved a careful examination of digit combinations. I am ready to provide the final count, which is 3.
 
 
 """
@@ -701,27 +383,9 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Enumerating Prime Substrings**
+**Calculating Prime Substrings**
 
-Okay, I've got a handle on the task. I'm currently generating the primes under 400. Once I've got that list, I'll be looping through them and checking for the presence of "79" as a substring. It's a straightforward process of digit inspection for each prime I generate, really.
-
-
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
-                            {
-                                "function_call": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-**Identifying The Target Primes**
-
-I've made great progress on the search. I've compiled the complete list of primes under 400 and meticulously checked each for the substring "79." So far, I've found two that fit the criteria: 79 and 179. I'm continuing the exhaustive search through the rest of the list now. I will continue until it is complete.
+I'm currently working on identifying prime numbers below 400 and determining which ones contain the substring "79". The plan involves generating a list of primes and then iterating through them, checking for the substring. My approach focuses on efficiency to ensure a quick result.
 
 
 """,
@@ -737,9 +401,9 @@ I've made great progress on the search. I've compiled the complete list of prime
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Verifying Prime Counts**
+**Identifying Patterns and Numbers**
 
-I've meticulously reviewed the list of primes below 400. I've re-checked the substring "79" condition across all primes. My analysis confirms three primes fit: 79, 179, and 379. This completes the task, providing the definitive count.
+I've systematically generated prime numbers below 400 and checked for the substring "79." So far, I've found it in 79 and 179. I'm now verifying the final prime numbers between 300 and 400. Once complete, I can confidently provide the final count of primes containing "79."
 
 
 """,
@@ -755,9 +419,63 @@ I've meticulously reviewed the list of primes below 400. I've re-checked the sub
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Confirming Final Results**
+**Confirming Prime Number Counts**
 
-I've rigorously checked the prime numbers below 400 one last time, with special attention to the "79" substring condition. I've re-reviewed my list of the relevant primes and the counting logic. I'm now certain that the definitive answer is 3.
+Now, I've methodically listed all primes under 400 and meticulously checked for the presence of the substring "79". I confirmed that 79, 179 and 379 are the only primes that satisfy the condition. The work is checked, so I am confident that I have provided an accurate count.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Verifying Prime Number Substrings**
+
+I've carefully listed all primes below 400 and exhaustively checked for "79" as a substring in each. The primes containing "79" are definitively 79, 179, and 379. My thorough verification involved a systematic check of various digit combinations. I'm now confident in the completeness of the search.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Confirming the Prime Count**
+
+I've rigorously checked all primes below 400 for the substring "79". The only ones that meet the criteria are 79, 179 and 379. This exhaustive search confirms the final count of 3 primes. The approach used here is fully verified.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Counting Primes with Substrings**
+
+I've completed my systematic listing and checking of all primes below 400 for the substring "79". I'm now certain that only 79, 179 and 379 contain this substring. The process involved a careful examination of digit combinations. I am ready to provide the final count, which is 3.
 
 
 """,
@@ -802,7 +520,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                                 "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
-                                "text": "I",
+                                "text": "I don't",
                                 "thought": None,
                                 "thought_signature": None,
                                 "video_metadata": None,
@@ -814,7 +532,7 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
                                 "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
-                                "text": " don't remember.",
+                                "text": " remember.",
                                 "thought": None,
                                 "thought_signature": None,
                                 "video_metadata": None,
@@ -827,13 +545,232 @@ I've rigorously checked the prime numbers below 400 one last time, with special 
             "format": None,
             "tools": [],
             "usage": {
-                "input_tokens": 362,
+                "input_tokens": 517,
                 "output_tokens": 6,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": "None",
-                "total_tokens": 368,
+                "total_tokens": 523,
+            },
+            "n_chunks": 4,
+        }
+    }
+)
+async_stream_snapshot = snapshot(
+    {
+        "response": {
+            "provider_id": "google",
+            "model_id": "google/gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+**Charting Prime Territory**
+
+Okay, I've got the goal locked in: count primes under 400 containing "79". Currently, I'm forming my initial strategy, with the crucial first step being listing all prime numbers below 400. That's the baseline, and then I'll filter. It is the beginning of the journey.
+
+
+**Refining the Approach**
+
+Now I have a clearer picture. I have the core strategy: generate primes under 400, then filter for the substring "79." I'm mentally simulating having a list. The next step is to execute this plan by getting a concrete list or generating it. I'll need to make sure I don't miss any in the iteration.
+
+
+**Evaluating Substring Criteria**
+
+I'm now methodically evaluating primes for the "79" substring. I generated primes up to 400 and created a checklist for primes ending in "79" or with "79" embedded. I've narrowed down the candidates and am testing each number's primality or checking the list. The goal is to avoid errors and be complete.
+
+
+**Confirming Substring Presence**
+
+I've taken the listed primes under 400 and meticulously examined each one for the "79" substring, creating a subset. I systematically generated a list of primes up to 400 to form the set. I confirmed the primality of the numbers where "79" appears and performed the final count. I'm confident in my results.
+
+
+
+**Verifying Substring Presence**
+
+I've rigorously checked the prime list for the presence of "79," using both mental checks and systematic validation. The process has been thorough, ensuring that nothing was overlooked. I have determined, conclusively, that the count of primes less than 400 that contain "79" is 3.
+
+
+"""
+                        ),
+                        Text(text="3"),
+                    ],
+                    provider_id="google",
+                    model_id="google/gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Charting Prime Territory**
+
+Okay, I've got the goal locked in: count primes under 400 containing "79". Currently, I'm forming my initial strategy, with the crucial first step being listing all prime numbers below 400. That's the baseline, and then I'll filter. It is the beginning of the journey.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Refining the Approach**
+
+Now I have a clearer picture. I have the core strategy: generate primes under 400, then filter for the substring "79." I'm mentally simulating having a list. The next step is to execute this plan by getting a concrete list or generating it. I'll need to make sure I don't miss any in the iteration.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Evaluating Substring Criteria**
+
+I'm now methodically evaluating primes for the "79" substring. I generated primes up to 400 and created a checklist for primes ending in "79" or with "79" embedded. I've narrowed down the candidates and am testing each number's primality or checking the list. The goal is to avoid errors and be complete.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Confirming Substring Presence**
+
+I've taken the listed primes under 400 and meticulously examined each one for the "79" substring, creating a subset. I systematically generated a list of primes up to 400 to form the set. I confirmed the primality of the numbers where "79" appears and performed the final count. I'm confident in my results.
+
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Verifying Substring Presence**
+
+I've rigorously checked the prime list for the presence of "79," using both mental checks and systematic validation. The process has been thorough, ensuring that nothing was overlooked. I have determined, conclusively, that the count of primes less than 400 that contain "79" is 3.
+
+
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": "3",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                        ],
+                        "role": "model",
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[Text(text="I don't remember.")],
+                    provider_id="google",
+                    model_id="google/gemini-2.5-flash",
+                    provider_model_name="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": "I don't",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": " remember.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                        ],
+                        "role": "model",
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "usage": {
+                "input_tokens": 452,
+                "output_tokens": 6,
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "reasoning_tokens": 0,
+                "raw": "None",
+                "total_tokens": 458,
             },
             "n_chunks": 4,
         }

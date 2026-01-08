@@ -21,8 +21,11 @@ test_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
-                    "thinking": False,
-                    "encode_thoughts_as_text": False,
+                    "thinking": {
+                        "level": "none",
+                        "encode_thoughts_as_text": False,
+                        "include_summaries": False,
+                    },
                 },
                 "finish_reason": FinishReason.MAX_TOKENS,
                 "usage": {
@@ -72,8 +75,7 @@ So the result is 4242. That matches my previous calculation. So maybe I confused
         ),
         "logs": [
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: mlx)",
-            "Skipping unsupported parameter: thinking=False (provider: mlx)",
-            "Skipping unsupported parameter: encode_thoughts_as_text=False (provider: mlx)",
+            "Skipping unsupported parameter: thinking={'level': 'none', 'encode_thoughts_as_text': False, 'include_summaries': False} (provider: mlx)",
         ],
     }
 )

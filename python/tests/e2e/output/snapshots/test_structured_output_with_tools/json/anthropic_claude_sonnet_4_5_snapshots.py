@@ -505,8 +505,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "anthropic",
-            "provider_model_name": "claude-sonnet-4-5",
             "model_id": "anthropic/claude-sonnet-4-5",
+            "provider_model_name": "claude-sonnet-4-5",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -738,8 +738,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "anthropic",
-            "provider_model_name": "claude-sonnet-4-5",
             "model_id": "anthropic/claude-sonnet-4-5",
+            "provider_model_name": "claude-sonnet-4-5",
             "finish_reason": None,
             "messages": [
                 SystemMessage(

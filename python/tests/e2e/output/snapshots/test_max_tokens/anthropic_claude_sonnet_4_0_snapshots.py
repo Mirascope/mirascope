@@ -149,8 +149,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "anthropic",
-            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -217,8 +217,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "anthropic",
-            "provider_model_name": "claude-sonnet-4-0",
             "model_id": "anthropic/claude-sonnet-4-0",
+            "provider_model_name": "claude-sonnet-4-0",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),

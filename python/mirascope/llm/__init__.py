@@ -92,6 +92,8 @@ from .providers import (
     Params,
     Provider,
     ProviderId,
+    ThinkingConfig,
+    ThinkingLevel,
     register_provider,
     reset_provider_registry,
 )
@@ -205,6 +207,8 @@ __all__ = [
     "TextEndChunk",
     "TextStartChunk",
     "TextStream",
+    "ThinkingConfig",
+    "ThinkingLevel",
     "Thought",
     "ThoughtChunk",
     "ThoughtEndChunk",

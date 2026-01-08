@@ -37,7 +37,7 @@ def test_resume_with_override_thinking_and_tools(
 
     @llm.call(
         default_model(model_id),
-        thinking=True,
+        thinking={"level": "medium"},
         tools=[compute_fib],
     )
     def fib_query() -> str:
@@ -50,7 +50,7 @@ def test_resume_with_override_thinking_and_tools(
         )
 
         tool_outputs = primer_response.execute_tools()
-        with llm.model(model_id, thinking=False):
+        with llm.model(model_id, thinking=llm.ThinkingConfig(level="none")):
             response = primer_response.resume(tool_outputs)
 
         snap.set_response(response)

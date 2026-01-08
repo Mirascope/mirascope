@@ -15,7 +15,7 @@ test_snapshot = snapshot(
             "provider_id": "openai",
             "model_id": "openai/gpt-4o:responses",
             "provider_model_name": "gpt-4o:responses",
-            "params": {"thinking": False},
+            "params": {"thinking": {"level": "none"}},
             "finish_reason": None,
             "usage": {
                 "input_tokens": 84,
@@ -32,9 +32,11 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**The Fibonacci Conundrum**
+Here's the summary:
 
-Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got the `default_api.compute_fib` function specifically designed for this. Seems like all I need to do is feed it the right input.  Let's see, the parameter is `n`, and they want the 100th term. Therefore, I need to call the function with `n=100`. Simple as that.
+**Calculating the 100th Fibonacci Number**
+
+Okay, so the user wants the 100th Fibonacci number.  That's a straightforward request. I recall the `default_api` has a function specifically for this, `compute_fib`. The parameter to that function, which I need to call, is `n`.  It looks like `n` represents the index of the Fibonacci number we want, which in this case is 100. Therefore, I need to execute `compute_fib(n=100)`.  That should give us the answer directly.
 """
                         ),
                         ToolCall(
@@ -56,9 +58,11 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**The Fibonacci Conundrum**
+Here's the summary:
 
-Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got the `default_api.compute_fib` function specifically designed for this. Seems like all I need to do is feed it the right input.  Let's see, the parameter is `n`, and they want the 100th term. Therefore, I need to call the function with `n=100`. Simple as that.
+**Calculating the 100th Fibonacci Number**
+
+Okay, so the user wants the 100th Fibonacci number.  That's a straightforward request. I recall the `default_api` has a function specifically for this, `compute_fib`. The parameter to that function, which I need to call, is `n`.  It looks like `n` represents the index of the Fibonacci number we want, which in this case is 100. Therefore, I need to execute `compute_fib(n=100)`.  That should give us the answer directly.
 """,
                                 "thought": True,
                                 "thought_signature": None,
@@ -77,7 +81,7 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                                 "inline_data": None,
                                 "text": None,
                                 "thought": None,
-                                "thought_signature": b"\n\xe2\x01\x01\xd1\xed\x8ao\x15|nC\xac\xc5\x03Q\x02\xd7\xfao\x9e\x8111\x17m6TO\x0c[C\xb4\xb5w\x06\xd0F\x92\xec\x16\x12\x85q21\xf7{\xd0k\x98j\xb4\xc4T\xe9\xe3d>\xca\x02\xff0\x9b~\xca\xd8\xe0\x04\xeei!0Z\xee&\x90\xb3\x1fPf\r\x8b\xe3Rd}\xa8\xe8\x8ba\xca\xa6\x1c~\xdf&B\x134\r\x12\x1ae\xd5V\xb2qen\\\xc0\xbf\x86\x17P\xebng\x06\x1b\xd5\xd5D\xa7\x00>2\x10\x92\x97V0crXg.\x8c\xa79[\x15\xd0\xeeA\xdb\xaf\xb1m7\x0e\xfa\xc9\xb8\xea\xaaf\x1e\xfe-;2\xba<\x12\xde\x96\xa3\xd2[\xa6\x02|#\xab\xd1\x9fPu$\x8c\xe9(\xb4\xfbwn!Q\xa5\xcar\x82vg!\xf5s\xe2\xd4\x8b\xdb\x87pI:BN\x8b\x9c5\xce\xe5X\xd4\x0fe\x9d\xff\xea\xb0l,]Z\x01(\x01",
+                                "thought_signature": b"\n\xb3\x04\x01r\xc8\xda|\x9f\xeb\xe3\xae}4\x8ai9\xd3!b\xa2\t\x03\xb9\x98P\x9d\xa0\xeeS\xa7\xb5\xbb\x82\x1aYO\x15J\xe3\x99\x84[]'\x8c5\xe0\xfb\xeaf3\x03\x14\x8dS\xc0\xc7\x97EmqR@\xf0\xcf\xe3~\xea\xab\xc0A\xf3\x1a\xce+\xc2\x17\xae\x04\xe0{\xbd\xa5\xf6>\t\x10\x00\xe9\x00\xd021\xc6,\xac9\xc3\x8dmRA4d\xad\xeb\x19\x8fo\xf9\xe5\xd1e\xe2\xb4\xdd\xbe\n\x11?\xf9\x95\x9c\xa3<\xe1\x11j\xf9\x1cN\x01\xac\xdf\x8ePa\xcd\xfb\xeb!\xd3\xd7n\x82mR\x1a\x8a\xf4\xf0\x7f*P\x12\xae\x17\x1f\xf36\xa0\x01\x96\xbdN\xf8\xc1\xba\x06\x1em\x8ci$\x7fZ0\xd2E\"\xaa@\xd7*6\xce\x08>\x13?\xb6\x89M\x02`\xbf\x1b\xaf\xa1\x9eF\x11\x85$b\xf7\x1dT\xf8?\xa8]\xaf[klxg\x80\xe2\xa1u\x89\xe3\x8fxN0\x0f\xf7AF\xc6N\x8a=\x07\xe8\xa6\xb2\xa9\x87\x11\x03\xcfm\xbb\xb7\x9f\x0e\xff\xa4\x85^X+2\xfa\x05t<+w~z\xc7\x1b+0L\xef\x8f\xbbRH\xd2\xd4zPj\xaft \xa5(\x8d\xc0\n\x0f\x8a\x90ES\xc8\x1c\x16#\x8c\xca\xde{\xff\xd7#3>ec\xf9\x18;`\x92\xc9\x14f\x00\xb8\xc5\xbf\x93\x12N9\xd9\x94\xa9\x8fzw\xb1]8\xeb\x04n\xaf\xe9\xb1}X6Wc\xbfN+6l\xc80\xfc\x10\xb1\x9d\xe3wp\xc6|\xd3~\xf5S\x8f\x9d\x9a\x11`\x91\xf3\x9d\xf1@\xaeI8\xdd\x8bG\xe8\xd0w\xa6\x17\x95\xb3\xd8\x8c\x8dc\x917\xfc\n\x0c\x00q\xea\xc4[<\x0c\xc3\x8e\xdd\x1e\xcc\xd1\xa1\xc34\x08j\xa6\x1a\x8b\xd6O\xbfe\xc9>\xba\xe9<\x93}}\x11\x85\x95<\xb6\x02\x9b\xb2A_\x1f0HI\xac+X\xf8\xa1\xd3~d@\xc6\x1c\xc2\xe3\x84A\xb5\x16\xca\x8a\xda\xb3\xd7\xf7\xde\xa9R~\x07\xbf\xb1\r\xc8x\x02\x00\x10ihB\x9c\xeb\xfa\xfc\xfe\xc6n\xc1\xfa\xcdZ^W\xe2\x8f\xf8\x9d6\xc6b'\x1c_\tc\xe1\x07\xd1\\\xe8<K\x04\x11 \xdf+\xb5*\xfb\xf5(\xe7<\xe2:\xe8z\x80]5\xba\xe1\xd7\xc2\xd5\xb7\x05\x8an\n\xd1\xbd\xa2h\xca\xa0\x1a6\x1a\xf4\xcbTi\xf2\xe9\x97\x7fJ\x0e\"\x9b=",
                                 "video_metadata": None,
                             },
                         ],
@@ -104,7 +108,7 @@ Alright, so the user is after the 100th Fibonacci number. Easy enough. We've got
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_06593a9ea7951926006916133437908193afc85e5604f85aaf",
+                            "id": "msg_0d910b91893210890069605786859c8190b7badae44dca89e3",
                             "content": [
                                 {
                                     "annotations": [],

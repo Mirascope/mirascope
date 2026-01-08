@@ -128,8 +128,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "mlx",
-            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -187,8 +187,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "mlx",
-            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_name": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),

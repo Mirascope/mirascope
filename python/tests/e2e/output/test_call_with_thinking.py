@@ -25,41 +25,41 @@ RESUME_PROMPT = (
 
 @pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
-def test_call_with_thinking_true_sync(
+def test_call_with_thinking_sync(
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test synchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking=True)
+    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
     def call(query: str) -> str:
         return query
 
     with snapshot_test(snapshot, caplog) as snap:
         response = call(PROMPT)
-        with llm.model(model_id, thinking=False):
+        with llm.model(model_id, thinking=llm.ThinkingConfig(level="minimal")):
             response = response.resume(RESUME_PROMPT)
         snap.set_response(response)
 
 
 @pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
-def test_call_with_thinking_true_stream(
+def test_call_with_thinking_stream(
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking=True)
+    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
     def call(query: str) -> str:
         return query
 
     with snapshot_test(snapshot, caplog) as snap:
         response = call.stream(PROMPT)
         response.finish()
-        with llm.model(model_id, thinking=False):
+        with llm.model(model_id, thinking=llm.ThinkingConfig(level="minimal")):
             response = response.resume(RESUME_PROMPT)
         response.finish()
         snap.set_response(response)
@@ -68,20 +68,20 @@ def test_call_with_thinking_true_stream(
 @pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_call_with_thinking_true_async(
+async def test_call_with_thinking_async(
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test asynchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking=True)
+    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
     async def call(query: str) -> str:
         return query
 
     with snapshot_test(snapshot, caplog) as snap:
         response = await call(PROMPT)
-        with llm.model(model_id, thinking=False):
+        with llm.model(model_id, thinking=llm.ThinkingConfig(level="minimal")):
             response = await response.resume(RESUME_PROMPT)
         snap.set_response(response)
 
@@ -89,21 +89,21 @@ async def test_call_with_thinking_true_async(
 @pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_call_with_thinking_true_async_stream(
+async def test_call_with_thinking_async_stream(
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test async streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking=True)
+    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
     async def call(query: str) -> str:
         return query
 
     with snapshot_test(snapshot, caplog) as snap:
         response = await call.stream(PROMPT)
         await response.finish()
-        with llm.model(model_id, thinking=False):
+        with llm.model(model_id, thinking=llm.ThinkingConfig(level="minimal")):
             response = await response.resume(RESUME_PROMPT)
         await response.finish()
         snap.set_response(response)

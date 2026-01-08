@@ -20,8 +20,11 @@ test_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
-                    "thinking": False,
-                    "encode_thoughts_as_text": False,
+                    "thinking": {
+                        "level": "none",
+                        "encode_thoughts_as_text": False,
+                        "include_summaries": False,
+                    },
                 },
                 "finish_reason": None,
                 "usage": {

@@ -23,7 +23,7 @@ from openai.types.responses.response_input_param import (
     FunctionCallOutput,
     Message as ResponseInputMessageParam,
 )
-from openai.types.shared_params import Reasoning
+from openai.types.shared_params import Reasoning, ReasoningEffort
 from openai.types.shared_params.response_format_json_object import (
     ResponseFormatJSONObject,
 )
@@ -37,13 +37,23 @@ from .....formatting import (
 )
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ....base import Params, _utils as _base_utils
+from ....base import Params, ThinkingLevel, _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
     MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
     MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
     NON_REASONING_MODELS,
 )
+
+# Thinking level to a float multiplier % of max tokens
+THINKING_LEVEL_TO_EFFORT: dict[ThinkingLevel, ReasoningEffort] = {
+    "none": "minimal",
+    "default": "medium",
+    "minimal": "minimal",
+    "low": "low",
+    "medium": "medium",
+    "max": "high",
+}
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -236,12 +246,25 @@ def _create_strict_response_format(
     return response_format
 
 
-def _compute_reasoning(thinking: bool) -> Reasoning:
-    """Compute the OpenAI `Reasoning` config based on thinking settings."""
-    if thinking:
-        return {"effort": "medium", "summary": "auto"}
-    else:
-        return {"effort": "minimal"}
+def _compute_reasoning(
+    level: ThinkingLevel,
+    include_summaries: bool,
+) -> Reasoning:
+    """Compute the OpenAI `Reasoning` config based on ThinkingConfig.
+
+    Args:
+        level: The thinking level
+        include_summaries: Whether to include summary (True/False for auto)
+
+    Returns:
+        OpenAI Reasoning configuration
+    """
+    reasoning: Reasoning = {"effort": THINKING_LEVEL_TO_EFFORT.get(level) or "medium"}
+
+    if include_summaries:
+        reasoning["summary"] = "auto"
+
+    return reasoning
 
 
 def encode_request(
@@ -282,16 +305,21 @@ def encode_request(
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
+            thinking_config = param_accessor.thinking
             if base_model_name in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
-                    "thinking", param_accessor.thinking, "openai", model_id
+                    "thinking", thinking_config, "openai", model_id
                 )
             else:
                 # Assume model supports reasoning unless explicitly listed as non-reasoning
                 # This ensures new reasoning models work immediately without code updates
-                kwargs["reasoning"] = _compute_reasoning(param_accessor.thinking)
-        if param_accessor.encode_thoughts_as_text:
-            encode_thoughts = True
+                level = thinking_config.get("level")
+                include_summaries = thinking_config.get("include_summaries", True)
+                kwargs["reasoning"] = _compute_reasoning(level, include_summaries)
+
+            # Handle encode_thoughts_as_text from ThinkingConfig
+            if thinking_config.get("encode_thoughts_as_text"):
+                encode_thoughts = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]

@@ -12,8 +12,8 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider_id": "google",
-            "provider_model_name": "gemini-3-pro-preview",
             "model_id": "google/gemini-3-pro-preview",
+            "provider_model_name": "gemini-3-pro-preview",
             "finish_reason": None,
             "messages": [
                 UserMessage(

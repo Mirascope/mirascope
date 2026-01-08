@@ -13,21 +13,21 @@ test_snapshot = snapshot(
             "provider_id": "google",
             "model_id": "google/gemini-3-pro-preview",
             "provider_model_name": "gemini-3-pro-preview",
-            "params": {"thinking": True},
+            "params": {"thinking": {"level": "medium"}},
             "finish_reason": None,
             "usage": {
                 "input_tokens": 13,
-                "output_tokens": 313,
+                "output_tokens": 339,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 283,
+                "reasoning_tokens": 309,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=30 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=13
-)] thoughts_token_count=283 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=326 traffic_type=None\
+)] thoughts_token_count=309 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=352 traffic_type=None\
 """,
-                "total_tokens": 326,
+                "total_tokens": 352,
             },
             "messages": [
                 UserMessage(
@@ -37,19 +37,25 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     content=[
                         Thought(
                             thought="""\
-**Processing a Simple Arithmetic Request**
+**My Thought Process: Generating a JSON Response for a Simple Addition**
 
-Okay, so I'm presented with a straightforward request: "What is 2 + 2?"  Simple. I need to return a JSON response, adhering to a defined schema, which, as an expert in this field, I instantly recognize. My thinking process, in brief, goes like this:
+Okay, the user wants "2 + 2" as a JSON response. My first step, as always, is to thoroughly analyze the request and, importantly, the provided JSON schema. I need to make sure I deliver precisely what's expected.
 
-First, I quickly review the schema: it specifies an object with `integer_a`, `integer_b`, and `answer` as required integer properties.  I immediately recognize these as the components of the simple addition problem.
+First, I see the core task is a simple addition. Then, I drill down into the schema: "object", with specific properties: `integer_a`, `integer_b`, and `answer`, all integers. These are *required*, so I can't omit any.
 
-Next, the mapping is easy: `integer_a` is 2, `integer_b` is 2, and the `answer` is clearly 4.
+Next, I need to map the question to the schema. "2 + 2" means `integer_a` is 2, `integer_b` is also 2, and the `answer` is, of course, 4.
 
-I then construct the JSON object: `{"integer_a": 2, "integer_b": 2, "answer": 4}`.
+With those mappings done, it's straightforward to construct the JSON:
 
-Now, as always, I perform a rapid validation check: Is it valid JSON? Yes. Are strings properly quoted? Not applicable, since all values are integers. Are there any comments or control tokens? No, it's clean. Does the structure comply with the schema? Absolutely.
+```json
+{
+  "integer_a": 2,
+  "integer_b": 2,
+  "answer": 4
+}
+```
 
-Finally, I generate the output - the validated JSON string. This is practically second nature at this point.
+Now, the final stage is validating the JSON, ensuring it’s correct. It needs to be valid JSON, which is a fundamental requirement. I need to make sure all strings, although not applicable in this case, are double-quoted, there are no comments or control tokens, and there is only a single JSON object. It is, in fact, valid JSON. I'm now ready to generate the final output.
 
 
 """
@@ -77,19 +83,25 @@ Finally, I generate the output - the validated JSON string. This is practically 
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Processing a Simple Arithmetic Request**
+**My Thought Process: Generating a JSON Response for a Simple Addition**
 
-Okay, so I'm presented with a straightforward request: "What is 2 + 2?"  Simple. I need to return a JSON response, adhering to a defined schema, which, as an expert in this field, I instantly recognize. My thinking process, in brief, goes like this:
+Okay, the user wants "2 + 2" as a JSON response. My first step, as always, is to thoroughly analyze the request and, importantly, the provided JSON schema. I need to make sure I deliver precisely what's expected.
 
-First, I quickly review the schema: it specifies an object with `integer_a`, `integer_b`, and `answer` as required integer properties.  I immediately recognize these as the components of the simple addition problem.
+First, I see the core task is a simple addition. Then, I drill down into the schema: "object", with specific properties: `integer_a`, `integer_b`, and `answer`, all integers. These are *required*, so I can't omit any.
 
-Next, the mapping is easy: `integer_a` is 2, `integer_b` is 2, and the `answer` is clearly 4.
+Next, I need to map the question to the schema. "2 + 2" means `integer_a` is 2, `integer_b` is also 2, and the `answer` is, of course, 4.
 
-I then construct the JSON object: `{"integer_a": 2, "integer_b": 2, "answer": 4}`.
+With those mappings done, it's straightforward to construct the JSON:
 
-Now, as always, I perform a rapid validation check: Is it valid JSON? Yes. Are strings properly quoted? Not applicable, since all values are integers. Are there any comments or control tokens? No, it's clean. Does the structure comply with the schema? Absolutely.
+```json
+{
+  "integer_a": 2,
+  "integer_b": 2,
+  "answer": 4
+}
+```
 
-Finally, I generate the output - the validated JSON string. This is practically second nature at this point.
+Now, the final stage is validating the JSON, ensuring it’s correct. It needs to be valid JSON, which is a fundamental requirement. I need to make sure all strings, although not applicable in this case, are double-quoted, there are no comments or control tokens, and there is only a single JSON object. It is, in fact, valid JSON. I'm now ready to generate the final output.
 
 
 """,
@@ -112,7 +124,7 @@ Finally, I generate the output - the validated JSON string. This is practically 
 }\
 """,
                                 "thought": None,
-                                "thought_signature": b"\x12\x86\x07\n\x83\x07\x01r\xc8\xda|\xae\x16\x07x$\xfb\x8f\x0e\ny\x060\x1f\xef|{\xecz\xfe\r\xe8p\x92\xf6\x89\xc2\xd1\x80\xe5\xf9\x9dk\xfc\xcd\xb0\xf3\xd7\x82\xa3\x82\xfb\xad\x97\xa7,\x04wNf\xc3\xe9S++\x82\xc5sY\xa3\xbb\xb3\xc1W\xd9\x9dHe\xc2\x04\xaa\x86ai\x0f\x13\x07\\\xf8'\x06\x8d\x9bx\x84Z=\x99\xda\xcb\xf1\x17)x\xb3^\x1c\x9a/\x0b\xbb\xc1\xb1J\xf6\xfcb\xad[8\x9c\xc2O\x8f\xbe\x04\xfc\x90\x11Wy\xec\x02\xa8d\x82\x8a\x94\xfc\x0c\x10rSy\xff\xac\n\x81\x9e\xc3\xca2\xcb\x81\x9d\xcd\t\xf73\x13\xb5;\xf84\xa4R\xfc\xb0\x81\xe1\xdf\x191\x0e\x811\xa0[\x81vu\x08\xbd\x15I\xeb,\xaf\xa4\x0f\x89x4\x85h\xd0\xda\xe2\x91,\xd8H`z\xd7ju5F0\x18\xfc8\x15\xcd\xb4\x93\xfc\x11\xdc\xafn\x92\xd8\xcf\x9c\x1es\xb1T\x9c\xfd}N\xda:C\x12wSx\xc6\xad\x90\x8cP\xce\xacn\xafQ\x02\xb6\xf8\xc2[-\x99\xc4\xe3\x83\xb9\x7f\x94\xad\x1f66>\x0c\xef\x9ax\xa3\xe3\xf8\xc3\xb1\xf3\xf2gu>\x98|IF\xa9GMm\xd1\x18.\x96U\xf9\xb4\xf3'c\x01\xd9\x0b\x94\t\xad\x94,\x88\x91B\x88|6Ub\xeb\xae\xe6=tK\xbeE\xacq9\x13\xe4\x86\x1bl\x9f2\xd0\x9fi\xfc\xa1\x06*\xb2\xbeN1\xc0\x1b\x12\xdf\x89\x05\xd86\xd7\xb4%T\xf1\xbe'\x80/\xde\xf1~\x1e\x9a\x001\x83\xdb)\xbc\xf8\x1f\xc6oh\xc3\x16\xedH'\x85\xb1\x96\x04\xcdHaD}\xfbn\xc0\xac8\x946\x8d\xdd\xd8\x06\xeaG\x9a\x83\xb6\xf825>_\x868\xc8\x9bD\xf5\x8c\xbcm\x94\x1e\x1dV\xe6\x83\xb5\xdb\x85\xd0P\xd6\x1e\x02\xab\xf9\x0eo\xe5\xaeh\rd\xc7\xd1\\\x9a\xf2Inpx\xe5\xdb\xa8\xe9\xd5\xedi\xf5\xc3\x98\x13<q\xb9\x1e\x00(\xef\x95\x81V8F\x9d\x96\xa3Or.Z\xf33\xc1\xc8f\xa7\xc6\xa0\x97\xd8b\x955\xb8\xf8d\x0c\xc1\x84\xf8\xd0\x11\xcap\xbbC-\x94T\xee\x0f\x92~D\xb5m\x84\xea\xd3\xce@\xa9>\xf8\x19~4\x8b\xa1\x19l<\x17C\x96\xc6IW.\x12]N\xd3\xf4\x8c\x9d\xcf\xbc,\x0eZ\x1e\x980N\xb5xFly\xc4\x0b\x04\x03\xda\xc1\xe4\x1c\xddp\x92\xbdlc\xd8\x90C/6*9\x82\xf4\x96\xe9\x14t\xd5!\xb8\xb0\x8f\\\xa4\xde\xa2\x8dp\x134`\xde\xaeYU\xbe\xfa\xa4mS\xcc\xec\xd6\xef0\x9a$@\xedNV\xdd&z\xd7\x16\x13\xeap~K\t\xad\xdc\xbf\xed\x8a\xbf\x84\xfc\xdb&\xc8M+\xc8\"\x14\xd84;]\x11\xf4\xafE\x0cy\xd6l\x8fE\xca\xc5\xee(\xa5:\x15\x08!\xa8\xf7<\xc6\x81\x9e\x7f\tp\xc9\x7f\x16L\x89Z,\r\x13\xb4\xcf%\x04\n\xa4\x9af\xce\xcb\x00\xbf\xbb\xc0DF\xf0Jl\xe5#Im\x82\x00\xd6<\xc1\x08\xf6\xca0\xdb\xa3%\xf5\xc6t\x8b|n{\x12#\x14$\xddv\xd4\xd8$\xd5\xb7\xe8\x1d\xff\xcfL\x05\xde\xe0\xb9\x1e\xeb%\xce\x13=\xbb\x9d\xaa\xdc:\x82\x0b\xb5\x18l\xd0d?=\xfd5\x93\x91h\x19/d\t\xb9\xed\xd8\xd3\x12S~\xb4\xc39\x88\x00\xe4K\xb6\x9b\x10\x9fE\xd2\xbb\xd9\x12;\tb\xd1\x9a\xe1\x81Z\xd7\xa5\xb9\xa3E,\x8fR\xb9\"n\x993\x0e\xb8\xd5\xc6VQ<\xean\x94\x02'\xa7\xeb\xc6\xc4\xdd\x80d\x88\x1a\x1eM\xc1\xd0\xa7\xb2\x00\x89\xear\xc5D\xeb\xdc\x9aHgVf\xb7QjzeMu\xa9\xd3\xdc\xca@\xa7(\xbc\x9eP\x1e\x9d6\xd8\xeb:\xe1l\xd4\"|\x1e\x10s\x11\xda\x89\x7f\xa8",
+                                "thought_signature": b"\x12\xe2\x07\n\xdf\x07\x01r\xc8\xda|\xe0\x03\x0f\x1b$\x9aV\xd0\xce\xc3Y\xde0]D<j\xf5]\x04#\xd2\xc5?\xf8\xeb\xd6\xddC\xf8\x9dAs5\"\xd2\x8aK_\x84Y\xec\xe1\xd1\xed\xa1\xf0\x9d&\xd5\x07~\x01\x19\x13\xd1\xfa\x02&O4\xe4&\x8fH\xec4~\xce\x94R(\xaa\xf7\x1e\x08\xb8\xd3`\x0c^~[f\xde0\xb3\xa5Y\xfeS\xa9u\xf0\xe2qS4\xab9\xaf\x11\x98\x1a\x8b\x13\xa9\x9e\x88\xf2\xcf\x1b\xa1$d\x18\xe1\x9a\x115r\xc7\xdfW\xb3\xeb88\xff\xd6\x86\x05\xe6\x17\xdd\xcd\xed\xdc\xd7^\x19S\xa5\x8f\xbdP\x998pC\xd4\xf8\x94\x11\xc89 \x90\xf0\xc7,%Q\x9d\x8d\xfe\xc8\xb8\x1a\xd2g\xbdN\x17,H\x0f\x9c\xe9\xb9j\xb5)\x92\x81\n\x8by\x95\x19\xc5<\x88[\x1a0l\xb1\x92\xc2*\xd3P09\xa8\xe1\x91\x02\xb0Za\xff\xd2_\xfa\xe1\xfe5P\x89\xab\xdaM\x15\x8f\x97\x9c=\x9a[)\x1fe\x92$$\xaf3\xa6\x7f\x8c*\x04q\xcc\xeb\xfb\xd4\xb1k A\xf3\xe05\xfc\x13fBb\xad\x19c^\xccE%\xa6\xfe\xd8Z\xb6\x9bC\x9c\x15\x0c\xa9s\x90&\x9f$\x97\x0e\xfe\xb31<\x0f\xce\xac\xe7\xea\xf8\xd2B\x9d\ng\xef\xdb\x9e\x1aqwo\xad\x9b\xa7E\x9e\xa24\xc3\x84\xb7y\xa62\xfe\x10\xaeh\xd8\xba\xdbF,\x83\xbb\xb7\x84\x00\xab\x96\xd2R\xb0w84\x15\xeb9Q\x1e\x89\x7f*XFi\x9e9?\xf2\x1a\xd6\xf51\xf6\xdb/\xaa\xa1fWv\xfc\x0e\xbesJ\xcdb\x03\x1a\xb6\xf6n\xa7\xe2Y\x7fD)\xc8\xbb\x8bW0\xbd\x8f\x9b\xad4)\xae\xf5\xdaA\x88\x96z\xdeSu\xe0\xcd}\x01\xf0\xcdBU\x92\xde\x8b\xd4\xb1\xbfJ:\xcd\xa1\xbf\xd4\xc2\x08\xe3X\x0b[\x12v\x99\x01\xc4#t\xb5\xabq\x1b\xf8\xc6\x81\x1c\x01\xdf\nF\xabP\xe5\x8c\x7f#'\xcc\x13`\xa8\xce\xcd\x91K\xd2c\xe3~\xfc>\xb9\x18p\xac;\xe8[\xe9*\xa5\xe0\xd6HT\xd2\x8fk\xf1\xff\x99\xf7yq^'\x92\xe6\xb3?\xcc\x84\x95^z\xcb\x16\xbe\x10\xfb\xa9\x95\x08p\x01V\x0f;6\xa3!mR6\x02\xa7E\x9f\x1d{g\xde\x03G\x8b\x16\x91[\x15\xdf\x84\xa7\x88}k<+c(h{\xb1\xeb6>\x81\xd70E\x9b1\xe8)\x83\x90\x94\x1b&\x7f=\xeb\x84\xfe\xd3';T'\xfc\x120\xa0\x1a\x171\x1ezg\xcc\x8c\x17\xa3!e'\x94\xcbb\xe8`\xcawgh\"\x00\x02\xcf\xa8\xca\x1b\x80|MN\xfa\x02=v\x14\x83\xc4\x9a\x0b\x19jpE\xfc\r\xdc\xafGJ\x0f\xd1=;\xf9|\xbc\xea\x06]\x8b9Y\x99\x91\xb8\x85\x86*\x11z\xc5\xf1E\xc4@\x8a<}\x90\xb3\xb3\xde\xeb\xf7gTcO\xab\xca6\xa6\x04\xa5a#\xd8q\xcf\xe4\x94\xd6\x8bA\xb96\"!\xb8|\xb0j\x92\xfd\x9b1\xbb\xf1\x9f\xf0\x1ee\x87V\xd3/b\x07\x01\xf3\xbf\xe0[\xea\"\x8d&c\x99\x9d\x00s\xf6\xfc.:4\xe8A\xb9\x97\xd0[\xff\xbd\xc8\\\xe16gM\xfa\x1e\xb0\xcdt\xed\xe3\xd3\xbc\x1f\xc6\xfb\xf3^\xe2\xdda\xdd\x9e\xb1\xc6\xde\x1fww\x80{ix\xcb\xa4g\xb4\x98\x10<\xae\x11\xe9k8{t\xa8\xf4\x83\x0bcy\xe8\xb5\xdc\xa6=\xd5\x8b\xed\x0c\x9d\xe3\xc5\xd2\xa3\x94w(b%\xe7\r^\xc2[\x88P_`\xf5\x1e\xe0\xd1$\xba+\x9f\x7f\xa4+\xf8-,\xbb\xa2\xd7\x15Z\x82\xc3\xf18\xcf|n\xf8u\xbc\x81\xef\x1e\xefsA\x9bu\x1a\xd2\xf4\xf4\xde\x1dq1O\xf2\xba\xf21\x1b\xdcQ\x05vyk:\xeb6\xceU\xb2m\xe0}\xbb\x89t~(\xef\xfc\xf2\x16\xb9\x86H#\\04Ds\xc6M\xb5\x89A\xbf\xd9\x98I7\xad__\xac\xab\x94\x9c\xa8'\xf5N\xc2\xf8\x8d\x87#\xb1\xd4\x14s\xe7\xb5\\\xd6\xb6\x8d\xb8\x9a\x1d\xfc\xac\xff\x05b\xaf\xc3\xfe\xa6\xa5\x05\xf3\x04\xb6%\r\xdco\xbe\xea\x83\xe7t\\\xc0\x13D\xcd\x1f\x10h\x1a\x14_\xda\x08",
                                 "video_metadata": None,
                             },
                         ],

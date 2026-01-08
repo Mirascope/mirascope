@@ -1,0 +1,197 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '266'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Charting
+        Prime Territory**\\n\\nOkay, I've got the goal locked in: count primes under
+        400 containing \\\"79\\\". Currently, I'm forming my initial strategy, with
+        the crucial first step being listing all prime numbers below 400. That's the
+        baseline, and then I'll filter. It is the beginning of the journey.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 98,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 68},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"uVJgabi3DYWsz7IP3PzDwAM\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"**Refining the Approach**\\n\\nNow I have a clearer
+        picture. I have the core strategy: generate primes under 400, then filter
+        for the substring \\\"79.\\\" I'm mentally simulating having a list. The next
+        step is to execute this plan by getting a concrete list or generating it.
+        I'll need to make sure I don't miss any in the iteration.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 634,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 604},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"uVJgabi3DYWsz7IP3PzDwAM\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"**Evaluating Substring Criteria**\\n\\nI'm now methodically
+        evaluating primes for the \\\"79\\\" substring. I generated primes up to 400
+        and created a checklist for primes ending in \\\"79\\\" or with \\\"79\\\"
+        embedded. I've narrowed down the candidates and am testing each number's primality
+        or checking the list. The goal is to avoid errors and be complete.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 1171,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 1141},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"uVJgabi3DYWsz7IP3PzDwAM\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"**Confirming Substring Presence**\\n\\nI've taken
+        the listed primes under 400 and meticulously examined each one for the \\\"79\\\"
+        substring, creating a subset. I systematically generated a list of primes
+        up to 400 to form the set. I confirmed the primality of the numbers where
+        \\\"79\\\" appears and performed the final count. I'm confident in my results.\\n\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 1611,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 1581},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"uVJgabi3DYWsz7IP3PzDwAM\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"**Verifying Substring Presence**\\n\\nI've rigorously
+        checked the prime list for the presence of \\\"79,\\\" using both mental checks
+        and systematic validation. The process has been thorough, ensuring that nothing
+        was overlooked. I have determined, conclusively, that the count of primes
+        less than 400 that contain \\\"79\\\" is 3.\\n\\n\\n\",\"thought\": true}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 30,\"totalTokenCount\":
+        1796,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 30}],\"thoughtsTokenCount\":
+        1766},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"uVJgabi3DYWsz7IP3PzDwAM\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"3\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 1796,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 1766},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"uVJgabi3DYWsz7IP3PzDwAM\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 00:58:34 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1420
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}, {"parts": [{"text": "**Charting Prime Territory**\n\nOkay,
+      I''ve got the goal locked in: count primes under 400 containing \"79\". Currently,
+      I''m forming my initial strategy, with the crucial first step being listing
+      all prime numbers below 400. That''s the baseline, and then I''ll filter. It
+      is the beginning of the journey.\n\n\n", "thought": true}, {"text": "**Refining
+      the Approach**\n\nNow I have a clearer picture. I have the core strategy: generate
+      primes under 400, then filter for the substring \"79.\" I''m mentally simulating
+      having a list. The next step is to execute this plan by getting a concrete list
+      or generating it. I''ll need to make sure I don''t miss any in the iteration.\n\n\n",
+      "thought": true}, {"text": "**Evaluating Substring Criteria**\n\nI''m now methodically
+      evaluating primes for the \"79\" substring. I generated primes up to 400 and
+      created a checklist for primes ending in \"79\" or with \"79\" embedded. I''ve
+      narrowed down the candidates and am testing each number''s primality or checking
+      the list. The goal is to avoid errors and be complete.\n\n\n", "thought": true},
+      {"text": "**Confirming Substring Presence**\n\nI''ve taken the listed primes
+      under 400 and meticulously examined each one for the \"79\" substring, creating
+      a subset. I systematically generated a list of primes up to 400 to form the
+      set. I confirmed the primality of the numbers where \"79\" appears and performed
+      the final count. I''m confident in my results.\n\n\n\n", "thought": true}, {"text":
+      "**Verifying Substring Presence**\n\nI''ve rigorously checked the prime list
+      for the presence of \"79,\" using both mental checks and systematic validation.
+      The process has been thorough, ensuring that nothing was overlooked. I have
+      determined, conclusively, that the count of primes less than 400 that contain
+      \"79\" is 3.\n\n\n", "thought": true}, {"text": "3"}], "role": "model"}, {"parts":
+      [{"text": "If you remember what the primes were, then share them, or say ''I
+      don''t remember.''"}], "role": "user"}], "generationConfig": {"thinkingConfig":
+      {"include_thoughts": false, "thinking_budget": 0}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '2267'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"I don't\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 452,\"candidatesTokenCount\":
+        4,\"totalTokenCount\": 456,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        452}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"wVJgaZvdKZPrz7IPm46OkAs\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" remember.\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        452,\"candidatesTokenCount\": 6,\"totalTokenCount\": 458,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 452}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"wVJgaZvdKZPrz7IPm46OkAs\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 00:58:41 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=530
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

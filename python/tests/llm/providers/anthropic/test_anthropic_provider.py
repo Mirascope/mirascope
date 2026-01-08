@@ -1,14 +1,16 @@
 """Tests for llm.providers.AnthropicProvider."""
 
-from typing import NoReturn
+from typing import NoReturn, get_args
 from unittest.mock import MagicMock, patch
 
 import pytest
 from anthropic import (
     RateLimitError as AnthropicRateLimitError,
 )
+from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.providers.anthropic._utils import process_params
 from mirascope.llm.providers.anthropic.provider import AnthropicProvider
 
 
@@ -151,3 +153,65 @@ async def test_async_call_rate_limit_error() -> None:
         assert isinstance(exc_info.value, llm.RateLimitError)
         assert "Rate limit exceeded" in str(exc_info.value)
         assert isinstance(exc_info.value.__cause__, AnthropicRateLimitError)
+
+
+def test_param_processing_thinking_levels() -> None:
+    default_thinking = process_params({}, 16000)
+    default_thinking = process_params({"thinking": {"level": "default"}}, 16000)
+    assert default_thinking == default_thinking
+    assert default_thinking == snapshot(
+        {"max_tokens": 16000, "encode_thoughts_as_text": False}
+    )
+
+
+def test_param_processing_thinking_disabled() -> None:
+    no_thinking = process_params({"thinking": {"level": "none"}}, 16000)
+    assert no_thinking == snapshot(
+        {
+            "max_tokens": 16000,
+            "encode_thoughts_as_text": False,
+            "thinking": {"type": "disabled"},
+        }
+    )
+
+
+def test_param_processing_thinking_by_level() -> None:
+    result: dict[llm.ThinkingLevel, object] = {
+        level: process_params({"thinking": {"level": level}}, 16000)
+        for level in get_args(llm.ThinkingLevel)
+    }
+    assert result == snapshot(
+        {
+            "none": {
+                "max_tokens": 16000,
+                "encode_thoughts_as_text": False,
+                "thinking": {"type": "disabled"},
+            },
+            "default": {"max_tokens": 16000, "encode_thoughts_as_text": False},
+            "minimal": {
+                "max_tokens": 16000,
+                "encode_thoughts_as_text": False,
+                "thinking": {"type": "enabled", "budget_tokens": 1024},
+            },
+            "low": {
+                "max_tokens": 16000,
+                "encode_thoughts_as_text": False,
+                "thinking": {"type": "enabled", "budget_tokens": 3200},
+            },
+            "medium": {
+                "max_tokens": 16000,
+                "encode_thoughts_as_text": False,
+                "thinking": {"type": "enabled", "budget_tokens": 6400},
+            },
+            "high": {
+                "max_tokens": 16000,
+                "encode_thoughts_as_text": False,
+                "thinking": {"type": "enabled", "budget_tokens": 9600},
+            },
+            "max": {
+                "max_tokens": 16000,
+                "encode_thoughts_as_text": False,
+                "thinking": {"type": "enabled", "budget_tokens": 12800},
+            },
+        }
+    )

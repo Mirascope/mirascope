@@ -15,7 +15,7 @@ test_snapshot = snapshot(
             "provider_id": "anthropic",
             "model_id": "anthropic-beta/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
-            "params": {"thinking": False},
+            "params": {"thinking": {"level": "none"}},
             "finish_reason": None,
             "usage": {
                 "input_tokens": 477,
@@ -32,9 +32,11 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Fibonacci Calculation Strategy**
+Okay, here's my summary, presented as a stream of thought:
 
-Okay, so the user wants the 100th Fibonacci number. Easy enough. I remember that `default_api.compute_fib` function is designed for this kind of calculation. That's precisely what it's for. So, I need to call that function. And, since they're looking for the 100th term, the input `n` should be set to 100. Should be straightforward.
+**Calculating the 100th Fibonacci Number**
+
+Alright, I see the request – the user wants the 100th Fibonacci number. Straightforward. Thankfully, based on my understanding of the system, I know there's a handy function for this: `default_api.compute_fib`. This function is *designed* to handle exactly this kind of calculation. So, the most direct and efficient approach is to simply call `default_api.compute_fib` and pass it the desired index, which, in this case, is `n=100`. No need to overcomplicate things; leverage the tools available. That should provide the answer they're looking for, pronto.
 """
                         ),
                         ToolCall(
@@ -56,9 +58,11 @@ Okay, so the user wants the 100th Fibonacci number. Easy enough. I remember that
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Fibonacci Calculation Strategy**
+Okay, here's my summary, presented as a stream of thought:
 
-Okay, so the user wants the 100th Fibonacci number. Easy enough. I remember that `default_api.compute_fib` function is designed for this kind of calculation. That's precisely what it's for. So, I need to call that function. And, since they're looking for the 100th term, the input `n` should be set to 100. Should be straightforward.
+**Calculating the 100th Fibonacci Number**
+
+Alright, I see the request – the user wants the 100th Fibonacci number. Straightforward. Thankfully, based on my understanding of the system, I know there's a handy function for this: `default_api.compute_fib`. This function is *designed* to handle exactly this kind of calculation. So, the most direct and efficient approach is to simply call `default_api.compute_fib` and pass it the desired index, which, in this case, is `n=100`. No need to overcomplicate things; leverage the tools available. That should provide the answer they're looking for, pronto.
 """,
                                 "thought": True,
                                 "thought_signature": None,
@@ -77,7 +81,7 @@ Okay, so the user wants the 100th Fibonacci number. Easy enough. I remember that
                                 "inline_data": None,
                                 "text": None,
                                 "thought": None,
-                                "thought_signature": b'\n\xe2\x01\x01r\xc8\xda|\xbc{\x0eX\x06a\x08\x9c\xa9\xfeW"\xe8\xa9\rW\xff*\x0e\xe2J*\xff=X\xf4\xc7\xa6\xa4\x05\xf5\x8fS"Pmb\x97\xd3\xbfI+\xb2\xfe"\x0b\x04t\xf1T\xad\x1b\xca\xba\x1ew\x984\xfc(\xaaf>k\xee\x03\x08:\xd5f\xe5\x05\x03\xdcS\x1a~\xed\xe0\xd6\x1c\xb3t\n\x12\xbbJ\x14H\xe6:\xabw\x9cT\xb1X\xc4\x8d\xb5\t\xdf\xf4?\xb8<K\xdf\xe8\xcd\x85\x80\xed1q\xf2c=\xc1\x1a\xfc\xdcy\xaf\xf1\x9c\xdb\xe8\x0f`(\x10\x9aoT\xf8\xb5\x19\xdd\x1b\x00\xc8\x0fZ,\xc2\xc3dK\xab\x95\x00M#Um\x1f\x12\xc1\xf0DUX\x1eM3\x1fV\x00c\xa1\xba6b\xcf\xad\xee\xd3x\xe5r\xbb\xe6\nc\n\x8d\x1e\xad\xddC\x7f\x166\xa9p\xc9\xd8\x98\xaa=F\x83\xe8\xef\xab\xff\xa3\xa5q\xc5v\x85\xfen\xeb\xcbey\xac\x89',
+                                "thought_signature": b"\n\xe2\x01\x01r\xc8\xda|\xadV\xe8@\x06\x86@\xd4\xafIJ=/P\x9d\x94$mE\xe1\x82\xdd\xdaX|\x1e\xea\x86\x92\x1db&\x9e@i\x11\xd5\xf7\x90\x8a\xf3\x95\xca\x88\x9d\x92\x00\x0f\x81\x1e\xee\xc6}\xe1\x1d\x1a\x82\xd8\xc6\x7f\x8f\xd8\xe1\x9e\x03\xa3\x86\xdfqF\x13\xd7\x90\x90W/\xc9\xd5f#%\xb4@\x18\x88:\x9d@1G\x93b\xef\x8eC\x9c0:DK\x90\x04\x15\x15\x8ei\x15\xa3fW\xa7\xed4C\x88qyUu\xf9\x98\x98\x96\xf2R+r\x87Nw\xadp\xb2\xbf\xbc!\xf3\xe3\xd5\x83bQ\xcc\xad\xd4,\x84\xa1m\x86?;XL\x8d~\xb4\xf7\xd7\xe3Y\xc8M\xe3\xd5\xa4\x8dA\xfe\xdf\\\xef\xf6\xd8\x04\x8d\xc1>\x8d\x14\xda\xfaF\x81W\x87I\xd3d\xb7\x81\xa6\xbcP\xb9\xc8\x1a\xdf\xf6+\x0b\x1b{_I0{pdO\xdd'\xe8?4C\xad\x88\xea\x02\xab",
                                 "video_metadata": None,
                             },
                         ],

@@ -143,7 +143,7 @@ def _encode_user_message(
 
 
 def _encode_assistant_message(
-    message: AssistantMessage, model_id: OpenAIModelId, encode_thoughts: bool
+    message: AssistantMessage, model_id: OpenAIModelId, encode_thoughts_as_text: bool
 ) -> openai_types.ChatCompletionAssistantMessageParam:
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
@@ -152,7 +152,7 @@ def _encode_assistant_message(
         and message.provider_model_name
         == model_name(model_id=model_id, api_mode="completions")
         and message.raw_message
-        and not encode_thoughts
+        and not encode_thoughts_as_text
     ):
         return cast(
             openai_types.ChatCompletionAssistantMessageParam, message.raw_message
@@ -176,7 +176,7 @@ def _encode_assistant_message(
                 )
             )
         elif part.type == "thought":
-            if encode_thoughts:
+            if encode_thoughts_as_text:
                 text_params.append(
                     openai_types.ChatCompletionContentPartTextParam(
                         text="**Thinking:** " + part.thought, type="text"
@@ -202,7 +202,7 @@ def _encode_assistant_message(
 
 
 def _encode_message(
-    message: Message, model_id: OpenAIModelId, encode_thoughts: bool
+    message: Message, model_id: OpenAIModelId, encode_thoughts_as_text: bool
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format.
 
@@ -223,7 +223,7 @@ def _encode_message(
     elif message.role == "user":
         return _encode_user_message(message, model_id)
     elif message.role == "assistant":
-        return [_encode_assistant_message(message, model_id, encode_thoughts)]
+        return [_encode_assistant_message(message, model_id, encode_thoughts_as_text)]
     else:
         raise ValueError(f"Unsupported role: {message.role}")  # pragma: no cover
 
@@ -298,12 +298,12 @@ def encode_request(
             "model": base_model_name,
         }
     )
-    encode_thoughts = False
+    encode_thoughts_as_text = False
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
         provider_id="openai",
-        unsupported_params=["top_k", "thinking"],
+        unsupported_params=["top_k"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
@@ -316,8 +316,10 @@ def encode_request(
             kwargs["seed"] = param_accessor.seed
         if param_accessor.stop_sequences is not None:
             kwargs["stop"] = param_accessor.stop_sequences
-        if param_accessor.encode_thoughts_as_text is not None:
-            encode_thoughts = True
+        if param_accessor.thinking is not None:
+            thinking = param_accessor.thinking
+            if thinking.get("encode_thoughts_as_text"):
+                encode_thoughts_as_text = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
 
@@ -362,7 +364,9 @@ def encode_request(
 
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
-        encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
+        encoded_messages.extend(
+            _encode_message(message, model_id, encode_thoughts_as_text)
+        )
     kwargs["messages"] = encoded_messages
 
     return messages, format, kwargs

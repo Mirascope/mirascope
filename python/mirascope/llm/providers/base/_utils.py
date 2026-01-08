@@ -10,6 +10,7 @@ from .params import Params
 
 if TYPE_CHECKING:
     from ..model_id import ModelId
+    from .params import ThinkingConfig
 
 logger = logging.getLogger(__name__)
 
@@ -138,16 +139,10 @@ class SafeParamsAccessor:
         return self._params.get("stop_sequences")
 
     @property
-    def thinking(self) -> bool | None:
+    def thinking(self) -> "ThinkingConfig | None":
         """Access the thinking parameter."""
         self._unaccessed.discard("thinking")
         return self._params.get("thinking")
-
-    @property
-    def encode_thoughts_as_text(self) -> bool | None:
-        """Access the encode_thoughts_as_text parameter."""
-        self._unaccessed.discard("encode_thoughts_as_text")
-        return self._params.get("encode_thoughts_as_text")
 
     def emit_warning_for_unused_param(
         self,
