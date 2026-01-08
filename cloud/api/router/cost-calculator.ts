@@ -31,8 +31,11 @@ export abstract class BaseCostCalculator {
    * Extracts token usage from a provider response.
    *
    * Must be implemented by each provider-specific calculator.
+   *
+   * @param body - The parsed provider response body
+   * @returns Validated TokenUsage with non-negative numbers, or null if extraction fails
    */
-  protected abstract extractUsage(body: unknown): TokenUsage | null;
+  public abstract extractUsage(body: unknown): TokenUsage | null;
 
   /**
    * Calculates cache write cost from provider-specific breakdown.
@@ -73,47 +76,27 @@ export abstract class BaseCostCalculator {
   ): TokenUsage | null;
 
   /**
-   * Main entry point: calculates usage and cost for a request.
+   * Calculates cost from TokenUsage using models.dev pricing data.
    *
-   * @param modelId - The model ID from the request
-   * @param responseBody - The parsed provider response body
-   * @returns Effect with usage and cost data (in centi-cents), or null if usage unavailable
+   * @param modelId - The model ID
+   * @param usage - Token usage data from the provider response
+   * @returns Effect with cost breakdown (in centi-cents), or null if pricing unavailable
    */
   public calculate(
     modelId: string,
-    responseBody: unknown,
-  ): Effect.Effect<
-    {
-      usage: TokenUsage;
-      cost: CostBreakdown;
-    } | null,
-    Error
-  > {
+    usage: TokenUsage,
+  ): Effect.Effect<CostBreakdown | null, Error> {
     return Effect.gen(this, function* () {
-      // Extract usage from response
-      const usage = this.extractUsage(responseBody);
-      if (!usage) {
-        return null;
-      }
-
       // Get pricing data (null if unavailable)
       const pricing = yield* getModelPricing(this.provider, modelId).pipe(
         Effect.catchAll(() => Effect.succeed(null)),
       );
 
       if (!pricing) {
-        // Return usage without cost data
-        return {
-          usage,
-          cost: {
-            inputCost: 0n,
-            outputCost: 0n,
-            totalCost: 0n,
-          },
-        };
+        return null;
       }
 
-      // Calculate cost in centi-cents
+      // Calculate costs in centi-cents using BIGINT (pricing is centi-cents per million tokens)
       const inputCost =
         (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
       const outputCost =
@@ -135,14 +118,11 @@ export abstract class BaseCostCalculator {
         inputCost + outputCost + (cacheReadCost || 0n) + (cacheWriteCost || 0n);
 
       return {
-        usage,
-        cost: {
-          inputCost,
-          outputCost,
-          cacheReadCost,
-          cacheWriteCost,
-          totalCost,
-        },
+        inputCost,
+        outputCost,
+        cacheReadCost,
+        cacheWriteCost,
+        totalCost,
       };
     });
   }
@@ -160,7 +140,7 @@ export class OpenAICostCalculator extends BaseCostCalculator {
     super("openai");
   }
 
-  protected extractUsage(body: unknown): TokenUsage | null {
+  public extractUsage(body: unknown): TokenUsage | null {
     if (typeof body !== "object" || body === null) return null;
 
     const bodyObj = body as Record<string, unknown>;
@@ -245,7 +225,7 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
   // Pricing multiplier: 1h / 5m = 2.0 / 1.25 = 1.6
   static readonly EPHEMERAL_1H_MULTIPLIER = 1.6;
 
-  protected extractUsage(body: unknown): TokenUsage | null {
+  public extractUsage(body: unknown): TokenUsage | null {
     if (typeof body !== "object" || body === null) return null;
 
     const usage = (
@@ -285,8 +265,8 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
     return {
       inputTokens: usage.input_tokens,
       outputTokens: usage.output_tokens,
-      cacheReadTokens,
-      cacheWriteTokens,
+      cacheReadTokens: cacheReadTokens > 0 ? cacheReadTokens : undefined,
+      cacheWriteTokens: cacheWriteTokens > 0 ? cacheWriteTokens : undefined,
       cacheWriteBreakdown,
     };
   }
@@ -346,7 +326,7 @@ export class GoogleCostCalculator extends BaseCostCalculator {
     super("google");
   }
 
-  protected extractUsage(body: unknown): TokenUsage | null {
+  public extractUsage(body: unknown): TokenUsage | null {
     if (typeof body !== "object" || body === null) return null;
 
     const bodyObj = body as Record<string, unknown>;

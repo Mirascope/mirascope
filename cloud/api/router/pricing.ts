@@ -131,10 +131,31 @@ export function getModelsDotDevPricingData() {
 
 /**
  * Converts dollar-based pricing to centi-cent pricing.
+ * Returns null if pricing contains invalid values (NaN, negative, etc.).
  */
 function convertPricingToCenticents(
   pricing: ModelPricingDollars,
-): ModelPricing {
+): ModelPricing | null {
+  // Validate input and output (required fields)
+  if (
+    !Number.isFinite(pricing.input) ||
+    !Number.isFinite(pricing.output) ||
+    pricing.input < 0 ||
+    pricing.output < 0
+  ) {
+    return null;
+  }
+
+  // Validate optional cache fields if present
+  if (
+    (pricing.cache_read !== undefined &&
+      (!Number.isFinite(pricing.cache_read) || pricing.cache_read < 0)) ||
+    (pricing.cache_write !== undefined &&
+      (!Number.isFinite(pricing.cache_write) || pricing.cache_write < 0))
+  ) {
+    return null;
+  }
+
   return {
     input: dollarsToCenticents(pricing.input),
     output: dollarsToCenticents(pricing.output),
@@ -182,7 +203,7 @@ export function getModelPricing(
 }
 
 /**
- * Usage data for cost calculation
+ * Usage data for cost calculation.
  */
 export interface TokenUsage {
   inputTokens: number;
@@ -201,7 +222,7 @@ export interface TokenUsage {
 }
 
 /**
- * Calculated cost breakdown in centi-cents
+ * Calculated cost breakdown in centi-cents.
  */
 export interface CostBreakdown {
   inputCost: CostInCenticents;
@@ -209,45 +230,4 @@ export interface CostBreakdown {
   cacheReadCost?: CostInCenticents;
   cacheWriteCost?: CostInCenticents;
   totalCost: CostInCenticents;
-}
-
-/**
- * Calculates the cost for a request based on usage and pricing.
- *
- * All calculations are performed in centi-cents using BIGINT arithmetic.
- * Pricing is in centi-cents per million tokens.
- *
- * @param pricing - The model's pricing information in centi-cents
- * @param usage - Token usage from the response
- * @returns Cost breakdown in centi-cents
- */
-export function calculateCost(
-  pricing: ModelPricing,
-  usage: TokenUsage,
-): CostBreakdown {
-  // Pricing is in centi-cents per million tokens
-  // Calculate: (tokens * price_per_million) / 1_000_000
-  const inputCost = (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
-  const outputCost = (BigInt(usage.outputTokens) * pricing.output) / 1_000_000n;
-
-  const cacheReadCost =
-    usage.cacheReadTokens && pricing.cache_read
-      ? (BigInt(usage.cacheReadTokens) * pricing.cache_read) / 1_000_000n
-      : undefined;
-
-  const cacheWriteCost =
-    usage.cacheWriteTokens && pricing.cache_write
-      ? (BigInt(usage.cacheWriteTokens) * pricing.cache_write) / 1_000_000n
-      : undefined;
-
-  const totalCost =
-    inputCost + outputCost + (cacheReadCost || 0n) + (cacheWriteCost || 0n);
-
-  return {
-    inputCost,
-    outputCost,
-    cacheReadCost,
-    cacheWriteCost,
-    totalCost,
-  };
 }

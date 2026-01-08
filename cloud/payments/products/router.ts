@@ -6,7 +6,7 @@
  * two-phase reservation pattern to prevent overdraft in concurrent scenarios.
  */
 
-import { Effect } from "effect";
+import { Effect, Schedule } from "effect";
 import { Stripe } from "@/payments/client";
 import { DrizzleORM } from "@/db/client";
 import {
@@ -22,6 +22,12 @@ import {
   type CostInCenticents,
   centicentsToDollars,
 } from "@/api/router/cost-utils";
+import {
+  getCostCalculator,
+  isValidProvider,
+  type ProviderName,
+} from "@/api/router/providers";
+import type { TokenUsage } from "@/api/router/pricing";
 
 /**
  * Gas fee percentage applied to router usage charges.
@@ -494,6 +500,108 @@ export class Router {
       yield* this.chargeUsageMeter(
         reservation.stripeCustomerId,
         actualCostCenticents,
+      );
+    });
+  }
+
+  /**
+   * Calculates cost from usage data and charges the router usage meter.
+   *
+   * This method:
+   * 1. Validates the provider
+   * 2. Gets the appropriate cost calculator for the provider
+   * 3. Calculates costs using real pricing data from models.dev
+   * 4. Charges the Stripe meter (with 5% gas fee and retries)
+   *
+   * Errors during cost calculation or meter charging are logged but don't fail
+   * the request to ensure request processing continues even if metering fails.
+   *
+   * TODO: Replace retry logic with queue-based async metering for better
+   * reliability. Track failed charges in a dead letter queue for reconciliation.
+   * See queue implementation in [future PR reference].
+   *
+   * @param provider - Provider name (e.g., "openai", "anthropic", "google")
+   * @param model - Model ID for cost calculation
+   * @param usageData - Parsed usage data (TokenUsage format with validated non-negative numbers)
+   * @param stripeCustomerId - Stripe customer ID to charge
+   * @returns Effect that succeeds when metering is complete (or skipped)
+   *
+   * @example
+   * ```ts
+   * yield* payments.products.router.chargeForUsage({
+   *   provider: "anthropic",
+   *   model: "claude-3-opus",
+   *   usageData: { inputTokens: 1000, outputTokens: 500 },
+   *   stripeCustomerId: "cus_123",
+   * });
+   * ```
+   */
+  chargeForUsage({
+    provider,
+    model,
+    usageData,
+    stripeCustomerId,
+  }: {
+    provider: ProviderName;
+    model: string;
+    usageData: TokenUsage;
+    stripeCustomerId: string;
+  }): Effect.Effect<void, never, Stripe> {
+    return Effect.gen(this, function* () {
+      // Validate provider before getting cost calculator
+      if (!isValidProvider(provider)) {
+        console.warn("Invalid provider for metering:", { provider });
+        return;
+      }
+
+      // Get cost calculator for the provider
+      const calculator = getCostCalculator(provider);
+
+      // Calculate cost from TokenUsage
+      const costBreakdown = yield* calculator.calculate(model, usageData).pipe(
+        /* v8 ignore start */
+        // TODO: Add test case for calculation errors (e.g., network failure fetching pricing)
+        Effect.catchAll((error) => {
+          console.error("Cost calculation failed:", {
+            provider,
+            model,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          return Effect.succeed(null);
+        }),
+        /* v8 ignore stop */
+      );
+
+      // If pricing unavailable, log warning and skip charging
+      if (!costBreakdown) {
+        console.warn("Pricing unavailable for model:", { provider, model });
+        return;
+      }
+
+      // Charge the meter with retries (5% gas fee applied by chargeUsageMeter)
+      // TODO: Replace with queue-based async metering for better reliability
+      yield* this.chargeUsageMeter(
+        stripeCustomerId,
+        costBreakdown.totalCost,
+      ).pipe(
+        Effect.retry(
+          Schedule.exponential("100 millis").pipe(
+            Schedule.compose(Schedule.recurs(3)),
+          ),
+        ),
+        /* v8 ignore start */
+        // TODO: Remove v8 ignore once queue-based async metering test is added
+        Effect.catchAll((error) => {
+          console.error("Failed to charge usage meter after retries:", {
+            stripeCustomerId,
+            provider,
+            model,
+            costCenticents: costBreakdown.totalCost.toString(),
+            error: error instanceof Error ? error.message : String(error),
+          });
+          return Effect.succeed(undefined);
+        }),
+        /* v8 ignore stop */
       );
     });
   }
