@@ -5,11 +5,11 @@ import React from "react";
 const typographyVariants = cva("text-xl", {
   variants: {
     variant: {
-      h1: "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl font-fun",
-      h2: "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 font-fun",
-      h3: "scroll-m-20 text-2xl font-semibold tracking-tight font-fun",
-      h4: "scroll-m-20 text-xl font-semibold tracking-tight font-fun",
-      h5: "scroll-m-20 text-lg font-semibold tracking-tight font-fun",
+      h1: "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl font-handwriting",
+      h2: "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0 font-handwriting",
+      h3: "scroll-m-20 text-2xl font-semibold tracking-tight font-handwriting",
+      h4: "scroll-m-20 text-xl font-semibold tracking-tight font-handwriting",
+      h5: "scroll-m-20 text-lg font-semibold tracking-tight font-handwriting",
       p: "leading-7 not-first:mt-6",
       span: "",
     },

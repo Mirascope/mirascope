@@ -222,7 +222,7 @@
   }
   body {
     /* Ported from website's body styles */
-    @apply m-0 font-normal tracking-[0.01em] antialiased bg-background text-foreground;
+    @apply m-0 font-normal font-handwriting tracking-[0.01em] antialiased bg-background text-foreground;
   }
 
   /* Paper texture overlay for all non-home pages */
@@ -237,7 +237,7 @@
     background-image: var(--texture-svg);
     opacity: var(--texture-opacity);
     mix-blend-mode: var(--texture-blend-mode);
-    z-index: 1;
+    z-index: 150;
   }
 }
 
