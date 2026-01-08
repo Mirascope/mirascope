@@ -13,7 +13,7 @@
     "test:python": "cd python && uv run pytest tests/",
     "test:cloud": "cd cloud && bun run test",
     "coverage:python": "cd python && uv run pytest --cov --cov-config=.coveragerc --cov-report=term-missing",
-    "codespell": "uvx codespell",
+    "codespell": "uvx codespell --skip \"./cloud/docker/data,./cloud/docker/data/**\"",
     "ci": "bun run lint && bun run coverage:python && bun run docs:build",
     "lint": "bun run codespell && bun run lint:python && bun run lint:typescript && bun run lint:cloud",
     "lint:python": "cd python && uv sync --all-extras --dev && uv run ruff check . && uv run pyright .",
