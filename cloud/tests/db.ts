@@ -523,6 +523,38 @@ export const TestEnvironmentFixture = Effect.gen(function* () {
 });
 
 /**
+ * Effect-native test fixture for API keys.
+ *
+ * Creates a test API key within an environment using the Effect-native
+ * `Database` service.
+ *
+ * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.
+ *
+ * Returns all properties from TestEnvironmentFixture plus:
+ * - apiKey: the created API key (includes the plaintext key)
+ *
+ * Requires Database - call `yield* Database` in your test
+ * if you need to perform additional database operations.
+ */
+export const TestApiKeyFixture = Effect.gen(function* () {
+  const envFixture = yield* TestEnvironmentFixture;
+  const db = yield* Database;
+
+  const apiKey = yield* db.organizations.projects.environments.apiKeys.create({
+    userId: envFixture.owner.id,
+    organizationId: envFixture.org.id,
+    projectId: envFixture.project.id,
+    environmentId: envFixture.environment.id,
+    data: { name: "Test API Key" },
+  });
+
+  return {
+    ...envFixture,
+    apiKey,
+  };
+});
+
+/**
  * Effect-native test fixture for spans.
  *
  * Creates a test span within an environment using the Effect-native
