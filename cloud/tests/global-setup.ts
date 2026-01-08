@@ -68,36 +68,50 @@ const clickhouseUser = process.env.TEST_CLICKHOUSE_USER ?? "default";
 const clickhousePassword = process.env.TEST_CLICKHOUSE_PASSWORD ?? randomUUID();
 const clickhouseDatabase = "mirascope_analytics";
 
-const runClickhouseMigrations = (clickhouseUrl: string, nativePort: number) => {
-  execFileSync("bash", ["clickhouse/migrate.sh", "migrate"], {
-    cwd: path.resolve(__dirname, ".."),
-    env: {
-      ...process.env,
-      TZ: "UTC",
-      CLICKHOUSE_URL: clickhouseUrl,
-      CLICKHOUSE_USER: clickhouseUser,
-      CLICKHOUSE_PASSWORD: clickhousePassword,
-      CLICKHOUSE_DATABASE: clickhouseDatabase,
-      CLICKHOUSE_MIGRATE_NATIVE_PORT: String(nativePort),
+const acquireClickhouseContainer = Effect.tryPromise({
+  try: () =>
+    new GenericContainer(clickhouseImage)
+      .withExposedPorts(8123, 9000)
+      .withEnvironment({
+        CLICKHOUSE_DB: clickhouseDatabase,
+        CLICKHOUSE_USER: clickhouseUser,
+        CLICKHOUSE_PASSWORD: clickhousePassword,
+        CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1",
+      })
+      .withWaitStrategy(Wait.forHttp("/ping", 8123))
+      .start(),
+  catch: (cause) => new ContainerError({ cause }),
+});
+
+const runClickhouseMigrations = (clickhouseUrl: string, nativePort: number) =>
+  Effect.try({
+    try: () => {
+      execFileSync("bash", ["clickhouse/migrate.sh", "migrate"], {
+        cwd: path.resolve(__dirname, ".."),
+        env: {
+          ...process.env,
+          TZ: "UTC",
+          CLICKHOUSE_URL: clickhouseUrl,
+          CLICKHOUSE_USER: clickhouseUser,
+          CLICKHOUSE_PASSWORD: clickhousePassword,
+          CLICKHOUSE_DATABASE: clickhouseDatabase,
+          CLICKHOUSE_MIGRATE_NATIVE_PORT: String(nativePort),
+        },
+        stdio: "inherit",
+      });
     },
-    stdio: "inherit",
+    catch: (cause) => new ContainerError({ cause }),
   });
-};
 
 // Vitest global setup - runs once before all tests
 export async function setup() {
   const scope = Effect.runSync(Scope.make());
 
-  clickhouseContainer = await new GenericContainer(clickhouseImage)
-    .withExposedPorts(8123, 9000)
-    .withEnvironment({
-      CLICKHOUSE_DB: clickhouseDatabase,
-      CLICKHOUSE_USER: clickhouseUser,
-      CLICKHOUSE_PASSWORD: clickhousePassword,
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1",
-    })
-    .withWaitStrategy(Wait.forHttp("/ping", 8123))
-    .start();
+  clickhouseContainer = await Effect.runPromise(
+    Effect.acquireRelease(acquireClickhouseContainer, (c) =>
+      Effect.promise(() => c.stop()),
+    ).pipe(Scope.extend(scope)),
+  );
 
   const clickhouseHttpPort = clickhouseContainer.getMappedPort(8123);
   const clickhouseNativePort = clickhouseContainer.getMappedPort(9000);
@@ -109,7 +123,7 @@ export async function setup() {
   process.env.CLICKHOUSE_DATABASE = clickhouseDatabase;
   process.env.CLICKHOUSE_MIGRATE_NATIVE_PORT = String(clickhouseNativePort);
 
-  runClickhouseMigrations(clickhouseUrl, clickhouseNativePort);
+  Effect.runSync(runClickhouseMigrations(clickhouseUrl, clickhouseNativePort));
 
   fs.writeFileSync(
     CLICKHOUSE_CONNECTION_FILE,

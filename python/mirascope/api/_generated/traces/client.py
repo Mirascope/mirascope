@@ -5,8 +5,20 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawTracesClient, RawTracesClient
-from .types.traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
+from .types.traces_create_request_resource_spans_item import (
+    TracesCreateRequestResourceSpansItem,
+)
 from .types.traces_create_response import TracesCreateResponse
+from .types.traces_get_analytics_summary_response import (
+    TracesGetAnalyticsSummaryResponse,
+)
+from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
+from .types.traces_search_request_attribute_filters_item import (
+    TracesSearchRequestAttributeFiltersItem,
+)
+from .types.traces_search_request_sort_by import TracesSearchRequestSortBy
+from .types.traces_search_request_sort_order import TracesSearchRequestSortOrder
+from .types.traces_search_response import TracesSearchResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -76,7 +88,191 @@ class TracesClient:
             ],
         )
         """
-        _response = self._raw_client.create(resource_spans=resource_spans, request_options=request_options)
+        _response = self._raw_client.create(
+            resource_spans=resource_spans, request_options=request_options
+        )
+        return _response.data
+
+    def search(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesSearchResponse:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesSearchResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.traces.search(
+            start_time="startTime",
+            end_time="endTime",
+        )
+        """
+        _response = self._raw_client.search(
+            start_time=start_time,
+            end_time=end_time,
+            query=query,
+            trace_id=trace_id,
+            span_id=span_id,
+            model=model,
+            provider=provider,
+            function_id=function_id,
+            function_name=function_name,
+            has_error=has_error,
+            min_tokens=min_tokens,
+            max_tokens=max_tokens,
+            min_duration=min_duration,
+            max_duration=max_duration,
+            attribute_filters=attribute_filters,
+            limit=limit,
+            offset=offset,
+            sort_by=sort_by,
+            sort_order=sort_order,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def gettracedetail(
+        self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> TracesGetTraceDetailResponse:
+        """
+        Parameters
+        ----------
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesGetTraceDetailResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.traces.gettracedetail(
+            trace_id="traceId",
+        )
+        """
+        _response = self._raw_client.gettracedetail(
+            trace_id, request_options=request_options
+        )
+        return _response.data
+
+    def getanalyticssummary(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        function_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesGetAnalyticsSummaryResponse:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        function_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesGetAnalyticsSummaryResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.traces.getanalyticssummary(
+            start_time="startTime",
+            end_time="endTime",
+        )
+        """
+        _response = self._raw_client.getanalyticssummary(
+            start_time=start_time,
+            end_time=end_time,
+            function_id=function_id,
+            request_options=request_options,
+        )
         return _response.data
 
 
@@ -152,5 +348,213 @@ class AsyncTracesClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create(resource_spans=resource_spans, request_options=request_options)
+        _response = await self._raw_client.create(
+            resource_spans=resource_spans, request_options=request_options
+        )
+        return _response.data
+
+    async def search(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesSearchResponse:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesSearchResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.search(
+                start_time="startTime",
+                end_time="endTime",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.search(
+            start_time=start_time,
+            end_time=end_time,
+            query=query,
+            trace_id=trace_id,
+            span_id=span_id,
+            model=model,
+            provider=provider,
+            function_id=function_id,
+            function_name=function_name,
+            has_error=has_error,
+            min_tokens=min_tokens,
+            max_tokens=max_tokens,
+            min_duration=min_duration,
+            max_duration=max_duration,
+            attribute_filters=attribute_filters,
+            limit=limit,
+            offset=offset,
+            sort_by=sort_by,
+            sort_order=sort_order,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def gettracedetail(
+        self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> TracesGetTraceDetailResponse:
+        """
+        Parameters
+        ----------
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesGetTraceDetailResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.gettracedetail(
+                trace_id="traceId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.gettracedetail(
+            trace_id, request_options=request_options
+        )
+        return _response.data
+
+    async def getanalyticssummary(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        function_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesGetAnalyticsSummaryResponse:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        function_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesGetAnalyticsSummaryResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.getanalyticssummary(
+                start_time="startTime",
+                end_time="endTime",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.getanalyticssummary(
+            start_time=start_time,
+            end_time=end_time,
+            function_id=function_id,
+            request_options=request_options,
+        )
         return _response.data

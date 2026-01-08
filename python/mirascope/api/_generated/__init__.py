@@ -5,6 +5,7 @@
 from .types import (
     AlreadyExistsError,
     AlreadyExistsErrorTag,
+    ClickHouseError,
     DatabaseError,
     DatabaseErrorTag,
     HttpApiDecodeError,
@@ -34,7 +35,17 @@ from .errors import (
     NotFoundError,
     UnauthorizedError,
 )
-from . import annotations, api_keys, docs, environments, functions, health, organizations, projects, traces
+from . import (
+    annotations,
+    api_keys,
+    docs,
+    environments,
+    functions,
+    health,
+    organizations,
+    projects,
+    traces,
+)
 from .annotations import (
     AnnotationsCreateRequestLabel,
     AnnotationsCreateResponse,
@@ -82,7 +93,12 @@ from .organizations import (
     OrganizationsUpdateResponse,
     OrganizationsUpdateResponseRole,
 )
-from .projects import ProjectsCreateResponse, ProjectsGetResponse, ProjectsListResponseItem, ProjectsUpdateResponse
+from .projects import (
+    ProjectsCreateResponse,
+    ProjectsGetResponse,
+    ProjectsListResponseItem,
+    ProjectsUpdateResponse,
+)
 from .traces import (
     TracesCreateRequestResourceSpansItem,
     TracesCreateRequestResourceSpansItemResource,
@@ -107,6 +123,17 @@ from .traces import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
     TracesCreateResponse,
     TracesCreateResponsePartialSuccess,
+    TracesGetAnalyticsSummaryResponse,
+    TracesGetAnalyticsSummaryResponseTopFunctionsItem,
+    TracesGetAnalyticsSummaryResponseTopModelsItem,
+    TracesGetTraceDetailResponse,
+    TracesGetTraceDetailResponseSpansItem,
+    TracesSearchRequestAttributeFiltersItem,
+    TracesSearchRequestAttributeFiltersItemOperator,
+    TracesSearchRequestSortBy,
+    TracesSearchRequestSortOrder,
+    TracesSearchResponse,
+    TracesSearchResponseSpansItem,
 )
 
 __all__ = [
@@ -129,6 +156,7 @@ __all__ = [
     "ApiKeysListResponseItem",
     "AsyncMirascope",
     "BadRequestError",
+    "ClickHouseError",
     "ConflictError",
     "DatabaseError",
     "DatabaseErrorTag",
@@ -205,6 +233,17 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "TracesGetAnalyticsSummaryResponse",
+    "TracesGetAnalyticsSummaryResponseTopFunctionsItem",
+    "TracesGetAnalyticsSummaryResponseTopModelsItem",
+    "TracesGetTraceDetailResponse",
+    "TracesGetTraceDetailResponseSpansItem",
+    "TracesSearchRequestAttributeFiltersItem",
+    "TracesSearchRequestAttributeFiltersItemOperator",
+    "TracesSearchRequestSortBy",
+    "TracesSearchRequestSortOrder",
+    "TracesSearchResponse",
+    "TracesSearchResponseSpansItem",
     "UnauthorizedError",
     "UnauthorizedErrorBody",
     "UnauthorizedErrorTag",

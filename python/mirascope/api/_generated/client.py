@@ -60,13 +60,19 @@ class Mirascope:
         httpx_client: typing.Optional[httpx.Client] = None,
     ):
         _defaulted_timeout = (
-            timeout if timeout is not None else 180 if httpx_client is None else httpx_client.timeout.read
+            timeout
+            if timeout is not None
+            else 180
+            if httpx_client is None
+            else httpx_client.timeout.read
         )
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             httpx_client=httpx_client
             if httpx_client is not None
-            else httpx.Client(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
+            else httpx.Client(
+                timeout=_defaulted_timeout, follow_redirects=follow_redirects
+            )
             if follow_redirects is not None
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
@@ -126,13 +132,19 @@ class AsyncMirascope:
         httpx_client: typing.Optional[httpx.AsyncClient] = None,
     ):
         _defaulted_timeout = (
-            timeout if timeout is not None else 180 if httpx_client is None else httpx_client.timeout.read
+            timeout
+            if timeout is not None
+            else 180
+            if httpx_client is None
+            else httpx_client.timeout.read
         )
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             httpx_client=httpx_client
             if httpx_client is not None
-            else httpx.AsyncClient(timeout=_defaulted_timeout, follow_redirects=follow_redirects)
+            else httpx.AsyncClient(
+                timeout=_defaulted_timeout, follow_redirects=follow_redirects
+            )
             if follow_redirects is not None
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
@@ -140,7 +152,9 @@ class AsyncMirascope:
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
         self.docs = AsyncDocsClient(client_wrapper=self._client_wrapper)
-        self.organizations = AsyncOrganizationsClient(client_wrapper=self._client_wrapper)
+        self.organizations = AsyncOrganizationsClient(
+            client_wrapper=self._client_wrapper
+        )
         self.projects = AsyncProjectsClient(client_wrapper=self._client_wrapper)
         self.environments = AsyncEnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = AsyncApiKeysClient(client_wrapper=self._client_wrapper)
@@ -148,10 +162,14 @@ class AsyncMirascope:
         self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
 
 
-def _get_base_url(*, base_url: typing.Optional[str] = None, environment: MirascopeEnvironment) -> str:
+def _get_base_url(
+    *, base_url: typing.Optional[str] = None, environment: MirascopeEnvironment
+) -> str:
     if base_url is not None:
         return base_url
     elif environment is not None:
         return environment.value
     else:
-        raise Exception("Please pass in either base_url or environment to construct the client")
+        raise Exception(
+            "Please pass in either base_url or environment to construct the client"
+        )

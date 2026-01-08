@@ -4,11 +4,11 @@
  * Provides endpoints for searching spans in ClickHouse analytics database,
  * retrieving trace details, and getting analytics summaries.
  *
- * ## Endpoints
+ * ## Endpoints (Traces API)
  *
- * - `POST /search` - Search spans with filters and pagination
- * - `GET /search/traces/:traceId` - Get full trace detail with all spans
- * - `GET /search/analytics` - Get analytics summary for a time range
+ * - `POST /traces/search` - Search spans with filters and pagination
+ * - `GET /traces/:traceId` - Get full trace detail with all spans
+ * - `GET /traces/analytics` - Get analytics summary for a time range
  *
  * ## Query Constraints
  *
@@ -19,15 +19,7 @@
  * - Required: startTime + endTime
  */
 
-import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
-import {
-  NotFoundError,
-  DatabaseError,
-  PermissionDeniedError,
-  UnauthorizedError,
-  ClickHouseError,
-} from "@/errors";
 
 // =============================================================================
 // Attribute Filter Schema
@@ -50,7 +42,7 @@ const AttributeFilterSchema = Schema.Struct({
 // Search Request/Response Schemas
 // =============================================================================
 
-const SearchRequestSchema = Schema.Struct({
+export const SearchRequestSchema = Schema.Struct({
   startTime: Schema.String,
   endTime: Schema.String,
   query: Schema.optional(Schema.String),
@@ -92,7 +84,7 @@ const SpanSearchResultSchema = Schema.Struct({
 
 export type SpanSearchResult = typeof SpanSearchResultSchema.Type;
 
-const SearchResponseSchema = Schema.Struct({
+export const SearchResponseSchema = Schema.Struct({
   spans: Schema.Array(SpanSearchResultSchema),
   total: Schema.Number,
   hasMore: Schema.Boolean,
@@ -141,7 +133,7 @@ const SpanDetailSchema = Schema.Struct({
 
 export type SpanDetail = typeof SpanDetailSchema.Type;
 
-const TraceDetailResponseSchema = Schema.Struct({
+export const TraceDetailResponseSchema = Schema.Struct({
   traceId: Schema.String,
   spans: Schema.Array(SpanDetailSchema),
   rootSpanId: Schema.NullOr(Schema.String),
@@ -154,7 +146,7 @@ export type TraceDetailResponse = typeof TraceDetailResponseSchema.Type;
 // Analytics Summary Schemas
 // =============================================================================
 
-const AnalyticsSummaryRequestSchema = Schema.Struct({
+export const AnalyticsSummaryRequestSchema = Schema.Struct({
   startTime: Schema.String,
   endTime: Schema.String,
   functionId: Schema.optional(Schema.String),
@@ -172,7 +164,7 @@ const TopFunctionSchema = Schema.Struct({
   count: Schema.Number,
 });
 
-const AnalyticsSummaryResponseSchema = Schema.Struct({
+export const AnalyticsSummaryResponseSchema = Schema.Struct({
   totalSpans: Schema.Number,
   avgDurationMs: Schema.NullOr(Schema.Number),
   p50DurationMs: Schema.NullOr(Schema.Number),
@@ -187,41 +179,3 @@ const AnalyticsSummaryResponseSchema = Schema.Struct({
 
 export type AnalyticsSummaryResponse =
   typeof AnalyticsSummaryResponseSchema.Type;
-
-// =============================================================================
-// API Group Definition
-// =============================================================================
-
-export class SearchApi extends HttpApiGroup.make("search")
-  .add(
-    HttpApiEndpoint.post("search", "/search")
-      .setPayload(SearchRequestSchema)
-      .addSuccess(SearchResponseSchema)
-      .addError(UnauthorizedError, { status: UnauthorizedError.status })
-      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(ClickHouseError, { status: ClickHouseError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
-  )
-  .add(
-    HttpApiEndpoint.get("getTraceDetail", "/search/traces/:traceId")
-      .setPath(
-        Schema.Struct({
-          traceId: Schema.String,
-        }),
-      )
-      .addSuccess(TraceDetailResponseSchema)
-      .addError(UnauthorizedError, { status: UnauthorizedError.status })
-      .addError(NotFoundError, { status: NotFoundError.status })
-      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(ClickHouseError, { status: ClickHouseError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
-  )
-  .add(
-    HttpApiEndpoint.get("getAnalyticsSummary", "/search/analytics")
-      .setUrlParams(AnalyticsSummaryRequestSchema)
-      .addSuccess(AnalyticsSummaryResponseSchema)
-      .addError(UnauthorizedError, { status: UnauthorizedError.status })
-      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(ClickHouseError, { status: ClickHouseError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
-  ) {}
