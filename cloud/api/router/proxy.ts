@@ -6,9 +6,11 @@
  * Mirascope API key to internal provider keys.
  */
 
-import { Effect } from "effect";
+import { Effect, Stream } from "effect";
 import { ProxyError } from "@/errors";
-import type { ProxyConfig } from "@/api/router/providers";
+import type { ProxyConfig, ProviderName } from "@/api/router/providers";
+import { parseStreamingResponse } from "./streaming";
+import type { TokenUsage } from "@/api/router/pricing";
 
 /**
  * Extracts the path suffix after the provider prefix.
@@ -34,26 +36,21 @@ export function extractProviderPath(
 }
 
 /**
- * Extracts the model ID from a request body.
- *
- * @param body - The parsed request body
- * @returns The model ID or null if not found
- */
-export function extractModelFromRequest(body: unknown): string | null {
-  if (typeof body !== "object" || body === null) return null;
-
-  const model = (body as { model?: string }).model;
-  return typeof model === "string" ? model : null;
-}
-
-/**
  * Result of proxying a request to a provider.
  */
 export interface ProxyResult {
   /** The provider's response */
   response: Response;
-  /** Parsed JSON body if available, null otherwise */
+  /**
+   * Parsed JSON body if available, null otherwise.
+   * For non-streaming: Contains the full response body (type varies by provider/endpoint).
+   * For streaming: null (usage available via usageStream).
+   */
   body: unknown;
+  /**
+   * For streaming responses only: Stream of usage data extracted from chunks.
+   */
+  usageStream?: Stream.Stream<TokenUsage, ProxyError>;
 }
 
 /**
@@ -83,7 +80,7 @@ export interface ProxyResult {
 export function proxyToProvider(
   request: Request,
   config: ProxyConfig & { apiKey: string },
-  providerName: string,
+  providerName: ProviderName,
 ): Effect.Effect<ProxyResult, ProxyError> {
   return Effect.gen(function* () {
     // Validate API key is configured
@@ -131,36 +128,49 @@ export function proxyToProvider(
         }),
     });
 
-    // Check if response is streaming (has text/event-stream content-type)
+    // Check if response is streaming
     const contentType = response.headers.get("content-type") || "";
-    const isStreaming =
-      contentType.includes("text/event-stream") ||
-      contentType.includes("application/x-ndjson");
+    const isSSE = contentType.includes("text/event-stream");
+    const isNDJSON = contentType.includes("application/x-ndjson");
+    const isStreaming = isSSE || isNDJSON;
+
+    // Parse streaming responses to extract usage
+    if (isStreaming) {
+      const format = isSSE ? "sse" : /* v8 ignore next */ "ndjson";
+      const streamResult = yield* parseStreamingResponse(
+        response,
+        format,
+        providerName,
+      );
+      return {
+        response: streamResult.response,
+        body: null, // Body will be available via usageStream
+        usageStream: streamResult.usageStream,
+      };
+    }
+
+    // For non-streaming responses, parse the body normally
+    const responseClone = response.clone();
+    const bodyResult = yield* Effect.tryPromise({
+      try: () => responseClone.text(),
+      catch: (error) =>
+        new ProxyError({
+          message: `Failed to read response body: ${
+            error instanceof Error
+              ? error.message
+              : /* v8 ignore next */ String(error)
+          }`,
+          cause: error,
+        }),
+    }).pipe(Effect.catchAll(() => Effect.succeed(null as string | null)));
 
     let parsedBody: unknown = null;
 
-    // Only parse body for non-streaming responses
-    if (!isStreaming) {
-      const responseClone = response.clone();
-      const bodyResult = yield* Effect.tryPromise({
-        try: () => responseClone.text(),
-        catch: (error) =>
-          new ProxyError({
-            message: `Failed to read response body: ${
-              error instanceof Error
-                ? error.message
-                : /* v8 ignore next */ String(error)
-            }`,
-            cause: error,
-          }),
-      }).pipe(Effect.catchAll(() => Effect.succeed(null as string | null)));
-
-      if (bodyResult) {
-        try {
-          parsedBody = JSON.parse(bodyResult);
-        } catch {
-          // Not JSON, that's ok
-        }
+    if (bodyResult) {
+      try {
+        parsedBody = JSON.parse(bodyResult);
+      } catch {
+        // Not JSON, that's ok
       }
     }
 
