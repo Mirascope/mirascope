@@ -1,7 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { TempPage } from "@/app/components/temp-page";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/docs")({
-  // todo(sebastian): temp route ahead of porting md/mdx files
-  component: () => <TempPage name="Docs" />,
+  component: DocsLayout,
 });
+
+function DocsLayout() {
+  return (
+    <div className="docs-layout">
+      {/* This Outlet will render child routes like /docs/v1/test */}
+      {/* Eventually this will include sidebar, header, etc. */}
+      <Outlet />
+    </div>
+  );
+}
