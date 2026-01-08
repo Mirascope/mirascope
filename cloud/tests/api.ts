@@ -23,7 +23,9 @@ import { Payments } from "@/payments";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
+import { users } from "@/db/schema";
 import { TEST_DATABASE_URL, DefaultMockPayments } from "@/tests/db";
+import { eq } from "drizzle-orm";
 
 // Re-export expect from vitest
 export { expect };
@@ -306,7 +308,10 @@ function createSequentialDescribe(
 
       // Clean up database - delete org first (cascades), then user
       if (ownerRef?.id) {
-        const dbLayer = createTestDatabaseLayer(databaseUrl);
+        const dbLayer = Layer.merge(
+          createTestDatabaseLayer(databaseUrl),
+          DrizzleORM.layer({ connectionString: databaseUrl }).pipe(Layer.orDie),
+        );
 
         await Effect.runPromise(
           Effect.gen(function* () {
@@ -320,8 +325,9 @@ function createSequentialDescribe(
               });
             }
 
-            // Delete user
-            yield* db.users.delete({ userId: ownerRef.id });
+            // Hard-delete user to avoid polluting other tests with soft-deleted rows
+            const client = yield* DrizzleORM;
+            yield* client.delete(users).where(eq(users.id, ownerRef.id));
           }).pipe(Effect.provide(dbLayer)),
         );
       }
