@@ -1,3 +1,5 @@
+import type { TOCItem } from "@/app/lib/content/types";
+
 /**
  * MDX Type Definitions
  *
@@ -5,16 +7,6 @@
  */
 
 import type React from "react";
-
-/**
- * Table of contents item extracted from MDX headings
- */
-export interface TOCItem {
-  id: string;
-  text: string;
-  level: number;
-  children?: TOCItem[];
-}
 
 /**
  * Frontmatter extracted from MDX files
