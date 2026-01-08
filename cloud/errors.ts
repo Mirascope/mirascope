@@ -187,3 +187,32 @@ export class ProxyError extends Schema.TaggedError<ProxyError>()("ProxyError", {
 }) {
   static readonly status = 502 as const;
 }
+
+/**
+ * Error that occurs when pricing data is unavailable for cost estimation.
+ *
+ * This error is raised when we cannot retrieve pricing information needed to
+ * estimate the cost of a request. When this occurs, the request should be
+ * rejected rather than proxied, as we cannot lock sufficient funds without
+ * a cost estimate.
+ *
+ * @example
+ * ```ts
+ * const estimate = yield* estimateCost({ ... }).pipe(
+ *   Effect.catchTag("PricingUnavailableError", (error) => {
+ *     console.error("Cannot estimate cost:", error.message);
+ *     return Effect.fail(new HandlerError({ message: "Pricing unavailable" }));
+ *   })
+ * );
+ * ```
+ */
+export class PricingUnavailableError extends Schema.TaggedError<PricingUnavailableError>()(
+  "PricingUnavailableError",
+  {
+    message: Schema.String,
+    provider: Schema.optional(Schema.String),
+    model: Schema.optional(Schema.String),
+  },
+) {
+  static readonly status = 503 as const;
+}
