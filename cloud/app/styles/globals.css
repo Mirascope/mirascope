@@ -23,19 +23,23 @@
 }
 
 :root {
+  --mirple: rgba(99, 102, 241, 1); /* Mirascope purple, same as #6366f1 */
+  --mirple-accent: color-mix(in srgb, var(--mirple) 60%, transparent);
+  --mirple-dark: rgba(84, 82, 220, 1); /* Darker purple */
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: var(--mirple);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: var(--mirple-accent);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
@@ -65,7 +69,7 @@
 
   /* Nav text variables */
   --color-nav-text: var(--color-foreground);
-  --color-nav-text-hover: var(--color-foreground);
+  --color-nav-text-hover: var(--mirple);
   --color-nav-text-shadow:
     0 2px 10px rgba(255, 255, 255, 0.3), 0 4px 20px rgba(255, 255, 255, 0.2);
   --color-nav-text-shadow-hover:
@@ -85,19 +89,18 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  --background: oklch(0.11 0.005 285.823);
+  --foreground: oklch(0.95 0 0);
   --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --secondary: oklch(0.5 0.12 195);
+  --secondary-foreground: oklch(0.9 0 0);
+  --muted: oklch(0.18 0.025 270);
+  --muted-foreground: oklch(0.75 0.015 286.067);
+  --accent: var(--mirple-accent);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.985 0 0);
@@ -162,8 +165,8 @@
 }
 
 @theme inline {
-  --color-mirple: #6366f1; /* Mirascope purple */
-  --color-mirple-dark: #5452dc; /* Darker purple */
+  --color-mirple: var(--mirple);
+  --color-mirple-dark: var(--mirple-dark);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
