@@ -59,10 +59,7 @@ export default function Header() {
           <MirascopeLogo
             size="small"
             withText={true}
-            textClassName={cn(
-              "landing-text",
-              HEADER_STYLES.logoText(isSearchOpen),
-            )}
+            textClassName={cn(HEADER_STYLES.logoText(isSearchOpen))}
           />
         </Link>
         <DesktopNavigation isSearchOpen={isSearchOpen} />
