@@ -23,7 +23,8 @@ import { Payments } from "@/payments";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
-import { TEST_DATABASE_URL, DefaultMockPayments } from "@/tests/db";
+import { TEST_DATABASE_URL } from "@/tests/db";
+import { DefaultMockPayments } from "@/tests/payments";
 
 // Re-export expect from vitest
 export { expect };

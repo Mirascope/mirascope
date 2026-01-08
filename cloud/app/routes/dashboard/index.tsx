@@ -4,7 +4,8 @@ import { DashboardLayout } from "@/app/components/dashboard-layout";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useEnvironment } from "@/app/contexts/environment";
-import { useOrganizationCredits } from "@/app/api/organizations";
+import { useOrganizationRouterBalance } from "@/app/api/organizations";
+import { centicentsToDollars } from "@/api/router/cost-utils";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardPage,
@@ -15,9 +16,8 @@ function DashboardContent() {
   const { selectedProject } = useProject();
   const { selectedEnvironment } = useEnvironment();
 
-  const { data: credits, isLoading: creditsLoading } = useOrganizationCredits(
-    selectedOrganization?.id,
-  );
+  const { data: routerBalance, isLoading: routerBalanceLoading } =
+    useOrganizationRouterBalance(selectedOrganization?.id);
 
   return (
     <div className="p-6">
@@ -37,10 +37,10 @@ function DashboardContent() {
               Router Credits
             </h2>
             <p className="text-lg font-semibold">
-              {creditsLoading ? (
+              {routerBalanceLoading ? (
                 <span className="text-muted-foreground">Loading...</span>
-              ) : credits ? (
-                `$${credits.balance.toFixed(2)}`
+              ) : routerBalance ? (
+                `$${centicentsToDollars(routerBalance.balance).toFixed(2)}`
               ) : (
                 <span className="text-muted-foreground">—</span>
               )}

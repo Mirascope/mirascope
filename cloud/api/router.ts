@@ -9,7 +9,7 @@ import {
   getOrganizationHandler,
   updateOrganizationHandler,
   deleteOrganizationHandler,
-  getOrganizationCreditsHandler,
+  getOrganizationRouterBalanceHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectsHandler,
@@ -80,7 +80,9 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
         updateOrganizationHandler(path.id, payload),
       )
       .handle("delete", ({ path }) => deleteOrganizationHandler(path.id))
-      .handle("credits", ({ path }) => getOrganizationCreditsHandler(path.id)),
+      .handle("routerBalance", ({ path }) =>
+        getOrganizationRouterBalanceHandler(path.id),
+      ),
 );
 
 const ProjectsHandlersLive = HttpApiBuilder.group(

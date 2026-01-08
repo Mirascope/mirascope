@@ -80,6 +80,7 @@ export const Route = createFileRoute("/api/v0/$")({
               payments: {
                 apiKey: process.env.STRIPE_SECRET_KEY || "",
                 routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
+                routerMeterId: process.env.STRIPE_ROUTER_METER_ID || "",
               },
             }),
           ),

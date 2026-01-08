@@ -51,8 +51,10 @@ export const UpdateOrganizationRequestSchema = Schema.Struct({
   slug: Schema.optional(OrganizationSlugSchema),
 });
 
-export const OrganizationCreditsSchema = Schema.Struct({
-  balance: Schema.Number,
+export const OrganizationRouterBalanceSchema = Schema.Struct({
+  balance: Schema.BigInt.annotations({
+    description: "Balance in centi-cents (1/10000 of a dollar)",
+  }),
 });
 
 export type Organization = typeof OrganizationSchema.Type;
@@ -62,7 +64,8 @@ export type CreateOrganizationRequest =
   typeof CreateOrganizationRequestSchema.Type;
 export type UpdateOrganizationRequest =
   typeof UpdateOrganizationRequestSchema.Type;
-export type OrganizationCredits = typeof OrganizationCreditsSchema.Type;
+export type OrganizationRouterBalance =
+  typeof OrganizationRouterBalanceSchema.Type;
 
 export class OrganizationsApi extends HttpApiGroup.make("organizations")
   .add(
@@ -107,9 +110,9 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addError(StripeError, { status: StripeError.status }),
   )
   .add(
-    HttpApiEndpoint.get("credits", "/organizations/:id/credits")
+    HttpApiEndpoint.get("routerBalance", "/organizations/:id/router-balance")
       .setPath(Schema.Struct({ id: Schema.String }))
-      .addSuccess(OrganizationCreditsSchema)
+      .addSuccess(OrganizationRouterBalanceSchema)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(StripeError, { status: StripeError.status })

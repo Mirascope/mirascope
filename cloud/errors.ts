@@ -157,6 +157,70 @@ export class StripeError extends Schema.TaggedError<StripeError>()(
   static readonly status = 500 as const;
 }
 
+/**
+ * Error that occurs when attempting to reserve funds but insufficient balance is available.
+ *
+ * This error is returned when:
+ * - Available balance < estimated cost
+ * - Available = total balance - SUM(active reservations)
+ *
+ * The HTTP status code is 402 (Payment Required) to indicate that the user
+ * needs to add more credits before they can make the request.
+ *
+ * @example
+ * ```ts
+ * const reservation = yield* payments.customers.reserveFunds({ ... }).pipe(
+ *   Effect.catchTag("InsufficientFundsError", (error) => {
+ *     console.error(`Need $${error.required}, have $${error.available}`);
+ *     return Effect.fail(new UnauthorizedError({ message: "Top up your credits" }));
+ *   })
+ * );
+ * ```
+ */
+export class InsufficientFundsError extends Schema.TaggedError<InsufficientFundsError>()(
+  "InsufficientFundsError",
+  {
+    message: Schema.String,
+    required: Schema.Number,
+    available: Schema.Number,
+  },
+) {
+  static readonly status = 402 as const;
+}
+
+/**
+ * Error that occurs when attempting to modify a credit reservation in an invalid state.
+ *
+ * This error is returned when trying to settle or release a reservation that:
+ * - Doesn't exist (may have been deleted or never created)
+ * - Is already settled (would cause double-charging)
+ * - Is already released (conflicting lifecycle transitions)
+ * - Is expired (should use CRON job to handle)
+ *
+ * The HTTP status code is 500 because this indicates a bug in our reservation
+ * lifecycle management that should never happen in normal operation.
+ *
+ * @example
+ * ```ts
+ * yield* payments.customers.settleFunds(reservationId, actualCost).pipe(
+ *   Effect.catchTag("ReservationStateError", (error) => {
+ *     console.error(`Reservation ${error.reservationId} in invalid state:`, error.message);
+ *     // Log for investigation - this indicates a bug
+ *     return Effect.fail(new InternalError({ message: "Reservation error" }));
+ *   })
+ * );
+ * ```
+ */
+export class ReservationStateError extends Schema.TaggedError<ReservationStateError>()(
+  "ReservationStateError",
+  {
+    message: Schema.String,
+    reservationId: Schema.String,
+  },
+) {
+  static readonly status = 500 as const;
+}
+
 // =============================================================================
 // Proxy Errors
 // =============================================================================

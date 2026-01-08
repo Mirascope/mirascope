@@ -3,6 +3,7 @@ import { describe, expect } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
+import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
@@ -15,6 +16,7 @@ const getTestStripe = () =>
   Stripe.layer({
     apiKey: "sk_test_123",
     routerPriceId: "price_test_mock",
+    routerMeterId: "meter_test_mock",
   });
 
 /**
@@ -486,10 +488,14 @@ export class MockPayments {
       config: {
         apiKey: "sk_test_mock",
         routerPriceId: "price_test_mock_for_testing",
+        routerMeterId: "meter_test_mock",
       },
     } as unknown as Context.Tag.Service<typeof Stripe>);
 
-    return Payments.Default.pipe(Layer.provide(customStripe));
+    return Payments.Default.pipe(
+      Layer.provide(customStripe),
+      Layer.provide(MockDrizzleORMLayer),
+    );
   }
 }
 
@@ -593,6 +599,7 @@ export const MockStripe = Layer.succeed(Stripe, {
   config: {
     apiKey: "sk_test_mock",
     routerPriceId: "price_test_mock_for_testing",
+    routerMeterId: "meter_test_mock",
   },
 } as unknown as Context.Tag.Service<typeof Stripe>);
 

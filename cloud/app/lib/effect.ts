@@ -21,11 +21,16 @@ function createAppServicesLayer(databaseUrl: string) {
     throw new Error("STRIPE_ROUTER_PRICE_ID environment variable is not set");
   }
 
+  const routerMeterId = process.env.STRIPE_ROUTER_METER_ID;
+  if (!routerMeterId) {
+    throw new Error("STRIPE_ROUTER_METER_ID environment variable is not set");
+  }
+
   return Layer.mergeAll(
     Layer.succeed(SettingsService, getSettings()),
     Database.Live({
       database: { connectionString: databaseUrl },
-      payments: { apiKey: stripeApiKey, routerPriceId },
+      payments: { apiKey: stripeApiKey, routerPriceId, routerMeterId },
     }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
   );

@@ -56,6 +56,8 @@ export interface StripeConfig {
   apiKey: string;
   /** Stripe price ID for usage-based credits (metered billing) */
   routerPriceId: string;
+  /** Stripe meter ID for tracking usage-based credits */
+  routerMeterId: string;
   /** Optional API version (defaults to Stripe SDK default) */
   apiVersion?: string;
 }

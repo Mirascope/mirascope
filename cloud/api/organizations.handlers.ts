@@ -56,7 +56,7 @@ export const deleteOrganizationHandler = (organizationId: string) =>
     yield* db.organizations.delete({ organizationId, userId: user.id });
   });
 
-export const getOrganizationCreditsHandler = (organizationId: string) =>
+export const getOrganizationRouterBalanceHandler = (organizationId: string) =>
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
@@ -68,10 +68,11 @@ export const getOrganizationCreditsHandler = (organizationId: string) =>
       userId: user.id,
     });
 
-    // Get the customer balance from Stripe
-    const balance = yield* payments.customers.getBalance(
+    // Get the router balance info from Stripe
+    const balanceInfo = yield* payments.products.router.getBalanceInfo(
       organization.stripeCustomerId,
     );
 
-    return { balance };
+    // Return available balance in centi-cents (client will convert to dollars for display)
+    return { balance: balanceInfo.availableBalance };
   });
