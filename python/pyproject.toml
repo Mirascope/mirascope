@@ -50,6 +50,9 @@ Repository = "https://github.com/Mirascope/mirascope/tree/v2"
 Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"
 
+# IMPORTANT: When adding or modifying extras below, update the EXTRA_IMPORTS mapping
+# in mirascope/_stubs.py to ensure proper import stubbing for missing dependencies.
+# The mapping translates PyPI package names to their Python import names.
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.75.0,<1.0"]
 api = ["pydantic-settings>=2.12.0"]
@@ -86,6 +89,7 @@ dev = [
     "pytest-httpserver>=1.1.0",
     "datamodel-code-generator>=0.39.0",
     "fastmcp>=0.3.0",
+    "tomli>=2.2.1",
 ]
 
 

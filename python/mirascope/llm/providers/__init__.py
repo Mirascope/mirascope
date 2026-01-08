@@ -1,5 +1,20 @@
 """Interfaces for LLM providers."""
 
+from ..._stubs import stub_module_if_missing
+
+# Stub modules for missing optional dependencies BEFORE importing
+# This must happen before any imports from these modules
+# Note: We only stub top-level provider modules, not their submodules.
+# The _StubModule will automatically handle nested attribute access.
+stub_module_if_missing("mirascope.llm.providers.anthropic", "anthropic")
+stub_module_if_missing("mirascope.llm.providers.google", "google")
+stub_module_if_missing("mirascope.llm.providers.mlx", "mlx")
+stub_module_if_missing("mirascope.llm.providers.openai", "openai")
+stub_module_if_missing("mirascope.llm.providers.together", "openai")
+stub_module_if_missing("mirascope.llm.providers.ollama", "openai")
+
+# Now imports work regardless of which packages are installed
+# ruff: noqa: E402
 from .anthropic import (
     AnthropicModelId,
     AnthropicProvider,

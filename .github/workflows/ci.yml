@@ -85,6 +85,9 @@ jobs:
           uv run datamodel-codegen --input schemas/gen-ai --output mirascope/ops/_internal/instrumentation/gen_ai_types
           git diff --exit-code mirascope/ops/_internal/instrumentation/gen_ai_types
 
+      - name: Verify EXTRA_IMPORTS is up-to-date
+        run: ./scripts/validate_extra_imports.sh
+
       - name: Run `ruff`
         run: uv run ruff check . && uv run ruff format --check .
 
