@@ -70,7 +70,7 @@ describe("CostCalculator", () => {
   });
 
   describe("OpenAICostCalculator", () => {
-    it("should extract usage from OpenAI response", async () => {
+    it("should extract usage from OpenAI Completions API response", async () => {
       const calculator = new OpenAICostCalculator();
       const responseBody = {
         choices: [{ message: { content: "Hello" } }],
@@ -100,7 +100,33 @@ describe("CostCalculator", () => {
       expect(result).toBeNull();
     });
 
-    it("should extract cache tokens from OpenAI response", async () => {
+    it("should extract usage from OpenAI Responses API response", async () => {
+      const calculator = new OpenAICostCalculator();
+      const responseBody = {
+        output: [
+          {
+            type: "message",
+            content: [{ type: "output_text", text: "Hello" }],
+          },
+        ],
+        usage: {
+          input_tokens: 100,
+          output_tokens: 50,
+          total_tokens: 150,
+        },
+      };
+
+      const result = await Effect.runPromise(
+        calculator.calculate("gpt-4o-mini", responseBody),
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.usage.inputTokens).toBe(100);
+      expect(result?.usage.outputTokens).toBe(50);
+      expect(result?.usage.cacheReadTokens).toBeUndefined();
+    });
+
+    it("should extract cache tokens from OpenAI Completions API response", async () => {
       const calculator = new OpenAICostCalculator();
       const responseBody = {
         usage: {
@@ -121,9 +147,46 @@ describe("CostCalculator", () => {
       expect(result?.usage.cacheReadTokens).toBe(30);
     });
 
+    it("should extract cache tokens from OpenAI Responses API response", async () => {
+      const calculator = new OpenAICostCalculator();
+      const responseBody = {
+        usage: {
+          input_tokens: 100,
+          output_tokens: 50,
+          total_tokens: 150,
+          input_tokens_details: {
+            cached_tokens: 30,
+          },
+        },
+      };
+
+      const result = await Effect.runPromise(
+        calculator.calculate("gpt-4o-mini", responseBody),
+      );
+
+      expect(result).toBeDefined();
+      expect(result?.usage.cacheReadTokens).toBe(30);
+    });
+
     it("should return null for invalid response body", async () => {
       const calculator = new OpenAICostCalculator();
       const responseBody = { choices: [] }; // No usage
+
+      const result = await Effect.runPromise(
+        calculator.calculate("gpt-4o-mini", responseBody),
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null for response with invalid usage format", async () => {
+      const calculator = new OpenAICostCalculator();
+      const responseBody = {
+        usage: {
+          // Missing both Completions and Responses API fields
+          invalid_field: 100,
+        },
+      };
 
       const result = await Effect.runPromise(
         calculator.calculate("gpt-4o-mini", responseBody),
@@ -212,8 +275,7 @@ describe("CostCalculator", () => {
       );
 
       expect(result).toBeDefined();
-      // inputTokens should be base + cache_read + cache_write
-      expect(result?.usage.inputTokens).toBe(150); // 100 + 30 + 20
+      expect(result?.usage.inputTokens).toBe(100);
       expect(result?.usage.cacheReadTokens).toBe(30);
       expect(result?.usage.cacheWriteTokens).toBe(20);
     });
@@ -351,6 +413,22 @@ describe("CostCalculator", () => {
       const responseBody = {
         candidates: [{ content: { parts: [{ text: "Hello" }] } }],
         // No usageMetadata field
+      };
+
+      const result = await Effect.runPromise(
+        calculator.calculate("gemini-2.0-flash-exp", responseBody),
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null for response with incomplete usageMetadata", async () => {
+      const calculator = new GoogleCostCalculator();
+      const responseBody = {
+        usageMetadata: {
+          // Missing required promptTokenCount and candidatesTokenCount
+          totalTokenCount: 150,
+        },
       };
 
       const result = await Effect.runPromise(

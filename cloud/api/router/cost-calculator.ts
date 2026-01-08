@@ -98,6 +98,10 @@ export abstract class BaseCostCalculator {
 
 /**
  * OpenAI-specific cost calculator.
+ *
+ * Supports both:
+ * - Completions API: uses prompt_tokens/completion_tokens
+ * - Responses API: uses input_tokens/output_tokens
  */
 export class OpenAICostCalculator extends BaseCostCalculator {
   constructor() {
@@ -107,26 +111,38 @@ export class OpenAICostCalculator extends BaseCostCalculator {
   protected extractUsage(body: unknown): TokenUsage | null {
     if (typeof body !== "object" || body === null) return null;
 
-    const usage = (
-      body as {
-        usage?: {
-          prompt_tokens: number;
-          completion_tokens: number;
-          total_tokens: number;
-          prompt_tokens_details?: {
-            cached_tokens?: number;
-          };
-        };
-      }
-    ).usage;
+    const bodyObj = body as Record<string, unknown>;
+    const usage = bodyObj.usage as Record<string, unknown> | undefined;
 
     if (!usage) return null;
 
-    return {
-      inputTokens: usage.prompt_tokens,
-      outputTokens: usage.completion_tokens,
-      cacheReadTokens: usage.prompt_tokens_details?.cached_tokens,
-    };
+    // Check for Responses API format (input_tokens/output_tokens)
+    if ("input_tokens" in usage && "output_tokens" in usage) {
+      const inputTokensDetails = usage.input_tokens_details as
+        | { cached_tokens?: number }
+        | undefined;
+
+      return {
+        inputTokens: usage.input_tokens as number,
+        outputTokens: usage.output_tokens as number,
+        cacheReadTokens: inputTokensDetails?.cached_tokens,
+      };
+    }
+
+    // Fall back to Completions API format (prompt_tokens/completion_tokens)
+    if ("prompt_tokens" in usage && "completion_tokens" in usage) {
+      const promptTokensDetails = usage.prompt_tokens_details as
+        | { cached_tokens?: number }
+        | undefined;
+
+      return {
+        inputTokens: usage.prompt_tokens as number,
+        outputTokens: usage.completion_tokens as number,
+        cacheReadTokens: promptTokensDetails?.cached_tokens,
+      };
+    }
+
+    return null;
   }
 }
 
@@ -202,12 +218,8 @@ export class AnthropicCostCalculator extends BaseCostCalculator {
       cacheWriteTokens = usage.cache_creation_input_tokens || 0;
     }
 
-    // Total input tokens includes base + cache read + cache write
-    // Matches Python SDK: mirascope/llm/providers/anthropic/_utils/decode.py
-    const inputTokens = usage.input_tokens + cacheReadTokens + cacheWriteTokens;
-
     return {
-      inputTokens,
+      inputTokens: usage.input_tokens,
       outputTokens: usage.output_tokens,
       cacheReadTokens,
       cacheWriteTokens,
@@ -226,18 +238,28 @@ export class GoogleCostCalculator extends BaseCostCalculator {
   protected extractUsage(body: unknown): TokenUsage | null {
     if (typeof body !== "object" || body === null) return null;
 
-    const metadata = (
-      body as {
-        usageMetadata?: {
-          promptTokenCount: number;
-          candidatesTokenCount: number;
-          totalTokenCount: number;
-          cachedContentTokenCount?: number;
-        };
-      }
-    ).usageMetadata;
+    const bodyObj = body as Record<string, unknown>;
 
-    if (!metadata) return null;
+    if (!bodyObj.usageMetadata) {
+      return null;
+    }
+
+    const metadata = bodyObj.usageMetadata as
+      | {
+          promptTokenCount?: number;
+          candidatesTokenCount?: number;
+          totalTokenCount?: number;
+          cachedContentTokenCount?: number;
+        }
+      | undefined;
+
+    if (
+      !metadata ||
+      metadata.promptTokenCount === undefined ||
+      metadata.candidatesTokenCount === undefined
+    ) {
+      return null;
+    }
 
     return {
       inputTokens: metadata.promptTokenCount,
