@@ -4,6 +4,7 @@
 
 from .already_exists_error import AlreadyExistsError
 from .already_exists_error_tag import AlreadyExistsErrorTag
+from .click_house_error import ClickHouseError
 from .database_error import DatabaseError
 from .database_error_tag import DatabaseErrorTag
 from .http_api_decode_error import HttpApiDecodeError
@@ -30,6 +31,7 @@ from .unauthorized_error_tag import UnauthorizedErrorTag
 __all__ = [
     "AlreadyExistsError",
     "AlreadyExistsErrorTag",
+    "ClickHouseError",
     "DatabaseError",
     "DatabaseErrorTag",
     "HttpApiDecodeError",

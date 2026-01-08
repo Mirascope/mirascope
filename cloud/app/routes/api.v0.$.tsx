@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
+import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouseSearch } from "@/clickhouse/search";
+import { SettingsService, getSettings } from "@/settings";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -61,11 +64,14 @@ export const Route = createFileRoute("/api/v0/$")({
           const pathParams = extractPathParameters(params["*"]);
           const authResult = yield* authenticate(request, pathParams);
 
+          const clickHouseSearch = yield* ClickHouseSearch;
+
           const result = yield* handleRequest(request, {
             prefix: "/api/v0",
             user: authResult.user,
             apiKeyInfo: authResult.apiKeyInfo,
             environment: process.env.ENVIRONMENT || "development",
+            clickHouseSearch,
           });
 
           if (!result.matched) {
@@ -75,13 +81,24 @@ export const Route = createFileRoute("/api/v0/$")({
           return result.response;
         }).pipe(
           Effect.provide(
-            Database.Live({
-              database: { connectionString: databaseUrl },
-              payments: {
-                apiKey: process.env.STRIPE_SECRET_KEY || "",
-                routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
-              },
-            }),
+            Layer.mergeAll(
+              Database.Live({
+                database: { connectionString: databaseUrl },
+                payments: {
+                  apiKey: process.env.STRIPE_SECRET_KEY || "",
+                  routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
+                },
+              }),
+              ClickHouseSearch.Default.pipe(
+                Layer.provide(ClickHouse.Default),
+                Layer.provide(
+                  Layer.succeed(SettingsService, {
+                    ...getSettings(),
+                    env: process.env.ENVIRONMENT || "development",
+                  }),
+                ),
+              ),
+            ),
           ),
           handleErrors,
           handleDefects,

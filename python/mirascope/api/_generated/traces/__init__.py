@@ -26,6 +26,17 @@ from .types import (
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
     TracesCreateResponse,
     TracesCreateResponsePartialSuccess,
+    TracesGetAnalyticsSummaryResponse,
+    TracesGetAnalyticsSummaryResponseTopFunctionsItem,
+    TracesGetAnalyticsSummaryResponseTopModelsItem,
+    TracesGetTraceDetailResponse,
+    TracesGetTraceDetailResponseSpansItem,
+    TracesSearchRequestAttributeFiltersItem,
+    TracesSearchRequestAttributeFiltersItemOperator,
+    TracesSearchRequestSortBy,
+    TracesSearchRequestSortOrder,
+    TracesSearchResponse,
+    TracesSearchResponseSpansItem,
 )
 
 __all__ = [
@@ -52,4 +63,15 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "TracesGetAnalyticsSummaryResponse",
+    "TracesGetAnalyticsSummaryResponseTopFunctionsItem",
+    "TracesGetAnalyticsSummaryResponseTopModelsItem",
+    "TracesGetTraceDetailResponse",
+    "TracesGetTraceDetailResponseSpansItem",
+    "TracesSearchRequestAttributeFiltersItem",
+    "TracesSearchRequestAttributeFiltersItemOperator",
+    "TracesSearchRequestSortBy",
+    "TracesSearchRequestSortOrder",
+    "TracesSearchResponse",
+    "TracesSearchResponseSpansItem",
 ]

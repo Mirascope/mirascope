@@ -19,7 +19,7 @@
 import { Effect } from "effect";
 import { Authentication } from "@/auth";
 import {
-  ClickHouseSearchService,
+  ClickHouseSearch,
   type SpanSearchInput,
   type TraceDetailInput,
   type AnalyticsSummaryInput,
@@ -44,13 +44,17 @@ export * from "@/api/search.schemas";
 export const searchHandler = (payload: SearchRequest) =>
   Effect.gen(function* () {
     const { apiKeyInfo } = yield* Authentication.ApiKey;
-    const searchService = yield* ClickHouseSearchService;
+    const searchService = yield* ClickHouseSearch;
 
     // Convert readonly arrays to mutable arrays
-    const model = payload.model ? [...payload.model] : undefined;
-    const provider = payload.provider?.length
-      ? [...payload.provider]
-      : undefined;
+    const model =
+      payload.model && payload.model.length > 0
+        ? [...payload.model]
+        : undefined;
+    const provider =
+      payload.provider && payload.provider.length > 0
+        ? [...payload.provider]
+        : undefined;
     const attributeFilters: AttributeFilter[] | undefined =
       payload.attributeFilters
         ? payload.attributeFilters.map((f) => ({
@@ -94,7 +98,7 @@ export const searchHandler = (payload: SearchRequest) =>
 export const getTraceDetailHandler = (traceId: string) =>
   Effect.gen(function* () {
     const { apiKeyInfo } = yield* Authentication.ApiKey;
-    const searchService = yield* ClickHouseSearchService;
+    const searchService = yield* ClickHouseSearch;
 
     const input: TraceDetailInput = {
       environmentId: apiKeyInfo.environmentId,
@@ -112,7 +116,7 @@ export const getTraceDetailHandler = (traceId: string) =>
 export const getAnalyticsSummaryHandler = (params: AnalyticsSummaryRequest) =>
   Effect.gen(function* () {
     const { apiKeyInfo } = yield* Authentication.ApiKey;
-    const searchService = yield* ClickHouseSearchService;
+    const searchService = yield* ClickHouseSearch;
 
     const input: AnalyticsSummaryInput = {
       environmentId: apiKeyInfo.environmentId,

@@ -22,12 +22,14 @@ import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearchService } from "@/clickhouse/search";
+import { ClickHouseSearch } from "@/clickhouse/search";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
 import { TEST_DATABASE_URL, DefaultMockPayments } from "@/tests/db";
 import { eq } from "drizzle-orm";
+import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
+import fs from "fs";
 
 // Re-export expect from vitest
 export { expect };
@@ -54,6 +56,25 @@ function createTestDatabaseLayer(connectionString: string) {
  * Layer that provides Database for API handler tests.
  */
 const TestDatabaseLayer = createTestDatabaseLayer(TEST_DATABASE_URL);
+
+type ClickHouseConnectionFile = {
+  url: string;
+  user: string;
+  password: string;
+  database: string;
+  nativePort: number;
+};
+
+function getTestClickHouseConfig(): ClickHouseConnectionFile {
+  try {
+    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
+    return JSON.parse(raw) as ClickHouseConnectionFile;
+  } catch {
+    throw new Error(
+      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
+    );
+  }
+}
 
 /**
  * Wraps a test function to automatically provide Database and Payments layers.
@@ -120,16 +141,19 @@ function createTestWebHandler(
   apiKeyInfo?: ApiKeyInfo,
 ) {
   // ClickHouse services layer for test environment
+  const clickhouseConfig = getTestClickHouseConfig();
   const settings = getSettings();
   const settingsLayer = Layer.succeed(SettingsService, {
     ...settings,
     env: "test",
+    CLICKHOUSE_URL: clickhouseConfig.url,
+    CLICKHOUSE_USER: clickhouseConfig.user,
+    CLICKHOUSE_PASSWORD: clickhouseConfig.password,
+    CLICKHOUSE_DATABASE: clickhouseConfig.database,
   });
-  const clickHouseClientLayer = ClickHouse.Default.pipe(
+  const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
+    Layer.provide(ClickHouse.Default),
     Layer.provide(settingsLayer),
-  );
-  const clickHouseSearchLayer = ClickHouseSearchService.Default.pipe(
-    Layer.provide(clickHouseClientLayer),
   );
 
   const services = Layer.mergeAll(
@@ -413,7 +437,7 @@ function createSimpleTestWebHandler() {
   const clickHouseClientLayer = ClickHouse.Default.pipe(
     Layer.provide(settingsLayer),
   );
-  const clickHouseSearchLayer = ClickHouseSearchService.Default.pipe(
+  const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
     Layer.provide(clickHouseClientLayer),
   );
 

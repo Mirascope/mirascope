@@ -5,8 +5,7 @@ import { HandlerError } from "@/errors";
 import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearchService } from "@/clickhouse/search";
+import { ClickHouseSearch } from "@/clickhouse/search";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
@@ -15,6 +14,7 @@ export type HandleRequestOptions = {
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
+  clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
 };
 
 type WebHandlerOptions = {
@@ -23,6 +23,7 @@ type WebHandlerOptions = {
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
+  clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
@@ -31,12 +32,6 @@ function createWebHandler(options: WebHandlerOptions) {
     ...settings,
     env: options.environment,
   });
-  const clickHouseClientLayer = ClickHouse.Default.pipe(
-    Layer.provide(settingsLayer),
-  );
-  const clickHouseSearchLayer = ClickHouseSearchService.Default.pipe(
-    Layer.provide(clickHouseClientLayer),
-  );
   const services = Layer.mergeAll(
     settingsLayer,
     Layer.succeed(AuthenticatedUser, options.user),
@@ -46,7 +41,7 @@ function createWebHandler(options: WebHandlerOptions) {
     }),
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
-    clickHouseSearchLayer,
+    Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -85,6 +80,7 @@ export const handleRequest = (
       user: options.user,
       apiKeyInfo: options.apiKeyInfo,
       environment: options.environment,
+      clickHouseSearch: options.clickHouseSearch,
     });
 
     const result = yield* Effect.tryPromise({

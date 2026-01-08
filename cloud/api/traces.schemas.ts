@@ -6,7 +6,15 @@ import {
   DatabaseError,
   AlreadyExistsError,
   UnauthorizedError,
+  ClickHouseError,
 } from "@/errors";
+import {
+  AnalyticsSummaryRequestSchema,
+  AnalyticsSummaryResponseSchema,
+  SearchRequestSchema,
+  SearchResponseSchema,
+  TraceDetailResponseSchema,
+} from "@/api/search.schemas";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
@@ -110,13 +118,54 @@ export const CreateTraceResponseSchema = Schema.Struct({
 
 export type CreateTraceResponse = typeof CreateTraceResponseSchema.Type;
 
-export class TracesApi extends HttpApiGroup.make("traces").add(
-  HttpApiEndpoint.post("create", "/traces")
-    .setPayload(CreateTraceRequestSchema)
-    .addSuccess(CreateTraceResponseSchema)
-    .addError(UnauthorizedError, { status: UnauthorizedError.status })
-    .addError(NotFoundError, { status: NotFoundError.status })
-    .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-    .addError(DatabaseError, { status: DatabaseError.status })
-    .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
-) {}
+export class TracesApi extends HttpApiGroup.make("traces")
+  .add(
+    HttpApiEndpoint.post("create", "/traces")
+      .setPayload(CreateTraceRequestSchema)
+      .addSuccess(CreateTraceResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post("search", "/traces/search")
+      .setPayload(SearchRequestSchema)
+      .addSuccess(SearchResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getTraceDetail", "/traces/:traceId")
+      .setPath(
+        Schema.Struct({
+          traceId: Schema.String,
+        }),
+      )
+      .addSuccess(TraceDetailResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getAnalyticsSummary", "/traces/analytics")
+      .setUrlParams(AnalyticsSummaryRequestSchema)
+      .addSuccess(AnalyticsSummaryResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  ) {}
