@@ -14,11 +14,11 @@ import {
   createPendingRouterRequest,
   reserveRouterFunds,
   handleRouterRequestFailure,
-  handleNonStreamingResponse,
-  handleStreamingResponse,
   type ValidatedRouterRequest,
   type RouterRequestContext,
-} from "@/api/router/route-handlers";
+} from "@/api/router/utils";
+import { handleStreamingResponse } from "@/api/router/streaming";
+import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 import { DefaultMockPayments, MockPayments } from "@/tests/payments";
 import { InternalError, UnauthorizedError, DatabaseError } from "@/errors";
 import type { ProxyResult } from "@/api/router/proxy";

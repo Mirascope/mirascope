@@ -11,9 +11,9 @@ import {
   createPendingRouterRequest,
   reserveRouterFunds,
   handleRouterRequestFailure,
-  handleStreamingResponse,
-  handleNonStreamingResponse,
-} from "@/api/router/route-handlers";
+} from "@/api/router/utils";
+import { handleStreamingResponse } from "@/api/router/streaming";
+import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 
 /**
  * Unified Provider Proxy Route
