@@ -11,7 +11,13 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["api", "auth", "db", "payments"],
+      include: [
+        "api",
+        "auth",
+        "db",
+        "payments",
+        "workers/routerMeteringQueue.ts", // TODO: get full coverage on workers module
+      ],
       exclude: [
         "**/index.ts",
         "db/migrations/**",

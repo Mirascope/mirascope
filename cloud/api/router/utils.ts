@@ -23,6 +23,11 @@ import {
   type ProviderName,
 } from "@/api/router/providers";
 import { estimateCost } from "@/api/router/cost-estimator";
+import type { TokenUsage } from "@/api/router/pricing";
+import {
+  RouterMeteringQueueService,
+  type RouterMeteringMessage,
+} from "@/workers/routerMeteringQueue";
 
 // =============================================================================
 // Types
@@ -277,5 +282,46 @@ export function handleRouterRequestFailure(
         return Effect.succeed(undefined);
       }),
     );
+  });
+}
+
+// =============================================================================
+// Metering Functions
+// =============================================================================
+
+/**
+ * Enqueues metering data to the router metering queue.
+ *
+ * This is the single source of truth for all metering operations.
+ * Both streaming and non-streaming handlers use this function to
+ * asynchronously process usage data via the DLQ-backed queue.
+ *
+ * @param routerRequestId - Router request ID
+ * @param reservationId - Reservation ID for fund settlement
+ * @param request - Router request identifiers
+ * @param usage - Token usage data
+ * @param costCenticents - Calculated cost in centicents
+ * @returns Effect that completes when message is enqueued
+ */
+export function enqueueRouterMetering(
+  routerRequestId: string,
+  reservationId: string,
+  request: RouterRequestIdentifiers,
+  usage: TokenUsage,
+  costCenticents: number,
+): Effect.Effect<void, Error, RouterMeteringQueueService> {
+  return Effect.gen(function* () {
+    const queue = yield* RouterMeteringQueueService;
+
+    const message: RouterMeteringMessage = {
+      routerRequestId,
+      reservationId,
+      request,
+      usage,
+      costCenticents,
+      timestamp: Date.now(),
+    };
+
+    yield* queue.send(message);
   });
 }

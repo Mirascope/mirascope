@@ -10,6 +10,20 @@
   "triggers": {
     "crons": ["*/1 * * * *", "*/5 * * * *"],
   },
+  "queues": {
+    "producers": [
+      { "queue": "router-metering", "binding": "ROUTER_METERING_QUEUE" },
+    ],
+    "consumers": [
+      {
+        "queue": "router-metering",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "dead_letter_queue": "router-metering-dlq",
+      },
+    ],
+  },
   //   "env": {
   //     "production": {
   //       "name": "mirascope",

@@ -541,10 +541,6 @@ export const MockMeteringContext = {
         statusText: "OK",
         headers: new Headers({ "content-type": "text/event-stream" }),
       },
-      databaseUrl: TEST_DATABASE_URL,
-      stripeApiKey: "sk_test_123",
-      routerPriceId: "price_test123",
-      routerMeterId: "meter_test123",
       ...overrides,
     };
   },

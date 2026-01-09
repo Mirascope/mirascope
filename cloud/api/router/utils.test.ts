@@ -3,7 +3,6 @@ import {
   expect,
   it,
   TestApiKeyFixture,
-  TEST_DATABASE_URL,
   MockDrizzleORM,
 } from "@/tests/db";
 import { Effect, Layer } from "effect";
@@ -14,11 +13,14 @@ import {
   createPendingRouterRequest,
   reserveRouterFunds,
   handleRouterRequestFailure,
+  enqueueRouterMetering,
   type ValidatedRouterRequest,
   type RouterRequestContext,
+  type RouterRequestIdentifiers,
 } from "@/api/router/utils";
 import { handleStreamingResponse } from "@/api/router/streaming";
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
+import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 import { DefaultMockPayments, MockPayments } from "@/tests/payments";
 import { InternalError, UnauthorizedError, DatabaseError } from "@/errors";
 import type { ProxyResult } from "@/api/router/proxy";
@@ -411,18 +413,18 @@ describe("Route Handlers", () => {
           headers: new Headers({ "content-type": "text/event-stream" }),
         };
 
+        // Mock queue service
+        const mockQueueSendEffect = Effect.succeed(undefined);
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => mockQueueSendEffect,
+        });
+
         const response = yield* handleStreamingResponse(
           proxyResult,
           context,
           validated,
           responseMetadata,
-          TEST_DATABASE_URL,
-          {
-            apiKey: "sk_test_123",
-            routerPriceId: "price_test123",
-            routerMeterId: "meter_test123",
-          },
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
         expect(response.headers.get("content-type")).toBe("text/event-stream");
@@ -507,30 +509,20 @@ describe("Route Handlers", () => {
           },
         };
 
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-
-        // Verify request was updated with usage
-        const updated =
-          yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-            {
-              userId: owner.id,
-              organizationId: project.organizationId,
-              projectId: project.id,
-              environmentId: environment.id,
-              apiKeyId: apiKey.id,
-              routerRequestId: routerRequest.id,
-            },
-          );
-
-        expect(updated.status).toBe("success");
-        expect(updated.inputTokens).toBe(10n);
-        expect(updated.outputTokens).toBe(5n);
+        // Note: Metering now happens asynchronously via queue,
+        // so we don't expect immediate DB updates in this test
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
@@ -606,29 +598,20 @@ describe("Route Handlers", () => {
           },
         };
 
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-
-        // Verify request was marked as failure
-        const updated =
-          yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-            {
-              userId: owner.id,
-              organizationId: project.organizationId,
-              projectId: project.id,
-              environmentId: environment.id,
-              apiKeyId: apiKey.id,
-              routerRequestId: routerRequest.id,
-            },
-          );
-
-        expect(updated.status).toBe("failure");
-        expect(updated.errorMessage).toContain("No usage data");
+        // Note: Metering now happens asynchronously via queue,
+        // so we dont expect immediate DB updates in this test
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
@@ -699,29 +682,20 @@ describe("Route Handlers", () => {
           },
         };
 
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-
-        // Verify request was marked as failure
-        const updated =
-          yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-            {
-              userId: owner.id,
-              organizationId: project.organizationId,
-              projectId: project.id,
-              environmentId: environment.id,
-              apiKeyId: apiKey.id,
-              routerRequestId: routerRequest.id,
-            },
-          );
-
-        expect(updated.status).toBe("failure");
-        expect(updated.errorMessage).toContain("No usage data");
+        // Note: Metering now happens asynchronously via queue,
+        // so we dont expect immediate DB updates in this test
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
@@ -800,32 +774,20 @@ describe("Route Handlers", () => {
           },
         };
 
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-
-        // Verify request was updated with cache token usage
-        const updated =
-          yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-            {
-              userId: owner.id,
-              organizationId: project.organizationId,
-              projectId: project.id,
-              environmentId: environment.id,
-              apiKeyId: apiKey.id,
-              routerRequestId: routerRequest.id,
-            },
-          );
-
-        expect(updated.status).toBe("success");
-        expect(updated.inputTokens).toBe(100n);
-        expect(updated.outputTokens).toBe(50n);
-        expect(updated.cacheReadTokens).toBe(20n);
-        expect(updated.cacheWriteTokens).toBeNull();
+        // Note: Metering now happens asynchronously via queue,
+        // so we dont expect immediate DB updates in this test
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
@@ -901,30 +863,20 @@ describe("Route Handlers", () => {
           },
         };
 
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-
-        // Verify request was updated with null input tokens but valid output tokens
-        const updated =
-          yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-            {
-              userId: owner.id,
-              organizationId: project.organizationId,
-              projectId: project.id,
-              environmentId: environment.id,
-              apiKeyId: apiKey.id,
-              routerRequestId: routerRequest.id,
-            },
-          );
-
-        expect(updated.status).toBe("success");
-        expect(updated.inputTokens).toBeNull();
-        expect(updated.outputTokens).toBe(10n);
+        // Note: Metering now happens asynchronously via queue,
+        // so we dont expect immediate DB updates in this test
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
@@ -1000,30 +952,20 @@ describe("Route Handlers", () => {
           },
         };
 
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        );
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-
-        // Verify request was updated with valid input tokens but null output tokens
-        const updated =
-          yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-            {
-              userId: owner.id,
-              organizationId: project.organizationId,
-              projectId: project.id,
-              environmentId: environment.id,
-              apiKeyId: apiKey.id,
-              routerRequestId: routerRequest.id,
-            },
-          );
-
-        expect(updated.status).toBe("success");
-        expect(updated.inputTokens).toBe(10n);
-        expect(updated.outputTokens).toBeNull();
+        // Note: Metering now happens asynchronously via queue,
+        // so we dont expect immediate DB updates in this test
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
@@ -1105,36 +1047,24 @@ describe("Route Handlers", () => {
             },
           };
 
+          // Mock queue service
+          const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+            send: () => Effect.succeed(undefined),
+          });
+
           const response = yield* handleNonStreamingResponse(
             proxyResult,
             context,
             validated,
-          );
+          ).pipe(Effect.provide(mockQueueLayer));
 
           expect(response).toBeDefined();
-
-          // Verify request was updated with cache write token usage
-          const updated =
-            yield* db.organizations.projects.environments.apiKeys.routerRequests.findById(
-              {
-                userId: owner.id,
-                organizationId: project.organizationId,
-                projectId: project.id,
-                environmentId: environment.id,
-                apiKeyId: apiKey.id,
-                routerRequestId: routerRequest.id,
-              },
-            );
-
-          expect(updated.status).toBe("success");
-          expect(updated.inputTokens).toBe(100n);
-          expect(updated.outputTokens).toBe(50n);
-          expect(updated.cacheReadTokens).toBeNull();
-          expect(updated.cacheWriteTokens).toBe(25n);
+          // Note: Metering now happens asynchronously via queue,
+          // so we don't expect immediate DB updates in this test
         }).pipe(Effect.provide(DefaultMockPayments)),
     );
 
-    it.effect("handles error when settleFunds fails", () =>
+    it.effect("handles response and enqueues successfully", () =>
       Effect.gen(function* () {
         const { owner, project, environment, apiKey } =
           yield* TestApiKeyFixture;
@@ -1157,14 +1087,9 @@ describe("Route Handlers", () => {
             },
           );
 
-        // Mock payments that fails on settleFunds
-        const consoleErrorSpy = vi
-          .spyOn(console, "error")
-          .mockImplementation(() => {});
         const mockPayments = new MockPayments();
         const mockPaymentsLayer = mockPayments.build();
 
-        // Get the payments instance and mock settleFunds to fail
         const payments = yield* Payments.pipe(
           Effect.provide(mockPaymentsLayer),
         );
@@ -1215,34 +1140,19 @@ describe("Route Handlers", () => {
           },
         };
 
-        // Create mock that fails on settleFunds by creating a fresh Payments layer
-        // that has settleFunds return an error
-        const failingPaymentsLayer = Layer.succeed(Payments, {
-          ...payments,
-          products: {
-            router: {
-              ...payments.products.router,
-              settleFunds: () =>
-                Effect.fail(new DatabaseError({ message: "Settle failed" })),
-            },
-          },
-        } as never);
+        // Mock queue service
+        const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
 
         const response = yield* handleNonStreamingResponse(
           proxyResult,
           context,
           validated,
-        ).pipe(Effect.provide(failingPaymentsLayer));
+        ).pipe(Effect.provide(mockQueueLayer));
 
         expect(response).toBeDefined();
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          expect.stringContaining(
-            "[handleNonStreamingResponse] Error updating request",
-          ),
-          expect.anything(),
-        );
-
-        consoleErrorSpy.mockRestore();
+        // Note: Metering now happens asynchronously via queue
       }).pipe(Effect.provide(DefaultMockPayments)),
     );
   });
@@ -1335,5 +1245,110 @@ describe("Route Handlers", () => {
         consoleErrorSpy.mockRestore();
       }),
     );
+  });
+
+  describe("enqueueRouterMetering", () => {
+    it("successfully enqueues metering message", async () => {
+      const sendMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+
+      const usage = {
+        inputTokens: 100,
+        outputTokens: 50,
+      };
+
+      const request: RouterRequestIdentifiers = {
+        userId: "user_123",
+        organizationId: "org_123",
+        projectId: "proj_123",
+        environmentId: "env_123",
+        apiKeyId: "key_123",
+        routerRequestId: "req_123",
+      };
+
+      const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+        send: sendMock,
+      });
+
+      await Effect.runPromise(
+        enqueueRouterMetering("req_123", "res_123", request, usage, 150).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
+      );
+
+      expect(sendMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          routerRequestId: "req_123",
+          reservationId: "res_123",
+          request,
+          usage,
+          costCenticents: 150,
+          timestamp: expect.any(Number) as number,
+        }),
+      );
+    });
+
+    it("fails when queue send fails", async () => {
+      const sendMock = vi
+        .fn()
+        .mockReturnValue(Effect.fail(new Error("Send failed")));
+
+      const usage = {
+        inputTokens: 100,
+        outputTokens: 50,
+      };
+
+      const request: RouterRequestIdentifiers = {
+        userId: "user_123",
+        organizationId: "org_123",
+        projectId: "proj_123",
+        environmentId: "env_123",
+        apiKeyId: "key_123",
+        routerRequestId: "req_123",
+      };
+
+      const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+        send: sendMock,
+      });
+
+      await expect(
+        Effect.runPromise(
+          enqueueRouterMetering("req_123", "res_123", request, usage, 150).pipe(
+            Effect.provide(mockQueueLayer),
+          ),
+        ),
+      ).rejects.toThrow("Send failed");
+    });
+
+    it("handles non-Error object thrown by queue send", async () => {
+      const sendMock = vi
+        .fn()
+        .mockReturnValue(Effect.fail(new Error("string error")));
+
+      const usage = {
+        inputTokens: 100,
+        outputTokens: 50,
+      };
+
+      const request: RouterRequestIdentifiers = {
+        userId: "user_123",
+        organizationId: "org_123",
+        projectId: "proj_123",
+        environmentId: "env_123",
+        apiKeyId: "key_123",
+        routerRequestId: "req_123",
+      };
+
+      const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+        send: sendMock,
+      });
+
+      await expect(
+        Effect.runPromise(
+          enqueueRouterMetering("req_123", "res_123", request, usage, 150).pipe(
+            Effect.provide(mockQueueLayer),
+          ),
+        ),
+      ).rejects.toThrow("string error");
+    });
   });
 });

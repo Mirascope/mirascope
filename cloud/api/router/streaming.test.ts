@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Effect, Layer } from "effect";
-import {
-  parseStreamingResponse,
-  performStreamMetering,
-  settleMeteringForStream,
-} from "@/api/router/streaming";
+import { parseStreamingResponse } from "@/api/router/streaming";
 import { ProxyError } from "@/errors";
 import { MockMeteringContext } from "@/tests/api";
-import { Database } from "@/db";
-import { Payments } from "@/payments";
+import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 describe("Streaming", () => {
+  // Mock queue service for all tests
+  const mockQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+    send: () => Effect.succeed(undefined),
+  });
+
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -28,13 +28,17 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
       expect(result.responseEffect).toBeDefined();
 
       // Run the responseEffect to get the Response
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       expect(finalResponse).toBeInstanceOf(Response);
       expect(finalResponse.status).toBe(200);
@@ -60,10 +64,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       // Read the stream to trigger metering
       const text = await finalResponse.text();
@@ -95,10 +103,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", meteringContext),
+        parseStreamingResponse(response, "ndjson", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
       expect(text).toBe(ndjsonData);
@@ -133,10 +145,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       expect(finalResponse.status).toBe(201);
       expect(finalResponse.statusText).toBe("Created");
@@ -162,13 +178,16 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
       // Should fail when trying to read the stream
       await expect(
         Effect.runPromise(
           result.responseEffect.pipe(
+            Effect.provide(mockQueueLayer),
             Effect.flatMap((response) =>
               Effect.tryPromise({
                 try: () => response.text(),
@@ -204,10 +223,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
       expect(text).toBe(sseData);
@@ -236,10 +259,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", meteringContext),
+        parseStreamingResponse(response, "ndjson", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
       expect(text).toBe(ndjsonData);
@@ -266,10 +293,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       await finalResponse.text();
 
@@ -299,10 +330,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
       expect(text).toBe(sseData);
@@ -329,10 +364,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", meteringContext),
+        parseStreamingResponse(response, "ndjson", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
       expect(text).toBe(ndjsonData);
@@ -359,10 +398,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
 
@@ -394,10 +437,14 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "sse", meteringContext),
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
 
@@ -406,398 +453,10 @@ describe("Streaming", () => {
 
       // This exercises line 144: processRemainingBuffer returns null for unparsable content
     });
-  });
 
-  describe("performStreamMetering", () => {
-    it("should update DB with failure and release funds when no usage data", async () => {
-      // Mock update and releaseFunds calls
-      const updateMock = vi.fn(() => Effect.succeed(undefined));
-      const releaseFundsMock = vi.fn(() => Effect.succeed(undefined));
-
-      const mockDbLayer = Layer.succeed(Database, {
-        organizations: {
-          projects: {
-            environments: {
-              apiKeys: {
-                routerRequests: {
-                  update: updateMock,
-                },
-              },
-            },
-          },
-        },
-      } as never);
-
-      const mockPaymentsLayer = Layer.succeed(Payments, {
-        products: {
-          router: {
-            releaseFunds: releaseFundsMock,
-          },
-        },
-      } as never);
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "gpt-4",
-      );
-
-      await Effect.runPromise(
-        performStreamMetering(null, meteringContext).pipe(
-          Effect.provide(mockDbLayer),
-          Effect.provide(mockPaymentsLayer),
-        ),
-      );
-
-      // Verify update was called with failure status
-      expect(updateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            status: "failure",
-            errorMessage: "No usage data from stream",
-          }) as unknown,
-        }),
-      );
-
-      // Verify releaseFunds was called
-      expect(releaseFundsMock).toHaveBeenCalledWith(
-        meteringContext.reservationId,
-      );
-    });
-
-    it("should update DB with failure and release funds when cost calculation fails", async () => {
-      // Mock update and releaseFunds calls
-      const updateMock = vi.fn(() => Effect.succeed(undefined));
-      const releaseFundsMock = vi.fn(() => Effect.succeed(undefined));
-
-      const mockDbLayer = Layer.succeed(Database, {
-        organizations: {
-          projects: {
-            environments: {
-              apiKeys: {
-                routerRequests: {
-                  update: updateMock,
-                },
-              },
-            },
-          },
-        },
-      } as never);
-
-      const mockPaymentsLayer = Layer.succeed(Payments, {
-        products: {
-          router: {
-            releaseFunds: releaseFundsMock,
-          },
-        },
-      } as never);
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "unknown-model", // Will cause cost calculation to fail
-      );
-
-      const usage = {
-        inputTokens: 10,
-        outputTokens: 5,
-      };
-
-      await Effect.runPromise(
-        performStreamMetering(usage, meteringContext).pipe(
-          Effect.provide(mockDbLayer),
-          Effect.provide(mockPaymentsLayer),
-        ),
-      );
-
-      // Verify update was called with failure status
-      expect(updateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            status: "failure",
-            errorMessage: "Cost calculation failed",
-          }) as unknown,
-        }),
-      );
-
-      // Verify releaseFunds was called
-      expect(releaseFundsMock).toHaveBeenCalledWith(
-        meteringContext.reservationId,
-      );
-    });
-
-    it("should update DB with success and settle funds when usage and cost are valid", async () => {
-      // Mock update and settleFunds calls
-      const updateMock = vi.fn(() => Effect.succeed(undefined));
-      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
-
-      const mockDbLayer = Layer.succeed(Database, {
-        organizations: {
-          projects: {
-            environments: {
-              apiKeys: {
-                routerRequests: {
-                  update: updateMock,
-                },
-              },
-            },
-          },
-        },
-      } as never);
-
-      const mockPaymentsLayer = Layer.succeed(Payments, {
-        products: {
-          router: {
-            settleFunds: settleFundsMock,
-          },
-        },
-      } as never);
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "gpt-4",
-      );
-
-      const usage = {
-        inputTokens: 100,
-        outputTokens: 50,
-      };
-
-      await Effect.runPromise(
-        performStreamMetering(usage, meteringContext).pipe(
-          Effect.provide(mockDbLayer),
-          Effect.provide(mockPaymentsLayer),
-        ),
-      );
-
-      // Verify update was called with success status and usage data
-      expect(updateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            status: "success",
-            inputTokens: 100n,
-            outputTokens: 50n,
-          }) as unknown,
-        }),
-      );
-
-      // Verify settleFunds was called with the correct cost
-      expect(settleFundsMock).toHaveBeenCalledWith(
-        meteringContext.reservationId,
-        expect.any(BigInt),
-      );
-    });
-
-    it("should handle cache tokens correctly", async () => {
-      // Mock update and settleFunds calls
-      const updateMock = vi.fn(() => Effect.succeed(undefined));
-      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
-
-      const mockDbLayer = Layer.succeed(Database, {
-        organizations: {
-          projects: {
-            environments: {
-              apiKeys: {
-                routerRequests: {
-                  update: updateMock,
-                },
-              },
-            },
-          },
-        },
-      } as never);
-
-      const mockPaymentsLayer = Layer.succeed(Payments, {
-        products: {
-          router: {
-            settleFunds: settleFundsMock,
-          },
-        },
-      } as never);
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "gpt-4",
-      );
-
-      const usage = {
-        inputTokens: 100,
-        outputTokens: 50,
-        cacheReadTokens: 20,
-        cacheWriteTokens: 10,
-      };
-
-      await Effect.runPromise(
-        performStreamMetering(usage, meteringContext).pipe(
-          Effect.provide(mockDbLayer),
-          Effect.provide(mockPaymentsLayer),
-        ),
-      );
-
-      // Verify update was called with cache token fields
-      expect(updateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            status: "success",
-            inputTokens: 100n,
-            outputTokens: 50n,
-            cacheReadTokens: 20n,
-            cacheWriteTokens: 10n,
-          }) as unknown,
-        }),
-      );
-    });
-
-    it("should handle zero input tokens correctly", async () => {
-      // Mock update and settleFunds calls
-      const updateMock = vi.fn(() => Effect.succeed(undefined));
-      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
-
-      const mockDbLayer = Layer.succeed(Database, {
-        organizations: {
-          projects: {
-            environments: {
-              apiKeys: {
-                routerRequests: {
-                  update: updateMock,
-                },
-              },
-            },
-          },
-        },
-      } as never);
-
-      const mockPaymentsLayer = Layer.succeed(Payments, {
-        products: {
-          router: {
-            settleFunds: settleFundsMock,
-          },
-        },
-      } as never);
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "gpt-4",
-      );
-
-      const usage = {
-        inputTokens: 0,
-        outputTokens: 10,
-      };
-
-      await Effect.runPromise(
-        performStreamMetering(usage, meteringContext).pipe(
-          Effect.provide(mockDbLayer),
-          Effect.provide(mockPaymentsLayer),
-        ),
-      );
-
-      // Verify update was called with null for zero inputTokens
-      expect(updateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            status: "success",
-            inputTokens: null,
-            outputTokens: 10n,
-          }) as unknown,
-        }),
-      );
-    });
-
-    it("should handle zero output tokens correctly", async () => {
-      // Mock update and settleFunds calls
-      const updateMock = vi.fn(() => Effect.succeed(undefined));
-      const settleFundsMock = vi.fn(() => Effect.succeed(undefined));
-
-      const mockDbLayer = Layer.succeed(Database, {
-        organizations: {
-          projects: {
-            environments: {
-              apiKeys: {
-                routerRequests: {
-                  update: updateMock,
-                },
-              },
-            },
-          },
-        },
-      } as never);
-
-      const mockPaymentsLayer = Layer.succeed(Payments, {
-        products: {
-          router: {
-            settleFunds: settleFundsMock,
-          },
-        },
-      } as never);
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "gpt-4",
-      );
-
-      const usage = {
-        inputTokens: 10,
-        outputTokens: 0,
-      };
-
-      await Effect.runPromise(
-        performStreamMetering(usage, meteringContext).pipe(
-          Effect.provide(mockDbLayer),
-          Effect.provide(mockPaymentsLayer),
-        ),
-      );
-
-      // Verify update was called with null for zero outputTokens
-      expect(updateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            status: "success",
-            inputTokens: 10n,
-            outputTokens: null,
-          }) as unknown,
-        }),
-      );
-    });
-  });
-
-  describe("settleMeteringForStream", () => {
-    it("should handle layer construction errors gracefully", async () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
-      const meteringContext = MockMeteringContext.fromProvider(
-        "openai",
-        "gpt-4",
-      );
-
-      // Provide invalid database URL to trigger layer construction error
-      const invalidContext = {
-        ...meteringContext,
-        databaseUrl: "invalid://not-a-real-database",
-      };
-
-      const usage = {
-        inputTokens: 10,
-        outputTokens: 5,
-      };
-
-      // Should succeed despite layer construction failure (catchAll handles it)
-      await Effect.runPromise(settleMeteringForStream(usage, invalidContext));
-
-      // Verify error was logged
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "[Stream.ensuring] Failed to create Database layer for metering:",
-        expect.anything(),
-      );
-
-      consoleErrorSpy.mockRestore();
-    });
-  });
-
-  describe("parseStreamingResponse - remaining buffer", () => {
-    it("processes remaining NDJSON buffer with usage data", async () => {
-      // NDJSON stream that ends with incomplete usage data in buffer (no final newline)
-      const ndjsonData = `{"id":"1","choices":[{"text":"Hello"}]}\n{"id":"2","usageMetadata":{"promptTokenCount":10,"candidatesTokenCount":5}}`;
+    it("processes remaining buffer with NDJSON format", async () => {
+      // Stream that ends with incomplete NDJSON usage data in buffer
+      const ndjsonData = `{"candidates":[{"content":{"parts":[{"text":"Hello"}]}}]}\n{"usageMetadata":{"promptTokenCount":10,"candidatesTokenCount":5}}`;
       const stream = new ReadableStream({
         start(controller) {
           controller.enqueue(new TextEncoder().encode(ndjsonData));
@@ -816,17 +475,72 @@ describe("Streaming", () => {
       );
 
       const result = await Effect.runPromise(
-        parseStreamingResponse(response, "ndjson", meteringContext),
+        parseStreamingResponse(response, "ndjson", meteringContext).pipe(
+          Effect.provide(mockQueueLayer),
+        ),
       );
 
-      const finalResponse = await Effect.runPromise(result.responseEffect);
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(mockQueueLayer)),
+      );
 
       const text = await finalResponse.text();
 
       // Verify the stream was processed correctly
       expect(text).toBe(ndjsonData);
 
-      // This exercises line 142: processRemainingBuffer with format === "ndjson"
+      // This exercises line 119: processRemainingBuffer with ndjson format
+    });
+
+    it("handles queue enqueue failure gracefully", async () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const sseData = `data: {"id":"1","usage":{"prompt_tokens":10,"completion_tokens":5}}\n\n`;
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(sseData));
+          controller.close();
+        },
+      });
+
+      const response = new Response(stream, {
+        status: 200,
+        headers: { "content-type": "text/event-stream" },
+      });
+
+      const meteringContext = MockMeteringContext.fromProvider(
+        "openai",
+        "gpt-4",
+      );
+
+      // Create a failing queue layer
+      const failingQueueLayer = Layer.succeed(RouterMeteringQueueService, {
+        send: () => Effect.fail(new Error("Queue is down")),
+      });
+
+      const result = await Effect.runPromise(
+        parseStreamingResponse(response, "sse", meteringContext).pipe(
+          Effect.provide(failingQueueLayer),
+        ),
+      );
+
+      const finalResponse = await Effect.runPromise(
+        result.responseEffect.pipe(Effect.provide(failingQueueLayer)),
+      );
+
+      await finalResponse.text();
+
+      // Verify error was logged but stream still completed
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "[settleMeteringForStream] Failed to enqueue metering",
+        ),
+        expect.anything(),
+      );
+
+      consoleErrorSpy.mockRestore();
     });
   });
 });

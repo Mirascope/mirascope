@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { Database } from "@/db";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { InternalError } from "@/errors";
@@ -14,6 +14,7 @@ import {
 } from "@/api/router/utils";
 import { handleStreamingResponse } from "@/api/router/streaming";
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
+import { routerMeteringQueueLayer } from "@/server-entry";
 
 /**
  * Unified Provider Proxy Route
@@ -138,8 +139,6 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
                 statusText: proxyResult.response.statusText,
                 headers: proxyResult.response.headers,
               },
-              config.databaseUrl,
-              config.stripe,
             );
           }
 
@@ -150,10 +149,13 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
           );
         }).pipe(
           Effect.provide(
-            Database.Live({
-              database: { connectionString: config.databaseUrl },
-              payments: config.stripe,
-            }),
+            Layer.merge(
+              Database.Live({
+                database: { connectionString: config.databaseUrl },
+                payments: config.stripe,
+              }),
+              routerMeteringQueueLayer,
+            ),
           ),
           handleErrors,
           handleDefects,
