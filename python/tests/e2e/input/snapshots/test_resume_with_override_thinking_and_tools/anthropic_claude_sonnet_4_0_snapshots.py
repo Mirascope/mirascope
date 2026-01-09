@@ -51,10 +51,11 @@ Okay, the user wants the 100th Fibonacci number. That's straightforward. I know 
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -69,14 +70,17 @@ Okay, the user wants the 100th Fibonacci number. That's straightforward. I know 
                                 "video_metadata": None,
                             },
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"n": 100},
                                     "name": "compute_fib",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,

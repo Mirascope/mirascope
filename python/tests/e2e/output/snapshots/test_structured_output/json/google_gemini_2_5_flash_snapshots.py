@@ -17,17 +17,17 @@ sync_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 317,
-                "output_tokens": 191,
+                "output_tokens": 234,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 139,
+                "reasoning_tokens": 182,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=52 candidates_tokens_details=None prompt_token_count=317 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=317
-)] thoughts_token_count=139 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=508 traffic_type=None\
+)] thoughts_token_count=182 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=551 traffic_type=None\
 """,
-                "total_tokens": 508,
+                "total_tokens": 551,
             },
             "messages": [
                 SystemMessage(
@@ -110,10 +110,11 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -229,17 +230,17 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 317,
-                "output_tokens": 291,
+                "output_tokens": 219,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 239,
+                "reasoning_tokens": 167,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=52 candidates_tokens_details=None prompt_token_count=317 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=317
-)] thoughts_token_count=239 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=608 traffic_type=None\
+)] thoughts_token_count=167 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=536 traffic_type=None\
 """,
-                "total_tokens": 608,
+                "total_tokens": 536,
             },
             "messages": [
                 SystemMessage(
@@ -322,10 +323,11 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -519,10 +521,11 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -537,10 +540,11 @@ Respond only with valid JSON that matches this exact schema:
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -644,7 +648,7 @@ Respond only with valid JSON that matches this exact schema:
                 "output_tokens": 52,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 272,
+                "reasoning_tokens": 202,
                 "raw": "None",
                 "total_tokens": 369,
             },
@@ -740,10 +744,11 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -758,10 +763,11 @@ Respond only with valid JSON that matches this exact schema:
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -865,7 +871,7 @@ Respond only with valid JSON that matches this exact schema:
                 "output_tokens": 52,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 194,
+                "reasoning_tokens": 167,
                 "raw": "None",
                 "total_tokens": 369,
             },

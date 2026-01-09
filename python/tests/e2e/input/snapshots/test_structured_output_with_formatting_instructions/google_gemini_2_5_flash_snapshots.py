@@ -17,17 +17,17 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 62,
-                "output_tokens": 112,
+                "output_tokens": 153,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 88,
+                "reasoning_tokens": 129,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=24 candidates_tokens_details=None prompt_token_count=62 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=62
-)] thoughts_token_count=88 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=174 traffic_type=None\
+)] thoughts_token_count=129 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=215 traffic_type=None\
 """,
-                "total_tokens": 174,
+                "total_tokens": 215,
             },
             "messages": [
                 SystemMessage(
@@ -53,10 +53,11 @@ lucky number 7.\
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}',

@@ -25,9 +25,11 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
@@ -35,9 +37,9 @@ interactions:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"title\\\":\\\"THE
         NAME OF THE WIND\\\",\\\"author\\\":{\\\"first_name\\\":\\\"Patrick\\\",\\\"last_name\\\":\\\"Rothfuss\\\"},\\\"rating\\\":7}\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        11,\"candidatesTokenCount\": 29,\"totalTokenCount\": 197,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 11}],\"thoughtsTokenCount\": 157},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"x3QKafCHFdfRz7IPhuvsEQ\"}\r\n\r\n"
+        11,\"candidatesTokenCount\": 29,\"totalTokenCount\": 178,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 11}],\"thoughtsTokenCount\": 138},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"4ZtgacC9A6PnqtsPv9ypkQw\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -46,11 +48,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 04 Nov 2025 21:48:56 GMT
+      - Fri, 09 Jan 2026 06:10:41 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1490
+      - gfet4t7; dur=1582
       Transfer-Encoding:
       - chunked
       Vary:

@@ -30,9 +30,11 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
@@ -41,14 +43,14 @@ interactions:
         \ \\\"title\\\": \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": {\\n    \\\"first_name\\\":
         \\\"Patrick\\\",\\n    \\\"last_name\\\": \\\"Rothfuss\"}],\"role\": \"model\"},\"index\":
         0}],\"usageMetadata\": {\"promptTokenCount\": 317,\"candidatesTokenCount\":
-        39,\"totalTokenCount\": 550,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        317}],\"thoughtsTokenCount\": 194},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"fqLyaIejGpbWz7IP-vaJ0Ao\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        39,\"totalTokenCount\": 523,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        317}],\"thoughtsTokenCount\": 167},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"z5pgaeWlK_eeqtsPkveDiQw\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
         {\"parts\": [{\"text\": \"\\\"\\n  },\\n  \\\"rating\\\": 7\\n}\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        317,\"candidatesTokenCount\": 52,\"totalTokenCount\": 563,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 317}],\"thoughtsTokenCount\": 194},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"fqLyaIejGpbWz7IP-vaJ0Ao\"}\r\n\r\n"
+        317,\"candidatesTokenCount\": 52,\"totalTokenCount\": 536,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 317}],\"thoughtsTokenCount\": 167},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"z5pgaeWlK_eeqtsPkveDiQw\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -57,11 +59,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Fri, 17 Oct 2025 20:09:35 GMT
+      - Fri, 09 Jan 2026 06:06:08 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1986
+      - gfet4t7; dur=1572
       Transfer-Encoding:
       - chunked
       Vary:

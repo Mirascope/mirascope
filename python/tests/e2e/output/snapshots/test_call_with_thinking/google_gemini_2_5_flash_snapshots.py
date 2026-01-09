@@ -76,10 +76,11 @@ There are 3 such primes.
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -100,10 +101,11 @@ I just went through and systematically checked all the primes less than 400. In 
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -142,10 +144,11 @@ There are 3 such primes.
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "The primes are 79, 179, and 379.",
@@ -230,10 +233,11 @@ I'm confident the answer is:
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -266,10 +270,11 @@ I'm confident the answer is:
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "3",
@@ -296,10 +301,11 @@ I'm confident the answer is:
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "I don't remember.",
@@ -376,10 +382,11 @@ I've completed my systematic listing and checking of all primes below 400 for th
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -394,10 +401,11 @@ I'm currently working on identifying prime numbers below 400 and determining whi
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -412,10 +420,11 @@ I've systematically generated prime numbers below 400 and checked for the substr
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -430,10 +439,11 @@ Now, I've methodically listed all primes under 400 and meticulously checked for 
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -448,10 +458,11 @@ I've carefully listed all primes below 400 and exhaustively checked for "79" as 
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -466,10 +477,11 @@ I've rigorously checked all primes below 400 for the substring "79". The only on
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -484,10 +496,11 @@ I've completed my systematic listing and checking of all primes below 400 for th
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "3",
@@ -514,10 +527,11 @@ I've completed my systematic listing and checking of all primes below 400 for th
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "I don't",
@@ -526,10 +540,11 @@ I've completed my systematic listing and checking of all primes below 400 for th
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": " remember.",
@@ -612,10 +627,11 @@ I've rigorously checked the prime list for the presence of "79," using both ment
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -630,10 +646,11 @@ Okay, I've got the goal locked in: count primes under 400 containing "79". Curre
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -648,10 +665,11 @@ Now I have a clearer picture. I have the core strategy: generate primes under 40
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -666,10 +684,11 @@ I'm now methodically evaluating primes for the "79" substring. I generated prime
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -685,10 +704,11 @@ I've taken the listed primes under 400 and meticulously examined each one for th
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -703,10 +723,11 @@ I've rigorously checked the prime list for the presence of "79," using both ment
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "3",
@@ -733,10 +754,11 @@ I've rigorously checked the prime list for the presence of "79," using both ment
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "I don't",
@@ -745,10 +767,11 @@ I've rigorously checked the prime list for the presence of "79," using both ment
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": " remember.",

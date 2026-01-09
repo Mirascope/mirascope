@@ -16,17 +16,17 @@ sync_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 11,
-                "output_tokens": 186,
+                "output_tokens": 256,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 157,
+                "reasoning_tokens": 227,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=29 candidates_tokens_details=None prompt_token_count=11 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=11
-)] thoughts_token_count=157 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=197 traffic_type=None\
+)] thoughts_token_count=227 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=267 traffic_type=None\
 """,
-                "total_tokens": 197,
+                "total_tokens": 267,
             },
             "messages": [
                 UserMessage(
@@ -48,10 +48,11 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -122,17 +123,17 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 11,
-                "output_tokens": 208,
+                "output_tokens": 361,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 162,
+                "reasoning_tokens": 309,
                 "raw": """\
-cache_tokens_details=None cached_content_token_count=None candidates_token_count=46 candidates_tokens_details=None prompt_token_count=11 prompt_tokens_details=[ModalityTokenCount(
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=52 candidates_tokens_details=None prompt_token_count=11 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=11
-)] thoughts_token_count=162 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=219 traffic_type=None\
+)] thoughts_token_count=309 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=372 traffic_type=None\
 """,
-                "total_tokens": 219,
+                "total_tokens": 372,
             },
             "messages": [
                 UserMessage(
@@ -147,12 +148,12 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         Text(
                             text="""\
 {
-"title": "THE NAME OF THE WIND",
-"author": {
-"first_name": "Patrick",
-"last_name": "Rothfuss"
-},
-"rating": 7
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
 }\
 """
                         )
@@ -163,20 +164,21 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
 {
-"title": "THE NAME OF THE WIND",
-"author": {
-"first_name": "Patrick",
-"last_name": "Rothfuss"
-},
-"rating": 7
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
 }\
 """,
                                 "thought": None,
@@ -263,10 +265,11 @@ stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -329,7 +332,7 @@ stream_snapshot = snapshot(
                 "output_tokens": 29,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 278,
+                "reasoning_tokens": 264,
                 "raw": "None",
                 "total_tokens": 40,
             },
@@ -364,10 +367,11 @@ async_stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -430,7 +434,7 @@ async_stream_snapshot = snapshot(
                 "output_tokens": 29,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 134,
+                "reasoning_tokens": 212,
                 "raw": "None",
                 "total_tokens": 40,
             },

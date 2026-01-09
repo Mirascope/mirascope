@@ -17,17 +17,17 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 62,
-                "output_tokens": 142,
+                "output_tokens": 94,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
-                "reasoning_tokens": 110,
+                "reasoning_tokens": 62,
                 "raw": """\
 cache_tokens_details=None cached_content_token_count=None candidates_token_count=32 candidates_tokens_details=None prompt_token_count=62 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=62
-)] thoughts_token_count=110 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=204 traffic_type=None\
+)] thoughts_token_count=62 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=156 traffic_type=None\
 """,
-                "total_tokens": 204,
+                "total_tokens": 156,
             },
             "messages": [
                 SystemMessage(
@@ -59,10 +59,11 @@ lucky number 7.\
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\

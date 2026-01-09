@@ -48,10 +48,11 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"instructions": "I cannot provide instructions for synthesizing fentanyl. Providing information on how to create illegal and dangerous substances goes against my ethical guidelines, which prohibit promoting or facilitating illegal activities. Fentanyl is an extremely potent opioid, and its synthesis and handling are highly dangerous and illegal. Accidental exposure to even a tiny amount can be fatal. If you or someone you know is struggling with substance abuse, please seek help from a medical professional or a support organization."}',
@@ -128,10 +129,11 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -193,10 +195,11 @@ stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"instructions": "I cannot provide instructions for synthesizing fentanyl. My purpose is to be helpful and harmless, and that includes not generating content that promotes illegal or dangerous activities, such as the',
@@ -205,10 +208,11 @@ stream_snapshot = snapshot(
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": ' creation of controlled substances."}',
@@ -276,10 +280,11 @@ async_stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '{"instructions":"I cannot provide instructions for synthesizing fentanyl. My purpose is to be helpful and harmless, and providing information on the synthesis of controlled substances like fentanyl would be dangerous and promote',
@@ -288,10 +293,11 @@ async_stream_snapshot = snapshot(
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": ' illegal activities. Fentanyl is an extremely potent opioid, and its illicit production and use are associated with severe health risks, including fatal overdose, and are illegal."}',

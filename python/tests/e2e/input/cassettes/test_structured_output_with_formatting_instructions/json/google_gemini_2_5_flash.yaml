@@ -20,21 +20,23 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRXW+CMBSG7/kVzbnWRZ2bye4WddEsKjqyD8cuGinQiC1pD5sb4b/bQkDIetGc
-        nPft+XiaO4TAgYqABxSZhgfyaTKE5OVtNSmQCTRCnTLJlCq8equTt2JjQXa2jyD3BSE+IMeE+Sbh
-        g7eYk/Xjak42T8TGb8v1zIde5aMZxlJVRpei4ocj2UmMw0zrxqQochFZ08QXBbQaF0381buOq2TC
-        7CwnGbCkthe1AUIuuI53jGoprO3F27jQqFwE7GzSA6duUJaGTNOIrRhSA442eCBV8pSiJ49MTGVW
-        grsfVcVanDv6ba2jRJp0pNFg3PtXV89MV560P6D1N2ZJmnD8tZt483cPWiCwO1ZNwmkBA8M/i2Ls
-        jjgc2vVLZBXFV6Y0r3BF7GQA9kc3d/0woTouG4JiOpVCs2VgPeFi+0z33/tV6Mq/ydLNPvrT8fYH
-        nMK5ABC6jTOCAgAA
+        H4sIAAAAAAAC/2WRX0/CMBTF3/cpmj6D0SmQ+GYEFRL+iIuQOB8adtkaSru0dwZd9t1tt2yUsIfm
+        5pyze29/LQNC6I7JhCcMwdBH8mUVQsr6dJ6SCBKt0UpWzJnGc7b5Sq+2EYST+4mWsSQkpshRQGyF
+        mEZvE7J4mk/I8oW4ejNdjGPaa3KswEzpJrhiqPnuQNYKs31hTBfSDLlMXWgUy4p6g6uu/u6d19VK
+        gNvlqBIQbbxqA3TPJTfZGphR0sU+ouWKdi6XCZysfBu0A+rWtDAshTkgs+BYh4fmWh1zjNQB5LMq
+        anDDsGnmcb7w71sfFTJxYd0Nhr2rvmZsp3LhP4D3NvaSTHD8dTeJJtuIeiDwcq2WROABo5Z/kWZo
+        oqtsTayB+Ana8IZWCkfLrx/eDPp7wUxWz6MaTK6kgWniMtuZSNkuPLwuN/A3mq4Gs5/w4V3RoAr+
+        AQUxfpaBAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +45,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:47:40 GMT
+      - Fri, 09 Jan 2026 05:59:56 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1307
+      - gfet4t7; dur=1019
       Transfer-Encoding:
       - chunked
       Vary:
