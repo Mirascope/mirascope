@@ -477,22 +477,30 @@ export class Router {
   /**
    * Settles a reservation after successful request completion.
    *
-   * This is a high-level convenience method that:
-   * 1. Releases the reservation
-   * 2. Charges the meter with actual cost
+   * This method atomically:
+   * 1. Releases the reservation (DB update within transaction)
+   * 2. Charges the meter with actual cost (Stripe API)
+   *
+   * Both operations are wrapped in a database transaction. If Stripe charging fails,
+   * the DB update is rolled back, leaving the reservation in 'active' status for
+   * retry by the billing reconciliation cron job.
+   *
+   * ## Idempotency
+   *
+   * The transaction uses `WHERE status = 'active'` which ensures that if the
+   * reservation is already released, the update affects 0 rows and the method
+   * returns without charging. This provides safe retry by cron jobs without
+   * double-charging.
    *
    * Use this for the common case when a router request succeeds and you have actual cost.
    * For failed requests where you don't want to charge, use `releaseFunds` directly.
-   *
-   * The reservation is already linked to the router request (via routerRequestId set during
-   * reserveFunds), so you don't need to pass it again.
    *
    * @param reservationId - Reservation ID from reserveFunds()
    * @param actualCostCenticents - Actual cost in centi-cents to charge
    * @returns Effect that succeeds when settlement is complete
    * @throws DatabaseError - If database operation fails
-   * @throws ReservationStateError - If reservation not found or already released
-   * @throws StripeError - If meter charging fails
+   * @throws ReservationStateError - If reservation not found
+   * @throws StripeError - If meter charging fails (transaction rolls back)
    */
   settleFunds(
     reservationId: string,
@@ -505,9 +513,11 @@ export class Router {
     return Effect.gen(this, function* () {
       const db = yield* DrizzleORM;
 
-      // Get customer ID from reservation before releasing
+      // Get reservation details for Stripe customer ID
       const [reservation] = yield* db
-        .select({ stripeCustomerId: creditReservations.stripeCustomerId })
+        .select({
+          stripeCustomerId: creditReservations.stripeCustomerId,
+        })
         .from(creditReservations)
         .where(eq(creditReservations.id, reservationId))
         .pipe(
@@ -527,13 +537,27 @@ export class Router {
         });
       }
 
-      // Release funds
-      yield* this.releaseFunds(reservationId);
+      // Transaction: Release funds (DB) + Charge meter (Stripe)
+      // If Stripe fails, the DB update rolls back
+      yield* db.withTransaction(
+        Effect.gen(this, function* () {
+          // Release funds - skip charging if already released (idempotency)
+          const alreadyReleased = yield* this.releaseFunds(reservationId).pipe(
+            Effect.map(() => false),
+            Effect.catchTag("ReservationStateError", () =>
+              Effect.succeed(true),
+            ),
+          );
 
-      // Charge the meter with actual cost
-      yield* this.chargeUsageMeter(
-        reservation.stripeCustomerId,
-        actualCostCenticents,
+          if (alreadyReleased) {
+            return;
+          }
+
+          yield* this.chargeUsageMeter(
+            reservation.stripeCustomerId,
+            actualCostCenticents,
+          );
+        }),
       );
     });
   }
