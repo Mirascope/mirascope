@@ -4,7 +4,7 @@ import { assert } from "vitest";
 import { createCustomIt, ensureEffect } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
-import type { PlanType } from "@/payments/subscriptions";
+import type { PlanTier } from "@/payments/subscriptions";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 import StripeSDK from "stripe";
 
@@ -117,7 +117,7 @@ export const MOCK_PRICE_IDS = {
 // =============================================================================
 
 /** Maps plan type to mock price ID */
-export function getPriceIdForPlan(plan: PlanType): string {
+export function getPriceIdForPlan(plan: PlanTier): string {
   return MOCK_PRICE_IDS[plan];
 }
 
@@ -1450,7 +1450,7 @@ export const DefaultMockPayments = new MockPayments().build();
  */
 export interface TestSubscriptionFixtureParams {
   /** Plan tier (defaults to "free") */
-  plan?: PlanType;
+  plan?: PlanTier;
   /** Subscription status (defaults to "active") */
   status?: "active" | "canceled" | "past_due";
   /** Whether customer has a payment method (defaults to false) */
@@ -1769,7 +1769,7 @@ export function TestErrorScenarioFixture(
  */
 export interface TestSubscriptionWithScheduleFixtureParams extends TestSubscriptionFixtureParams {
   /** Target plan for the scheduled change */
-  targetPlan: PlanType;
+  targetPlan: PlanTier;
   /** Schedule ID (defaults to "sched_test_123") */
   scheduleId?: string;
   /** Schedule status (defaults to "active") */
@@ -1993,7 +1993,7 @@ export function TestSubscriptionWithScheduleFixture(
  */
 export interface TestPaymentIntentScenarioFixtureParams extends TestSubscriptionFixtureParams {
   /** Target plan for the upgrade */
-  targetPlan: PlanType;
+  targetPlan: PlanTier;
   /** Whether this upgrade requires payment (defaults to true) */
   requiresPayment?: boolean;
   /** Invoice ID (defaults to "TEST_IDS.invoice") */
@@ -2161,10 +2161,10 @@ export function TestPaymentIntentScenarioFixture(
  */
 export function TestUpgradeWithPaymentIntentFixture(params: {
   /** Current subscription plan */
-  currentPlan: PlanType;
+  currentPlan: PlanTier;
   /** Target plan for upgrade */
-  targetPlan: PlanType;
-  /** Stripe customer ID (defaults to "TEST_IDS.customer") */
+  targetPlan: PlanTier;
+  /** Stripe customer ID (defaults to "cus_test_123") */
   stripeCustomerId?: string;
   /** Whether upgrade requires payment (defaults to false) */
   requiresPayment?: boolean;
@@ -2316,15 +2316,15 @@ export function TestUpgradeWithPaymentIntentFixture(params: {
  *       targetPlan: "free",
  *     });
  *
- *     expect(result.proratedAmount).toBe(-5000);
- *     expect(result.recurringAmountInDollars).toBe(0);
+ *     expect(result.proratedAmountInCents).toBe(-50);
+ *     expect(result.recurringAmountInCents).toBe(0);
  *   }).pipe(
  *     Effect.provide(
  *       TestPreviewChangeFixture({
  *         currentPlan: "pro",
  *         targetPlan: "free",
- *         proratedAmount: -5000,
- *         recurringAmount: 0,
+ *         proratedAmountInCents: -5000,
+ *         recurringAmountInCents: 0,
  *       })
  *     )
  *   )
@@ -2333,15 +2333,15 @@ export function TestUpgradeWithPaymentIntentFixture(params: {
  */
 export function TestPreviewChangeFixture(params: {
   /** Current subscription plan */
-  currentPlan: PlanType;
+  currentPlan: PlanTier;
   /** Target plan for change */
-  targetPlan: PlanType;
-  /** Stripe customer ID (defaults to "TEST_IDS.customer") */
+  targetPlan: PlanTier;
+  /** Stripe customer ID (defaults to "cus_test_123") */
   stripeCustomerId?: string;
-  /** Prorated amount for immediate charge/credit */
-  proratedAmount?: number;
-  /** Recurring amount for next period */
-  recurringAmount?: number;
+  /** Prorated amount for immediate charge/credit (in cents, as Stripe uses) */
+  proratedAmountInCents?: number;
+  /** Recurring amount for next period (in cents, as Stripe uses) */
+  recurringAmountInCents?: number;
   /** Whether customer has payment method (defaults to false) */
   hasPaymentMethod?: boolean;
   /** Optional override for subscription items returned by retrieve (for edge case testing) */
@@ -2359,8 +2359,8 @@ export function TestPreviewChangeFixture(params: {
     currentPlan,
     targetPlan,
     stripeCustomerId = TEST_IDS.customer,
-    proratedAmount = 0,
-    recurringAmount = 10000,
+    proratedAmountInCents = 0,
+    recurringAmountInCents = 10000,
     hasPaymentMethod = false,
     retrieveSubscriptionItems,
     customCurrentPriceId,
@@ -2410,22 +2410,22 @@ export function TestPreviewChangeFixture(params: {
   const upcomingInvoiceData = {
     id: "in_upcoming",
     object: "invoice" as const,
-    amount_due: proratedAmount,
+    amount_due: proratedAmountInCents,
     total:
       upcomingInvoiceTotalOverride !== undefined
         ? upcomingInvoiceTotalOverride
-        : recurringAmount,
+        : recurringAmountInCents,
     period_end: periodEnd,
     lines: {
       data: [
         {
           id: "il_proration",
-          amount: proratedAmount,
+          amount: proratedAmountInCents,
           proration: true,
         },
         {
           id: "il_recurring",
-          amount: recurringAmount,
+          amount: recurringAmountInCents,
           proration: false,
         },
       ],
@@ -2454,7 +2454,7 @@ export function TestPreviewChangeFixture(params: {
       Effect.succeed({
         id: targetPriceId,
         object: "price" as const,
-        unit_amount: recurringAmount, // Use the recurring amount as the price
+        unit_amount: recurringAmountInCents, // Use the recurring amount as the price
         currency: "usd",
       }),
     );
@@ -2617,10 +2617,10 @@ export function TestMultipleSubscriptionItemsFixture(
  */
 export function TestDowngradeWithScheduleFixture(params: {
   /** Current subscription plan */
-  currentPlan: PlanType;
+  currentPlan: PlanTier;
   /** Target plan for downgrade */
-  targetPlan: PlanType;
-  /** Stripe customer ID (defaults to "TEST_IDS.customer") */
+  targetPlan: PlanTier;
+  /** Stripe customer ID (defaults to "cus_test_123") */
   stripeCustomerId?: string;
   /** Subscription ID (defaults to "TEST_IDS.subscription") */
   subscriptionId?: string;

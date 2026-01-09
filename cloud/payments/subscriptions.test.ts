@@ -267,8 +267,8 @@ describe("subscriptions", () => {
             currentPlan: "pro",
             targetPlan: "free",
             stripeCustomerId: "cus_123",
-            proratedAmount: 5000,
-            recurringAmount: 10000,
+            proratedAmountInCents: 5000,
+            recurringAmountInCents: 10000,
           }),
         ),
       ),
@@ -292,8 +292,8 @@ describe("subscriptions", () => {
             currentPlan: "pro",
             targetPlan: "team",
             stripeCustomerId: "cus_123",
-            proratedAmount: 5000,
-            recurringAmount: 10000,
+            proratedAmountInCents: 5000,
+            recurringAmountInCents: 10000,
             hasPaymentMethod: true,
           }),
         ),
@@ -321,8 +321,8 @@ describe("subscriptions", () => {
               currentPlan: "pro",
               targetPlan: "team",
               stripeCustomerId: "cus_123",
-              proratedAmount: 5000,
-              recurringAmount: 10000,
+              proratedAmountInCents: 5000,
+              recurringAmountInCents: 10000,
               retrieveSubscriptionItems: [
                 { id: "si_other", priceId: "price_cloud_spans_mock" },
               ],
@@ -682,8 +682,8 @@ describe("subscriptions", () => {
             currentPlan: "free",
             targetPlan: "pro",
             stripeCustomerId: "cus_123",
-            proratedAmount: 1000,
-            recurringAmount: 5000, // $50 in cents
+            proratedAmountInCents: 1000,
+            recurringAmountInCents: 5000, // $50 in cents
             upcomingInvoiceTotalOverride: null, // Null to test price retrieval fallback
           }),
         ),

@@ -10,8 +10,11 @@ import type StripeAPI from "stripe";
 import { Stripe as StripeService, type StripeConfig } from "@/payments/client";
 import { NotFoundError, StripeError, SubscriptionPastDueError } from "@/errors";
 
+/** Subscription plan tier values (source of truth) */
+export const PLAN_TIERS = ["free", "pro", "team"] as const;
+
 /** Subscription plan tier types */
-export type PlanType = "free" | "pro" | "team";
+export type PlanTier = (typeof PLAN_TIERS)[number];
 
 /**
  * Subscription details for an organization.
@@ -20,7 +23,7 @@ export interface SubscriptionDetails {
   /** Current subscription ID */
   subscriptionId: string;
   /** Current plan tier */
-  currentPlan: PlanType;
+  currentPlan: PlanTier;
   /** Subscription status */
   status: StripeAPI.Subscription.Status;
   /** Current billing period end date */
@@ -36,7 +39,7 @@ export interface SubscriptionDetails {
   };
   /** Scheduled plan change details (if any) */
   scheduledChange?: {
-    targetPlan: PlanType;
+    targetPlan: PlanTier;
     effectiveDate: Date;
     scheduleId: string;
   };
@@ -49,7 +52,7 @@ export interface PreviewSubscriptionChangeParams {
   /** Stripe customer ID */
   stripeCustomerId: string;
   /** Target plan tier */
-  targetPlan: PlanType;
+  targetPlan: PlanTier;
 }
 
 /**
@@ -73,7 +76,7 @@ export interface UpdateSubscriptionParams {
   /** Stripe customer ID */
   stripeCustomerId: string;
   /** Target plan tier */
-  targetPlan: PlanType;
+  targetPlan: PlanTier;
 }
 
 /**
@@ -120,7 +123,7 @@ export class Subscriptions {
   /**
    * Determines plan tier from Stripe price ID.
    */
-  private getPlanFromPriceId(priceId: string, config: StripeConfig): PlanType {
+  private getPlanFromPriceId(priceId: string, config: StripeConfig): PlanTier {
     if (priceId === config.cloudProPriceId) return "pro";
     if (priceId === config.cloudTeamPriceId) return "team";
     return "free"; // default fallback
@@ -129,7 +132,7 @@ export class Subscriptions {
   /**
    * Gets price ID from plan tier.
    */
-  private getPriceIdFromPlan(plan: PlanType, config: StripeConfig): string {
+  private getPriceIdFromPlan(plan: PlanTier, config: StripeConfig): string {
     if (plan === "free") return config.cloudFreePriceId;
     if (plan === "pro") return config.cloudProPriceId;
     return config.cloudTeamPriceId;
@@ -155,7 +158,7 @@ export class Subscriptions {
   /**
    * Determines if a plan change is an upgrade.
    */
-  private isUpgrade(currentPlan: PlanType, targetPlan: PlanType): boolean {
+  private isUpgrade(currentPlan: PlanTier, targetPlan: PlanTier): boolean {
     return (
       Subscriptions.PLAN_TIERS[targetPlan] >
       Subscriptions.PLAN_TIERS[currentPlan]
