@@ -748,6 +748,15 @@
                   "query": {
                     "type": "string"
                   },
+                  "inputMessagesQuery": {
+                    "type": "string"
+                  },
+                  "outputMessagesQuery": {
+                    "type": "string"
+                  },
+                  "fuzzySearch": {
+                    "type": "boolean"
+                  },
                   "traceId": {
                     "type": "string"
                   },

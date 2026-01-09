@@ -83,13 +83,14 @@ from .functions import (
 )
 from .health import HealthCheckResponse, HealthCheckResponseStatus
 from .organizations import (
+    OrganizationsCreatePaymentIntentResponse,
     OrganizationsCreateResponse,
     OrganizationsCreateResponseRole,
-    OrganizationsCreditsResponse,
     OrganizationsGetResponse,
     OrganizationsGetResponseRole,
     OrganizationsListResponseItem,
     OrganizationsListResponseItemRole,
+    OrganizationsRouterBalanceResponse,
     OrganizationsUpdateResponse,
     OrganizationsUpdateResponseRole,
 )
@@ -191,13 +192,14 @@ __all__ = [
     "NotFoundErrorBody",
     "NotFoundErrorTag",
     "NumberFromString",
+    "OrganizationsCreatePaymentIntentResponse",
     "OrganizationsCreateResponse",
     "OrganizationsCreateResponseRole",
-    "OrganizationsCreditsResponse",
     "OrganizationsGetResponse",
     "OrganizationsGetResponseRole",
     "OrganizationsListResponseItem",
     "OrganizationsListResponseItemRole",
+    "OrganizationsRouterBalanceResponse",
     "OrganizationsUpdateResponse",
     "OrganizationsUpdateResponseRole",
     "PermissionDeniedError",

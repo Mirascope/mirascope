@@ -111,8 +111,14 @@ export interface SpanSearchInput {
   startTime: Date;
   /** End of time range (required). */
   endTime: Date;
-  /** Optional text search query (token-based matching). */
+  /** Optional text search query (token-based matching on span name). */
   query?: string;
+  /** Optional search in input messages (gen_ai.input_messages, mirascope.trace.arg_values). */
+  inputMessagesQuery?: string;
+  /** Optional search in output messages (gen_ai.output_messages, mirascope.trace.output). */
+  outputMessagesQuery?: string;
+  /** Enable fuzzy search using ngramSearch (default: false, uses LIKE). */
+  fuzzySearch?: boolean;
   /** Filter by trace ID. */
   traceId?: string;
   /** Filter by span ID. */
@@ -759,6 +765,49 @@ function buildSearchWhereClause(input: SpanSearchInput): {
     for (const token of tokens) {
       const tokenKey = addParam("token", token);
       conditions.push(`hasToken(s.name_lower, {${tokenKey}:String})`);
+    }
+  }
+
+  // Optional input messages search (gen_ai.input_messages, mirascope.trace.arg_values)
+  if (input.inputMessagesQuery) {
+    const inputKey = addParam("inputMessagesQuery", input.inputMessagesQuery);
+    if (input.fuzzySearch) {
+      // Fuzzy search using ngramSearch (score > 0.3 for typo tolerance)
+      conditions.push(
+        `(ngramSearchCaseInsensitive(JSONExtractString(s.attributes, 'gen_ai.input_messages'), {${inputKey}:String}) > 0.3 OR ngramSearchCaseInsensitive(JSONExtractString(s.attributes, 'mirascope.trace.arg_values'), {${inputKey}:String}) > 0.3)`,
+      );
+    } else {
+      // Exact substring match using LIKE
+      const inputKeyLike = addParam(
+        "inputMessagesQueryLike",
+        `%${input.inputMessagesQuery}%`,
+      );
+      conditions.push(
+        `(JSONExtractString(s.attributes, 'gen_ai.input_messages') LIKE {${inputKeyLike}:String} OR JSONExtractString(s.attributes, 'mirascope.trace.arg_values') LIKE {${inputKeyLike}:String})`,
+      );
+    }
+  }
+
+  // Optional output messages search (gen_ai.output_messages, mirascope.trace.output)
+  if (input.outputMessagesQuery) {
+    const outputKey = addParam(
+      "outputMessagesQuery",
+      input.outputMessagesQuery,
+    );
+    if (input.fuzzySearch) {
+      // Fuzzy search using ngramSearch (score > 0.3 for typo tolerance)
+      conditions.push(
+        `(ngramSearchCaseInsensitive(JSONExtractString(s.attributes, 'gen_ai.output_messages'), {${outputKey}:String}) > 0.3 OR ngramSearchCaseInsensitive(JSONExtractString(s.attributes, 'mirascope.trace.output'), {${outputKey}:String}) > 0.3)`,
+      );
+    } else {
+      // Exact substring match using LIKE
+      const outputKeyLike = addParam(
+        "outputMessagesQueryLike",
+        `%${input.outputMessagesQuery}%`,
+      );
+      conditions.push(
+        `(JSONExtractString(s.attributes, 'gen_ai.output_messages') LIKE {${outputKeyLike}:String} OR JSONExtractString(s.attributes, 'mirascope.trace.output') LIKE {${outputKeyLike}:String})`,
+      );
     }
   }
 

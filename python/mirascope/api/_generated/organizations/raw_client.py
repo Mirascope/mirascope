@@ -18,10 +18,15 @@ from ..types.already_exists_error import AlreadyExistsError
 from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
+from .types.organizations_create_payment_intent_response import (
+    OrganizationsCreatePaymentIntentResponse,
+)
 from .types.organizations_create_response import OrganizationsCreateResponse
-from .types.organizations_credits_response import OrganizationsCreditsResponse
 from .types.organizations_get_response import OrganizationsGetResponse
 from .types.organizations_list_response_item import OrganizationsListResponseItem
+from .types.organizations_router_balance_response import (
+    OrganizationsRouterBalanceResponse,
+)
 from .types.organizations_update_response import OrganizationsUpdateResponse
 
 # this is used as the default value for optional parameters
@@ -85,11 +90,23 @@ class RawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def create(
-        self, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[OrganizationsCreateResponse]:
         """
         Parameters
@@ -177,8 +194,16 @@ class RawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def get(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -257,8 +282,16 @@ class RawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def update(
         self,
@@ -356,10 +389,20 @@ class RawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
-    def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
+    def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[None]:
         """
         Parameters
         ----------
@@ -426,12 +469,20 @@ class RawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
-    def credits(
+    def routerbalance(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[OrganizationsCreditsResponse]:
+    ) -> HttpResponse[OrganizationsRouterBalanceResponse]:
         """
         Parameters
         ----------
@@ -442,20 +493,20 @@ class RawOrganizationsClient:
 
         Returns
         -------
-        HttpResponse[OrganizationsCreditsResponse]
+        HttpResponse[OrganizationsRouterBalanceResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(id)}/credits",
+            f"organizations/{jsonable_encoder(id)}/router-balance",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    OrganizationsCreditsResponse,
+                    OrganizationsRouterBalanceResponse,
                     parse_obj_as(
-                        type_=OrganizationsCreditsResponse,  # type: ignore
+                        type_=OrganizationsRouterBalanceResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -506,8 +557,118 @@ class RawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def createpaymentintent(
+        self,
+        id: str,
+        *,
+        amount: float,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[OrganizationsCreatePaymentIntentResponse]:
+        """
+        Parameters
+        ----------
+        id : str
+
+        amount : float
+            a positive number
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[OrganizationsCreatePaymentIntentResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(id)}/credits/payment-intent",
+            method="POST",
+            json={
+                "amount": amount,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OrganizationsCreatePaymentIntentResponse,
+                    parse_obj_as(
+                        type_=OrganizationsCreatePaymentIntentResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
 
 class AsyncRawOrganizationsClient:
@@ -567,11 +728,23 @@ class AsyncRawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def create(
-        self, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[OrganizationsCreateResponse]:
         """
         Parameters
@@ -659,8 +832,16 @@ class AsyncRawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def get(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -739,8 +920,16 @@ class AsyncRawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def update(
         self,
@@ -838,8 +1027,16 @@ class AsyncRawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def delete(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -910,12 +1107,20 @@ class AsyncRawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
-    async def credits(
+    async def routerbalance(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[OrganizationsCreditsResponse]:
+    ) -> AsyncHttpResponse[OrganizationsRouterBalanceResponse]:
         """
         Parameters
         ----------
@@ -926,20 +1131,20 @@ class AsyncRawOrganizationsClient:
 
         Returns
         -------
-        AsyncHttpResponse[OrganizationsCreditsResponse]
+        AsyncHttpResponse[OrganizationsRouterBalanceResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(id)}/credits",
+            f"organizations/{jsonable_encoder(id)}/router-balance",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    OrganizationsCreditsResponse,
+                    OrganizationsRouterBalanceResponse,
                     parse_obj_as(
-                        type_=OrganizationsCreditsResponse,  # type: ignore
+                        type_=OrganizationsRouterBalanceResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -990,5 +1195,115 @@ class AsyncRawOrganizationsClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def createpaymentintent(
+        self,
+        id: str,
+        *,
+        amount: float,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[OrganizationsCreatePaymentIntentResponse]:
+        """
+        Parameters
+        ----------
+        id : str
+
+        amount : float
+            a positive number
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[OrganizationsCreatePaymentIntentResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(id)}/credits/payment-intent",
+            method="POST",
+            json={
+                "amount": amount,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OrganizationsCreatePaymentIntentResponse,
+                    parse_obj_as(
+                        type_=OrganizationsCreatePaymentIntentResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )

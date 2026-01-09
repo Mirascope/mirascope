@@ -92,7 +92,12 @@ const testSpans = [
     function_version: "v1",
     error_type: null,
     error_message: null,
-    attributes: "{}",
+    attributes: JSON.stringify({
+      "gen_ai.input_messages": "What is programming?",
+      "gen_ai.output_messages": "Programming is the art of writing code.",
+      "mirascope.trace.arg_values": '{"prompt": "Tell me about programming"}',
+      "mirascope.trace.output": "Programming involves creating software.",
+    }),
     events: null,
     links: null,
     service_name: "test-service",
@@ -291,6 +296,87 @@ describe("ClickHouseSearch", () => {
         expect(typeof result.total).toBe("number");
         expect(typeof result.hasMore).toBe("boolean");
       }).pipe(provideSearchLayer),
+    );
+
+    it.effect("filters by inputMessagesQuery using LIKE", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.search({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          inputMessagesQuery: "programming",
+        });
+
+        expect(result.spans.length).toBeGreaterThan(0);
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("filters by outputMessagesQuery using LIKE", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.search({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          outputMessagesQuery: "art of writing",
+        });
+
+        expect(result.spans.length).toBeGreaterThan(0);
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("returns empty for non-matching inputMessagesQuery", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.search({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          inputMessagesQuery: "nonexistentterm12345",
+        });
+
+        expect(result.spans).toHaveLength(0);
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("filters by inputMessagesQuery with fuzzySearch enabled", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        // "programing" (typo) should match "programming" with fuzzy search
+        const result = yield* searchService.search({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          inputMessagesQuery: "programing",
+          fuzzySearch: true,
+        });
+
+        expect(result.spans.length).toBeGreaterThan(0);
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect(
+      "fuzzySearch does not match without typo tolerance in LIKE mode",
+      () =>
+        Effect.gen(function* () {
+          const searchService = yield* ClickHouseSearch;
+
+          // "programing" (typo) should NOT match "programming" with LIKE (default)
+          const result = yield* searchService.search({
+            environmentId: TEST_ENVIRONMENT_ID,
+            startTime: new Date("2024-01-01"),
+            endTime: new Date("2024-01-31"),
+            inputMessagesQuery: "programing",
+            fuzzySearch: false,
+          });
+
+          expect(result.spans).toHaveLength(0);
+        }).pipe(provideSearchLayer),
     );
   });
 

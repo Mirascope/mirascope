@@ -179,6 +179,30 @@ client.traces.search(
 <dl>
 <dd>
 
+**input_messages_query:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**output_messages_query:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fuzzy_search:** `typing.Optional[bool]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **trace_id:** `typing.Optional[str]` 
     
 </dd>
@@ -775,7 +799,7 @@ client.organizations.delete(
 </dl>
 </details>
 
-<details><summary><code>client.organizations.<a href="src/mirascope/organizations/client.py">credits</a>(...)</code></summary>
+<details><summary><code>client.organizations.<a href="src/mirascope/organizations/client.py">routerbalance</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -791,7 +815,7 @@ client.organizations.delete(
 from mirascope.api._generated import Mirascope
 
 client = Mirascope()
-client.organizations.credits(
+client.organizations.routerbalance(
     id="id",
 )
 
@@ -810,6 +834,69 @@ client.organizations.credits(
 <dd>
 
 **id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organizations.<a href="src/mirascope/organizations/client.py">createpaymentintent</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from mirascope.api._generated import Mirascope
+
+client = Mirascope()
+client.organizations.createpaymentintent(
+    id="id",
+    amount=1.1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**amount:** `float` — a positive number
     
 </dd>
 </dl>
