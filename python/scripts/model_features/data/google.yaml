@@ -422,6 +422,21 @@ models:
           reason: unmet_dependencies
           failed_dependencies:
           - chat_model
+  gemini-3-flash-preview:
+    owned_by: google
+    deprecated: false
+    discovered_at: '2026-01-08T22:59:46.316610'
+    metadata:
+      display_name: Gemini 3 Flash Preview
+    features:
+      chat_model:
+        status: supported
+        tested_at: '2026-01-08T22:59:47.327767'
+      structured_output_with_tools:
+        status: supported
+        tested_at: '2026-01-08T22:59:48.732013'
+        metadata:
+          called_tool: true
   gemini-3-pro-image-preview:
     owned_by: google
     deprecated: false
@@ -926,4 +941,4 @@ models:
           reason: unmet_dependencies
           failed_dependencies:
           - chat_model
-last_discovery: '2025-12-16T15:16:15.591396'
+last_discovery: '2026-01-08T23:03:00.506074'

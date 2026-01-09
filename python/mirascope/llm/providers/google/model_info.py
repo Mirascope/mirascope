@@ -21,6 +21,7 @@ GoogleKnownModels = Literal[
     "google/gemini-2.5-flash-lite-preview-09-2025",
     "google/gemini-2.5-flash-preview-09-2025",
     "google/gemini-2.5-pro",
+    "google/gemini-3-flash-preview",
     "google/gemini-3-pro-image-preview",
     "google/gemini-3-pro-preview",
     "google/gemini-flash-latest",
