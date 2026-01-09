@@ -3,6 +3,11 @@ import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
+import {
+  GenericContainer,
+  type StartedTestContainer,
+  Wait,
+} from "testcontainers";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -10,6 +15,8 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { fileURLToPath } from "url";
+import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -50,10 +57,55 @@ const runMigrations = (connectionUri: string) =>
 
 // Store container reference for teardown
 let container: StartedPostgreSqlContainer | null = null;
+let clickhouseContainer: StartedTestContainer | null = null;
+
+const clickhouseImage = "clickhouse/clickhouse-server:24.10";
+const clickhouseUser = process.env.TEST_CLICKHOUSE_USER ?? "default";
+const clickhousePassword = process.env.TEST_CLICKHOUSE_PASSWORD ?? randomUUID();
+const clickhouseDatabase = "mirascope_analytics";
+
+const runClickhouseMigrations = (clickhouseUrl: string, nativePort: number) => {
+  execFileSync("bash", ["clickhouse/migrate.sh", "migrate"], {
+    cwd: path.resolve(__dirname, ".."),
+    env: {
+      ...process.env,
+      TZ: "UTC",
+      CLICKHOUSE_URL: clickhouseUrl,
+      CLICKHOUSE_USER: clickhouseUser,
+      CLICKHOUSE_PASSWORD: clickhousePassword,
+      CLICKHOUSE_DATABASE: clickhouseDatabase,
+      CLICKHOUSE_MIGRATE_NATIVE_PORT: String(nativePort),
+    },
+    stdio: "inherit",
+  });
+};
 
 // Vitest global setup - runs once before all tests
 export async function setup() {
   const scope = Effect.runSync(Scope.make());
+
+  clickhouseContainer = await new GenericContainer(clickhouseImage)
+    .withExposedPorts(8123, 9000)
+    .withEnvironment({
+      CLICKHOUSE_DB: clickhouseDatabase,
+      CLICKHOUSE_USER: clickhouseUser,
+      CLICKHOUSE_PASSWORD: clickhousePassword,
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1",
+    })
+    .withWaitStrategy(Wait.forHttp("/ping", 8123))
+    .start();
+
+  const clickhouseHttpPort = clickhouseContainer.getMappedPort(8123);
+  const clickhouseNativePort = clickhouseContainer.getMappedPort(9000);
+  const clickhouseUrl = `http://127.0.0.1:${clickhouseHttpPort}`;
+
+  process.env.CLICKHOUSE_URL = clickhouseUrl;
+  process.env.CLICKHOUSE_USER = clickhouseUser;
+  process.env.CLICKHOUSE_PASSWORD = clickhousePassword;
+  process.env.CLICKHOUSE_DATABASE = clickhouseDatabase;
+  process.env.CLICKHOUSE_MIGRATE_NATIVE_PORT = String(clickhouseNativePort);
+
+  runClickhouseMigrations(clickhouseUrl, clickhouseNativePort);
 
   container = await Effect.runPromise(
     Effect.acquireRelease(acquireContainer, (c) =>
@@ -85,5 +137,9 @@ export async function teardown() {
   // Stop the container
   if (container) {
     await container.stop();
+  }
+
+  if (clickhouseContainer) {
+    await clickhouseContainer.stop();
   }
 }
