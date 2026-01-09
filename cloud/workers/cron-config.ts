@@ -30,6 +30,11 @@ export interface BillingCronTriggerEnv extends CronTriggerEnv {
   readonly STRIPE_SECRET_KEY?: string;
   readonly STRIPE_ROUTER_PRICE_ID?: string;
   readonly STRIPE_ROUTER_METER_ID?: string;
+  readonly STRIPE_CLOUD_FREE_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_PRO_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_TEAM_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_SPANS_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_SPANS_METER_ID?: string;
 }
 
 /**

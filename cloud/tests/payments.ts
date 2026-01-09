@@ -1,5 +1,5 @@
 import { Context, Effect, Layer } from "effect";
-import { describe, expect } from "@effect/vitest";
+import { describe, expect, assert } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
@@ -7,7 +7,7 @@ import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 import StripeSDK from "stripe";
 
 // Re-export describe and expect for convenience
-export { describe, expect };
+export { describe, expect, assert };
 
 /**
  * Creates a Stripe layer for tests.
@@ -18,6 +18,11 @@ const getTestStripe = () =>
     apiKey: "sk_test_123",
     routerPriceId: "price_test_mock",
     routerMeterId: "meter_test_mock",
+    cloudFreePriceId: "price_cloud_free_mock",
+    cloudProPriceId: "price_cloud_pro_mock",
+    cloudTeamPriceId: "price_cloud_team_mock",
+    cloudSpansPriceId: "price_cloud_spans_mock",
+    cloudSpansMeterId: "meter_cloud_spans_mock",
   });
 
 /**
@@ -565,6 +570,11 @@ export class MockPayments {
         apiKey: "sk_test_mock",
         routerPriceId: "price_test_mock_for_testing",
         routerMeterId: "meter_test_mock",
+        cloudFreePriceId: "price_cloud_free_mock",
+        cloudProPriceId: "price_cloud_pro_mock",
+        cloudTeamPriceId: "price_cloud_team_mock",
+        cloudSpansPriceId: "price_cloud_spans_mock",
+        cloudSpansMeterId: "meter_cloud_spans_mock",
       },
     } as unknown as Context.Tag.Service<typeof Stripe>);
 
@@ -697,6 +707,11 @@ export const MockStripe = Layer.succeed(Stripe, {
     apiKey: "sk_test_mock",
     routerPriceId: "price_test_mock_for_testing",
     routerMeterId: "meter_test_mock",
+    cloudFreePriceId: "price_cloud_free_mock",
+    cloudProPriceId: "price_cloud_pro_mock",
+    cloudTeamPriceId: "price_cloud_team_mock",
+    cloudSpansPriceId: "price_cloud_spans_mock",
+    cloudSpansMeterId: "meter_cloud_spans_mock",
   },
 } as unknown as Context.Tag.Service<typeof Stripe>);
 

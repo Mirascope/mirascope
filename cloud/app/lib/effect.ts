@@ -11,26 +11,20 @@ export type AppServices = SettingsService | Database | AuthService;
  * Creates the application services layer with Database, Settings, and Auth.
  */
 function createAppServicesLayer(databaseUrl: string) {
-  const stripeApiKey = process.env.STRIPE_SECRET_KEY;
-  if (!stripeApiKey) {
-    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
-  }
-
-  const routerPriceId = process.env.STRIPE_ROUTER_PRICE_ID;
-  if (!routerPriceId) {
-    throw new Error("STRIPE_ROUTER_PRICE_ID environment variable is not set");
-  }
-
-  const routerMeterId = process.env.STRIPE_ROUTER_METER_ID;
-  if (!routerMeterId) {
-    throw new Error("STRIPE_ROUTER_METER_ID environment variable is not set");
-  }
-
   return Layer.mergeAll(
     Layer.succeed(SettingsService, getSettings()),
     Database.Live({
       database: { connectionString: databaseUrl },
-      payments: { apiKey: stripeApiKey, routerPriceId, routerMeterId },
+      payments: {
+        apiKey: process.env.STRIPE_SECRET_KEY,
+        routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
+        routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
+        cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
+        cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
+        cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
+        cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
+        cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
+      },
     }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
   );

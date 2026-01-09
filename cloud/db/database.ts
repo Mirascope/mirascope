@@ -218,7 +218,11 @@ export class Database extends Context.Tag("Database")<
    * ```ts
    * const DatabaseLive = Database.Live({
    *   database: { connectionString: process.env.DATABASE_URL },
-   *   payments: { apiKey: process.env.STRIPE_SECRET_KEY, routerPriceId: "price_..." },
+   *   payments: {
+   *     apiKey: process.env.STRIPE_SECRET_KEY,
+   *     routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
+   *     // ... other fields from process.env
+   *   },
    * });
    *
    * program.pipe(Effect.provide(DatabaseLive));
@@ -226,7 +230,7 @@ export class Database extends Context.Tag("Database")<
    */
   static Live = (config: {
     database: DrizzleORMConfig;
-    payments: StripeConfig;
+    payments: Partial<StripeConfig>;
   }) => {
     const drizzleLayer = DrizzleORM.layer(config.database);
 

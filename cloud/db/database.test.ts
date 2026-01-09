@@ -11,6 +11,11 @@ describe("Database", () => {
           apiKey: "sk_test_key",
           routerPriceId: "price_test",
           routerMeterId: "meter_test",
+          cloudFreePriceId: "price_cloud_free_test",
+          cloudProPriceId: "price_cloud_pro_test",
+          cloudTeamPriceId: "price_cloud_team_test",
+          cloudSpansPriceId: "price_cloud_spans_test",
+          cloudSpansMeterId: "meter_cloud_spans_test",
         },
       });
 

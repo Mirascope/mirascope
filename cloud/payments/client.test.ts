@@ -1,8 +1,8 @@
-import { describe, it, expect } from "@/tests/payments";
+import { describe, it, expect, assert } from "@/tests/payments";
 import { vi, beforeEach } from "vitest";
 import { Effect, Layer } from "effect";
 import { Stripe, wrapStripeClient } from "@/payments/client";
-import { StripeError } from "@/errors";
+import { StripeError, ConfigError } from "@/errors";
 import OriginalStripe from "stripe";
 
 // Mock the Stripe SDK
@@ -87,6 +87,11 @@ describe("Stripe", () => {
         apiKey: "sk_test_123",
         routerPriceId: "price_test",
         routerMeterId: "meter_test",
+        cloudFreePriceId: "price_cloud_free",
+        cloudProPriceId: "price_cloud_pro",
+        cloudTeamPriceId: "price_cloud_team",
+        cloudSpansPriceId: "price_cloud_spans",
+        cloudSpansMeterId: "meter_cloud_spans",
         apiVersion: "2023-10-16",
       });
 
@@ -94,18 +99,72 @@ describe("Stripe", () => {
       expect(Layer.isLayer(layer)).toBe(true);
     });
 
-    it("creates a layer with minimal configuration", () => {
+    it.effect("validates configuration and creates client", () => {
       const layer = Stripe.layer({
         apiKey: "sk_test_123",
         routerPriceId: "price_test",
         routerMeterId: "meter_test",
+        cloudFreePriceId: "price_cloud_free",
+        cloudProPriceId: "price_cloud_pro",
+        cloudTeamPriceId: "price_cloud_team",
+        cloudSpansPriceId: "price_cloud_spans",
+        cloudSpansMeterId: "meter_cloud_spans",
       });
 
       expect(layer).toBeDefined();
-      expect(OriginalStripe).toHaveBeenCalledWith("sk_test_123", {
-        apiVersion: undefined,
-        typescript: true,
-      });
+
+      // Return an effect that accesses Stripe, which will trigger layer initialization
+      return Effect.gen(function* () {
+        const stripe = yield* Stripe;
+
+        // Accessing the stripe service should have triggered constructor call
+        expect(OriginalStripe).toHaveBeenCalledWith("sk_test_123", {
+          apiVersion: undefined,
+          typescript: true,
+        });
+
+        // Verify the service is properly configured
+        expect(stripe.config.apiKey).toBe("sk_test_123");
+        expect(stripe.config.routerPriceId).toBe("price_test");
+      }).pipe(Effect.provide(layer));
+    });
+
+    it("validates configuration and fails with missing fields", () => {
+      const result = Effect.runSync(
+        Layer.launch(Stripe.layer({})).pipe(Effect.flip),
+      );
+
+      assert(result instanceof ConfigError);
+      expect(result.message).toContain("Missing or empty fields");
+      expect(result.message).toContain("apiKey");
+      expect(result.message).toContain("routerPriceId");
+      expect(result.message).toContain("routerMeterId");
+      expect(result.message).toContain("cloudFreePriceId");
+      expect(result.message).toContain("cloudProPriceId");
+      expect(result.message).toContain("cloudTeamPriceId");
+      expect(result.message).toContain("cloudSpansPriceId");
+      expect(result.message).toContain("cloudSpansMeterId");
+    });
+
+    it("validates configuration and fails with empty strings", () => {
+      const result = Effect.runSync(
+        Layer.launch(
+          Stripe.layer({
+            apiKey: "",
+            routerPriceId: "price_meter",
+            routerMeterId: "meter_router",
+            cloudFreePriceId: "price_cloud_free",
+            cloudProPriceId: "price_cloud_pro",
+            cloudTeamPriceId: "price_cloud_team",
+            cloudSpansPriceId: "price_cloud_spans",
+            cloudSpansMeterId: "meter_cloud_spans",
+          }),
+        ).pipe(Effect.flip),
+      );
+
+      assert(result instanceof ConfigError);
+      expect(result.message).toContain("Missing or empty fields");
+      expect(result.message).toContain("apiKey");
     });
   });
 

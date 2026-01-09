@@ -122,7 +122,7 @@ export class Payments extends Context.Tag("Payments")<
    * and payment operations (owned by Payments), while allowing Payments to use the database
    * for credit reservations.
    *
-   * @param config - Stripe configuration
+   * @param config - Partial Stripe configuration (validated by Stripe layer)
    * @returns A Layer providing Payments (requires DrizzleORM)
    *
    * @example
@@ -131,15 +131,16 @@ export class Payments extends Context.Tag("Payments")<
    * const DatabaseLive = Database.Live({
    *   database: { connectionString: process.env.DATABASE_URL },
    *   payments: {
-   *     apiKey: process.env.STRIPE_SECRET_KEY!,
-   *     routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID!,
+   *     apiKey: process.env.STRIPE_SECRET_KEY,
+   *     routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
+   *     // ... other fields from process.env
    *   },
    * });
    *
    * program.pipe(Effect.provide(DbLive));
    * ```
    */
-  static Live = (config: StripeConfig) => {
+  static Live = (config: Partial<StripeConfig>) => {
     const stripeLayer = Stripe.layer(config);
 
     return Payments.Default.pipe(Layer.provide(stripeLayer));

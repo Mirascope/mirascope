@@ -46,7 +46,7 @@
 
 import { Effect, Layer, Context } from "effect";
 import OriginalStripe from "stripe";
-import { StripeError } from "@/errors";
+import { StripeError, ConfigError } from "@/errors";
 
 /**
  * Stripe service configuration options.
@@ -54,10 +54,20 @@ import { StripeError } from "@/errors";
 export interface StripeConfig {
   /** Stripe secret API key (sk_test_... or sk_live_...) */
   apiKey: string;
-  /** Stripe price ID for usage-based credits (metered billing) */
+  /** Stripe price ID for usage-based Router credits (metered billing) */
   routerPriceId: string;
-  /** Stripe meter ID for tracking usage-based credits */
+  /** Stripe meter ID for tracking Router usage-based credits */
   routerMeterId: string;
+  /** Stripe price ID for Cloud Free tier subscription */
+  cloudFreePriceId: string;
+  /** Stripe price ID for Cloud Pro tier subscription */
+  cloudProPriceId: string;
+  /** Stripe price ID for Cloud Team tier subscription */
+  cloudTeamPriceId: string;
+  /** Stripe price ID for Cloud Spans usage-based billing */
+  cloudSpansPriceId: string;
+  /** Stripe meter ID for tracking Cloud Spans usage */
+  cloudSpansMeterId: string;
   /** Optional API version (defaults to Stripe SDK default) */
   apiVersion?: string;
 }
@@ -115,6 +125,43 @@ type WrapWithEffect<T> =
     : T extends object
       ? { [K in keyof T]: WrapWithEffect<T[K]> }
       : T;
+
+/**
+ * Validates that all required Stripe config fields are non-empty strings.
+ *
+ * Accepts a partial config (e.g., from process.env) and validates that all
+ * required fields are present and non-empty. Returns a fully-typed StripeConfig
+ * if validation passes.
+ *
+ * @param config - Partial Stripe configuration to validate
+ * @returns Effect that succeeds with validated StripeConfig or fails with ConfigError
+ */
+function validateStripeConfig(
+  config: Partial<StripeConfig>,
+): Effect.Effect<StripeConfig, ConfigError> {
+  const errors: string[] = [];
+
+  // Validate all required fields are present and non-empty
+  if (!config.apiKey?.trim()) errors.push("apiKey");
+  if (!config.routerPriceId?.trim()) errors.push("routerPriceId");
+  if (!config.routerMeterId?.trim()) errors.push("routerMeterId");
+  if (!config.cloudFreePriceId?.trim()) errors.push("cloudFreePriceId");
+  if (!config.cloudProPriceId?.trim()) errors.push("cloudProPriceId");
+  if (!config.cloudTeamPriceId?.trim()) errors.push("cloudTeamPriceId");
+  if (!config.cloudSpansPriceId?.trim()) errors.push("cloudSpansPriceId");
+  if (!config.cloudSpansMeterId?.trim()) errors.push("cloudSpansMeterId");
+
+  if (errors.length > 0) {
+    return Effect.fail(
+      new ConfigError({
+        message: `Invalid Stripe configuration. Missing or empty fields: ${errors.join(", ")}`,
+      }),
+    );
+  }
+
+  // All required fields are present and non-empty, safe to cast to StripeConfig
+  return Effect.succeed(config as StripeConfig);
+}
 
 /**
  * Wraps a Stripe client to return Effects instead of Promises.
@@ -258,54 +305,59 @@ export const wrapStripeClient = (
 /**
  * Stripe service interface that includes both the wrapped client and configuration.
  */
-export interface StripeService extends WrapWithEffect<OriginalStripe> {
+export interface StripeClient extends WrapWithEffect<OriginalStripe> {
   /** Stripe configuration (includes routerPriceId for metered billing) */
   config: StripeConfig;
 }
 
-export class Stripe extends Context.Tag("Stripe")<Stripe, StripeService>() {
+export class Stripe extends Context.Tag("Stripe")<Stripe, StripeClient>() {
   /**
    * Creates a Layer that provides the Stripe service.
    *
    * This layer initializes the Stripe SDK with the provided configuration
-   * and wraps it to return Effects instead of Promises. The config is also
-   * exposed via the service for accessing application-level settings like
-   * routerPriceId.
+   * and wraps it to return Effects instead of Promises. The config is validated
+   * to ensure all required fields are present and non-empty.
    *
-   * @param config - Stripe configuration (apiKey, routerPriceId, optional apiVersion)
-   * @returns A Layer providing Stripe with no dependencies
+   * @param config - Partial Stripe configuration (e.g., from process.env)
+   * @returns A Layer providing Stripe, or fails with ConfigError if validation fails
    *
    * @example
    * ```ts
    * const StripeLive = Stripe.layer({
-   *   apiKey: process.env.STRIPE_SECRET_KEY!,
-   *   routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID!,
-   *   apiVersion: "2023-10-16"
+   *   apiKey: process.env.STRIPE_SECRET_KEY,
+   *   routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
+   *   routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
+   *   cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
+   *   cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
+   *   cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
+   *   cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
+   *   cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
    * });
    *
    * program.pipe(Effect.provide(StripeLive));
    * ```
    */
-  static layer = (config: StripeConfig) => {
-    // Create the raw Stripe client
-    // Note: Stripe's apiVersion type is a union of specific versions, but we allow any string
+  static layer = (config: Partial<StripeConfig>) => {
+    return Layer.effect(
+      Stripe,
+      Effect.gen(function* () {
+        // Validate config first
+        const validatedConfig = yield* validateStripeConfig(config);
 
-    const originalStripe = new OriginalStripe(config.apiKey, {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-      apiVersion: config.apiVersion as any,
-      typescript: true,
-    });
+        // Create Stripe client with validated config
+        const originalStripe = new OriginalStripe(validatedConfig.apiKey, {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          apiVersion: validatedConfig.apiVersion as any,
+          typescript: true,
+        });
 
-    // Wrap it to return Effects
-    const wrappedStripe = wrapStripeClient(originalStripe);
+        const wrappedStripe = wrapStripeClient(originalStripe);
 
-    // Create service with both client and config
-    const stripeService: StripeService = {
-      ...wrappedStripe,
-      config,
-    };
-
-    // Return a Layer that provides the service
-    return Layer.succeed(Stripe, stripeService);
+        return {
+          ...wrappedStripe,
+          config: validatedConfig,
+        };
+      }),
+    );
   };
 }

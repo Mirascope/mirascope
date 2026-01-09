@@ -76,12 +76,15 @@ export class Customers {
   /**
    * Creates a Stripe customer and subscription for an organization.
    *
-   * The price ID for the subscription is automatically read from the Stripe
-   * service configuration (stripe.config.routerPriceId).
+   * The price IDs for the subscription are automatically read from the Stripe
+   * service configuration.
    *
    * This is a two-step process:
    * 1. Create a Stripe customer with the organization's details
-   * 2. Create a subscription for usage-based credits using the configured price ID
+   * 2. Create a subscription with multiple items:
+   *    - Router usage-based credits (routerPriceId)
+   *    - Cloud Free tier subscription (cloudFreePriceId)
+   *    - Cloud Spans usage-based billing (cloudSpansPriceId)
    *
    * If subscription creation fails, the customer is NOT automatically deleted.
    * Caller is responsible for cleanup on failure.
@@ -107,10 +110,17 @@ export class Customers {
         },
       });
 
-      // Create subscription for usage-based credits using configured price ID
+      // Create subscription with multiple items:
+      // - Router credits (metered)
+      // - Cloud Free tier (subscription)
+      // - Cloud Spans (metered with graduated tiers)
       const subscription = yield* stripe.subscriptions.create({
         customer: customer.id,
-        items: [{ price: stripe.config.routerPriceId }],
+        items: [
+          { price: stripe.config.routerPriceId },
+          { price: stripe.config.cloudFreePriceId },
+          { price: stripe.config.cloudSpansPriceId },
+        ],
         metadata: {
           organizationId: params.organizationId,
           organizationName: params.organizationName,
