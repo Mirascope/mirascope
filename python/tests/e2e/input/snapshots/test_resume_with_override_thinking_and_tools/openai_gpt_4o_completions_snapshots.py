@@ -15,7 +15,7 @@ test_snapshot = snapshot(
             "provider_id": "openai",
             "model_id": "openai/gpt-4o:completions",
             "provider_model_name": "gpt-4o:completions",
-            "params": {"thinking": False},
+            "params": {"thinking": {"level": "none"}},
             "finish_reason": None,
             "usage": {
                 "input_tokens": 91,
@@ -32,9 +32,11 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Let's Calculate That Fibonacci Number!**
+Here's a summary of my thought process:
 
-Okay, so the user wants the 100th Fibonacci number, which is pretty straightforward. I immediately recognize that `default_api.compute_fib` is the tool for the job.  No need to reinvent the wheel, I can just leverage that existing functionality. The solution is simply to call that function with the input parameter `n` set to 100.  Efficient and direct - that should do the trick.
+**Calculating the 100th Fibonacci Number**
+
+Okay, the user wants the 100th Fibonacci number.  That's straightforward enough. I recall that the `default_api.compute_fib` function is available, and, from experience, I know this is designed for calculating the nth Fibonacci number. Therefore, to solve this, my plan is to immediately call that function, supplying the input 'n' as 100. Simple!
 """
                         ),
                         ToolCall(
@@ -56,9 +58,11 @@ Okay, so the user wants the 100th Fibonacci number, which is pretty straightforw
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Let's Calculate That Fibonacci Number!**
+Here's a summary of my thought process:
 
-Okay, so the user wants the 100th Fibonacci number, which is pretty straightforward. I immediately recognize that `default_api.compute_fib` is the tool for the job.  No need to reinvent the wheel, I can just leverage that existing functionality. The solution is simply to call that function with the input parameter `n` set to 100.  Efficient and direct - that should do the trick.
+**Calculating the 100th Fibonacci Number**
+
+Okay, the user wants the 100th Fibonacci number.  That's straightforward enough. I recall that the `default_api.compute_fib` function is available, and, from experience, I know this is designed for calculating the nth Fibonacci number. Therefore, to solve this, my plan is to immediately call that function, supplying the input 'n' as 100. Simple!
 """,
                                 "thought": True,
                                 "thought_signature": None,
@@ -77,7 +81,7 @@ Okay, so the user wants the 100th Fibonacci number, which is pretty straightforw
                                 "inline_data": None,
                                 "text": None,
                                 "thought": None,
-                                "thought_signature": b"\n\xe2\x01\x01\xd1\xed\x8ao\x03Q\xf9\xda\xec1'-oCu\n\xbc\x9f\x87[\x12\x88t\x15\xbf\x81\x13\\\xf4Q\xde\x10\xa2\xf5\x1dE\xe3\x8e\\0>a\xfauT\x15\xe6T\ra:\x05\x94u\x84\x0c:~\x08\xd2\xcb\xd9)\xe1w\xcc\x8d\xd7\x1d* \x97k\x8c\xe2\x18\x81\xa0\xd7\xd3-><\xbb\xb4\xa0\xe6\xe3|\xacH\xfaL\xc0\r\x96 \xc5\x1d%\xd0\x19\xac\xd7\xb3\xce\xf94\xb5\xc4\xe3%\xea\x8c\x85\x96O[dNaU{\xc3\xd1\xe8\xc1\x92\xf6\xa0\xecYF\x8f\xf4\xa2\x96A\x87\x0e,\xcb<\xa1\xf9:\x10^\x16|\x1c\x02uML\xe3\x86%{4\x1a\xdb\xe5r\xd1\xd0`\x9es\xa7\xf5\xe6\xb3\x01\n7\x07g\x92\x06+\xa5\x9d\xa5s\x18O~n\x175\xeb\x1c\xc4m\x8d\x0bpG\x15*\xf6/\xe5\xe3=\x1dhz\x96\xff?\xb9\x93B\xcf\xf3g\xd4Xr\x81w\xa6F",
+                                "thought_signature": b"\n\xd5\x01\x01r\xc8\xda|u\x89up\x10V\xabg\x83b\xeb\x8cu\xfc5\xe5X\xaf\xa6\x07,\xda\xa8O\x1c5\xc0\xa0\xe06\x08\xe5\xbb\xca\x85\xfbM\nJ\x80\xdf\n\x8c?\xa21R\x06^\x981N(\xe0\xc2\x943\xd3\x1f\xf9p\x8a\x870\xc7E^\xb4/\x7f\x89(\xa2\xd9\x97\xba}?\xa8\xd0\x8f\xeaS`\x05<3\x85!\x9c\xc7{\x96\xb8\x84\xefE\xec\xdf\x00K=\xb7\x96\xc6\x15w\x85\xe4\x91\xf9\xa7L\xb6\xab\xfc\xa6e\x81H\x9a\xa7\xbf8zRh \\\xca&\xd3\xf7/SZ\xc9\xbd\xf7\xe5W;X?\xa9P\xbfd\xf0\xc7yEtqB\xc2\xc4\xcaI\x94\xe6}/\x8e+9\xbe:\x1c^\x98\x0f\xe2\xc8\xe8\xed\x8a\x0e\xdbIE\xa8\xeb-Y\xc4\xb4$*^\x15\xd5F\xa3\xd6\xb4a\xef\xa2-R\xee\xc0\xfe1\xf3$@",
                                 "video_metadata": None,
                             },
                         ],

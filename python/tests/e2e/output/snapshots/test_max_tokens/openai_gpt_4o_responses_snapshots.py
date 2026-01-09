@@ -163,8 +163,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -203,8 +203,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),

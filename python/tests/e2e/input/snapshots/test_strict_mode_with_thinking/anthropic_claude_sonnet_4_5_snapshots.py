@@ -13,16 +13,16 @@ test_snapshot = snapshot(
             "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-5",
             "provider_model_name": "claude-sonnet-4-5",
-            "params": {"thinking": True},
+            "params": {"thinking": {"level": "medium"}},
             "finish_reason": None,
             "usage": {
                 "input_tokens": 293,
-                "output_tokens": 154,
+                "output_tokens": 159,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=293, output_tokens=154, server_tool_use=None, service_tier='standard')",
-                "total_tokens": 447,
+                "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=293, output_tokens=159, server_tool_use=None, service_tier='standard')",
+                "total_tokens": 452,
             },
             "messages": [
                 UserMessage(
@@ -32,21 +32,21 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-The user is asking me to answer "What is 2 + 2?" and I need to respond in JSON format according to the schema provided.
+The user is asking me to add 2 + 2, which equals 4.
 
-The schema requires:
-- integer_a: integer
-- integer_b: integer  \n\
-- answer: integer
+I need to respond with valid JSON that matches the schema provided. The schema requires:
+- integer_a: an integer
+- integer_b: an integer  \n\
+- answer: an integer
 
 All three fields are required.
 
-So for the question "What is 2 + 2?":
-- integer_a = 2
-- integer_b = 2
-- answer = 4
+So for the question "What is 2 + 2?", I should set:
+- integer_a: 2
+- integer_b: 2
+- answer: 4
 
-I need to return this as a single line JSON object without any markdown formatting or extra text.\
+The response must be a single line of JSON without any markdown or additional text.\
 """
                         ),
                         Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}'),
@@ -58,23 +58,23 @@ I need to return this as a single line JSON object without any markdown formatti
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "EssECkYIChgCKkDSbncMSCfIvPhvksJ7pyjCQVYbrDYBjuOWsITZO+AeQKkcvd58HG844sHCDtvCzGM55gYpa7Iembnd4s3c4hpYEgxl/81Itls4Waxfr4UaDC2aJrCfP4zsKDJihCIwsnV5o60f+L558a4hnwJwkcjYPvdIPHevytWAkNlJ+WVLS2vRQGtaur0z/WOFpKwuKrIDhEA8dJsIBild7IOfBd/m+QD3/q3mSXfyjzUMQowZCqUP2ha7gyGuKYpkqd4rqxMkD9fTXe7kRBeXB6uK6dmgfKrIK2PjRNvhyHRBAGlfRmTyLNLUTNHTGWrVkAgHQvOZQj7lBKQvdh96pKJH3KTGJixRBS0G75yqkLbc6etdp2usHLZ5Sg56VPDRq8y3H1UtsmNp7bLUtl5fOX1AGjAdNE/GDfDKHttWIXbytKv8elBiByksFO70A6msC06CMOy3Aa6uf6OyYu/dBWr3rz+Ys39XYdrcgMS9QsgMcOiU+FT0yC+RqfnGXMMf6d4YDVrS/pSjNw8vqkiZXyCHxRoAJ651s4vEfixU+Rf5CtZy9hvJhfGMLGvLq+rBM/VYQhylyYoD882/1OD4D2IjdNtMu583fefYMecdf9mbMPHQSwWc/57oFBAKqSpg1lI6ZyXhz4Qf8KBi51+f0+kUjTlrsLIL+ne5C7wiL53f010B/7A0Mx62YYiogM1SpBt/OGKwxflq7ns3ngO4MStH1sqUvJVyNXWlUttTNaxA6GO0mw0QZmMkdvrjrx/fD2afalwRVTQYAQ==",
+                                "signature": "EtEECkYICxgCKkBBztxF0T3qi+Qr79sEprJqw9sLbVC8j1s4AjRjfbZofKn6rAtPetncMx/prNv2Ra0zNx9vP1LBaEjBDBtWOnCYEgyp7HNAl7fMHW6ZEn4aDEYAvtDnZ/ctC+wYjiIwfrYZVKHxsWiYurqBHL9KFZsrcZ5wb/RBqxfeYCs1B9waXPu8dKdifuvO/XpBtgeWKrgD7Pj80mt7v630Eqwn46QQuhVoTUiG4jPSHratzA9TULjz44Ow1P6U8hlk0jNem2TT27I+FDh/fR+PpWMj0S64X803NKQMeTD1qUXoy0vs9MeGx6V36jOVYf4kl5rw4SmJuqlwbdN4xy6rpTIpZT6ajPIurVUf5XZ78uHx+wuOAfnLioKWy6S+27m4m/7w/ulxTMQT+zRp/9zL2V6/xHKa0WKJUf/d/w1GQKbhF0RIi0sTAZaQEH5S70PydOlcyI2VIMcJFgN1hFi7nAfamd8VcYzRzN6Y3jTtT+kIQBqq+o93v+WZC50/lS6l9MO4+8csKg7qJdM3Q8NED7P03o9GSJvXFMV9Zd7ik71uhjfKuHGYkyb3h6W7XulxmdC+Apo2WmUn03fnDHCgo8fnA/b4v4LKQlZ69MtBJsSe/FrDJOqIWcLwJMLp26+SkeDlSGwgR1SQFBnaX9x2vxs+iQbdeCynqycG/Hz0ECJHQJoQzlWWDf09C6A4vE5bVZsEJXEDqG8p1A459ca/Y1Lkq7BjYpUAdkJR/XoGfF1zMiifA9YJNtvUm9BvM5ZD5di/xTDoBapVeJF0/FwYAQ==",
                                 "thinking": """\
-The user is asking me to answer "What is 2 + 2?" and I need to respond in JSON format according to the schema provided.
+The user is asking me to add 2 + 2, which equals 4.
 
-The schema requires:
-- integer_a: integer
-- integer_b: integer  \n\
-- answer: integer
+I need to respond with valid JSON that matches the schema provided. The schema requires:
+- integer_a: an integer
+- integer_b: an integer  \n\
+- answer: an integer
 
 All three fields are required.
 
-So for the question "What is 2 + 2?":
-- integer_a = 2
-- integer_b = 2
-- answer = 4
+So for the question "What is 2 + 2?", I should set:
+- integer_a: 2
+- integer_b: 2
+- answer: 4
 
-I need to return this as a single line JSON object without any markdown formatting or extra text.\
+The response must be a single line of JSON without any markdown or additional text.\
 """,
                                 "type": "thinking",
                             },

@@ -59,11 +59,11 @@ class BetaParseKwargs(TypedDict, total=False):
 
 def _beta_encode_content(
     content: Sequence[ContentPart],
-    encode_thoughts: bool,
+    encode_thoughts_as_text: bool,
     add_cache_control: bool = False,
 ) -> str | Sequence[BetaContentBlockParam]:
     """Convert mirascope content to Beta Anthropic content format."""
-    result = encode_content(content, encode_thoughts, add_cache_control)
+    result = encode_content(content, encode_thoughts_as_text, add_cache_control)
     if isinstance(result, str):
         return result
     return cast(Sequence[BetaContentBlockParam], result)
@@ -72,7 +72,7 @@ def _beta_encode_content(
 def _beta_encode_message(
     message: UserMessage | AssistantMessage,
     model_id: str,
-    encode_thoughts: bool,
+    encode_thoughts_as_text: bool,
     add_cache_control: bool = False,
 ) -> BetaMessageParam:
     """Convert user or assistant Message to Beta MessageParam format.
@@ -80,7 +80,7 @@ def _beta_encode_message(
     Args:
         message: The message to encode
         model_id: The Anthropic model ID
-        encode_thoughts: Whether to encode thought blocks as text
+        encode_thoughts_as_text: Whether to encode thought blocks as text
         add_cache_control: Whether to add cache_control to the last content block
     """
     if (
@@ -88,7 +88,7 @@ def _beta_encode_message(
         and message.provider_id == "anthropic"
         and message.model_id == model_id
         and message.raw_message
-        and not encode_thoughts
+        and not encode_thoughts_as_text
         and not add_cache_control
     ):
         raw = cast(dict[str, Any], message.raw_message)
@@ -97,7 +97,9 @@ def _beta_encode_message(
             content=raw["content"],
         )
 
-    content = _beta_encode_content(message.content, encode_thoughts, add_cache_control)
+    content = _beta_encode_content(
+        message.content, encode_thoughts_as_text, add_cache_control
+    )
 
     return BetaMessageParam(
         role=message.role,
@@ -108,7 +110,7 @@ def _beta_encode_message(
 def _beta_encode_messages(
     messages: Sequence[UserMessage | AssistantMessage],
     model_id: str,
-    encode_thoughts: bool,
+    encode_thoughts_as_text: bool,
 ) -> Sequence[BetaMessageParam]:
     """Encode messages and add cache control for multi-turn conversations.
 
@@ -124,7 +126,7 @@ def _beta_encode_messages(
         is_last = i == len(messages) - 1
         add_cache = has_assistant_message and is_last
         encoded_messages.append(
-            _beta_encode_message(message, model_id, encode_thoughts, add_cache)
+            _beta_encode_message(message, model_id, encode_thoughts_as_text, add_cache)
         )
     return encoded_messages
 
@@ -145,7 +147,7 @@ def beta_encode_request(
     """Prepares a request for the Anthropic beta.messages.parse method."""
 
     processed = process_params(params, DEFAULT_MAX_TOKENS)
-    encode_thoughts = processed.pop("encode_thoughts", False)
+    encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 
     kwargs: BetaParseKwargs = BetaParseKwargs(
@@ -200,7 +202,7 @@ def beta_encode_request(
     )
 
     kwargs["messages"] = _beta_encode_messages(
-        remaining_messages, model_id, encode_thoughts
+        remaining_messages, model_id, encode_thoughts_as_text
     )
 
     if system_message_content:

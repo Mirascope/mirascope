@@ -98,7 +98,7 @@ def test_strict_mode_with_thinking(
     @llm.call(
         model_id,
         format=llm.format(IntegerAdditionResponse, mode="strict"),
-        thinking=True,
+        thinking={"level": "medium"},
     )
     def get_answer(question: str) -> str:
         return f"Answer this question: {question}"
@@ -123,7 +123,7 @@ def test_strict_mode_with_streamed_thinking(
     @llm.call(
         model_id,
         format=llm.format(IntegerAdditionResponse, mode="strict"),
-        thinking=True,
+        thinking={"level": "medium"},
     )
     def get_answer(question: str) -> str:
         return f"Answer this question: {question}"

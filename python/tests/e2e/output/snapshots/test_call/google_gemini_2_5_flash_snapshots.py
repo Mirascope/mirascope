@@ -168,8 +168,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "google",
-            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -250,8 +250,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "google",
-            "provider_model_name": "gemini-2.5-flash",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_name": "gemini-2.5-flash",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),

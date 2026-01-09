@@ -15,7 +15,7 @@ test_snapshot = snapshot(
             "provider_id": "anthropic",
             "model_id": "anthropic/claude-sonnet-4-0",
             "provider_model_name": "claude-sonnet-4-0",
-            "params": {"thinking": False},
+            "params": {"thinking": {"level": "none"}},
             "finish_reason": None,
             "usage": {
                 "input_tokens": 477,
@@ -32,9 +32,11 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Fibonacci Number Calculation**
+Here's a summary of my thought process:
 
-Okay, so the user wants the 100th Fibonacci number.  No problem. I know the `default_api.compute_fib` function handles this perfectly.  It's designed for exactly this purpose.  My thought process is simple: I'll just call `compute_fib` with `n=100`. That should give me the answer they're looking for without any further manipulation needed. Easy peasy.
+**Calculating the 100th Fibonacci Number**
+
+Okay, the user wants the 100th Fibonacci number. That's straightforward. I know there's a function available, `default_api.compute_fib`, that's specifically designed for this purpose. The input argument is the `n` for the nth Fibonacci number we want. So, all I need to do is call `default_api.compute_fib` and set `n` to 100. Should be quick and simple.
 """
                         ),
                         ToolCall(
@@ -56,9 +58,11 @@ Okay, so the user wants the 100th Fibonacci number.  No problem. I know the `def
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
-**Fibonacci Number Calculation**
+Here's a summary of my thought process:
 
-Okay, so the user wants the 100th Fibonacci number.  No problem. I know the `default_api.compute_fib` function handles this perfectly.  It's designed for exactly this purpose.  My thought process is simple: I'll just call `compute_fib` with `n=100`. That should give me the answer they're looking for without any further manipulation needed. Easy peasy.
+**Calculating the 100th Fibonacci Number**
+
+Okay, the user wants the 100th Fibonacci number. That's straightforward. I know there's a function available, `default_api.compute_fib`, that's specifically designed for this purpose. The input argument is the `n` for the nth Fibonacci number we want. So, all I need to do is call `default_api.compute_fib` and set `n` to 100. Should be quick and simple.
 """,
                                 "thought": True,
                                 "thought_signature": None,
@@ -77,7 +81,7 @@ Okay, so the user wants the 100th Fibonacci number.  No problem. I know the `def
                                 "inline_data": None,
                                 "text": None,
                                 "thought": None,
-                                "thought_signature": b"\n\xe2\x01\x01r\xc8\xda|\x0c\x1a:\xa1\x92\x1b\xf1h\xf1{\x14OLT\xa8_\xd8B\xe2\xe4p\xf7\x99J\xdc\xb1hl,\x81\xa3\x1e\x16\xec\xaaV\xdb9\xbe\x8a\x87\x9a?L/^=F\xd4\x8e\x96\xa6\x8an6i\x1b\x14C\xa6\xa9\xc1\xa3\x9c\x98\x08W3\t\xf3\x85 %M\xea\xee/\x8c\xa3rwU\x8b\xae\xb70\x11``\xb9\xd4\xe6\x15_d*\xdf\xa9\xea\xa8\xef\xa6\xd2\xd2C\xe7\xe6\xa9\x07e\x07g\xd7\xed=\xa1\xb0\xcel\xaa(\xb8C5B\x1d6z\xac-T\x9d\n\x96]\x85\xa1\x998l\x9bS1Q\xcb\xd6O\xe4\x16&\xe6\x80\x9a\xcb]\xbf\xf9\x0f\x86\x97Y$\xc5\\\x7f\xb8\x1d\x89H\xdc\xd2\xda\x99[Y\xcf\xf7k>\xa5\xdf\xe5\xb0\xcbBS\xba!a\xad\xb8{3\xbd=\x13T6\xbb\x8d\xe5\xc9\x0b/.\xfeq\x1a\xee\xcc\xe4\xee\x95\x17\xd8\xaa(VK\xaag",
+                                "thought_signature": b'\n\xe2\x01\x01r\xc8\xda|\xda\xe5\xda\x0c\x1e\xc5t9\xf7\x94S\xc02\x04\xb6{\r\xf4\xbcIw\xad\xf2\x8f\xa4\xd2%\x95\x7f\xee\x10#|\x138\xf0\x8c4!\x95\x94\xffaaNT\xcf\x9a\xa7\xe1\xaeA\x94\xe5\xc2\x8e\xc2/\xd0p8\x17\x0f\x13Ml\x1f\xabYOv\xa0j\xf3r\x88WN2\x8f\xd2$\xf0\xf2Z\xeb\xcb9\x7f\x0f\x1b\xd9\xd9\x9b\x85\xf5"\xe8\xd0\xa8{\xc7Y\xdb\xc4\xb0?\xcd\r\x88\x91\xc9=,\xcb\x88\x16\x1a\xa8J\xe8\x8c\xd1{\x18L\xdd\xb6\xc9\x1eD\xce\x85\xeaM\xf1\x1e\t\xe2\xfb5\xa1\xb7\xbd\xa2\x02N\x00\xf74vHi\xbd\xd2\x81?<\xea\x04< \xc7\x05L"\x8b\xa2R\xa9\xd1\x86\xb2\xc2\xf6\x89D\'\xae\xf8*\x1e\xc4\xda\xa5\xe8\xa1\x8e\xd6jEd\xf7\xd3\xb7 \xd6\x1b+\x19\r\xd0\xceS\xe7\xa4f_k\x1bCx\xa9\x16\t(_\xb6\xd0\xce\x8d',
                                 "video_metadata": None,
                             },
                         ],

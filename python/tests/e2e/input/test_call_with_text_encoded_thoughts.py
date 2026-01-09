@@ -77,7 +77,10 @@ def test_call_with_text_encoded_thoughts(
 ) -> None:
     """Test call using thought-as-text encoding."""
 
-    @llm.call(model_id, encode_thoughts_as_text=True)
+    @llm.call(
+        model_id,
+        thinking=llm.ThinkingConfig(encode_thoughts_as_text=True, level="minimal"),
+    )
     def call() -> list[llm.Message]:
         return messages(model_id)
 

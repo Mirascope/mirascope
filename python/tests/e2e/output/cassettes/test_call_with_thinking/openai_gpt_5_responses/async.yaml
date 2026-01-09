@@ -1,0 +1,271 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"How many primes below 400 contain 79 as a substring?
+      Answer ONLY with the number, not sharing which primes they are.","role":"user"}],"model":"gpt-5","reasoning":{"effort":"medium","summary":"auto"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '221'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      CF-RAY:
+      - 9baff91e2fca27ab-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 00:56:29 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=oV6Pd6GobMuM_nJP_Gjz4UT7ednYxIzUMtOdCtNEHC4-1767920189-1.0.1.1-o7Wn1dz4Dcb_KbkNOW2w0n7AG7bXlzG_H43xW8NI_JrfWrhINkcST1iZL3xbDWjghKUbj.xb1EIT6n0i74qjVmjOoVfkt4wTPiNbJK.gIIc;
+        path=/; expires=Fri, 09-Jan-26 01:26:29 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=pnT8qeuzClM6YRGxLECyNVMz1Fd033eFvrXEaEzb.BY-1767920189953-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '20865'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '20868'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '2000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '1999058'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 28ms
+      x-request-id:
+      - req_c9962b1c5dc141e5b1b8c5dd07020f52
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"How many primes below 400 contain 79 as a substring?
+      Answer ONLY with the number, not sharing which primes they are.\",\"role\":\"user\"},{\"id\":\"rs_02b016ad78836c87006960522974a48194a7e8e5b2a764cf1a\",\"summary\":[{\"text\":\"**Counting
+      primes with 79 substring**\\n\\nI need to find prime numbers less than 400 that
+      contain \\\"79\\\" as a substring, which refers to contiguous digits. The candidates
+      are 79, 179, 279, and 379. Oh, but 790-799 are above 400, so they don\u2019t
+      count. 79 and 179 are confirmed primes. However, 279 isn\u2019t prime because
+      it's divisible by 3. Now for 379, I need to check if it's prime by testing divisibility
+      against primes up to about 19. I'll keep investigating!\",\"type\":\"summary_text\"},{\"text\":\"**Confirming
+      prime status of 379**\\n\\nI\u2019m checking if 379 is prime, so I calculated
+      some multiplication and found out that it is indeed prime. I also confirmed
+      79, 179, and 279 in relation to the \\\"79\\\" substring. The only numbers that
+      fit are 79, 179, 279, and 379. The range of 790-799 exceeds 400, so I can't
+      include them. I realize \\\"79\\\" must be contiguous, whether in the tens and
+      ones or hundreds and tens places. This makes it clear!\",\"type\":\"summary_text\"},{\"text\":\"**Verifying
+      prime numbers containing \\\"79\\\"**\\n\\nI'm analyzing three-digit numbers
+      and confirming that combinations containing \\\"79\\\" at the start or end,
+      like 790-799, are not allowed. The only eligible numbers are 79, 179, 279, and
+      379. Among these, I confirm that 79, 179, and 379 are prime, while 279 isn\u2019t.
+      So, that gives me a count of 3. I checked primality for each. 79 and 379 are
+      confirmed, and 179 checks out too. Now, I\u2019ll ensure there aren\u2019t any
+      other primes containing \\\"79.\\\"\",\"type\":\"summary_text\"},{\"text\":\"**Confirming
+      the count of primes**\\n\\nI previously included 279, which isn\u2019t prime,
+      but 379 is. I'm checking other numbers to see if they contain \\\"79.\\\" Numbers
+      like 197 and 297 don't qualify. For 397, it has \\\"97,\\\" so still not it.
+      However, 179 does contain \\\"79.\\\" I realize there aren't any instances of
+      \\\"79\\\" repeating or leading zeros to consider. Ultimately, I\u2019m supposed
+      to return just the number of confirmed primes, which is 3. I double-check everything
+      to be safe. So, I\u2019ll return 3.\",\"type\":\"summary_text\"},{\"text\":\"**Verifying
+      the primality of 379**\\n\\nI'm checking whether 379 is a prime number by dividing
+      it with smaller primes. I find that it doesn't divide evenly by 2, 3, 5, 7,
+      11, 13, 17, or 19. All checks show it's not divisible by any of these primes,
+      confirming that 379 is indeed prime. I previously verified 179 is prime as well.
+      So, my final count of primes containing \\\"79\\\" is 3. I'll just return \\\"3\\\"
+      as the answer.\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"},{\"id\":\"msg_02b016ad78836c87006960523daedc81949c7c4fe2559245a2\",\"content\":[{\"annotations\":[],\"text\":\"3\",\"type\":\"output_text\",\"logprobs\":[]}],\"role\":\"assistant\",\"status\":\"completed\",\"type\":\"message\"},{\"content\":\"If
+      you remember what the primes were, then share them, or say 'I don't remember.'\",\"role\":\"user\"}],\"model\":\"gpt-5\",\"reasoning\":{\"effort\":\"minimal\",\"summary\":\"auto\"}}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '3114'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//fFTJbuMwDL3nKwxd5tIUspt4yR/MNxSFQVt0qqkWQ6KCBkX+fWA53qbp
+        3Gw+8nF5pL52ScKkYKeEOfR9zbOGpzmIoixf8rYsOM+rnB+zF+RV05ZpdSizBnmZihygSAts2NNA
+        YZs/2NJEY43H0d46BEJRw4ClRV5UGU8rHjFPQMEPMa3VvUJCMQY10H6cnQ1mqKsD5XE0S6WkObNT
+        8rVLkiRhPVzRDfECL6hsj47tkuQ2Jp4oH6ZG5+wQaYJS0SDNFFALJJDKb1FPLrQkrdnYNXzWNlAf
+        qCb7gd9BslbVLagtnbYC1VD3uaf9cZ/x7Ljn5Z4X91lGRnZKXmObY7OLTP4/IuXZoYwiHZuDOKBI
+        j8eWp9UxEkcSuvY4ygTemmGcM+SD1uCuQ+K3aLs9PSpA+/N/Kii7LlYARzFMPKtEVkCV8+8VaPQe
+        zrjK/8M+RLC1htAsU1kXtqGd9MBPmqOjAxhjCSYNX982oLLn3tnmARKJTgn7nQhrflHiUKNu0D2z
+        2et2/5oDmbMqFgPeS09gaHQeHKMT68GBUqi2G0IujKveO7xIG3w9XVMdZz9vUO+s7qluoX3H+gOv
+        P2IOh6lJa9Yei/bzKWHXWRf71NJIDeo+u9VSsPEwUCxH5qFDutZSDDk6iZuT8ugussWa5HSkHQQ1
+        isI8WYfrjgl1jw4oRHP6zO/WOPx7kZ11Gpb/lejRb72z7IKusV7SdVw1IYNe6h6H/m5lO6oUyLIZ
+        WHaAke3r1Wbw2diva3TBtHCfMRPSQ6OmlyzEDZ8bkGbzVOTZ03f76v2Z24xaiiWQb1r99wVK+SPg
+        Ee+8CD9RkyVQC1hk8wiD36qtkUAAwUB/293+AgAA//8DAFlZj51YBgAA
+    headers:
+      CF-RAY:
+      - 9baff9a35dc327ab-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 00:56:31 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1031'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1033'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '2000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '2000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_1b46664d19bb421e9159000dbdd09eab
+    status:
+      code: 200
+      message: OK
+version: 1

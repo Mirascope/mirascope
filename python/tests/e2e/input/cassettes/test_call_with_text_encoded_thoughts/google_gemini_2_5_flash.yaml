@@ -14,7 +14,8 @@ interactions:
       {"text": "Yes."}], "role": "model"}, {"parts": [{"text": "Please tell me what
       the number is."}], "role": "user"}], "systemInstruction": {"parts": [{"text":
       "Always answer with extreme concision, giving the answer and no added context."}],
-      "role": "user"}, "generationConfig": {}}'
+      "role": "user"}, "generationConfig": {"thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 0}}}'
     headers:
       accept:
       - '*/*'
@@ -23,26 +24,28 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1136'
+      - '1203'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/12QQUvEMBCF7/kVJWcrS7FWvIkuqLi6aFmExUPYTNtom5RmKl1K/7tJu+mm5hDC
-        vJeZeV9PgoAemOSCMwRNb4O9qQRBP95WUxJBohFcyRRr1uDZO53eexsLQmc/0ejmOk6opw3z++vi
-        3LFRJVh7pTiUzj44A82EFLp4B6aVtLaP9G1LZ1VIDp0pr4gbMLamrWY5bACZycbmBLRuVFVjqn5A
-        3qt2zHYVJVM3j8XCEJ9kVMjKpbJyX72++sFMFaXPyMNnQrJS4NEmSdefKfVA4L+1HAriEaNYqDYv
-        cLliEpMTsoniDhotJlw5VAZgGF3GYVYyXYwDaQO6VlLDE7ee3fPvkb1meq1f+PfmsO3YowzvNCUD
-        +QNLW6U7JQIAAA==
+        H4sIAAAAAAAC/2WQzU7DMBCE73mKaM8tQoFQxI2/AwdEgQhVQj0szSa1cOzU3qJAlXfHTprUhRwc
+        a2c89ny7KI5hhSoXOTJZuIrf3SSOd93qNa2YFDthGLlhjYYP3v7bBXtnYWr8IUguL9IZBFo77peT
+        Q6LRkry90jnJwd4OBiiEEnb9Qmi18rbX7GkOoypUTo0bn0bDBV00bC2W9EiMrhuODaA2uqo505+k
+        bvW263aezPq0gMWRId3LrBnl8dGzZPIv1965W4UMGQX4XEmUgr99k+x+kUEAgv88a0DR/ZfRHkrP
+        6Y2MFT2QkiqHaJqcpNNCol13kWDI1lpZesi9p5E3JX5siuti8bNhO2++TJM8ryBqo1/sw/PkBwIA
+        AA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -51,11 +54,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 19:39:00 GMT
+      - Fri, 09 Jan 2026 00:50:14 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=918
+      - gfet4t7; dur=570
       Transfer-Encoding:
       - chunked
       Vary:

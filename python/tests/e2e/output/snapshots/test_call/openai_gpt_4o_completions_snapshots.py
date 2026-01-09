@@ -82,8 +82,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:completions",
             "model_id": "openai/gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -114,8 +114,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:completions",
             "model_id": "openai/gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),

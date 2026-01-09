@@ -20,23 +20,26 @@ test_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
-                    "thinking": False,
-                    "encode_thoughts_as_text": False,
+                    "thinking": {
+                        "level": "none",
+                        "encode_thoughts_as_text": False,
+                        "include_summaries": False,
+                    },
                 },
                 "finish_reason": None,
                 "usage": {
                     "input_tokens": 13,
-                    "output_tokens": 31,
+                    "output_tokens": 107,
                     "cache_read_tokens": 0,
                     "cache_write_tokens": 0,
-                    "reasoning_tokens": 0,
+                    "reasoning_tokens": 75,
                     "raw": """\
-cache_tokens_details=None cached_content_token_count=None candidates_token_count=31 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=32 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=13
-)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=44 traffic_type=None\
+)] thoughts_token_count=75 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=120 traffic_type=None\
 """,
-                    "total_tokens": 44,
+                    "total_tokens": 120,
                 },
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -44,11 +47,11 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         content=[
                             Text(
                                 text="""\
-To calculate 4200 + 42, you can add the numbers together:
+To find the sum of 4200 and 42, you add them together:
 
 4200
-+ 42
------
++   42
+------
 """
                             )
                         ],
@@ -65,11 +68,11 @@ To calculate 4200 + 42, you can add the numbers together:
                                     "function_response": None,
                                     "inline_data": None,
                                     "text": """\
-To calculate 4200 + 42, you can add the numbers together:
+To find the sum of 4200 and 42, you add them together:
 
 4200
-+ 42
------
++   42
+------
 """,
                                     "thought": None,
                                     "thought_signature": None,

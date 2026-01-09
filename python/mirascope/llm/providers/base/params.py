@@ -1,6 +1,58 @@
 """Base parameters for LLM providers."""
 
-from typing import TypedDict
+from typing import Literal, TypedDict
+from typing_extensions import Required
+
+ThinkingLevel = Literal["none", "default", "minimal", "low", "medium", "high", "max"]
+"""Level of effort/reasoning to apply to thinking."""
+
+
+class ThinkingConfig(TypedDict, total=False):
+    """Configuration for extended reasoning/thinking in LLM responses.
+
+    Thinking is a process where the model spends additional tokens reasoning about
+    the prompt before generating a response. Providing any `ThinkingConfig` will enable
+    thinking (unless it is specifically disabled via level="minimal"). Depending on
+    the provider and model, thinking may always be active regardless of user settings.
+    """
+
+    level: Required[ThinkingLevel]
+    """Level of effort/reasoning to apply to thinking.
+
+    - none: Disable thinking entirely. Minimizes cost and latency.
+    - default: Use the provider's default
+    - minimal: Use the provider's lowest setting for reasoning
+    - medium: Use a moderate amount of reasoning tokens 
+    - high: Allow extensive resources for thinking
+    - max: Uses as much thinking as allowed by the provider.
+
+    Mirascope makes a best effort to apply the chosen thinking level, but exact behavior
+    varies by provider and model. For example, some models may not support thinking,
+    while other models may not allow disabling it.
+    """
+
+    include_summaries: bool
+    """Whether to generate reasoning summaries (human readable Thoughts) from model output.
+    
+    Generally, providers do not return raw model thinking output, but may produce
+    thought summaries. When `include_summaries` is true, these will be requested from
+    the provider (if available). Otherwise, they will not be requested.
+    """
+
+    encode_thoughts_as_text: bool
+    """Re-encode Thought content as text for model consumption.
+
+    If `True`, when an `AssistantMessage` contains `Thoughts` and is passed back
+    to an LLM, those `Thoughts` will be encoded as `Text`, ensuring the assistant
+    can read its prior reasoning. This contrasts with provider defaults which may
+    ignore prior thoughts, particularly if tool calls are not involved.
+
+    When `True`, Mirascope will re-encode messages rather than reusing raw provider
+    response content, which may disable provider-specific optimizations like cached
+    reasoning tokens.
+
+    Defaults to `False` if unset.
+    """
 
 
 class Params(TypedDict, total=False):
@@ -55,39 +107,16 @@ class Params(TypedDict, total=False):
     response.
     """
 
-    thinking: bool
-    """Configures whether the model should use thinking.
-    
-    Thinking is a process where the model spends additional tokens thinking about the
-    prompt before generating a response. You may configure thinking either by passing
-    a bool to enable or disable it.
+    thinking: ThinkingConfig | None
+    """Configuration for extended reasoning/thinking.
 
-    If `params.thinking` is `True`, then thinking and thought summaries will be enabled
-    (if supported by the model/provider), with a default budget for thinking tokens.
+    Pass a `ThinkingConfig` to configure thinking behavior. The `level` field controls
+    whether thinking is enabled and how much reasoning to use. Level may be one of 
+    "minimal", "low", "medium", or "high". If level is unset, then thinking is enabled
+    with a provider-specific default level.
 
-    If `params.thinking` is `False`, then thinking will be wholly disabled, assuming
-    the model allows this (some models, e.g. `google:gemini-2.5-pro`, do not allow
-    disabling thinking).
-
-    If `params.thinking` is unset (or `None`), then we will use provider-specific default
-    behavior for the chosen model.
-    """
-
-    encode_thoughts_as_text: bool
-    """Configures whether `Thought` content should be re-encoded as text for model consumption.
-    
-    If `True`, then when an `AssistantMessage` contains `Thoughts` and is being passed back
-    to an LLM, those `Thoughts` will be encoded as `Text`, so that the assistant can read
-    those thoughts. That ensures the assistant has access to (at least the summarized output of)
-    its reasoning process, and contrasts with provider default behaviors which may ignore
-    prior thoughts, particularly if tool calls are not involved.
-
-    When `True`, we will always re-encode Mirascope messages being passed to the provider,
-    rather than reusing raw provider response content. This may disable provider-specific
-    behavior like cached reasoning tokens.
-
-    If `False`, then `Thoughts` will not be encoded as text, and whether reasoning context
-    is available to the model depends entirely on the provider's behavior. 
-
-    Defaults to `False` if unset.
+    `ThinkingConfig` can also include `encode_thoughts_as_text`, which is an advanced
+    feature for providing past thoughts back to the model as text content. This is
+    primarily useful for making thoughts transferable when passing a conversation
+    to a different model or provider than the one that generated the thinking.
     """

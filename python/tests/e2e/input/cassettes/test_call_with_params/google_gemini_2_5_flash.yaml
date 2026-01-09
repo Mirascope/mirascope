@@ -3,7 +3,7 @@ interactions:
     body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
       "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
       500, "stopSequences": ["4242"], "seed": 42, "thinkingConfig": {"include_thoughts":
-      false, "thinking_budget": 0}}}'
+      false, "thinking_budget": 200}}}'
     headers:
       accept:
       - '*/*'
@@ -12,7 +12,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '276'
+      - '278'
       content-type:
       - application/json
       host:
@@ -21,17 +21,19 @@ interactions:
       - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
       - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRX0/CMBTF3/cpmr7KDH+mJrwZMYYYA+pCTBwPhV6gsbtd2i4Byb67txuDEfuw
-        dvecntv+eowY42uBUknhwfEx+6YKY8f6GzSDHtCT0JaoWAjrL95mHDtrsnjYh008NWwt9LrUFM+S
-        Yb/PbmjqsYMpSUAmpGR+BwzLfAXWMW+2QP92nGGGwZ9h2JBhHEaGvNOmOq+XvcvhrNEQOudGgm7t
-        VWvgG4XK7T5AOIPB9pnO5vysKpSwp3I/ahvU0bx0Ygtv4AVhEmcYvLAmL3xqfgCfTFljGoyasA7V
-        K300OOneeKGvpCTp/Yt1E2qqdJd25yHojkIrf6hJP3+lvMPBX5+qBVHPy+iEpKG0IPKqwbGFnADF
-        w9u7eKOF29WJ3IIrDDqYyuBZ4furgOH9i5xNfh+mczsdLeLHhEdV9AfLoPO4UAIAAA==
+        H4sIAAAAAAAC/2WRQU/CQBCF7/0Vm70KphQQws2oBw9G1IaA1sPGDm1ju1O60wRC+O9OtxS2cQ/N
+        ZN7bebNfj54Q8kfpOIsVgZEL8cUdIY7222ioCTSx0LW4WaqKrt72HJ2aLQT75pIMUWwzHQtKQZi6
+        ELgVk8D3BUdyMRAHrIWKrV4IwgS4qBaRjnRji/QND5sEkR7aE2npxJwu9ffgulyFOTTJBcaQd/ZT
+        Z5C8TWbSd1AGdWP7CF+X8qLyqrDntu91AXa0rI1K4AVIMSZ1gSHLCouSQvwF/YC1xTQat8Mcqj19
+        HJx1QlJ5/2rgD/7NNY+cmuUubudP8CNVntHBon5ah9IBQf21OhKeA0xSinWSUn/F2dQ7E2shrqAy
+        WUsrgYL5DYPb6XCbK5PaPFmBKVEbeI4bz3r0mShV+/fzYLYjs7zb7FbZ21x6J+8PSV8rh28CAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -40,11 +42,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:47:26 GMT
+      - Fri, 09 Jan 2026 01:14:07 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=720
+      - gfet4t7; dur=907
       Transfer-Encoding:
       - chunked
       Vary:

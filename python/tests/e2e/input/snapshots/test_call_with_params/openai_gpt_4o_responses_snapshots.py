@@ -20,8 +20,11 @@ test_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
-                    "thinking": False,
-                    "encode_thoughts_as_text": False,
+                    "thinking": {
+                        "level": "none",
+                        "encode_thoughts_as_text": False,
+                        "include_summaries": False,
+                    },
                 },
                 "finish_reason": None,
                 "usage": {
@@ -42,7 +45,7 @@ test_snapshot = snapshot(
                         provider_model_name="gpt-4o:responses",
                         raw_message=[
                             {
-                                "id": "msg_0d902d0e83de5d560068f96689f0b8819698f9c3a097db17f1",
+                                "id": "msg_05c44bd417a9465100696055dbbddc8195945fcef04458d081",
                                 "content": [
                                     {
                                         "annotations": [],
@@ -66,7 +69,7 @@ test_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai)",
             "Skipping unsupported parameter: seed=42 (provider: openai)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai)",
-            "Skipping unsupported parameter: thinking=False (provider: openai with model_id: openai/gpt-4o:responses)",
+            "Skipping unsupported parameter: thinking={'level': 'none', 'encode_thoughts_as_text': False, 'include_summaries': False} (provider: openai with model_id: openai/gpt-4o:responses)",
         ],
     }
 )

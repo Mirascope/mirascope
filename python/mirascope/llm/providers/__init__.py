@@ -19,7 +19,7 @@ from .anthropic import (
     AnthropicModelId,
     AnthropicProvider,
 )
-from .base import BaseProvider, Params, Provider
+from .base import BaseProvider, Params, Provider, ThinkingConfig, ThinkingLevel
 from .google import GoogleModelId, GoogleProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXModelId, MLXProvider
@@ -56,6 +56,8 @@ __all__ = [
     "Params",
     "Provider",
     "ProviderId",
+    "ThinkingConfig",
+    "ThinkingLevel",
     "TogetherProvider",
     "get_provider_for_model",
     "register_provider",

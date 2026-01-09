@@ -19,13 +19,6 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
 from pydantic import BaseModel
 
 from mirascope import llm, ops
-from mirascope.llm import Text
-from mirascope.llm.content import (
-    Audio,
-    Base64ImageSource,
-    Image,
-)
-from mirascope.llm.responses.finish_reason import FinishReason
 from mirascope.ops._internal import configuration as ops_configuration
 from mirascope.ops._internal.configuration import set_tracer
 from tests.ops.utils import span_snapshot
@@ -405,8 +398,8 @@ def test_model_call_with_base64_image(
         llm.messages.user(
             [
                 "What color is this pixel?",
-                Image(
-                    source=Base64ImageSource(
+                llm.Image(
+                    source=llm.Base64ImageSource(
                         type="base64_image_source",
                         data=base64_image,
                         mime_type="image/png",
@@ -506,7 +499,7 @@ def test_model_call_with_audio_content(
     audio_path = str(
         Path(__file__).parent.parent / "e2e" / "assets" / "audio" / "tagline.mp3"
     )
-    audio = Audio.from_file(audio_path)
+    audio = llm.Audio.from_file(audio_path)
     messages = [llm.messages.user(["What is in this audio?", audio])]
 
     model.call(messages=messages)
@@ -551,7 +544,7 @@ def test_model_call_with_reasoning_model(
     """Test OpenTelemetry instrumentation with reasoning model (Thought content)."""
     model = llm.Model(
         model_id="anthropic/claude-sonnet-4-20250514",
-        thinking=True,
+        thinking={"level": "medium"},
     )
     messages = [llm.messages.user("What is 2+2? Think step by step.")]
 
@@ -572,9 +565,9 @@ def test_model_call_with_reasoning_model(
                 "gen_ai.output.type": "text",
                 "gen_ai.response.model": "anthropic/claude-sonnet-4-20250514",
                 "gen_ai.response.finish_reasons": ["stop"],
-                "gen_ai.response.id": "msg_015wBHMrr9GvYPVmGn1j2mmK",
+                "gen_ai.response.id": "msg_012oWcYH9pLBuc2YFDVLEA3j",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 2+2? Think step by step."}]}]',
-                "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"reasoning","content":"This is a very simple arithmetic question. Let me think through it step by step as requested.\\n\\n2 + 2\\n\\nStep 1: I have the number 2\\nStep 2: I need to add another 2 to it\\nStep 3: 2 + 2 = 4\\n\\nThis is basic addition. I can think of it as:\\n- Starting with 2\\n- Adding 2 more\\n- 2, 3, 4 (counting up by 2)\\n- Or simply knowing that 2 + 2 = 4\\n\\nThe answer is 4."},{"type":"text","content":"I\'ll solve 2 + 2 step by step:\\n\\n**Step 1:** Start with the first number: 2\\n\\n**Step 2:** Add the second number: 2\\n\\n**Step 3:** Perform the addition:\\n2 + 2 = 4\\n\\n**Answer:** 4\\n\\nThis can also be thought of as counting: if you have 2 items and add 2 more items, you end up with 4 items total."}],"finish_reason":"stop"}]',
+                "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"reasoning","content":"This is a very basic arithmetic question. Let me think through it step by step as requested.\\n\\n2 + 2\\n\\nStep 1: I have the number 2\\nStep 2: I need to add another 2 to it\\nStep 3: 2 + 2 = 4\\n\\nThis is one of the most fundamental addition problems. I can think of it in several ways:\\n- Counting: if I have 2 items and add 2 more items, I have 4 items total\\n- On a number line: starting at 2 and moving 2 spaces to the right gets me to 4\\n- As groups: 2 groups of 2 makes 4 total\\n\\nThe answer is definitely 4."},{"type":"text","content":"I\'ll solve 2 + 2 step by step:\\n\\n**Step 1:** Start with the first number: 2\\n\\n**Step 2:** Add the second number: 2\\n\\n**Step 3:** Perform the addition:\\n- 2 + 2 = 4\\n\\n**Answer:** 2 + 2 = 4\\n\\nThis can also be thought of as:\\n- Counting: 1, 2, then 3, 4 (adding two more)\\n- Or combining two groups of 2 objects each to get 4 objects total"}],"finish_reason":"stop"}]',
             },
         }
     )
@@ -694,7 +687,7 @@ def test_model_call_with_message_name(
     model = llm.Model(model_id="openai/gpt-4o-mini")
 
     user_msg = llm.messages.UserMessage(
-        content=[Text(text="What is 1+1?")], name="calculator_user"
+        content=[llm.Text(text="What is 1+1?")], name="calculator_user"
     )
     messages = [user_msg]
 
@@ -760,7 +753,7 @@ def test_model_call_with_format_tool_finish_reason(
                 format=format,
                 input_messages=list(messages),
                 assistant_message=assistant_message,
-                finish_reason=FinishReason.MAX_TOKENS,
+                finish_reason=llm.FinishReason.MAX_TOKENS,
             )
 
     # Register the mock provider
@@ -773,7 +766,7 @@ def test_model_call_with_format_tool_finish_reason(
     messages = [llm.messages.user("Return a book recommendation.")]
 
     response = model.call(messages=messages, format=book_format)
-    assert response.finish_reason == FinishReason.MAX_TOKENS
+    assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1

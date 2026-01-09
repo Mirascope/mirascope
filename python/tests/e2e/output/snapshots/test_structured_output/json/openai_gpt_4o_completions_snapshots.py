@@ -401,8 +401,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:completions",
             "model_id": "openai/gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -583,8 +583,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:completions",
             "model_id": "openai/gpt-4o:completions",
+            "provider_model_name": "gpt-4o:completions",
             "finish_reason": None,
             "messages": [
                 SystemMessage(

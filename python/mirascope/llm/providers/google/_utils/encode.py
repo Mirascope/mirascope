@@ -18,11 +18,46 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ...base import Params, _utils as _base_utils
+from ...base import Params, ThinkingLevel, _utils as _base_utils
 from ..model_id import GoogleModelId, model_name
 from ..model_info import MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT
 
 UNKNOWN_TOOL_ID = "google_unknown_tool_id"
+
+# Thinking level to a float multiplier % of max tokens
+THINKING_LEVEL_TO_BUDGET_MULTIPLIER: dict[ThinkingLevel, float] = {
+    "minimal": 0,
+    "low": 0.2,
+    "medium": 0.4,
+    "high": 0.6,
+    "max": 0.8,
+}
+
+
+def compute_thinking_budget(
+    level: ThinkingLevel,
+    max_tokens: int | None,
+) -> int:
+    """Compute Google thinking budget from ThinkingConfig level.
+
+    Args:
+        level: The thinking level from ThinkingConfig
+
+    Returns:
+        Token budget for thinking:
+        - -1 for automatic budget (level=None)
+        - 0 to disable thinking ("minimal")
+        - Positive int for specific budget ("low", "medium", "high")
+    """
+    if level == "default":
+        # Use Google's automatic budget
+        return -1
+
+    if max_tokens is None:
+        max_tokens = 16000
+
+    multiplier: float = THINKING_LEVEL_TO_BUDGET_MULTIPLIER.get(level, 0.4)
+    return int(multiplier * max_tokens)
 
 
 class GoogleKwargs(TypedDict, total=False):
@@ -186,7 +221,7 @@ def encode_request(
     google_config: genai_types.GenerateContentConfigDict = (
         genai_types.GenerateContentConfigDict()
     )
-    encode_thoughts = False
+    encode_thoughts_as_text = False
     google_model_name = model_name(model_id)
 
     with _base_utils.ensure_all_params_accessed(
@@ -205,17 +240,28 @@ def encode_request(
         if param_accessor.stop_sequences is not None:
             google_config["stop_sequences"] = param_accessor.stop_sequences
         if param_accessor.thinking is not None:
-            if param_accessor.thinking:
-                google_config["thinking_config"] = genai_types.ThinkingConfigDict(
-                    thinking_budget=-1,  # automatic budget
-                    include_thoughts=True,
-                )
+            thinking_config = param_accessor.thinking
+            level = thinking_config.get("level")
+            include_summaries = thinking_config.get("include_summaries", True)
+
+            # Compute budget from level
+            budget = compute_thinking_budget(level, param_accessor.max_tokens)
+            thinking_dict = genai_types.ThinkingConfigDict(
+                thinking_budget=budget,
+            )
+
+            if budget == 0:
+                # Disabled: no thoughts
+                thinking_dict["include_thoughts"] = False
             else:
-                google_config["thinking_config"] = genai_types.ThinkingConfigDict(
-                    include_thoughts=False, thinking_budget=0
-                )
-        if param_accessor.encode_thoughts_as_text:
-            encode_thoughts = True
+                # Enable thoughts based on include_summaries
+                thinking_dict["include_thoughts"] = include_summaries
+
+            google_config["thinking_config"] = thinking_dict
+
+            # Handle encode_thoughts_as_text from ThinkingConfig
+            if thinking_config.get("encode_thoughts_as_text"):
+                encode_thoughts_as_text = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
@@ -285,7 +331,9 @@ def encode_request(
 
     kwargs = GoogleKwargs(
         model=model_name(model_id),
-        contents=_encode_messages(remaining_messages, model_id, encode_thoughts),
+        contents=_encode_messages(
+            remaining_messages, model_id, encode_thoughts_as_text
+        ),
         config=google_config,
     )
 

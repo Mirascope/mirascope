@@ -21,6 +21,8 @@ interactions:
       - api.anthropic.com
       user-agent:
       - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -48,16 +50,14 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3WPQUvEMBCF/0rJ1S2kIcWl4FEEwZMIikiIydhG26SbTEUp/e9OCkWq7CmZ972Z
-        eTOzIVjoWcNMrycLZQreA5ayFFzUvK4kOzBniQ+pVbx6uI/1Y3v3VPkbGU9vt8frY/36Th78HiG7
-        ICXdAgkx9FnQKbmE2iNJJngE+jXP8+ZH+MpkfRomBefFRSFFcVWw5eXAEoZRRdCUivBaJThN4E1e
-        sa9zuxQkT2uCZmbOjxMqDB/gE2uqS0qgTQfK0ER0wau9gW+csD3Htt48H8YOBoi6V/Xw3/9Lq+4v
-        XQ4sTLhLJ+geiJ/OgEIHcT1Xe6ujZcvyA3u3+0ynAQAA
+        H4sIAAAAAAAA/3WPQUvEMBCF/0rJ1RbakLpswZt4VtiLiISYDNtgm3STiayU/ncnhSJV9pTM+97M
+        vJnZ6A0MrGN6UMlAFb1zgJWoeM3bum0EK5k1xMd4lnXTHl+5PRxPLy492ufr5enjdC9G8uD3BNkF
+        MaozkBD8kAUVo42oHJKkvUOgX/c2b36Eaybr0zHB67q4KwQvHgq2vJcsop9kAEWpCK9VhEsCp/OK
+        fZ3bBSc5rQm6mVk3JZToP8FF1jUHSqB0D1LTRLTeyb2h3jhhc4ttvXk+TD2MENQg2/G//5c2/V+6
+        lMwn3KXjdA+EL6tBooWwnqucUcGwZfkBzLomb6cBAAA=
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b026e7b6a0730a5-SEA
+      - 9bb01018af090999-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,15 +65,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Dec 2025 23:27:36 GMT
+      - Fri, 09 Jan 2026 01:11:53 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -83,29 +79,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:27:35Z'
+      - '2026-01-09T01:11:51Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:27:36Z'
+      - '2026-01-09T01:11:52Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:27:33Z'
+      - '2026-01-09T01:11:49Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:27:35Z'
+      - '2026-01-09T01:11:51Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF24mmwJrTHhDPQChpFP
+      - req_011CWvv1AyHf2hEt5fFwpgbM
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '2777'
+      - '3095'
     status:
       code: 200
       message: OK

@@ -289,8 +289,8 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "finish_reason": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -427,8 +427,8 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider_id": "openai",
-            "provider_model_name": "gpt-4o:responses",
             "model_id": "openai/gpt-4o:responses",
+            "provider_model_name": "gpt-4o:responses",
             "finish_reason": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),

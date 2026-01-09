@@ -7,7 +7,7 @@ interactions:
       "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
       "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
       "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
-      "thinkingConfig": {"include_thoughts": true, "thinking_budget": -1}}}'
+      "thinkingConfig": {"include_thoughts": true, "thinking_budget": 6400}}}'
     headers:
       accept:
       - '*/*'
@@ -16,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '634'
+      - '636'
       content-type:
       - application/json
       host:
@@ -25,38 +25,46 @@ interactions:
       - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
       - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Assessing
-        the Schema**\\n\\nI'm currently focused on the schema provided. I understand
-        the user requires an object with an \\\"integer_result\\\" property. I've
-        grasped the need to structure my response to precisely match the user's defined
-        output format. I'm contemplating how to generate the correct JSON format.\\n\\n\\n\",\"thought\":
-        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        13,\"totalTokenCount\": 13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        13}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Finalizing the
-        Output**\\n\\nI've moved through the steps: mapping the request, constructing
-        the JSON, and verifying its integrity. It seems I'm prepared to generate the
-        final, valid JSON string, ready for output. The process of constructing and
-        validating the JSON confirms that it aligns with the requested schema. All
-        checks have passed.\\n\\n\\n\",\"thought\": true}],\"role\": \"model\"},\"index\":
-        0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\": 13,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
-        \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
-        {\"parts\": [{\"text\": \"{\\n  \\\"integer_a\\\": 2,\\n  \\\"integer_b\\\":
-        2,\\n  \\\"answer\\\": 4\\n}\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
-        {\"promptTokenCount\": 13,\"candidatesTokenCount\": 30,\"totalTokenCount\":
-        316,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\":
-        273},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\ndata:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Processing
+        the Input**\\n\\nI'm currently focused on the initial request. I've dissected
+        the prompt and the accompanying JSON schema. I'm prioritizing understanding
+        the expected output format, specifically the required object structure with
+        its `integer_a` property. This groundwork is crucial for a correct response.
+        I'm ready to move into actually calculating now.\\n\\n\\n\",\"thought\": true}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\":
+        13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Calculating the
+        Response**\\n\\nI've completed mapping the request to the schema. I've determined
+        that the first operand, `integer_a`, is 2, and the second operand, `integer_b`,
+        is also 2. The anticipated `answer` is 4. I've constructed a JSON object using
+        these values and validated it against the provided constraints. Now, the final
+        JSON string is ready for output.\\n\\n\\n\",\"thought\": true}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\":
+        13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n  \\\"integer_a\\\":
+        2,\\n  \\\"integer_b\\\": 2,\\n  \"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 13,\"candidatesTokenCount\": 23,\"totalTokenCount\":
+        344,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\":
+        308},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\\"answer\\\":
+        4\\n}\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 30,\"totalTokenCount\": 351,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 308},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
         {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\",\"thoughtSignature\":
-        \"Eq4ICqsIAXLI2nyy5Pdl3XFwLeRSqz+JjJ58uk5zEHIz3N2Sz2J9z58qhgtgRmhkWFOfRDpuqGQb2fLztllASY6F3WQdEMvJZeF2x+/Gx/is+FflYeTsXV86GR+tz0LHZu/dscL0dbaizMyn58bfX7t5Q2BqtU6r/cgRAkwmWIcbd+5CmFoOV/9i1eDjQ1BkXHcBpMVHtkuxL9ZONB7VdTdDsxMVUzV609SiLTc/nnyH83HF6AOXt+Gj0gvRLp6HYyoZ8uFxXi+Dq19EQoWvXl2XH+Vf5bkrJ9GtAWQw3Dwa1hZlu5+vYbR3LDo/87548jZRMaENs5y66MppKW2RKEFq+rvYhzlXMHqH126xdxRQPOCkvu7f4V3TjSxXi5EdvWekQ+0qmLZymzcapEnU8zmeJDrnDHvqETJVwz0xofTbwnLUZl3LS1nO2h0+pgSJUpY/F1n0ttHmP7pvr/xiC7URkoTKdwHOmhYx1Qkkca+a0FnhLPHW85V3AnIc5+VbF4GWUqHA15BI5hADosqvL3JGvoNIuQ2leaTe9pvTBYO5LRfFMene3D9xTDKv+nFmYMaLtKB8n8kmcrvEW8+n8eQ6Hm+CtZl4Eh6iI35Rem2Ib5Dm6Hi3yhX/jvKH36MhE/4+LHi3E/OTFsZ7PL3f0IEk1rzwsdp54qT001V8aMJXDcVwv9ZzTX5oxXnoE4h5wIUGM3qNl4QKDLxB5XBPbuF4k842EBJW9FovLxfpRU/TsclvO+Z4ebq+NmDKZPa5Rn5sX+SoxNGmUInDBsGoPJZymrC+0jwAZeP1iWguzEHSaVX/ffZMVEPUUOvDn8R5vJL8lWyGCzmMNmvBpeMT/mle2jJgWGypF5rXdpVhj2zXlEKcwnmWp/8STmnMrbjbDzizLeUYw0iq6MI7aY5+mu0HLY7Kh5MIg9/OUQBR/ZDZjn1krmqHJv4nD4LU/eMR5LqZai30THw+lJ8JZB0K7wI7KGTLt6ZkJGzgOsRDJ+cKR6R8MsC4NKnDNMLocU8JRSERrgB7ec6Cym+YffE9eBG4mRb7Swl6BiWkrOyRzPKUOdqiD7r0z/1S/OTK1wOCizt19iFny0yphewtcSU0oXYpYRH3m9qbzoUXliDlCJlKhWi9MF+DTi0Jk+vGuajrbvqMLRpwCNNXquBawGXLvZScnRMRrHq8akkH9WqrXoExJXMVTsWhz02J8JTeb9E+Lyx7OLLzsbLp8/7UtLSkQs0OCej3p4GKnIeyNUV8KyIalO5de07F1wnFSC+HEXMuYq5FxUitJeSLeKprzAi/IoxqWVAncF+Z1UEpJ9zTPQmNEf0Jy0jsO9duJfMn+iTmanCY6SW6N7zSYtbKb/oSn56u8jVMd9yeDEQUnCE5vlkn/MLlVLhDK9htvC4EO+4uQY19gRDfzeFEIuV4u8NV62w=\"}],\"role\":
+        \"EtQJCtEJAXLI2nzH9trCt5to1cviPu9JBRUBQMEwcy3a2wA+jIWeKl5kBxrJ+4paEEwxiH+53rrhoolvYf8xPzwg6qOVPE+FbKUfQwzChwDwsc2A8E2/6otQNRiszLsQxUbBI/hg5rK6jWEYe942JPCsnjTmKZ1cW/dE3G/VCFyZHxRXz4b/lAZup8QyAxgzBDnEqCEl9QE/B6Dn26oj7uOYf026hW8NAZX27YG8YBrMDugAi9yxzGdTWRGpnkQuclYQCjGn7ExeIzmMSwKNe+rAJ2hlKvhMJTfZfhBMY1bVxs5gZJ+xYDZruOJRuuTq1lxNzdcaxcsQAfKt7AFW9BrQ9O660TE7s9qMRMsxZ7xn0NhXB4btQl9z6MYhgYpceDcT5m+JSWo/EUa31OGWZdLs0kxaMZTRdjJ5dHCbLsPlg9m3E3CXIps+g5snyFqup51py+lLPxndoekhw7O5g1N3IfxP3fngKc8D/93BP9OJR7io1z6h061ENyqCG266ROhx1dErKWTj9EQiSbZOJ6kuJnr3wERTCO9B/m8BsRdVk0C7E9bkTcauG5qpn226MdBl9MAWFpjCAuJThvpdaJXXHpv38VXhb9u+GArj+K2IJlDcIloxGdrmdh0QnE+ocSX4MB41QYi/hQkI+7sOs+akncsblx+sI2u4klZB6JWZ2ArezkXuBAp3LjsHS9WKb0z05xkr91V9kDLmd8qvWWNU0o4pksotkNHX6jRWdPUmt1M1LG34wMBwS4/u4ftYREzcYBWHVMRcCwM9pyVUA2WUrp5qEtB60REv0OWl2EQVqiWrVpLDByshqdOs28qaQC9xpmwpAXTUGBxML7FBYQCHlnRV+GVCxLUGG58jFFfYgP3Dl/kotE3kWjmbh+ND+ePWc7cQQMFe+1l3/F4vNiZF5uFAqqFcvio6BRKCtPXBqqGr1G8USySiteOkugJhiQ7LwP1kIzokFI65pRvBC11ZU5SiJH8UX7i9JJ6O0wvbfcBzf+7FxO2R8+SCcEiftThCUzzS88cQ3S2u+9hUrb1jDEhCOAKXTyisAsbyt8bVBvp0WklERcVdjl/EJUAG3jeSSVIDsMaiY7l+WDC1ulrjCp2PQ14tm9waocxQL2yPJZF4DCgYLyN64wRXjY9x1kwfPCZ2vIMhXfgwgZfpNi98qIu22RAGBtbTIpX8pjYoY9d0F2gNztUOxAO4xCD3VdgsXVow8itAttKrgIyz8va+9Gg0/IvfSYjLgu3fKvOlHuQXyKUkHwCh+jTYWNTbiZwvLMMBa0YV+T35vD1AXCLbEw/FrDgO3g1VYhQ6/NifNAoN2QYNHLGHoT5Qh6/MjFCRH8g4lQQSPqKW6Y0vhaWeSc5lr06zTYI1bhYund8WcSlWAOpa+5WW++jZJN9zeYUrURKxMMAhOosRBuATIRg/knIB9Yp/d4CtwwoT/3evz1QcY07DtzKzEvTRXHTm7GBLVoDimVMkaSqUpz9HG2tKyMoovfPc9AgKUBGIdCRFzmZz3SOiQfMQJjniQeMka731co9Urj1HquYcni3M6aFoUKe45p0hGWQQm8mHTG58APll0pmfK2P2VQrDLG5ndR/XpzbH5P0d5Y6a5hsjg3qqC4H4wL2pOnQDcs8PrYt2SZe8vVed\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        13,\"candidatesTokenCount\": 30,\"totalTokenCount\": 316,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 273},\"modelVersion\":
-        \"gemini-3-pro-preview\",\"responseId\": \"we1BaaLpIarwqtsPtcasgAU\"}\r\n\r\n"
+        13,\"candidatesTokenCount\": 30,\"totalTokenCount\": 351,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 308},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -65,11 +73,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Dec 2025 23:39:45 GMT
+      - Fri, 09 Jan 2026 00:52:55 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=3084
+      - gfet4t7; dur=2829
       Transfer-Encoding:
       - chunked
       Vary:

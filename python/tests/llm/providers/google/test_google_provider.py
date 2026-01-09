@@ -11,6 +11,7 @@ from google.genai.errors import (
 from google.genai.types import GenerateContentResponse
 
 from mirascope import llm
+from mirascope.llm.providers.google._utils.encode import compute_thinking_budget
 from mirascope.llm.providers.google._utils.errors import map_google_error
 from mirascope.llm.providers.google.provider import GoogleProvider
 
@@ -185,3 +186,7 @@ def test_map_google_error_fallback() -> None:
     error = GoogleClientError(418, {"error": {"message": "I'm a teapot"}})
     result = map_google_error(error)
     assert result == llm.APIError
+
+
+def test_param_processing_thinking_default() -> None:
+    assert compute_thinking_budget("default", 1000) == -1

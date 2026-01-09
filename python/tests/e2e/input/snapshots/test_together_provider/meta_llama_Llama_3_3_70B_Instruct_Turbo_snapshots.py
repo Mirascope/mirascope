@@ -1,6 +1,10 @@
 from inline_snapshot import snapshot
 
-from mirascope.llm import AssistantMessage, Text, UserMessage
+from mirascope.llm import (
+    AssistantMessage,
+    Text,
+    UserMessage,
+)
 
 test_snapshot = snapshot(
     {

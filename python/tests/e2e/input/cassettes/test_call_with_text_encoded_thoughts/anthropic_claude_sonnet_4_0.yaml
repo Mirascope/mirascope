@@ -12,7 +12,7 @@ interactions:
       we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
       I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},{"type":"text","text":"Yes.","cache_control":null}]},{"role":"user","content":[{"type":"text","text":"Please
       tell me what the number is.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
-      answer with extreme concision, giving the answer and no added context.","cache_control":{"type":"ephemeral"}}]}'
+      answer with extreme concision, giving the answer and no added context.","cache_control":{"type":"ephemeral"}}],"thinking":{"type":"enabled","budget_tokens":1024}}'
     headers:
       accept:
       - application/json
@@ -23,13 +23,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1251'
+      - '1302'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
       - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -55,16 +57,34 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
+        lxDk/U2H9ew5uTf7/PwvRu1lLg8IAAA=
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b026e8e9afd7654-SEA
+      - 9baff03069f90882-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -72,15 +92,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Dec 2025 23:27:38 GMT
+      - Fri, 09 Jan 2026 00:50:07 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -90,29 +106,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:27:38Z'
+      - '2026-01-09T00:50:04Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:27:38Z'
+      - '2026-01-09T00:50:07Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:27:36Z'
+      - '2026-01-09T00:50:03Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:27:38Z'
+      - '2026-01-09T00:50:04Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF24zwhMffo4ybM5r2Ac
+      - req_011CWvtLqf1rrrdWLwL79ZXp
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1950'
+      - '4880'
     status:
       code: 200
       message: OK

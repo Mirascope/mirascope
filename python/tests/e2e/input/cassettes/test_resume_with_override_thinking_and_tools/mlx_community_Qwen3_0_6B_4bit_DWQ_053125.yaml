@@ -5,7 +5,7 @@ interactions:
       the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
       {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
       "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
-      true, "thinking_budget": -1}}}'
+      true, "thinking_budget": 6400}}}'
     headers:
       accept:
       - '*/*'
@@ -14,7 +14,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '420'
+      - '422'
       content-type:
       - application/json
       host:
@@ -23,30 +23,29 @@ interactions:
       - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
       - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/3VU2XbaOhR95ytUv7QNNMxT17oPTA6EyQESCDd3NcKWbWFZciQZbLLy75VNkkJu
-        yoORzrT3GXSeMwBoJqQWtqBEQvsJ/lUSAJ7Tb6JjVCIqleJNpIQB5PKP7fH3fHJWJhJFiZN2cTFC
-        8qsAHUjMkCgMsHChBDreMApNE4NJ6G8Q/3Jx8UAf6NSDcQ4MgEAISBeBUCAO9pBKkV6LhYJ0T3xp
-        6nsJwISBgLMNQb666IzLkCooomIpN44UPgSuyjIGdkhNiRnNgUcL2TAk8hcM8KXJ/CCU6JeNN4+J
-        E0w4W0hghyIL2IwDFEFTkljpsFAgC0XH5FhiExKwwRLgI0VMVRygCgR9JBX5R6ri7V1suoAiZCkj
-        BjZIJSiTk0oo+XPULTz6cyQUp+QYf+UIQFsmCc5ZDvgxgCl1EBBIEzwhOcSOKxW9PeTWT1W4BCOJ
-        qFiRv2b4jf6jgL8/pmmoZgiXhcQCFksZSI5N78sD1XIfOqqsFJhqquQhOtG95P4+Bm/lVu0nZzP0
-        qqeqTMmYnLD7gKuMIHfEJ86JuxKrVD4oXs7uL5/nMVethTLkKXxH3ndaq9GgRPehsd+tr71tS2+j
-        Gb/a6qzjzfruAPE47Ft14djzmewgPCm020vWyUZGt1YxK4VJb+U3ysvptrUdTKc1Pb/uH6a4sp2E
-        DSfMt52F6xTiqiiso+tFrMc7HGRLN5t1d5Kndsc2Brq7OUwPJBDzQr4782YGue+ve8ZMRrwiadnJ
-        jk2oL1k9m7euG1nd97PQNyJxFRWLFQgDPjSbdRneZifrwfam6C8mM3MWw5G73LArMRc4qOkbelWZ
-        VmYLspAND67tcv62qOt0PhzB6mFdvBv0CiV70W3Xe5G9M+bDYXMHd3JAxxFZk+YhX9qMO9mWVe+W
-        lteBudzuS2Mz6vVcozUtcmOlFMSjEQpv/Uan67EKdxiRJButaMvLB4Og0rxp7zr2fIeq0bZwuInm
-        qBzkG2bAC3V3XFrdL8m2KJ3eqF2OBrvmlTdc2TO2M5+m3C0d2rTf15tuebUL+/ndXCfLbfb+qXS/
-        x63RajebDO+evJExWmuZzybhvz9ToHFG0q77zELkzfx9TDQbUyzcGYKCJfOlzRdT430oNUwtFClx
-        4YP9GAkBnTTuOImrHjVFXG0h633npK/ym/h+ecRMyKW0tDDxHCMJ1RKG75OuqZXmB3LBPEQ7LEyX
-        cLV6hD3Z2Wf6Yv1VL5mE5FxVK+b+F1d0FSomp8v8ZM+rAkGCZZwkteitFidPUwGc0XqrYuak2G9P
-        7Zxio5l5rfaxAXeIC3ystIN8VcsfpcvqD5tA4aZ4mlqJAaMCDazExqi0GnAdR0NU2z5JYTxVkV9r
-        eVrmJfMbzJeyy80GAAA=
+        H4sIAAAAAAAC/3VU23LiOBB95ytUfpnZmAGbQCBTNQ9cQiATAoRLgM1WImzZFtbFSHK4pPLvI5uQ
+        QJbhgQL16T5Hp1v9mgHAcCBzsQsVksZP8K8+AeA1/U5inCnElA7sj/RhBIX6xO4+rwe/NUShdZJk
+        tJBA3ySAQMaUQrEB3AN0A1TAYz9QIBLcQVL+fGSP7OysDokTE6gw8zUCAduyVACaeM4ZdBwM7mI6
+        R+LsLEF3Q7jJpqhYIgFWkCl5MomlSTkwDKDSSqQSEGtqj4sVFG4OtEHI+CpJfVfqxcxRmDMAXyAm
+        cE5QFjy7yIMxUU8wwjmH0yhW6MnD8+dEwq5uhBzsYQcSsgEukthnyAWaRQOwBFEsIi5RIgMBzHQ+
+        gMKPqfYW4J3wZ/b8jkeAnbgCWKH0mjkw4FmgebR0hjSJ4sDlSZWE/O9SgW4zkEilRDpHG6VL6UYQ
+        F8wRWMbYCXcYTCOCco/MyH5p6q5ruq9KxOgg9pb9+yTs7dTNJUdj9B5nkKJkUg6kfuHVIO2VPJGc
+        pOtjfZMvgbej/2+n7zHQPYIqFil9PW7XqpPbdoFtzLqcevE2vr9fe9sSrbw0Z/3Kwl8QelPxbubL
+        xYiotl0pwpYKe+agZvt2MZx2HpTsldWwez6eXTZMPsl7k2Vw3RuPvTzd3FmCzOn9g1VeR9Nt0Lsc
+        eQ+WwqOp41hsXbN79nV4kb/Km3e/W9vCYD27HQ/oknjRbJMvd3/f+OHqsmWzUTAd2KyPx8WwHw5v
+        6bLqdq9m1W54Lgbdl3KZdOej7q3nz8jLZjSOAyKvWNO54pY0Ka40q+2LaWTaS6s48UwtrijrdLSY
+        cqluBKl7bmMr3YoJRaNybo4XdV5QpnA6QX/aH/drleuWi2pr6qyGUacrVr9+GZlTjv/36bYhOEnd
+        pdxFZA//aIfhYYZlcI+g5EkfjcGw2/tovoGZi9b62PqC7+iNAf20biepC3zEkND7y/18u8lT+C7/
+        ye04E3GpLCNOMjtIQb3v4MdEGXoP0UgNeYhYncfpviuVdrQH6/Eobpff44orSI5DhUL2f3VlQ7Ni
+        crg3D1aqNggSrDbJpYZXk+HBE9AER7L2LmYOzN6P9LHEUvIsUrd3DRgjIfHOaR9R7eWPQq70wyNQ
+        BimfIZCMOJOo7SYY3HR96MFG8+mCUD3qVmUZ8GrHyLxl/gDqJf1KOAYAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -55,308 +54,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 12 Dec 2025 20:51:11 GMT
+      - Fri, 09 Jan 2026 01:19:04 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1821
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      - X-Origin
-      - Referer
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
-      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
-      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
-      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
-      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
-      true, "thinking_budget": -1}}}'
-    headers:
-      accept:
-      - '*/*'
-      accept-encoding:
-      - gzip, deflate
-      connection:
-      - keep-alive
-      content-length:
-      - '420'
-      content-type:
-      - application/json
-      host:
-      - generativelanguage.googleapis.com
-      user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-      x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-    method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAC/3VUW1PqSBB+51dM5eXseoEAInKqfEAOkiBwuEQB1y0Zkg4ZksyEuaBi+d/PJIiC
-        6+YhlfRlvv6+nu7XHEKGi6lHPCxBGD/RP9qC0Gv2Tn2MSqBSO3YmbUwwl5+x2+d171uHSHhOk4yj
-        IycAdE3mjGLXJajBqKIeV/HR0QN9oPWIk0UgT5BgSOpAJYCjJ0ylyH6LpimDvWyq4jnwPEI9hhLO
-        5hHEeWT/WANaMIkwCjSTCBCjWbZkLBIoAA46CAnQlgBLNPPAxyqSjzgheZfFiZLw6JP5DJEtqq+o
-        K4k+xEYUwMsjR6f9EMiNAPPoBXkgyIKCh3zGdQIRuiBbIolDEGhGZwgLhCnCfKFirV1GzkZLJWR2
-        nq4LuTiKEJHoiWh+M3qpic7yaETiRJePRVZoHnUghV2A3Ba+Zf+Oqpk/UOPki+oBU1pOLbzkCvZ8
-        byf/36od3Yau6aDP736KY0hbuSfVF1wdpMmKb5LTdG3W9L443g7+377nMdIyY6l4Bt9Q9lV90rFL
-        9Pm65UyGrdagfVYbsGDenvZ71aK8swbkpnkTd4P28ux8dceW5xjmzoVfbdeLrbhRrczvq9IqTWCB
-        1XRqr2y5xjcLv1vo1fruL9c734zt6tNg1Ro1IuVQpxuq8JjUBF8fj8rTpOKbhabV6dvXhcpkU6sV
-        7+5dtz4amsNQKMGSEp4WV4POxUtvCaa6KpVuafF2MnHofdn0x3UnPO9bol6uKm9TntDbTrvtlcZn
-        y3uRFIbrF/d6fltQ0dXzeNMPRy2TRAlxmpZpb7rNTevYUoXOWnRIHI5WQc8KF/Xy1Jq6vWC8ujCP
-        OXdIb1TgzXAc1Ja1nl+Ml9bT5aWR+07xfz/VNjiLMnVj5kG0C/9oh+ETSkQwBCxY2kdj5PzufzTf
-        INSDZ202v8R3QQi8yM7tpufqK0yB6wXjfc5WOgF/ib/zW8y0uKwsQ6WZXZBYLyT8caMMPe1xIh0W
-        Am0wlS2kSmULu7e/DvzF6rtfMomjQ1epdPKfc8UvjUqi/cW2t/O0QDgi8iUl5TQnzt4IaICDsnYq
-        5vbE3l3pwxIr6Vhkam8bcAdckK3SC4i1lqelfOXUj7AIMjyDg0gYFWB72USuelcYP57W59ZqU7X7
-        F5KEpD41cm+5P1zg56/ZBQAA
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 16 Dec 2025 18:22:42 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Server-Timing:
-      - gfet4t7; dur=1478
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      - X-Origin
-      - Referer
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
-      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
-      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
-      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
-      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
-      true, "thinking_budget": -1}}}'
-    headers:
-      accept:
-      - '*/*'
-      accept-encoding:
-      - gzip, deflate
-      connection:
-      - keep-alive
-      content-length:
-      - '420'
-      content-type:
-      - application/json
-      host:
-      - generativelanguage.googleapis.com
-      user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-      x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-    method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAC/31UWXPiOBB+51do/ZKZDMORcGWr8kA4gjkMBEOAna2JbMu2sJCMJANOKv99ZRMS
-        SGXWDy6p++vr61a/ZADQbEgd7ECJhPY3+EdJAHhJ/4mOUYmoVIqjSAlDyOUH9vC9nJwVRKJ9YqRd
-        XvaRvBCgAYkdERUDmD6UoI0tRqFtY2BEawvxvy4vf9FfdBjAOAt0EFEHcSFVXjmFRyASiIMdpFIA
-        qa7FQkH6Jz5o6iMHwAhxF9lSnfSLLQIekyleMkaUJQO+8kjU3cciwQCBUAp4cpALIyJ/wxDnbLYO
-        I4l+u9h6Am5EbYkZBVgAuIWYQIugLNj52PYTGdpDW5JYCVRVOqAIqZR1CQhjgQAEBwhglQQMkLJX
-        XhSbnqrliT4BKNRVRTp6czBHqS+bcY5EyKiTJp0k+LlWsEMXHAHoyrTuCcsmSA/J/+Enm+qYtcUs
-        EsCGhCQF/Kn0b/RWufn+lAMTvA4VaYiyyPNVsENDHXag8RfVsp9a7yfApPuSR+hE95r987wceVZz
-        Qs6G7U1P4Rol83SS4ae4CgS5J74wTsyVWJXzSfF6dn/9uo4J9iiUEU/DN/iiUZ/39Ssaj5qLSucR
-        y61Ti0dt/KiXS5X7zXikK7Z61SCcNmx/WliVVkTkq3cQVv3Z1XrbLw65EayoXr+XlXJrXiD752Xw
-        uC/w0lbFcep7vWTHeN6A3fa9hRw3jqOF0ctXSuOeUUYWF52aYeF6mdh+tI0Gi1Z943QNNt8ZXtN0
-        98t8cduPXWGWY+5ckfHsru8aYbcj89XZ5MYzljejenfVmNbWVFrWMJhb1dXsahQs42pY1OsT8tiJ
-        TLc+gMRZ0kEPXe9q+dIe9da9PH7wb+ab0rWE+/2dOxw/P+ztR9WL7sCQRdxweq1N/UHwRVy5ud/A
-        UbNaa0+6rCiCdmFtL6eRHw2N1rR5X5v3vOmws7J4YRj/4D9WdDxfh8ycVVqG0do4/WawWdfqZvxA
-        +J1NinGjXbxe1CG3nRBPm3jQXe52fHoT4RnVr2teoDtm3JLl2sR6Dne3t1rmqw7/+9FdjTOSdnPN
-        HESO8Pf2ay6mWPgPCAqWzI02MYej92HTsNpNeyUufMIPkBDQS/0OEr/qNVLE1cZzPpZI8ui+ie+5
-        Q8wkuTQtLUosB0hCtYXh+wRrIVfTLk0WINpgUbqFy+VD2JOlfaYvVt/0kklIzlWlo+2JX9FUUTE5
-        3eYni14RBAmWcVKU2ZqbJ09OBThL68hi5oTs4xM6T7F6nXlj+9CAmVr1+MC0h9aKy59XufJPl0Dh
-        p/G0wzIUSHcSTAiNO2g9Tzsunz1X9RFemISNPS3zmvkP9pAgR84GAAA=
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 16 Dec 2025 18:23:33 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Server-Timing:
-      - gfet4t7; dur=1849
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      - X-Origin
-      - Referer
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
-      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
-      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
-      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
-      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
-      true, "thinking_budget": -1}}}'
-    headers:
-      accept:
-      - '*/*'
-      accept-encoding:
-      - gzip, deflate
-      connection:
-      - keep-alive
-      content-length:
-      - '420'
-      content-type:
-      - application/json
-      host:
-      - generativelanguage.googleapis.com
-      user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-      x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-    method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAC/31VW3PyNhB951do/NI2F2KIuaQzeSDmEhNuCcZQmk4iy2tbYMuOJIdAJv+9MuQC
-        +dLywODds2fPHq/EawEhjWDmUQ9LENqf6G8VQeh1+53nEiaBSZX4CKlgirn8wu4+r3u/FUTCS16k
-        HR0Nl3h9giKQvwnkcsBLJEMqkJesWPHo6J7dMwsJABUFlAngaIWZFNvHkq7LELWpmzBMCEUsi13g
-        RYTsELOln0WRYs6BXkKyWMnEkiYMkQgwj9ZIyHwmBcByi3r0wMdZJB9wSoskidNMwoNP3UfkZ4xs
-        S3NhIGjAwEN+wlHKgVABiiwXXURWPgVGgsZpBJ9lSgReUhYgrBiUX4Ga4pE9IizUo+pyglYhcNjG
-        PEp2so5WISXh0S/j5RoIjkgWKZinhs0tGlNG9iyClzSihEqli8NTBkIh9xyTwOOdMVESUEWG4uQZ
-        cmKZ5NzR/1ixoorgkV0qpsed0xKJMMkiT7m85ZSckqVKjSXHNAil8mmFuVe8Z9rJtyVQdQqg9kDy
-        DPZybyf/vTkfpppK58HavecZjiHfrD3V3/oqEOaB+KE4L1dhNdu3xNvB89vPc4zVXmCZ8W17UxKz
-        MetZZfbSSZxBUhtNJjWe2XYs5l2yvmnJ4YaPp0ZpdndbnflGp3LRbhiBnTqyRTYdfb2ek470uknJ
-        9c42VrkbNsuValZr3jH9pr4EPJ0cm+Xnpxd33UjHJSfMRO/aDCZtx3ZLbQuOR42wd7toTGcdvy6H
-        lU3zaWKZ5oDZBjOvGt5ZfdKDu1K5NZ0vnJnT707xakYS92z417R0bOkL5re6TpUZllW9mOm3wEjJ
-        arOkmY2XQ2c8vXEr1mxueX2Q58fEjNjC6vcqjX57PqThZGmd1Z8dW5ppc8L1wWY5K7s1SDqmuenW
-        yzhulkZ+YGbVBhttwquUjDZu1JDtCZ1ch22dN42aAeu7Rbzs35IA8Hm/GneAiEVodLqLqqLo1RuZ
-        MZ8b/kY50B+UXJKKp2vXYfaq5xi1rGx4Fem0zuYLfbh5mTbuenXzOtCz+njGenPw1t3nczeaeq1O
-        CvGqb5CFCLrHQza56tiD2fnSl2aVhRNzemG3g5vV5aVW+Gkb/vnaBI0n0fbNx4kH0Qf8c1U0nzIq
-        wjvAIsl3TBvbw9HnYmqUefCiwvo3fB+EwMGWt5/zogAY8Pzkf11K+Yn9XfxR3PXMxW1laVleqd4P
-        Vnc3/tx2LeXqZEg7WQIzk2x7d1cqu7Z7V/1BvlR7z8tE4ugwVbk4+YVXNFVXGu3/B+z9PSiDcETl
-        Oh/Kbs3sveOpGhzI+nCxsGf2x3E7lFivFd7d3r0AB7igO6cDiJWXp+Vi5dSPsAi3/TQOIk2YAMvL
-        Mbo+aGLvod+Wa/Ekxehh1Ls6vQ20wlvhX6uIFFUEBwAA
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Wed, 17 Dec 2025 23:59:15 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Server-Timing:
-      - gfet4t7; dur=1480
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      - X-Origin
-      - Referer
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
-      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
-      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
-      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
-      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
-      true, "thinking_budget": -1}}}'
-    headers:
-      accept:
-      - '*/*'
-      accept-encoding:
-      - gzip, deflate
-      connection:
-      - keep-alive
-      content-length:
-      - '420'
-      content-type:
-      - application/json
-      host:
-      - generativelanguage.googleapis.com
-      user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-      x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
-    method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
-  response:
-    body:
-      string: !!binary |
-        H4sIAAAAAAAC/3VU23bqNhB95yu0/NQmhBLutCsPEAj3u0PIabpOhD22FWzJluSAycq/VzKHBNKU
-        By+kueyZvTXzlkHIsDC1iY0lCONP9Le6Qegt/WoboxKoVIbjlboMMZefvoff28l/5SJhp4OMi4s7
-        smYUWxZBt9i3Yh9LwihaSK4A3eTi4ok+0ckGJ1kkGJIeoFgAR1tMpUiP1/m89NBnFhoHa+A51MYi
-        QUBZ7Ho51EMcAtAGFYMlerbBwbEvf+KQ5CwWhLGEnw5ZPyMnplZaATmkd9mVZMhhHFnH8qirLQLQ
-        K/ZjEDlkesBBuUAWBQkiQQA2UdUj/JmJ6bIP2EeELAqxEDoboeiZ3qhGnhE+oCoGcQBS92HqGOGx
-        2LeRCxIFkHpgKraqmygm1sZP1NFG4DjEIkoNP8mhMUMUwNbI7BW49AjdICL/SoMlY75AmAPixPUk
-        0vXnnqiR/SKSp9nTOkkew4ntPfv/yh7bU2r6Z8/il52qxrTyJ6x/wVVOmLvim2Adrq4VU18M72fn
-        9+/7WBCXYhnzFP427jUbq2GvQLcvTt26XYa1WT3fqF6G0/th2PWGFac7q6y6MJYNp4udbRXunYHX
-        Gj1O133RuXuZFkeJGU02HbiMyg8he50knkmT8TgsRuviPk9WXruflPh+UZrfVxbBDx499IfVRr40
-        6cTUrbvReN6pPXas1nS7327MVVSfsuuJldjlXr/Wut90R/jB5EFhGeLQ98zdALbdcWcka1Fp0BC9
-        YZfhbq/UGIxnVofR4jQaLDqvndUlS6qjFsbxbF+o8/GyXm25TTGZ1/7A7ebjbl3J0yXftX/Mi+3i
-        6NaCDV5Xq7uKL2sQ7V8ePTJ8uZsNLvuledIcrE26beSTZo1U3ZsbI/Md4/98sm1w5qfsBswG/+j+
-        IYfhEEqENwcsmNbRWJiT6Yf4BqE27NR1/ov/CITAbpp3pPOqMaCg14P9Oa1qOP3fxO+5A6YuLi3L
-        iHXkCCRW+wt/vCgj5Or1SZNtgN6yON1f5fIB9mTdndmvq7/skknsn5sKhex/8oqWQiX+6R48WZGK
-        IOwTmeimzPbKPBkBBXBW1pHFzAnZxyd9XmJZj0XK9kGAJXBBDky7ECgurwq58pXjY+GleAYHETIq
-        oGen5LbnLQyTYg+iZiTFVFpXC2tmZN4z/wIyGk58BwYAAA==
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 18 Dec 2025 00:00:48 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Server-Timing:
-      - gfet4t7; dur=1458
+      - gfet4t7; dur=1449
       Transfer-Encoding:
       - chunked
       Vary:

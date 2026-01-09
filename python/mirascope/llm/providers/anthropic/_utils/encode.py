@@ -17,12 +17,21 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ...base import Params, _utils as _base_utils
+from ...base import Params, ThinkingLevel, _utils as _base_utils
 from ..model_id import AnthropicModelId, model_name
 
 DEFAULT_MAX_TOKENS = 16000
 # TODO: Change DEFAULT_FORMAT_MODE to strict when strict is no longer a beta feature.
 DEFAULT_FORMAT_MODE = "tool"
+
+# Thinking level to a float multiplier % of max tokens
+THINKING_LEVEL_TO_BUDGET_MULTIPLIER: dict[ThinkingLevel, float] = {
+    "minimal": 0,  # Will become 1024 (actual minimal value)
+    "low": 0.2,
+    "medium": 0.4,
+    "high": 0.6,
+    "max": 0.8,
+}
 
 AnthropicImageMimeType = Literal["image/jpeg", "image/png", "image/gif", "image/webp"]
 
@@ -36,6 +45,30 @@ def encode_image_mime_type(mime_type: ImageMimeType) -> AnthropicImageMimeType:
     )  # pragma: no cover
 
 
+def compute_thinking_budget(
+    level: ThinkingLevel,
+    max_tokens: int,
+) -> int:
+    """Compute Anthropic token budget from ThinkingConfig level.
+
+    Args:
+        level: The thinking level from ThinkingConfig
+        max_tokens: The max_tokens value for the request
+
+    Returns:
+        Token budget for thinking (0 to disable, positive for budget)
+    """
+
+    if level == "none":
+        return 0
+    elif level == "default":
+        return -1  # Do not set thinking, leave to provider default
+
+    multiplier: float = THINKING_LEVEL_TO_BUDGET_MULTIPLIER.get(level, 0.4)
+    budget = int(multiplier * max_tokens)
+    return max(1024, budget)  # Always return at least 1024, minimum allowed budget
+
+
 class ProcessedParams(TypedDict, total=False):
     """Common parameters processed from Params."""
 
@@ -45,7 +78,7 @@ class ProcessedParams(TypedDict, total=False):
     top_k: int
     stop_sequences: list[str]
     thinking: dict[str, Any]
-    encode_thoughts: bool
+    encode_thoughts_as_text: bool
 
 
 def process_params(params: Params, default_max_tokens: int) -> ProcessedParams:
@@ -55,7 +88,7 @@ def process_params(params: Params, default_max_tokens: int) -> ProcessedParams:
     """
     result: ProcessedParams = {
         "max_tokens": default_max_tokens,
-        "encode_thoughts": False,
+        "encode_thoughts_as_text": False,
     }
 
     with _base_utils.ensure_all_params_accessed(
@@ -72,13 +105,22 @@ def process_params(params: Params, default_max_tokens: int) -> ProcessedParams:
         if param_accessor.stop_sequences is not None:
             result["stop_sequences"] = param_accessor.stop_sequences
         if param_accessor.thinking is not None:
-            if param_accessor.thinking:
-                budget_tokens = max(1024, result["max_tokens"] // 2)
+            thinking_config = param_accessor.thinking
+            level = thinking_config.get("level")
+
+            # Compute token budget from level
+            budget_tokens = compute_thinking_budget(level, result["max_tokens"])
+            if budget_tokens == 0:
+                result["thinking"] = {"type": "disabled"}
+            elif budget_tokens > 0:
                 result["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
-                result["thinking"] = {"type": "disabled"}
-        if param_accessor.encode_thoughts_as_text:
-            result["encode_thoughts"] = True
+                # budget is -1, do not set thinking at all.
+                pass
+
+            # Handle encode_thoughts_as_text from ThinkingConfig
+            if thinking_config.get("encode_thoughts_as_text"):
+                result["encode_thoughts_as_text"] = True
 
     return result
 
@@ -253,7 +295,7 @@ def _encode_message(
 def _encode_messages(
     messages: Sequence[UserMessage | AssistantMessage],
     model_id: AnthropicModelId,
-    encode_thoughts: bool,
+    encode_thoughts_as_text: bool,
 ) -> Sequence[anthropic_types.MessageParam]:
     """Encode messages and add cache control for multi-turn conversations.
 
@@ -269,7 +311,7 @@ def _encode_messages(
         is_last = i == len(messages) - 1
         add_cache = has_assistant_message and is_last
         encoded_messages.append(
-            _encode_message(message, model_id, encode_thoughts, add_cache)
+            _encode_message(message, model_id, encode_thoughts_as_text, add_cache)
         )
     return encoded_messages
 
@@ -297,7 +339,7 @@ def encode_request(
     """Prepares a request for the Anthropic messages.create method."""
 
     processed = process_params(params, DEFAULT_MAX_TOKENS)
-    encode_thoughts = processed.pop("encode_thoughts", False)
+    encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 
     kwargs: MessageCreateKwargs = MessageCreateKwargs(
@@ -341,7 +383,9 @@ def encode_request(
         messages
     )
 
-    kwargs["messages"] = _encode_messages(remaining_messages, model_id, encode_thoughts)
+    kwargs["messages"] = _encode_messages(
+        remaining_messages, model_id, encode_thoughts_as_text
+    )
 
     if system_message_content:
         kwargs["system"] = [
