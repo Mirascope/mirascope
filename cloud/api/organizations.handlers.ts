@@ -96,7 +96,7 @@ export const createPaymentIntentHandler = (
     // Create PaymentIntent for credit purchase
     const result =
       yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
-        customerId: organization.stripeCustomerId,
+        stripeCustomerId: organization.stripeCustomerId,
         amountInDollars: payload.amount,
         metadata: {
           organizationId: organization.id,

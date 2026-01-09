@@ -2162,6 +2162,16 @@
               }
             }
           },
+          "409": {
+            "description": "SubscriptionPastDueError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPastDueError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "DatabaseError",
             "content": {
@@ -6406,6 +6416,36 @@
             "type": "string",
             "enum": [
               "StripeError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubscriptionPastDueError": {
+        "type": "object",
+        "required": [
+          "message",
+          "stripeCustomerId",
+          "pastDueSubscriptionIds",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "stripeCustomerId": {
+            "type": "string"
+          },
+          "pastDueSubscriptionIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "SubscriptionPastDueError"
             ]
           }
         },

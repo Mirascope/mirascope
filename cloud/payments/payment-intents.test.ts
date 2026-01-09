@@ -13,7 +13,7 @@ describe("payment intents", () => {
 
         const result =
           yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
-            customerId: "cus_test123",
+            stripeCustomerId: "cus_test123",
             amountInDollars: 50,
             metadata: {
               organizationId: "org_123",
@@ -55,7 +55,7 @@ describe("payment intents", () => {
         const payments = yield* Payments;
 
         yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
-          customerId: "cus_test123",
+          stripeCustomerId: "cus_test123",
           amountInDollars: 50,
           metadata: {
             organizationId: "org_123",
@@ -74,7 +74,9 @@ describe("payment intents", () => {
                   create: (params: StripeSDK.PaymentIntentCreateParams) => {
                     // Verify metadata
                     expect(params.metadata).toBeDefined();
-                    expect(params.metadata?.customerId).toBe("cus_test123");
+                    expect(params.metadata?.stripeCustomerId).toBe(
+                      "cus_test123",
+                    );
                     expect(params.metadata?.creditAmountInCents).toBe("5000");
                     expect(params.metadata?.organizationId).toBe("org_123");
                     expect(params.metadata?.customKey).toBe("customValue");
@@ -111,7 +113,7 @@ describe("payment intents", () => {
         const payments = yield* Payments;
 
         yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
-          customerId: "cus_test123",
+          stripeCustomerId: "cus_test123",
           amountInDollars: 123.45,
         });
       }).pipe(
@@ -147,7 +149,7 @@ describe("payment intents", () => {
 
         const result = yield* payments.paymentIntents
           .createRouterCreditsPurchaseIntent({
-            customerId: "cus_test123",
+            stripeCustomerId: "cus_test123",
             amountInDollars: 50,
           })
           .pipe(Effect.flip);
@@ -187,7 +189,7 @@ describe("payment intents", () => {
 
           const result = yield* payments.paymentIntents
             .createRouterCreditsPurchaseIntent({
-              customerId: "cus_test123",
+              stripeCustomerId: "cus_test123",
               amountInDollars: 50,
             })
             .pipe(Effect.flip);

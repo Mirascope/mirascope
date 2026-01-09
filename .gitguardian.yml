@@ -8,3 +8,11 @@ ignored-matches:
   # Ignore the specific mock database URL used in test_security.py
   - name: "Mock PostgreSQL credentials for testing"
     match: "postgresql://user:pass@host"
+
+  # Ignore mock Stripe API keys used in tests
+  - name: "Mock Stripe API key for testing (sk_test_mock)"
+    match: "sk_test_mock"
+
+  # Ignore mock Stripe Payment Intent Client Secret used in tests
+  - name: "Mock Stripe Payment Intent Client Secret for testing (pi_client_secret_mock)"
+    match: "pi_client_secret_mock"

@@ -61,6 +61,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
   StripeError,
+  SubscriptionPastDueError,
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import { OrganizationMemberships } from "@/db/organization-memberships";
@@ -242,14 +243,13 @@ export class Organizations extends BaseAuthenticatedEffectService<
       const organizationId = crypto.randomUUID();
 
       // Create Stripe customer and subscription for organization
-      const { customerId: stripeCustomerId } = yield* payments.customers.create(
-        {
+      const { stripeCustomerId: stripeCustomerId } =
+        yield* payments.customers.create({
           organizationId,
           organizationName: data.name,
           organizationSlug: data.slug,
           email: user.email,
-        },
-      );
+        });
 
       // Create organization in transaction with membership creation
       return yield* client
@@ -512,7 +512,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
       }
 
       yield* payments.customers.update({
-        customerId: updated.stripeCustomerId,
+        stripeCustomerId: updated.stripeCustomerId,
         organizationName: data.name,
         organizationSlug: data.slug,
       });
@@ -543,7 +543,11 @@ export class Organizations extends BaseAuthenticatedEffectService<
     organizationId: string;
   }): Effect.Effect<
     void,
-    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    | NotFoundError
+    | PermissionDeniedError
+    | DatabaseError
+    | SubscriptionPastDueError
+    | StripeError,
     DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
@@ -583,7 +587,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
       }
 
       // Cancel all active subscriptions before deleting
-      yield* payments.customers.cancelSubscriptions(org.stripeCustomerId);
+      yield* payments.customers.subscriptions.cancel(org.stripeCustomerId);
 
       // Delete the organization (cascade handles memberships and audits)
       yield* client

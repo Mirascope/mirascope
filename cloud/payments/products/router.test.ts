@@ -1557,7 +1557,7 @@ describe("Router Product", () => {
 
         const creditGrantId = yield* payments.products.router.createCreditGrant(
           {
-            customerId: "cus_test123",
+            stripeCustomerId: "cus_test123",
             amountInDollars: 50,
           },
         );
@@ -1607,7 +1607,7 @@ describe("Router Product", () => {
         const expiresAt = new Date("2026-01-01T00:00:00Z");
 
         yield* payments.products.router.createCreditGrant({
-          customerId: "cus_test123",
+          stripeCustomerId: "cus_test123",
           amountInDollars: 50,
           expiresAt,
         });
@@ -1650,7 +1650,7 @@ describe("Router Product", () => {
         const payments = yield* Payments;
 
         yield* payments.products.router.createCreditGrant({
-          customerId: "cus_test123",
+          stripeCustomerId: "cus_test123",
           amountInDollars: 50,
           metadata: {
             paymentIntentId: "pi_123",

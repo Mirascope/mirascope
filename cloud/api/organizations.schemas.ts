@@ -6,6 +6,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
   StripeError,
+  SubscriptionPastDueError,
 } from "@/errors";
 import { createSlugSchema } from "@/db/slug";
 
@@ -122,6 +123,9 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(SubscriptionPastDueError, {
+        status: SubscriptionPastDueError.status,
+      })
       .addError(StripeError, { status: StripeError.status }),
   )
   .add(

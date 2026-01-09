@@ -79,14 +79,14 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
             });
 
             // Extract metadata
-            const customerId =
+            const stripeCustomerId =
               typeof paymentIntent.customer === "string"
                 ? paymentIntent.customer
                 : paymentIntent.customer?.id;
             const creditAmountInCents =
               paymentIntent.metadata?.creditAmountInCents;
 
-            if (!customerId || !creditAmountInCents) {
+            if (!stripeCustomerId || !creditAmountInCents) {
               console.error("Missing metadata in payment intent:", {
                 paymentIntentId: paymentIntent.id,
                 metadata: paymentIntent.metadata,
@@ -109,14 +109,14 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
 
             // Create the credit grant
             console.log("Creating credit grant:", {
-              customerId,
+              stripeCustomerId,
               amountInDollars,
               paymentIntentId: paymentIntent.id,
             });
 
             const creditGrantId =
               yield* payments.products.router.createCreditGrant({
-                customerId,
+                stripeCustomerId,
                 amountInDollars,
                 expiresAt,
                 metadata: {

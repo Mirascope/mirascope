@@ -27,7 +27,8 @@ export const Route = createFileRoute("/privacy")({
     };
   },
   loader: async (
-    ctx: LoaderFnContext<any, any, any, Record<string, never>>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ctx: LoaderFnContext<unknown, any, "/privacy", Record<string, never>>,
   ): Promise<PolicyLoaderData> => {
     return privacyContentLoader()(ctx);
   },

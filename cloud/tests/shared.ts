@@ -62,3 +62,15 @@ export function createCustomIt<TServices>(
     },
   }) as CustomIt<TServices>;
 }
+
+/**
+ * Ensures a value is wrapped in an Effect.
+ * If the value is already an Effect, returns it as-is.
+ * Otherwise, wraps it with Effect.succeed.
+ */
+export const ensureEffect = <A, E = never, R = never>(
+  value: A | Effect.Effect<A, E, R>,
+): Effect.Effect<A, E, R> =>
+  Effect.isEffect(value)
+    ? value
+    : (Effect.succeed(value) as Effect.Effect<A, E, R>);

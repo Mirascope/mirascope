@@ -9,6 +9,7 @@
 import { Effect } from "effect";
 import { Stripe } from "@/payments/client";
 import { StripeError } from "@/errors";
+import { Subscriptions } from "@/payments/subscriptions";
 
 /**
  * Parameters for creating a Stripe customer with subscription for an organization.
@@ -29,7 +30,7 @@ export interface CreateCustomerParams {
  */
 export interface CreateCustomerResult {
   /** Stripe customer ID */
-  customerId: string;
+  stripeCustomerId: string;
   /** Stripe subscription ID */
   subscriptionId: string;
 }
@@ -39,7 +40,7 @@ export interface CreateCustomerResult {
  */
 export interface UpdateCustomerParams {
   /** Stripe customer ID */
-  customerId: string;
+  stripeCustomerId: string;
   /** Updated organization name (optional) */
   organizationName?: string;
   /** Updated organization slug (optional) */
@@ -49,14 +50,15 @@ export interface UpdateCustomerParams {
 /**
  * Customers service for managing Stripe customers.
  *
- * Provides methods for creating, updating, and deleting Stripe customers,
- * as well as managing subscriptions and retrieving credit balances.
+ * Provides methods for creating, updating, and deleting Stripe customers.
+ * Subscription management is handled through the nested `subscriptions` property.
  *
  * @example
  * ```ts
  * const program = Effect.gen(function* () {
  *   const payments = yield* Payments;
  *
+ *   // Customer operations
  *   const result = yield* payments.customers.create({
  *     organizationId: "org_123",
  *     organizationName: "Acme Corp",
@@ -64,7 +66,8 @@ export interface UpdateCustomerParams {
  *     email: "billing@acme.com",
  *   });
  *
- *   console.log(result.customerId); // "cus_123"
+ *   // Subscription operations
+ *   const details = yield* payments.customers.subscriptions.get(result.stripeCustomerId);
  * });
  * ```
  */
@@ -73,6 +76,13 @@ export class Customers {
   readonly config = {
     version: "1.0.0",
   };
+
+  /** Subscriptions service for managing customer subscriptions */
+  readonly subscriptions: Subscriptions;
+
+  constructor() {
+    this.subscriptions = new Subscriptions();
+  }
   /**
    * Creates a Stripe customer and subscription for an organization.
    *
@@ -128,7 +138,7 @@ export class Customers {
       });
 
       return {
-        customerId: customer.id,
+        stripeCustomerId: customer.id,
         subscriptionId: subscription.id,
       };
     });
@@ -167,7 +177,9 @@ export class Customers {
         params.organizationSlug !== undefined
       ) {
         // Fetch current metadata to preserve organizationId
-        const customer = yield* stripe.customers.retrieve(params.customerId);
+        const customer = yield* stripe.customers.retrieve(
+          params.stripeCustomerId,
+        );
         const currentMetadata = "metadata" in customer ? customer.metadata : {};
 
         updateData.metadata = {
@@ -183,36 +195,7 @@ export class Customers {
 
       // Only update if there's something to change
       if (Object.keys(updateData).length > 0) {
-        yield* stripe.customers.update(params.customerId, updateData);
-      }
-    });
-  }
-
-  /**
-   * Cancels all active subscriptions for a Stripe customer.
-   *
-   * Used when deleting an organization to properly clean up billing.
-   * Cancels subscriptions immediately without proration.
-   *
-   * @param customerId - The Stripe customer ID
-   * @returns Effect that succeeds when all subscriptions are cancelled
-   * @throws StripeError - If cancellation fails
-   */
-  cancelSubscriptions(
-    customerId: string,
-  ): Effect.Effect<void, StripeError, Stripe> {
-    return Effect.gen(function* () {
-      const stripe = yield* Stripe;
-
-      // List all active subscriptions for the customer
-      const subscriptions = yield* stripe.subscriptions.list({
-        customer: customerId,
-        status: "active",
-      });
-
-      // Cancel each subscription immediately
-      for (const subscription of subscriptions.data) {
-        yield* stripe.subscriptions.cancel(subscription.id);
+        yield* stripe.customers.update(params.stripeCustomerId, updateData);
       }
     });
   }
@@ -223,14 +206,14 @@ export class Customers {
    * Use this for cleanup when organization creation fails after Stripe customer
    * has been created.
    *
-   * @param customerId - The Stripe customer ID to delete
+   * @param stripeCustomerId - The Stripe customer ID to delete
    * @returns Effect that succeeds when customer is deleted
    * @throws StripeError - If deletion fails
    */
-  delete(customerId: string): Effect.Effect<void, StripeError, Stripe> {
+  delete(stripeCustomerId: string): Effect.Effect<void, StripeError, Stripe> {
     return Effect.gen(function* () {
       const stripe = yield* Stripe;
-      yield* stripe.customers.del(customerId);
+      yield* stripe.customers.del(stripeCustomerId);
     });
   }
 }
