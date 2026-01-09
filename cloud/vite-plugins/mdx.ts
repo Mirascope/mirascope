@@ -23,12 +23,8 @@
  */
 
 import type { Plugin } from "vite";
-import { compile } from "@mdx-js/mdx";
-import remarkGfm from "remark-gfm";
-import rehypePrettyCode from "rehype-pretty-code";
 import fs from "node:fs";
-import { parseFrontmatter } from "../app/lib/content/frontmatter";
-import { extractTOC } from "../app/lib/content/toc";
+import { compileMDXContent } from "../app/lib/content/mdx-compile";
 
 export function viteMDX(): Plugin {
   return {
@@ -45,32 +41,9 @@ export function viteMDX(): Plugin {
         // Read the MDX file content
         const rawContent = fs.readFileSync(id, "utf-8");
 
-        // Parse frontmatter
-        const { frontmatter, content } = parseFrontmatter(rawContent);
-
-        // Extract TOC
-        const tableOfContents = extractTOC(content);
-
-        // Compile MDX to JSX
-        const result = await compile(content, {
-          development: process.env.NODE_ENV === "development",
-          outputFormat: "program", // Output as a full ESM program
-          remarkPlugins: [remarkGfm],
-          rehypePlugins: [
-            [
-              rehypePrettyCode,
-              {
-                theme: "github-dark",
-                keepBackground: false,
-              },
-            ],
-          ],
-        });
-
-        let jsxCode = String(result);
-
-        // Remove ALL default exports from MDX output to avoid conflicts
-        jsxCode = jsxCode.replace(/export\s+default\s+MDXContent;?\s*/g, "");
+        // Compile MDX using shared utility
+        const { jsxCode, frontmatter, tableOfContents, content } =
+          await compileMDXContent(rawContent);
 
         // Export as a named export 'mdx' containing component and metadata
         const moduleCode = `

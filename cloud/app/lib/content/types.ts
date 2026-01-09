@@ -1,3 +1,5 @@
+import type { ProcessedMDX } from "@/app/lib/mdx/types";
+
 /**
  * Table of contents item extracted from MDX headings
  */
@@ -40,13 +42,7 @@ export interface ContentMeta {
 export interface Content<T extends ContentMeta = ContentMeta> {
   meta: T; // Typed, validated metadata
   content: string; // MDX with frontmatter stripped out
-
-  // MDX structure expected by components (used in MDXRenderer)
-  mdx: {
-    code: string; // Compiled MDX code
-    frontmatter: Record<string, unknown>; // Extracted frontmatter
-    tableOfContents: TOCItem[]; // Table of contents extracted from headings
-  };
+  mdx: ProcessedMDX; // Pre-compiled MDX component with metadata
 }
 
 /* ========== BLOG CONTENT TYPES =========== */

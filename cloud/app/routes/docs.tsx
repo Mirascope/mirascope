@@ -7,7 +7,7 @@ export const Route = createFileRoute("/docs")({
 function DocsLayout() {
   return (
     <div className="docs-layout">
-      {/* This Outlet will render child routes like /docs/v1/test */}
+      {/* This Outlet will render child routes like /docs/v1/placeholder */}
       {/* Eventually this will include sidebar, header, etc. */}
       <Outlet />
     </div>

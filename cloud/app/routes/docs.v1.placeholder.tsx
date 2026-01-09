@@ -1,7 +1,7 @@
 /**
  * Test route for MDX rendering
  *
- * Route: /docs/v1/test
+ * Route: /docs/v1/placeholder
  */
 
 import { createFileRoute } from "@tanstack/react-router";
