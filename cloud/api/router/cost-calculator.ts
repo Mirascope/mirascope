@@ -85,7 +85,7 @@ export abstract class BaseCostCalculator {
   public calculate(
     modelId: string,
     usage: TokenUsage,
-  ): Effect.Effect<CostBreakdown | null, Error> {
+  ): Effect.Effect<CostBreakdown | null, never> {
     return Effect.gen(this, function* () {
       // Get pricing data (null if unavailable)
       const pricing = yield* getModelPricing(this.provider, modelId).pipe(
@@ -96,34 +96,38 @@ export abstract class BaseCostCalculator {
         return null;
       }
 
-      // Calculate costs in centi-cents using BIGINT (pricing is centi-cents per million tokens)
-      const inputCost =
-        (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
-      const outputCost =
-        (BigInt(usage.outputTokens) * pricing.output) / 1_000_000n;
+      return yield* Effect.try(() => {
+        const inputCost =
+          (BigInt(usage.inputTokens) * pricing.input) / 1_000_000n;
+        const outputCost =
+          (BigInt(usage.outputTokens) * pricing.output) / 1_000_000n;
 
-      const cacheReadCost =
-        usage.cacheReadTokens && pricing.cache_read
-          ? (BigInt(usage.cacheReadTokens) * pricing.cache_read) / 1_000_000n
-          : undefined;
+        const cacheReadCost =
+          usage.cacheReadTokens && pricing.cache_read
+            ? (BigInt(usage.cacheReadTokens) * pricing.cache_read) / 1_000_000n
+            : undefined;
 
-      // Use provider-specific cache write cost calculation
-      const cacheWriteCost = this.calculateCacheWriteCost(
-        usage.cacheWriteTokens,
-        usage.cacheWriteBreakdown,
-        pricing.cache_write || 0n,
-      );
+        // Use provider-specific cache write cost calculation
+        const cacheWriteCost = this.calculateCacheWriteCost(
+          usage.cacheWriteTokens,
+          usage.cacheWriteBreakdown,
+          pricing.cache_write || 0n,
+        );
 
-      const totalCost =
-        inputCost + outputCost + (cacheReadCost || 0n) + (cacheWriteCost || 0n);
+        const totalCost =
+          inputCost +
+          outputCost +
+          (cacheReadCost || 0n) +
+          (cacheWriteCost || 0n);
 
-      return {
-        inputCost,
-        outputCost,
-        cacheReadCost,
-        cacheWriteCost,
-        totalCost,
-      };
+        return {
+          inputCost,
+          outputCost,
+          cacheReadCost,
+          cacheWriteCost,
+          totalCost,
+        };
+      }).pipe(Effect.orElseSucceed(() => null));
     });
   }
 }

@@ -484,6 +484,16 @@ export class MockPayments {
             });
           },
         },
+        meterEvents: {
+          create: () =>
+            Effect.succeed({
+              id: `evt_mock_${crypto.randomUUID()}`,
+              object: "billing.meter_event" as const,
+              created: Date.now(),
+              event_name: "use_credits",
+              livemode: false,
+            }),
+        },
       },
       config: {
         apiKey: "sk_test_mock",
@@ -593,6 +603,16 @@ export const MockStripe = Layer.succeed(Stripe, {
           object: "list" as const,
           data: MOCK_CREDIT_GRANTS_DATA,
           has_more: false,
+        }),
+    },
+    meterEvents: {
+      create: () =>
+        Effect.succeed({
+          id: `evt_mock_${crypto.randomUUID()}`,
+          object: "billing.meter_event" as const,
+          created: Date.now(),
+          event_name: "use_credits",
+          livemode: false,
         }),
     },
   },

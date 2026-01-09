@@ -216,12 +216,12 @@ export class Database extends Context.Tag("Database")<
    *
    * @example
    * ```ts
-   * const DbLive = Database.Live({
+   * const DatabaseLive = Database.Live({
    *   database: { connectionString: process.env.DATABASE_URL },
    *   payments: { apiKey: process.env.STRIPE_SECRET_KEY, routerPriceId: "price_..." },
    * });
    *
-   * program.pipe(Effect.provide(DbLive));
+   * program.pipe(Effect.provide(DatabaseLive));
    * ```
    */
   static Live = (config: {
@@ -229,16 +229,15 @@ export class Database extends Context.Tag("Database")<
     payments: StripeConfig;
   }) => {
     const drizzleLayer = DrizzleORM.layer(config.database);
+
     const paymentsLayer = Payments.Live(config.payments).pipe(
       Layer.provide(drizzleLayer),
     );
 
-    return Layer.mergeAll(
-      Database.Default.pipe(
-        Layer.provide(drizzleLayer),
-        Layer.provide(paymentsLayer),
-      ),
-      paymentsLayer,
+    const databaseLayer = Database.Default.pipe(
+      Layer.provideMerge(Layer.mergeAll(drizzleLayer, paymentsLayer)),
     );
+
+    return Layer.mergeAll(drizzleLayer, paymentsLayer, databaseLayer);
   };
 }

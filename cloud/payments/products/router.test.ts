@@ -27,6 +27,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.merge(
                 Layer.succeed(Stripe, {
@@ -64,6 +65,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.merge(
                 Layer.succeed(Stripe, {
@@ -123,76 +125,79 @@ describe("Router Product", () => {
         expect(balanceInfo.creditBalance).toBe(100000n);
         // Meter usage: 1000 units = 1000 centi-cents ($0.10)
         expect(balanceInfo.meterUsage).toBe(1000n);
-        // Active reservations: 5000 centi-cents ($0.50)
+        // Active reservations: 5000 centi-cents ($0.50) - from custom mock
         expect(balanceInfo.activeReservations).toBe(5000n);
-        // Available: 100000 - 1000 = 99000 centi-cents ($9.90)
+        // Available: 100000 - 1000 = 99000 centi-cents ($9.90) (reservations not subtracted from available)
         expect(balanceInfo.availableBalance).toBe(99000n);
       }).pipe(
-        Effect.provide(Payments.Default),
         Effect.provide(
-          Layer.succeed(DrizzleORM, {
-            select: () => ({
-              from: () => ({
-                where: () => Effect.succeed([{ sum: "5000" }]), // Mock active reservations
-              }),
-            }),
-          } as unknown as Context.Tag.Service<typeof DrizzleORM>),
-        ),
-        Effect.provide(
-          Layer.succeed(Stripe, {
-            billing: {
-              creditGrants: {
-                list: () =>
-                  Effect.succeed({
-                    object: "list" as const,
-                    data: [
-                      {
-                        amount: {
-                          monetary: { value: 1000, currency: "usd" },
-                        },
-                        applicability_config: {
-                          scope: {
-                            prices: [{ id: "price_test_mock" }],
+          Payments.Default.pipe(
+            Layer.provide(
+              Layer.succeed(DrizzleORM, {
+                select: () => ({
+                  from: () => ({
+                    where: () => Effect.succeed([{ sum: "5000" }]), // Mock active reservations
+                  }),
+                }),
+              } as unknown as Context.Tag.Service<typeof DrizzleORM>),
+            ),
+            Layer.provide(
+              Layer.succeed(Stripe, {
+                billing: {
+                  creditGrants: {
+                    list: () =>
+                      Effect.succeed({
+                        object: "list" as const,
+                        data: [
+                          {
+                            amount: {
+                              monetary: { value: 1000, currency: "usd" },
+                            },
+                            applicability_config: {
+                              scope: {
+                                prices: [{ id: "price_test_mock" }],
+                              },
+                            },
+                          },
+                        ],
+                        has_more: false,
+                      }),
+                  },
+                  meters: {
+                    listEventSummaries: () =>
+                      Effect.succeed({
+                        object: "list" as const,
+                        data: [{ aggregated_value: 1000 }],
+                        has_more: false,
+                      }),
+                  },
+                },
+                subscriptions: {
+                  list: () =>
+                    Effect.succeed({
+                      object: "list" as const,
+                      data: [
+                        {
+                          id: "sub_123",
+                          customer: "cus_123",
+                          current_period_start: 1000000,
+                          current_period_end: 2000000,
+                          items: {
+                            data: [{ price: { id: "price_test_mock" } }],
                           },
                         },
-                      },
-                    ],
-                    has_more: false,
-                  }),
-              },
-              meters: {
-                listEventSummaries: () =>
-                  Effect.succeed({
-                    object: "list" as const,
-                    data: [{ aggregated_value: 1000 }],
-                    has_more: false,
-                  }),
-              },
-            },
-            subscriptions: {
-              list: () =>
-                Effect.succeed({
-                  object: "list" as const,
-                  data: [
-                    {
-                      id: "sub_123",
-                      customer: "cus_123",
-                      current_period_start: 1000000,
-                      current_period_end: 2000000,
-                      items: {
-                        data: [{ price: { id: "price_test_mock" } }],
-                      },
-                    },
-                  ],
-                  has_more: false,
-                }),
-            },
-            config: {
-              apiKey: "sk_test_mock",
-              routerPriceId: "price_test_mock",
-              routerMeterId: "meter_test_mock",
-            },
-          } as unknown as Context.Tag.Service<typeof Stripe>),
+                      ],
+                      has_more: false,
+                    }),
+                },
+                config: {
+                  apiKey: "sk_test_mock",
+                  routerPriceId: "price_test_mock",
+                  routerMeterId: "meter_test_mock",
+                },
+              } as unknown as Context.Tag.Service<typeof Stripe>),
+            ),
+          ),
         ),
       ),
     );
@@ -214,6 +219,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.merge(
                 Layer.succeed(Stripe, {
@@ -256,6 +262,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.merge(
                 Layer.succeed(Stripe, {
@@ -993,6 +1000,74 @@ describe("Router Product", () => {
     );
   });
 
+  describe("getUsageMeterBalance (additional coverage)", () => {
+    it.effect(
+      "returns usage balance in centicents (1:1 with meter units)",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          const balance =
+            yield* payments.products.router.getUsageMeterBalance("cus_123");
+
+          // 1000 units = 1000 centicents ($0.10)
+          expect(balance).toBe(1000n);
+        }).pipe(
+          Effect.provide(
+            Payments.Default.pipe(
+              Layer.provide(MockDrizzleORMLayer),
+              Layer.provide(
+                Layer.succeed(Stripe, {
+                  subscriptions: {
+                    list: () =>
+                      Effect.succeed({
+                        object: "list" as const,
+                        data: [
+                          {
+                            id: "sub_123",
+                            customer: "cus_123",
+                            current_period_start: 1000000,
+                            current_period_end: 2000000,
+                            items: {
+                              data: [{ price: { id: "price_test_mock" } }],
+                            },
+                          },
+                        ],
+                        has_more: false,
+                      }),
+                  },
+                  billing: {
+                    meters: {
+                      listEventSummaries: () =>
+                        Effect.succeed({
+                          object: "list" as const,
+                          data: [{ aggregated_value: 1000 }],
+                          has_more: false,
+                        }),
+                    },
+                  },
+                  prices: {
+                    retrieve: () =>
+                      Effect.succeed({
+                        id: "price_test_mock",
+                        object: "price" as const,
+                        unit_amount: null,
+                        unit_amount_decimal: null,
+                      }),
+                  },
+                  config: {
+                    apiKey: "sk_test_mock",
+                    routerPriceId: "price_test_mock",
+                    routerMeterId: "meter_test_mock",
+                  },
+                } as unknown as Context.Tag.Service<typeof Stripe>),
+              ),
+            ),
+          ),
+        ),
+    );
+  });
+
   describe("chargeForUsage", () => {
     beforeEach(() => {
       vi.restoreAllMocks();
@@ -1062,6 +1137,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.succeed(Stripe, {
                 prices: {
@@ -1118,6 +1194,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.succeed(Stripe, {
                 prices: {
@@ -1176,6 +1253,7 @@ describe("Router Product", () => {
         }).pipe(
           Effect.provide(
             Payments.Default.pipe(
+              Layer.provide(MockDrizzleORMLayer),
               Layer.provide(
                 Layer.succeed(Stripe, {
                   prices: {
@@ -1228,6 +1306,7 @@ describe("Router Product", () => {
         }).pipe(
           Effect.provide(
             Payments.Default.pipe(
+              Layer.provide(MockDrizzleORMLayer),
               Layer.provide(
                 Layer.succeed(Stripe, {
                   config: {
@@ -1267,6 +1346,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.succeed(Stripe, {
                 prices: {
@@ -1333,6 +1413,7 @@ describe("Router Product", () => {
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
+            Layer.provide(MockDrizzleORMLayer),
             Layer.provide(
               Layer.succeed(Stripe, {
                 config: {
@@ -1396,6 +1477,7 @@ describe("Router Product", () => {
         }).pipe(
           Effect.provide(
             Payments.Default.pipe(
+              Layer.provide(MockDrizzleORMLayer),
               Layer.provide(
                 Layer.succeed(Stripe, {
                   prices: {

@@ -1,5 +1,6 @@
-import { describe, it, expect, assert, vi, beforeEach } from "@effect/vitest";
+import { describe, it, expect, vi, beforeEach } from "@effect/vitest";
 import { Effect } from "effect";
+import assert from "node:assert";
 import {
   OpenAICostCalculator,
   AnthropicCostCalculator,
@@ -314,6 +315,18 @@ describe("CostCalculator", () => {
       };
 
       const usage = calculator.extractUsageFromStreamChunk(chunk);
+      expect(usage).toBeNull();
+    });
+
+    it("should return null for null chunk", () => {
+      const calculator = new OpenAICostCalculator();
+      const usage = calculator.extractUsageFromStreamChunk(null);
+      expect(usage).toBeNull();
+    });
+
+    it("should return null for non-object chunk", () => {
+      const calculator = new OpenAICostCalculator();
+      const usage = calculator.extractUsageFromStreamChunk("not an object");
       expect(usage).toBeNull();
     });
   });
@@ -828,6 +841,36 @@ describe("CostCalculator", () => {
 
         // Calculate returns null when fetch errors occur
         const result = yield* calculator.calculate("gpt-4o-mini", usage);
+        expect(result).toBeNull();
+      }),
+    );
+
+    it.effect("should handle decimal token values gracefully", () =>
+      Effect.gen(function* () {
+        const calculator = new OpenAICostCalculator();
+
+        // Test with decimal tokens (BigInt constructor throws on decimals)
+        const invalidUsage = {
+          inputTokens: 100.5,
+          outputTokens: 500,
+        };
+
+        const result = yield* calculator.calculate("gpt-4o-mini", invalidUsage);
+        expect(result).toBeNull();
+      }),
+    );
+
+    it.effect("should handle Infinity token values gracefully", () =>
+      Effect.gen(function* () {
+        const calculator = new OpenAICostCalculator();
+
+        // Test with Infinity tokens (BigInt constructor throws on Infinity)
+        const invalidUsage = {
+          inputTokens: Infinity,
+          outputTokens: 500,
+        };
+
+        const result = yield* calculator.calculate("gpt-4o-mini", invalidUsage);
         expect(result).toBeNull();
       }),
     );

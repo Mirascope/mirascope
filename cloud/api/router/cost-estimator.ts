@@ -387,6 +387,13 @@ function getCostEstimator(provider: ProviderName): BaseCostEstimator {
  * @returns Estimated cost
  * @throws PricingUnavailableError if pricing data cannot be fetched
  */
+/**
+ * Estimates the cost of an AI provider request.
+ *
+ * @param params - Estimation parameters
+ * @returns Effect that resolves to estimated cost
+ * @throws PricingUnavailableError if pricing data cannot be fetched
+ */
 export function estimateCost({
   provider,
   modelId,
