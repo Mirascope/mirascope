@@ -401,12 +401,12 @@ export default {
 
     // Stripe configuration validation
     if (
-      !env.STRIPE_API_KEY ||
+      !env.STRIPE_SECRET_KEY ||
       !env.STRIPE_ROUTER_PRICE_ID ||
       !env.STRIPE_ROUTER_METER_ID
     ) {
       console.error(
-        "[billingReconciliationCron] Missing Stripe configuration (STRIPE_API_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
+        "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
       );
       return;
     }
@@ -435,7 +435,7 @@ export default {
     );
     const drizzleLayer = DrizzleORM.layer({ connectionString: databaseUrl });
     const stripeLayer = Stripe.layer({
-      apiKey: env.STRIPE_API_KEY,
+      apiKey: env.STRIPE_SECRET_KEY,
       routerPriceId: env.STRIPE_ROUTER_PRICE_ID,
       routerMeterId: env.STRIPE_ROUTER_METER_ID,
     });

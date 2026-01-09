@@ -7,7 +7,7 @@ describe("billingReconciliationCron", () => {
     DATABASE_URL: "postgres://test:test@localhost:5432/test",
     ENVIRONMENT: "test",
     CLICKHOUSE_URL: "http://localhost:8123",
-    STRIPE_API_KEY: "sk_test_mock",
+    STRIPE_SECRET_KEY: "sk_test_mock",
     STRIPE_ROUTER_PRICE_ID: "price_test_mock",
     STRIPE_ROUTER_METER_ID: "meter_test_mock",
   };
@@ -44,7 +44,7 @@ describe("billingReconciliationCron", () => {
 
     const envWithoutStripe: CronTriggerEnv = {
       ...mockEnv,
-      STRIPE_API_KEY: undefined,
+      STRIPE_SECRET_KEY: undefined,
       STRIPE_ROUTER_PRICE_ID: undefined,
       STRIPE_ROUTER_METER_ID: undefined,
     };
@@ -52,7 +52,7 @@ describe("billingReconciliationCron", () => {
     await billingReconciliationCron.scheduled(mockEvent, envWithoutStripe);
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[billingReconciliationCron] Missing Stripe configuration (STRIPE_API_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
+      "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
     );
 
     consoleErrorSpy.mockRestore();

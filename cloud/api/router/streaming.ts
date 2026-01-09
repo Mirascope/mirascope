@@ -9,22 +9,25 @@ import { Effect, Stream, pipe, Ref } from "effect";
 import { ProxyError } from "@/errors";
 import { getCostCalculator, type ProviderName } from "@/api/router/providers";
 import type { TokenUsage } from "@/api/router/pricing";
-import { Database } from "@/db";
-import { Payments } from "@/payments";
 import type { ProxyResult } from "@/api/router/proxy";
 import {
   type RouterRequestIdentifiers,
   type RouterRequestContext,
   type ValidatedRouterRequest,
-  handleRouterRequestFailure,
+  enqueueRouterMetering,
 } from "@/api/router/utils";
+import { RouterMeteringQueueService } from "@/workers/routerMeteringQueue";
 
 /**
  * Result of parsing a streaming response.
  */
 export interface StreamParseResult {
   /** Effect that yields a Response with ReadableStream for the client */
-  responseEffect: Effect.Effect<Response, ProxyError>;
+  responseEffect: Effect.Effect<
+    Response,
+    ProxyError,
+    RouterMeteringQueueService
+  >;
 }
 
 /**
@@ -43,11 +46,6 @@ export interface ResponseMetadata {
  * Metering context for streaming responses.
  *
  * Provides the necessary information to perform metering when usage data is extracted.
- *
- * **Important**: The databaseUrl and stripe config are required because the Stream.ensuring
- * finalizer runs after the outer Effect scope has completed and disposed its services.
- * We need to create a fresh Database.Live layer with independent service lifecycle to
- * perform metering operations after the stream has been fully consumed by the client.
  */
 export interface StreamMeteringContext {
   /** Provider name (e.g., "openai", "anthropic", "google") */
@@ -60,14 +58,6 @@ export interface StreamMeteringContext {
   request: RouterRequestIdentifiers;
   /** Original response metadata */
   response: ResponseMetadata;
-  /** Database connection string for creating fresh DB connection in ensuring */
-  databaseUrl: string;
-  /** Stripe API key for payments */
-  stripeApiKey: string;
-  /** Stripe router price ID */
-  routerPriceId: string;
-  /** Stripe router meter ID */
-  routerMeterId: string;
 }
 
 /**
@@ -139,132 +129,60 @@ function processRemainingBuffer(
 }
 
 /**
- * Core metering logic for streaming responses.
+ * Settles metering for a streaming response after stream completes.
  *
- * **Exported for testing**: This function is exported to allow unit tests to verify
- * the metering logic with mocked Database and Payments layers.
+ * Calculates cost from usage data and enqueues to the router metering queue
+ * for asynchronous processing.
+ *
+ * **Note**: This runs in Stream.ensuring, which executes after the stream completes.
+ * The queue service must be provided in the outer scope.
  *
  * @param usage - Final usage data extracted from stream, or null if none found
  * @param meteringContext - Context with all necessary IDs and config
- * @returns Effect that performs metering operations (requires Database and Payments services)
+ * @returns Effect that completes when metering is enqueued (always succeeds)
  */
-export function performStreamMetering(
+export function settleMeteringForStream(
   usage: TokenUsage | null,
   meteringContext: StreamMeteringContext,
-): Effect.Effect<void, never, Database | Payments> {
+): Effect.Effect<void, never, RouterMeteringQueueService> {
   return Effect.gen(function* () {
-    const db = yield* Database;
-    const payments = yield* Payments;
-    const costCalculator = getCostCalculator(meteringContext.provider);
-
     if (!usage) {
-      yield* handleRouterRequestFailure(
-        meteringContext.request.routerRequestId,
-        meteringContext.reservationId,
-        meteringContext.request,
-        "No usage data from stream",
+      console.warn(
+        `[settleMeteringForStream] No usage data from stream for request ${meteringContext.request.routerRequestId}`,
       );
       return;
     }
 
     // Calculate cost
+    const costCalculator = getCostCalculator(meteringContext.provider);
     const costResult = yield* costCalculator.calculate(
       meteringContext.modelId,
       usage,
     );
 
     if (!costResult || costResult.totalCost <= 0) {
-      yield* handleRouterRequestFailure(
-        meteringContext.request.routerRequestId,
-        meteringContext.reservationId,
-        meteringContext.request,
-        "Cost calculation failed",
+      console.warn(
+        `[settleMeteringForStream] Cost calculation failed for request ${meteringContext.request.routerRequestId}`,
       );
       return;
     }
 
-    // Update router request with usage and cost
-    yield* db.organizations.projects.environments.apiKeys.routerRequests.update(
-      {
-        userId: meteringContext.request.userId,
-        organizationId: meteringContext.request.organizationId,
-        projectId: meteringContext.request.projectId,
-        environmentId: meteringContext.request.environmentId,
-        apiKeyId: meteringContext.request.apiKeyId,
-        routerRequestId: meteringContext.request.routerRequestId,
-        data: {
-          inputTokens: usage.inputTokens ? BigInt(usage.inputTokens) : null,
-          outputTokens: usage.outputTokens ? BigInt(usage.outputTokens) : null,
-          cacheReadTokens: usage.cacheReadTokens
-            ? BigInt(usage.cacheReadTokens)
-            : null,
-          cacheWriteTokens: usage.cacheWriteTokens
-            ? BigInt(usage.cacheWriteTokens)
-            : null,
-          cacheWriteBreakdown: usage.cacheWriteBreakdown || null,
-          costCenticents: costResult.totalCost,
-          status: "success",
-          completedAt: new Date(),
-        },
-      },
-    );
-
-    // Settle funds (releases reservation and charges meter)
-    yield* payments.products.router.settleFunds(
+    // Enqueue metering for async processing
+    yield* enqueueRouterMetering(
+      meteringContext.request.routerRequestId,
       meteringContext.reservationId,
-      costResult.totalCost,
+      meteringContext.request,
+      usage,
+      Number(costResult.totalCost),
     );
   }).pipe(
     Effect.catchAll((error) => {
       console.error(
-        `[performStreamMetering] Error updating request ${meteringContext.request.routerRequestId} or settling reservation ${meteringContext.reservationId}:`,
+        `[settleMeteringForStream] Failed to enqueue metering for request ${meteringContext.request.routerRequestId}:`,
         error,
       );
-      return Effect.succeed(undefined);
-    }),
-  );
-}
-
-/**
- * Settles metering for a streaming response after stream completes.
- *
- * This function:
- * 1. Calculates cost from usage data
- * 2. Updates router request in database with usage and cost
- * 3. Settles fund reservation and charges the meter
- * 4. Handles failure cases by releasing funds
- *
- * **Note**: This runs in Stream.ensuring, which executes after the stream completes.
- * It creates a fresh Database.Live layer because the outer Effect scope has already
- * disposed its services by the time the stream finishes.
- *
- * @param usage - Final usage data extracted from stream, or null if none found
- * @param meteringContext - Context with all necessary IDs and config
- * @returns Effect that completes when metering is finished (always succeeds)
- */
-export function settleMeteringForStream(
-  usage: TokenUsage | null,
-  meteringContext: StreamMeteringContext,
-): Effect.Effect<void, never> {
-  return performStreamMetering(usage, meteringContext).pipe(
-    // Provide fresh Database and Payments services with their own connection pool
-    Effect.provide(
-      Database.Live({
-        database: { connectionString: meteringContext.databaseUrl },
-        payments: {
-          apiKey: meteringContext.stripeApiKey,
-          routerPriceId: meteringContext.routerPriceId,
-          routerMeterId: meteringContext.routerMeterId,
-        },
-      }),
-    ),
-    // Catch any errors from layer construction to ensure infallible Effect
-    Effect.catchAll((error) => {
-      console.error(
-        "[Stream.ensuring] Failed to create Database layer for metering:",
-        error,
-      );
-      return Effect.succeed(undefined);
+      // Log error but don't fail - queue has retry + DLQ
+      return Effect.void;
     }),
   );
 }
@@ -280,7 +198,7 @@ export function settleMeteringForStream(
  * 5. Converts back to a native ReadableStream for the client
  *
  * The Effect Stream pipeline properly handles async work in the ensuring finalizer,
- * waiting for DB updates and Stripe metering to complete before finishing the stream.
+ * waiting for queue enqueueing to complete before finishing the stream.
  *
  * @param response - The streaming response from the provider
  * @param format - The streaming format ("sse" or "ndjson")
@@ -291,7 +209,7 @@ export function parseStreamingResponse(
   response: Response,
   format: "sse" | "ndjson",
   meteringContext: StreamMeteringContext,
-): Effect.Effect<StreamParseResult, ProxyError> {
+): Effect.Effect<StreamParseResult, ProxyError, RouterMeteringQueueService> {
   return Effect.gen(function* () {
     const originalBody = response.body;
     if (!originalBody) {
@@ -381,21 +299,17 @@ export function parseStreamingResponse(
     // Convert Effect Stream back to ReadableStream (preserves original Uint8Array chunks)
     const readableStreamEffect = Stream.toReadableStreamEffect(effectStream);
 
-    // Wrap in Response
-    const responseEffect = pipe(
-      readableStreamEffect,
-      Effect.map(
-        (readableStream) =>
-          new Response(readableStream, {
-            status: meteringContext.response.status,
-            statusText: meteringContext.response.statusText,
-            headers: meteringContext.response.headers,
-          }),
-      ),
-    );
-
     return {
-      responseEffect,
+      responseEffect: readableStreamEffect.pipe(
+        Effect.map(
+          (readableStream) =>
+            new Response(readableStream, {
+              status: meteringContext.response.status,
+              statusText: meteringContext.response.statusText,
+              headers: meteringContext.response.headers,
+            }),
+        ),
+      ),
     };
   });
 }
@@ -410,8 +324,6 @@ export function parseStreamingResponse(
  * @param context - Router request context
  * @param validated - Validated request information
  * @param responseMetadata - Original response metadata
- * @param databaseUrl - Database URL for metering
- * @param stripeConfig - Stripe configuration for metering
  * @returns Final response for the client
  */
 export function handleStreamingResponse(
@@ -419,13 +331,7 @@ export function handleStreamingResponse(
   context: RouterRequestContext,
   validated: ValidatedRouterRequest,
   responseMetadata: ResponseMetadata,
-  databaseUrl: string,
-  stripeConfig: {
-    apiKey: string;
-    routerPriceId: string;
-    routerMeterId: string;
-  },
-): Effect.Effect<Response, ProxyError> {
+): Effect.Effect<Response, ProxyError, RouterMeteringQueueService> {
   return Effect.gen(function* () {
     const meteringContext: StreamMeteringContext = {
       provider: validated.provider,
@@ -433,10 +339,6 @@ export function handleStreamingResponse(
       reservationId: context.reservationId,
       request: context.request,
       response: responseMetadata,
-      databaseUrl,
-      stripeApiKey: stripeConfig.apiKey,
-      routerPriceId: stripeConfig.routerPriceId,
-      routerMeterId: stripeConfig.routerMeterId,
     };
 
     const streamParseResult = yield* parseStreamingResponse(

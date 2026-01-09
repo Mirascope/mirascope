@@ -5,6 +5,11 @@ import {
 import clickhouseCron, { type CronTriggerEnv } from "@/workers/clickhouseCron";
 import reservationExpiryCron from "@/workers/reservationExpiryCron";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
+import routerMeteringQueue, {
+  RouterMeteringQueueService,
+} from "@/workers/routerMeteringQueue";
+import { type WorkerEnv } from "@/workers/cron-config";
+import { Effect, Layer } from "effect";
 
 interface ScheduledEvent {
   readonly scheduledTime: number;
@@ -12,6 +17,17 @@ interface ScheduledEvent {
 }
 
 const fetchHandler = createStartHandler(defaultStreamHandler);
+
+/**
+ * Global router metering queue layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers.
+ */
+export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
+  Layer.succeed(RouterMeteringQueueService, {
+    send: () => Effect.fail(new Error("RouterMeteringQueue not initialized")),
+  });
 
 /**
  * Scheduled event handler that routes to the appropriate cron job.
@@ -37,11 +53,14 @@ const scheduled = async (
   }
 };
 
-const fetch: ExportedHandlerFetchHandler<CronTriggerEnv> = (
-  request,
-  env,
-  ctx,
-) => {
+const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
+  // Set router metering queue layer for route handlers
+  if (env.ROUTER_METERING_QUEUE) {
+    routerMeteringQueueLayer = RouterMeteringQueueService.Live(
+      env.ROUTER_METERING_QUEUE,
+    );
+  }
+
   if (env.ENVIRONMENT === "local") {
     const { pathname } = new URL(request.url);
     if (pathname === "/__scheduled") {
@@ -68,4 +87,5 @@ const fetch: ExportedHandlerFetchHandler<CronTriggerEnv> = (
 export default {
   fetch,
   scheduled,
+  queue: routerMeteringQueue.queue.bind(routerMeteringQueue),
 };
