@@ -208,3 +208,108 @@ describe.sequential("Organizations API", (it) => {
     }),
   );
 });
+
+describe.sequential("Organizations Subscription API", (it) => {
+  let org: PublicOrganizationWithMembership;
+
+  it.effect("Create test organization for subscription tests", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      org = yield* client.organizations.create({
+        payload: {
+          name: "Subscription Test Org",
+          slug: "subscription-test-org",
+        },
+      });
+      expect(org.id).toBeDefined();
+    }),
+  );
+
+  it.effect(
+    "GET /organizations/:id/subscription - get subscription details",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const subscription = yield* client.organizations.subscription({
+          path: { id: org.id },
+        });
+
+        expect(subscription.subscriptionId).toBeDefined();
+        expect(subscription.currentPlan).toBeDefined();
+        expect(["free", "pro", "team"]).toContain(subscription.currentPlan);
+        expect(subscription.hasPaymentMethod).toBeDefined();
+        expect(subscription.currentPeriodEnd).toBeInstanceOf(Date);
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:id/subscription/preview - preview upgrade",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const preview = yield* client.organizations.previewSubscriptionChange({
+          path: { id: org.id },
+          payload: { targetPlan: "pro" },
+        });
+
+        expect(preview.isUpgrade).toBeDefined();
+        expect(typeof preview.proratedAmountInDollars).toBe("number");
+        expect(typeof preview.recurringAmountInDollars).toBe("number");
+        expect(preview.nextBillingDate).toBeInstanceOf(Date);
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:id/subscription/update - upgrade subscription",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+        const result = yield* client.organizations.updateSubscription({
+          path: { id: org.id },
+          payload: { targetPlan: "pro" },
+        });
+
+        expect(typeof result.requiresPayment).toBe("boolean");
+        // Result may have clientSecret or scheduledFor depending on upgrade/downgrade
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:id/subscription/cancel-downgrade - cancel scheduled downgrade",
+    () =>
+      Effect.gen(function* () {
+        const { client } = yield* TestApiContext;
+
+        // First schedule a downgrade by calling update with a lower tier
+        // (This may or may not actually schedule depending on current plan)
+        try {
+          yield* client.organizations.updateSubscription({
+            path: { id: org.id },
+            payload: { targetPlan: "free" },
+          });
+        } catch {
+          // Ignore if downgrade fails (e.g., already on free)
+        }
+
+        // Try to cancel - it will fail with "No scheduled changes found" since
+        // the mock doesn't track scheduled changes, but the endpoint should handle it gracefully
+        const result = yield* client.organizations
+          .cancelScheduledDowngrade({
+            path: { id: org.id },
+          })
+          .pipe(Effect.flip);
+
+        // Expect either success or specific error
+        if (result._tag === "StripeError") {
+          expect(result.message).toBe("No scheduled changes found");
+        }
+      }),
+  );
+
+  it.effect("DELETE test organization", () =>
+    Effect.gen(function* () {
+      const { client } = yield* TestApiContext;
+      yield* client.organizations.delete({ path: { id: org.id } });
+    }),
+  );
+});

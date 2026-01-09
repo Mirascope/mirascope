@@ -14,6 +14,10 @@ import {
   deleteOrganizationHandler,
   getOrganizationRouterBalanceHandler,
   createPaymentIntentHandler,
+  getSubscriptionHandler,
+  previewSubscriptionChangeHandler,
+  updateSubscriptionHandler,
+  cancelScheduledDowngradeHandler,
 } from "@/api/organizations.handlers";
 import {
   listProjectsHandler,
@@ -105,6 +109,16 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       )
       .handle("createPaymentIntent", ({ path, payload }) =>
         createPaymentIntentHandler(path.id, payload),
+      )
+      .handle("subscription", ({ path }) => getSubscriptionHandler(path.id))
+      .handle("previewSubscriptionChange", ({ path, payload }) =>
+        previewSubscriptionChangeHandler(path.id, payload),
+      )
+      .handle("updateSubscription", ({ path, payload }) =>
+        updateSubscriptionHandler(path.id, payload),
+      )
+      .handle("cancelScheduledDowngrade", ({ path }) =>
+        cancelScheduledDowngradeHandler(path.id),
       ),
 );
 

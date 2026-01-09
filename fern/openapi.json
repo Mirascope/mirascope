@@ -2393,6 +2393,477 @@
         }
       }
     },
+    "/organizations/{id}/subscription": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.subscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "subscriptionId",
+                    "currentPlan",
+                    "status",
+                    "currentPeriodEnd",
+                    "hasPaymentMethod"
+                  ],
+                  "properties": {
+                    "subscriptionId": {
+                      "type": "string"
+                    },
+                    "currentPlan": {
+                      "type": "string",
+                      "enum": [
+                        "free",
+                        "pro",
+                        "team"
+                      ]
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "currentPeriodEnd": {
+                      "$ref": "#/components/schemas/Date"
+                    },
+                    "hasPaymentMethod": {
+                      "type": "boolean"
+                    },
+                    "paymentMethod": {
+                      "type": "object",
+                      "required": [
+                        "brand",
+                        "last4",
+                        "expMonth",
+                        "expYear"
+                      ],
+                      "properties": {
+                        "brand": {
+                          "type": "string"
+                        },
+                        "last4": {
+                          "type": "string"
+                        },
+                        "expMonth": {
+                          "type": "number"
+                        },
+                        "expYear": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "scheduledChange": {
+                      "type": "object",
+                      "required": [
+                        "targetPlan",
+                        "effectiveDate",
+                        "scheduleId"
+                      ],
+                      "properties": {
+                        "targetPlan": {
+                          "type": "string",
+                          "enum": [
+                            "free",
+                            "pro",
+                            "team"
+                          ]
+                        },
+                        "effectiveDate": {
+                          "$ref": "#/components/schemas/Date"
+                        },
+                        "scheduleId": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StripeError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{id}/subscription/preview": {
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.previewSubscriptionChange",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "isUpgrade",
+                    "proratedAmountInDollars",
+                    "nextBillingDate",
+                    "recurringAmountInDollars"
+                  ],
+                  "properties": {
+                    "isUpgrade": {
+                      "type": "boolean"
+                    },
+                    "proratedAmountInDollars": {
+                      "type": "number"
+                    },
+                    "nextBillingDate": {
+                      "$ref": "#/components/schemas/Date"
+                    },
+                    "recurringAmountInDollars": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StripeError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "targetPlan"
+                ],
+                "properties": {
+                  "targetPlan": {
+                    "type": "string",
+                    "enum": [
+                      "free",
+                      "pro",
+                      "team"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/organizations/{id}/subscription/update": {
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.updateSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "requiresPayment"
+                  ],
+                  "properties": {
+                    "requiresPayment": {
+                      "type": "boolean"
+                    },
+                    "clientSecret": {
+                      "type": "string"
+                    },
+                    "scheduledFor": {
+                      "$ref": "#/components/schemas/Date"
+                    },
+                    "scheduleId": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StripeError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "targetPlan"
+                ],
+                "properties": {
+                  "targetPlan": {
+                    "type": "string",
+                    "enum": [
+                      "free",
+                      "pro",
+                      "team"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/organizations/{id}/subscription/cancel-downgrade": {
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.cancelScheduledDowngrade",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StripeError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/organizations/{organizationId}/projects": {
       "get": {
         "tags": [
@@ -6450,6 +6921,10 @@
           }
         },
         "additionalProperties": false
+      },
+      "Date": {
+        "type": "string",
+        "description": "a string to be decoded into a Date"
       }
     },
     "securitySchemes": {}
