@@ -19,6 +19,7 @@ export * from "@/api/environments.schemas";
 export * from "@/api/api-keys.schemas";
 export * from "@/api/functions.schemas";
 export * from "@/api/annotations.schemas";
+export * from "@/api/search.schemas";
 
 export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(HealthApi)

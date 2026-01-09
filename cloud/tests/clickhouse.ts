@@ -3,20 +3,36 @@ import { describe, expect, it as vitestIt } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
 import { ClickHouse } from "@/clickhouse/client";
 import { SettingsService, type Settings } from "@/settings";
+import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
+import fs from "fs";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
 
-// Environment variables for ClickHouse connection
-const CLICKHOUSE_URL = process.env.CLICKHOUSE_URL ?? "http://localhost:8123";
-const CLICKHOUSE_USER = process.env.CLICKHOUSE_USER ?? "default";
-const CLICKHOUSE_PASSWORD = process.env.CLICKHOUSE_PASSWORD ?? "clickhouse";
-const CLICKHOUSE_DATABASE =
-  process.env.CLICKHOUSE_DATABASE ?? "mirascope_analytics";
+type ClickHouseConnectionFile = {
+  url: string;
+  user: string;
+  password: string;
+  database: string;
+  nativePort: number;
+};
+
+function getTestClickHouseConfig(): ClickHouseConnectionFile {
+  try {
+    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
+    return JSON.parse(raw) as ClickHouseConnectionFile;
+  } catch {
+    throw new Error(
+      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
+    );
+  }
+}
+
+const clickhouseConfig = getTestClickHouseConfig();
 
 export const checkClickHouseAvailable = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${CLICKHOUSE_URL}/ping`, {
+    const response = await fetch(`${clickhouseConfig.url}/ping`, {
       method: "GET",
       signal: AbortSignal.timeout(2000),
     });
@@ -33,10 +49,10 @@ export const clickHouseAvailable = await checkClickHouseAvailable();
  */
 const testSettings: Settings = {
   env: "local",
-  CLICKHOUSE_URL,
-  CLICKHOUSE_USER,
-  CLICKHOUSE_PASSWORD,
-  CLICKHOUSE_DATABASE,
+  CLICKHOUSE_URL: clickhouseConfig.url,
+  CLICKHOUSE_USER: clickhouseConfig.user,
+  CLICKHOUSE_PASSWORD: clickhouseConfig.password,
+  CLICKHOUSE_DATABASE: clickhouseConfig.database,
   CLICKHOUSE_TLS_ENABLED: false,
 };
 

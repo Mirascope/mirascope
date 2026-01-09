@@ -6,6 +6,7 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
+from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
@@ -20,8 +21,20 @@ from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.unauthorized_error_body import UnauthorizedErrorBody
-from .types.traces_create_request_resource_spans_item import TracesCreateRequestResourceSpansItem
+from .types.traces_create_request_resource_spans_item import (
+    TracesCreateRequestResourceSpansItem,
+)
 from .types.traces_create_response import TracesCreateResponse
+from .types.traces_get_analytics_summary_response import (
+    TracesGetAnalyticsSummaryResponse,
+)
+from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
+from .types.traces_search_request_attribute_filters_item import (
+    TracesSearchRequestAttributeFiltersItem,
+)
+from .types.traces_search_request_sort_by import TracesSearchRequestSortBy
+from .types.traces_search_request_sort_order import TracesSearchRequestSortOrder
+from .types.traces_search_response import TracesSearchResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -144,8 +157,393 @@ class RawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def search(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TracesSearchResponse]:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TracesSearchResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "traces/search",
+            method="POST",
+            json={
+                "startTime": start_time,
+                "endTime": end_time,
+                "query": query,
+                "traceId": trace_id,
+                "spanId": span_id,
+                "model": model,
+                "provider": provider,
+                "functionId": function_id,
+                "functionName": function_name,
+                "hasError": has_error,
+                "minTokens": min_tokens,
+                "maxTokens": max_tokens,
+                "minDuration": min_duration,
+                "maxDuration": max_duration,
+                "attributeFilters": convert_and_respect_annotation_metadata(
+                    object_=attribute_filters,
+                    annotation=typing.Sequence[TracesSearchRequestAttributeFiltersItem],
+                    direction="write",
+                ),
+                "limit": limit,
+                "offset": offset,
+                "sortBy": sort_by,
+                "sortOrder": sort_order,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesSearchResponse,
+                    parse_obj_as(
+                        type_=TracesSearchResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def gettracedetail(
+        self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[TracesGetTraceDetailResponse]:
+        """
+        Parameters
+        ----------
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TracesGetTraceDetailResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"traces/{jsonable_encoder(trace_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesGetTraceDetailResponse,
+                    parse_obj_as(
+                        type_=TracesGetTraceDetailResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def getanalyticssummary(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        function_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TracesGetAnalyticsSummaryResponse]:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        function_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TracesGetAnalyticsSummaryResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "traces/analytics",
+            method="GET",
+            params={
+                "startTime": start_time,
+                "endTime": end_time,
+                "functionId": function_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesGetAnalyticsSummaryResponse,
+                    parse_obj_as(
+                        type_=TracesGetAnalyticsSummaryResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
 
 class AsyncRawTracesClient:
@@ -265,5 +663,390 @@ class AsyncRawTracesClient:
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def search(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TracesSearchResponse]:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TracesSearchResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "traces/search",
+            method="POST",
+            json={
+                "startTime": start_time,
+                "endTime": end_time,
+                "query": query,
+                "traceId": trace_id,
+                "spanId": span_id,
+                "model": model,
+                "provider": provider,
+                "functionId": function_id,
+                "functionName": function_name,
+                "hasError": has_error,
+                "minTokens": min_tokens,
+                "maxTokens": max_tokens,
+                "minDuration": min_duration,
+                "maxDuration": max_duration,
+                "attributeFilters": convert_and_respect_annotation_metadata(
+                    object_=attribute_filters,
+                    annotation=typing.Sequence[TracesSearchRequestAttributeFiltersItem],
+                    direction="write",
+                ),
+                "limit": limit,
+                "offset": offset,
+                "sortBy": sort_by,
+                "sortOrder": sort_order,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesSearchResponse,
+                    parse_obj_as(
+                        type_=TracesSearchResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def gettracedetail(
+        self, trace_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[TracesGetTraceDetailResponse]:
+        """
+        Parameters
+        ----------
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TracesGetTraceDetailResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"traces/{jsonable_encoder(trace_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesGetTraceDetailResponse,
+                    parse_obj_as(
+                        type_=TracesGetTraceDetailResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def getanalyticssummary(
+        self,
+        *,
+        start_time: str,
+        end_time: str,
+        function_id: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TracesGetAnalyticsSummaryResponse]:
+        """
+        Parameters
+        ----------
+        start_time : str
+
+        end_time : str
+
+        function_id : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TracesGetAnalyticsSummaryResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "traces/analytics",
+            method="GET",
+            params={
+                "startTime": start_time,
+                "endTime": end_time,
+                "functionId": function_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesGetAnalyticsSummaryResponse,
+                    parse_obj_as(
+                        type_=TracesGetAnalyticsSummaryResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )

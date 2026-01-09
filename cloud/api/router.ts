@@ -46,6 +46,11 @@ import {
   updateAnnotationHandler,
   deleteAnnotationHandler,
 } from "@/api/annotations.handlers";
+import {
+  searchHandler,
+  getTraceDetailHandler,
+  getAnalyticsSummaryHandler,
+} from "@/api/search.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -60,7 +65,16 @@ const TracesHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
   "traces",
   (handlers) =>
-    handlers.handle("create", ({ payload }) => createTraceHandler(payload)),
+    handlers
+      // TODO: Add missing router handlers e.g. list, listByFunctionHash, etc.
+      .handle("create", ({ payload }) => createTraceHandler(payload))
+      .handle("search", ({ payload }) => searchHandler(payload))
+      .handle("getTraceDetail", ({ path }) =>
+        getTraceDetailHandler(path.traceId),
+      )
+      .handle("getAnalyticsSummary", ({ urlParams }) =>
+        getAnalyticsSummaryHandler(urlParams),
+      ),
 );
 
 const DocsHandlersLive = HttpApiBuilder.group(
