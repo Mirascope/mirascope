@@ -8,7 +8,7 @@
     "enabled": true,
   },
   "triggers": {
-    "crons": ["*/1 * * * *"],
+    "crons": ["*/1 * * * *", "*/5 * * * *"],
   },
   //   "env": {
   //     "production": {

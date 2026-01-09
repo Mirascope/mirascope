@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "@effect/vitest";
+import { assert } from "@/tests/db";
 import { Context, Effect, Layer } from "effect";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
@@ -9,7 +10,6 @@ import {
   StripeError,
 } from "@/errors";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
-import { assert } from "@/tests/db";
 import { DrizzleORM } from "@/db/client";
 import { clearPricingCache } from "@/api/router/pricing";
 import type { ProviderName } from "@/api/router/providers";
@@ -784,6 +784,7 @@ describe("Router Product", () => {
   describe("settleFunds", () => {
     it.effect("successfully settles funds and charges meter", () => {
       let chargedAmount: string | undefined;
+      let releaseCalled = false;
 
       return Effect.gen(function* () {
         const payments = yield* Payments;
@@ -796,22 +797,31 @@ describe("Router Product", () => {
         // Should charge with gas fee: 500 centi-cents * 1.05 = 525 centi-cents
         // Meter value = 525 (since 1 meter unit = 1 centi-cent)
         expect(chargedAmount).toBe("525");
+        expect(releaseCalled).toBe(true);
       }).pipe(
         Effect.provide(Payments.Default),
         Effect.provide(
           Layer.succeed(DrizzleORM, {
             select: () => ({
               from: () => ({
-                where: () => Effect.succeed([{ stripeCustomerId: "cus_123" }]),
+                where: () =>
+                  Effect.succeed([
+                    { stripeCustomerId: "cus_123", status: "active" },
+                  ]),
               }),
             }),
             update: () => ({
               set: () => ({
                 where: () => ({
-                  returning: () => Effect.succeed([{ id: "reservation_123" }]),
+                  returning: () => {
+                    releaseCalled = true;
+                    return Effect.succeed([{ id: "reservation_123" }]);
+                  },
                 }),
               }),
             }),
+            withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+              effect,
           } as unknown as Context.Tag.Service<typeof DrizzleORM>),
         ),
         Effect.provide(
@@ -826,6 +836,123 @@ describe("Router Product", () => {
                   Effect.sync(() => {
                     chargedAmount = params.payload.value;
                   }),
+              },
+            },
+            config: {
+              apiKey: "sk_test_mock",
+              routerPriceId: "price_test_mock",
+              routerMeterId: "meter_test_mock",
+            },
+          } as unknown as Context.Tag.Service<typeof Stripe>),
+        ),
+      );
+    });
+
+    it.effect(
+      "skips charging when reservation is already released (idempotency)",
+      () => {
+        let chargedAmount: string | undefined;
+
+        return Effect.gen(function* () {
+          const payments = yield* Payments;
+
+          yield* payments.products.router.settleFunds("reservation_123", 500n);
+
+          // Should NOT charge since update returns 0 rows (status != active)
+          expect(chargedAmount).toBeUndefined();
+        }).pipe(
+          Effect.provide(Payments.Default),
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              select: () => ({
+                from: () => ({
+                  where: () =>
+                    Effect.succeed([
+                      { stripeCustomerId: "cus_123", status: "released" },
+                    ]),
+                }),
+              }),
+              update: () => ({
+                set: () => ({
+                  where: () => ({
+                    returning: () =>
+                      // Return empty array = 0 rows affected (already released)
+                      Effect.succeed([]),
+                  }),
+                }),
+              }),
+              withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+                effect,
+            } as unknown as Context.Tag.Service<typeof DrizzleORM>),
+          ),
+          Effect.provide(
+            Layer.succeed(Stripe, {
+              billing: {
+                meterEvents: {
+                  create: (params: {
+                    event_name: string;
+                    payload: { stripe_customer_id: string; value: string };
+                    timestamp: number;
+                  }) =>
+                    Effect.sync(() => {
+                      chargedAmount = params.payload.value;
+                    }),
+                },
+              },
+              config: {
+                apiKey: "sk_test_mock",
+                routerPriceId: "price_test_mock",
+                routerMeterId: "meter_test_mock",
+              },
+            } as unknown as Context.Tag.Service<typeof Stripe>),
+          ),
+        );
+      },
+    );
+
+    it.effect("returns StripeError when Stripe charging fails", () => {
+      return Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const result = yield* payments.products.router
+          .settleFunds("reservation_123", 450n)
+          .pipe(Effect.flip);
+
+        assert(result instanceof StripeError);
+      }).pipe(
+        Effect.provide(Payments.Default),
+        Effect.provide(
+          Layer.succeed(DrizzleORM, {
+            select: () => ({
+              from: () => ({
+                where: () =>
+                  Effect.succeed([
+                    { stripeCustomerId: "cus_123", status: "active" },
+                  ]),
+              }),
+            }),
+            update: () => ({
+              set: () => ({
+                where: () => ({
+                  returning: () => Effect.succeed([{ id: "reservation_123" }]),
+                }),
+              }),
+            }),
+            withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+              effect,
+          } as unknown as Context.Tag.Service<typeof DrizzleORM>),
+        ),
+        Effect.provide(
+          Layer.succeed(Stripe, {
+            billing: {
+              meterEvents: {
+                create: () =>
+                  Effect.fail(
+                    new StripeError({
+                      message: "Stripe API error",
+                      cause: new Error("Stripe API error"),
+                    }),
+                  ),
               },
             },
             config: {
@@ -860,6 +987,8 @@ describe("Router Product", () => {
                   where: () => Effect.succeed([]), // Empty array = not found
                 }),
               }),
+              withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+                effect,
             } as unknown as Context.Tag.Service<typeof DrizzleORM>),
           ),
           Effect.provide(
@@ -893,103 +1022,12 @@ describe("Router Product", () => {
                 where: () => Effect.fail(new Error("Database connection lost")),
               }),
             }),
+            withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+              effect,
           } as unknown as Context.Tag.Service<typeof DrizzleORM>),
         ),
         Effect.provide(
           Layer.succeed(Stripe, {
-            config: {
-              apiKey: "sk_test_mock",
-              routerPriceId: "price_test_mock",
-              routerMeterId: "meter_test_mock",
-            },
-          } as unknown as Context.Tag.Service<typeof Stripe>),
-        ),
-      ),
-    );
-
-    it.effect(
-      "returns ReservationStateError when release fails (reservation not found)",
-      () =>
-        Effect.gen(function* () {
-          const payments = yield* Payments;
-
-          const result = yield* payments.products.router
-            .settleFunds("reservation_123", 450n)
-            .pipe(Effect.flip);
-
-          assert(result instanceof ReservationStateError);
-        }).pipe(
-          Effect.provide(Payments.Default),
-          Effect.provide(
-            Layer.succeed(DrizzleORM, {
-              select: () => ({
-                from: () => ({
-                  where: () =>
-                    Effect.succeed([{ stripeCustomerId: "cus_123" }]),
-                }),
-              }),
-              update: () => ({
-                set: () => ({
-                  where: () => ({
-                    returning: () => ({
-                      pipe: () => Effect.succeed([]), // Empty array = not found
-                    }),
-                  }),
-                }),
-              }),
-            } as unknown as Context.Tag.Service<typeof DrizzleORM>),
-          ),
-          Effect.provide(
-            Layer.succeed(Stripe, {
-              config: {
-                apiKey: "sk_test_mock",
-                routerPriceId: "price_test_mock",
-                routerMeterId: "meter_test_mock",
-              },
-            } as unknown as Context.Tag.Service<typeof Stripe>),
-          ),
-        ),
-    );
-
-    it.effect("returns StripeError when meter charging fails", () =>
-      Effect.gen(function* () {
-        const payments = yield* Payments;
-
-        const result = yield* payments.products.router
-          .settleFunds("reservation_123", 450n)
-          .pipe(Effect.flip);
-
-        assert(result instanceof StripeError);
-      }).pipe(
-        Effect.provide(Payments.Default),
-        Effect.provide(
-          Layer.succeed(DrizzleORM, {
-            select: () => ({
-              from: () => ({
-                where: () => Effect.succeed([{ stripeCustomerId: "cus_123" }]),
-              }),
-            }),
-            update: () => ({
-              set: () => ({
-                where: () => ({
-                  returning: () => Effect.succeed([{ id: "reservation_123" }]),
-                }),
-              }),
-            }),
-          } as unknown as Context.Tag.Service<typeof DrizzleORM>),
-        ),
-        Effect.provide(
-          Layer.succeed(Stripe, {
-            billing: {
-              meterEvents: {
-                create: () =>
-                  Effect.fail(
-                    new StripeError({
-                      message: "Stripe API error",
-                    }),
-                  ),
-              },
-            },
             config: {
               apiKey: "sk_test_mock",
               routerPriceId: "price_test_mock",

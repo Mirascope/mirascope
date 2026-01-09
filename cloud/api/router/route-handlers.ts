@@ -345,46 +345,51 @@ export function handleNonStreamingResponse(
       : null;
 
     if (costResult && costResult.totalCost > 0) {
-      // Update router request with usage and cost
-      yield* db.organizations.projects.environments.apiKeys.routerRequests.update(
-        {
-          userId: context.request.userId,
-          organizationId: context.request.organizationId,
-          projectId: context.request.projectId,
-          environmentId: context.request.environmentId,
-          apiKeyId: context.request.apiKeyId,
-          routerRequestId: context.routerRequestId,
-          data: {
-            inputTokens: usage!.inputTokens ? BigInt(usage!.inputTokens) : null,
-            outputTokens: usage!.outputTokens
-              ? BigInt(usage!.outputTokens)
-              : null,
-            cacheReadTokens: usage!.cacheReadTokens
-              ? BigInt(usage!.cacheReadTokens)
-              : null,
-            cacheWriteTokens: usage!.cacheWriteTokens
-              ? BigInt(usage!.cacheWriteTokens)
-              : null,
-            cacheWriteBreakdown: usage!.cacheWriteBreakdown || null,
-            costCenticents: costResult.totalCost,
-            status: "success",
-            completedAt: new Date(),
+      // Update router request and settle reservation (errors swallowed, cron will reconcile)
+      yield* Effect.gen(function* () {
+        yield* db.organizations.projects.environments.apiKeys.routerRequests.update(
+          {
+            userId: context.request.userId,
+            organizationId: context.request.organizationId,
+            projectId: context.request.projectId,
+            environmentId: context.request.environmentId,
+            apiKeyId: context.request.apiKeyId,
+            routerRequestId: context.routerRequestId,
+            data: {
+              inputTokens: usage!.inputTokens
+                ? BigInt(usage!.inputTokens)
+                : null,
+              outputTokens: usage!.outputTokens
+                ? BigInt(usage!.outputTokens)
+                : null,
+              cacheReadTokens: usage!.cacheReadTokens
+                ? BigInt(usage!.cacheReadTokens)
+                : null,
+              cacheWriteTokens: usage!.cacheWriteTokens
+                ? BigInt(usage!.cacheWriteTokens)
+                : null,
+              cacheWriteBreakdown: usage!.cacheWriteBreakdown || null,
+              costCenticents: costResult.totalCost,
+              status: "success",
+              completedAt: new Date(),
+            },
           },
-        },
-      );
-
-      // Settle reservation - this updates DB and charges the meter
-      yield* payments.products.router
-        .settleFunds(context.reservationId, costResult.totalCost)
-        .pipe(
-          Effect.catchAll((error) => {
-            console.error(
-              `Failed to settle reservation ${context.reservationId} (cost: ${costResult.totalCost} centicents):`,
-              error,
-            );
-            return Effect.succeed(undefined);
-          }),
         );
+
+        // Settle reservation - this updates DB and charges the meter
+        yield* payments.products.router.settleFunds(
+          context.reservationId,
+          costResult.totalCost,
+        );
+      }).pipe(
+        Effect.catchAll((error) => {
+          console.error(
+            `[handleNonStreamingResponse] Error updating request ${context.routerRequestId} or settling reservation ${context.reservationId}:`,
+            error,
+          );
+          return Effect.succeed(undefined);
+        }),
+      );
     } else {
       // No usage or cost calculation failed, update request and release funds
       yield* handleRouterRequestFailure(

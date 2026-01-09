@@ -1236,7 +1236,9 @@ describe("Route Handlers", () => {
 
         expect(response).toBeDefined();
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Failed to settle reservation"),
+          expect.stringContaining(
+            "[handleNonStreamingResponse] Error updating request",
+          ),
           expect.anything(),
         );
 
