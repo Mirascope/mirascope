@@ -485,7 +485,7 @@ def aliased_module_import_fn(query: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.7.1", "extras": None}}
+        {"openai": {"version": "2.14.0", "extras": None}}
     )
 
 
@@ -506,7 +506,7 @@ def aliased_import_fn(query: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.7.1", "extras": None}}
+        {"openai": {"version": "2.14.0", "extras": None}}
     )
 
 
@@ -640,7 +640,7 @@ def annotated_assignment_fn() -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.7.1", "extras": None}}
+        {"openai": {"version": "2.14.0", "extras": None}}
     )
 
 
@@ -664,7 +664,7 @@ def internal_imports_fn() -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.7.1", "extras": None}}
+        {"openai": {"version": "2.14.0", "extras": None}}
     )
 
 
