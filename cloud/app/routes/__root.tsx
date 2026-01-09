@@ -64,16 +64,18 @@ function RootComponent() {
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <Header />
-              <main className="grow">
-                {/* Content container with padding to account for fixed header */}
+              <div className="flex min-h-screen flex-col">
+                <Header />
                 <div className="mx-auto w-full max-w-7xl grow pt-(--header-height)">
-                  <Outlet />
+                  <main className="grow">
+                    {/* Content container with padding to account for fixed header */}
+                    <Outlet />
+                  </main>
                 </div>
-              </main>
-              <Footer />
-              <TanStackRouterDevtools />
-              <Scripts />
+                <Footer />
+                <TanStackRouterDevtools />
+                <Scripts />
+              </div>
             </AuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
