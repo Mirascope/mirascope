@@ -1,0 +1,173 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.mistral.tool
+description: API documentation for mirascope.core.mistral.tool
+---
+
+# mirascope.core.mistral.tool
+
+The `MistralTool` class for easy tool usage with Mistral LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/mirascope/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/mistral/tool" symbolName="MistralTool" /> MistralTool
+
+A class for defining tools for Mistral LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.mistral import mistral_call
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+@mistral_call("mistral-large-latest", tools=[format_book])
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+if tool := response.tool:  # returns a `MistralTool` instance
+    print(tool.call())
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/tool#basetool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "SkipJsonSchema[ToolCall]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipJsonSchema",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+      },
+      "parameters": [
+        {
+          "type_str": "ToolCall",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ToolCall"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/mistral/tool" symbolName="tool_schema" /> tool_schema
+
+Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+Example:
+```python
+from mirascope.core.mistral import MistralTool
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+tool_type = MistralTool.type_from_fn(format_book)
+print(tool_type.tool_schema())  # prints the Mistral-specific tool schema
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "dict[str, Any]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "dict",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+    },
+    "parameters": [
+      {
+        "type_str": "str",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+      },
+      {
+        "type_str": "Any",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/mistral/tool" symbolName="from_tool_call" /> from_tool_call
+
+Constructs an `MistralTool` instance from a `tool_call`.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "ToolCall",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ToolCall"
+    },
+    "description": "The Mistral tool call from which to construct this tool instance."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "MistralTool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/mistral/tool#mistraltool"
+  }
+}}
+/>
+
+
+

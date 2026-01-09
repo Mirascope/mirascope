@@ -1,0 +1,694 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.dynamic_config
+description: API documentation for mirascope.core.base.dynamic_config
+---
+
+# mirascope.core.base.dynamic_config
+
+## <ApiType type="Module" path="core/base/dynamic_config" symbolName="dynamic_config" /> dynamic_config
+
+The base type in a function as an LLM call to return for dynamic configuration.
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigBase" /> DynamicConfigBase
+
+**Bases:** 
+<TypeLink type={{"type_str": "TypedDict", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.TypedDict"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "NotRequired[Metadata]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Metadata",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/mirascope/api/core/base/metadata#metadata"
+        }
+      ]
+    }
+  },
+  {
+    "name": "computed_fields",
+    "type_info": {
+      "type_str": "NotRequired[dict[str, Any | list[Any] | list[list[Any]]]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, Any | list[Any] | list[list[Any]]]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "Any | list[Any] | list[list[Any]]",
+              "description": null,
+              "kind": "union",
+              "base_type": {
+                "type_str": "Union",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+              },
+              "parameters": [
+                {
+                  "type_str": "Any",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+                },
+                {
+                  "type_str": "list[Any]",
+                  "description": null,
+                  "kind": "generic",
+                  "base_type": {
+                    "type_str": "list",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "Any",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+                    }
+                  ]
+                },
+                {
+                  "type_str": "list[list[Any]]",
+                  "description": null,
+                  "kind": "generic",
+                  "base_type": {
+                    "type_str": "list",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "list[Any]",
+                      "description": null,
+                      "kind": "generic",
+                      "base_type": {
+                        "type_str": "list",
+                        "description": null,
+                        "kind": "simple",
+                        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+                      },
+                      "parameters": [
+                        {
+                          "type_str": "Any",
+                          "description": null,
+                          "kind": "simple",
+                          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "NotRequired[Sequence[type[BaseTool] | Callable]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[type[BaseTool] | Callable]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "type[BaseTool] | Callable",
+              "description": null,
+              "kind": "union",
+              "base_type": {
+                "type_str": "Union",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+              },
+              "parameters": [
+                {
+                  "type_str": "type[BaseTool]",
+                  "description": null,
+                  "kind": "generic",
+                  "base_type": {
+                    "type_str": "type",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/functions.html#type"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "BaseTool",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "/docs/mirascope/api/core/base/tool#basetool"
+                    }
+                  ]
+                },
+                {
+                  "type_str": "Callable",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigMessages" /> DynamicConfigMessages
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_MessageParamT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "messages",
+    "type_info": {
+      "type_str": "NotRequired[Sequence[_MessageParamT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[_MessageParamT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "_MessageParamT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_MessageParamT"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigCallParams" /> DynamicConfigCallParams
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_CallParamsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "NotRequired[_CallParamsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_CallParamsT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_CallParamsT"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigClient" /> DynamicConfigClient
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "NotRequired[_ClientT | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_ClientT | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "_ClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ClientT"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigMessagesCallParams" /> DynamicConfigMessagesCallParams
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_MessageParamT, _CallParamsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "messages",
+    "type_info": {
+      "type_str": "NotRequired[Sequence[_MessageParamT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[_MessageParamT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "_MessageParamT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_MessageParamT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "NotRequired[_CallParamsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_CallParamsT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_CallParamsT"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigMessagesClient" /> DynamicConfigMessagesClient
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_MessageParamT, _ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "messages",
+    "type_info": {
+      "type_str": "NotRequired[Sequence[_MessageParamT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[_MessageParamT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "_MessageParamT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_MessageParamT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "NotRequired[_ClientT | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_ClientT | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "_ClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ClientT"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigCallParamsClient" /> DynamicConfigCallParamsClient
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_CallParamsT, _ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}, {"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "NotRequired[_CallParamsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_CallParamsT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_CallParamsT"
+        }
+      ]
+    }
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "NotRequired[_ClientT | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_ClientT | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "_ClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ClientT"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/dynamic_config" symbolName="DynamicConfigFull" /> DynamicConfigFull
+
+**Bases:** 
+<TypeLink type={{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}} />, <TypeLink type={{"type_str": "Generic[_MessageParamT, _CallParamsT, _ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}, {"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "messages",
+    "type_info": {
+      "type_str": "NotRequired[Sequence[_MessageParamT]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Sequence[_MessageParamT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "_MessageParamT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_MessageParamT"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "NotRequired[_CallParamsT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_CallParamsT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_CallParamsT"
+        }
+      ]
+    }
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "NotRequired[_ClientT | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "_ClientT | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "_ClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ClientT"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Attribute" path="core/base/dynamic_config" symbolName="BaseDynamicConfig" /> BaseDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "DynamicConfigBase | DynamicConfigMessages[_MessageParamT] | DynamicConfigCallParams[_CallParamsT] | DynamicConfigClient[_ClientT] | DynamicConfigMessagesCallParams[_MessageParamT, _CallParamsT] | DynamicConfigMessagesClient[_MessageParamT, _ClientT] | DynamicConfigCallParamsClient[_CallParamsT, _ClientT] | DynamicConfigFull[_MessageParamT, _CallParamsT, _ClientT] | None", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "DynamicConfigBase", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigbase"}, {"type_str": "DynamicConfigMessages[_MessageParamT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigMessages", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigmessages"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}]}, {"type_str": "DynamicConfigCallParams[_CallParamsT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigcallparams"}, "parameters": [{"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}]}, {"type_str": "DynamicConfigClient[_ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigClient", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigclient"}, "parameters": [{"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}, {"type_str": "DynamicConfigMessagesCallParams[_MessageParamT, _CallParamsT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigMessagesCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigmessagescallparams"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}]}, {"type_str": "DynamicConfigMessagesClient[_MessageParamT, _ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigMessagesClient", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigmessagesclient"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}, {"type_str": "DynamicConfigCallParamsClient[_CallParamsT, _ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigCallParamsClient", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigcallparamsclient"}, "parameters": [{"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}, {"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}, {"type_str": "DynamicConfigFull[_MessageParamT, _CallParamsT, _ClientT]", "description": null, "kind": "generic", "base_type": {"type_str": "DynamicConfigFull", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#dynamicconfigfull"}, "parameters": [{"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_CallParamsT", "description": null, "kind": "simple", "doc_identifier": "_CallParamsT"}, {"type_str": "_ClientT", "description": null, "kind": "simple", "doc_identifier": "_ClientT"}]}, {"type_str": "None", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/constants.html#None"}]}} />
+
+The base type in a function as an LLM call to return for dynamic configuration.
+
+
+

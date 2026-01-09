@@ -1,0 +1,87 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.bedrock.stream
+description: API documentation for mirascope.core.bedrock.stream
+---
+
+# mirascope.core.bedrock.stream
+
+The `BedrockStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams)
+
+</Info>
+
+## <ApiType type="Class" path="core/bedrock/stream" symbolName="BedrockStream" /> BedrockStream
+
+A class for convenience around streaming Bedrock LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.bedrock import bedrock_call
+
+
+@bedrock_call("gpt-4o-mini", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+stream = recommend_book("fantasy")  # returns `BedrockStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[BedrockCallResponse, BedrockCallResponseChunk, UserMessageTypeDef, AssistantMessageTypeDef, ToolUseBlockMessageTypeDef, InternalBedrockMessageParam, BedrockTool, ToolTypeDef, AsyncBedrockDynamicConfig | BedrockDynamicConfig, BedrockCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "BedrockCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/call_response#bedrockcallresponse"}, {"type_str": "BedrockCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/call_response_chunk#bedrockcallresponsechunk"}, {"type_str": "UserMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "UserMessageTypeDef"}, {"type_str": "AssistantMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "AssistantMessageTypeDef"}, {"type_str": "ToolUseBlockMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "ToolUseBlockMessageTypeDef"}, {"type_str": "InternalBedrockMessageParam", "description": null, "kind": "simple", "doc_identifier": "InternalBedrockMessageParam"}, {"type_str": "BedrockTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/tool#bedrocktool"}, {"type_str": "ToolTypeDef", "description": null, "kind": "simple", "doc_identifier": "ToolTypeDef"}, {"type_str": "AsyncBedrockDynamicConfig | BedrockDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncBedrockDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/dynamic_config#asyncbedrockdynamicconfig"}, {"type_str": "BedrockDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/dynamic_config#bedrockdynamicconfig"}]}, {"type_str": "BedrockCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/call_params#bedrockcallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+    },
+    "description": "Get metadata required for cost calculation."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/bedrock/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed BedrockStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "BedrockCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/bedrock/call_response#bedrockcallresponse"
+  }
+}}
+/>
+
+
+

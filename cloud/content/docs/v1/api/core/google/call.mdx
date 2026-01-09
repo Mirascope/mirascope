@@ -1,0 +1,240 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.google.call
+description: API documentation for mirascope.core.google.call
+---
+
+# mirascope.core.google.call
+
+## <ApiType type="Alias" path="core/google/call" symbolName="call" /> call
+
+A decorator for calling the Google API with a typed function.
+
+<Info title="Usage">
+
+[Calls](/docs/mirascope/learn/calls)
+
+</Info>
+
+
+This decorator is used to wrap a typed function that calls the Google API. It parses
+the prompt template of the wrapped function as the messages array and templates the input
+arguments for the function into each message's template.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.google import google_call
+
+
+@google_call("google-1.5-flash")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+print(response.content)
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "The Google model to use in the API call."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "description": "Whether to stream the response from the API call."
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "list[BaseTool | Callable]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseTool | Callable",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "BaseTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/mirascope/api/core/base/tool#basetool"
+            },
+            {
+              "type_str": "Callable",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The tools to use in the Google API call."
+  },
+  {
+    "name": "response_model",
+    "type_info": {
+      "type_str": "BaseModel | BaseType",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseModel",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"
+        },
+        {
+          "type_str": "BaseType",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "BaseType"
+        }
+      ]
+    },
+    "description": "The response model into which the response\nshould be structured."
+  },
+  {
+    "name": "output_parser",
+    "type_info": {
+      "type_str": "Callable[[GoogleCallResponse | ResponseModelT], Any]",
+      "description": null,
+      "kind": "callable",
+      "base_type": {
+        "type_str": "Callable",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+      },
+      "parameters": [
+        {
+          "type_str": "[GoogleCallResponse | ResponseModelT]",
+          "description": null,
+          "kind": "tuple",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "GoogleCallResponse | ResponseModelT",
+              "description": null,
+              "kind": "union",
+              "base_type": {
+                "type_str": "Union",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+              },
+              "parameters": [
+                {
+                  "type_str": "GoogleCallResponse",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/mirascope/api/core/google/call_response#googlecallresponse"
+                },
+                {
+                  "type_str": "ResponseModelT",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "ResponseModelT"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type_str": "Any",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+        }
+      ]
+    },
+    "description": "A function\nfor parsing the call response whose value will be returned in place of the\noriginal call response."
+  },
+  {
+    "name": "json_modem",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "description": "Whether to use JSON Mode."
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "object",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#object"
+    },
+    "description": "An optional custom client to use in place of the default client."
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "GoogleCallParams",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/google/call_params#googlecallparams"
+    },
+    "description": "The `GoogleCallParams` call parameters to use in the\nAPI call."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Callable",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+  },
+  "description": "The decorator for turning a typed function into a Google API\ncall."
+}}
+/>
+
+
+**Alias to:** `mirascope.core.google._call.google_call`
+
