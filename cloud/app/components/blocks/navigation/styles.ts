@@ -39,12 +39,11 @@ export const HEADER_STYLES = {
   container: (isLandingPage: boolean, scrolled: boolean) =>
     cn(
       // Fixed positioning and layout
-      "fixed top-0 right-0 left-0 z-100 mb-2 flex w-full flex-col items-center justify-center px-3 py-2 md:px-6",
+      "fixed top-0 right-0 left-0 z-[100] mb-2 flex w-full flex-col items-center justify-center px-3 py-2 md:px-6",
       // Text styling for landing page
       "font-handwriting",
       // Background color (only on non-landing pages)
-      // todo(sebastian): do we still need this?
-      isLandingPage ? "" : "",
+      isLandingPage ? "" : "bg-background",
       // Bottom border and shadow when scrolled (only on non-landing pages)
       scrolled && !isLandingPage ? "border-border border-b shadow-sm" : "",
     ),
@@ -155,7 +154,7 @@ export const MOBILE_NAV_STYLES = {
   // Container for the entire mobile navigation
   container: cn(
     // Positioning and layout
-    "absolute top-full right-4 z-90 mt-2 max-w-xs md:hidden",
+    "absolute top-full right-4 z-[90] mt-2 max-w-xs md:hidden",
     // Appearance
     "bg-background text-foreground rounded-lg p-6 shadow-lg",
     // Reset text shadow from parent header
@@ -296,7 +295,7 @@ export const SEARCH_BAR_STYLES = {
   mobileOverlay: (isOpen: boolean) =>
     cn(
       // Positioning and layout - cover entire screen
-      "fixed inset-0 z-90 flex flex-col",
+      "fixed inset-0 z-[90] flex flex-col",
       // More transparent background with subtle blur effect
       "bg-background/10 mr-0 backdrop-blur-[2px]",
       // Transition properties
@@ -411,7 +410,7 @@ export const SEARCH_BAR_STYLES = {
       "w-full",
       // Mobile vs desktop positioning
       isMobile
-        ? "absolute top-full mt-4 left-0 right-0 z-90 max-h-[calc(100vh-var(--header-height-base)*1.2)]" // Mobile: now part of the overlay
+        ? "absolute top-full mt-4 left-0 right-0 z-[90] max-h-[calc(100vh-var(--header-height-base)*1.2)]" // Mobile: now part of the overlay
         : "absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0", // Desktop: dropdown below
       // Conditional textured background
       isLandingPage ? "textured-bg-absolute" : "",

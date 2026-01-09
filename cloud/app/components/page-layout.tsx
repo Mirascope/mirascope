@@ -71,7 +71,7 @@ const SidebarToggle = ({
       size="icon"
       onClick={onClick}
       className={cn(
-        "z-80 rounded-full border-1 p-0 shadow-md",
+        "z-80 rounded-full border p-0 shadow-md",
         "h-6 w-6",
         isOpen ? "bg-muted" : "bg-background",
         className,
@@ -209,7 +209,7 @@ PageLayout.LeftSidebar = ({
   return (
     <>
       {/* Container div - fixed size on desktop (CSS-driven), zero width on mobile */}
-      <div className="w-0 flex-shrink-0 md:w-64">
+      <div className="w-0 shrink-0 md:w-64">
         {/* Mobile backdrop - only visible when sidebar is open */}
         <div className="md:hidden">
           <SidebarBackdrop
@@ -253,7 +253,7 @@ PageLayout.LeftSidebar = ({
           id="left-sidebar-content"
           className={cn(
             // Base styles
-            "fixed top-[var(--header-height)] z-40 overflow-hidden",
+            "fixed top-(--header-height) z-40 overflow-hidden",
             // Update height to account for footer
             "h-[calc(100vh-var(--header-height)-var(--footer-height,40px))]",
             "bg-background/95 border-border/40 backdrop-blur-sm",
@@ -320,13 +320,13 @@ PageLayout.RightSidebar = ({
   return (
     <>
       {/* Desktop version - always visible on large screens via CSS */}
-      <div className="hidden w-56 flex-shrink-0 lg:block">
+      <div className="hidden w-56 shrink-0 lg:block">
         {children && (
           <div
             className={cn(
-              "fixed top-[var(--header-height)]",
+              "fixed top-(--header-height)",
               "h-[calc(100vh-var(--header-height)-var(--footer-height,40px))]",
-              "w-56 max-w-[14rem] overflow-y-auto",
+              "w-56 max-w-56 overflow-y-auto",
               className,
             )}
           >
@@ -370,7 +370,7 @@ PageLayout.RightSidebar = ({
           <div
             id="right-sidebar-content"
             className={cn(
-              "bg-background border-border fixed top-[var(--header-height)] right-0 z-40",
+              "bg-background border-border fixed top-(--header-height) right-0 z-40",
               "h-[calc(100vh-var(--header-height)-var(--footer-height,40px))] w-72 rounded-md border-l shadow-lg",
               "transition-transform duration-300 ease-in-out lg:hidden",
               isOpen ? "translate-x-0" : "translate-x-full",
@@ -380,7 +380,7 @@ PageLayout.RightSidebar = ({
           >
             <div className="flex h-full flex-col">
               {/* Simple padding on top instead of the header bar with X button */}
-              <div className="flex-grow overflow-y-auto p-5">{children}</div>
+              <div className="grow overflow-y-auto p-5">{children}</div>
             </div>
           </div>
         </>
