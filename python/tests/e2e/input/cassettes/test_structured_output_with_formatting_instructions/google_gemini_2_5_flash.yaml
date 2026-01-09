@@ -24,21 +24,23 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/1WRX2+CMBTF3/kUTZ91cW6K29syXWaMoo79ScaydFKgsbakvSRuhO++FkQLD+Ry
-        z+k9tz9KDyG8IyJmMQGq8T36NB2EyvptNSmACjBC2zLNnCi4eJundGpjAXq0h3AZYWDAaWQ+Ihw+
-        z9DqYTlDwROy9ft8NY1wzyikgEyqxrUmoNhuj7YSsqTQunEoAkyk1uFX2AmrzvVX77Kikpza/IOM
-        KW/tVWvACRNMZ1tKtBTW9hIGa3xWmYjp0bQHXhtQj8aFJildUiAGFjkjwbmShxxCuafiURY1rPGw
-        Geaw7ejD25MOEgjvSNd+qzlz9dSkMu5Cd/6HuSThDH7tTcLZR4gdENBdqyXhOcCwQV+kGXRXnEy8
-        E7EG4htVmjW0Unow/PrDq1E/4URndR5WVOdSaDqPrSe52SzITxAs7vzXP3++Hn0nm/FmgL3K+wcY
-        CcdgdQIAAA==
+        H4sIAAAAAAAC/2WRXW+CMBSG7/kVTa9lmWRK3J1Rl7nEjziyj4xdNHCExtqS9pC4Ef/7WhCFjAty
+        OO/b854+VB4hNGEy5SlDMPSRfNkOIVX9dpqSCBKt0LZss2Aab97mqTq1tSCc3CFaxRQ5CojtR0yj
+        5wVZT1cLsnkirn5frucxHViFlZgr3bi2DDVPDmSnMN+XxjQOzZDLzDnCM+2Ena/19+C2olYCXP5R
+        pSBa+7k10D2X3OQ7YEZJZ3uNNlt6VblM4WTb914bUI+mpWEZrACZhcWuSGih1bHASB1AzlRZwxoH
+        zbAO254ePFx0VMhEXxqOBv/mmrlN5aILvfM/7CWZ4PjjbhItPiLaAYH9tVoSXgcYtejLLMf+isNg
+        4l2QNRTfQBve4MrgaAH6wd3I3wtm8jqQajCFkgaWqfN8voiMJX44HYfFb7jcBuFs4k8T6p29P/IZ
+        KZZ2AgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +49,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:47:43 GMT
+      - Fri, 09 Jan 2026 06:00:00 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1321
+      - gfet4t7; dur=1228
       Transfer-Encoding:
       - chunked
       Vary:

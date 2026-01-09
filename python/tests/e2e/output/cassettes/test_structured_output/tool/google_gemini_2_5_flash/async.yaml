@@ -12,8 +12,8 @@ interactions:
       "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
       "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
       should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
-      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config":
-      {"mode": "ANY", "allowed_function_names": ["__mirascope_formatted_output_tool__"]}},
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"], "mode": "ANY"}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -23,41 +23,56 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1178'
+      - '1174'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/21V25KiSBB9768wfNoNZkbuwr4JioAoF0GFjQ2jhBJKuQmFqBPz74t294zdMzwQ
-        RZ6Tl0oiT35/6fX6IcgjFAEM6/4/vX87S6/3/fG+Y0WOYY474N3UGUtQ4V/c1+f707mj7Js8xKjI
-        ZZCmH5zf8BxksLP3t9sMVaAOixJu90WVAYxhtC0aXDZ4i4si3W77Xz47gyqu/xC0QyqAUR532PCz
-        092twUlR/dHxXjGqarx9r8sCuELh8bfcD2oKnphOgZN9U9f935g//lADRjh9uLnqpLcYzSc9U+nd
-        z2ttMf4c4seH70/h+t1lmjjBSxTnADfVI6pc2sooUjHKRGO9oQfWJCPHjFBA0SHmeW0SdruzD61r
-        c40vjUdBg2hS0oCvpvH80tAUS5aq0tL6FV7mZbXQqtI/cTUXVCAx1ELTnGBReK1NRtOdu1uO7LzV
-        DshqDDGlosuAPnTYMloRimau1hmcjZSrqdSNvDQHpiRJ8nR1qCttxZqhReaQvI2jltorae3zoqAY
-        ArsLp4AJY5qnh8Ekoy94yIHctKVitBLcYJj5Mqm16npvmOdz6QaUsEbGzeClc5zOru0Y1kxGVhYO
-        Nry65ozjhBi6URPPdwYQ2QYax0VyFmJiOqWckZ+WaUkWGyfGN8Yb+LJhHOY7PzQdpU6HiUjRF1TK
-        hLZauEPrgHQ+A+PgIrgZOk4lndykSbaf3maT2TlPEDE9OCNckia7YWZUJYVSGlzXbKF3VzL2LTfz
-        EeWCEenJh2ZX2Dkxu0QiDsaphMVRkM2ihhan7I6+lFyFrxoDdyeePw24q3obFbmpZHpz5mY7m5A3
-        tlzfLkOH9Dir5cR8LsJAcJQLP72snKGrulVSZQuRFg9eZaLBiuRJuI7TXA+b9sLBE2ssp4ZN5YjL
-        YoaRrI2uW5hA5ZKvxmJiUWht283JWIthhXhdHsQ4XYPofM73Dhsq9GWi+MPBYTNUIla4nbhNFu32
-        5fgqEFHLLVtJ8Fe84C1DewED7QoKYlj5XJ4H+s32yPGq68Ip9TzjkqlqttZ2g8n4HEWCo59EThEC
-        qqELBwFOlXiz9I4bpnaMiBJQstRcgk9P11mXWpow7qjxtVkTH1OpZMoRtoWaWCDhaOjTtMjBSZkd
-        cO7emlu6YjwxZsBSNXhPy/a+T08kMEiKXXnzopKI5jLL0BE0WFWkOTMKwqXcbCTvdmOpfcjEbXnT
-        tXGitBZhDbyDTkzMvWohbnENdHKRSrXnX6/PU/trYv/7Na39qnid+ayIYPpO/znOnfLkqE4cCOoi
-        v9OWrmn9FJ4+yiN46czkJ/4c1jWIH3Hn97i9GOaw0z8Y9d7Ftxd26vtX/fe315z34h5l9Zu75xxi
-        0Kk++CmI/bIqshK7xRHmctE8VJ+m3pT0aUt8ILDiG44LDNKPEMN9+S1wPe7SovR5fTxtlq5DIEX4
-        +lDIycZ90t8uwce63vv48tTud1H8WCPFiy9vDX/9BytY1ei12THMunZ+pb9xX/edriePjP0K1mWR
-        11CL7hx1482An8gHdm/V8TZsza02svsvP17+B+oIyJ1ABwAA
+        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
+        0fEy7JhNq3TvgjkwNXPpHTDj4x2VBCpSm7VWECh0i3TP4NOJlwSa6fDNoOJTEslKyaasd8W2E6Wc
+        GYoGuUb5I0oVvsjtuXQZKmNWIvMcWEeJ2a6Bk1k6iowyRpGUoh+iEbpAkT+R5DlUOYKRKAw4VUmU
+        mDM7PCQ4J7S6dekK10u9ye0EEa7O700xmksND9usU2s4LTwozwK98aoKICeePWWtAcpwIlKI0cSO
+        bZOCOJ3p1i8LMdGIwLdnjz93B3/arzu0K0JoVWxTEZGaFvHUqsR6Lu9cWpgV6uDyKMrDDalWK98u
+        uVvv0MXPKdmvIZaGAXHHAr6+LxCexoQXJONcwZ4uJi20DdaATXnLxlriiZeV0DJD125+fZ0cjiow
+        83BmEKeU4gvZqrpDWMMqOuNFReCmMZZ/f7yPf9y8//1x6z4P7Ve4qNs4qd7l36/lBxA0xZhbSTC2
+        zavMdnTjOw88F02crI8w8je9moxjkL35qq++T1nSJA8sSeKnd4h6ih4U9Y/xn3997fk63NtYz9Nr
+        pZqA4EFvwXdOee6Gtu6A05ZJw7bTG72hu2+A84H2fhLsD9/yoAVB9VOKQLE/fjEej4+2RfURAz8Q
+        4mNDQVWA7Q3FTr7zAYseDX6e632Pnz6s+x1ufp4Rw1/Fbwv/+h+ck2Esvi47S+rHOv9E/8L/TB+4
+        lb91fB6SsWubMRHjV82Ed1kQ9RgdGMadFI3iwt8XU33+9OXT/wDEbK5oCQsAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -66,11 +81,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:50:21 GMT
+      - Fri, 09 Jan 2026 06:05:47 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1854
+      - gfet4t7; dur=2192
       Transfer-Encoding:
       - chunked
       Vary:

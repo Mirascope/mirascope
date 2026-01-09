@@ -61,10 +61,11 @@ To find the sum of 4200 and 42, you add them together:
                         raw_message={
                             "parts": [
                                 {
-                                    "function_call": None,
+                                    "media_resolution": None,
                                     "code_execution_result": None,
                                     "executable_code": None,
                                     "file_data": None,
+                                    "function_call": None,
                                     "function_response": None,
                                     "inline_data": None,
                                     "text": """\

@@ -30,21 +30,23 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRXU/CMBSG7/crml6D4SOIekcEI0FgwqIm1piGdVvD1i7tWQIu+++2+4BNd7E0
-        73nO13tyByF8oMLnPgWm8QP6NApCefm3MSmACTCBRjJiShVc2erLW2+DADvZJJwTgRDBwCFmxAgE
-        e88LtJmtF2j7hOz7fbmZE9yrOJpBJJUFy0QrBVxp+BY0qfNdCoofjnWKJWLaAXYSoiDTmmALFHVl
-        RYGL0BJTIgrcmra4vL961x2VjJldIJE+ixu8aAAzleA62jGqpbDY3tu6+BLlwmcnIw+cpkFZGmea
-        hmzNgBq36cVTnCqZpODJIxOPMivdHg+nVbXWdTrAZFTHQQKNu6HBXe9fYT03bXncPlvromZLGnM4
-        21W8xYeHW07An7kaL5yWZdicLQsj6M44HN87tWmVj29MaV4ZFrLEWNgf3Uz6gTlgVHbEiulUCs2W
-        vmXmq5cz3exft6tb/2e6dIdB4J5na+wUzi8W0XaFuQIAAA==
+        H4sIAAAAAAAC/2WRXU/CMBSG7/crml6DEcwCekcA4y5gBBc1cYacsG5r2NrZniXqsv9uuw8Yuoul
+        ec9zvt5TOYTQI4iIR4BM0wfybhRCquZvY1IgE2gCvWTEAhRe2ParBm+DIPuySbQKBSEhRY4ZC40Q
+        0uBpTbaLzZr4j8S+X73tKqSjloMSU6ks2CRaKeZK40FA3uXvABU/nroUS2RwBewlpnGpdUgtUHeV
+        FSAXiSVmoajpYNr6/P4YXXZUMmN2gVxGLOvxugfMVILrdM9AS2Gx58Df0XOUi4h9GfnW6Rs0pWmp
+        IWEbhmDchrOntFAyLzCQJyaWsmzcvpvM2mqD61wB7rSLo0TIrkPuZPSvsF6Ztjwbnm1wUbMlZBy/
+        7SrB+i2gAyfwz1y9F87AMmrOViYpXs84mU+dzrTWxxemNG8NS1huLBxPb9xxbA6YNh2pYrqQQjMv
+        ssynWyQAPl9uYv4z83b3B+bPFx51aucXvLD91LkCAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -53,11 +55,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 20:07:40 GMT
+      - Fri, 09 Jan 2026 06:05:31 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2355
+      - gfet4t7; dur=1526
       Transfer-Encoding:
       - chunked
       Vary:

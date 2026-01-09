@@ -24,21 +24,23 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/1WRy26DMBBF93yF5XWo2oQmUndRkyhRlUdT+pBKF1YYwAqxkT2oaRH/XhtCalig
-        Ye713PGh8gihByZiHjMETR/Ip+kQUjVvq0mBINAIXcs0C6bw39s+lVMbC8LZHqJVRJFjDpH5iGi4
-        nJPNdD0n2wWx9ftqM4vowCisxEyq1rVjqPjhSPYSs6TUunUohlyk1jGpqRNWX+uvwf+KSuZg808y
-        hryz152BJlxwne2BaSms7SXc7uhV5SKGs2nfel1AM5qWmqWwBmQGFrsioYWSpwJDeQTxKMsG1njY
-        DnPY9vRhcNFRIsv70qg768zVM5PKcxe68z/MJVnO8cfeJJx/hNQBgf21OhKeA4wa9GWaYX/Fu2Ds
-        XZC1FN9Aad7iSuFkAPrDm3s/yZnOmkCqQBdSaFjF1gOj5ycWi++Fv3z9nax2gZ/M+DSgXu39AcAb
-        faZ2AgAA
+        H4sIAAAAAAAC/2WRy26DMBBF93yF5XVS5aEmandVkqosktAUNX3QhRsMWHFsZA9SUsS/14ZCjMrC
+        Gt17mRkflx5C+EBEzGICVON79GkUhMr6tJ4UQAUYo5WMmBMF12zzlU5tIkDP9idcRgKhCAMDTiMj
+        RDh8WqHNw3qFto/I1nt/s4zwoMmRAjKpmmBAQLHDEe0kZEmhdRdSBJhIbWgeiQo7g6uu/hpc11WS
+        U7vLScaUt/GqDeCECaazHSVaCht7CbcB7lwmYno28shrB9StcaFJStcUiAFHOjw4V/KUQyiPVCxk
+        UYObTZpmDueeP219kEB4zxrfzQf/+uqlmcq4+wDO25hLEs7gYm8Srt5C7ICA/lotCc8Bhg3/Is2g
+        v+J4NPX+kDUUX6nSrMGV0pMBOJzc3A4TTnRWD8SK6lwKTf3YZvYfPCWHZO/PvvOfuR/wYHFJn9+x
+        V3m/ORK3ooICAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +49,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:47:39 GMT
+      - Fri, 09 Jan 2026 05:59:54 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1650
+      - gfet4t7; dur=1251
       Transfer-Encoding:
       - chunked
       Vary:

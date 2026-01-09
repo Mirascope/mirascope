@@ -59,14 +59,17 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "mellon"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -75,14 +78,17 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                                 "video_metadata": None,
                             },
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "radiance"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -120,10 +126,11 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": 'The secrets have been retrieved. For the password "mellon", the secret is "Welcome to Moria!". For the password "radiance", the secret is "Life before Death".',
@@ -212,14 +219,17 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "mellon"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -228,14 +238,17 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                                 "video_metadata": None,
                             },
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "radiance"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -273,10 +286,11 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": 'The secrets have been retrieved. For the password "mellon", the secret is "Welcome to Moria!". For the password "radiance", the secret is "Life before Death".\n',
@@ -350,14 +364,17 @@ stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "mellon"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -366,14 +383,17 @@ stream_snapshot = snapshot(
                                 "video_metadata": None,
                             },
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "radiance"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -411,10 +431,11 @@ stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "The secrets associated with",
@@ -423,10 +444,11 @@ stream_snapshot = snapshot(
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": ' the passwords "mellon" and "radiance" are "Welcome to Moria',
@@ -435,10 +457,11 @@ stream_snapshot = snapshot(
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": '!" and "Life before Death" respectively.',
@@ -522,14 +545,17 @@ async_stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "mellon"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -538,14 +564,17 @@ async_stream_snapshot = snapshot(
                                 "video_metadata": None,
                             },
                             {
+                                "media_resolution": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
                                 "function_call": {
                                     "id": None,
                                     "args": {"password": "radiance"},
                                     "name": "secret_retrieval_tool",
+                                    "partial_args": None,
+                                    "will_continue": None,
                                 },
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": None,
@@ -587,10 +616,11 @@ For the password "radiance", the secret is: "Life before Death"\
                     raw_message={
                         "parts": [
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": "I",
@@ -599,10 +629,11 @@ For the password "radiance", the secret is: "Life before Death"\
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\
@@ -614,10 +645,11 @@ For the password "mellon", the\
                                 "video_metadata": None,
                             },
                             {
-                                "function_call": None,
+                                "media_resolution": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "file_data": None,
+                                "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
                                 "text": """\

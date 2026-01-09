@@ -12,7 +12,7 @@ interactions:
       ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
       "Look up book information by ISBN.", "name": "get_book_info", "parameters":
       {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
-      "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config": {"mode": "ANY"}},
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -22,27 +22,29 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1115'
+      - '1113'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}},\"thoughtSignature\":
-        \"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\"}],\"role\":
+        \"CiQBcsjafJwTFnfpFx5zDp2yQ02h7b7TcQte+zVsHI0TkC4NhiYKfAFyyNp8MZKtC6TiUEOOSYB9ermvqxakuudgN8uDxeJaXPZWsPhJ/voPkfA1BonazZOBaNt5L6rUIhVcKZ/0fUCApSQC7FBJmAynY5/h1eR/SAnNGZ9kw+UTO1lqVVmu38J7P7YZCrlIzDWQSwS+06Hq4dG2tkYYz4B3niwK0gEBcsjafIGyXCjbiptpZ0jGzAsEjXc3z0DbMwj+50uq/RAtbrzWvr69HyY2PS+kV4MDLlb85VFblA0pIvMQsAjUpnengyUVyXbM7wYyyeOySt9sunKxb8CJAd2b+WtQp9NilZabcTtuGS1pJvUvZ0ePxLfzVdBuYWVbDvYK/sGcK1QSfTYIlNWlC055rCTkxiuTPikPl/5+t/evobCGItUozoWEf6EKXNfVNh2o/+IRAcl3TFDj8UMNjXqXd/oobaeLDUZ/oWcSjSBZw6N3w8Ub784KhgIBcsjafE5aSWnzwwxa2jKGhbc4tNd9+DYomWacGnwtW5otEsVXf7WL1Tf/c47zCm+MQuopMGuLRK7QluYJicCm/JJjVKROHIaOkFhsNHhneRl0NVB1V9lLKXFcGZepO7MNN1v4JuGtsBuOO7l+iLXS6E1nYuQWcQjR2nlihePqBFLma/xSr0v5pvIXk0Va+aZdbpAtTWBDgZAkDU2jNnvnnCFoEhukD4BN6fazkzr5HsWQbqHQqEssDo7pFefVDNY9w1H4kpxA9SqkxrOKNomHHbo7CrGg+h4Fzpji10gt0Ai7/8DN3QiYW8iJA60aXeUV/BdAqydvPkEJtIH1S5vPfxyUtvckCoMCAXLI2nxB1//plwkNY649Tq3FgFLH4ae9lgp6nA1l6DwMIlIVGNAgCV0RMgML9DcjpVHhEbhL5/JBBBddKJBBhcMmmOVSyPU3RvnkIDJ828unv0R+SLuEgPeO0ERLsUyt0fqomUX8zw/0oE/ikovNj1A5uJ37ce8varhAGHIbcRtCK7AUiF28+kvdqD7yVyI7pRqTWKNietDqWFPwWatSe+eChMUsdCXGQKq4JboD3KMW9f0nfFcEZG9hdXOLHQhovSQMsmtq2nmvAZ6WPe7RsTR3i2CUJTrAoIz73J1ha49xybk3AugNlvDRKYtD+jEE+v7IO1WHZnUxoJd/MLdzlrOLDQovAXLI2nyI1eCfW4mvOKf6jrdNIOgTExCC8dzryZea/+G7XbHM4GGAI1uiK5tXC+8=\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
         generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
-        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 556,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 338},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"MnUKaZ6YHfPoz7IPuY-C4Qw\"}\r\n\r\n"
+        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 401,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 183},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"lZhgaev3E6PPz7IPiYGzwQM\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -51,11 +53,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 04 Nov 2025 21:50:44 GMT
+      - Fri, 09 Jan 2026 05:56:38 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2498
+      - gfet4t7; dur=1433
       Transfer-Encoding:
       - chunked
       Vary:
@@ -75,7 +77,7 @@ interactions:
     body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
       and provide detailed info and a recommendation score"}], "role": "user"}, {"parts":
       [{"functionCall": {"args": {"isbn": "0-7653-1178-X"}, "name": "get_book_info"},
-      "thoughtSignature": "CiQB0e2Kb-Ep6wJurTfCi1Ey3VsfBqgDOWRVYQ-50CqBbmcODY0KgAEB0e2Kb6es3tEju0zo8h9zhT6bBOd_uZBwFdeeAXslc-NHGTF3EtGaqp0jCnq1GWyBgrb7hIjxQj8jN8qJ1ta0v1ryK7Ia9tuNavQ9iX1t4JpIUlNvBgRLvRsS7YCFNjikf2CAoYvjJq_QpUWdwCFlaYNaAGYYYfgpDCFSk233dgqWAgHR7YpvuiKt77SLJ55cKKf-LgpolXM8DaUO7XhwYG9GPN_JSnJRQnPugdbEUH4Fxo9PwS7K_xGtHpUpqJNbjuEFgBYchkvx7lyT9yiAAyhqJTL5BSIhltLbKIJAXDjN_xuKYwa-5otcUmPUVG7ZQxPlaTB2kvB_DOOEHiIxyofXXzItHtLrwftxzPdi4P7rESsB4GGoLrH96pw-0AGwGUfxsd9s50688f9g5TAH2mGTYxfcKy8ktvle4FZ2NtRSjWfG9ZFyqwmNDutNuw276_9k1zPBAHWbMNb_CcFqlzltGLhvTk5EmZFyIP3CQvaHvHWbDTe2Q7gZYDsBsM2j2g7RJJx1wjQYQDGo90wiXQWDU8-35DE-Cr4BAdHtim_YW2vgQjFuD8WqQhfS40UQ42J32weSVXk-5zC6HmjB_yNVY2Hof73ZaPlCViW71LP9v0ZOl1HiO6kq1q6bC-QVz-lfsgpgKZCiafIQ3AVGO-IK6hjxgY2S25Pm7rOEigULR6rfZU0J7m6KDMZFeURIUcnfnL4-sSN8g3Ulhp1nrljQPwz16jrDgUJvZh5PUv1cvqHkUSDufsvWbcMsmsJR_Qp3eYEv0YXcV3zWeN9jbQmUWRfygfTZbQrbAQHR7YpvFum_mhT7oBQNL2lfYFd93ZFEkPs4aQmOvudiZ44S6wg0q9mVq_1TTsfH8fkW3o3qvOaTO5SNdgD4kYV0rnTCr6U0THbcQfZqbcWPyMIgaVVrIYNSzvyZ3CaTSAIAICyANQXL2vcs-cEPrCdAtkZORy73lNgXgFt9xrkpZsonpht4ljGYOhGikVRvReNk23tnN5AIfKijn237-1UxSLi9cppk6U5rlRDCaU-Aie1EtGlo976Uo_d5RdusDsvqJBBk6_OqH66jGKl0w_rJP2vN8efGzqGJRgrRAQHR7YpvuFU4VYVFNU-9eigTLtODDs6lxifA8VJvL6zmUfPTCRFPtP5LqyMpnesDxpHnz0mElzU6jp7XCLam8AAnhlB606KXbjlOSjSdmIo-m023knBS6ejw068Alt3MMGu3vhUCLVd1_jShkc7gYHjKzyP67tsgeyhR9oe_cOFqXTAwrrWIK26jvyOk2QD8P_Rr44Eaz8Vpoqxv908VfYH-wpFVsJ5_-_6dPHA41CRfzy_-xKDqjD-8EOQ2fQIKxqk8nqeDqN7fFroOkCenr96kCqcBAdHtim_rG-bSVc_2FXmFX32QJUYvttG2jMbSeK9bOB3K4cPyAULlW9evPgQ7sjQVBreDmwas_Eidve0bBgCk86n9HyPBVGrgI9Vc_Ak9v_locBGhCTiElAu-BUgTjc58ZzlMIJHO3XWfmk_teyu5E18nwU6fQiRmTORO9zgNooSIiYL-A2Ycuz_r36_r1ArRlPmmyeNj1WaQu4qp_ksh1pwQb2STkAUK7gEB0e2KbwG0KQC7WLvQj48XufpTINFAXtPFK_vV8EsgkwpOZa0S7BFqmA5G-f3uVWxqDwKBOgHUhyJPXXHw9d7N8kkvqDrkZql5FeI6910zQPpuKOwOOcXhVAgeM4MrtCn_k7iYyjuZlN6AuwI0z6SyhYOOtiSBpFfmF1eUtwESkOfmS5mQnA8GdB-u7_d7fdn8M8IT77u8IVZy7mmRFspP2irc8B9M0ie_1ifKFQ3A8-tRH8Ke_ot-NFYgmcznmS0z9PtUrTh1Bvi1PwXDA-QEM_EJjakgLALvssCFDQzdHPOR2M4VoadM1ad5ckwTCmoB0e2KbwynNzZA73c83oe4BDhBCJLOBRVYSVmM3_ySI7UbSxFa2434ZEMBA7acG4n8gKfgmKtXL4Qw0QbbXQDcTQGB5M6fQnAaTcMVhm9NMFQGhnWFIJ37UpjUf8eSQn43sLRlwvBXJpfO"}],
+      "thoughtSignature": "CiQBcsjafJwTFnfpFx5zDp2yQ02h7b7TcQte-zVsHI0TkC4NhiYKfAFyyNp8MZKtC6TiUEOOSYB9ermvqxakuudgN8uDxeJaXPZWsPhJ_voPkfA1BonazZOBaNt5L6rUIhVcKZ_0fUCApSQC7FBJmAynY5_h1eR_SAnNGZ9kw-UTO1lqVVmu38J7P7YZCrlIzDWQSwS-06Hq4dG2tkYYz4B3niwK0gEBcsjafIGyXCjbiptpZ0jGzAsEjXc3z0DbMwj-50uq_RAtbrzWvr69HyY2PS-kV4MDLlb85VFblA0pIvMQsAjUpnengyUVyXbM7wYyyeOySt9sunKxb8CJAd2b-WtQp9NilZabcTtuGS1pJvUvZ0ePxLfzVdBuYWVbDvYK_sGcK1QSfTYIlNWlC055rCTkxiuTPikPl_5-t_evobCGItUozoWEf6EKXNfVNh2o_-IRAcl3TFDj8UMNjXqXd_oobaeLDUZ_oWcSjSBZw6N3w8Ub784KhgIBcsjafE5aSWnzwwxa2jKGhbc4tNd9-DYomWacGnwtW5otEsVXf7WL1Tf_c47zCm-MQuopMGuLRK7QluYJicCm_JJjVKROHIaOkFhsNHhneRl0NVB1V9lLKXFcGZepO7MNN1v4JuGtsBuOO7l-iLXS6E1nYuQWcQjR2nlihePqBFLma_xSr0v5pvIXk0Va-aZdbpAtTWBDgZAkDU2jNnvnnCFoEhukD4BN6fazkzr5HsWQbqHQqEssDo7pFefVDNY9w1H4kpxA9SqkxrOKNomHHbo7CrGg-h4Fzpji10gt0Ai7_8DN3QiYW8iJA60aXeUV_BdAqydvPkEJtIH1S5vPfxyUtvckCoMCAXLI2nxB1__plwkNY649Tq3FgFLH4ae9lgp6nA1l6DwMIlIVGNAgCV0RMgML9DcjpVHhEbhL5_JBBBddKJBBhcMmmOVSyPU3RvnkIDJ828unv0R-SLuEgPeO0ERLsUyt0fqomUX8zw_0oE_ikovNj1A5uJ37ce8varhAGHIbcRtCK7AUiF28-kvdqD7yVyI7pRqTWKNietDqWFPwWatSe-eChMUsdCXGQKq4JboD3KMW9f0nfFcEZG9hdXOLHQhovSQMsmtq2nmvAZ6WPe7RsTR3i2CUJTrAoIz73J1ha49xybk3AugNlvDRKYtD-jEE-v7IO1WHZnUxoJd_MLdzlrOLDQovAXLI2nyI1eCfW4mvOKf6jrdNIOgTExCC8dzryZea_-G7XbHM4GGAI1uiK5tXC-8="}],
       "role": "model"}, {"parts": [{"functionResponse": {"name": "get_book_info",
       "response": {"output": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson,
       Pages: 544, Published: 2006-07-25"}}}], "role": "user"}], "systemInstruction":
@@ -89,7 +91,7 @@ interactions:
       ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
       "Look up book information by ISBN.", "name": "get_book_info", "parameters":
       {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
-      "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config": {"mode": "ANY"}},
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -99,28 +101,30 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '3578'
+      - '2720'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"publication_year\":
-        2006,\"author\": \"Brandon Sanderson\",\"pages\": 544,\"title\": \"Mistborn:
-        The Final Empire\"}},\"thoughtSignature\": \"CiQB0e2Kb+YhcPcgaefVi6CV/CtbHbGQys5f+P+ujnv8EGXAnHIKfwHR7Ypvzr9pKNxznhAMohCeesL3PGmBDGnNwK7nX5DOBICmb6y/I9Aju8FwyRFn+19BFflU5vSMuUEOENmNy3u2VgYk89nfRlFihhSPfEF3ceTCKJvivcZN0nn8XQiXbgutEp9PuNZPW/OtaSflyms6NZoA3F73qwX4lLD4QBgKuQEB0e2Kbx3YHuhWSxi4vZax5vz2Ykn022H+WuUc0hJQLehsO3R2NiBSXu69YPTy6t2k+i4ZMMG/r/LpKVGA2TmW+JH7J/9RNKJbA4TYUty4EpczSwkuO8LfnI+KobBQLktJpzCCUfav+6l9izqLfm5u8A/wk/cr3pRwTC32Fw7UBe1DArTmCdUfujIAjGrLzXEY4H4GsYS/XU04ywXaZDf3hg+O0DBhT0DNkIqdfIuR1vUmzziA+yC8lQqsAQHR7Ypv22eO2XSj8cQ+QCR1j4iVEYxYYNEsXd2EQj2HkMtYHBxKf0GehlrchBPVovyLOI5tvVD5coIry6oVpC7Q6UBK7MnJa2Cev3UrJueWyT1Czt8mpJ/k79XJ+AxfsNXidGggu14NPiRsxFDrO4UPSkpha0jOIRlX1LnfVeaV+KjCIFrSRnmHmJweBEPRbANHPV62lFKqR5kCOQBg7WW9M3j7aw+4wa/mahsK8AEB0e2Kb3v3b0nM7Ux49qG+50LlwabJi3EggBzvCPaPu8J6McRVCGT68/RVnNbyMVTd0QCaQlTH+sPMEtNCdb2UbuI+b//Vm4LhTb8aUwPuCDdN8i9q6fNmC9hX9f1hKV5ifnWfY5U2wgkFLQqbe/YKyJWUV0+zDqUJSZGlMSGonGgYwUimg42t8uPHPUmlj25rDI0rFuLzFjMzYW5lp3qfQb+Y+leQHIOX6ZdBnemfnchWEetOQQHV3dyxS4h2Eeem2YnYp/mfb5t3YuULmRXsBUbIXOthU12AhPJozytMVX4TwfCu5RT1kOzo61u7/vEKqgEB0e2Kb27ygW3La7yO0fL49E8Yaj3I94Pk7wfSB99n2DxYdS0Sq6p0OYr70sR3wdYCSaPLwldWTmAuNpUQmmn0r9sXQjD98lIi7iUO3nC37m1lBheF6frrNVWczZ+FyWceRjY0Qal5SB+sTNsQhH0nVNMAeFeZYKyzu5qXM0X8EWqYm6u3WgFqyl/UTihnSqaTcT638Iox5oaPPcv2ihPOSmW0xYd3Lc46sQpxAdHtim9H2ihVQhdpFCjxsy3JINv3LTE1MtkjjaI5t+qJzl0FapuXCIckn0IgWQcPdxTWqpUK+VaEc+e8beXx3dK6qvI8e8ek3UqJu+tAZ3AIMcVgjfWOULQXRi+71qbX58f7op2A1jlRwWSImxGWkRo=\"}],\"role\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"Mistborn:
+        The Final Empire\",\"publication_year\": 2006,\"author\": \"Brandon Sanderson\",\"pages\":
+        544}},\"thoughtSignature\": \"CiQBcsjafOkYE2E7MnPk7lvQhONAcDphj7Q4ZLCIsoUkq5BsZPMKdQFyyNp8oJ/MuLmTq9fQ24lQdxuW9YR0sd6bByjZ07SlnJL1QJad4hASE9N1/e/ZOAU9aRPOcNbXhSz61hNx8/1mAjQx7p3mnRx0BXQevSGu/VCeUEdOaGC4uD0iGViw7L7uf7v1uUM33OSN766naK9nVrjPdArHAQFyyNp8ySeKk03/P/8NyEGHPr6smiY7/CmPINXClgjbrY9uptd0hE2KcdsklG/AqrTFq7kUoWZIIXsl1X+wUFT2Vd9qAttJZChH21C3QN2OwiaWmxdIhOyZlU7HvljtgiyhkHXVW5BdElD6qpxyzV60lY6eEyVxe10pw1tS9epvqhe+vZ+x6qHpfEQZFZRmrjT1Q0tPJ5tQ50WA28gBOOmpWVLPzQy6aKgvtq/nuTAkl6PgsUGjogSQPFEcuLSaGDHrsvaTzqYK+AEBcsjafFcSGWJKp9fsOB3D+s8XXxMnwkpDCQMM2hncDtRW86mvf6mjiNpIum7tJGkdbfyYlCR2xSpg7K9BTgH8poO85vh/aZxWbffJ4zR6+U0awClMIpgujOzzj1eXI7XGFYB0o82oogY1tntZWtUBtx052ZnMtF5F+cor8r/s+CCujfdSnc5OoiY7nv0LIdHuooXTpo32mcmDXZwDfqEuo9GrupiM7Pm8gF1brUHhq1xGmr3Qw/gzzlMNOIY1C3NJ032LfcTtBBmEE4QjJ91TL9ummJTy0Z1A54J9aItffWCnbvNS4+2C0D14YU9AJKJwOGupcnfWIwrZAQFyyNp8PrQECk0Zn70Sn7bNyUWAKlgesFE/e6cZvZ1cRGzTBHW+hq0yRI9k6PJOVbdlYiu7FR1rOG0Zw4halgdVmaOJIuyjNlF9CEwiNtKiWo+G0v9mI1CjfedSVuuiGAdB1cZ5DqbV7jzyITZeyFFBxy2krfW0zbBtCrJIssILztTbi0Yyz2ReZOVhm+7mAeADjzMJruhgGdJjFUFGZcTmFaGfl0BqFJsj3FzEe0bj1xBJY3+a+GWXVcn2e25IPbClHcMYLrptMuaJUETT9SuzxjlpyAzxstsKtAEBcsjafFWR7LnUwJUoKJ4nFqFynARpBkWcytWL57aqzTgfLxl8xbF5Lmwy8Ys1xVsaMfr4deVzdvrzmQdIlCw6tWP6yVCSo+DUkxIhVGiMfjvihI0ug0M6NuCYmFkxf6OwZT3+PQI3L3fNq5WF88szp4VMScfRM2x7UQmMji0vjDpJeYpDdgObHy/cMbo9wgy/ykjA76/BNZA4/+ongmwx7tPAA4YAK2/r7gX8ljH3tktmBOUKrQEBcsjafKF3/QageUYHsQ/fcNWMHCs0kLoeL0n+aV2nfm/xg0MoZeY6r8CgLd9Lz2hPrIP39j8neZj63rAqZywlP0isarJhC/wPx9615iHnRin8gZjbbj7UXa+Dj/c5g71Oe9N3YOffYLvVPhUXUvtLC2fUp6c5BSygIBCzTE8ow5WbxirBn/ArupDeeoVUd2w9Jo4omiKR4MGgegbjfHBiVH5bGTwpVWptq7PPcgqyAQFyyNp8l7zoPK0Hlge9a87L07xlQE7AJ5j7JxPFiUwTEpLoXQT6TmQVMIC05gLabUAmEAjrCOVpLEHJf2URPEfcnIK67tpG9tlGPHaK8BNHDLd3Rdop5bcD0bw2CdKMBof+4p41m3kqTAG5a27AmKFBVOH9K5cZD9cPScwOCx2+dngtUgqjhmnaXfIxUVcMQV6U7hw27xXDKDLWWD6rqP5oCHKNVDuFENPBG+v6berIQ1g=\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
         generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
-        604,\"candidatesTokenCount\": 49,\"totalTokenCount\": 895,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 604}],\"thoughtsTokenCount\": 242},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"NXUKaYTyAqmCz7IPpP6k8AY\"}\r\n\r\n"
+        451,\"candidatesTokenCount\": 49,\"totalTokenCount\": 800,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 451}],\"thoughtsTokenCount\": 300},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"lphgafKuMaHQz7IP0srSwQM\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -129,11 +133,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 04 Nov 2025 21:50:47 GMT
+      - Fri, 09 Jan 2026 05:56:40 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2504
+      - gfet4t7; dur=1869
       Transfer-Encoding:
       - chunked
       Vary:

@@ -25,21 +25,23 @@ interactions:
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WR22rCQBCG7/MUy1xrqaJIvSvVtlI8NvRAU2Qxa7KY7MbdCWhD3r2TxGhscxGG
-        +f+dwzeZwxhsuPKlz1FYGLIvyjCWlf9C0wqFQhLqFCUTbvDirb6sEZMFxaF4BJkHKDESHgw9cJ/H
-        bHY/HbP5Iyvi98ls5EHLA55iqA15yL6VxuJa8bh6s+Bo5GZX2iLeVFYaw21qrQc5aYajVAEJgxwa
-        o+Tn+Lt1WcDoSBTTxdoXUW3PawONoKQNV4JbrQrbqztfwFmVyhcHSt86dYOyNKSWB2IqkBNKfgYG
-        idFxgq7eCfWg0xJlp1MVa5C/0rt3Jx018uha6vda/+raEXWVUfMkjWvRkjySeCw2cccfLjRA4PVY
-        NQmnAQzoNGkQ4p8ROz3nhKyi+CaMlRWuQMQEsN296be3dLKwbAhG2EQrKyZ+4UG1fOG++/i0Ptqf
-        wWSx3+8/42UPnNz5BRFuXwWUAgAA
+        H4sIAAAAAAAC/2WR22rCQBCG7/MUYa61VGm19U6qogUP2PQATSmD2SSLyW7YnRSr5N27SYxuaC7C
+        Mv8/p29OjuvCDkXAAySmYeR+mojrnqp/qUlBTJARmpAJZqjo6q2/k/U2FmKHMglOPhCnhPkw8sGb
+        T93VeDl11zO3fL8vVhMfOj5gTrFUxmPsIVeavgWmdc4GSfHdvrIlaCtbSXGYa+1DYTSFxEVkhGEB
+        1ijF5f3VuS6gZMLK6VIZsKSxF43BjCC4jrcMtRSl7cVbb+CichGwgwnfOk2DqjTkGiO2ZIQGJV6A
+        QaZkmpEn90w8ybxC2evVxSzyLb3/eNZJEibt1IdB519dPTFdeWKfxLqWWRITTr/lJt70wwMLBLXH
+        akg4FjAwp8mjmNoj9u4GzhlZTfGNKc1rXBFLDcBu/+a+G5qTxVVDUExnUmi2CEqPfs4ixCPO83B7
+        HC42xx8x4+NXcArnD7ZT+o+UAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -48,11 +50,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 04 Nov 2025 21:48:38 GMT
+      - Fri, 09 Jan 2026 06:05:36 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1820
+      - gfet4t7; dur=1401
       Transfer-Encoding:
       - chunked
       Vary:
