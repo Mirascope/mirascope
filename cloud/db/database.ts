@@ -51,6 +51,7 @@ import { ApiKeys } from "@/db/api-keys";
 import { Traces } from "@/db/traces";
 import { Functions } from "@/db/functions";
 import { Annotations } from "@/db/annotations";
+import { RouterRequests } from "@/db/router-requests";
 import { Payments, type StripeConfig } from "@/payments";
 
 /**
@@ -63,16 +64,26 @@ export interface TracesService extends Ready<Traces> {
 }
 
 /**
+ * Type definition for the API keys service with nested router requests.
+ *
+ * Access pattern: `db.organizations.projects.environments.apiKeys.routerRequests.create(...)`
+ */
+export interface ApiKeysService extends Ready<ApiKeys> {
+  readonly routerRequests: Ready<RouterRequests>;
+}
+
+/**
  * Type definition for the environments service with nested API keys, traces, and functions.
  *
  * Access pattern:
  * - API Keys: `db.organizations.projects.environments.apiKeys.create(...)`
+ * - Router Requests: `db.organizations.projects.environments.apiKeys.routerRequests.create(...)`
  * - Traces: `db.organizations.projects.environments.traces.create(...)`
  * - Annotations: `db.organizations.projects.environments.traces.annotations.create(...)`
  * - Functions: `db.organizations.projects.environments.functions.create(...)`
  */
 export interface EnvironmentsService extends Ready<Environments> {
-  readonly apiKeys: Ready<ApiKeys>;
+  readonly apiKeys: ApiKeysService;
   readonly traces: TracesService;
   readonly functions: Ready<Functions>;
 }
@@ -164,6 +175,7 @@ export class Database extends Context.Tag("Database")<
       const tracesService = new Traces(projectMemberships);
       const functionsService = new Functions(projectMemberships);
       const annotationsService = new Annotations(projectMemberships);
+      const routerRequestsService = new RouterRequests(projectMemberships);
 
       return {
         users: provideDependencies(new Users()),
@@ -176,7 +188,10 @@ export class Database extends Context.Tag("Database")<
             memberships: provideDependencies(projectMemberships),
             environments: {
               ...provideDependencies(environmentsService),
-              apiKeys: provideDependencies(apiKeysService),
+              apiKeys: {
+                ...provideDependencies(apiKeysService),
+                routerRequests: provideDependencies(routerRequestsService),
+              },
               traces: {
                 ...provideDependencies(tracesService),
                 annotations: provideDependencies(annotationsService),
