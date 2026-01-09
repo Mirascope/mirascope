@@ -3,7 +3,6 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     Text,
-    Thought,
     ToolCall,
     ToolOutput,
     UserMessage,
@@ -30,45 +29,17 @@ test_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(
                     content=[
-                        Thought(
-                            thought="""\
-Here's a summary of my thought process:
-
-**Calculating the 100th Fibonacci Number**
-
-Okay, the user wants the 100th Fibonacci number. That's straightforward. I know there's a function available, `default_api.compute_fib`, that's specifically designed for this purpose. The input argument is the `n` for the nth Fibonacci number we want. So, all I need to do is call `default_api.compute_fib` and set `n` to 100. Should be quick and simple.
-"""
-                        ),
                         ToolCall(
                             id="google_unknown_tool_id",
                             name="compute_fib",
                             args='{"n": 100}',
-                        ),
+                        )
                     ],
                     provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
-                            {
-                                "media_resolution": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_call": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-Here's a summary of my thought process:
-
-**Calculating the 100th Fibonacci Number**
-
-Okay, the user wants the 100th Fibonacci number. That's straightforward. I know there's a function available, `default_api.compute_fib`, that's specifically designed for this purpose. The input argument is the `n` for the nth Fibonacci number we want. So, all I need to do is call `default_api.compute_fib` and set `n` to 100. Should be quick and simple.
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
                             {
                                 "media_resolution": None,
                                 "code_execution_result": None,
@@ -85,9 +56,9 @@ Okay, the user wants the 100th Fibonacci number. That's straightforward. I know 
                                 "inline_data": None,
                                 "text": None,
                                 "thought": None,
-                                "thought_signature": b'\n\xe2\x01\x01r\xc8\xda|\xda\xe5\xda\x0c\x1e\xc5t9\xf7\x94S\xc02\x04\xb6{\r\xf4\xbcIw\xad\xf2\x8f\xa4\xd2%\x95\x7f\xee\x10#|\x138\xf0\x8c4!\x95\x94\xffaaNT\xcf\x9a\xa7\xe1\xaeA\x94\xe5\xc2\x8e\xc2/\xd0p8\x17\x0f\x13Ml\x1f\xabYOv\xa0j\xf3r\x88WN2\x8f\xd2$\xf0\xf2Z\xeb\xcb9\x7f\x0f\x1b\xd9\xd9\x9b\x85\xf5"\xe8\xd0\xa8{\xc7Y\xdb\xc4\xb0?\xcd\r\x88\x91\xc9=,\xcb\x88\x16\x1a\xa8J\xe8\x8c\xd1{\x18L\xdd\xb6\xc9\x1eD\xce\x85\xeaM\xf1\x1e\t\xe2\xfb5\xa1\xb7\xbd\xa2\x02N\x00\xf74vHi\xbd\xd2\x81?<\xea\x04< \xc7\x05L"\x8b\xa2R\xa9\xd1\x86\xb2\xc2\xf6\x89D\'\xae\xf8*\x1e\xc4\xda\xa5\xe8\xa1\x8e\xd6jEd\xf7\xd3\xb7 \xd6\x1b+\x19\r\xd0\xceS\xe7\xa4f_k\x1bCx\xa9\x16\t(_\xb6\xd0\xce\x8d',
+                                "thought_signature": b"\n\xbc\x02\x01r\xc8\xda|\xee;\xf5\xce\x17j\x1d\xd5T\x0e\xf9\xd6\xb5\xd2;\x7f\xca\x92\xf2\xc9\xdb\x0eJ\x94Rq/AVr\xa0\x95\x02\xd9q\x19\xdc^\xe4\xfb`\xfa\xd3\xefm\\\xbd'\x90\xb2\x9b\x82\\\xfcI\xb4\x9az,\x86,\xdd\x18b\x92vN3%\xce\xae%3\xca5\x96}\xda\xa2\xc3\x1cx%\xa2\xbf\xbb#\x07\x0f\x05\xdcZ\x98?o\xb5\xb3\xae\x7f\xde\xfd\xc4\x89\x007\xe6t'\xd5\x15^k\x1f\x1c,\x0e&\xa7\xed\x9d\x86\xee0\xe3\xfa\x0c\xa4\x8e\r\x0f\xbf\xfa\xb09q\xe4\xbb\x1d\x16\xaf|\x16\x0f\x9dzZ\x16j\x80q\x9a\x7f\xb0W\xb09u\\\x03\x05\xe8z\x15\xebH\xa6z\xfd\xdc2P\x89\x98hm\xee\xa6Y\x0bHy\xbf;\xcb[;\xaa\xdc\x8c\x15\x94\xaf\xb7(\xe5\xd5\xfa\xe9\x0eP\xae\x8a\xdeXJg\x01\x1e\xa6\x14\xa9\xaf\x80rg\xfa\xae\xadEV4K\xa9w\xfdks\x80\x9b\xbd\xb3\xf1C\x12\xcc\x86w\xec\x9df9\xb3\xdd\xdc_\x984/\xcf\x11\xb0\xc9\xad\x1d\x0b\xcer\xccn\x1eK\x9e\xb3\x08\x8fO\xad!\x00\xff\xf7|=\x9b\xdf\xed\xcf\x94\xc3\xe8\x13\xeel\x94;\x81P\xff\xc3\xe3\xf6C\xacA\xe6\xce\x80ew[X\x06\xd8\xcd\xfd\x12\"c\x92pW",
                                 "video_metadata": None,
-                            },
+                            }
                         ],
                         "role": "model",
                     },

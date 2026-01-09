@@ -19,28 +19,28 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 122,
-                "output_tokens": 38,
+                "output_tokens": 32,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": """\
-cache_tokens_details=None cached_content_token_count=None candidates_token_count=38 candidates_tokens_details=None prompt_token_count=122 prompt_tokens_details=[ModalityTokenCount(
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=32 candidates_tokens_details=None prompt_token_count=122 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=122
-)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=160 traffic_type=None\
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=154 traffic_type=None\
 """,
-                "total_tokens": 160,
+                "total_tokens": 154,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(
                     content=[
                         Thought(
-                            thought='The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make this function call.'
+                            thought="The user is asking for the 100th Fibonacci number. I have access to a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the value n=100, so I have all the required parameters to make the function call."
                         ),
                         Text(text="I'll compute the 100th Fibonacci number for you."),
                         ToolCall(
-                            id="toolu_01CjFzbAZRjYvqVoXGRET7ZX",
+                            id="toolu_016feRCAQERKZe9apWg1fnsJ",
                             name="compute_fib",
                             args='{"n": 100}',
                         ),
@@ -52,8 +52,8 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "ErUDCkYICxgCKkBu3sY/7ZuUOcbiLFXGUIPtQ96joTBhtL6mSUbAAiXw+fGhn5Inf6ahCEc4YPLvNE/oEG94XNHLzQLE5Wb3r1AsEgwO5fdJWVC/HC4w620aDG1I8rKvTNjmDXVciCIwFfnbOabYIPTQXCb2FMnpyVv+LHxmXUZa+vZMgYNlPTqx+/loctbacaIrx2zk0+P6KpwCV4CQqBWN1nxkTe4bDOe9L2nlwuzyOzl1QC/QnW03+LlmTn8o5HOZasALRgskJVQ2XlIt+phB894/5yCLDHrilBhUKeLzZqJpjrW5n90A+ZAGcc7kE+qlp2hM4TYqMwz0KbbrZIW6B4Q8tfqqYbODm3xHIAO/pjjLH4r9wV6M5Tyjvivx8+wf3HHGxXWPh3PnPtSannMXpg/jMDjRHXT+el6fghY9R6tnBdgB4VLPRKJyup1MxCvtCwF5Eqjkyy6Fui/PJ28MMOVZEUgi/pa0aaovd2X9VT5R3gVnsurJY/O4yKXNsJRd3QUEAAcybBl8yfUfmkdnL7Zl+Oqu+YObQe2y35Y2r3VxGRUEbAgCbt1pkMiHpJB1zxPcyj4YAQ==",
-                                "thinking": 'The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make this function call.',
+                                "signature": "EqsDCkYICxgCKkDlyJ5F08q1ul9N4Sb7iho/bgJZqZyZFMHOcP/PFmTtBbupvF+V+BTnFU1xGUzM91yvi92HufLaHM9v5xXkFVeiEgzQY/S7aAJcMjBF3JEaDIYqzR5QP5f/piK0fyIwf6R6YIzh43EeI0J6fO/kNWBHNDGqS3W255JX4E0BQ5w58YR7QPw+wDYLqa2V9nFmKpICUjBPYDVQY2TSJEORcPnDTEBCH4D7CWCGDj40MB1+SU3EuRt/up+caQQ3/sP69cQmWJQF9mfES4e2OsK4n9kkEoYhs7EgL7hEjs6r8xAzALkf7XfApmBTLdvakuPu66eme/swjT0D0YyyLxwyFGg8OcnfW6d2r9o6HiGyjaGgI1ceAKa3ZCeEvSdqGXELepRoNRZVUpQbS/wvDTMp9RutnmcWljez4DoN85s/FfnMWt9yq8fIRES7QK6cBqvP5KauP1RfEeaRcbZmOLvRfKglXDr2zuSklsxQ29ptEotIvXshl3gBFVZJvCCdJSydpv6FbhfXKt0ZCxqRMWr5IhkLArkioDjAji/Cy+ae8H8jdfzOohgB",
+                                "thinking": "The user is asking for the 100th Fibonacci number. I have access to a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the value n=100, so I have all the required parameters to make the function call.",
                                 "type": "thinking",
                             },
                             {
@@ -62,7 +62,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                                 "type": "text",
                             },
                             {
-                                "id": "toolu_01CjFzbAZRjYvqVoXGRET7ZX",
+                                "id": "toolu_016feRCAQERKZe9apWg1fnsJ",
                                 "input": {"n": 100},
                                 "name": "compute_fib",
                                 "type": "tool_use",
@@ -73,7 +73,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01CjFzbAZRjYvqVoXGRET7ZX",
+                            id="toolu_016feRCAQERKZe9apWg1fnsJ",
                             name="compute_fib",
                             value="218922995834555169026",
                         )
@@ -82,7 +82,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The 100th Fibonacci number is 218,922,995,834,555,169,026."
+                            text="The 100th Fibonacci number is 218922995834555169026."
                         )
                     ],
                     provider_id="google",
@@ -98,7 +98,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                                 "function_call": None,
                                 "function_response": None,
                                 "inline_data": None,
-                                "text": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                                "text": "The 100th Fibonacci number is 218922995834555169026.",
                                 "thought": None,
                                 "thought_signature": None,
                                 "video_metadata": None,

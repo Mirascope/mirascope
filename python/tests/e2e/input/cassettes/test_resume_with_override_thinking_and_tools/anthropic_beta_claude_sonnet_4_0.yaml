@@ -189,4 +189,187 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW3OiMBh991cwPO2ObUVqKu5MHyilFQTvVHRnZydCuFQgSIJaOv3vG7C20i0P
+        DDnnu3FyvtcGx/EOTNzQhRQR/hf3myEc91q9Sw4nFCWUESeIgSnM6Gfs8Xk9+2YhXp44NMSJAqOo
+        lvzOJzBGDGf14zSn6K8XrvmLr0Ew88k3yWU6g9uC8IV4q53f6vV4GuDcD+gs9BNI86xqr+TkTrYN
+        TUxeZG2K9LytgeFmO5o37WKO/bbjCy/gEWFfHICl5EEqyXRjjazxjSzlao9IVm/YyjUlKdy+5faW
+        j7tpx29uFyvVJH2rucST5rrYL58p0DRjZbRCxeqkd+uNBEICsWO1gTAwd3sJAllxUzt4jnVhKKt5
+        k5rbIJdcLdU7nXtlMjK7nt3f7CRh4Tz0V2AgGVM7pbOup6FuEUb2ky2sLdo6DORJiHfuWHeEljeL
+        Mgq6D2NtC67lNDa9vZgGc/dxAzcDtMWkpy3sQ3Hv6AvRUJWxJW291qKFD7OOO+gFDwfTvdMVZW+p
+        atwx9ej52jcKfxaLgT0cGIXu397yje/U//OpPJ/hqFI6xi6KTuEfV8N7YRKSYIogweWd8rP5aPxh
+        BD5MXHRgsPAl3kSEQL+qa5Z1OR8lKGMOdrmT8TiHOe8H+Xl17FkOV43F52WmiShkjocf7uLTjDmR
+        zvEGJQrOK8cDcGx7tiA1vt195ymmMKpTonTxX11yz7qG0fnmnC0VEwhGIX0pf2qu2vOzdWANamOd
+        VGyciX2yd31EcNN4V/t4AU8oI+FRaR/FTMtL8QpcehEkQdWPzxBJcUKQ5pYxaNXz4XIHhstFtqVk
+        nI+yaD8x+cZb4x8ykcsUOgQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:26:01 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=888
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
+      fibonacci number?"},{"role":"assistant","content":[{"type":"tool_use","id":"google_unknown_tool_id","name":"compute_fib","input":{"n":100},"cache_control":null}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"google_unknown_tool_id","content":"218922995834555169026","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '721'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQXU/DIBSG/0rDNTMtlm7tncbsQm+diTGGMDgbaAsVDkaz9L9LFxe/4hXkfd7z
+        8Z4DGbyGnnRE9TJpWETvHOCiXrCS8ZJXNaHE6syHuBdldTluLkwdn9xNg5v79e56d3dlttmD7yPM
+        LohR7iELwfezIGO0EaXDLCnvEPKvezic/AhvMzk+Hbk1UFRliaZY2613UilbuDRsIRQ2Fqxa0ZYx
+        2racrs5ryjmnVdPSkjVnZHqkJKIfRQCZM+Rm4LTAFBz5BBFeEjiVp7rU95Sk46LdgVg3JhTon8FF
+        0tXLZd5UKgNC5V5ovRM/HeWJZ6z/Y6faeQCMBgYIshd8+Ov/opX5TSdKfMLvEmtyHAivVoFACyEH
+        nc+rZdBkmj4A9rWVUM8BAAA=
+    headers:
+      CF-RAY:
+      - 9bb1dc5a6abc9369-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 06:26:03 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-09T06:26:03Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-09T06:26:03Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-09T06:26:02Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-09T06:26:03Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWwKxquoosi9ZacEtdG5d
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1843'
+    status:
+      code: 200
+      message: OK
 version: 1
