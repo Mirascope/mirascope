@@ -47,12 +47,13 @@ from ...model_info import (
 
 # Thinking level to a float multiplier % of max tokens
 THINKING_LEVEL_TO_EFFORT: dict[ThinkingLevel, ReasoningEffort] = {
-    "none": "minimal",
     "default": "medium",
+    "none": "none",
     "minimal": "minimal",
     "low": "low",
     "medium": "medium",
-    "max": "high",
+    "high": "high",
+    "max": "xhigh",
 }
 
 
