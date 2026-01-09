@@ -11,6 +11,13 @@ import { getCostCalculator, type ProviderName } from "@/api/router/providers";
 import type { TokenUsage } from "@/api/router/pricing";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
+import type { ProxyResult } from "@/api/router/proxy";
+import {
+  type RouterRequestIdentifiers,
+  type RouterRequestContext,
+  type ValidatedRouterRequest,
+  handleRouterRequestFailure,
+} from "@/api/router/utils";
 
 /**
  * Result of parsing a streaming response.
@@ -18,24 +25,6 @@ import { Payments } from "@/payments";
 export interface StreamParseResult {
   /** Effect that yields a Response with ReadableStream for the client */
   responseEffect: Effect.Effect<Response, ProxyError>;
-}
-
-/**
- * Router request identifiers for database operations.
- */
-export interface RouterRequestIdentifiers {
-  /** User ID */
-  userId: string;
-  /** Organization ID */
-  organizationId: string;
-  /** Project ID */
-  projectId: string;
-  /** Environment ID */
-  environmentId: string;
-  /** API Key ID */
-  apiKeyId: string;
-  /** Router request ID for database updates */
-  routerRequestId: string;
 }
 
 /**
@@ -169,23 +158,11 @@ export function performStreamMetering(
     const costCalculator = getCostCalculator(meteringContext.provider);
 
     if (!usage) {
-      yield* db.organizations.projects.environments.apiKeys.routerRequests.update(
-        {
-          userId: meteringContext.request.userId,
-          organizationId: meteringContext.request.organizationId,
-          projectId: meteringContext.request.projectId,
-          environmentId: meteringContext.request.environmentId,
-          apiKeyId: meteringContext.request.apiKeyId,
-          routerRequestId: meteringContext.request.routerRequestId,
-          data: {
-            status: "failure",
-            errorMessage: "No usage data from stream",
-            completedAt: new Date(),
-          },
-        },
-      );
-      yield* payments.products.router.releaseFunds(
+      yield* handleRouterRequestFailure(
+        meteringContext.request.routerRequestId,
         meteringContext.reservationId,
+        meteringContext.request,
+        "No usage data from stream",
       );
       return;
     }
@@ -197,23 +174,11 @@ export function performStreamMetering(
     );
 
     if (!costResult || costResult.totalCost <= 0) {
-      yield* db.organizations.projects.environments.apiKeys.routerRequests.update(
-        {
-          userId: meteringContext.request.userId,
-          organizationId: meteringContext.request.organizationId,
-          projectId: meteringContext.request.projectId,
-          environmentId: meteringContext.request.environmentId,
-          apiKeyId: meteringContext.request.apiKeyId,
-          routerRequestId: meteringContext.request.routerRequestId,
-          data: {
-            status: "failure",
-            errorMessage: "Cost calculation failed",
-            completedAt: new Date(),
-          },
-        },
-      );
-      yield* payments.products.router.releaseFunds(
+      yield* handleRouterRequestFailure(
+        meteringContext.request.routerRequestId,
         meteringContext.reservationId,
+        meteringContext.request,
+        "Cost calculation failed",
       );
       return;
     }
@@ -250,10 +215,9 @@ export function performStreamMetering(
       costResult.totalCost,
     );
   }).pipe(
-    // Catch all errors to ensure infallible Effect
     Effect.catchAll((error) => {
       console.error(
-        "[Stream metering] Error during metering (will not interrupt stream):",
+        `[performStreamMetering] Error updating request ${meteringContext.request.routerRequestId} or settling reservation ${meteringContext.reservationId}:`,
         error,
       );
       return Effect.succeed(undefined);
@@ -433,5 +397,55 @@ export function parseStreamingResponse(
     return {
       responseEffect,
     };
+  });
+}
+
+/**
+ * Handles a streaming response.
+ *
+ * Parses the streaming response with Effect Streams, performing metering
+ * in the stream finalizer.
+ *
+ * @param proxyResult - Result from proxying to provider
+ * @param context - Router request context
+ * @param validated - Validated request information
+ * @param responseMetadata - Original response metadata
+ * @param databaseUrl - Database URL for metering
+ * @param stripeConfig - Stripe configuration for metering
+ * @returns Final response for the client
+ */
+export function handleStreamingResponse(
+  proxyResult: ProxyResult,
+  context: RouterRequestContext,
+  validated: ValidatedRouterRequest,
+  responseMetadata: ResponseMetadata,
+  databaseUrl: string,
+  stripeConfig: {
+    apiKey: string;
+    routerPriceId: string;
+    routerMeterId: string;
+  },
+): Effect.Effect<Response, ProxyError> {
+  return Effect.gen(function* () {
+    const meteringContext: StreamMeteringContext = {
+      provider: validated.provider,
+      modelId: validated.modelId,
+      reservationId: context.reservationId,
+      request: context.request,
+      response: responseMetadata,
+      databaseUrl,
+      stripeApiKey: stripeConfig.apiKey,
+      routerPriceId: stripeConfig.routerPriceId,
+      routerMeterId: stripeConfig.routerMeterId,
+    };
+
+    const streamParseResult = yield* parseStreamingResponse(
+      proxyResult.response,
+      proxyResult.streamFormat!,
+      meteringContext,
+    );
+
+    const finalResponse = yield* streamParseResult.responseEffect;
+    return finalResponse;
   });
 }
