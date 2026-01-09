@@ -4293,4 +4293,4 @@ models:
           reason: unmet_dependencies
           failed_dependencies:
           - completions_api
-last_discovery: '2025-12-18T11:37:47.379462'
+last_discovery: '2026-01-08T23:03:01.901516'
