@@ -3,7 +3,6 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     Text,
-    Thought,
     ToolCall,
     ToolOutput,
     UserMessage,
@@ -30,45 +29,17 @@ test_snapshot = snapshot(
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(
                     content=[
-                        Thought(
-                            thought="""\
-Here's a summary of my thought process:
-
-**Calculating the 100th Fibonacci Number**
-
-Okay, the user wants the 100th Fibonacci number.  That's straightforward enough. I recall that the `default_api.compute_fib` function is available, and, from experience, I know this is designed for calculating the nth Fibonacci number. Therefore, to solve this, my plan is to immediately call that function, supplying the input 'n' as 100. Simple!
-"""
-                        ),
                         ToolCall(
                             id="google_unknown_tool_id",
                             name="compute_fib",
                             args='{"n": 100}',
-                        ),
+                        )
                     ],
                     provider_id="google",
                     model_id="google/gemini-2.5-flash",
                     provider_model_name="gemini-2.5-flash",
                     raw_message={
                         "parts": [
-                            {
-                                "media_resolution": None,
-                                "code_execution_result": None,
-                                "executable_code": None,
-                                "file_data": None,
-                                "function_call": None,
-                                "function_response": None,
-                                "inline_data": None,
-                                "text": """\
-Here's a summary of my thought process:
-
-**Calculating the 100th Fibonacci Number**
-
-Okay, the user wants the 100th Fibonacci number.  That's straightforward enough. I recall that the `default_api.compute_fib` function is available, and, from experience, I know this is designed for calculating the nth Fibonacci number. Therefore, to solve this, my plan is to immediately call that function, supplying the input 'n' as 100. Simple!
-""",
-                                "thought": True,
-                                "thought_signature": None,
-                                "video_metadata": None,
-                            },
                             {
                                 "media_resolution": None,
                                 "code_execution_result": None,
@@ -85,9 +56,9 @@ Okay, the user wants the 100th Fibonacci number.  That's straightforward enough.
                                 "inline_data": None,
                                 "text": None,
                                 "thought": None,
-                                "thought_signature": b"\n\xd5\x01\x01r\xc8\xda|u\x89up\x10V\xabg\x83b\xeb\x8cu\xfc5\xe5X\xaf\xa6\x07,\xda\xa8O\x1c5\xc0\xa0\xe06\x08\xe5\xbb\xca\x85\xfbM\nJ\x80\xdf\n\x8c?\xa21R\x06^\x981N(\xe0\xc2\x943\xd3\x1f\xf9p\x8a\x870\xc7E^\xb4/\x7f\x89(\xa2\xd9\x97\xba}?\xa8\xd0\x8f\xeaS`\x05<3\x85!\x9c\xc7{\x96\xb8\x84\xefE\xec\xdf\x00K=\xb7\x96\xc6\x15w\x85\xe4\x91\xf9\xa7L\xb6\xab\xfc\xa6e\x81H\x9a\xa7\xbf8zRh \\\xca&\xd3\xf7/SZ\xc9\xbd\xf7\xe5W;X?\xa9P\xbfd\xf0\xc7yEtqB\xc2\xc4\xcaI\x94\xe6}/\x8e+9\xbe:\x1c^\x98\x0f\xe2\xc8\xe8\xed\x8a\x0e\xdbIE\xa8\xeb-Y\xc4\xb4$*^\x15\xd5F\xa3\xd6\xb4a\xef\xa2-R\xee\xc0\xfe1\xf3$@",
+                                "thought_signature": b"\n\xe2\x01\x01r\xc8\xda|\xa13\x03\xda\xb1whX\xf5(;\xc7,^\xf3n\x9a4\xe5\x9b^\xa3\xa3\xdd\xdf\t\xae\x03fz\xed^l\x06:\x8f\t\x94\x1fIop^\xa0\x1e\x1eO\x17w\xe0EA\xd0\x16\xa1\xc2\xe3\xd35\xcbz\xc6\xf6B\xa2T\xf1h\xde\x88\xe3\xa4%\xa7[\xe9\xeaO\xa7\x0egz\xa2\xd8\xb7\xd6\x86\xbeA\xcaB\xd6b\x9eu@\xf4\xb5\x80\x14\x04)\xb8}\xb2\xce\xc4(\x88\x81\xf1\xa8\xf8\xc5\xc7\x08V\xb1\xe22k\x87\xfb\x91^5S&\xe7\xd8i\xe1\xac\xa0\x80;B\xad\xbc\x96\xa1's\xb9tk\xafz9E\xfatF\x86\x08\x02\xe6J\x13\xdb\xdd\xc2\xd5\xb9\xc2Ji\xce\xf4\x06\xa0\xaffL\xce\xdd 8\x02\xe9Xz\x8eg\xb5\xb6\x9f\xd7\x97\xde\xef\xe6xf!I>\xa1,\xf0y\xe76\x86(\xcc\x86\xf9\x15\x9d\xfca\x9a\xbd\xc0\xb3\x86d+\xff\xd0",
                                 "video_metadata": None,
-                            },
+                            }
                         ],
                         "role": "model",
                     },

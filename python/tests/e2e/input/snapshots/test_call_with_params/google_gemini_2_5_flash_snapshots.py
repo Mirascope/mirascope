@@ -29,17 +29,17 @@ test_snapshot = snapshot(
                 "finish_reason": None,
                 "usage": {
                     "input_tokens": 13,
-                    "output_tokens": 107,
+                    "output_tokens": 34,
                     "cache_read_tokens": 0,
                     "cache_write_tokens": 0,
-                    "reasoning_tokens": 75,
+                    "reasoning_tokens": 0,
                     "raw": """\
-cache_tokens_details=None cached_content_token_count=None candidates_token_count=32 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
+cache_tokens_details=None cached_content_token_count=None candidates_token_count=34 candidates_tokens_details=None prompt_token_count=13 prompt_tokens_details=[ModalityTokenCount(
   modality=<MediaModality.TEXT: 'TEXT'>,
   token_count=13
-)] thoughts_token_count=75 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=120 traffic_type=None\
+)] thoughts_token_count=None tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=47 traffic_type=None\
 """,
-                    "total_tokens": 120,
+                    "total_tokens": 47,
                 },
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
@@ -47,11 +47,12 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         content=[
                             Text(
                                 text="""\
-To find the sum of 4200 and 42, you add them together:
+To find the sum of 4200 and 42, we can add them together:
 
-4200
-+   42
-------
+   4200
++    42
+-------
+   \
 """
                             )
                         ],
@@ -69,11 +70,12 @@ To find the sum of 4200 and 42, you add them together:
                                     "function_response": None,
                                     "inline_data": None,
                                     "text": """\
-To find the sum of 4200 and 42, you add them together:
+To find the sum of 4200 and 42, we can add them together:
 
-4200
-+   42
-------
+   4200
++    42
+-------
+   \
 """,
                                     "thought": None,
                                     "thought_signature": None,

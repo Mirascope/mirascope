@@ -47,27 +47,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VU25KqOBT9FYqXmSm6W7nZalU/IOIV28tBBedMWQECRCFgCAh29b9PcKpPn545
-        80Sy1t4rKynWfuOT1Icx3+e9GBQ+fMxTjCF9VB6ltqS2VVHhH3jkMz7Jw2NbdAbdmxENrM12bJFu
-        kmkSjQ4iq6F1BpsqmOcghAwgadwAIM9RTgGmDPJSTCFb9f98+6inEcJnhMNG4WPZ560IckUOCYdy
-        DuQNyAUp4SiDxXabRtwIuSkGnoc4XCQuJE/clItACTmGMQccTTnABQX2KEox54E4hj73nRlIsoLC
-        Y4Dc7zyTA5RxjP8HvuvjX6hzv4uPCPuwgv4fT9wPcxHIuYykJfKZeNObZ9BDAfK4EsQFk3phZh+4
-        PP1hLo7vdQReCkRYUwYISCCF5O44AefGA7vzF+dP7G1yFGJAC9I8mUG2Q/3sTPUq1OfnQSHnTuv5
-        UGyXnovMkT3eTld03eucUmsQUbOTfNu6mobsqxCMI6xOcdABkW54irMyy1ejlRrjnmK/Tszb2jTU
-        vSsTUcuN8LpUA3+23+mtia5cO1IbDMfitEvmpfV6Sob2zkP69DoKsLsErjNdWWtbd6XRAmf1rhTM
-        SZXY2wMQysMidF7jlXWphFacetQFHpiSSrqd28KqM8+u+k7R15fB/lXE1dmCijtcwp4p4fha3Orl
-        LRbXemuN921ZMOPEwt1UnSwPINfMTZifZ7u1ZMdTKmTRoNtTWmqtm8MJQfEg2s6heTtcZtmJ7FXc
-        a2vCQRt73vPZEC5xJkULxXIui+utPXddcpjuOwNl3aXB5eK4y2EiV5Optmxlp5M5UUjvuussVKs+
-        laisusI1kCeTcWXvV5G8wiv6DWC8sLOwdVoMT5uJbQkw7gRh5PQ2HYoHfjhQduZqM5/VRSYuKr2k
-        +nWkGpfTua47owK1VjOpu1gsdwdjG6JWBtoApKUv2b2dpW7kcIfzgsyc1lKp5/ZrPtv48npraJpX
-        u4O4WwfbIDn72Hw+xMLyUgjO0l1DqZZVRyLyrhpvtoarhbpLxey8QJNsNhBv1cqrT4qjrV9e+PeH
-        zzjCqgnq/dPnp7+xH/bncPw6fPds1mnx9EUpTeMji8nH+Gj2BRsg+ml0c7XD5uSUl11qjzeG9Xyw
-        WRVmSWjG0GdEm1bMNnz/jcd8nx3+/v4XywJNsyOBgE2qr+fciZxlC2KPSeEijh/44j6OmMJd6kjT
-        M8Q531dkmc0j4EXw6DGtJmzHrxXtD57R/v9xH73NATCLYAIJiI9q8t/6T1aM/s2+P/BpQX+GRLnH
-        7gNJiTx4pAgSdtNmivqA+Pz7+99AJYMLtgUAAA==
+        H4sIAAAAAAAA/3VU25KqOBT9FYqXmam+CCoqVs2DclHwCtjepqY8EcJFIEESUOzy3yd4qk+fnjnz
+        lGStnbV3Unvtdz7FHkz4Pu8moPDgC8EIQfrSfmkKTUmQxDb/zEce41MSHARxee22oyi8hKfr/OaU
+        pSlRz0pZDK0yWEdBQkAAGZDjpAYAIRGhAFEGuRhRyHb9v94/4mkYoThCQa3wse3zqxByBYE5FxEO
+        kBrkfJxzlMGiINCQ06MjRsB1Iw4V6RHmr5zBhaCEHMNYBRzFHOD8Ark0wohzQZJAj/vm4jQrKDz4
+        0fEbEwOUMYz9jj7U0S+0ud/Flwh58Aq9P165H6WFgHBZjsvIY9L13RIkBVP4k1X4zBH8o6IkedA5
+        PBdRzmIzkIMUUpg/ykxB/D31l2pf2X+QKECAFnn9TdqZqEq8M5RroExiNalMSRd6Z7FI5HnbOXaj
+        EDeOgbk/76u9Phsv3GVjqacrOjwWWak/rZ+GK6S/idfR220mi1UZyc1x4U/BeCaX0nUb62sYacHN
+        2jWcLhiY7uw01FumBlRjd77ZkrWU/EYWTQS/Mi5+x+7sjFvYbmnQEMyOv2jE881wPFdHZ6e1aUqS
+        uW1rwtCSLlJvZ3et5eXpou6mZ9Bcy0hPJ5mhvJ2Gy526tnbNlWNqC9tdInWlDZVxW+0qG2WkntrC
+        bCg+OW8trbBpo8ieXGBZrQZZdmTXSjempcuprzlt2FyQSRvJcazhXUi6WjDthtqJdPLedXAbTGO/
+        u/UHWTpcTb0SxMWy6HRgChvkcloJqrCrqun1UumjoLdwkb/peM1cxp1xNKpOYBQYogsHE9DaK1Ar
+        He882mpTmNl4bu/Xb5l1dBqXUl3NMtkuKErdTXKCt7aK5z2JNHQfzTZUrs4937A1p2tNOu7wXC6l
+        CSiWou1rENjucZ8upqXtT4Jkq+bNW+HECblaTTmjGqZGuSVh0gqG+npvlorimU7lZWVHP4b+dkKF
+        vXI927NNLhlhPB3kcYTV0+AUNZTqCcDeuHfy/NsCh8GQvz9/Wg5eazM+lj5v/Mb682cL/NpgD/9V
+        uHj9ooRxcmBm+BgR9blgQ6LjQ1sZWJo92UMZZJtA9BExWRRijV+Pmk8f1lcRO/D9dx7xfZb8fv+b
+        9T7F2SGHgE2jr3keBGFWgshlUqhIkme+eIwcpvCQOlAcQ0T4frvVYjMHuCE8uEyrNtfha4TwwTPa
+        +z/u426dAGYha54cJAcp/W/8JyuG/2bvzzwu6M+Q2Oqx98C8jFx4oBHM2UvrSemB3OPv938AFeS+
+        cpoFAAA=
     headers:
       CF-RAY:
-      - 9bb01a5c79e77205-SEA
+      - 9bb2031c39a4db33-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -75,7 +75,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 09 Jan 2026 01:18:55 GMT
+      - Fri, 09 Jan 2026 06:52:31 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -89,47 +89,47 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-09T01:18:54Z'
+      - '2026-01-09T06:52:30Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-09T01:18:55Z'
+      - '2026-01-09T06:52:31Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-09T01:18:50Z'
+      - '2026-01-09T06:52:29Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-09T01:18:54Z'
+      - '2026-01-09T06:52:30Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CWvvYAc5YZaTe3mJRvvVT
+      - req_011CWwMys9EjZxFYCrbhNQY6
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '5298'
+      - '2367'
     status:
       code: 200
       message: OK
 - request:
     body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
       "role": "user"}, {"parts": [{"text": "I''ll compute the 100th Fibonacci number
-      for you."}, {"functionCall": {"id": "toolu_01CjFzbAZRjYvqVoXGRET7ZX", "args":
+      for you."}, {"functionCall": {"id": "toolu_016feRCAQERKZe9apWg1fnsJ", "args":
       {"n": 100}, "name": "compute_fib"}}], "role": "model"}, {"parts": [{"functionResponse":
-      {"id": "toolu_01CjFzbAZRjYvqVoXGRET7ZX", "name": "compute_fib", "response":
+      {"id": "toolu_016feRCAQERKZe9apWg1fnsJ", "name": "compute_fib", "response":
       {"output": "218922995834555169026"}}}], "role": "user"}], "tools": [{"functionDeclarations":
       [{"description": "Compute the nth Fibonacci number (1-indexed).", "name": "compute_fib",
       "parameters": {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required":
-      ["n"], "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
-      true, "thinking_budget": 6400}}}'
+      ["n"], "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      0}}}'
     headers:
       accept:
       - '*/*'
@@ -138,15 +138,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '782'
+      - '753'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
       x-goog-api-key:
       - <filtered>
     method: POST
@@ -154,12 +154,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WQXU+DMBSG7/kVTa+7BZggeKtbskTjnMSYmF10cDYaS4ttSabL/rulDMa0F+3J
-        ed/z0efoIYRzKgpWUAMa36EPm0Ho6O5Wk8KAMFboUzZZU2Uu3u4cR7G1GDi0RTgrAQW+b0q0YFsp
-        aJ4zJJpqCwoxjcIgIWkYkjSNSDK7IVEUkSBOiR/GUzxqeBriDbmsoSSHdkYlC+C9/dQb8I4Jpss1
-        UC1Fa3vNnld4UJko4GDTvtcPcK1xo+kensBQC4QO38a1klVtMvkJ4l42DkhgF+/EC8Arwyw560Ya
-        yq9rY5/8a6wf7FjGx2RH0O0vKWfm21Gdv2d4RML82atn4d6Nd6bSgXoDpVlHZA+VZTQJp9Fkx6ku
-        XUusQNdSaFgWzrMo9jSfPM5jtf65Xa748itpXiT2Tt4vvokv2T0CAAA=
+        H4sIAAAAAAAC/2WQTW+DMAyG7/yKKOe2grRUsOs+pK6axjbUTpt6SIsLEZAwYqROiP++AKOlWw6J
+        Zb9+7Ty1RQg9cBmJiCNoekM+TYaQurvbmpIIEk1hSJlkwUu8aPtTj2IjQTi1TTRMgDi2jQl5EHsl
+        +eEgiKzyPZREaMIcz2fM911vvnBd11n6NlvO6MiqOce7yWWBUmXQuucqgmyQN4OAHoUUOnkFrpVs
+        ZW/hc0DPVSEjOJm0bQ0DOmtaaR7DEyA3KPj5w7QoVV5gqFKQt6rqUDiM9W4jdFeC+VBHhTy77nUX
+        k3/G+s6MFdmY6Qi3+SXPBH53PO/fQzoigX/2Glh07876pdKD2kCpRU8khtwwmrKZOz1mXCedJS1B
+        F0pqWEWtRq83MYdq+7hap1+ogyJgH+mLR63G+gEC2Pe+NwIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -168,11 +168,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 09 Jan 2026 01:18:56 GMT
+      - Fri, 09 Jan 2026 06:52:32 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=621
+      - gfet4t7; dur=549
       Transfer-Encoding:
       - chunked
       Vary:

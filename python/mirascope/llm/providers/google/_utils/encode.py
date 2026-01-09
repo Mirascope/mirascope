@@ -18,46 +18,100 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ...base import Params, ThinkingLevel, _utils as _base_utils
+from ...base import Params, ThinkingConfig, ThinkingLevel, _utils as _base_utils
 from ..model_id import GoogleModelId, model_name
 from ..model_info import MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT
 
 UNKNOWN_TOOL_ID = "google_unknown_tool_id"
 
-# Thinking level to a float multiplier % of max tokens
+# Thinking level to a float multiplier % of max tokens (for 2.5 models using budget)
 THINKING_LEVEL_TO_BUDGET_MULTIPLIER: dict[ThinkingLevel, float] = {
-    "minimal": 0,
+    "none": 0,
+    "minimal": 0.1,
     "low": 0.2,
     "medium": 0.4,
     "high": 0.6,
     "max": 0.8,
 }
 
+# Gemini 3 Pro supports only LOW or HIGH
+# https://ai.google.dev/gemini-api/docs/gemini-3#thinking_level
+THINKING_LEVEL_FOR_GEMINI_3_PRO: dict[ThinkingLevel, genai_types.ThinkingLevel] = {
+    "default": genai_types.ThinkingLevel.THINKING_LEVEL_UNSPECIFIED,
+    "none": genai_types.ThinkingLevel.LOW,
+    "minimal": genai_types.ThinkingLevel.LOW,
+    "low": genai_types.ThinkingLevel.LOW,
+    "medium": genai_types.ThinkingLevel.HIGH,
+    "high": genai_types.ThinkingLevel.HIGH,
+    "max": genai_types.ThinkingLevel.HIGH,
+}
 
-def compute_thinking_budget(
-    level: ThinkingLevel,
+# Gemini 3 Flash supports MINIMAL, LOW, MEDIUM, HIGH
+# https://ai.google.dev/gemini-api/docs/gemini-3#thinking_level
+THINKING_LEVEL_FOR_GEMINI_3_FLASH: dict[ThinkingLevel, genai_types.ThinkingLevel] = {
+    "default": genai_types.ThinkingLevel.THINKING_LEVEL_UNSPECIFIED,
+    "none": genai_types.ThinkingLevel.MINIMAL,
+    "minimal": genai_types.ThinkingLevel.MINIMAL,
+    "low": genai_types.ThinkingLevel.LOW,
+    "medium": genai_types.ThinkingLevel.MEDIUM,
+    "high": genai_types.ThinkingLevel.HIGH,
+    "max": genai_types.ThinkingLevel.HIGH,
+}
+
+
+def google_thinking_config(
+    thinking_config: ThinkingConfig,
     max_tokens: int | None,
-) -> int:
-    """Compute Google thinking budget from ThinkingConfig level.
+    model_id: GoogleModelId,
+) -> genai_types.ThinkingConfigDict:
+    """Compute Google thinking configuration based on model version.
 
     Args:
-        level: The thinking level from ThinkingConfig
+        thinking_config: The ThinkingConfig from params
+        max_tokens: Max output tokens (used to compute budget for 2.5 models)
+        model_id: The Google model ID to determine version
 
     Returns:
-        Token budget for thinking:
-        - -1 for automatic budget (level=None)
-        - 0 to disable thinking ("minimal")
-        - Positive int for specific budget ("low", "medium", "high")
+        ThinkingConfigDict with either thinking_level or thinking_budget set.
+
+    Notes:
+        - Gemini 2.5 models use thinking_budget (token count)
+        - Gemini 3.0 Pro supports thinking_level "low" or "high"
+        - Gemini 3.0 Flash supports thinking_level "minimal", "low", "medium", "high"
+
+    See: https://ai.google.dev/gemini-api/docs/gemini-3#thinking_level
     """
-    if level == "default":
-        # Use Google's automatic budget
-        return -1
+    level: ThinkingLevel = thinking_config.get("level", "default")
+    include_summaries = thinking_config.get("include_summaries")
 
-    if max_tokens is None:
-        max_tokens = 16000
+    result = genai_types.ThinkingConfigDict()
 
-    multiplier: float = THINKING_LEVEL_TO_BUDGET_MULTIPLIER.get(level, 0.4)
-    return int(multiplier * max_tokens)
+    if "gemini-3-flash" in model_id:
+        result["thinking_level"] = THINKING_LEVEL_FOR_GEMINI_3_FLASH.get(
+            level, genai_types.ThinkingLevel.THINKING_LEVEL_UNSPECIFIED
+        )
+    elif "gemini-3-pro" in model_id:
+        result["thinking_level"] = THINKING_LEVEL_FOR_GEMINI_3_PRO.get(
+            level, genai_types.ThinkingLevel.THINKING_LEVEL_UNSPECIFIED
+        )
+    else:  # Fall back to 2.5-style budgets
+        # 2.5 models use thinking_budget
+        if level == "default":
+            budget = -1  # Dynamic budget
+        elif level == "none":
+            budget = 0  # Disable thinking
+        else:
+            # Compute budget as percentage of max_tokens
+            if max_tokens is None:
+                max_tokens = 16000
+            multiplier = THINKING_LEVEL_TO_BUDGET_MULTIPLIER.get(level, 0.4)
+            budget = int(multiplier * max_tokens)
+
+        result["thinking_budget"] = budget
+    if include_summaries is not None:
+        result["include_thoughts"] = include_summaries
+
+    return result
 
 
 class GoogleKwargs(TypedDict, total=False):
@@ -241,23 +295,11 @@ def encode_request(
             google_config["stop_sequences"] = param_accessor.stop_sequences
         if param_accessor.thinking is not None:
             thinking_config = param_accessor.thinking
-            level = thinking_config.get("level")
-            include_summaries = thinking_config.get("include_summaries", True)
 
-            # Compute budget from level
-            budget = compute_thinking_budget(level, param_accessor.max_tokens)
-            thinking_dict = genai_types.ThinkingConfigDict(
-                thinking_budget=budget,
+            # Compute thinking config based on model version
+            google_config["thinking_config"] = google_thinking_config(
+                thinking_config, param_accessor.max_tokens, model_id
             )
-
-            if budget == 0:
-                # Disabled: no thoughts
-                thinking_dict["include_thoughts"] = False
-            else:
-                # Enable thoughts based on include_summaries
-                thinking_dict["include_thoughts"] = include_summaries
-
-            google_config["thinking_config"] = thinking_dict
 
             # Handle encode_thoughts_as_text from ThinkingConfig
             if thinking_config.get("encode_thoughts_as_text"):

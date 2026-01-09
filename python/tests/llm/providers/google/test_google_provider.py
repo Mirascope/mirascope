@@ -1,6 +1,7 @@
 """Tests for llm.providers.GoogleProvider."""
 
 from collections.abc import AsyncIterator, Iterator
+from typing import get_args
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,10 +9,11 @@ from google.genai.errors import (
     ClientError as GoogleClientError,
     ServerError as GoogleServerError,
 )
-from google.genai.types import GenerateContentResponse
+from google.genai.types import GenerateContentResponse, ThinkingLevel
+from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm.providers.google._utils.encode import compute_thinking_budget
+from mirascope.llm.providers.google._utils.encode import google_thinking_config
 from mirascope.llm.providers.google._utils.errors import map_google_error
 from mirascope.llm.providers.google.provider import GoogleProvider
 
@@ -188,5 +190,89 @@ def test_map_google_error_fallback() -> None:
     assert result == llm.APIError
 
 
-def test_param_processing_thinking_default() -> None:
-    assert compute_thinking_budget("default", 1000) == -1
+def test_google_thinking_config_levels_2_5() -> None:
+    """Test thinking config computation for Gemini 2.5 models."""
+
+    results = {}
+    for level in get_args(llm.ThinkingLevel):
+        results[level] = google_thinking_config(
+            {"level": level}, max_tokens=None, model_id="google/gemini-2.5-flash"
+        )
+    assert results == snapshot(
+        {
+            "none": {"thinking_budget": 0},
+            "default": {"thinking_budget": -1},
+            "minimal": {"thinking_budget": 1600},
+            "low": {"thinking_budget": 3200},
+            "medium": {"thinking_budget": 6400},
+            "high": {"thinking_budget": 9600},
+            "max": {"thinking_budget": 12800},
+        }
+    )
+
+
+def test_google_thinking_config_levels_3_flash() -> None:
+    """Test thinking config computation for Gemini 3 flash models."""
+
+    results = {}
+    for level in get_args(llm.ThinkingLevel):
+        results[level] = google_thinking_config(
+            {"level": level}, max_tokens=None, model_id="google/gemini-3-flash"
+        )
+    assert results == snapshot(
+        {
+            "none": {"thinking_level": ThinkingLevel.MINIMAL},
+            "default": {"thinking_level": ThinkingLevel.THINKING_LEVEL_UNSPECIFIED},
+            "minimal": {"thinking_level": ThinkingLevel.MINIMAL},
+            "low": {"thinking_level": ThinkingLevel.LOW},
+            "medium": {"thinking_level": ThinkingLevel.MEDIUM},
+            "high": {"thinking_level": ThinkingLevel.HIGH},
+            "max": {"thinking_level": ThinkingLevel.HIGH},
+        }
+    )
+
+
+def test_google_thinking_config_levels_3_pro() -> None:
+    """Test thinking config computation for Gemini 3 pro models."""
+
+    results = {}
+    for level in get_args(llm.ThinkingLevel):
+        results[level] = google_thinking_config(
+            {"level": level}, max_tokens=None, model_id="google/gemini-3-pro"
+        )
+    assert results == snapshot(
+        {
+            "none": {"thinking_level": ThinkingLevel.LOW},
+            "default": {"thinking_level": ThinkingLevel.THINKING_LEVEL_UNSPECIFIED},
+            "minimal": {"thinking_level": ThinkingLevel.LOW},
+            "low": {"thinking_level": ThinkingLevel.LOW},
+            "medium": {"thinking_level": ThinkingLevel.HIGH},
+            "high": {"thinking_level": ThinkingLevel.HIGH},
+            "max": {"thinking_level": ThinkingLevel.HIGH},
+        }
+    )
+
+
+def test_google_thinking_config_include_summaries() -> None:
+    """Test include_summaries flag is respected."""
+    result = google_thinking_config(
+        {"level": "low", "include_summaries": False},
+        max_tokens=1000,
+        model_id="google/gemini-3.0-flash",
+    )
+    assert result.get("include_thoughts") is False
+
+    result = google_thinking_config(
+        {"level": "low", "include_summaries": True},
+        max_tokens=1000,
+        model_id="google/gemini-2.5-flash",
+    )
+    assert result.get("include_thoughts") is True
+
+
+def test_google_thinking_config_unknown_model() -> None:
+    """Test unknown model defaults to 2.5 behavior."""
+    result = google_thinking_config(
+        {"level": "low"}, max_tokens=1000, model_id="google/gemini-unknown-model"
+    )
+    assert result.get("thinking_budget") == 200  # 20% of 1000
