@@ -6,6 +6,7 @@ import { useProject } from "@/app/contexts/project";
 import { useEnvironment } from "@/app/contexts/environment";
 import { useOrganizationRouterBalance } from "@/app/api/organizations";
 import { centicentsToDollars } from "@/api/router/cost-utils";
+import { PurchaseRouterCreditsDialog } from "@/app/components/purchase-router-credits-dialog";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardPage,
@@ -33,9 +34,17 @@ function DashboardContent() {
         </div>
         {selectedOrganization && (
           <div className="p-4 rounded-lg border border-border bg-card">
-            <h2 className="text-sm font-medium text-muted-foreground mb-1">
-              Router Credits
-            </h2>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                Router Credits
+              </h2>
+              {routerBalance && (
+                <PurchaseRouterCreditsDialog
+                  organizationId={selectedOrganization.id}
+                  currentBalance={centicentsToDollars(routerBalance.balance)}
+                />
+              )}
+            </div>
             <p className="text-lg font-semibold">
               {routerBalanceLoading ? (
                 <span className="text-muted-foreground">Loading...</span>

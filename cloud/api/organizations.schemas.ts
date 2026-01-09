@@ -57,6 +57,17 @@ export const OrganizationRouterBalanceSchema = Schema.Struct({
   }),
 });
 
+export const CreatePaymentIntentRequestSchema = Schema.Struct({
+  amount: Schema.Number.pipe(
+    Schema.positive({ message: () => "Amount must be positive" }),
+  ),
+});
+
+export const CreatePaymentIntentResponseSchema = Schema.Struct({
+  clientSecret: Schema.String,
+  amount: Schema.Number,
+});
+
 export type Organization = typeof OrganizationSchema.Type;
 export type OrganizationWithMembership =
   typeof OrganizationWithMembershipSchema.Type;
@@ -66,6 +77,10 @@ export type UpdateOrganizationRequest =
   typeof UpdateOrganizationRequestSchema.Type;
 export type OrganizationRouterBalance =
   typeof OrganizationRouterBalanceSchema.Type;
+export type CreatePaymentIntentRequest =
+  typeof CreatePaymentIntentRequestSchema.Type;
+export type CreatePaymentIntentResponse =
+  typeof CreatePaymentIntentResponseSchema.Type;
 
 export class OrganizationsApi extends HttpApiGroup.make("organizations")
   .add(
@@ -113,6 +128,19 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
     HttpApiEndpoint.get("routerBalance", "/organizations/:id/router-balance")
       .setPath(Schema.Struct({ id: Schema.String }))
       .addSuccess(OrganizationRouterBalanceSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "createPaymentIntent",
+      "/organizations/:id/credits/payment-intent",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .setPayload(CreatePaymentIntentRequestSchema)
+      .addSuccess(CreatePaymentIntentResponseSchema)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(StripeError, { status: StripeError.status })
