@@ -118,6 +118,30 @@ export const CreateTraceResponseSchema = Schema.Struct({
 
 export type CreateTraceResponse = typeof CreateTraceResponseSchema.Type;
 
+export const PublicTraceSchema = Schema.Struct({
+  id: Schema.String,
+  otelTraceId: Schema.String,
+  environmentId: Schema.String,
+  projectId: Schema.String,
+  organizationId: Schema.String,
+  serviceName: Schema.NullOr(Schema.String),
+  serviceVersion: Schema.NullOr(Schema.String),
+  resourceAttributes: Schema.NullOr(
+    Schema.Record({ key: Schema.String, value: Schema.Unknown }),
+  ),
+  createdAt: Schema.NullOr(Schema.String),
+});
+
+export type PublicTraceResponse = typeof PublicTraceSchema.Type;
+
+export const ListByFunctionHashResponseSchema = Schema.Struct({
+  traces: Schema.Array(PublicTraceSchema),
+  total: Schema.Number,
+});
+
+export type ListByFunctionHashResponse =
+  typeof ListByFunctionHashResponseSchema.Type;
+
 export class TracesApi extends HttpApiGroup.make("traces")
   .add(
     HttpApiEndpoint.post("create", "/traces")
@@ -167,5 +191,22 @@ export class TracesApi extends HttpApiGroup.make("traces")
         status: PermissionDeniedError.status,
       })
       .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("listByFunctionHash", "/traces/function/hash/:hash")
+      .setPath(Schema.Struct({ hash: Schema.String }))
+      .setUrlParams(
+        Schema.Struct({
+          limit: Schema.optional(Schema.NumberFromString),
+          offset: Schema.optional(Schema.NumberFromString),
+        }),
+      )
+      .addSuccess(ListByFunctionHashResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}

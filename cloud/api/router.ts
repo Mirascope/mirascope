@@ -1,7 +1,10 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
 import { checkHealthHandler } from "@/api/health.handlers";
-import { createTraceHandler } from "@/api/traces.handlers";
+import {
+  createTraceHandler,
+  listByFunctionHashHandler,
+} from "@/api/traces.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
   listOrganizationsHandler,
@@ -66,7 +69,6 @@ const TracesHandlersLive = HttpApiBuilder.group(
   "traces",
   (handlers) =>
     handlers
-      // TODO: Add missing router handlers e.g. list, listByFunctionHash, etc.
       .handle("create", ({ payload }) => createTraceHandler(payload))
       .handle("search", ({ payload }) => searchHandler(payload))
       .handle("getTraceDetail", ({ path }) =>
@@ -74,6 +76,9 @@ const TracesHandlersLive = HttpApiBuilder.group(
       )
       .handle("getAnalyticsSummary", ({ urlParams }) =>
         getAnalyticsSummaryHandler(urlParams),
+      )
+      .handle("listByFunctionHash", ({ path, urlParams }) =>
+        listByFunctionHashHandler(path.hash, urlParams),
       ),
 );
 
