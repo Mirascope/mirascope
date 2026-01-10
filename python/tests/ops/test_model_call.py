@@ -71,6 +71,8 @@ def test_model_call_exports_genai_span(span_exporter: InMemorySpanExporter) -> N
                 "gen_ai.system_instructions": '[{"type":"text","content":"You are a concise assistant."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello to the user named Kai."}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello, Kai!"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 25,
+                "gen_ai.usage.output_tokens": 5,
             },
         }
     )
@@ -109,6 +111,8 @@ def test_model_call_with_tools(span_exporter: InMemorySpanExporter) -> None:
                 "gen_ai.response.id": "resp_01a49b3ee0a2578500691448c3d8b88194b5a7507bef965031",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What\'s the weather like in San Francisco?"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"tool_call","id":"call_Y3kZyVbjyhkatuwQCffwwZNP","name":"get_current_weather","arguments":{"location":"San Francisco"}}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 65,
+                "gen_ai.usage.output_tokens": 17,
             },
         }
     )
@@ -155,6 +159,8 @@ def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None
                 "gen_ai.response.id": "resp_040cbfa7241e8c2e00691448c521408194a985acda1297a136",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Count from 1 to 5"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"1, 2, 3, 4, 5."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 14,
+                "gen_ai.usage.output_tokens": 15,
             },
         }
     )
@@ -195,6 +201,8 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
                 "gen_ai.response.id": "resp_034d6a18f8f9b04d00691448c897908190bc7902109227fbd1",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Return a person named Alice who is 30 years old as JSON"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"{\\"name\\":\\"Alice\\",\\"age\\":30}"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 61,
+                "gen_ai.usage.output_tokens": 10,
             },
         }
     )
@@ -234,6 +242,8 @@ def test_model_call_with_image(span_exporter: InMemorySpanExporter) -> None:
                 "gen_ai.response.id": "resp_059298961709406100691448ca3f9c8195b58fedfa1e53ddae",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What\'s in this image?"},{"type":"uri","modality":"image","uri":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The image depicts a serene landscape featuring a wooden pathway leading through a lush green marsh or field. The area is surrounded by tall grass and shrubs, with trees in the background. The sky above is bright with soft clouds, creating a peaceful atmosphere. This setting suggests a natural environment, ideal for walking or exploring nature."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 36847,
+                "gen_ai.usage.output_tokens": 64,
             },
         }
     )
@@ -380,6 +390,8 @@ def test_model_call_with_none_parameters(
                 "gen_ai.response.id": "resp_0d7415c9c4354f3d00691448d730348190949080c88fea1ed2",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello! How can I assist you today?"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 9,
+                "gen_ai.usage.output_tokens": 10,
             },
         }
     )
@@ -430,6 +442,8 @@ def test_model_call_with_base64_image(
                 "gen_ai.response.id": "resp_0f873f56169b6cf2006915837c2d6c81949f5b0dced4f89e59",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What color is this pixel?"},{"type":"blob","modality":"image","mime_type":"image/png","content":"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=="}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The color of this pixel is bright red."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 8513,
+                "gen_ai.usage.output_tokens": 10,
             },
         }
     )
@@ -484,6 +498,8 @@ def test_model_call_with_tool_outputs(
                 "gen_ai.response.id": "resp_078dc246495066dd0069159645dfa08190b52fc7846f8b790d",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What\'s the weather in Tokyo?"}]},{"role":"assistant","parts":[{"type":"tool_call","id":"call_W4leLhMeS7Jo9ahswUPYo2Cd","name":"get_weather","arguments":{"location":"Tokyo"}}]},{"role":"user","parts":[{"type":"tool_call_response","id":"call_W4leLhMeS7Jo9ahswUPYo2Cd","response":"Weather in Tokyo: 72°F, sunny"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Tokyo is currently sunny with a temperature of 72°F."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 80,
+                "gen_ai.usage.output_tokens": 17,
             },
         }
     )
@@ -532,6 +548,8 @@ def test_model_call_with_audio_content(
                 "gen_ai.response.model": "google/gemini-2.5-flash",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"This audio contains:\\n\\n1.  A **male voice speaking** the phrase: \\"LLM abstractions that aren\'t abstractions.\\"\\n2.  Immediately following the speech, there is a distinct, **high-pitched electronic hum or whine** that lasts for about two seconds. This sound could be characteristic of coil whine, a small motor, or electronic interference."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 91,
+                "gen_ai.usage.output_tokens": 924,
             },
         }
     )
@@ -568,6 +586,8 @@ def test_model_call_with_reasoning_model(
                 "gen_ai.response.id": "msg_012oWcYH9pLBuc2YFDVLEA3j",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 2+2? Think step by step."}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"reasoning","content":"This is a very basic arithmetic question. Let me think through it step by step as requested.\\n\\n2 + 2\\n\\nStep 1: I have the number 2\\nStep 2: I need to add another 2 to it\\nStep 3: 2 + 2 = 4\\n\\nThis is one of the most fundamental addition problems. I can think of it in several ways:\\n- Counting: if I have 2 items and add 2 more items, I have 4 items total\\n- On a number line: starting at 2 and moving 2 spaces to the right gets me to 4\\n- As groups: 2 groups of 2 makes 4 total\\n\\nThe answer is definitely 4."},{"type":"text","content":"I\'ll solve 2 + 2 step by step:\\n\\n**Step 1:** Start with the first number: 2\\n\\n**Step 2:** Add the second number: 2\\n\\n**Step 3:** Perform the addition:\\n- 2 + 2 = 4\\n\\n**Answer:** 2 + 2 = 4\\n\\nThis can also be thought of as:\\n- Counting: 1, 2, then 3, 4 (adding two more)\\n- Or combining two groups of 2 objects each to get 4 objects total"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 48,
+                "gen_ai.usage.output_tokens": 305,
             },
         }
     )
@@ -605,6 +625,8 @@ def test_model_call_with_stop_string(
                 "gen_ai.response.id": "chatcmpl-CbPJmygYNvzYcJeStNI1mOCFZRPN5",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello! How can I assist you today?"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 9,
+                "gen_ai.usage.output_tokens": 9,
             },
         }
     )
@@ -674,6 +696,8 @@ def test_model_call_records_response_id(
                 "gen_ai.response.id": "resp_07823e07fc5e11d7006915bf7b0e4c81949d25229918fa7c9c",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello! How can I assist you today?"}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 9,
+                "gen_ai.usage.output_tokens": 10,
             },
         }
     )
@@ -712,6 +736,8 @@ def test_model_call_with_message_name(
                 "gen_ai.response.id": "resp_0727bc32da4ffb69006915caaf3f3c81969c5045f4b078be93",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 1+1?"}],"name":"calculator_user"}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"1 + 1 equals 2."}],"finish_reason":"stop"}]',
+                "gen_ai.usage.input_tokens": 14,
+                "gen_ai.usage.output_tokens": 9,
             },
         }
     )
