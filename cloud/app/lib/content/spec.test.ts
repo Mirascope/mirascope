@@ -161,7 +161,7 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Overview",
       slug: "overview",
-      path: "api/overview",
+      path: "docs/api/overview",
       routePath: "/docs/api/overview",
       type: "docs",
     });
@@ -185,7 +185,7 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Overview",
       slug: "overview",
-      path: "v1/api/overview",
+      path: "docs/v1/api/overview",
       routePath: "/docs/v1/api/overview",
       type: "docs",
     });
@@ -209,7 +209,7 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Getting Started",
       slug: "getting-started",
-      path: "v1/getting-started",
+      path: "docs/v1/getting-started",
       routePath: "/docs/v1/getting-started",
       type: "docs",
     });
@@ -232,7 +232,7 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Getting Started",
       slug: "getting-started",
-      path: "getting-started",
+      path: "docs/getting-started",
       routePath: "/docs/getting-started",
       type: "docs",
     });
@@ -266,19 +266,19 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Getting Started",
       slug: "getting-started",
-      path: "v1/getting-started",
+      path: "docs/v1/getting-started",
       routePath: "/docs/v1/getting-started",
     });
     expect(result[1]).toMatchObject({
       label: "Why Mirascope?",
       slug: "why",
-      path: "v1/getting-started/why",
+      path: "docs/v1/getting-started/why",
       routePath: "/docs/v1/getting-started/why",
     });
     expect(result[2]).toMatchObject({
       label: "Help",
       slug: "help",
-      path: "v1/getting-started/help",
+      path: "docs/v1/getting-started/help",
       routePath: "/docs/v1/getting-started/help",
     });
   });
@@ -307,13 +307,13 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Welcome",
       slug: "welcome",
-      path: "v1/welcome",
+      path: "docs/v1/welcome",
       routePath: "/docs/v1/welcome",
     });
     expect(result[1]).toMatchObject({
       label: "Overview",
       slug: "overview",
-      path: "v1/api/overview",
+      path: "docs/v1/api/overview",
       routePath: "/docs/v1/api/overview",
     });
   });
@@ -342,13 +342,13 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Getting Started",
       slug: "getting-started",
-      path: "getting-started",
+      path: "docs/getting-started",
       routePath: "/docs/getting-started",
     });
     expect(result[1]).toMatchObject({
       label: "Overview",
       slug: "overview",
-      path: "v1/api/overview",
+      path: "docs/v1/api/overview",
       routePath: "/docs/v1/api/overview",
     });
   });
@@ -371,7 +371,7 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Welcome",
       slug: "index",
-      path: "v1/index",
+      path: "docs/v1/index",
       routePath: "/docs/v1", // Index pages use trailing slash (no /index in route)
     });
   });
@@ -401,7 +401,7 @@ describe("getDocsFromSpec", () => {
     expect(result[0]).toMatchObject({
       label: "Child",
       slug: "child",
-      path: "v1/folder/child",
+      path: "docs/v1/folder/child",
       routePath: "/docs/v1/folder/child",
     });
   });

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { NotFound } from "@/app/components/not-found";
-import { blogPostContentLoader } from "@/app/lib/content/meta";
+import { blogPostContentLoader } from "@/app/lib/content/content-loader";
 import { BlogPostPage } from "@/app/components/blog-post-page";
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/blog/$slug")({
       ],
     };
   },
-  loader: blogPostContentLoader,
+  loader: blogPostContentLoader(),
   component: BlogPost,
 });
 

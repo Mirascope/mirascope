@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/app/lib/utils";
 import { useSunsetTime } from "@/app/hooks/sunset-time";
 import { useGradientFadeOnScroll } from "@/app/hooks/gradient-fade-scroll";
-import { BookOpen, ChevronDown, ChevronUp, Rocket, Users } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, Users } from "lucide-react";
 import { ButtonLink } from "@/app/components/ui/button-link";
 import homeStyles from "@/app/components/home-page.module.css";
 import { ResponsiveTextBlock } from "@/app/components/blocks/responsive-text-block";
@@ -149,13 +149,13 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
         </div>
         <div className="mt-8 flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
           <ButtonLink
-            href="/docs/mirascope/v2"
+            href="/docs/v1"
             variant="outline"
             size="lg"
             className="box-shade w-full min-w-[200px] border-0 bg-white text-center font-handwriting font-bold text-black hover:bg-white/90 hover:text-black sm:w-auto"
           >
-            <Rocket className="size-5" aria-hidden="true" />
-            Mirascope v2 Alpha
+            <BookOpen className="size-5" aria-hidden="true" />
+            Mirascope v1
           </ButtonLink>
           <ButtonLink
             href="/discord-invite"

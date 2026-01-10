@@ -8,7 +8,7 @@ import v1ApiSection from "./v1/api/_meta";
 import v1GuidesSection from "./v1/guides/_meta";
 
 export const docsSpec: FullDocsSpec = {
-  sections: [v1DocsSection, v1ApiSection, v1GuidesSection],
+  sections: [v1DocsSection, v1GuidesSection, v1ApiSection],
 };
 
 export const docInfos = getDocsFromSpec(docsSpec);
@@ -19,5 +19,6 @@ for (const docInfo of docInfos) {
 }
 
 export function getDocInfoByPath(path: string): DocInfo | undefined {
-  return pathToDocInfo.get(path);
+  // DocInfo.path includes "docs/" prefix, but vite plugin passes subpath without prefix
+  return pathToDocInfo.get(`docs/${path}`) ?? pathToDocInfo.get(path);
 }

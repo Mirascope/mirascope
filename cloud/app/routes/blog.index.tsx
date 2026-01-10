@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getAllBlogMeta } from "@/app/lib/content/meta";
-import { BlogPage } from "../components/blog-page";
+import { getAllBlogMeta } from "@/app/lib/content/virtual-module";
+import { BlogPage } from "@/app/components/blog-page";
 
 export const Route = createFileRoute("/blog/")({
   // todo(sebastian): simplify and add other SEO metadata
