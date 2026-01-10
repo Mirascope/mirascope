@@ -44,6 +44,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: codespell-project/actions-codespell@v2
+        with:
+          skip: ./cloud/clickhouse/search.test.ts
 
   python-lint:
     name: Python Lint & Type Check

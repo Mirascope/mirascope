@@ -5,10 +5,15 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawOrganizationsClient, RawOrganizationsClient
+from .types.organizations_create_payment_intent_response import (
+    OrganizationsCreatePaymentIntentResponse,
+)
 from .types.organizations_create_response import OrganizationsCreateResponse
-from .types.organizations_credits_response import OrganizationsCreditsResponse
 from .types.organizations_get_response import OrganizationsGetResponse
 from .types.organizations_list_response_item import OrganizationsListResponseItem
+from .types.organizations_router_balance_response import (
+    OrganizationsRouterBalanceResponse,
+)
 from .types.organizations_update_response import OrganizationsUpdateResponse
 
 # this is used as the default value for optional parameters
@@ -55,7 +60,11 @@ class OrganizationsClient:
         return _response.data
 
     def create(
-        self, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
         Parameters
@@ -84,10 +93,14 @@ class OrganizationsClient:
             slug="slug",
         )
         """
-        _response = self._raw_client.create(name=name, slug=slug, request_options=request_options)
+        _response = self._raw_client.create(
+            name=name, slug=slug, request_options=request_options
+        )
         return _response.data
 
-    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> OrganizationsGetResponse:
+    def get(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsGetResponse:
         """
         Parameters
         ----------
@@ -149,10 +162,14 @@ class OrganizationsClient:
             id="id",
         )
         """
-        _response = self._raw_client.update(id, name=name, slug=slug, request_options=request_options)
+        _response = self._raw_client.update(
+            id, name=name, slug=slug, request_options=request_options
+        )
         return _response.data
 
-    def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -177,9 +194,9 @@ class OrganizationsClient:
         _response = self._raw_client.delete(id, request_options=request_options)
         return _response.data
 
-    def credits(
+    def routerbalance(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> OrganizationsCreditsResponse:
+    ) -> OrganizationsRouterBalanceResponse:
         """
         Parameters
         ----------
@@ -190,7 +207,7 @@ class OrganizationsClient:
 
         Returns
         -------
-        OrganizationsCreditsResponse
+        OrganizationsRouterBalanceResponse
             Success
 
         Examples
@@ -198,11 +215,49 @@ class OrganizationsClient:
         from mirascope.api._generated import Mirascope
 
         client = Mirascope()
-        client.organizations.credits(
+        client.organizations.routerbalance(
             id="id",
         )
         """
-        _response = self._raw_client.credits(id, request_options=request_options)
+        _response = self._raw_client.routerbalance(id, request_options=request_options)
+        return _response.data
+
+    def createpaymentintent(
+        self,
+        id: str,
+        *,
+        amount: float,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsCreatePaymentIntentResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        amount : float
+            a positive number
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreatePaymentIntentResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.createpaymentintent(
+            id="id",
+            amount=1.1,
+        )
+        """
+        _response = self._raw_client.createpaymentintent(
+            id, amount=amount, request_options=request_options
+        )
         return _response.data
 
 
@@ -254,7 +309,11 @@ class AsyncOrganizationsClient:
         return _response.data
 
     async def create(
-        self, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> OrganizationsCreateResponse:
         """
         Parameters
@@ -291,7 +350,9 @@ class AsyncOrganizationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create(name=name, slug=slug, request_options=request_options)
+        _response = await self._raw_client.create(
+            name=name, slug=slug, request_options=request_options
+        )
         return _response.data
 
     async def get(
@@ -374,10 +435,14 @@ class AsyncOrganizationsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.update(id, name=name, slug=slug, request_options=request_options)
+        _response = await self._raw_client.update(
+            id, name=name, slug=slug, request_options=request_options
+        )
         return _response.data
 
-    async def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    async def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -410,9 +475,9 @@ class AsyncOrganizationsClient:
         _response = await self._raw_client.delete(id, request_options=request_options)
         return _response.data
 
-    async def credits(
+    async def routerbalance(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> OrganizationsCreditsResponse:
+    ) -> OrganizationsRouterBalanceResponse:
         """
         Parameters
         ----------
@@ -423,7 +488,7 @@ class AsyncOrganizationsClient:
 
         Returns
         -------
-        OrganizationsCreditsResponse
+        OrganizationsRouterBalanceResponse
             Success
 
         Examples
@@ -436,12 +501,60 @@ class AsyncOrganizationsClient:
 
 
         async def main() -> None:
-            await client.organizations.credits(
+            await client.organizations.routerbalance(
                 id="id",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.credits(id, request_options=request_options)
+        _response = await self._raw_client.routerbalance(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    async def createpaymentintent(
+        self,
+        id: str,
+        *,
+        amount: float,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsCreatePaymentIntentResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        amount : float
+            a positive number
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsCreatePaymentIntentResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.createpaymentintent(
+                id="id",
+                amount=1.1,
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.createpaymentintent(
+            id, amount=amount, request_options=request_options
+        )
         return _response.data

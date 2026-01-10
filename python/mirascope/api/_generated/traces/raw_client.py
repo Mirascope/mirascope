@@ -174,6 +174,9 @@ class RawTracesClient:
         start_time: str,
         end_time: str,
         query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
         trace_id: typing.Optional[str] = OMIT,
         span_id: typing.Optional[str] = OMIT,
         model: typing.Optional[typing.Sequence[str]] = OMIT,
@@ -202,6 +205,12 @@ class RawTracesClient:
         end_time : str
 
         query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
 
         trace_id : typing.Optional[str]
 
@@ -250,6 +259,9 @@ class RawTracesClient:
                 "startTime": start_time,
                 "endTime": end_time,
                 "query": query,
+                "inputMessagesQuery": input_messages_query,
+                "outputMessagesQuery": output_messages_query,
+                "fuzzySearch": fuzzy_search,
                 "traceId": trace_id,
                 "spanId": span_id,
                 "model": model,
@@ -680,6 +692,9 @@ class AsyncRawTracesClient:
         start_time: str,
         end_time: str,
         query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
         trace_id: typing.Optional[str] = OMIT,
         span_id: typing.Optional[str] = OMIT,
         model: typing.Optional[typing.Sequence[str]] = OMIT,
@@ -708,6 +723,12 @@ class AsyncRawTracesClient:
         end_time : str
 
         query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
 
         trace_id : typing.Optional[str]
 
@@ -756,6 +777,9 @@ class AsyncRawTracesClient:
                 "startTime": start_time,
                 "endTime": end_time,
                 "query": query,
+                "inputMessagesQuery": input_messages_query,
+                "outputMessagesQuery": output_messages_query,
+                "fuzzySearch": fuzzy_search,
                 "traceId": trace_id,
                 "spanId": span_id,
                 "model": model,

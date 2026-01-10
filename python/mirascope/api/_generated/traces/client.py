@@ -99,6 +99,9 @@ class TracesClient:
         start_time: str,
         end_time: str,
         query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
         trace_id: typing.Optional[str] = OMIT,
         span_id: typing.Optional[str] = OMIT,
         model: typing.Optional[typing.Sequence[str]] = OMIT,
@@ -127,6 +130,12 @@ class TracesClient:
         end_time : str
 
         query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
 
         trace_id : typing.Optional[str]
 
@@ -182,6 +191,9 @@ class TracesClient:
             start_time=start_time,
             end_time=end_time,
             query=query,
+            input_messages_query=input_messages_query,
+            output_messages_query=output_messages_query,
+            fuzzy_search=fuzzy_search,
             trace_id=trace_id,
             span_id=span_id,
             model=model,
@@ -359,6 +371,9 @@ class AsyncTracesClient:
         start_time: str,
         end_time: str,
         query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
         trace_id: typing.Optional[str] = OMIT,
         span_id: typing.Optional[str] = OMIT,
         model: typing.Optional[typing.Sequence[str]] = OMIT,
@@ -387,6 +402,12 @@ class AsyncTracesClient:
         end_time : str
 
         query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
 
         trace_id : typing.Optional[str]
 
@@ -450,6 +471,9 @@ class AsyncTracesClient:
             start_time=start_time,
             end_time=end_time,
             query=query,
+            input_messages_query=input_messages_query,
+            output_messages_query=output_messages_query,
+            fuzzy_search=fuzzy_search,
             trace_id=trace_id,
             span_id=span_id,
             model=model,

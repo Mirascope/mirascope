@@ -319,6 +319,32 @@ describe("Search schema definitions", () => {
       expect(input.attributeFilters?.[1]?.operator).toBe("exists");
     });
 
+    it("accepts search request with message query filters", () => {
+      const input: SearchRequest = {
+        startTime: "2024-01-01T00:00:00Z",
+        endTime: "2024-01-31T23:59:59Z",
+        inputMessagesQuery: "hello world",
+        outputMessagesQuery: "response text",
+        fuzzySearch: true,
+      };
+
+      expect(input.inputMessagesQuery).toBe("hello world");
+      expect(input.outputMessagesQuery).toBe("response text");
+      expect(input.fuzzySearch).toBe(true);
+    });
+
+    it("accepts search request with fuzzySearch disabled", () => {
+      const input: SearchRequest = {
+        startTime: "2024-01-01T00:00:00Z",
+        endTime: "2024-01-31T23:59:59Z",
+        inputMessagesQuery: "programming",
+        fuzzySearch: false,
+      };
+
+      expect(input.inputMessagesQuery).toBe("programming");
+      expect(input.fuzzySearch).toBe(false);
+    });
+
     it("accepts all valid sortBy values", () => {
       const validSortByValues: SearchRequest["sortBy"][] = [
         "start_time",

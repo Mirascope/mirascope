@@ -6,11 +6,16 @@ import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class OrganizationsCreditsResponse(UniversalBaseModel):
-    balance: float
+class OrganizationsRouterBalanceResponse(UniversalBaseModel):
+    balance: str = pydantic.Field()
+    """
+    Balance in centi-cents (1/10000 of a dollar)
+    """
 
     if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
+        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
+            extra="allow", frozen=True
+        )  # type: ignore # Pydantic v2
     else:
 
         class Config:
