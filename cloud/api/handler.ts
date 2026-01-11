@@ -4,8 +4,10 @@ import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
+import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { ClickHouseSearch } from "@/clickhouse/search";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
@@ -21,6 +23,8 @@ type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
+  drizzleOrm: Context.Tag.Service<DrizzleORM>;
+  spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
@@ -40,6 +44,8 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
+    Layer.succeed(DrizzleORM, options.drizzleOrm),
+    Layer.succeed(SpansMeteringQueueService, options.spansMeteringQueue),
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -66,15 +72,19 @@ export const handleRequest = (
 ): Effect.Effect<
   { matched: boolean; response: Response },
   HandlerError,
-  Database | Payments
+  Database | Payments | DrizzleORM | SpansMeteringQueueService
 > =>
   Effect.gen(function* () {
     const db = yield* Database;
     const payments = yield* Payments;
+    const drizzleOrm = yield* DrizzleORM;
+    const spansMeteringQueue = yield* SpansMeteringQueueService;
 
     const webHandler = createWebHandler({
       db,
       payments,
+      drizzleOrm,
+      spansMeteringQueue,
       user: options.user,
       apiKeyInfo: options.apiKeyInfo,
       environment: options.environment,

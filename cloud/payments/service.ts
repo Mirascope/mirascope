@@ -35,7 +35,8 @@
  * Payments (service layer)
  *   ├── customers: Ready<Customers>
  *   └── products
- *       └── router: Ready<Router>
+ *       ├── router: Ready<Router>
+ *       └── spans: Ready<Spans>
  *
  * Each service uses `yield* Stripe` internally. The `makeReady` wrapper
  * provides the Stripe client, so consumers see methods returning
@@ -47,6 +48,7 @@ import { Context, Layer, Effect } from "effect";
 import { Stripe, type StripeConfig } from "@/payments/client";
 import { Customers } from "@/payments/customers";
 import { Router } from "@/payments/products/router";
+import { Spans } from "@/payments/products/spans";
 import { PaymentIntents } from "@/payments/payment-intents";
 import { DrizzleORM } from "@/db/client";
 import { dependencyProvider, type Ready } from "@/utils";
@@ -84,6 +86,7 @@ export class Payments extends Context.Tag("Payments")<
     readonly customers: Ready<Customers>;
     readonly products: {
       readonly router: Ready<Router>;
+      readonly spans: Ready<Spans>;
     };
     readonly paymentIntents: Ready<PaymentIntents>;
   }
@@ -108,6 +111,7 @@ export class Payments extends Context.Tag("Payments")<
         customers: provideDependencies(new Customers()),
         products: {
           router: provideDependencies(new Router()),
+          spans: provideDependencies(new Spans()),
         },
         paymentIntents: provideDependencies(new PaymentIntents()),
       };

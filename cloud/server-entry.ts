@@ -8,6 +8,9 @@ import billingReconciliationCron from "@/workers/billingReconciliationCron";
 import routerMeteringQueue, {
   RouterMeteringQueueService,
 } from "@/workers/routerMeteringQueue";
+import spansMeteringQueue, {
+  SpansMeteringQueueService,
+} from "@/workers/spansMeteringQueue";
 import { type WorkerEnv } from "@/workers/cron-config";
 import { Effect, Layer } from "effect";
 
@@ -27,6 +30,17 @@ const fetchHandler = createStartHandler(defaultStreamHandler);
 export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
   Layer.succeed(RouterMeteringQueueService, {
     send: () => Effect.fail(new Error("RouterMeteringQueue not initialized")),
+  });
+
+/**
+ * Global spans metering queue layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers.
+ */
+export let spansMeteringQueueLayer: Layer.Layer<SpansMeteringQueueService> =
+  Layer.succeed(SpansMeteringQueueService, {
+    send: () => Effect.fail(new Error("SpansMeteringQueue not initialized")),
   });
 
 /**
@@ -61,6 +75,13 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
     );
   }
 
+  // Set spans metering queue layer for route handlers
+  if (env.SPANS_METERING_QUEUE) {
+    spansMeteringQueueLayer = SpansMeteringQueueService.Live(
+      env.SPANS_METERING_QUEUE,
+    );
+  }
+
   if (env.ENVIRONMENT === "local") {
     const { pathname } = new URL(request.url);
     if (pathname === "/__scheduled") {
@@ -87,5 +108,16 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
 export default {
   fetch,
   scheduled,
-  queue: routerMeteringQueue.queue.bind(routerMeteringQueue),
+  queue(batch: unknown, env: WorkerEnv) {
+    // Route to appropriate queue handler based on queue name
+    // Cloudflare Workers passes the queue name in the batch metadata
+    const queueName = (batch as { queue?: string }).queue;
+
+    if (queueName === "spans-metering") {
+      return spansMeteringQueue.queue(batch as never, env);
+    }
+
+    // Default to router metering queue for backwards compatibility
+    return routerMeteringQueue.queue(batch as never, env);
+  },
 };

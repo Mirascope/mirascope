@@ -4,6 +4,7 @@
 
 import type { CloudflareEnvironment } from "@/settings";
 import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
+import type { SpanMeteringMessage } from "@/workers/spansMeteringQueue";
 
 /**
  * Cloudflare Scheduled Event type.
@@ -43,5 +44,8 @@ export interface BillingCronTriggerEnv extends CronTriggerEnv {
 export interface WorkerEnv extends BillingCronTriggerEnv {
   readonly ROUTER_METERING_QUEUE?: {
     send: (message: RouterMeteringMessage) => Promise<void>;
+  };
+  readonly SPANS_METERING_QUEUE?: {
+    send: (message: SpanMeteringMessage) => Promise<void>;
   };
 }
