@@ -156,6 +156,213 @@ describe("routerMeteringQueue", () => {
       // Verify settleFunds was called
       expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
     });
+
+    it("handles undefined token fields by setting them to null", async () => {
+      const message = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          // @ts-expect-error checking an error case that goes against the type hints
+          outputTokens: undefined,
+          cacheReadTokens: undefined,
+          cacheWriteTokens: undefined,
+        },
+      });
+
+      // Mock the update and settleFunds functions
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+
+      // Create proper mock layers using Layer.succeed with partial implementations
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, 150n).pipe(
+          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
+        ),
+      );
+
+      // Verify database update was called with null for undefined fields
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: message.request.userId,
+          organizationId: message.request.organizationId,
+          routerRequestId: message.routerRequestId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            inputTokens: 100n,
+            outputTokens: null,
+            cacheReadTokens: null,
+            cacheWriteTokens: null,
+            costCenticents: 150n,
+            status: "success",
+          }),
+        }),
+      );
+
+      // Verify settleFunds was called
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
+    });
+
+    it("handles all token fields as undefined by setting them to null", async () => {
+      const message = createTestMessage({
+        usage: {
+          // @ts-expect-error checking an error case that goes against the type hints
+          inputTokens: undefined,
+          // @ts-expect-error checking an error case that goes against the type hints
+          outputTokens: undefined,
+          cacheReadTokens: undefined,
+          cacheWriteTokens: undefined,
+        },
+        costCenticents: 0,
+      });
+
+      // Mock the update and settleFunds functions
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+
+      // Create proper mock layers using Layer.succeed with partial implementations
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, 0n).pipe(
+          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
+        ),
+      );
+
+      // Verify database update was called with all null token fields
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: message.request.userId,
+          organizationId: message.request.organizationId,
+          routerRequestId: message.routerRequestId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            inputTokens: null,
+            outputTokens: null,
+            cacheReadTokens: null,
+            cacheWriteTokens: null,
+            costCenticents: 0n,
+            status: "success",
+          }),
+        }),
+      );
+
+      // Verify settleFunds was called
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 0n);
+    });
+
+    it("handles cache token fields when present", async () => {
+      const message = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          cacheReadTokens: 20,
+          cacheWriteTokens: 10,
+          cacheWriteBreakdown: { foo: 5, bar: 5 },
+        },
+      });
+
+      // Mock the update and settleFunds functions
+      const updateMock = vi.fn().mockReturnValue(Effect.succeed(undefined));
+      const settleFundsMock = vi
+        .fn()
+        .mockReturnValue(Effect.succeed(undefined));
+
+      // Create proper mock layers using Layer.succeed with partial implementations
+      const mockDbLayer = Layer.succeed(Database, {
+        organizations: {
+          projects: {
+            environments: {
+              apiKeys: {
+                routerRequests: {
+                  update: updateMock,
+                },
+              },
+            },
+          },
+        },
+      } as never);
+
+      const mockPaymentsLayer = Layer.succeed(Payments, {
+        products: {
+          router: {
+            settleFunds: settleFundsMock,
+          },
+        },
+      } as never);
+
+      await Effect.runPromise(
+        updateAndSettleRouterRequest(message, 150n).pipe(
+          Effect.provide(Layer.merge(mockDbLayer, mockPaymentsLayer)),
+        ),
+      );
+
+      // Verify database update was called with cache tokens as bigints
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: message.request.userId,
+          organizationId: message.request.organizationId,
+          routerRequestId: message.routerRequestId,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          data: expect.objectContaining({
+            inputTokens: 100n,
+            outputTokens: 50n,
+            cacheReadTokens: 20n,
+            cacheWriteTokens: 10n,
+            cacheWriteBreakdown: { foo: 5, bar: 5 },
+            costCenticents: 150n,
+            status: "success",
+          }),
+        }),
+      );
+
+      // Verify settleFunds was called
+      expect(settleFundsMock).toHaveBeenCalledWith(message.reservationId, 150n);
+    });
   });
 
   describe("RouterMeteringQueueService", () => {
@@ -265,6 +472,25 @@ describe("routerMeteringQueue", () => {
 
       expect(message.retryCalled).toBe(true);
       expect(message.retryOptions?.delaySeconds).toBe(60);
+    });
+
+    it("processes message with minimal config (undefined optional cloud env vars)", async () => {
+      const message = createMockMessage(createTestMessage());
+      const batch = createMockBatch([message]);
+      const env = {
+        ENVIRONMENT: "test",
+        DATABASE_URL: "postgresql://test:test@localhost:5432/test",
+        STRIPE_SECRET_KEY: "sk_test_xxx",
+        STRIPE_ROUTER_PRICE_ID: "price_xxx",
+        STRIPE_ROUTER_METER_ID: "meter_xxx",
+        STRIPE_CLOUD_FREE_PRICE_ID: undefined,
+        STRIPE_CLOUD_PRO_PRICE_ID: undefined,
+        STRIPE_CLOUD_TEAM_PRICE_ID: undefined,
+        STRIPE_CLOUD_SPANS_PRICE_ID: undefined,
+        STRIPE_CLOUD_SPANS_METER_ID: undefined,
+      } as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
     });
   });
 
@@ -411,6 +637,34 @@ describe("routerMeteringQueue", () => {
           outputTokens: 0,
         },
         costCenticents: 0,
+      });
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      const env = {
+        ENVIRONMENT: "test",
+        DATABASE_URL: TEST_DATABASE_URL,
+        STRIPE_SECRET_KEY: "sk_test_xxx",
+        STRIPE_ROUTER_PRICE_ID: "price_xxx",
+        STRIPE_ROUTER_METER_ID: "meter_xxx",
+      } as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to missing data in worker's separate DB connection
+      expect(message.retryCalled).toBe(true);
+    });
+
+    it("processes message with some undefined token fields", async () => {
+      // Test with only some token fields to cover all null branches in ternaries
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+          // cacheReadTokens and cacheWriteTokens are undefined
+        },
+        costCenticents: 150,
       });
 
       const message = createMockMessage(meteringMessage);
