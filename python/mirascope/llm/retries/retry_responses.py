@@ -9,6 +9,7 @@ from ..responses import (
     Response,
 )
 from .retry_config import RetryConfig
+from .utils import RetryState
 
 if TYPE_CHECKING:
     from .retry_models import RetryModel
@@ -24,19 +25,27 @@ class RetryResponse(Response[FormattableT]):
     retry_config: RetryConfig
     """Configuration for retry behavior."""
 
+    retry_state: RetryState
+    """State tracking retry attempts and any exceptions caught."""
+
     def __init__(
-        self, response: Response[FormattableT], retry_config: RetryConfig
+        self,
+        response: Response[FormattableT],
+        retry_config: RetryConfig,
+        retry_state: RetryState,
     ) -> None:
         """Initialize a RetryResponse.
 
         Args:
             response: The successful response from the LLM.
             retry_config: Configuration for retry behavior.
+            retry_state: State tracking retry attempts and exceptions.
         """
         # Copy all attributes from the wrapped response
         for key, value in response.__dict__.items():
             object.__setattr__(self, key, value)
         self.retry_config = retry_config
+        self.retry_state = retry_state
 
     @property
     def model(self) -> "RetryModel":
@@ -80,19 +89,27 @@ class AsyncRetryResponse(AsyncResponse[FormattableT]):
     retry_config: RetryConfig
     """Configuration for retry behavior."""
 
+    retry_state: RetryState
+    """State tracking retry attempts and any exceptions caught."""
+
     def __init__(
-        self, response: AsyncResponse[FormattableT], retry_config: RetryConfig
+        self,
+        response: AsyncResponse[FormattableT],
+        retry_config: RetryConfig,
+        retry_state: RetryState,
     ) -> None:
         """Initialize an AsyncRetryResponse.
 
         Args:
             response: The successful async response from the LLM.
             retry_config: Configuration for retry behavior.
+            retry_state: State tracking retry attempts and exceptions.
         """
         # Copy all attributes from the wrapped response
         for key, value in response.__dict__.items():
             object.__setattr__(self, key, value)
         self.retry_config = retry_config
+        self.retry_state = retry_state
 
     @property
     def model(self) -> "RetryModel":

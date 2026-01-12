@@ -69,6 +69,11 @@ class RetryConfig:
     retry_on: tuple[type[Exception], ...] = DEFAULT_RETRYABLE_ERRORS
     """Tuple of exception types that should trigger a retry."""
 
+    def __post_init__(self) -> None:
+        """Validate configuration values."""
+        if self.max_attempts < 1:
+            raise ValueError("max_attempts must be at least 1")
+
     @classmethod
     def from_args(cls, **args: Unpack[RetryArgs]) -> "RetryConfig":
         """Create a RetryConfig from RetryArgs kwargs."""
