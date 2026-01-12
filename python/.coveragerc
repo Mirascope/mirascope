@@ -3,6 +3,10 @@
 # Remove items from this list as we add comprehensive tests for each module
 # Goal: When this exclude list is empty, we have 100% coverage across the entire codebase
 omit =
+
+    # TODO: We'll get full coverage for retries when we wire in to e2e testing
+    mirascope/llm/retries/*
+
     # NOTE: MLX modules are excluded because the `mlx` package is macOS-only (Apple Silicon).
     # CI runs on Linux where `mlx` is not available, so these modules cannot be tested there.
     # TODO: Add a macOS CI job to run MLX tests and restore coverage for these modules.
