@@ -428,3 +428,149 @@ class TestAsyncRetryDecorator:
         model = llm.Model("mock/test-model")
         response = await updated(model)
         assert response.retry_state.max_attempts == 5
+
+
+class TestRetryResponseProperties:
+    """Tests for RetryResponse property delegation."""
+
+    def test_response_properties_delegate_to_wrapped(
+        self, mock_provider: MockProvider
+    ) -> None:
+        """Test that all response properties delegate to the wrapped response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet()
+
+        # Test all delegated properties - these delegate to wrapped_response
+        assert response.raw is not None
+        assert response.provider_id == "mock"
+        assert response.provider_model_name == "test-model"
+        assert response.params is not None
+        assert response.toolkit is not None
+        assert response.messages is not None
+        assert response.content is not None
+        assert response.texts is not None
+        assert response.tool_calls is not None
+        assert response.thoughts is not None
+        # These may be None depending on mock implementation
+        _ = response.finish_reason
+        _ = response.usage
+        assert response.format is None  # No format specified
+        assert response.parse() is None  # No format specified
+
+    def test_execute_tools(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
+        """Test that execute_tools delegates to wrapped response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        response = greet()
+        result = response.execute_tools()
+        assert result == []  # No tool calls in mock response
+
+
+@pytest.mark.asyncio
+class TestAsyncRetryResponseProperties:
+    """Tests for AsyncRetryResponse property delegation."""
+
+    async def test_async_execute_tools(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that async execute_tools delegates to wrapped response."""
+
+        @llm.retry(max_attempts=2)
+        @llm.call("mock/test-model")
+        async def greet() -> str:
+            return "Hello"
+
+        response = await greet()
+        result = await response.execute_tools()
+        assert result == []  # No tool calls in mock response
+
+
+class TestRetryModelProperties:
+    """Tests for RetryModel property delegation."""
+
+    def test_model_id_property(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
+        """Test that model_id delegates to wrapped model."""
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_attempts=3)
+
+        assert retry_model.model_id == "mock/test-model"
+
+    def test_params_property(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
+        """Test that params delegates to wrapped model."""
+        model = llm.Model("mock/test-model")
+        retry_model = llm.retry(model, max_attempts=3)
+
+        assert retry_model.params is not None
+
+
+class TestRetryPromptProperties:
+    """Tests for RetryPrompt property delegation."""
+
+    def test_fn_property(self, mock_provider: MockProvider) -> None:  # noqa: ARG002
+        """Test that fn delegates to wrapped prompt."""
+
+        @llm.prompt
+        def greet() -> str:
+            return "Hello"
+
+        retry_prompt = llm.retry(greet, max_attempts=3)
+
+        assert retry_prompt.fn is greet.fn
+
+
+@pytest.mark.asyncio
+class TestAsyncRetryPromptProperties:
+    """Tests for AsyncRetryPrompt property delegation."""
+
+    async def test_async_fn_property(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that fn delegates to wrapped async prompt."""
+
+        @llm.prompt
+        async def greet() -> str:
+            return "Hello"
+
+        retry_prompt = llm.retry(greet, max_attempts=3)
+
+        assert retry_prompt.fn is greet.fn
+
+
+class TestRetryCallProperties:
+    """Tests for RetryCall property delegation."""
+
+    def test_default_model_property(
+        self,
+        mock_provider: MockProvider,  # noqa: ARG002
+    ) -> None:
+        """Test that default_model returns a RetryModel."""
+
+        @llm.retry(max_attempts=3)
+        @llm.call("mock/test-model")
+        def greet() -> str:
+            return "Hello"
+
+        default_model = greet.default_model
+
+        assert isinstance(default_model, llm.RetryModel)
+        assert default_model.model_id == "mock/test-model"
+
+
+class TestRetryDecoratorErrors:
+    """Tests for error handling in retry decorator."""
+
+    def test_retry_raises_type_error_for_unsupported_type(self) -> None:
+        """Test that retry raises TypeError for unsupported target types."""
+        with pytest.raises(TypeError, match="Unsupported target type for retry"):
+            llm.retry("not a valid target", max_attempts=3)  # type: ignore[arg-type]
