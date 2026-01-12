@@ -20,6 +20,7 @@ from . import (
     prompts,
     providers,
     responses,
+    retries,
     tools,
     types,
 )
@@ -144,6 +145,9 @@ from .responses import (
     Usage,
     UsageDeltaChunk,
 )
+from .retries import (
+    RetryConfig,
+)
 from .tools import (
     AnyToolFn,
     AnyTools,
@@ -249,6 +253,7 @@ __all__ = [
     "RawMessageChunk",
     "Response",
     "ResponseValidationError",
+    "RetryConfig",
     "RootResponse",
     "ServerError",
     "Stream",
@@ -309,6 +314,7 @@ __all__ = [
     "register_provider",
     "reset_provider_registry",
     "responses",
+    "retries",
     "tool",
     "tools",
     "types",
