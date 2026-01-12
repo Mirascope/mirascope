@@ -26,6 +26,7 @@ from ..tools import (
 )
 from ..types import Jsonable
 from .retry_config import RetryConfig
+from .retry_utils import RetryState
 
 if TYPE_CHECKING:
     from ..models import Params
@@ -43,6 +44,9 @@ class BaseRetryResponse(Generic[ResponseT, ToolkitT, FormattableT]):
     wrapped_response: ResponseT
 
     retry_config: RetryConfig
+
+    retry_state: RetryState
+    """State tracking retry attempts and any exceptions caught."""
 
     @property
     def raw(self) -> Any:  # noqa: ANN401
@@ -139,16 +143,21 @@ class RetryResponse(BaseRetryResponse[Response[FormattableT], Toolkit, Formattab
     """
 
     def __init__(
-        self, response: Response[FormattableT], retry_config: RetryConfig
+        self,
+        response: Response[FormattableT],
+        retry_config: RetryConfig,
+        retry_state: RetryState,
     ) -> None:
         """Initialize a RetryResponse.
 
         Args:
             response: The successful response from the LLM.
-            config: Configuration for retry behavior.
+            retry_config: Configuration for retry behavior.
+            retry_state: State tracking retry attempts and exceptions.
         """
         self.wrapped_response = response
         self.retry_config = retry_config
+        self.retry_state = retry_state
 
     def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response."""
@@ -188,16 +197,21 @@ class AsyncRetryResponse(
     """
 
     def __init__(
-        self, response: AsyncResponse[FormattableT], retry_config: RetryConfig
+        self,
+        response: AsyncResponse[FormattableT],
+        retry_config: RetryConfig,
+        retry_state: RetryState,
     ) -> None:
         """Initialize an AsyncRetryResponse.
 
         Args:
             response: The successful async response from the LLM.
-            config: Configuration for retry behavior.
+            retry_config: Configuration for retry behavior.
+            retry_state: State tracking retry attempts and exceptions.
         """
         self.wrapped_response = response
         self.retry_config = retry_config
+        self.retry_state = retry_state
 
     async def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response."""
