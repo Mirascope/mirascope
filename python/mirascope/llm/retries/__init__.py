@@ -8,7 +8,8 @@ This module provides retry capabilities for LLM calls, including:
 """
 
 from .retry_calls import AsyncRetryCall, BaseRetryCall, RetryCall
-from .retry_config import RetryConfig
+from .retry_config import RetryArgs, RetryConfig
+from .retry_decorator import retry
 from .retry_models import RetryModel
 from .retry_prompts import AsyncRetryPrompt, BaseRetryPrompt, RetryPrompt
 from .retry_responses import AsyncRetryResponse, RetryResponse
@@ -19,9 +20,11 @@ __all__ = [
     "AsyncRetryResponse",
     "BaseRetryCall",
     "BaseRetryPrompt",
+    "RetryArgs",
     "RetryCall",
     "RetryConfig",
     "RetryModel",
     "RetryPrompt",
     "RetryResponse",
+    "retry",
 ]
