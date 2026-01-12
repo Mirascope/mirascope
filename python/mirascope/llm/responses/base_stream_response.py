@@ -42,6 +42,9 @@ if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
 
 
+StreamResponseT = TypeVar("StreamResponseT", bound="BaseStreamResponse[Any, Any, Any]")
+
+
 @dataclass(kw_only=True)
 class RawStreamEventChunk:
     """A chunk containing a raw stream event from the underlying provider.
