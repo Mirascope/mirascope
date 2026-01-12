@@ -2,7 +2,7 @@ import React from "react";
 import PageLayout from "@/app/components/page-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { ProviderContextProvider } from "@/app/components/blocks/model-provider-provider";
-// import TocSidebar from "@/app/components/toc-sidebar";
+import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
 import MainContent from "@/app/components/blocks/docs/main-content";
 import DocsSidebar from "@/app/components/blocks/docs/sidebar";
 import type { DocContent } from "@/app/lib/content/types";
@@ -40,14 +40,13 @@ const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
             mobileCollapsible={true}
             mobileTitle="On this page"
           >
-            Sidebar content
-            {/* {isLoading ? (
+            {isLoading ? (
               <div className="h-full">
                 <div className="bg-muted mx-4 mt-16 h-6 animate-pulse rounded-md"></div>
               </div>
             ) : (
-              document && <TocSidebar document={document} />
-            )} */}
+              document && <DocsTocSidebar document={document} />
+            )}
           </PageLayout.RightSidebar>
         </PageLayout>
       </ProviderContextProvider>
