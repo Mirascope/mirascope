@@ -1,7 +1,11 @@
-// @ts-expect-error - virtual module resolved by vite plugin
-import { blogMetadata, docsMetadata } from "virtual:content-meta";
+import {
+  blogMetadata,
+  docsMetadata,
+  policyMetadata,
+  // @ts-expect-error - virtual module resolved by vite plugin
+} from "virtual:content-meta";
 import type { ProcessedMDX } from "@/app/lib/mdx/types";
-import type { BlogMeta, DocMeta } from "@/app/lib/content/types";
+import type { BlogMeta, DocMeta, PolicyMeta } from "@/app/lib/content/types";
 
 export function getAllBlogMeta(): BlogMeta[] {
   return blogMetadata as BlogMeta[];
@@ -9,6 +13,10 @@ export function getAllBlogMeta(): BlogMeta[] {
 
 export function getAllDocsMeta(): DocMeta[] {
   return docsMetadata as DocMeta[];
+}
+
+export function getAllPolicyMeta(): PolicyMeta[] {
+  return policyMetadata as PolicyMeta[];
 }
 
 /**
@@ -41,6 +49,7 @@ function buildModuleMap(
 
 const BLOG_PATH_REGEX = /^\/content\/blog\/(.*)\.mdx$/;
 const DOCS_PATH_REGEX = /^\/content\/docs\/(.*)\.mdx$/;
+const POLICY_PATH_REGEX = /^\/content\/policy\/(.*)\.mdx$/;
 
 const BLOG_MODULES = import.meta.glob<{ mdx: ProcessedMDX }>(
   "@/content/blog/*.mdx",
@@ -52,6 +61,15 @@ const DOCS_MODULES = import.meta.glob<{ mdx: ProcessedMDX }>(
   { eager: false },
 );
 
+const POLICY_MODULES = import.meta.glob<{ mdx: ProcessedMDX }>(
+  "@/content/policy/**/*.mdx",
+  { eager: false },
+);
+
 // Pre-build module maps once at module initialization
 export const BLOG_MODULE_MAP = buildModuleMap(BLOG_MODULES, BLOG_PATH_REGEX);
 export const DOCS_MODULE_MAP = buildModuleMap(DOCS_MODULES, DOCS_PATH_REGEX);
+export const POLICY_MODULE_MAP = buildModuleMap(
+  POLICY_MODULES,
+  POLICY_PATH_REGEX,
+);

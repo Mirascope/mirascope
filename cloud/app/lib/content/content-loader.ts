@@ -1,16 +1,20 @@
-import type { LoaderFnContext, AnyRoute } from "@tanstack/react-router";
+import type { LoaderFnContext } from "@tanstack/react-router";
 import type {
   BlogContent,
   BlogMeta,
   DocContent,
   DocMeta,
+  PolicyContent,
+  PolicyMeta,
 } from "@/app/lib/content/types";
 import type { ProcessedMDX } from "@/app/lib/mdx/types";
 import {
   BLOG_MODULE_MAP,
   DOCS_MODULE_MAP,
+  POLICY_MODULE_MAP,
   getAllBlogMeta,
   getAllDocsMeta,
+  getAllPolicyMeta,
   type ModuleMap,
 } from "./virtual-module";
 
@@ -47,7 +51,7 @@ function createContentLoader<
 >(moduleMap: ModuleMap, config: ContentLoaderConfig<TMeta, TParams, TContent>) {
   return async function loader(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    context: LoaderFnContext<any, AnyRoute, any, TParams>,
+    context: LoaderFnContext<any, any, any, TParams>,
   ): Promise<TContent | undefined> {
     // Type assertion needed due to TanStack Router's complex param type expansion
     const key = config.extractKey(context.params as TParams);
@@ -136,6 +140,92 @@ export function docsContentLoader(version?: string, moduleMap?: ModuleMap) {
       getModuleKey: (meta) => {
         // Strip "docs/" prefix to get the module key (file path relative to content/docs/)
         const prefix = "docs/";
+        return meta.path.startsWith(prefix)
+          ? meta.path.slice(prefix.length)
+          : meta.path;
+      },
+      buildContent: (meta, mdx) => ({ meta, content: mdx.content, mdx }),
+    },
+  );
+}
+
+/* ========== POLICY CONTENT LOADER =========== */
+
+/**
+ * Type for the data returned by policyContentLoader.
+ */
+export type PolicyLoaderData = PolicyContent | undefined;
+
+/**
+ * Generic policy content loader (supports custom module map for testing).
+ *
+ * @param subdirectory - Optional subdirectory within policy (e.g., "terms" for policy/terms/,
+ *                       or undefined for top-level policy files like privacy.mdx)
+ * @param moduleMap - Optional custom module map (for testing)
+ */
+export function policyContentLoader(
+  subdirectory: string | undefined,
+  moduleMap?: ModuleMap,
+) {
+  const effectiveModuleMap = moduleMap ?? POLICY_MODULE_MAP;
+
+  return createContentLoader<PolicyMeta, { _splat?: string }, PolicyContent>(
+    effectiveModuleMap,
+    {
+      getMeta: getAllPolicyMeta,
+      extractKey: (params) => {
+        // Build path with "policy/" prefix, optionally including subdirectory
+        const basePath = subdirectory ? `policy/${subdirectory}` : "policy";
+        return `${basePath}${params._splat ? `/${params._splat}` : ""}`;
+      },
+      findMeta: (metas, path) => {
+        // Find metadata matching the path (e.g., "policy/privacy" or "policy/terms/service")
+        return metas.find((m) => m.path === path);
+      },
+      getModuleKey: (meta) => {
+        // Strip "policy/" prefix to get the module key
+        const prefix = "policy/";
+        return meta.path.startsWith(prefix)
+          ? meta.path.slice(prefix.length)
+          : meta.path;
+      },
+      buildContent: (meta, mdx) => ({ meta, content: mdx.content, mdx }),
+    },
+  );
+}
+
+/**
+ * Terms content loader - convenience wrapper for policy/terms/ subdirectory.
+ *
+ * @param moduleMap - Optional custom module map (for testing)
+ */
+export function termsContentLoader(moduleMap?: ModuleMap) {
+  return policyContentLoader("terms", moduleMap);
+}
+
+/**
+ * Privacy content loader - convenience wrapper for top-level policy/privacy.
+ * This loader doesn't use _splat params since privacy is a single file.
+ *
+ * @param moduleMap - Optional custom module map (for testing)
+ */
+export function privacyContentLoader(moduleMap?: ModuleMap) {
+  const effectiveModuleMap = moduleMap ?? POLICY_MODULE_MAP;
+
+  return createContentLoader<PolicyMeta, Record<string, never>, PolicyContent>(
+    effectiveModuleMap,
+    {
+      getMeta: getAllPolicyMeta,
+      extractKey: () => {
+        // Privacy is always at "policy/privacy"
+        return "policy/privacy";
+      },
+      findMeta: (metas, path) => {
+        return metas.find((m) => m.path === path);
+      },
+      getModuleKey: (meta) => {
+        // Strip "policy/" prefix to get the module key
+        const prefix = "policy/";
         return meta.path.startsWith(prefix)
           ? meta.path.slice(prefix.length)
           : meta.path;

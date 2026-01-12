@@ -19,7 +19,8 @@ export default function Footer() {
             </span>
           </Link>
           <Link
-            to="/terms/use"
+            to="/terms/$"
+            params={{ _splat: "use" }}
             className={cn("text-sm sm:text-base", "nav-text")}
           >
             <span className="text-sm sm:text-base font-handwriting">

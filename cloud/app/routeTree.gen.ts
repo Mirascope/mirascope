@@ -19,7 +19,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
-import { Route as TermsUseRouteImport } from './routes/terms.use'
+import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
@@ -87,9 +87,9 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BlogRoute,
 } as any)
-const TermsUseRoute = TermsUseRouteImport.update({
-  id: '/terms/use',
-  path: '/terms/use',
+const TermsSplatRoute = TermsSplatRouteImport.update({
+  id: '/terms/$',
+  path: '/terms/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
@@ -187,7 +187,7 @@ export interface FileRoutesByFullPath {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
-  '/terms/use': typeof TermsUseRoute
+  '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
@@ -215,7 +215,7 @@ export interface FileRoutesByTo {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
-  '/terms/use': typeof TermsUseRoute
+  '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
@@ -245,7 +245,7 @@ export interface FileRoutesById {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
-  '/terms/use': typeof TermsUseRoute
+  '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
@@ -276,7 +276,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/dashboard/settings'
-    | '/terms/use'
+    | '/terms/$'
     | '/blog/'
     | '/dashboard'
     | '/api/v0/$'
@@ -304,7 +304,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/dashboard/settings'
-    | '/terms/use'
+    | '/terms/$'
     | '/blog'
     | '/dashboard'
     | '/api/v0/$'
@@ -333,7 +333,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/dashboard/settings'
-    | '/terms/use'
+    | '/terms/$'
     | '/blog/'
     | '/dashboard/'
     | '/api/v0/$'
@@ -362,7 +362,7 @@ export interface RootRouteChildren {
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
   AuthMeRoute: typeof AuthMeRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
-  TermsUseRoute: typeof TermsUseRoute
+  TermsSplatRoute: typeof TermsSplatRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
@@ -443,11 +443,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof BlogRoute
     }
-    '/terms/use': {
-      id: '/terms/use'
-      path: '/terms/use'
-      fullPath: '/terms/use'
-      preLoaderRoute: typeof TermsUseRouteImport
+    '/terms/$': {
+      id: '/terms/$'
+      path: '/terms/$'
+      fullPath: '/terms/$'
+      preLoaderRoute: typeof TermsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/settings': {
@@ -630,7 +630,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
-  TermsUseRoute: TermsUseRoute,
+  TermsSplatRoute: TermsSplatRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
