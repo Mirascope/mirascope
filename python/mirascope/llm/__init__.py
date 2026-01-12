@@ -145,9 +145,13 @@ from .responses import (
     UsageDeltaChunk,
 )
 from .retries import (
+    AsyncRetryCall,
+    AsyncRetryPrompt,
     AsyncRetryResponse,
+    RetryCall,
     RetryConfig,
     RetryModel,
+    RetryPrompt,
     RetryResponse,
 )
 from .tools import (
@@ -196,6 +200,8 @@ __all__ = [
     "AsyncContextTools",
     "AsyncPrompt",
     "AsyncResponse",
+    "AsyncRetryCall",
+    "AsyncRetryPrompt",
     "AsyncRetryResponse",
     "AsyncStream",
     "AsyncStreamResponse",
@@ -255,8 +261,10 @@ __all__ = [
     "RawMessageChunk",
     "Response",
     "ResponseValidationError",
+    "RetryCall",
     "RetryConfig",
     "RetryModel",
+    "RetryPrompt",
     "RetryResponse",
     "RootResponse",
     "ServerError",
