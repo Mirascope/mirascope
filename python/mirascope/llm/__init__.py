@@ -144,7 +144,10 @@ from .responses import (
     UsageDeltaChunk,
 )
 from .retries import (
+    AsyncRetryResponse,
     RetryConfig,
+    RetryModel,
+    RetryResponse,
 )
 from .tools import (
     AnyToolFn,
@@ -191,6 +194,7 @@ __all__ = [
     "AsyncContextTools",
     "AsyncPrompt",
     "AsyncResponse",
+    "AsyncRetryResponse",
     "AsyncStream",
     "AsyncStreamResponse",
     "AsyncTextStream",
@@ -249,6 +253,8 @@ __all__ = [
     "Response",
     "ResponseValidationError",
     "RetryConfig",
+    "RetryModel",
+    "RetryResponse",
     "RootResponse",
     "ServerError",
     "Stream",
