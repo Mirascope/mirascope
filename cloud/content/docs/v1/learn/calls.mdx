@@ -59,7 +59,7 @@ print(response.content)
 Official provider SDKs typically require more boilerplate code:
 
 <Info title="Official SDK" collapsible={true}>
-<ProviderCodeBlock examplePath="mirascope/learn/calls/basic_usage/sdk"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/basic_usage/sdk"/>
 </Info>
 
 Notice how Mirascope makes calls more readable by reducing boilerplate and standardizing interactions with LLM providers.
@@ -191,7 +191,7 @@ While most LLM providers focus on text outputs, some providers support additiona
 
 For providers that support audio outputs, you can receive both text and audio responses from your calls:
 
-<ProviderCodeBlock examplePath="mirascope/learn/calls/multi_modal_outputs"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/multi_modal_outputs"/>
 
 When using models that support audio outputs, you'll have access to:
 
@@ -372,10 +372,10 @@ When using the provider modules, you'll receive a provider-specific `BaseCallRes
 
 <TabbedSection>
 <Tab value="Shorthand">
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/basic_usage/shorthand"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/basic_usage/shorthand"/>
 </Tab>
 <Tab value="Template">
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/basic_usage/template"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/basic_usage/template"/>
 </Tab>
 </TabbedSection>
 
@@ -387,7 +387,7 @@ When using the provider modules, you'll receive a provider-specific `BaseCallRes
 
 When using provider-specific calls, you can also always return the original message types for that provider. To do so, simply return the provider-specific dynamic config:
 
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/custom_messages"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/custom_messages"/>
 
 Support for provider-specific messages ensures that you can still access newly released provider-specific features that Mirascope may not yet support natively.
 
@@ -401,10 +401,10 @@ You can pass a client to the `call` decorator using the `client` parameter:
 
 <TabbedSection>
 <Tab value="Shorthand">
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/custom_client/decorator/shorthand"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/custom_client/decorator/shorthand"/>
 </Tab>
 <Tab value="Template">
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/custom_client/decorator/template"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/custom_client/decorator/template"/>
 </Tab>
 </TabbedSection>
 
@@ -414,10 +414,10 @@ You can also configure the client dynamically at runtime through the dynamic con
 
 <TabbedSection>
 <Tab value="Shorthand">
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/custom_client/dynamic_config/shorthand"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/custom_client/dynamic_config/shorthand"/>
 </Tab>
 <Tab value="Template">
-<ProviderCodeBlock examplePath="mirascope/learn/calls/provider_specific/custom_client/dynamic_config/template"/>
+<ProviderCodeBlock examplePath="v1/learn/calls/provider_specific/custom_client/dynamic_config/template"/>
 </Tab>
 </TabbedSection>
 

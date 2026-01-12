@@ -278,7 +278,7 @@ While most LLM providers focus on text streaming, some providers support streami
 
 For providers that support audio outputs, you can stream both text and audio responses simultaneously:
 
-<ProviderCodeBlock examplePath="mirascope/learn/streams/multi_modal_outputs"/>
+<ProviderCodeBlock examplePath="v1/learn/streams/multi_modal_outputs"/>
 
 Each stream chunk provides access to:
 
@@ -305,7 +305,7 @@ This allows you to process both text and audio streams concurrently. Since audio
 
 Error handling in streams is similar to standard non-streaming calls. However, it's important to note that errors may occur during iteration rather than at the initial function call:
 
-<ProviderCodeBlock examplePath="mirascope/learn/streams/error_handling"/>
+<ProviderCodeBlock examplePath="v1/learn/streams/error_handling"/>
 
 In these examples we show provider-specific error handling, though you can also catch generic exceptions.
 
