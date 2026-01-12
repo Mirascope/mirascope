@@ -153,6 +153,7 @@ from .retries import (
     RetryModel,
     RetryPrompt,
     RetryResponse,
+    retry,
 )
 from .tools import (
     AnyToolFn,
@@ -327,6 +328,7 @@ __all__ = [
     "reset_provider_registry",
     "responses",
     "retries",
+    "retry",
     "tool",
     "tools",
     "types",
