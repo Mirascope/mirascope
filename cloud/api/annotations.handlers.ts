@@ -10,14 +10,12 @@ import type {
 export * from "@/api/annotations.schemas";
 
 export const toAnnotation = (annotation: PublicAnnotation) => {
-  const { otelSpanId, otelTraceId, ...ann } = annotation;
-  void otelSpanId;
-  void otelTraceId;
-
   return {
-    ...ann,
-    createdAt: ann.createdAt?.toISOString() ?? null,
-    updatedAt: ann.updatedAt?.toISOString() ?? null,
+    ...annotation,
+    spanId: annotation.otelSpanId,
+    traceId: annotation.otelTraceId,
+    createdAt: annotation.createdAt?.toISOString() ?? null,
+    updatedAt: annotation.updatedAt?.toISOString() ?? null,
   };
 };
 

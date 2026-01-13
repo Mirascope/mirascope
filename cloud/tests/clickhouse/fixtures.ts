@@ -12,9 +12,12 @@ import type {
   CompletedSpansBatchRequest,
 } from "@/db/clickhouse/types";
 import type {
+  AnalyticsSummaryResponse,
+  SpanDetail,
   SearchResponse,
+  SpanSearchResult,
   TraceDetailResponse,
-} from "@/api/traces-search.schemas";
+} from "@/db/clickhouse/search";
 
 // =============================================================================
 // Span Fixtures
@@ -272,4 +275,173 @@ export const buildTraceDetailSpan = (
 export const createSearchTimeWindow = () => ({
   startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   endTime: new Date().toISOString(),
+});
+
+/**
+ * Creates a search span result for ClickHouse search tests.
+ */
+export const createSearchSpanResult = (
+  overrides: Partial<SpanSearchResult> = {},
+): SpanSearchResult => ({
+  traceId: "trace-1",
+  spanId: "span-1",
+  name: "span",
+  startTime: new Date().toISOString(),
+  durationMs: 100,
+  model: null,
+  provider: null,
+  totalTokens: null,
+  functionId: null,
+  functionName: null,
+  ...overrides,
+});
+
+/**
+ * Creates a trace detail span for ClickHouse trace detail tests.
+ */
+export const createTraceDetailSpan = (
+  overrides: Partial<SpanDetail> = {},
+): SpanDetail => ({
+  traceId: "trace-1",
+  spanId: "span-1",
+  parentSpanId: null,
+  environmentId: "environment-1",
+  projectId: "project-1",
+  organizationId: "organization-1",
+  startTime: new Date().toISOString(),
+  endTime: new Date().toISOString(),
+  durationMs: 100,
+  name: "span",
+  kind: 1,
+  statusCode: null,
+  statusMessage: null,
+  model: null,
+  provider: null,
+  inputTokens: null,
+  outputTokens: null,
+  totalTokens: null,
+  costUsd: null,
+  functionId: null,
+  functionName: null,
+  functionVersion: null,
+  errorType: null,
+  errorMessage: null,
+  attributes: "{}",
+  events: null,
+  links: null,
+  serviceName: null,
+  serviceVersion: null,
+  resourceAttributes: null,
+  ...overrides,
+});
+
+/**
+ * Creates a trace detail response for ClickHouse trace detail tests.
+ */
+export const createTraceDetailResponse = (
+  overrides: Partial<TraceDetailResponse> = {},
+): TraceDetailResponse => ({
+  traceId: "trace-1",
+  spans: [],
+  rootSpanId: null,
+  totalDurationMs: null,
+  ...overrides,
+});
+
+/**
+ * Creates an analytics summary response for ClickHouse search tests.
+ */
+export const createAnalyticsSummaryResponse = (
+  overrides: Partial<AnalyticsSummaryResponse> = {},
+): AnalyticsSummaryResponse => ({
+  totalSpans: 0,
+  avgDurationMs: null,
+  p50DurationMs: null,
+  p95DurationMs: null,
+  p99DurationMs: null,
+  errorRate: 0,
+  totalTokens: 0,
+  totalCostUsd: 0,
+  topModels: [],
+  topFunctions: [],
+  ...overrides,
+});
+
+/**
+ * ClickHouse search analytics row used in search tests.
+ */
+export type SearchAnalyticsRow = {
+  trace_id: string;
+  span_id: string;
+  parent_span_id: string | null;
+  environment_id: string;
+  project_id: string;
+  organization_id: string;
+  start_time: string;
+  end_time: string;
+  duration_ms: number | null;
+  name: string;
+  kind: number;
+  status_code: number | null;
+  status_message: string | null;
+  model: string | null;
+  provider: string | null;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  total_tokens: number | null;
+  cost_usd: number | null;
+  function_id: string | null;
+  function_name: string | null;
+  function_version: string | null;
+  error_type: string | null;
+  error_message: string | null;
+  attributes: string;
+  events: string | null;
+  links: string | null;
+  service_name: string | null;
+  service_version: string | null;
+  resource_attributes: string | null;
+  created_at: string;
+  _version: number;
+};
+
+/**
+ * Creates a ClickHouse search analytics row for insert tests.
+ */
+export const createSearchAnalyticsRow = (
+  overrides: Partial<SearchAnalyticsRow> = {},
+): SearchAnalyticsRow => ({
+  trace_id: "trace-1",
+  span_id: "span-1",
+  parent_span_id: null,
+  environment_id: "environment-1",
+  project_id: "project-1",
+  organization_id: "organization-1",
+  start_time: "2024-01-15 10:00:00.000000000",
+  end_time: "2024-01-15 10:00:01.000000000",
+  duration_ms: 1000,
+  name: "span",
+  kind: 1,
+  status_code: 0,
+  status_message: null,
+  model: null,
+  provider: null,
+  input_tokens: null,
+  output_tokens: null,
+  total_tokens: null,
+  cost_usd: null,
+  function_id: null,
+  function_name: null,
+  function_version: null,
+  error_type: null,
+  error_message: null,
+  attributes: "{}",
+  events: null,
+  links: null,
+  service_name: null,
+  service_version: null,
+  resource_attributes: null,
+  created_at: "2024-01-15 10:00:00.000",
+  _version: Date.now(),
+  ...overrides,
 });

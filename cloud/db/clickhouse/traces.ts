@@ -35,6 +35,10 @@
  * - Enqueues spans for ClickHouse ingestion
  * - Returns ingestion statistics (acceptedSpans, rejectedSpans)
  *
+ * This service lives under `cloud/db/clickhouse` to keep ClickHouse ingestion
+ * logic grouped with ClickHouse services while still handling authorization
+ * and ingestion orchestration for trace requests.
+ *
  * @example
  * ```ts
  * const db = yield* Database;
@@ -60,12 +64,12 @@
  */
 
 import { Effect, Option } from "effect";
-import { and, desc, eq } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
   AlreadyExistsError,
@@ -75,23 +79,31 @@ import {
   ImmutableResourceError,
 } from "@/errors";
 import {
-  traces,
-  type CreateTraceResponse,
-  type PublicTrace,
-} from "@/db/schema/traces";
-import { spans } from "@/db/schema/spans";
-import { organizations, type ProjectRole } from "@/db/schema";
-import {
   SpansIngestQueue,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import {
-  SpansMeteringQueueService,
-  type SpanMeteringMessage,
-} from "@/workers/spansMeteringQueue";
+import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
 
-export type { CreateTraceResponse, PublicTrace };
+/** Response type for trace creation. */
+export type CreateTraceResponse = {
+  acceptedSpans: number;
+  rejectedSpans: number;
+  acceptedSpanIds: string[];
+};
+
+/** Public trace representation. */
+export type PublicTrace = {
+  id: string;
+  otelTraceId: string;
+  environmentId: string;
+  projectId: string;
+  organizationId: string;
+  serviceName: string | null;
+  serviceVersion: string | null;
+  resourceAttributes: Record<string, unknown> | null;
+  createdAt: Date | null;
+};
 
 /** Input type for trace ingestion via OTLP format. */
 export type TraceCreateInput = {
@@ -203,86 +215,6 @@ const normalizeUnixNano = (value: string | undefined): string | null => {
   return trimmed.length > 0 ? trimmed : null;
 };
 
-/**
- * Builds a stable metering identifier for a span.
- */
-const buildMeteringSpanId = (traceId: string, spanId: string): string =>
-  `${traceId}:${spanId}`;
-
-/**
- * Enqueues span metering messages for accepted spans.
- *
- * Fetches the organization's Stripe customer ID and enqueues a metering
- * message for each accepted span. Errors are logged but don't fail the
- * trace creation - eventual consistency via reconciliation is acceptable.
- */
-export const enqueueSpanMetering = (
-  spanIds: string[],
-  organizationId: string,
-  projectId: string,
-  environmentId: string,
-): Effect.Effect<void, never, DrizzleORM> =>
-  Effect.gen(function* () {
-    if (spanIds.length === 0) {
-      return;
-    }
-
-    const queue = yield* Effect.serviceOption(SpansMeteringQueueService);
-    /* v8 ignore start - Early return when queue not provided */
-    if (Option.isNone(queue)) {
-      return;
-    }
-    /* v8 ignore stop */
-
-    const client = yield* DrizzleORM;
-
-    // Fetch organization to get stripe customer ID
-    const [org] = yield* client
-      .select({ stripeCustomerId: organizations.stripeCustomerId })
-      .from(organizations)
-      .where(eq(organizations.id, organizationId))
-      .pipe(
-        Effect.catchAll((error) => {
-          console.error(
-            `[traces] Failed to fetch organization ${organizationId} for span metering:`,
-            error,
-          );
-          return Effect.succeed([]);
-        }),
-      );
-
-    if (!org) {
-      console.error(
-        `[traces] Organization ${organizationId} not found for span metering`,
-      );
-      return;
-    }
-
-    const timestamp = Date.now();
-
-    // Enqueue metering message for each accepted span
-    for (const spanId of spanIds) {
-      const message: SpanMeteringMessage = {
-        spanId,
-        organizationId,
-        projectId,
-        environmentId,
-        stripeCustomerId: org.stripeCustomerId,
-        timestamp,
-      };
-
-      yield* queue.value.send(message).pipe(
-        Effect.catchAll((error) => {
-          console.error(
-            `[traces] Failed to enqueue span metering for span ${spanId}:`,
-            error,
-          );
-          return Effect.void;
-        }),
-      );
-    }
-  });
-
 // =============================================================================
 // Traces Service
 // =============================================================================
@@ -390,7 +322,6 @@ export class Traces extends BaseAuthenticatedEffectService<
    * Requires ADMIN or DEVELOPER role on the project.
    * Spans are enqueued for asynchronous ingestion into ClickHouse.
    * Accepted/rejected counts are based on queue enqueue success.
-   * Accepted spans are metered when the spans metering queue is available.
    *
    * @param args.userId - The user ingesting the traces
    * @param args.organizationId - The organization containing the project
@@ -420,8 +351,7 @@ export class Traces extends BaseAuthenticatedEffectService<
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-      const queue = yield* Effect.serviceOption(SpansIngestQueue);
+      const queueOption = yield* Effect.serviceOption(SpansIngestQueue);
 
       yield* this.authorize({
         userId,
@@ -438,6 +368,18 @@ export class Traces extends BaseAuthenticatedEffectService<
       const acceptedSpanIds: string[] = [];
       const receivedAt = Date.now();
       const maxSpansPerMessage = 50;
+
+      /* v8 ignore start -- Spans ingest queue is required in worker configuration */
+      if (Option.isNone(queueOption)) {
+        return yield* Effect.fail(
+          new DatabaseError({
+            message: "Spans ingest queue is required for trace ingestion.",
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      const queue = queueOption.value;
 
       for (const resourceSpan of data.resourceSpans) {
         const serviceName = extractServiceName(
@@ -482,110 +424,6 @@ export class Traces extends BaseAuthenticatedEffectService<
 
         const spansForResource = completedSpans;
 
-        // Insert into PostgreSQL for annotations FK support
-        for (const span of spansForResource) {
-          // Upsert trace record
-          const existingTrace = yield* client
-            .select({ id: traces.id })
-            .from(traces)
-            .where(
-              and(
-                eq(traces.otelTraceId, span.traceId),
-                eq(traces.environmentId, environmentId),
-              ),
-            )
-            .limit(1)
-            .pipe(
-              /* v8 ignore start - Database error handling */
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to query trace",
-                    cause: e,
-                  }),
-              ),
-              /* v8 ignore stop */
-            );
-
-          let traceDbId: string;
-          if (existingTrace.length > 0 && existingTrace[0]?.id) {
-            traceDbId = existingTrace[0].id;
-          } else {
-            const [newTrace] = yield* client
-              .insert(traces)
-              .values({
-                otelTraceId: span.traceId,
-                environmentId,
-                projectId,
-                organizationId,
-                serviceName,
-                serviceVersion,
-                resourceAttributes,
-              })
-              .returning({ id: traces.id })
-              .pipe(
-                /* v8 ignore start - Database error handling */
-                Effect.mapError(
-                  (e) =>
-                    new DatabaseError({
-                      message: "Failed to insert trace",
-                      cause: e,
-                    }),
-                ),
-                /* v8 ignore stop */
-              );
-            /* v8 ignore start - Edge case: trace insert returns empty result */
-            if (!newTrace?.id) {
-              rejectedSpans++;
-              continue;
-            }
-            /* v8 ignore stop */
-            traceDbId = newTrace.id;
-          }
-
-          // Upsert span record
-          yield* client
-            .insert(spans)
-            .values({
-              traceId: traceDbId,
-              otelTraceId: span.traceId,
-              otelSpanId: span.spanId,
-              parentSpanId: span.parentSpanId ?? null,
-              environmentId,
-              projectId,
-              organizationId,
-              name: span.name,
-              kind: span.kind ?? null,
-              startTimeUnixNano: BigInt(span.startTimeUnixNano),
-              endTimeUnixNano: BigInt(span.endTimeUnixNano),
-              attributes: span.attributes ?? {},
-              status: span.status ?? {},
-              events: span.events ?? [],
-              links: span.links ?? [],
-              droppedAttributesCount: span.droppedAttributesCount ?? null,
-              droppedEventsCount: span.droppedEventsCount ?? null,
-              droppedLinksCount: span.droppedLinksCount ?? null,
-            })
-            .onConflictDoNothing({
-              target: [
-                spans.otelSpanId,
-                spans.otelTraceId,
-                spans.environmentId,
-              ],
-            })
-            .pipe(
-              /* v8 ignore start - Database error handling */
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to insert span",
-                    cause: e,
-                  }),
-              ),
-              /* v8 ignore stop */
-            );
-        }
-
         // Send to ClickHouse queue for analytics
         const batches = chunkSpans(spansForResource, maxSpansPerMessage);
 
@@ -601,34 +439,21 @@ export class Traces extends BaseAuthenticatedEffectService<
             spans: batch,
           };
 
-          const enqueued = yield* Option.match(queue, {
-            onNone: () => Effect.succeed(false),
-            onSome: (service) =>
-              service.send(message).pipe(
-                Effect.as(true),
-                Effect.catchAll(() => Effect.succeed(false)),
-              ),
-          });
+          const enqueued = yield* queue.send(message).pipe(
+            Effect.as(true),
+            Effect.catchAll(() => Effect.succeed(false)),
+          );
 
           if (enqueued) {
             acceptedSpans += batch.length;
             for (const span of batch) {
-              acceptedSpanIds.push(
-                buildMeteringSpanId(span.traceId, span.spanId),
-              );
+              acceptedSpanIds.push(span.spanId);
             }
           } else {
             rejectedSpans += batch.length;
           }
         }
       }
-
-      yield* enqueueSpanMetering(
-        acceptedSpanIds,
-        organizationId,
-        projectId,
-        environmentId,
-      );
 
       return {
         acceptedSpans,
@@ -668,7 +493,19 @@ export class Traces extends BaseAuthenticatedEffectService<
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
+      const clickHouseOption = yield* Effect.serviceOption(ClickHouseSearch);
+
+      /* v8 ignore start -- ClickHouseSearch is required for trace reads */
+      if (Option.isNone(clickHouseOption)) {
+        return yield* Effect.fail(
+          new DatabaseError({
+            message: "ClickHouseSearch is required to list traces.",
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      const clickHouseSearch = clickHouseOption.value;
 
       yield* this.authorize({
         userId,
@@ -679,13 +516,18 @@ export class Traces extends BaseAuthenticatedEffectService<
         traceId: "",
       });
 
-      return yield* client
-        .select()
-        .from(traces)
-        .where(eq(traces.environmentId, environmentId))
-        .orderBy(desc(traces.createdAt))
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const searchResult = yield* clickHouseSearch
+        .search({
+          environmentId,
+          startTime,
+          endTime,
+          limit: 1000,
+          offset: 0,
+        })
         .pipe(
-          /* v8 ignore start - Database error handling */
           Effect.mapError(
             (e) =>
               new DatabaseError({
@@ -693,8 +535,30 @@ export class Traces extends BaseAuthenticatedEffectService<
                 cause: e,
               }),
           ),
-          /* v8 ignore stop */
         );
+
+      const tracesById = new Map<string, PublicTrace>();
+      for (const span of searchResult.spans) {
+        if (!tracesById.has(span.traceId)) {
+          tracesById.set(span.traceId, {
+            id: span.traceId,
+            otelTraceId: span.traceId,
+            environmentId,
+            projectId,
+            organizationId,
+            serviceName: null,
+            serviceVersion: null,
+            resourceAttributes: null,
+            createdAt: new Date(span.startTime),
+          });
+        }
+      }
+
+      return Array.from(tracesById.values()).sort((a, b) => {
+        const aTime = a.createdAt?.getTime() ?? 0;
+        const bTime = b.createdAt?.getTime() ?? 0;
+        return bTime - aTime;
+      });
     });
   }
 
@@ -731,7 +595,19 @@ export class Traces extends BaseAuthenticatedEffectService<
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
+      const clickHouseOption = yield* Effect.serviceOption(ClickHouseSearch);
+
+      /* v8 ignore start -- ClickHouseSearch is required for trace reads */
+      if (Option.isNone(clickHouseOption)) {
+        return yield* Effect.fail(
+          new DatabaseError({
+            message: "ClickHouseSearch is required to read traces.",
+          }),
+        );
+      }
+      /* v8 ignore stop */
+
+      const clickHouseSearch = clickHouseOption.value;
 
       yield* this.authorize({
         userId,
@@ -742,17 +618,9 @@ export class Traces extends BaseAuthenticatedEffectService<
         traceId,
       });
 
-      const [row] = yield* client
-        .select()
-        .from(traces)
-        .where(
-          and(
-            eq(traces.otelTraceId, traceId),
-            eq(traces.environmentId, environmentId),
-          ),
-        )
+      const detail = yield* clickHouseSearch
+        .getTraceDetail({ environmentId, traceId })
         .pipe(
-          /* v8 ignore start - Database error handling */
           Effect.mapError(
             (e) =>
               new DatabaseError({
@@ -760,10 +628,9 @@ export class Traces extends BaseAuthenticatedEffectService<
                 cause: e,
               }),
           ),
-          /* v8 ignore stop */
         );
 
-      if (!row) {
+      if (detail.spans.length === 0) {
         return yield* Effect.fail(
           new NotFoundError({
             message: `Trace ${traceId} not found`,
@@ -772,7 +639,30 @@ export class Traces extends BaseAuthenticatedEffectService<
         );
       }
 
-      return row;
+      const firstSpan = detail.spans[0];
+      let resourceAttributes: Record<string, unknown> | null = null;
+      if (firstSpan?.resourceAttributes) {
+        try {
+          const parsed = JSON.parse(firstSpan.resourceAttributes) as unknown;
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            resourceAttributes = parsed as Record<string, unknown>;
+          }
+        } catch {
+          resourceAttributes = null;
+        }
+      }
+
+      return {
+        id: traceId,
+        otelTraceId: traceId,
+        environmentId,
+        projectId,
+        organizationId,
+        serviceName: firstSpan?.serviceName ?? null,
+        serviceVersion: firstSpan?.serviceVersion ?? null,
+        resourceAttributes,
+        createdAt: firstSpan?.startTime ? new Date(firstSpan.startTime) : null,
+      };
     });
   }
 

@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import {
   describe,
   it,
@@ -6,6 +5,8 @@ import {
   TestClickHouse,
   clickHouseAvailable,
 } from "@/tests/clickhouse";
+import { getSearchMigrationStatements } from "@/tests/clickhouse/migrations";
+import { createSearchAnalyticsRow } from "@/tests/clickhouse/fixtures";
 import { Effect, Layer } from "effect";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
@@ -22,31 +23,6 @@ const TEST_SPAN_ID_2 = "span002";
 const CLICKHOUSE_DATABASE =
   process.env.CLICKHOUSE_DATABASE ?? "mirascope_analytics";
 
-const MIGRATION_SQL = [
-  readFileSync(
-    new URL(
-      "./migrations/00001_create_spans_analytics.up.sql",
-      import.meta.url,
-    ),
-    "utf8",
-  ),
-  readFileSync(
-    new URL("./migrations/00002_drop_span_db_ids.up.sql", import.meta.url),
-    "utf8",
-  ),
-];
-
-const renderMigrationSql = (database: string) =>
-  MIGRATION_SQL.map((sql) => sql.replaceAll("{{database}}", database)).join(
-    "\n",
-  );
-
-const splitStatements = (sql: string): string[] =>
-  sql
-    .split(";")
-    .map((statement) => statement.trim())
-    .filter((statement) => statement.length > 0);
-
 const TestSearchLayer = ClickHouseSearch.Default.pipe(
   Layer.provide(TestClickHouse),
 );
@@ -57,7 +33,7 @@ const provideSearchLayer = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
 // Setup and teardown for test data
 const setupSchema = Effect.gen(function* () {
   const client = yield* ClickHouse;
-  const statements = splitStatements(renderMigrationSql(CLICKHOUSE_DATABASE));
+  const statements = getSearchMigrationStatements(CLICKHOUSE_DATABASE);
 
   for (const statement of statements) {
     yield* client.command(statement);
@@ -75,14 +51,18 @@ const setupSchema = Effect.gen(function* () {
   }
 });
 
-const testSpans = [
-  {
+const searchAnalyticsRowBase = {
+  environment_id: TEST_ENVIRONMENT_ID,
+  project_id: TEST_PROJECT_ID,
+  organization_id: TEST_ORG_ID,
+};
+
+const searchAnalyticsRows = [
+  createSearchAnalyticsRow({
+    ...searchAnalyticsRowBase,
     trace_id: TEST_TRACE_ID,
     span_id: TEST_SPAN_ID_1,
     parent_span_id: null,
-    environment_id: TEST_ENVIRONMENT_ID,
-    project_id: TEST_PROJECT_ID,
-    organization_id: TEST_ORG_ID,
     start_time: "2024-01-15 10:00:00.000000000",
     end_time: "2024-01-15 10:00:01.000000000",
     duration_ms: 1000,
@@ -96,32 +76,23 @@ const testSpans = [
     output_tokens: 50,
     total_tokens: 150,
     cost_usd: 0.01,
-    function_id: null,
     function_name: "my_function",
     function_version: "v1",
-    error_type: null,
-    error_message: null,
     attributes: JSON.stringify({
       "gen_ai.input_messages": "What is programming?",
       "gen_ai.output_messages": "Programming is the art of writing code.",
       "mirascope.trace.arg_values": '{"prompt": "Tell me about programming"}',
       "mirascope.trace.output": "Programming involves creating software.",
     }),
-    events: null,
-    links: null,
     service_name: "test-service",
     service_version: "1.0.0",
-    resource_attributes: null,
     created_at: "2024-01-15 10:00:00.000",
-    _version: Date.now(),
-  },
-  {
+  }),
+  createSearchAnalyticsRow({
+    ...searchAnalyticsRowBase,
     trace_id: TEST_TRACE_ID,
     span_id: TEST_SPAN_ID_2,
     parent_span_id: TEST_SPAN_ID_1,
-    environment_id: TEST_ENVIRONMENT_ID,
-    project_id: TEST_PROJECT_ID,
-    organization_id: TEST_ORG_ID,
     start_time: "2024-01-15 10:00:00.100000000",
     end_time: "2024-01-15 10:00:00.500000000",
     duration_ms: 400,
@@ -135,20 +106,11 @@ const testSpans = [
     output_tokens: 0,
     total_tokens: 50,
     cost_usd: 0.001,
-    function_id: null,
-    function_name: null,
-    function_version: null,
-    error_type: null,
-    error_message: null,
     attributes: "{}",
-    events: null,
-    links: null,
     service_name: "test-service",
     service_version: "1.0.0",
-    resource_attributes: null,
     created_at: "2024-01-15 10:00:00.100",
-    _version: Date.now(),
-  },
+  }),
 ];
 
 const setupTestData = Effect.gen(function* () {
@@ -156,7 +118,7 @@ const setupTestData = Effect.gen(function* () {
   yield* client.command(
     `TRUNCATE TABLE ${CLICKHOUSE_DATABASE}.spans_analytics`,
   );
-  yield* client.insert("spans_analytics", testSpans);
+  yield* client.insert("spans_analytics", searchAnalyticsRows);
 });
 
 const cleanupTestData = Effect.gen(function* () {

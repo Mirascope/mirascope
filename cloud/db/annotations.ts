@@ -61,8 +61,8 @@ import {
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
-import { ClickHouseSearch } from "@/clickhouse/search";
-import { RealtimeSpans } from "@/realtimeSpans";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -96,6 +96,10 @@ export type AnnotationFilters = {
 // Helpers
 // =============================================================================
 
+/**
+ * Checks whether a span exists using realtime cache first, then ClickHouse.
+ * Fails with DatabaseError when neither service is available.
+ */
 const checkSpanExists = ({
   environmentId,
   traceId,
@@ -104,20 +108,25 @@ const checkSpanExists = ({
   environmentId: string;
   traceId: string;
   spanId: string;
-}): Effect.Effect<boolean> =>
+}): Effect.Effect<boolean, DatabaseError> =>
   Effect.gen(function* () {
     const realtimeOption = yield* Effect.serviceOption(RealtimeSpans);
-    const clickhouseOption = yield* Effect.serviceOption(ClickHouseSearch);
+    const clickHouseOption = yield* Effect.serviceOption(ClickHouseSearch);
 
-    // Fail-closed: if neither service is available, return false
-    if (Option.isNone(realtimeOption) && Option.isNone(clickhouseOption)) {
-      return false;
+    /* v8 ignore start */
+    if (Option.isNone(realtimeOption) && Option.isNone(clickHouseOption)) {
+      return yield* Effect.fail(
+        new DatabaseError({
+          message: "RealtimeSpans and ClickHouseSearch must be available",
+        }),
+      );
     }
+    /* v8 ignore stop */
 
     const realtimeExists = yield* Option.match(realtimeOption, {
-      onNone: () => Effect.succeed(false),
-      onSome: (realtime) =>
-        realtime
+      onNone: /* v8 ignore next */ () => Effect.succeed(false),
+      onSome: (realtimeSpans) =>
+        realtimeSpans
           .exists({
             environmentId,
             traceId,
@@ -130,10 +139,10 @@ const checkSpanExists = ({
       return true;
     }
 
-    return yield* Option.match(clickhouseOption, {
-      onNone: () => Effect.succeed(false),
-      onSome: (clickhouse) =>
-        clickhouse.getTraceDetail({ environmentId, traceId }).pipe(
+    return yield* Option.match(clickHouseOption, {
+      onNone: /* v8 ignore next */ () => Effect.succeed(false),
+      onSome: (clickHouseSearch) =>
+        clickHouseSearch.getTraceDetail({ environmentId, traceId }).pipe(
           Effect.map((detail) =>
             detail.spans.some((span) => span.spanId === spanId),
           ),

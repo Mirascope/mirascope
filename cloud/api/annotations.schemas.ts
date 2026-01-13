@@ -34,6 +34,10 @@ export type UpdateAnnotationRequest = typeof UpdateAnnotationRequestSchema.Type;
 
 const AnnotationResponseSchema = Schema.Struct({
   id: Schema.String,
+  spanId: Schema.String,
+  traceId: Schema.String,
+  otelSpanId: Schema.String,
+  otelTraceId: Schema.String,
   label: Schema.NullOr(LabelSchema),
   reasoning: Schema.NullOr(Schema.String),
   metadata: Schema.NullOr(

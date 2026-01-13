@@ -8,7 +8,6 @@ import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 import { SettingsService, getSettings } from "@/settings";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import fs from "fs";
 
@@ -68,17 +67,8 @@ const realtimeSpansLayer = Layer.succeed(RealtimeSpans, {
   exists: () => Effect.succeed(false),
 });
 
-const mockSpansMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-  send: () => Effect.void,
-});
-
-const testLayer = Layer.mergeAll(
-  clickHouseSearchLayer,
-  mockSpansMeteringQueueLayer,
-);
-
 describe("handleRequest", () => {
-  it.effect("should return 404 without realtime spans configured", () =>
+  it.effect("should return 404 for unknown route", () =>
     Effect.gen(function* () {
       const clickHouseSearch = yield* ClickHouseSearch;
       const req = new Request(
@@ -91,6 +81,7 @@ describe("handleRequest", () => {
         environment: "test",
         prefix: "/api/v0",
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
       });
 
@@ -98,7 +89,11 @@ describe("handleRequest", () => {
       expect(matched).toBe(false);
     }).pipe(
       Effect.provide(
-        Layer.mergeAll(clickHouseSearchLayer, spansIngestQueueLayer),
+        Layer.mergeAll(
+          clickHouseSearchLayer,
+          spansIngestQueueLayer,
+          realtimeSpansLayer,
+        ),
       ),
     ),
   );

@@ -6,7 +6,7 @@ import type {
   CreateTraceResponse,
   ListByFunctionHashResponse,
 } from "@/api/traces.schemas";
-import type { PublicTrace } from "@/db/traces";
+import type { PublicTrace } from "@/db/clickhouse/traces";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 
 export * from "@/api/traces.schemas";

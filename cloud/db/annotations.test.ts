@@ -3,7 +3,6 @@
  */
 
 import { Effect, Layer } from "effect";
-import { it as vitestIt } from "vitest";
 import {
   describe,
   it,
@@ -11,10 +10,14 @@ import {
   TestEnvironmentFixture,
   TestSpanFixture,
   MockDrizzleORM,
+  createClickHouseSearchLayer,
+  createRealtimeSpansLayer,
 } from "@/tests/db";
+import {
+  createTraceDetailResponse,
+  createTraceDetailSpan,
+} from "@/tests/clickhouse/fixtures";
 import { Database } from "@/db/database";
-import { ClickHouseSearch } from "@/clickhouse/search";
-import { RealtimeSpans } from "@/realtimeSpans";
 import {
   NotFoundError,
   DatabaseError,
@@ -115,42 +118,22 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           Layer.mergeAll(
-            Layer.succeed(RealtimeSpans, {
-              upsert: () => Effect.void,
-              search: () =>
-                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+            createRealtimeSpansLayer({
               getTraceDetail: () =>
-                Effect.succeed({
-                  traceId: "nonexistenttraceid0123456789ab",
-                  spans: [],
-                  rootSpanId: null,
-                  totalDurationMs: null,
-                }),
+                Effect.succeed(
+                  createTraceDetailResponse({
+                    traceId: "nonexistenttraceid0123456789ab",
+                  }),
+                ),
               exists: () => Effect.succeed(false),
             }),
-            Layer.succeed(ClickHouseSearch, {
-              search: () =>
-                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+            createClickHouseSearchLayer({
               getTraceDetail: () =>
-                Effect.succeed({
-                  traceId: "nonexistenttraceid0123456789ab",
-                  spans: [],
-                  rootSpanId: null,
-                  totalDurationMs: null,
-                }),
-              getAnalyticsSummary: () =>
-                Effect.succeed({
-                  totalSpans: 0,
-                  avgDurationMs: null,
-                  p50DurationMs: null,
-                  p95DurationMs: null,
-                  p99DurationMs: null,
-                  errorRate: 0,
-                  totalTokens: 0,
-                  totalCostUsd: 0,
-                  topModels: [],
-                  topFunctions: [],
-                }),
+                Effect.succeed(
+                  createTraceDetailResponse({
+                    traceId: "nonexistenttraceid0123456789ab",
+                  }),
+                ),
             }),
           ),
         ),
@@ -213,42 +196,18 @@ describe("Annotations", () => {
                 // span lookup
                 .select([])
                 .build(),
-              Layer.succeed(RealtimeSpans, {
-                upsert: () => Effect.void,
-                search: () =>
-                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              createRealtimeSpansLayer({
                 getTraceDetail: () =>
-                  Effect.succeed({
-                    traceId: "missing-trace",
-                    spans: [],
-                    rootSpanId: null,
-                    totalDurationMs: null,
-                  }),
+                  Effect.succeed(
+                    createTraceDetailResponse({ traceId: "missing-trace" }),
+                  ),
                 exists: () => Effect.succeed(false),
               }),
-              Layer.succeed(ClickHouseSearch, {
-                search: () =>
-                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              createClickHouseSearchLayer({
                 getTraceDetail: () =>
-                  Effect.succeed({
-                    traceId: "missing-trace",
-                    spans: [],
-                    rootSpanId: null,
-                    totalDurationMs: null,
-                  }),
-                getAnalyticsSummary: () =>
-                  Effect.succeed({
-                    totalSpans: 0,
-                    avgDurationMs: null,
-                    p50DurationMs: null,
-                    p95DurationMs: null,
-                    p99DurationMs: null,
-                    errorRate: 0,
-                    totalTokens: 0,
-                    totalCostUsd: 0,
-                    topModels: [],
-                    topFunctions: [],
-                  }),
+                  Effect.succeed(
+                    createTraceDetailResponse({ traceId: "missing-trace" }),
+                  ),
               }),
             ),
           ),
@@ -321,19 +280,14 @@ describe("Annotations", () => {
                 },
               ])
               .build(),
-            Layer.succeed(RealtimeSpans, {
-              upsert: () => Effect.void,
-              search: () =>
-                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+            createRealtimeSpansLayer({
               getTraceDetail: () =>
-                Effect.succeed({
-                  traceId: "exists-trace",
-                  spans: [],
-                  rootSpanId: null,
-                  totalDurationMs: null,
-                }),
+                Effect.succeed(
+                  createTraceDetailResponse({ traceId: "exists-trace" }),
+                ),
               exists: () => Effect.succeed(true),
             }),
+            createClickHouseSearchLayer(),
           ),
         ),
       ),
@@ -389,22 +343,14 @@ describe("Annotations", () => {
               ])
               .select([])
               .build(),
-            Layer.succeed(RealtimeSpans, {
-              upsert: () => Effect.void,
-              search: () =>
-                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+            createRealtimeSpansLayer({
               getTraceDetail: () =>
-                Effect.succeed({
-                  traceId: "error-trace",
-                  spans: [],
-                  rootSpanId: null,
-                  totalDurationMs: null,
-                }),
+                Effect.succeed(
+                  createTraceDetailResponse({ traceId: "error-trace" }),
+                ),
               exists: () => Effect.fail(new Error("realtime failed")),
             }),
-            Layer.succeed(ClickHouseSearch, {
-              search: () =>
-                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+            createClickHouseSearchLayer({
               getTraceDetail: () =>
                 Effect.fail(
                   new ClickHouseError({
@@ -412,19 +358,6 @@ describe("Annotations", () => {
                     cause: new Error("clickhouse failed"),
                   }),
                 ),
-              getAnalyticsSummary: () =>
-                Effect.succeed({
-                  totalSpans: 0,
-                  avgDurationMs: null,
-                  p50DurationMs: null,
-                  p95DurationMs: null,
-                  p99DurationMs: null,
-                  errorRate: 0,
-                  totalTokens: 0,
-                  totalCostUsd: 0,
-                  topModels: [],
-                  topFunctions: [],
-                }),
             }),
           ),
         ),
@@ -432,12 +365,12 @@ describe("Annotations", () => {
     );
 
     it.effect(
-      "creates annotation when realtime and ClickHouse services missing",
+      "creates annotation when realtime misses and ClickHouse has span",
       () =>
         Effect.gen(function* () {
           const db = yield* Database;
 
-          const annotation =
+          const result =
             yield* db.organizations.projects.environments.traces.annotations.create(
               {
                 userId: "00000000-0000-0000-0000-000000000000",
@@ -445,209 +378,14 @@ describe("Annotations", () => {
                 projectId: "00000000-0000-0000-0000-000000000002",
                 environmentId: "00000000-0000-0000-0000-000000000001",
                 data: {
-                  otelSpanId: "missing-services-span",
-                  otelTraceId: "missing-services-trace",
+                  otelSpanId: "clickhouse-span",
+                  otelTraceId: "clickhouse-trace",
                   label: "pass",
                 },
               },
             );
 
-          expect(annotation.otelSpanId).toBe("missing-services-span");
-        }).pipe(
-          Effect.provide(
-            new MockDrizzleORM()
-              .select([
-                {
-                  role: "MEMBER",
-                  organizationId: "00000000-0000-0000-0000-000000000003",
-                  memberId: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                },
-              ])
-              .select([
-                {
-                  role: "MEMBER",
-                  organizationId: "00000000-0000-0000-0000-000000000003",
-                  memberId: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                },
-              ])
-              .select([
-                {
-                  role: "ADMIN",
-                  projectId: "00000000-0000-0000-0000-000000000002",
-                  memberId: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                },
-              ])
-              .select([])
-              .insert([
-                {
-                  id: "annotation-id",
-                  otelSpanId: "missing-services-span",
-                  otelTraceId: "missing-services-trace",
-                  label: "pass",
-                  reasoning: null,
-                  metadata: null,
-                  environmentId: "00000000-0000-0000-0000-000000000001",
-                  projectId: "00000000-0000-0000-0000-000000000002",
-                  organizationId: "00000000-0000-0000-0000-000000000003",
-                  createdBy: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                },
-              ])
-              .build(),
-          ),
-        ),
-    );
-
-    vitestIt(
-      "returns NotFoundError when both services are missing",
-      async () => {
-        const effect = Effect.gen(function* () {
-          const db = yield* Database;
-
-          return yield* db.organizations.projects.environments.traces.annotations.create(
-            {
-              userId: "00000000-0000-0000-0000-000000000000",
-              organizationId: "00000000-0000-0000-0000-000000000003",
-              projectId: "00000000-0000-0000-0000-000000000002",
-              environmentId: "00000000-0000-0000-0000-000000000001",
-              data: {
-                otelSpanId: "no-services-span",
-                otelTraceId: "no-services-trace",
-                label: "pass",
-              },
-            },
-          );
-        }).pipe(
-          Effect.provide(
-            new MockDrizzleORM()
-              .select([
-                {
-                  role: "MEMBER",
-                  organizationId: "00000000-0000-0000-0000-000000000003",
-                  memberId: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                },
-              ])
-              .select([
-                {
-                  role: "MEMBER",
-                  organizationId: "00000000-0000-0000-0000-000000000003",
-                  memberId: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                },
-              ])
-              .select([
-                {
-                  role: "ADMIN",
-                  projectId: "00000000-0000-0000-0000-000000000002",
-                  memberId: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                },
-              ])
-              .build(),
-          ),
-          Effect.flip,
-        );
-
-        const result = await Effect.runPromise(effect);
-        expect(result).toBeInstanceOf(NotFoundError);
-      },
-    );
-
-    vitestIt(
-      "returns NotFoundError when realtime exists false and ClickHouse missing",
-      async () => {
-        const effect = Effect.gen(function* () {
-          const db = yield* Database;
-
-          return yield* db.organizations.projects.environments.traces.annotations.create(
-            {
-              userId: "00000000-0000-0000-0000-000000000000",
-              organizationId: "00000000-0000-0000-0000-000000000003",
-              projectId: "00000000-0000-0000-0000-000000000002",
-              environmentId: "00000000-0000-0000-0000-000000000001",
-              data: {
-                otelSpanId: "no-clickhouse-span",
-                otelTraceId: "no-clickhouse-trace",
-                label: "pass",
-              },
-            },
-          );
-        }).pipe(
-          Effect.provide(
-            Layer.mergeAll(
-              new MockDrizzleORM()
-                .select([
-                  {
-                    role: "MEMBER",
-                    organizationId: "00000000-0000-0000-0000-000000000003",
-                    memberId: "00000000-0000-0000-0000-000000000000",
-                    createdAt: new Date(),
-                  },
-                ])
-                .select([
-                  {
-                    role: "MEMBER",
-                    organizationId: "00000000-0000-0000-0000-000000000003",
-                    memberId: "00000000-0000-0000-0000-000000000000",
-                    createdAt: new Date(),
-                  },
-                ])
-                .select([
-                  {
-                    role: "ADMIN",
-                    projectId: "00000000-0000-0000-0000-000000000002",
-                    memberId: "00000000-0000-0000-0000-000000000000",
-                    createdAt: new Date(),
-                  },
-                ])
-                .build(),
-              Layer.succeed(RealtimeSpans, {
-                upsert: () => Effect.void,
-                search: () =>
-                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
-                getTraceDetail: () =>
-                  Effect.succeed({
-                    traceId: "no-clickhouse-trace",
-                    spans: [],
-                    rootSpanId: null,
-                    totalDurationMs: null,
-                  }),
-                exists: () => Effect.succeed(false),
-              }),
-            ),
-          ),
-          Effect.flip,
-        );
-
-        const result = await Effect.runPromise(effect);
-        expect(result).toBeInstanceOf(NotFoundError);
-      },
-    );
-
-    vitestIt(
-      "creates annotation when realtime missing and ClickHouse has span",
-      async () => {
-        const effect = Effect.gen(function* () {
-          const db = yield* Database;
-
-          return yield* db.organizations.projects.environments.traces.annotations.create(
-            {
-              userId: "00000000-0000-0000-0000-000000000000",
-              organizationId: "00000000-0000-0000-0000-000000000003",
-              projectId: "00000000-0000-0000-0000-000000000002",
-              environmentId: "00000000-0000-0000-0000-000000000001",
-              data: {
-                otelSpanId: "clickhouse-span",
-                otelTraceId: "clickhouse-trace",
-                label: "pass",
-              },
-            },
-          );
+          expect(result.otelSpanId).toBe("clickhouse-span");
         }).pipe(
           Effect.provide(
             Layer.mergeAll(
@@ -694,70 +432,31 @@ describe("Annotations", () => {
                   },
                 ])
                 .build(),
-              Layer.succeed(ClickHouseSearch, {
-                search: () =>
-                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              createRealtimeSpansLayer({
+                exists: () => Effect.succeed(false),
+              }),
+              createClickHouseSearchLayer({
                 getTraceDetail: () =>
-                  Effect.succeed({
-                    traceId: "clickhouse-trace",
-                    spans: [
-                      {
-                        traceId: "clickhouse-trace",
-                        spanId: "clickhouse-span",
-                        parentSpanId: null,
-                        environmentId: "00000000-0000-0000-0000-000000000001",
-                        projectId: "00000000-0000-0000-0000-000000000002",
-                        organizationId: "00000000-0000-0000-0000-000000000003",
-                        name: "trace-span",
-                        startTime: new Date().toISOString(),
-                        endTime: new Date().toISOString(),
-                        durationMs: 1,
-                        kind: 1,
-                        statusCode: null,
-                        statusMessage: null,
-                        model: null,
-                        provider: null,
-                        inputTokens: null,
-                        outputTokens: null,
-                        totalTokens: null,
-                        costUsd: null,
-                        functionId: null,
-                        functionName: null,
-                        functionVersion: null,
-                        errorType: null,
-                        errorMessage: null,
-                        attributes: "{}",
-                        events: null,
-                        links: null,
-                        serviceName: null,
-                        serviceVersion: null,
-                        resourceAttributes: null,
-                      },
-                    ],
-                    rootSpanId: null,
-                    totalDurationMs: null,
-                  }),
-                getAnalyticsSummary: () =>
-                  Effect.succeed({
-                    totalSpans: 0,
-                    avgDurationMs: null,
-                    p50DurationMs: null,
-                    p95DurationMs: null,
-                    p99DurationMs: null,
-                    errorRate: 0,
-                    totalTokens: 0,
-                    totalCostUsd: 0,
-                    topModels: [],
-                    topFunctions: [],
-                  }),
+                  Effect.succeed(
+                    createTraceDetailResponse({
+                      traceId: "clickhouse-trace",
+                      spans: [
+                        createTraceDetailSpan({
+                          traceId: "clickhouse-trace",
+                          spanId: "clickhouse-span",
+                          environmentId: "00000000-0000-0000-0000-000000000001",
+                          projectId: "00000000-0000-0000-0000-000000000002",
+                          organizationId:
+                            "00000000-0000-0000-0000-000000000003",
+                          name: "trace-span",
+                        }),
+                      ],
+                    }),
+                  ),
               }),
             ),
           ),
-        );
-
-        const result = await Effect.runPromise(effect);
-        expect(result.otelSpanId).toBe("clickhouse-span");
-      },
+        ),
     );
 
     it.effect("returns PermissionDeniedError when user lacks permission", () =>

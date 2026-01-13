@@ -284,6 +284,12 @@ const createWebClickHouseClient = (settings: Settings): WebClickHouseClient => {
     request_timeout: 30000,
 
     max_open_connections: 10,
+
+    // Return Int64/UInt64 as numbers instead of strings in JSON responses.
+    // Safe for token counts which fit within JS Number.MAX_SAFE_INTEGER.
+    clickhouse_settings: {
+      output_format_json_quote_64bit_integers: 0,
+    },
   });
 };
 

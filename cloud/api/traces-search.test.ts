@@ -15,9 +15,13 @@ import type {
 } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
 import {
+  createAnalyticsSummaryResponse,
+  createSearchSpanResult,
+  createSearchTimeWindow,
+  createTraceDetailResponse,
+  createTraceDetailSpan,
   buildSearchSpan,
   buildTraceDetailSpan,
-  createSearchTimeWindow,
 } from "@/tests/clickhouse/fixtures";
 import { Authentication } from "@/auth";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
@@ -244,58 +248,34 @@ describe.sequential("Search API", (it) => {
         apiKeyInfo,
       });
 
+      const clickHouseSpans = [
+        createSearchSpanResult({
+          traceId: "trace-1",
+          spanId: "span-1",
+          name: "alpha",
+          startTime: new Date(Date.now() - 1000).toISOString(),
+          durationMs: 100,
+        }),
+        createSearchSpanResult({
+          traceId: "trace-1",
+          spanId: "span-2",
+          name: "beta",
+          startTime: new Date(Date.now() - 2000).toISOString(),
+          durationMs: 200,
+        }),
+      ];
+
       const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
         search: () =>
           Effect.succeed({
-            spans: [
-              {
-                traceId: "trace-1",
-                spanId: "span-1",
-                name: "alpha",
-                startTime: new Date(Date.now() - 1000).toISOString(),
-                durationMs: 100,
-                model: null,
-                provider: null,
-                totalTokens: null,
-                functionId: null,
-                functionName: null,
-              },
-              {
-                traceId: "trace-1",
-                spanId: "span-2",
-                name: "beta",
-                startTime: new Date(Date.now() - 2000).toISOString(),
-                durationMs: 200,
-                model: null,
-                provider: null,
-                totalTokens: null,
-                functionId: null,
-                functionName: null,
-              },
-            ],
-            total: 2,
+            spans: clickHouseSpans,
+            total: clickHouseSpans.length,
             hasMore: false,
           }),
         getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-1",
-            spans: [],
-            rootSpanId: null,
-            totalDurationMs: null,
-          }),
+          Effect.succeed(createTraceDetailResponse({ traceId: "trace-1" })),
         getAnalyticsSummary: () =>
-          Effect.succeed({
-            totalSpans: 0,
-            avgDurationMs: null,
-            p50DurationMs: null,
-            p95DurationMs: null,
-            p99DurationMs: null,
-            errorRate: 0,
-            totalTokens: 0,
-            totalCostUsd: 0,
-            topModels: [],
-            topFunctions: [],
-          }),
+          Effect.succeed(createAnalyticsSummaryResponse()),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1429,106 +1409,57 @@ describe.sequential("Search API", (it) => {
         apiKeyInfo: apiKey,
       });
 
+      const clickHouseTraceDetail = createTraceDetailResponse({
+        traceId: "trace-merge",
+        spans: [
+          createTraceDetailSpan({
+            traceId: "trace-merge",
+            spanId: "span-1",
+            parentSpanId: null,
+            environmentId: apiKey.environmentId,
+            projectId: apiKey.projectId,
+            organizationId: apiKey.organizationId,
+            startTime: new Date(Date.now() - 3000).toISOString(),
+            endTime: new Date(Date.now() - 2000).toISOString(),
+            durationMs: 1000,
+            name: "root",
+          }),
+        ],
+        rootSpanId: "span-1",
+        totalDurationMs: 1000,
+      });
+
       const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
         search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
-        getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-merge",
-            spans: [
-              {
-                traceId: "trace-merge",
-                spanId: "span-1",
-                parentSpanId: null,
-                environmentId: apiKey.environmentId,
-                projectId: apiKey.projectId,
-                organizationId: apiKey.organizationId,
-                startTime: new Date(Date.now() - 3000).toISOString(),
-                endTime: new Date(Date.now() - 2000).toISOString(),
-                durationMs: 1000,
-                name: "root",
-                kind: 1,
-                statusCode: null,
-                statusMessage: null,
-                model: null,
-                provider: null,
-                inputTokens: null,
-                outputTokens: null,
-                totalTokens: null,
-                costUsd: null,
-                functionId: null,
-                functionName: null,
-                functionVersion: null,
-                errorType: null,
-                errorMessage: null,
-                attributes: "{}",
-                events: null,
-                links: null,
-                serviceName: null,
-                serviceVersion: null,
-                resourceAttributes: null,
-              },
-            ],
-            rootSpanId: "span-1",
-            totalDurationMs: 1000,
-          }),
+        getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
-          Effect.succeed({
-            totalSpans: 0,
-            avgDurationMs: null,
-            p50DurationMs: null,
-            p95DurationMs: null,
-            p99DurationMs: null,
-            errorRate: 0,
-            totalTokens: 0,
-            totalCostUsd: 0,
-            topModels: [],
-            topFunctions: [],
+          Effect.succeed(createAnalyticsSummaryResponse()),
+      });
+
+      const realtimeTraceDetail = createTraceDetailResponse({
+        traceId: "trace-merge",
+        spans: [
+          createTraceDetailSpan({
+            traceId: "trace-merge",
+            spanId: "span-2",
+            parentSpanId: "span-1",
+            environmentId: apiKey.environmentId,
+            projectId: apiKey.projectId,
+            organizationId: apiKey.organizationId,
+            startTime: new Date(Date.now() - 1500).toISOString(),
+            endTime: new Date(Date.now() - 1000).toISOString(),
+            durationMs: 500,
+            name: "child",
           }),
+        ],
+        rootSpanId: "span-1",
+        totalDurationMs: 1500,
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
         upsert: () => Effect.void,
         search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
-        getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-merge",
-            spans: [
-              {
-                traceId: "trace-merge",
-                spanId: "span-2",
-                parentSpanId: "span-1",
-                environmentId: apiKey.environmentId,
-                projectId: apiKey.projectId,
-                organizationId: apiKey.organizationId,
-                startTime: new Date(Date.now() - 1500).toISOString(),
-                endTime: new Date(Date.now() - 1000).toISOString(),
-                durationMs: 500,
-                name: "child",
-                kind: 1,
-                statusCode: null,
-                statusMessage: null,
-                model: null,
-                provider: null,
-                inputTokens: null,
-                outputTokens: null,
-                totalTokens: null,
-                costUsd: null,
-                functionId: null,
-                functionName: null,
-                functionVersion: null,
-                errorType: null,
-                errorMessage: null,
-                attributes: "{}",
-                events: null,
-                links: null,
-                serviceName: null,
-                serviceVersion: null,
-                resourceAttributes: null,
-              },
-            ],
-            rootSpanId: "span-1",
-            totalDurationMs: 1500,
-          }),
+        getTraceDetail: () => Effect.succeed(realtimeTraceDetail),
         exists: () => Effect.succeed(false),
       });
 
@@ -1609,61 +1540,31 @@ describe.sequential("Search API", (it) => {
         apiKeyInfo: apiKey,
       });
 
+      const clickHouseTraceDetail = createTraceDetailResponse({
+        traceId: "trace-fallback",
+        spans: [
+          createTraceDetailSpan({
+            traceId: "trace-fallback",
+            spanId: "span-1",
+            parentSpanId: null,
+            environmentId: apiKey.environmentId,
+            projectId: apiKey.projectId,
+            organizationId: apiKey.organizationId,
+            startTime: new Date(Date.now() - 3000).toISOString(),
+            endTime: new Date(Date.now() - 2000).toISOString(),
+            durationMs: 1000,
+            name: "root",
+          }),
+        ],
+        rootSpanId: "span-1",
+        totalDurationMs: 1000,
+      });
+
       const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
         search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
-        getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-fallback",
-            spans: [
-              {
-                traceId: "trace-fallback",
-                spanId: "span-1",
-                parentSpanId: null,
-                environmentId: apiKey.environmentId,
-                projectId: apiKey.projectId,
-                organizationId: apiKey.organizationId,
-                startTime: new Date(Date.now() - 3000).toISOString(),
-                endTime: new Date(Date.now() - 2000).toISOString(),
-                durationMs: 1000,
-                name: "root",
-                kind: 1,
-                statusCode: null,
-                statusMessage: null,
-                model: null,
-                provider: null,
-                inputTokens: null,
-                outputTokens: null,
-                totalTokens: null,
-                costUsd: null,
-                functionId: null,
-                functionName: null,
-                functionVersion: null,
-                errorType: null,
-                errorMessage: null,
-                attributes: "{}",
-                events: null,
-                links: null,
-                serviceName: null,
-                serviceVersion: null,
-                resourceAttributes: null,
-              },
-            ],
-            rootSpanId: "span-1",
-            totalDurationMs: 1000,
-          }),
+        getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
-          Effect.succeed({
-            totalSpans: 0,
-            avgDurationMs: null,
-            p50DurationMs: null,
-            p95DurationMs: null,
-            p99DurationMs: null,
-            errorRate: 0,
-            totalTokens: 0,
-            totalCostUsd: 0,
-            topModels: [],
-            topFunctions: [],
-          }),
+          Effect.succeed(createAnalyticsSummaryResponse()),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1701,138 +1602,69 @@ describe.sequential("Search API", (it) => {
         apiKeyInfo: apiKey,
       });
 
+      const clickHouseTraceDetail = createTraceDetailResponse({
+        traceId: "trace-invalid",
+        spans: [
+          createTraceDetailSpan({
+            traceId: "trace-invalid",
+            spanId: "span-1",
+            parentSpanId: "root",
+            environmentId: apiKey.environmentId,
+            projectId: apiKey.projectId,
+            organizationId: apiKey.organizationId,
+            startTime: "invalid",
+            endTime: "invalid",
+            durationMs: null,
+            name: "invalid-root",
+          }),
+        ],
+        rootSpanId: null,
+        totalDurationMs: null,
+      });
+
       const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
         search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
-        getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-invalid",
-            spans: [
-              {
-                traceId: "trace-invalid",
-                spanId: "span-1",
-                parentSpanId: "root",
-                environmentId: apiKey.environmentId,
-                projectId: apiKey.projectId,
-                organizationId: apiKey.organizationId,
-                startTime: "invalid",
-                endTime: "invalid",
-                durationMs: null,
-                name: "invalid-root",
-                kind: 1,
-                statusCode: null,
-                statusMessage: null,
-                model: null,
-                provider: null,
-                inputTokens: null,
-                outputTokens: null,
-                totalTokens: null,
-                costUsd: null,
-                functionId: null,
-                functionName: null,
-                functionVersion: null,
-                errorType: null,
-                errorMessage: null,
-                attributes: "{}",
-                events: null,
-                links: null,
-                serviceName: null,
-                serviceVersion: null,
-                resourceAttributes: null,
-              },
-            ],
-            rootSpanId: null,
-            totalDurationMs: null,
-          }),
+        getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
-          Effect.succeed({
-            totalSpans: 0,
-            avgDurationMs: null,
-            p50DurationMs: null,
-            p95DurationMs: null,
-            p99DurationMs: null,
-            errorRate: 0,
-            totalTokens: 0,
-            totalCostUsd: 0,
-            topModels: [],
-            topFunctions: [],
+          Effect.succeed(createAnalyticsSummaryResponse()),
+      });
+
+      const realtimeTraceDetail = createTraceDetailResponse({
+        traceId: "trace-invalid",
+        spans: [
+          createTraceDetailSpan({
+            traceId: "trace-invalid",
+            spanId: "span-1",
+            parentSpanId: "root",
+            environmentId: apiKey.environmentId,
+            projectId: apiKey.projectId,
+            organizationId: apiKey.organizationId,
+            startTime: "invalid",
+            endTime: "invalid",
+            durationMs: null,
+            name: "invalid-dup",
           }),
+          createTraceDetailSpan({
+            traceId: "trace-invalid",
+            spanId: "span-2",
+            parentSpanId: "root",
+            environmentId: apiKey.environmentId,
+            projectId: apiKey.projectId,
+            organizationId: apiKey.organizationId,
+            startTime: "invalid",
+            endTime: "invalid",
+            durationMs: null,
+            name: "invalid-child",
+          }),
+        ],
+        rootSpanId: null,
+        totalDurationMs: null,
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
         upsert: () => Effect.void,
         search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
-        getTraceDetail: () =>
-          Effect.succeed({
-            traceId: "trace-invalid",
-            spans: [
-              {
-                traceId: "trace-invalid",
-                spanId: "span-1",
-                parentSpanId: "root",
-                environmentId: apiKey.environmentId,
-                projectId: apiKey.projectId,
-                organizationId: apiKey.organizationId,
-                startTime: "invalid",
-                endTime: "invalid",
-                durationMs: null,
-                name: "invalid-dup",
-                kind: 1,
-                statusCode: null,
-                statusMessage: null,
-                model: null,
-                provider: null,
-                inputTokens: null,
-                outputTokens: null,
-                totalTokens: null,
-                costUsd: null,
-                functionId: null,
-                functionName: null,
-                functionVersion: null,
-                errorType: null,
-                errorMessage: null,
-                attributes: "{}",
-                events: null,
-                links: null,
-                serviceName: null,
-                serviceVersion: null,
-                resourceAttributes: null,
-              },
-              {
-                traceId: "trace-invalid",
-                spanId: "span-2",
-                parentSpanId: "root",
-                environmentId: apiKey.environmentId,
-                projectId: apiKey.projectId,
-                organizationId: apiKey.organizationId,
-                startTime: "invalid",
-                endTime: "invalid",
-                durationMs: null,
-                name: "invalid-child",
-                kind: 1,
-                statusCode: null,
-                statusMessage: null,
-                model: null,
-                provider: null,
-                inputTokens: null,
-                outputTokens: null,
-                totalTokens: null,
-                costUsd: null,
-                functionId: null,
-                functionName: null,
-                functionVersion: null,
-                errorType: null,
-                errorMessage: null,
-                attributes: "{}",
-                events: null,
-                links: null,
-                serviceName: null,
-                serviceVersion: null,
-                resourceAttributes: null,
-              },
-            ],
-            rootSpanId: null,
-            totalDurationMs: null,
-          }),
+        getTraceDetail: () => Effect.succeed(realtimeTraceDetail),
         exists: () => Effect.succeed(false),
       });
 

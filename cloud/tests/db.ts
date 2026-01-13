@@ -1,4 +1,4 @@
-import { Effect, Layer, Config, Option } from "effect";
+import { Config, Context, Effect, Layer, Option } from "effect";
 import { describe, expect } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
@@ -17,8 +17,12 @@ import {
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import {
+  MockRealtimeSpansLayer,
+  createRealtimeSpansLayer,
+} from "@/tests/workers/realtimeSpans";
 import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
 import fs from "fs";
 import assert from "node:assert";
@@ -101,13 +105,11 @@ const TestClickHouse = Effect.sync(() => {
   return ClickHouse.Default.pipe(Layer.provide(settingsLayer));
 }).pipe(Layer.unwrapEffect);
 
-/**
- * Mock RealtimeSpans layer for tests.
- * Durable Objects are external services, so we mock them.
- * Returns true for exists() to simplify annotation CRUD tests.
- */
-const MockRealtimeSpans = Layer.succeed(RealtimeSpans, {
-  upsert: () => Effect.void,
+export { createRealtimeSpansLayer, MockRealtimeSpansLayer };
+
+type ClickHouseSearchService = Context.Tag.Service<ClickHouseSearch>;
+
+const defaultClickHouseSearchService: ClickHouseSearchService = {
   search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
   getTraceDetail: () =>
     Effect.succeed({
@@ -116,15 +118,36 @@ const MockRealtimeSpans = Layer.succeed(RealtimeSpans, {
       rootSpanId: null,
       totalDurationMs: null,
     }),
-  exists: () => Effect.succeed(true),
-});
+  getAnalyticsSummary: () =>
+    Effect.succeed({
+      totalSpans: 0,
+      avgDurationMs: null,
+      p50DurationMs: null,
+      p95DurationMs: null,
+      p99DurationMs: null,
+      errorRate: 0,
+      totalTokens: 0,
+      totalCostUsd: 0,
+      topModels: [],
+      topFunctions: [],
+    }),
+};
 
 /**
- * Mock SpansMeteringQueue layer for tests (no-op).
+ * Creates a mock ClickHouseSearch layer with optional overrides.
  */
-const MockSpansMeteringQueue = Layer.succeed(SpansMeteringQueueService, {
-  send: () => Effect.void,
-});
+export const createClickHouseSearchLayer = (
+  overrides: Partial<ClickHouseSearchService> = {},
+): Layer.Layer<ClickHouseSearch> =>
+  Layer.succeed(ClickHouseSearch, {
+    ...defaultClickHouseSearchService,
+    ...overrides,
+  });
+
+/**
+ * Default mock ClickHouseSearch layer for tests.
+ */
+export const MockClickHouseSearchLayer = createClickHouseSearchLayer();
 
 /**
  * SpansIngestQueue layer that synchronously executes ingestSpansMessage.
@@ -133,17 +156,36 @@ const MockSpansMeteringQueue = Layer.succeed(SpansMeteringQueueService, {
 const TestSpansIngestQueue = Layer.succeed(SpansIngestQueue, {
   send: (message: SpansIngestMessage) =>
     ingestSpansMessage(message).pipe(
-      Effect.provide(Layer.merge(TestClickHouse, MockRealtimeSpans)),
+      Effect.provide(Layer.merge(TestClickHouse, MockRealtimeSpansLayer)),
       Effect.catchAll(() => Effect.void),
     ),
 });
 
 export const TestDatabase: Layer.Layer<
-  Database | DrizzleORM | SqlClient.SqlClient
+  | Database
+  | DrizzleORM
+  | SqlClient.SqlClient
+  | ClickHouseSearch
+  | SpansIngestQueue
+  | RealtimeSpans
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { DefaultMockPayments } = yield* Effect.promise(
     () => import("@/tests/payments"),
+  );
+
+  // ClickHouse layer from Docker container config
+  const clickhouseConfig = getTestClickHouseConfig();
+  const settingsLayer = Layer.succeed(SettingsService, {
+    env: "test",
+    CLICKHOUSE_URL: clickhouseConfig.url,
+    CLICKHOUSE_USER: clickhouseConfig.user,
+    CLICKHOUSE_PASSWORD: clickhouseConfig.password,
+    CLICKHOUSE_DATABASE: clickhouseConfig.database,
+  });
+  const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
+    Layer.provide(ClickHouse.Default),
+    Layer.provide(settingsLayer),
   );
 
   return Layer.mergeAll(
@@ -152,30 +194,8 @@ export const TestDatabase: Layer.Layer<
       Layer.provide(DefaultMockPayments),
     ),
     TestSpansIngestQueue,
-    MockRealtimeSpans,
-    MockSpansMeteringQueue,
-  );
-}).pipe(Layer.unwrapEffect);
-
-/**
- * Test database layer WITHOUT spans ingest queue or realtime services.
- *
- * Use this when testing database operations that should not depend on
- * queue or realtime services (e.g., testing queue failure scenarios).
- */
-export const TestDatabaseNoSpansIngestQueue: Layer.Layer<
-  Database | DrizzleORM | SqlClient.SqlClient
-> = Effect.gen(function* () {
-  const { DefaultMockPayments } = yield* Effect.promise(
-    () => import("@/tests/payments"),
-  );
-
-  return Layer.mergeAll(
-    Database.Default.pipe(
-      Layer.provideMerge(TestDrizzleORM),
-      Layer.provide(DefaultMockPayments),
-    ),
-    MockSpansMeteringQueue,
+    MockRealtimeSpansLayer,
+    clickHouseSearchLayer,
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -241,7 +261,8 @@ export type TestServices =
   | Database
   | DrizzleORM
   | SqlClient.SqlClient
-  | SpansMeteringQueueService;
+  | ClickHouseSearch
+  | SpansIngestQueue;
 
 /**
  * Wraps a test function to automatically provide TestDatabase
@@ -286,39 +307,12 @@ const wrapEffectTest =
  */
 const baseIt = createCustomIt<TestServices>(wrapEffectTest);
 
-const wrapEffectTestNoSpansIngestQueue =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (original: any) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (name: any, fn: any, timeout?: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-      return original(
-        name,
-        () =>
-          /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-          fn()
-            .pipe(withRollback)
-            .pipe(Effect.provide(TestDatabaseNoSpansIngestQueue)),
-        /* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-        timeout,
-      );
-    };
-
-const noSpanIngestQueueIt = createCustomIt<TestServices>(
-  wrapEffectTestNoSpansIngestQueue,
-);
-
 /**
  * Type-safe `it` with `it.effect` that automatically:
  * 1. Wraps tests in a transaction that rolls back
  * 2. Provides TestDatabase layer
- *
- * Extended with `.noSpanIngestQueue` for tests that should not depend on
- * spans ingest queue or realtime services (e.g., testing queue failure scenarios).
  */
-export const it = Object.assign(baseIt, {
-  noSpanIngestQueue: noSpanIngestQueueIt,
-});
+export const it = baseIt;
 
 // ============================================================================
 // Mock database builder
@@ -719,7 +713,7 @@ export const TestApiKeyFixture = Effect.gen(function* () {
 /**
  * Effect-native test fixture for spans.
  *
- * Returns a test span identifier within an environment for ClickHouse/DO
+ * Returns a test span identifier within an environment for ClickHouse/DurableObjects
  * integration paths.
  *
  * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.

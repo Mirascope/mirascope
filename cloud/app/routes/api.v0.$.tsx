@@ -7,15 +7,13 @@ import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
-import {
-  RealtimeSpans,
-  realtimeSpansLayer,
-} from "@/workers/realtimeSpans";
+import { RealtimeSpans, realtimeSpansLayer } from "@/workers/realtimeSpans";
 import { SettingsService, getSettings } from "@/settings";
 import {
   SpansIngestQueue,
   spansIngestQueueLayer,
 } from "@/workers/spanIngestQueue";
+import { spansMeteringQueueLayer } from "@/workers/spansMeteringQueue";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -97,9 +95,14 @@ export const Route = createFileRoute("/api/v0/$")({
               Database.Live({
                 database: { connectionString: databaseUrl },
                 payments: {
-                  apiKey: process.env.STRIPE_SECRET_KEY || "",
-                  routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
-                  routerMeterId: process.env.STRIPE_ROUTER_METER_ID || "",
+                  apiKey: process.env.STRIPE_SECRET_KEY,
+                  routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
+                  routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
+                  cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
+                  cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
+                  cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
+                  cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
+                  cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
                 },
               }),
               ClickHouseSearch.Default.pipe(
@@ -113,6 +116,7 @@ export const Route = createFileRoute("/api/v0/$")({
               ),
               spansIngestQueueLayer,
               realtimeSpansLayer,
+              spansMeteringQueueLayer,
             ),
           ),
           handleErrors,

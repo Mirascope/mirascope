@@ -7,8 +7,6 @@ import {
 } from "@/tests/db";
 import { Effect, Layer } from "effect";
 import { Database } from "@/db";
-import { enqueueSpanMetering } from "@/db/traces";
-import { DrizzleORM } from "@/db/client";
 import {
   DatabaseError,
   NotFoundError,
@@ -19,21 +17,42 @@ import {
   SpansIngestQueue,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import {
-  SpansMeteringQueueService,
-  type SpanMeteringMessage,
-} from "@/workers/spansMeteringQueue";
-import { vi, it as vitestIt } from "vitest";
+import { vi, afterAll } from "vitest";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { TestClickHouse } from "@/tests/clickhouse";
+
+const CLICKHOUSE_DATABASE =
+  process.env.CLICKHOUSE_DATABASE ?? "mirascope_analytics";
+
+const cleanupClickHouse = Effect.gen(function* () {
+  const client = yield* ClickHouse;
+  yield* client.command(
+    `TRUNCATE TABLE ${CLICKHOUSE_DATABASE}.spans_analytics`,
+  );
+});
+
+afterAll(async () => {
+  await Effect.runPromise(
+    cleanupClickHouse.pipe(Effect.provide(TestClickHouse)),
+  );
+});
 
 type QueueSend = (message: SpansIngestMessage) => Effect.Effect<void, Error>;
 
-const buildSpan = (index: number) => ({
-  traceId: "trace-1",
-  spanId: `span-${index}`,
-  name: `span-${index}`,
-  startTimeUnixNano: "1000000000",
-  endTimeUnixNano: "2000000000",
-});
+const baseTimeUnixNano = BigInt(Date.now()) * 1000000n;
+
+const buildSpan = (index: number) => {
+  const startTime = baseTimeUnixNano + BigInt(index) * 1000000n;
+  const endTime = startTime + 1000000n;
+
+  return {
+    traceId: "trace-1",
+    spanId: `span-${index}`,
+    name: `span-${index}`,
+    startTimeUnixNano: startTime.toString(),
+    endTimeUnixNano: endTime.toString(),
+  };
+};
 
 describe("Traces", () => {
   describe("create", () => {
@@ -194,181 +213,6 @@ describe("Traces", () => {
       }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
     });
 
-    it.effect("meters accepted spans when metering queue is available", () => {
-      const sentMessages: SpansIngestMessage[] = [];
-      const meteringMessages: SpanMeteringMessage[] = [];
-      const send = vi.fn<QueueSend>((message: SpansIngestMessage) => {
-        sentMessages.push(message);
-        return Effect.void;
-      });
-      const meteringSend = vi.fn((message: SpanMeteringMessage) => {
-        meteringMessages.push(message);
-        return Effect.void;
-      });
-
-      return Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-metering",
-                    spanId: "span-1",
-                    name: "test-span-1",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                  {
-                    traceId: "trace-metering",
-                    spanId: "span-2",
-                    name: "test-span-2",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                  {
-                    traceId: "trace-metering",
-                    spanId: "span-incomplete",
-                    name: "test-span-incomplete",
-                    startTimeUnixNano: "",
-                    endTimeUnixNano: "",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(2);
-        expect(result.rejectedSpans).toBe(1);
-        expect(sentMessages).toHaveLength(1);
-        expect(meteringMessages).toHaveLength(2);
-        expect(meteringMessages[0]?.stripeCustomerId).toBe(
-          org.stripeCustomerId,
-        );
-        expect(meteringMessages.map((message) => message.spanId)).toEqual([
-          "trace-metering:span-1",
-          "trace-metering:span-2",
-        ]);
-      }).pipe(
-        Effect.provide(Layer.succeed(SpansIngestQueue, { send })),
-        Effect.provide(
-          Layer.succeed(SpansMeteringQueueService, {
-            send: meteringSend,
-          }),
-        ),
-      );
-    });
-
-    it.effect("continues when metering queue send fails", () => {
-      const send = vi.fn<QueueSend>().mockReturnValue(Effect.void);
-      const meteringSend = vi
-        .fn()
-        .mockReturnValue(Effect.fail(new Error("Metering queue down")));
-
-      return Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-metering-fail",
-                    spanId: "span-fail",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(1);
-        expect(result.rejectedSpans).toBe(0);
-        expect(meteringSend).toHaveBeenCalled();
-      }).pipe(
-        Effect.provide(Layer.succeed(SpansIngestQueue, { send })),
-        Effect.provide(
-          Layer.succeed(SpansMeteringQueueService, {
-            send: meteringSend,
-          }),
-        ),
-      );
-    });
-
-    it.noSpanIngestQueue.effect(
-      "rejects spans when queue binding is missing",
-      () =>
-        Effect.gen(function* () {
-          const { environment, project, org, owner } =
-            yield* TestEnvironmentFixture;
-          const db = yield* Database;
-
-          const resourceSpans = [
-            {
-              resource: { attributes: [] },
-              scopeSpans: [
-                {
-                  scope: { name: "test" },
-                  spans: [
-                    {
-                      traceId: "trace-missing-queue",
-                      spanId: "span-missing-queue",
-                      name: "queue-missing-span",
-                      startTimeUnixNano: "1000000000",
-                      endTimeUnixNano: "2000000000",
-                    },
-                  ],
-                },
-              ],
-            },
-          ];
-
-          const result =
-            yield* db.organizations.projects.environments.traces.create({
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              data: { resourceSpans },
-            });
-
-          expect(result.acceptedSpans).toBe(0);
-          expect(result.rejectedSpans).toBe(1);
-        }),
-    );
     it.effect("rejects spans when enqueue fails", () => {
       const send = vi
         .fn()
@@ -412,200 +256,6 @@ describe("Traces", () => {
         expect(result.acceptedSpans).toBe(0);
       }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
     });
-
-    it.effect("returns DatabaseError when trace lookup fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .create({
-            userId: "user-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test" },
-                      spans: [buildSpan(0)],
-                    },
-                  ],
-                },
-              ],
-            },
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to query trace");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([{ role: "OWNER" }])
-            .select([
-              {
-                memberId: "user-id",
-                role: "OWNER",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .select(new Error("Database connection failed"))
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when trace insert fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .create({
-            userId: "user-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test" },
-                      spans: [buildSpan(1)],
-                    },
-                  ],
-                },
-              ],
-            },
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to insert trace");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([{ role: "OWNER" }])
-            .select([
-              {
-                memberId: "user-id",
-                role: "OWNER",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .select([])
-            .insert(new Error("Database connection failed"))
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect(
-      "increments rejectedSpans when trace insert returns no id",
-      () => {
-        const send = vi.fn<QueueSend>(() => Effect.void);
-
-        return Effect.gen(function* () {
-          const db = yield* Database;
-
-          const result =
-            yield* db.organizations.projects.environments.traces.create({
-              userId: "user-id",
-              organizationId: "org-id",
-              projectId: "project-id",
-              environmentId: "env-id",
-              data: {
-                resourceSpans: [
-                  {
-                    resource: { attributes: [] },
-                    scopeSpans: [
-                      {
-                        scope: { name: "test" },
-                        spans: [buildSpan(0)],
-                      },
-                    ],
-                  },
-                ],
-              },
-            });
-
-          expect(result.acceptedSpans).toBe(1);
-          expect(result.rejectedSpans).toBe(1);
-        }).pipe(
-          Effect.provide(
-            Layer.mergeAll(
-              new MockDrizzleORM()
-                .select([{ role: "OWNER" }])
-                .select([
-                  {
-                    memberId: "user-id",
-                    role: "OWNER",
-                    createdAt: new Date(),
-                  },
-                ])
-                .select([{ id: "project-id" }])
-                .select([])
-                .insert([])
-                .build(),
-              Layer.succeed(SpansIngestQueue, { send }),
-            ),
-          ),
-        );
-      },
-    );
-
-    it.effect("returns DatabaseError when span insert fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .create({
-            userId: "user-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test" },
-                      spans: [buildSpan(1)],
-                    },
-                  ],
-                },
-              ],
-            },
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to insert span");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([{ role: "OWNER" }])
-            .select([
-              {
-                memberId: "user-id",
-                role: "OWNER",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .select([{ id: "trace-db-id" }])
-            .insert(new Error("Database connection failed"))
-            .build(),
-        ),
-      ),
-    );
 
     it.effect("handles empty resourceSpans", () => {
       const send = vi.fn<QueueSend>().mockReturnValue(Effect.void);
@@ -747,85 +397,6 @@ describe("Traces", () => {
         expect(result).toBeInstanceOf(PermissionDeniedError);
       }),
     );
-  });
-
-  describe("enqueueSpanMetering", () => {
-    vitestIt("returns early when metering queue is missing", async () => {
-      await Effect.runPromise(
-        enqueueSpanMetering(
-          ["trace-id:span-id"],
-          "org-id",
-          "project-id",
-          "environment-id",
-        ).pipe(
-          Effect.provide(
-            Layer.succeed(DrizzleORM, {
-              select: () => ({
-                from: () => ({
-                  where: () => Effect.fail(new Error("Drizzle should not run")),
-                }),
-              }),
-            } as never),
-          ),
-        ),
-      );
-    });
-
-    it.effect("handles database error when fetching organization", () => {
-      let sendCalled = false;
-      const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
-        select: () => ({
-          from: () => ({
-            where: () => Effect.fail(new Error("DB error")),
-          }),
-        }),
-      } as never);
-      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-        send: () => {
-          sendCalled = true;
-          return Effect.void;
-        },
-      });
-
-      return Effect.gen(function* () {
-        yield* enqueueSpanMetering(
-          ["trace-id:span-id"],
-          "org-id",
-          "project-id",
-          "environment-id",
-        );
-
-        expect(sendCalled).toBe(false);
-      }).pipe(Effect.provide(Layer.merge(MockDrizzleLayer, MockQueueLayer)));
-    });
-
-    it.effect("handles organization not found", () => {
-      let sendCalled = false;
-      const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
-        select: () => ({
-          from: () => ({
-            where: () => Effect.succeed([]),
-          }),
-        }),
-      } as never);
-      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-        send: () => {
-          sendCalled = true;
-          return Effect.void;
-        },
-      });
-
-      return Effect.gen(function* () {
-        yield* enqueueSpanMetering(
-          ["trace-id:span-id"],
-          "org-id",
-          "project-id",
-          "environment-id",
-        );
-
-        expect(sendCalled).toBe(false);
-      }).pipe(Effect.provide(Layer.merge(MockDrizzleLayer, MockQueueLayer)));
-    });
   });
 
   describe("findAll", () => {

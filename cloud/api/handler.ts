@@ -9,6 +9,7 @@ import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
@@ -17,16 +18,18 @@ export type HandleRequestOptions = {
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
-  realtimeSpans?: Context.Tag.Service<RealtimeSpans>;
+  realtimeSpans: Context.Tag.Service<RealtimeSpans>;
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
+  spansMeteringQueue?: Context.Tag.Service<SpansMeteringQueueService>;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
-  realtimeSpans?: Context.Tag.Service<RealtimeSpans>;
+  realtimeSpans: Context.Tag.Service<RealtimeSpans>;
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
+  spansMeteringQueue?: Context.Tag.Service<SpansMeteringQueueService>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
@@ -47,14 +50,18 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(Payments, options.payments),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
     Layer.succeed(SpansIngestQueue, options.spansIngestQueue),
+    // SpansMeteringQueueService required by trace handlers
+    Layer.succeed(
+      SpansMeteringQueueService,
+      /* v8 ignore next */
+      options.spansMeteringQueue ?? { send: () => Effect.void },
+    ),
   );
 
-  const services = options.realtimeSpans
-    ? Layer.merge(
-        baseServices,
-        Layer.succeed(RealtimeSpans, options.realtimeSpans),
-      )
-    : baseServices;
+  const services = Layer.merge(
+    baseServices,
+    Layer.succeed(RealtimeSpans, options.realtimeSpans),
+  );
 
   const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
@@ -95,6 +102,7 @@ export const handleRequest = (
       clickHouseSearch: options.clickHouseSearch,
       realtimeSpans: options.realtimeSpans,
       spansIngestQueue: options.spansIngestQueue,
+      spansMeteringQueue: options.spansMeteringQueue,
     });
 
     const result = yield* Effect.tryPromise({

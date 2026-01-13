@@ -48,7 +48,7 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
-import { Traces } from "@/db/traces";
+import { Traces } from "@/db/clickhouse/traces";
 import { Functions } from "@/db/functions";
 import { Annotations } from "@/db/annotations";
 import { RouterRequests } from "@/db/router-requests";
@@ -143,13 +143,6 @@ export class Database extends Context.Tag("Database")<
     readonly organizations: OrganizationsService;
   }
 >() {
-  /**
-   * Default layer that creates the Database service.
-   *
-   * Requires both DrizzleORM and Payments to be provided. The dependency provider
-   * automatically provides these dependencies to services, removing them from
-   * method signatures.
-   */
   static Default = Layer.effect(
     Database,
     Effect.gen(function* () {

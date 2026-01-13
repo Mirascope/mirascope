@@ -54,7 +54,7 @@ export { expect };
 const DefaultQueueLayer = Layer.succeed(SpansIngestQueue, {
   send: () => Effect.void,
 });
-const DefaultRealtimeLayer = Layer.succeed(RealtimeSpans, {
+export const DefaultRealtimeLayer = Layer.succeed(RealtimeSpans, {
   upsert: () => Effect.void,
   search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
   getTraceDetail: () =>
@@ -194,7 +194,11 @@ function createTestWebHandler(
   );
 
   const queueLayer = Layer.succeed(SpansIngestQueue, {
-    send: spansIngestQueueSend ?? (() => Effect.void),
+    send: queueSend ?? (() => Effect.void),
+  });
+
+  const spansMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+    send: () => Effect.void,
   });
 
   const services = Layer.mergeAll(
@@ -203,6 +207,7 @@ function createTestWebHandler(
     Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl, queueLayer, realtimeLayer),
     clickHouseSearchLayer,
+    spansMeteringQueueLayer,
   );
 
   const ApiWithDependencies = Layer.merge(

@@ -247,6 +247,7 @@ cloud/
 │   ├── clickhouse/                # ClickHouse analytics services
 │   │   ├── client.ts              # Effect service for ClickHouse access
 │   │   ├── search.ts              # Analytics/search queries and transforms
+│   │   ├── traces.ts              # Trace ingestion service and queue orchestration
 │   │   ├── transform.ts           # Span-to-ClickHouse row transform utilities
 │   │   ├── migrate.sh             # Schema migration runner (run: bun run clickhouse:migrate)
 │   │   ├── migrations/            # SQL migration files (versioned, applied on startup)
@@ -261,8 +262,7 @@ cloud/
 │   │   ├── client.ts              # Effect service client
 │   │   └── index.ts               # Barrel exports
 │   ├── spanIngestQueue.ts         # Queue consumer for span ingestion
-│   ├── clickhouseCron.ts          # Cron trigger for outbox sync
-│   └── outboxProcessor.ts         # Shared processing logic
+│   └── [other files]              # routerMeteringQueue.ts, reservationExpiryCron.ts, etc.
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
 │   ├── db.ts                      # Database test utilities
@@ -293,27 +293,21 @@ cloud/
 **ClickHouse Analytics Flow (Cloud)**:
 
 ```text
-PostgreSQL (OLTP)
-  └── spans_outbox (insert)
-        └── Cron (Cloudflare scheduled event)
-              └── ClickHouse (analytics)
+OTLP ingest
+  └── Cloudflare Queue (spans_ingest)
+        ├── ClickHouse (analytics)
+        └── RecentSpansDO (realtime cache)
 ```
 
-**ClickHouse Outbox Processing (Detailed)**:
+**ClickHouse Queue Processing (Detailed)**:
 
 ```text
-1) spans_outbox row is created when a span is inserted (db/traces.ts)
-2) Worker picks up the outbox row:
-   - Production: Cloudflare scheduled event -> clickhouseCron.ts
-   - Local dev: run cron via `bun run cron:dev` + `bun run cron:trigger`
-3) processOutboxMessages (outboxProcessor.ts):
-   - lock row (status=processing, lockedAt/lockedBy)
-   - load span + trace from Postgres
+1) traces.create enqueues OTLP spans (cloud/db/clickhouse/traces.ts)
+2) spanIngestQueue consumes messages:
    - transform to ClickHouse row
    - bulk insert into ClickHouse
-4) Success -> mark completed + processedAt
-5) Failure -> increment retryCount + backoff via processAfter
-6) Cron (clickhouseCron.ts) reprocesses pending/stale rows
+   - upsert into RecentSpansDO
+3) Failures trigger queue retry + DLQ
 ```
 
 **Tooling Choices**:

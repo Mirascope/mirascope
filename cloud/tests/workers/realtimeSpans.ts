@@ -6,6 +6,8 @@
  */
 
 import type { DurableObjectState } from "@cloudflare/workers-types";
+import { Context, Effect, Layer } from "effect";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 
 // =============================================================================
 // Test Constants
@@ -346,3 +348,38 @@ export const createExistsRequest = (input: {
     }),
     headers: { "content-type": "application/json" },
   });
+
+// =============================================================================
+// RealtimeSpans Test Layer
+// =============================================================================
+
+type RealtimeSpansService = Context.Tag.Service<RealtimeSpans>;
+
+const defaultRealtimeSpansService: RealtimeSpansService = {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  exists: () => Effect.succeed(true),
+};
+
+/**
+ * Creates a mock RealtimeSpans layer with optional overrides.
+ */
+export const createRealtimeSpansLayer = (
+  overrides: Partial<RealtimeSpansService> = {},
+): Layer.Layer<RealtimeSpans> =>
+  Layer.succeed(RealtimeSpans, {
+    ...defaultRealtimeSpansService,
+    ...overrides,
+  });
+
+/**
+ * Default mock RealtimeSpans layer for tests.
+ */
+export const MockRealtimeSpansLayer = createRealtimeSpansLayer();

@@ -5689,6 +5689,10 @@
                         "type": "object",
                         "required": [
                           "id",
+                          "spanId",
+                          "traceId",
+                          "otelSpanId",
+                          "otelTraceId",
                           "label",
                           "reasoning",
                           "metadata",
@@ -5701,6 +5705,18 @@
                         ],
                         "properties": {
                           "id": {
+                            "type": "string"
+                          },
+                          "spanId": {
+                            "type": "string"
+                          },
+                          "traceId": {
+                            "type": "string"
+                          },
+                          "otelSpanId": {
+                            "type": "string"
+                          },
+                          "otelTraceId": {
                             "type": "string"
                           },
                           "label": {
@@ -5863,6 +5879,10 @@
                   "type": "object",
                   "required": [
                     "id",
+                    "spanId",
+                    "traceId",
+                    "otelSpanId",
+                    "otelTraceId",
                     "label",
                     "reasoning",
                     "metadata",
@@ -5875,6 +5895,18 @@
                   ],
                   "properties": {
                     "id": {
+                      "type": "string"
+                    },
+                    "spanId": {
+                      "type": "string"
+                    },
+                    "traceId": {
+                      "type": "string"
+                    },
+                    "otelSpanId": {
+                      "type": "string"
+                    },
+                    "otelTraceId": {
                       "type": "string"
                     },
                     "label": {
@@ -6114,6 +6146,10 @@
                   "type": "object",
                   "required": [
                     "id",
+                    "spanId",
+                    "traceId",
+                    "otelSpanId",
+                    "otelTraceId",
                     "label",
                     "reasoning",
                     "metadata",
@@ -6126,6 +6162,18 @@
                   ],
                   "properties": {
                     "id": {
+                      "type": "string"
+                    },
+                    "spanId": {
+                      "type": "string"
+                    },
+                    "traceId": {
+                      "type": "string"
+                    },
+                    "otelSpanId": {
+                      "type": "string"
+                    },
+                    "otelTraceId": {
                       "type": "string"
                     },
                     "label": {
@@ -6290,6 +6338,10 @@
                   "type": "object",
                   "required": [
                     "id",
+                    "spanId",
+                    "traceId",
+                    "otelSpanId",
+                    "otelTraceId",
                     "label",
                     "reasoning",
                     "metadata",
@@ -6302,6 +6354,18 @@
                   ],
                   "properties": {
                     "id": {
+                      "type": "string"
+                    },
+                    "spanId": {
+                      "type": "string"
+                    },
+                    "traceId": {
+                      "type": "string"
+                    },
+                    "otelSpanId": {
+                      "type": "string"
+                    },
+                    "otelTraceId": {
                       "type": "string"
                     },
                     "label": {
