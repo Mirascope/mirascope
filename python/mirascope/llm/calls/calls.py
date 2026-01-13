@@ -1,7 +1,7 @@
 """The Call module for generating responses using LLMs."""
 
 from dataclasses import dataclass
-from typing import Generic, overload
+from typing import Generic, TypeVar, overload
 
 from ..context import Context, DepsT
 from ..formatting import FormattableT
@@ -23,6 +23,8 @@ from ..responses import (
     StreamResponse,
 )
 from ..types import P
+
+CallT = TypeVar("CallT", bound="BaseCall")
 
 
 @dataclass

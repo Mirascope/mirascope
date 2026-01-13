@@ -1,7 +1,7 @@
 """Shared base of Response and AsyncResponse."""
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from ..content import Text, Thought, ToolCall
 from ..formatting import Format, FormattableT
@@ -13,6 +13,8 @@ from .usage import Usage
 
 if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
+
+ResponseT = TypeVar("ResponseT", bound="BaseResponse[Any, Any]")
 
 
 class BaseResponse(RootResponse[ToolkitT, FormattableT]):
