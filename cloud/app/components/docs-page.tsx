@@ -1,7 +1,7 @@
 import React from "react";
 import ContentLayout from "@/app/components/content-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
-import { ProviderContextProvider } from "@/app/components/mdx/elements/model-provider-provider";
+import { ModelProviderProvider } from "@/app/components/mdx/elements/model-provider-provider";
 import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
 import MainContent from "@/app/components/blocks/docs/main-content";
 import DocsSidebar from "@/app/components/docs-sidebar";
@@ -21,7 +21,7 @@ type DocsPageProps = {
 const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
   return (
     <>
-      <ProviderContextProvider>
+      <ModelProviderProvider>
         <ContentLayout>
           <ContentLayout.LeftSidebar className="pt-1" collapsible={true}>
             <DocsSidebar />
@@ -49,7 +49,7 @@ const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
             )}
           </ContentLayout.RightSidebar>
         </ContentLayout>
-      </ProviderContextProvider>
+      </ModelProviderProvider>
     </>
   );
 };

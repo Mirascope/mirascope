@@ -231,7 +231,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
       /> */}
       <div className="bg-background/60 mb-2 w-full max-w-3xl rounded-md">
         {/* todo(seb): Add provider tabbed section */}
-        {/* <ProviderTabbedSection
+        {/* <ModelProviderTabbedSection
           customHeader={
             <div className="flex items-center px-1 pb-2">
               <MirascopeLogo size="micro" withText={true} />
@@ -239,7 +239,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
           }
         >
           <ProviderCodeWrapper className="textured-bg" code={codeExample} language="python" />
-        </ProviderTabbedSection> */}
+        </ModelProviderTabbedSection> */}
       </div>
 
       <div className="mt-2 flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">

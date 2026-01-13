@@ -11,10 +11,10 @@ import {
 } from "@/app/components/mdx/elements/model-provider-provider";
 
 /**
- * A tabbed section component that creates tabs for each provider
+ * A tabbed section component that creates tabs for each model provider
  * and integrates with the provider context for selection state
  */
-export default function ProviderTabbedSection({
+export default function ModelProviderTabbedSection({
   children,
   className = "",
   showLogo = false,
