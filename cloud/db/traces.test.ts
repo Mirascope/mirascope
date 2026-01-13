@@ -695,8 +695,8 @@ describe("Traces", () => {
           data: { resourceSpans },
         });
 
-        const trace =
-          yield* db.organizations.projects.environments.traces.findById({
+        const trace = yield* db.organizations.projects.environments.traces
+          .findById({
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
