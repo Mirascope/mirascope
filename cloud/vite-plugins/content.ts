@@ -591,19 +591,16 @@ function debounce<T extends (...args: unknown[]) => Promise<void>>(
   ms: number,
 ): (...args: Parameters<T>) => Promise<void> {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  let pendingPromise: Promise<void> | null = null;
-  let resolvePending: (() => void) | null = null;
   let isProcessing = false;
-  const queue: Array<{
-    args: Parameters<T>;
-    resolve: () => void;
-  }> = [];
+  let queuedExecution: { args: Parameters<T>; resolve: () => void } | null =
+    null;
 
   const execute = async (args: Parameters<T>): Promise<void> => {
     if (isProcessing) {
-      // If already processing, queue this run for after completion
+      // Return a promise that will resolve when this queued work actually completes
       return new Promise<void>((resolve) => {
-        queue.push({ args, resolve });
+        // If there's already a queued execution, replace args (debounce behavior)
+        queuedExecution = { args, resolve };
       });
     }
 
@@ -612,20 +609,14 @@ function debounce<T extends (...args: unknown[]) => Promise<void>>(
       await fn(...args);
     } finally {
       isProcessing = false;
-
-      // Resolve the current pending promise
-      resolvePending?.();
-      pendingPromise = null;
-      resolvePending = null;
       timeoutId = null;
 
-      // Process queued runs sequentially
-      if (queue.length > 0) {
-        const next = queue.shift()!;
-        // Execute the queued run and resolve its promise
-        void execute(next.args).then(() => {
-          next.resolve();
-        });
+      // Process queued execution
+      if (queuedExecution) {
+        const { args: queuedArgs, resolve } = queuedExecution;
+        queuedExecution = null;
+        await fn(...queuedArgs);
+        resolve();
       }
     }
   };
@@ -633,16 +624,12 @@ function debounce<T extends (...args: unknown[]) => Promise<void>>(
   return (...args: Parameters<T>): Promise<void> => {
     if (timeoutId) clearTimeout(timeoutId);
 
-    if (!pendingPromise) {
-      pendingPromise = new Promise<void>((resolve) => {
-        resolvePending = resolve;
-      });
-    }
+    const promise = new Promise<void>((resolve) => {
+      timeoutId = setTimeout(() => {
+        void execute(args).then(resolve);
+      }, ms);
+    });
 
-    timeoutId = setTimeout(() => {
-      void execute(args);
-    }, ms);
-
-    return pendingPromise;
+    return promise;
   };
 }
