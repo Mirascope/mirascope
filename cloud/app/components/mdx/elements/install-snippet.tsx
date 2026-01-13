@@ -1,6 +1,6 @@
 import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
 import type { Provider } from "@/app/components/mdx/elements/model-provider-provider";
-// import { AnalyticsCodeBlock } from "@/app/components/blocks/mdx/AnalyticsCodeBlock";
+import { AnalyticsCodeBlock } from "@/app/components/mdx/elements/analytics-code-block";
 import { cn } from "@/app/lib/utils";
 import { TabbedSection, Tab } from "./tabbed-section";
 
@@ -44,8 +44,6 @@ export function InstallSnippet({ className = "" }: InstallSnippetProps) {
   const { provider } = useProvider();
 
   // Generate install commands for each OS
-  // @ts-expect-error until todo(sebastian): add back code elements
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const generateCommand = (os: OS) => {
     const setEnvCmd = os === "MacOS / Linux" ? "export" : "set";
     const apiKeyVar = providerApiKeys[provider];
@@ -63,8 +61,7 @@ export function InstallSnippet({ className = "" }: InstallSnippetProps) {
     <TabbedSection className={cn(className)}>
       {operatingSystems.map((os) => (
         <Tab key={os} value={os}>
-          {/* <AnalyticsCodeBlock code={generateCommand(os)} language="bash" /> */}
-          AnalyticsCodeBlock
+          <AnalyticsCodeBlock code={generateCommand(os)} language="bash" />
         </Tab>
       ))}
     </TabbedSection>

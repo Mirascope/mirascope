@@ -30,7 +30,11 @@ function createSidebarConfig(): SidebarConfig {
 
   allDocInfo.forEach((doc) => {
     // Extract the slug pattern from the path
-    const keyPath = doc.path;
+    // Strip "docs/" prefix to match the lookup format
+    const prefix = "docs/";
+    const keyPath = doc.path.startsWith(prefix)
+      ? doc.path.slice(prefix.length)
+      : doc.path;
     slugToRoutePathMap.set(keyPath, doc.routePath);
   });
 

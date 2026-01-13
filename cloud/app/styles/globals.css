@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 
 @import "./content.css";
+@import "./code-highlighting.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -29,21 +30,36 @@
   --mirple-accent: color-mix(in srgb, var(--mirple) 60%, transparent);
   --mirple-dark: rgba(84, 82, 220, 1); /* Darker purple */
 
+  --text-2xs: clamp(0.5rem, 0.45rem + 0.4vw, 0.625rem); /* ~8-10px */
+  --text-xs: clamp(0.6rem, 0.55rem + 0.5vw, 0.8rem); /* ~10-13px */
+  --text-sm: clamp(0.7rem, 0.6rem + 0.75vw, 0.875rem); /* ~11-14px */
+  --text-base: clamp(0.825rem, 0.7rem + 0.875vw, 1rem); /* ~13-16px */
+  --text-lg: clamp(0.9rem, 0.75rem + 1vw, 1.125rem); /* ~14-18px */
+  --text-xl: clamp(1rem, 0.825rem + 1.125vw, 1.25rem); /* ~16-20px */
+  --text-2xl: clamp(1.125rem, 0.9rem + 1.5vw, 1.5rem); /* ~18-24px */
+  --text-3xl: clamp(1.25rem, 0.95rem + 1.75vw, 1.75rem); /* ~20-28px */
+  --text-4xl: clamp(1.5rem, 1.125rem + 2vw, 2.25rem); /* ~24-36px */
+  --text-5xl: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem); /* ~28-44px */
+  --text-6xl: clamp(2.25rem, 1.5rem + 3.5vw, 3.5rem); /* ~36-56px */
+  --text-7xl: clamp(2.75rem, 1.75rem + 4.5vw, 4.5rem); /* ~44-72px */
+  --text-8xl: clamp(3.5rem, 2.5rem + 5vw, 5.5rem); /* ~56-88px */
+  --text-9xl: clamp(4.5rem, 3rem + 6vw, 7rem); /* ~72-112px */
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --card: rgba(99, 102, 241, 0.2);
+  --card-foreground: oklch(0.1 0.2041 282.8);
+  --popover: oklch(0.995 0 0);
+  --popover-foreground: oklch(0.1 0.2041 282.8);
   --primary: var(--mirple);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.68 0.15 180);
+  --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: var(--mirple-accent);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.65 0.15 30);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -93,10 +109,10 @@
 .dark {
   --background: oklch(0.11 0.005 285.823);
   --foreground: oklch(0.95 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --card: rgba(99, 102, 241, 0.2);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.11 0.005 285.823);
+  --popover-foreground: oklch(0.95 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.5 0.12 195);
   --secondary-foreground: oklch(0.9 0 0);
@@ -104,8 +120,8 @@
   --muted-foreground: oklch(0.75 0.015 286.067);
   --accent: var(--mirple-accent);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.5 0.17 30);
+  --destructive-foreground: oklch(0.95 0 0);
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
@@ -180,6 +196,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-code-background: var(--color-background);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -207,6 +224,23 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --font-size-code: clamp(0.6rem, 0.55rem + 0.5vw, 0.75rem);
+
+  --font-size-2xs: var(--text-2xs);
+  --font-size-xs: var(--text-xs);
+  --font-size-sm: var(--text-sm);
+  --font-size-base: var(--text-base);
+  --font-size-lg: var(--text-lg);
+  --font-size-xl: var(--text-xl);
+  --font-size-2xl: var(--text-2xl);
+  --font-size-3xl: var(--text-3xl);
+  --font-size-4xl: var(--text-4xl);
+  --font-size-5xl: var(--text-5xl);
+  --font-size-6xl: var(--text-6xl);
+  --font-size-7xl: var(--text-7xl);
+  --font-size-8xl: var(--text-8xl);
+  --font-size-9xl: var(--text-9xl);
+
   /* Font stacks - Tailwind v4 maps these directly to font-* utilities */
   --font-sans:
     "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
@@ -225,6 +259,14 @@
   body {
     /* Ported from website's body styles */
     @apply m-0 font-normal font-handwriting tracking-[0.01em] antialiased bg-background text-foreground;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+    font-size: var(--font-size-code);
   }
 
   /* Paper texture overlay for all non-home pages */
