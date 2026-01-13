@@ -1,7 +1,7 @@
 import React from "react";
 import { PageTOC } from "@/app/components/page-toc";
 import { Server } from "lucide-react";
-import { ModelProviderDropdown } from "@/app/components/blocks/model-provider-dropdown";
+import { ModelProviderDropdown } from "@/app/components/mdx/elements/model-provider-dropdown";
 import { type DocContent } from "@/app/lib/content/types";
 import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
 

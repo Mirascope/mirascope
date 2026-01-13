@@ -1,6 +1,6 @@
 import { docRegistry } from "@/app/lib/content/doc-registry";
 import type { DocSpec, SectionSpec } from "@/app/lib/content/spec";
-import { type Provider } from "@/app/components/blocks/model-provider-provider";
+import { type Provider } from "@/app/components/mdx/elements/model-provider-provider";
 import Sidebar from "@/app/components/page-sidebar";
 import type {
   SidebarConfig,

@@ -8,7 +8,7 @@ import {
   type Provider,
   providers,
   providerDefaults,
-} from "@/app/components/blocks/model-provider-provider";
+} from "@/app/components/mdx/elements/model-provider-provider";
 
 /**
  * A tabbed section component that creates tabs for each provider

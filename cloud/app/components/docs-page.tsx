@@ -1,7 +1,7 @@
 import React from "react";
 import PageLayout from "@/app/components/page-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
-import { ProviderContextProvider } from "@/app/components/blocks/model-provider-provider";
+import { ProviderContextProvider } from "@/app/components/mdx/elements/model-provider-provider";
 import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
 import MainContent from "@/app/components/blocks/docs/main-content";
 import DocsSidebar from "@/app/components/blocks/docs/sidebar";

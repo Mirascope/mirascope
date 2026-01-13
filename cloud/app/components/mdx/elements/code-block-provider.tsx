@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LoadingContent from "@/app/components/blocks/loading-content";
-import { useProvider } from "@/app/components/blocks/model-provider-provider";
+import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
 // import { AnalyticsCodeBlock } from "./AnalyticsCodeBlock";
 interface ProviderCodeBlockProps {
   examplePath: string; // Path relative to public/examples

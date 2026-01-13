@@ -10,7 +10,7 @@ import {
   useProvider,
   providers,
   providerDefaults,
-} from "@/app/components/blocks/model-provider-provider";
+} from "@/app/components/mdx/elements/model-provider-provider";
 import { cn } from "@/app/lib/utils";
 
 interface ProviderDropdownProps {
