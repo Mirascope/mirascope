@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import React from "react";
 import { cn } from "@/app/lib/utils";
 import { NAV_LINK_STYLES, DESKTOP_NAV_STYLES } from "./styles";
+import { useAuth } from "@/app/contexts/auth";
 
 // Reusable navigation link component
 interface NavLinkProps {
@@ -33,12 +34,28 @@ interface DesktopNavigationProps {
 export default function DesktopNavigation({
   isSearchOpen,
 }: DesktopNavigationProps) {
+  const { user, isLoading, logout } = useAuth();
+
   return (
     <div className={DESKTOP_NAV_STYLES.container(isSearchOpen)}>
       {/* Products Menu */}
-      <NavLink href="/docs">Docs</NavLink>
+      <NavLink href="/docs/v1">Docs</NavLink>
       <NavLink href="/blog">Blog</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
+      {!isLoading && (
+        <>
+          {user ? (
+            <button
+              onClick={() => void logout()}
+              className={cn(NAV_LINK_STYLES.base)}
+            >
+              Logout
+            </button>
+          ) : (
+            <NavLink href="/login">Login</NavLink>
+          )}
+        </>
+      )}
     </div>
   );
 }

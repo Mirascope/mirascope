@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MOBILE_NAV_STYLES, NAV_LINK_STYLES } from "./styles";
+import { useAuth } from "@/app/contexts/auth";
+import { cn } from "@/app/lib/utils";
 
 interface MobileNavigationProps {
   /**
@@ -16,7 +18,14 @@ export default function MobileNavigation({
   isOpen,
   onClose,
 }: MobileNavigationProps) {
+  const { user, isLoading, logout } = useAuth();
+
   if (!isOpen) return null;
+
+  const handleLogout = async () => {
+    await logout();
+    onClose();
+  };
 
   return (
     <div className={MOBILE_NAV_STYLES.container}>
@@ -36,6 +45,27 @@ export default function MobileNavigation({
         >
           Pricing
         </Link>
+
+        {!isLoading && (
+          <>
+            {user ? (
+              <button
+                onClick={() => void handleLogout()}
+                className={cn(NAV_LINK_STYLES.mobile)}
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className={NAV_LINK_STYLES.mobile}
+                onClick={onClose}
+              >
+                Login
+              </Link>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
