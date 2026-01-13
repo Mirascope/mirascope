@@ -4,7 +4,6 @@ import { MDXRenderer } from "@/app/components/mdx/renderer";
 import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { ContentTOC } from "@/app/components/content-toc";
-// import { PagefindMeta } from "@/app/components/pagefind-meta";
 import type { BlogContent } from "@/app/lib/content/types";
 import ContentLayout from "@/app/components/content-layout";
 import { useEffect, useState } from "react";
@@ -22,23 +21,17 @@ function BackToBlogLink() {
 }
 
 type BlogPostPageProps = {
-  post: BlogContent;
-  slug: string;
-  isLoading?: boolean;
+  content: BlogContent;
 };
 
-export function BlogPostPage({
-  post,
-  slug,
-  isLoading = false,
-}: BlogPostPageProps) {
+export function BlogPostPage({ content }: BlogPostPageProps) {
+  const slug = content.meta.slug;
+
   // todo(sebastian): disabled - did this work before?
   const [, setOgImage] = useState<string | undefined>(undefined);
 
   // Find the first available image in the blog post directory
   useEffect(() => {
-    if (isLoading) return;
-
     const findOgImage = async () => {
       try {
         const response = await fetch(`/assets/blog/${slug}/`);
@@ -60,15 +53,13 @@ export function BlogPostPage({
     };
 
     void findOgImage();
-  }, [slug, isLoading]);
+  }, [slug]);
 
   // Extract metadata for easier access
-  const { title, date, readTime, author, lastUpdated } = post.meta;
+  const { title, date, readTime, author, lastUpdated } = content.meta;
 
   // Main content
-  const mainContent = isLoading ? (
-    <LoadingContent className="min-w-0 flex-1" fullHeight={true} />
-  ) : (
+  const mainContent = (
     <div className="min-w-0 flex-1 px-4">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6">
@@ -85,41 +76,25 @@ export function BlogPostPage({
           )}
         </div>
         <div id="blog-content" className="bg-background blog-content">
-          {post.mdx ? (
+          {content.mdx ? (
             <MDXRenderer
               className="mdx-content overflow-y-auto"
-              mdx={post.mdx}
+              mdx={content.mdx}
             />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
           )}
-          {/* todo(sebastian): re-enable when PagefindMeta is implemented */}
-          {/* {post.mdx ? (
-            <PagefindMeta
-              title={post.meta.title}
-              description={post.meta.description}
-              section={"blog"}
-            >
-                <MDXRenderer mdx={post.mdx} />
-            </PagefindMeta>
-          ) : (
-            <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
-          )} */}
         </div>
       </div>
     </div>
   );
 
-  // Right sidebar content - loading state or actual content
-  const rightSidebarContent = isLoading ? (
-    <div className="h-full">
-      <div className="bg-muted mx-4 mt-16 h-6 animate-pulse rounded-md"></div>
-    </div>
-  ) : (
+  // Right sidebar content
+  const rightSidebarContent = (
     <div className="flex h-full flex-col">
       <div className="px-4 pt-4 lg:pt-0">
         <CopyMarkdownButton
-          content={post.content}
+          content={content.content}
           itemId={slug}
           contentType="blog_markdown"
         />
@@ -130,9 +105,8 @@ export function BlogPostPage({
       </div>
 
       <div className="grow overflow-y-auto pr-4 pb-6 pl-4">
-        {/* todo(sebastian): Make sure the headings have IDs in the mdx content */}
         <ContentTOC
-          headings={post.mdx?.tableOfContents || []}
+          headings={content.mdx?.tableOfContents || []}
           observeHeadings={true}
         />
       </div>
@@ -141,17 +115,6 @@ export function BlogPostPage({
 
   return (
     <>
-      {/* <PageMeta
-        title={title}
-        description={post.meta.description || post.mdx?.frontmatter?.excerpt}
-        image={ogImage}
-        type="article"
-        article={{
-          publishedTime: date,
-          modifiedTime: lastUpdated,
-          author: author,
-        }}
-      /> */}
       <ContentLayout>
         <ContentLayout.LeftSidebar className="pt-1" collapsible={false}>
           <div className="pr-10">
@@ -162,7 +125,7 @@ export function BlogPostPage({
         <ContentLayout.Content>{mainContent}</ContentLayout.Content>
 
         <ContentLayout.RightSidebar
-          className={isLoading ? undefined : "pt-1"}
+          className="pt-1"
           mobileCollapsible={true}
           mobileTitle="Table of Contents"
         >
