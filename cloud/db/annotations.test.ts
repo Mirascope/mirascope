@@ -2,7 +2,8 @@
  * Tests for the Effect-native Annotations service.
  */
 
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
+import { it as vitestIt } from "vitest";
 import {
   describe,
   it,
@@ -12,11 +13,14 @@ import {
   MockDrizzleORM,
 } from "@/tests/db";
 import { Database } from "@/db/database";
+import { ClickHouseSearch } from "@/clickhouse/search";
+import { RealtimeSpans } from "@/realtimeSpans";
 import {
   NotFoundError,
   DatabaseError,
   PermissionDeniedError,
   AlreadyExistsError,
+  ClickHouseError,
 } from "@/errors";
 
 // =============================================================================
@@ -108,7 +112,652 @@ describe("Annotations", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect((result as NotFoundError).resource).toBe("span");
-      }),
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            Layer.succeed(RealtimeSpans, {
+              upsert: () => Effect.void,
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.succeed({
+                  traceId: "nonexistenttraceid0123456789ab",
+                  spans: [],
+                  rootSpanId: null,
+                  totalDurationMs: null,
+                }),
+              exists: () => Effect.succeed(false),
+            }),
+            Layer.succeed(ClickHouseSearch, {
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.succeed({
+                  traceId: "nonexistenttraceid0123456789ab",
+                  spans: [],
+                  rootSpanId: null,
+                  totalDurationMs: null,
+                }),
+              getAnalyticsSummary: () =>
+                Effect.succeed({
+                  totalSpans: 0,
+                  avgDurationMs: null,
+                  p50DurationMs: null,
+                  p95DurationMs: null,
+                  p99DurationMs: null,
+                  errorRate: 0,
+                  totalTokens: 0,
+                  totalCostUsd: 0,
+                  topModels: [],
+                  topFunctions: [],
+                }),
+            }),
+          ),
+        ),
+      ),
+    );
+
+    it.effect(
+      "returns NotFoundError when realtime and ClickHouse miss span",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result =
+            yield* db.organizations.projects.environments.traces.annotations
+              .create({
+                userId: "00000000-0000-0000-0000-000000000000",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                environmentId: "00000000-0000-0000-0000-000000000001",
+                data: {
+                  otelSpanId: "missing-span",
+                  otelTraceId: "missing-trace",
+                  label: "pass",
+                },
+              })
+              .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                // organizationMemberships.getRole (inside authorize)
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                // organizationMemberships.findById result
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                // projectMemberships.getMembership (authorization)
+                .select([
+                  {
+                    role: "ADMIN",
+                    projectId: "00000000-0000-0000-0000-000000000002",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                // span lookup
+                .select([])
+                .build(),
+              Layer.succeed(RealtimeSpans, {
+                upsert: () => Effect.void,
+                search: () =>
+                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+                getTraceDetail: () =>
+                  Effect.succeed({
+                    traceId: "missing-trace",
+                    spans: [],
+                    rootSpanId: null,
+                    totalDurationMs: null,
+                  }),
+                exists: () => Effect.succeed(false),
+              }),
+              Layer.succeed(ClickHouseSearch, {
+                search: () =>
+                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+                getTraceDetail: () =>
+                  Effect.succeed({
+                    traceId: "missing-trace",
+                    spans: [],
+                    rootSpanId: null,
+                    totalDurationMs: null,
+                  }),
+                getAnalyticsSummary: () =>
+                  Effect.succeed({
+                    totalSpans: 0,
+                    avgDurationMs: null,
+                    p50DurationMs: null,
+                    p95DurationMs: null,
+                    p99DurationMs: null,
+                    errorRate: 0,
+                    totalTokens: 0,
+                    totalCostUsd: 0,
+                    topModels: [],
+                    topFunctions: [],
+                  }),
+              }),
+            ),
+          ),
+        ),
+    );
+
+    it.effect("creates annotation when realtime span exists", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const annotation =
+          yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "exists-span",
+                otelTraceId: "exists-trace",
+                label: "pass",
+              },
+            },
+          );
+
+        expect(annotation.otelSpanId).toBe("exists-span");
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            new MockDrizzleORM()
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "ADMIN",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([])
+              .insert([
+                {
+                  id: "annotation-id",
+                  otelSpanId: "exists-span",
+                  otelTraceId: "exists-trace",
+                  label: "pass",
+                  reasoning: null,
+                  metadata: null,
+                  environmentId: "00000000-0000-0000-0000-000000000001",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  createdBy: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              ])
+              .build(),
+            Layer.succeed(RealtimeSpans, {
+              upsert: () => Effect.void,
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.succeed({
+                  traceId: "exists-trace",
+                  spans: [],
+                  rootSpanId: null,
+                  totalDurationMs: null,
+                }),
+              exists: () => Effect.succeed(true),
+            }),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("returns NotFoundError when realtime and ClickHouse fail", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.annotations
+            .create({
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "error-span",
+                otelTraceId: "error-trace",
+                label: "pass",
+              },
+            })
+            .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            new MockDrizzleORM()
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "ADMIN",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([])
+              .build(),
+            Layer.succeed(RealtimeSpans, {
+              upsert: () => Effect.void,
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.succeed({
+                  traceId: "error-trace",
+                  spans: [],
+                  rootSpanId: null,
+                  totalDurationMs: null,
+                }),
+              exists: () => Effect.fail(new Error("realtime failed")),
+            }),
+            Layer.succeed(ClickHouseSearch, {
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.fail(
+                  new ClickHouseError({
+                    message: "clickhouse failed",
+                    cause: new Error("clickhouse failed"),
+                  }),
+                ),
+              getAnalyticsSummary: () =>
+                Effect.succeed({
+                  totalSpans: 0,
+                  avgDurationMs: null,
+                  p50DurationMs: null,
+                  p95DurationMs: null,
+                  p99DurationMs: null,
+                  errorRate: 0,
+                  totalTokens: 0,
+                  totalCostUsd: 0,
+                  topModels: [],
+                  topFunctions: [],
+                }),
+            }),
+          ),
+        ),
+      ),
+    );
+
+    it.effect(
+      "creates annotation when realtime and ClickHouse services missing",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const annotation =
+            yield* db.organizations.projects.environments.traces.annotations.create(
+              {
+                userId: "00000000-0000-0000-0000-000000000000",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                environmentId: "00000000-0000-0000-0000-000000000001",
+                data: {
+                  otelSpanId: "missing-services-span",
+                  otelTraceId: "missing-services-trace",
+                  label: "pass",
+                },
+              },
+            );
+
+          expect(annotation.otelSpanId).toBe("missing-services-span");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "ADMIN",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([])
+              .insert([
+                {
+                  id: "annotation-id",
+                  otelSpanId: "missing-services-span",
+                  otelTraceId: "missing-services-trace",
+                  label: "pass",
+                  reasoning: null,
+                  metadata: null,
+                  environmentId: "00000000-0000-0000-0000-000000000001",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  createdBy: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              ])
+              .build(),
+          ),
+        ),
+    );
+
+    vitestIt(
+      "returns NotFoundError when both services are missing",
+      async () => {
+        const effect = Effect.gen(function* () {
+          const db = yield* Database;
+
+          return yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "no-services-span",
+                otelTraceId: "no-services-trace",
+                label: "pass",
+              },
+            },
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "MEMBER",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "ADMIN",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                },
+              ])
+              .build(),
+          ),
+          Effect.flip,
+        );
+
+        const result = await Effect.runPromise(effect);
+        expect(result).toBeInstanceOf(NotFoundError);
+      },
+    );
+
+    vitestIt(
+      "returns NotFoundError when realtime exists false and ClickHouse missing",
+      async () => {
+        const effect = Effect.gen(function* () {
+          const db = yield* Database;
+
+          return yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "no-clickhouse-span",
+                otelTraceId: "no-clickhouse-trace",
+                label: "pass",
+              },
+            },
+          );
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([
+                  {
+                    role: "ADMIN",
+                    projectId: "00000000-0000-0000-0000-000000000002",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .build(),
+              Layer.succeed(RealtimeSpans, {
+                upsert: () => Effect.void,
+                search: () =>
+                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+                getTraceDetail: () =>
+                  Effect.succeed({
+                    traceId: "no-clickhouse-trace",
+                    spans: [],
+                    rootSpanId: null,
+                    totalDurationMs: null,
+                  }),
+                exists: () => Effect.succeed(false),
+              }),
+            ),
+          ),
+          Effect.flip,
+        );
+
+        const result = await Effect.runPromise(effect);
+        expect(result).toBeInstanceOf(NotFoundError);
+      },
+    );
+
+    vitestIt(
+      "creates annotation when realtime missing and ClickHouse has span",
+      async () => {
+        const effect = Effect.gen(function* () {
+          const db = yield* Database;
+
+          return yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "clickhouse-span",
+                otelTraceId: "clickhouse-trace",
+                label: "pass",
+              },
+            },
+          );
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([
+                  {
+                    role: "ADMIN",
+                    projectId: "00000000-0000-0000-0000-000000000002",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([])
+                .insert([
+                  {
+                    id: "annotation-id",
+                    otelSpanId: "clickhouse-span",
+                    otelTraceId: "clickhouse-trace",
+                    label: "pass",
+                    reasoning: null,
+                    metadata: null,
+                    environmentId: "00000000-0000-0000-0000-000000000001",
+                    projectId: "00000000-0000-0000-0000-000000000002",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    createdBy: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  },
+                ])
+                .build(),
+              Layer.succeed(ClickHouseSearch, {
+                search: () =>
+                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+                getTraceDetail: () =>
+                  Effect.succeed({
+                    traceId: "clickhouse-trace",
+                    spans: [
+                      {
+                        traceId: "clickhouse-trace",
+                        spanId: "clickhouse-span",
+                        parentSpanId: null,
+                        environmentId: "00000000-0000-0000-0000-000000000001",
+                        projectId: "00000000-0000-0000-0000-000000000002",
+                        organizationId: "00000000-0000-0000-0000-000000000003",
+                        name: "trace-span",
+                        startTime: new Date().toISOString(),
+                        endTime: new Date().toISOString(),
+                        durationMs: 1,
+                        kind: 1,
+                        statusCode: null,
+                        statusMessage: null,
+                        model: null,
+                        provider: null,
+                        inputTokens: null,
+                        outputTokens: null,
+                        totalTokens: null,
+                        costUsd: null,
+                        functionId: null,
+                        functionName: null,
+                        functionVersion: null,
+                        errorType: null,
+                        errorMessage: null,
+                        attributes: "{}",
+                        events: null,
+                        links: null,
+                        serviceName: null,
+                        serviceVersion: null,
+                        resourceAttributes: null,
+                      },
+                    ],
+                    rootSpanId: null,
+                    totalDurationMs: null,
+                  }),
+                getAnalyticsSummary: () =>
+                  Effect.succeed({
+                    totalSpans: 0,
+                    avgDurationMs: null,
+                    p50DurationMs: null,
+                    p95DurationMs: null,
+                    p99DurationMs: null,
+                    errorRate: 0,
+                    totalTokens: 0,
+                    totalCostUsd: 0,
+                    topModels: [],
+                    topFunctions: [],
+                  }),
+              }),
+            ),
+          ),
+        );
+
+        const result = await Effect.runPromise(effect);
+        expect(result.otelSpanId).toBe("clickhouse-span");
+      },
     );
 
     it.effect("returns PermissionDeniedError when user lacks permission", () =>
@@ -215,77 +864,10 @@ describe("Annotations", () => {
                 createdAt: new Date(),
               },
             ])
-            // span query (succeed)
-            .select([
-              {
-                id: "span-id",
-                traceId: "trace-id",
-                otelSpanId: "testspan",
-                otelTraceId: "testtrace",
-              },
-            ])
             // annotation insert (unique constraint violation)
             .insert(
               Object.assign(new Error("duplicate key"), { code: "23505" }),
             )
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when span query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result =
-          yield* db.organizations.projects.environments.traces.annotations
-            .create({
-              userId: "00000000-0000-0000-0000-000000000000",
-              organizationId: "00000000-0000-0000-0000-000000000003",
-              projectId: "00000000-0000-0000-0000-000000000002",
-              environmentId: "00000000-0000-0000-0000-000000000001",
-              data: {
-                otelSpanId: "testspan",
-                otelTraceId: "testtrace",
-                label: "pass",
-              },
-            })
-            .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to find span");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // span query (fail)
-            .select(new Error("Span query failed"))
             .build(),
         ),
       ),
@@ -340,15 +922,6 @@ describe("Annotations", () => {
                 projectId: "00000000-0000-0000-0000-000000000002",
                 memberId: "00000000-0000-0000-0000-000000000000",
                 createdAt: new Date(),
-              },
-            ])
-            // span query (succeed)
-            .select([
-              {
-                id: "span-id",
-                traceId: "trace-id",
-                otelSpanId: "testspan",
-                otelTraceId: "testtrace",
               },
             ])
             // annotation insert (fail)
@@ -925,35 +1498,6 @@ describe("Annotations", () => {
           },
         );
 
-        // Create another span for second annotation
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: {
-            resourceSpans: [
-              {
-                resource: { attributes: [] },
-                scopeSpans: [
-                  {
-                    scope: { name: "test" },
-                    spans: [
-                      {
-                        traceId,
-                        spanId: "abcdef0123456789",
-                        name: "test-span",
-                        startTimeUnixNano: "1700000002000000000",
-                        endTimeUnixNano: "1700000003000000000",
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        });
-
         yield* db.organizations.projects.environments.traces.annotations.create(
           {
             userId: owner.id,
@@ -1123,32 +1667,6 @@ describe("Annotations", () => {
           "span000000000003",
         ];
 
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: {
-            resourceSpans: [
-              {
-                resource: { attributes: [] },
-                scopeSpans: [
-                  {
-                    scope: { name: "test" },
-                    spans: spanIds.map((spanId) => ({
-                      traceId,
-                      spanId,
-                      name: "test-span",
-                      startTimeUnixNano: "1700000000000000000",
-                      endTimeUnixNano: "1700000001000000000",
-                    })),
-                  },
-                ],
-              },
-            ],
-          },
-        });
-
         for (const spanId of spanIds) {
           yield* db.organizations.projects.environments.traces.annotations.create(
             {
@@ -1189,32 +1707,6 @@ describe("Annotations", () => {
           "span000000000002",
           "span000000000003",
         ];
-
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: {
-            resourceSpans: [
-              {
-                resource: { attributes: [] },
-                scopeSpans: [
-                  {
-                    scope: { name: "test" },
-                    spans: spanIds.map((spanId) => ({
-                      traceId,
-                      spanId,
-                      name: "test-span",
-                      startTimeUnixNano: "1700000000000000000",
-                      endTimeUnixNano: "1700000001000000000",
-                    })),
-                  },
-                ],
-              },
-            ],
-          },
-        });
 
         for (const spanId of spanIds) {
           yield* db.organizations.projects.environments.traces.annotations.create(

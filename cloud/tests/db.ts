@@ -104,6 +104,7 @@ const TestClickHouse = Effect.sync(() => {
 /**
  * Mock RealtimeSpans layer for tests.
  * Durable Objects are external services, so we mock them.
+ * Returns true for exists() to simplify annotation CRUD tests.
  */
 const MockRealtimeSpans = Layer.succeed(RealtimeSpans, {
   upsert: () => Effect.void,
@@ -718,8 +719,8 @@ export const TestApiKeyFixture = Effect.gen(function* () {
 /**
  * Effect-native test fixture for spans.
  *
- * Creates a test span within an environment using the Effect-native
- * `Database` service.
+ * Returns a test span identifier within an environment for ClickHouse/DO
+ * integration paths.
  *
  * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.
  *
@@ -732,45 +733,9 @@ export const TestApiKeyFixture = Effect.gen(function* () {
  */
 export const TestSpanFixture = Effect.gen(function* () {
   const envFixture = yield* TestEnvironmentFixture;
-  const db = yield* Database;
 
   const traceId = "0123456789abcdef0123456789abcdef";
   const spanId = "0123456789abcdef";
-
-  yield* db.organizations.projects.environments.traces.create({
-    userId: envFixture.owner.id,
-    organizationId: envFixture.org.id,
-    projectId: envFixture.project.id,
-    environmentId: envFixture.environment.id,
-    data: {
-      resourceSpans: [
-        {
-          resource: {
-            attributes: [
-              { key: "service.name", value: { stringValue: "test-service" } },
-            ],
-          },
-          scopeSpans: [
-            {
-              scope: { name: "test" },
-              spans: [
-                {
-                  traceId,
-                  spanId,
-                  name: "test-span",
-                  kind: 1,
-                  startTimeUnixNano: "1700000000000000000",
-                  endTimeUnixNano: "1700000001000000000",
-                  attributes: [],
-                  status: {},
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  });
 
   return {
     ...envFixture,

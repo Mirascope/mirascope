@@ -4,11 +4,11 @@ import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
-import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
@@ -17,21 +17,23 @@ export type HandleRequestOptions = {
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
+  realtimeSpans?: Context.Tag.Service<RealtimeSpans>;
+  spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
-  drizzleOrm: Context.Tag.Service<DrizzleORM>;
-  spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
+  realtimeSpans?: Context.Tag.Service<RealtimeSpans>;
+  spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
-  const services = Layer.mergeAll(
+  const baseServices = Layer.mergeAll(
     Layer.succeed(SettingsService, {
       ...getSettings(),
       env: options.environment,
@@ -44,9 +46,15 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
-    Layer.succeed(DrizzleORM, options.drizzleOrm),
-    Layer.succeed(SpansMeteringQueueService, options.spansMeteringQueue),
+    Layer.succeed(SpansIngestQueue, options.spansIngestQueue),
   );
+
+  const services = options.realtimeSpans
+    ? Layer.merge(
+        baseServices,
+        Layer.succeed(RealtimeSpans, options.realtimeSpans),
+      )
+    : baseServices;
 
   const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
@@ -72,23 +80,21 @@ export const handleRequest = (
 ): Effect.Effect<
   { matched: boolean; response: Response },
   HandlerError,
-  Database | Payments | DrizzleORM | SpansMeteringQueueService
+  Database | Payments
 > =>
   Effect.gen(function* () {
     const db = yield* Database;
     const payments = yield* Payments;
-    const drizzleOrm = yield* DrizzleORM;
-    const spansMeteringQueue = yield* SpansMeteringQueueService;
 
     const webHandler = createWebHandler({
       db,
       payments,
-      drizzleOrm,
-      spansMeteringQueue,
       user: options.user,
       apiKeyInfo: options.apiKeyInfo,
       environment: options.environment,
       clickHouseSearch: options.clickHouseSearch,
+      realtimeSpans: options.realtimeSpans,
+      spansIngestQueue: options.spansIngestQueue,
     });
 
     const result = yield* Effect.tryPromise({

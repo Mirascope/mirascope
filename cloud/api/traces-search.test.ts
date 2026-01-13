@@ -1,4 +1,5 @@
 import { Effect, Layer } from "effect";
+import { it as vitestIt } from "vitest";
 import {
   describe,
   it,
@@ -224,6 +225,1761 @@ describe.sequential("Search API", (it) => {
         expect(result.spans).toBeDefined();
         expect(typeof result.total).toBe("number");
       }),
+  );
+
+  it.effect("searchHandler merges realtime spans and dedupes", () =>
+    Effect.gen(function* () {
+      const settings = getSettings();
+      const settingsLayer = Layer.succeed(SettingsService, {
+        ...settings,
+        env: "test",
+      });
+
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for merge test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-1",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 100,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+              {
+                traceId: "trace-1",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 2000).toISOString(),
+                durationMs: 200,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 2,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-1",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-1",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 2000).toISOString(),
+                durationMs: 200,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+              {
+                traceId: "trace-1",
+                spanId: "span-3",
+                name: "gamma",
+                startTime: new Date(Date.now() - 500).toISOString(),
+                durationMs: 50,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 2,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-1",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        limit: 10,
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            settingsLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.total).toBe(3);
+      expect(result.spans.map((span) => span.spanId).sort()).toEqual([
+        "span-1",
+        "span-2",
+        "span-3",
+      ]);
+    }),
+  );
+
+  it.effect(
+    "searchHandler totals include ClickHouse count plus realtime add-ons",
+    () =>
+      Effect.gen(function* () {
+        const settings = getSettings();
+        const settingsLayer = Layer.succeed(SettingsService, {
+          ...settings,
+          env: "test",
+        });
+
+        if (!apiKeyInfo || !ownerFromContext) {
+          throw new Error("Missing API key context for totals test");
+        }
+
+        const authenticationLayer = Layer.succeed(Authentication, {
+          user: ownerFromContext,
+          apiKeyInfo,
+        });
+
+        const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+          search: () =>
+            Effect.succeed({
+              spans: [
+                {
+                  traceId: "trace-total",
+                  spanId: "span-1",
+                  name: "alpha",
+                  startTime: new Date(Date.now() - 1000).toISOString(),
+                  durationMs: 100,
+                  model: null,
+                  provider: null,
+                  totalTokens: null,
+                  functionId: null,
+                  functionName: null,
+                },
+                {
+                  traceId: "trace-total",
+                  spanId: "span-2",
+                  name: "beta",
+                  startTime: new Date(Date.now() - 2000).toISOString(),
+                  durationMs: 200,
+                  model: null,
+                  provider: null,
+                  totalTokens: null,
+                  functionId: null,
+                  functionName: null,
+                },
+              ],
+              total: 10,
+              hasMore: false,
+            }),
+          getTraceDetail: () =>
+            Effect.succeed({
+              traceId: "trace-total",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          getAnalyticsSummary: () =>
+            Effect.succeed({
+              totalSpans: 0,
+              avgDurationMs: null,
+              p50DurationMs: null,
+              p95DurationMs: null,
+              p99DurationMs: null,
+              errorRate: 0,
+              totalTokens: 0,
+              totalCostUsd: 0,
+              topModels: [],
+              topFunctions: [],
+            }),
+        });
+
+        const realtimeLayer = Layer.succeed(RealtimeSpans, {
+          upsert: () => Effect.void,
+          search: () =>
+            Effect.succeed({
+              spans: [
+                {
+                  traceId: "trace-total",
+                  spanId: "span-3",
+                  name: "gamma",
+                  startTime: new Date(Date.now() - 500).toISOString(),
+                  durationMs: 50,
+                  model: null,
+                  provider: null,
+                  totalTokens: null,
+                  functionId: null,
+                  functionName: null,
+                },
+              ],
+              total: 1,
+              hasMore: false,
+            }),
+          getTraceDetail: () =>
+            Effect.succeed({
+              traceId: "trace-total",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          exists: () => Effect.succeed(true),
+        });
+
+        const result = yield* searchHandler({
+          startTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+          endTime: new Date().toISOString(),
+          limit: 2,
+          offset: 0,
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              authenticationLayer,
+              clickHouseSearchLayer,
+              settingsLayer,
+              realtimeLayer,
+            ),
+          ),
+        );
+
+        expect(result.total).toBe(11);
+        expect(result.hasMore).toBe(true);
+        expect(result.spans).toHaveLength(2);
+      }),
+  );
+
+  it.effect(
+    "searchHandler does not inflate total when ClickHouse has more pages",
+    () =>
+      Effect.gen(function* () {
+        const settings = getSettings();
+        const settingsLayer = Layer.succeed(SettingsService, {
+          ...settings,
+          env: "test",
+        });
+
+        if (!apiKeyInfo || !ownerFromContext) {
+          throw new Error("Missing API key context for totals guard test");
+        }
+
+        const authenticationLayer = Layer.succeed(Authentication, {
+          user: ownerFromContext,
+          apiKeyInfo,
+        });
+
+        const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+          search: () =>
+            Effect.succeed({
+              spans: [
+                {
+                  traceId: "trace-guard",
+                  spanId: "span-1",
+                  name: "alpha",
+                  startTime: new Date(Date.now() - 1000).toISOString(),
+                  durationMs: 100,
+                  model: null,
+                  provider: null,
+                  totalTokens: null,
+                  functionId: null,
+                  functionName: null,
+                },
+              ],
+              total: 10,
+              hasMore: true,
+            }),
+          getTraceDetail: () =>
+            Effect.succeed({
+              traceId: "trace-guard",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          getAnalyticsSummary: () =>
+            Effect.succeed({
+              totalSpans: 0,
+              avgDurationMs: null,
+              p50DurationMs: null,
+              p95DurationMs: null,
+              p99DurationMs: null,
+              errorRate: 0,
+              totalTokens: 0,
+              totalCostUsd: 0,
+              topModels: [],
+              topFunctions: [],
+            }),
+        });
+
+        const realtimeLayer = Layer.succeed(RealtimeSpans, {
+          upsert: () => Effect.void,
+          search: () =>
+            Effect.succeed({
+              spans: [
+                {
+                  traceId: "trace-guard",
+                  spanId: "span-2",
+                  name: "beta",
+                  startTime: new Date(Date.now() - 500).toISOString(),
+                  durationMs: 50,
+                  model: null,
+                  provider: null,
+                  totalTokens: null,
+                  functionId: null,
+                  functionName: null,
+                },
+              ],
+              total: 1,
+              hasMore: false,
+            }),
+          getTraceDetail: () =>
+            Effect.succeed({
+              traceId: "trace-guard",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          exists: () => Effect.succeed(true),
+        });
+
+        const result = yield* searchHandler({
+          startTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+          endTime: new Date().toISOString(),
+          limit: 1,
+          offset: 0,
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              authenticationLayer,
+              clickHouseSearchLayer,
+              settingsLayer,
+              realtimeLayer,
+            ),
+          ),
+        );
+
+        expect(result.total).toBe(10);
+        expect(result.hasMore).toBe(true);
+        expect(result.spans).toHaveLength(1);
+      }),
+  );
+
+  it.effect("searchHandler skips realtime outside TTL window", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for realtime skip test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-skip",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 60_000).toISOString(),
+                durationMs: 10,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-skip",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.fail(new Error("realtime should be skipped")),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-skip",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const now = Date.now();
+      const result = yield* searchHandler({
+        startTime: new Date(now - 60 * 60 * 1000).toISOString(),
+        endTime: new Date(now - 59 * 60 * 1000).toISOString(),
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.total).toBe(1);
+      expect(result.spans[0]?.spanId).toBe("span-1");
+    }),
+  );
+
+  it.effect("searchHandler skips realtime when offset > 0", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for offset skip test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-offset",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 10,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 10,
+            hasMore: true,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-offset",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.fail(new Error("realtime should be skipped")),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-offset",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        limit: 10,
+        offset: 10,
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.total).toBe(10);
+      expect(result.spans[0]?.spanId).toBe("span-1");
+    }),
+  );
+
+  it.effect("searchHandler falls back when realtime search fails", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for realtime failure test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-fallback",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 25,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-fallback",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.fail(new Error("realtime failed")),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-fallback",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.total).toBe(1);
+      expect(result.spans[0]?.spanId).toBe("span-1");
+    }),
+  );
+
+  it.effect("searchHandler sorts by duration with nulls", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for duration sort test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-duration",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 50,
+                model: null,
+                provider: null,
+                totalTokens: 100,
+                functionId: null,
+                functionName: null,
+              },
+              {
+                traceId: "trace-sort-duration",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 2000).toISOString(),
+                durationMs: 50,
+                model: null,
+                provider: null,
+                totalTokens: 20,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 2,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-duration",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-duration",
+                spanId: "span-3",
+                name: "gamma",
+                startTime: new Date(Date.now() - 500).toISOString(),
+                durationMs: null,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-duration",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        sortBy: "duration_ms",
+        sortOrder: "asc",
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.spans[result.spans.length - 1]?.spanId).toBe("span-3");
+      expect(result.total).toBe(3);
+    }),
+  );
+
+  it.effect("searchHandler sorts by duration desc with nulls", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for duration desc sort test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-duration-desc",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 100,
+                model: null,
+                provider: null,
+                totalTokens: 10,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-duration-desc",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-duration-desc",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 500).toISOString(),
+                durationMs: null,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-duration-desc",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        sortBy: "duration_ms",
+        sortOrder: "desc",
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.total).toBe(2);
+    }),
+  );
+
+  it.effect("searchHandler sorts by total tokens with nulls", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for token sort test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-tokens",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 10,
+                model: null,
+                provider: null,
+                totalTokens: 200,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-tokens",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-tokens",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 1500).toISOString(),
+                durationMs: 20,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+              {
+                traceId: "trace-sort-tokens",
+                spanId: "span-3",
+                name: "gamma",
+                startTime: new Date(Date.now() - 500).toISOString(),
+                durationMs: 30,
+                model: null,
+                provider: null,
+                totalTokens: 50,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 2,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-tokens",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        sortBy: "total_tokens",
+        sortOrder: "desc",
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.spans[result.spans.length - 1]?.spanId).toBe("span-2");
+      expect(result.total).toBe(3);
+    }),
+  );
+
+  it.effect("searchHandler sorts by total tokens asc with nulls", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for tokens asc sort test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-tokens-asc",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 10,
+                model: null,
+                provider: null,
+                totalTokens: 50,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-tokens-asc",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-tokens-asc",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 500).toISOString(),
+                durationMs: 20,
+                model: null,
+                provider: null,
+                totalTokens: null,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-tokens-asc",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        sortBy: "total_tokens",
+        sortOrder: "asc",
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.total).toBe(2);
+    }),
+  );
+  it.effect("searchHandler sorts invalid start times", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for start time sort test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-start",
+                spanId: "span-1",
+                name: "alpha",
+                startTime: "invalid",
+                durationMs: 10,
+                model: null,
+                provider: null,
+                totalTokens: 10,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-start",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () =>
+          Effect.succeed({
+            spans: [
+              {
+                traceId: "trace-sort-start",
+                spanId: "span-2",
+                name: "beta",
+                startTime: new Date(Date.now() - 500).toISOString(),
+                durationMs: 20,
+                model: null,
+                provider: null,
+                totalTokens: 20,
+                functionId: null,
+                functionName: null,
+              },
+            ],
+            total: 1,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-sort-start",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const resultAsc = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        sortBy: "start_time",
+        sortOrder: "asc",
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      const resultDesc = yield* searchHandler({
+        startTime: new Date(Date.now() - 5_000).toISOString(),
+        endTime: new Date().toISOString(),
+        sortBy: "start_time",
+        sortOrder: "desc",
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(resultAsc.total).toBe(2);
+      expect(resultDesc.total).toBe(2);
+    }),
+  );
+
+  it.effect("getTraceDetailHandler merges realtime spans", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for trace detail merge test");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-merge",
+            spans: [
+              {
+                traceId: "trace-merge",
+                spanId: "span-1",
+                parentSpanId: null,
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: new Date(Date.now() - 3000).toISOString(),
+                endTime: new Date(Date.now() - 2000).toISOString(),
+                durationMs: 1000,
+                name: "root",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+            ],
+            rootSpanId: "span-1",
+            totalDurationMs: 1000,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-merge",
+            spans: [
+              {
+                traceId: "trace-merge",
+                spanId: "span-2",
+                parentSpanId: "span-1",
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: new Date(Date.now() - 1500).toISOString(),
+                endTime: new Date(Date.now() - 1000).toISOString(),
+                durationMs: 500,
+                name: "child",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+            ],
+            rootSpanId: "span-1",
+            totalDurationMs: 1500,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* getTraceDetailHandler("trace-merge").pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.spans).toHaveLength(2);
+      expect(result.rootSpanId).toBe("span-1");
+    }),
+  );
+
+  vitestIt(
+    "getTraceDetailHandler returns ClickHouse when realtime missing",
+    async () => {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for realtime missing test");
+      }
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-no-realtime",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const result = await Effect.runPromise(
+        getTraceDetailHandler("trace-no-realtime").pipe(
+          Effect.provide(
+            Layer.mergeAll(authenticationLayer, clickHouseSearchLayer),
+          ),
+        ),
+      );
+
+      expect(result.traceId).toBe("trace-no-realtime");
+      expect(result.spans).toEqual([]);
+    },
+  );
+
+  it.effect("getTraceDetailHandler falls back when realtime fails", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for trace fallback test");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-fallback",
+            spans: [
+              {
+                traceId: "trace-fallback",
+                spanId: "span-1",
+                parentSpanId: null,
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: new Date(Date.now() - 3000).toISOString(),
+                endTime: new Date(Date.now() - 2000).toISOString(),
+                durationMs: 1000,
+                name: "root",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+            ],
+            rootSpanId: "span-1",
+            totalDurationMs: 1000,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () => Effect.fail(new Error("realtime failed")),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* getTraceDetailHandler("trace-fallback").pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.spans).toHaveLength(1);
+      expect(result.rootSpanId).toBe("span-1");
+    }),
+  );
+
+  it.effect("getTraceDetailHandler handles invalid dates and duplicates", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for trace stats test");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-invalid",
+            spans: [
+              {
+                traceId: "trace-invalid",
+                spanId: "span-1",
+                parentSpanId: "root",
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: "invalid",
+                endTime: "invalid",
+                durationMs: null,
+                name: "invalid-root",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+            ],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-invalid",
+            spans: [
+              {
+                traceId: "trace-invalid",
+                spanId: "span-1",
+                parentSpanId: "root",
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: "invalid",
+                endTime: "invalid",
+                durationMs: null,
+                name: "invalid-dup",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+              {
+                traceId: "trace-invalid",
+                spanId: "span-2",
+                parentSpanId: "root",
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: "invalid",
+                endTime: "invalid",
+                durationMs: null,
+                name: "invalid-child",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+            ],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* getTraceDetailHandler("trace-invalid").pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.spans).toHaveLength(2);
+      expect(result.rootSpanId).toBe(null);
+      expect(result.totalDurationMs).toBe(null);
+    }),
+  );
+
+  it.effect("getTraceDetailHandler computes duration without max update", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for duration compute test");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-duration",
+            spans: [
+              {
+                traceId: "trace-duration",
+                spanId: "span-1",
+                parentSpanId: null,
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: new Date(Date.now() - 5000).toISOString(),
+                endTime: new Date(Date.now() - 3000).toISOString(),
+                durationMs: 2000,
+                name: "root",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+              {
+                traceId: "trace-duration",
+                spanId: "span-2",
+                parentSpanId: "span-1",
+                environmentId: apiKey.environmentId,
+                projectId: apiKey.projectId,
+                organizationId: apiKey.organizationId,
+                startTime: new Date(Date.now() - 4000).toISOString(),
+                endTime: new Date(Date.now() - 3500).toISOString(),
+                durationMs: 500,
+                name: "child",
+                kind: 1,
+                statusCode: null,
+                statusMessage: null,
+                model: null,
+                provider: null,
+                inputTokens: null,
+                outputTokens: null,
+                totalTokens: null,
+                costUsd: null,
+                functionId: null,
+                functionName: null,
+                functionVersion: null,
+                errorType: null,
+                errorMessage: null,
+                attributes: "{}",
+                events: null,
+                links: null,
+                serviceName: null,
+                serviceVersion: null,
+                resourceAttributes: null,
+              },
+            ],
+            rootSpanId: "span-1",
+            totalDurationMs: 2000,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "trace-duration",
+            spans: [],
+            rootSpanId: "span-1",
+            totalDurationMs: 2000,
+          }),
+        exists: () => Effect.succeed(false),
+      });
+
+      const result = yield* getTraceDetailHandler("trace-duration").pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            authenticationLayer,
+            clickHouseSearchLayer,
+            realtimeLayer,
+          ),
+        ),
+      );
+
+      expect(result.totalDurationMs).toBeGreaterThan(0);
+      expect(result.rootSpanId).toBe("span-1");
+    }),
   );
 
   it.effect("GET /traces/:traceId - returns empty for non-existent trace", () =>

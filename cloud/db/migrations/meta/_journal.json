@@ -22,6 +22,20 @@
       "when": 1767860710000,
       "tag": "0002_pink_peter_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768240558319,
+      "tag": "0003_drop_annotation_span_trace_ids",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1768271098737,
+      "tag": "0004_drop_traces_spans_outbox",
+      "breakpoints": true
     }
   ]
 }

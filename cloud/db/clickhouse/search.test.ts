@@ -22,13 +22,24 @@ const TEST_SPAN_ID_2 = "span002";
 const CLICKHOUSE_DATABASE =
   process.env.CLICKHOUSE_DATABASE ?? "mirascope_analytics";
 
-const MIGRATION_SQL = readFileSync(
-  new URL("./migrations/00001_create_spans_analytics.up.sql", import.meta.url),
-  "utf8",
-);
+const MIGRATION_SQL = [
+  readFileSync(
+    new URL(
+      "./migrations/00001_create_spans_analytics.up.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  ),
+  readFileSync(
+    new URL("./migrations/00002_drop_span_db_ids.up.sql", import.meta.url),
+    "utf8",
+  ),
+];
 
 const renderMigrationSql = (database: string) =>
-  MIGRATION_SQL.replaceAll("{{database}}", database);
+  MIGRATION_SQL.map((sql) => sql.replaceAll("{{database}}", database)).join(
+    "\n",
+  );
 
 const splitStatements = (sql: string): string[] =>
   sql
@@ -66,8 +77,6 @@ const setupSchema = Effect.gen(function* () {
 
 const testSpans = [
   {
-    id: "11111111-1111-1111-1111-111111111111",
-    trace_db_id: "22222222-2222-2222-2222-222222222222",
     trace_id: TEST_TRACE_ID,
     span_id: TEST_SPAN_ID_1,
     parent_span_id: null,
@@ -107,8 +116,6 @@ const testSpans = [
     _version: Date.now(),
   },
   {
-    id: "33333333-3333-3333-3333-333333333333",
-    trace_db_id: "22222222-2222-2222-2222-222222222222",
     trace_id: TEST_TRACE_ID,
     span_id: TEST_SPAN_ID_2,
     parent_span_id: TEST_SPAN_ID_1,
