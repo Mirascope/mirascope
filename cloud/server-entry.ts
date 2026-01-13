@@ -51,6 +51,11 @@ export let spansIngestQueueLayer: Layer.Layer<SpansIngestQueueService> =
  * Global realtime spans layer.
  *
  * Set by the fetch handler when RECENT_SPANS_DURABLE_OBJECT binding is available.
+ *
+ * The default no-op implementation returns empty results (not errors) so that
+ * routes can function gracefully when realtime spans are not configured. Search
+ * and trace detail endpoints will simply return no realtime data, falling back
+ * to ClickHouse-only results.
  */
 export let realtimeSpansLayer: Layer.Layer<RealtimeSpans> = Layer.succeed(
   RealtimeSpans,
