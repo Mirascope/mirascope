@@ -38,7 +38,7 @@ class MirascopeProvider(BaseProvider[None]):
     (Anthropic, Google, OpenAI) with usage tracking and cost calculation.
 
     This provider:
-    - Takes model IDs in the format "provider/model-name" (e.g., "openai/gpt-4")
+    - Takes model IDs in the format "scope/model-name" (e.g., "openai/gpt-4")
     - Routes requests to the Mirascope Router endpoint
     - Delegates to the appropriate underlying provider (Anthropic, Google, or OpenAI)
     - Uses MIRASCOPE_API_KEY for authentication
@@ -122,7 +122,7 @@ class MirascopeProvider(BaseProvider[None]):
         """Get the underlying provider for a model ID.
 
         Args:
-            model_id: Model identifier in format "provider/model-name"
+            model_id: Model identifier in format "scope/model-name"
 
         Returns:
             The appropriate cached provider instance (Anthropic, Google, or OpenAI)
@@ -130,16 +130,16 @@ class MirascopeProvider(BaseProvider[None]):
         Raises:
             ValueError: If the model ID format is invalid or provider is unsupported
         """
-        provider_prefix = _utils.extract_provider_prefix(model_id)
-        if not provider_prefix:
+        model_scope = _utils.extract_model_scope(model_id)
+        if not model_scope:
             raise ValueError(
                 f"Invalid model ID format: {model_id}. "
-                f"Expected format 'provider/model-name' (e.g., 'openai/gpt-4')"
+                f"Expected format 'scope/model-name' (e.g., 'openai/gpt-4')"
             )
 
         # Use the cached function to get/create the provider
         return _utils.create_underlying_provider(
-            provider_prefix=provider_prefix,
+            model_scope=model_scope,
             api_key=self.api_key,
             router_base_url=self.router_base_url,
         )

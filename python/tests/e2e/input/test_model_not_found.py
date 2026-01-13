@@ -8,15 +8,15 @@ from tests.e2e.conftest import E2E_MODEL_IDS
 
 def get_nonexistent_model_id(model_id: llm.ModelId) -> llm.ModelId:
     """Generate a nonexistent model ID based on the provider."""
-    # Extract provider prefix and preserve any suffix like :completions or :responses
+    # Extract model scope and preserve any suffix like :completions or :responses
     if "/" in model_id:
         parts = model_id.split("/")
-        provider_prefix = parts[0]
+        model_scope = parts[0]
         # Check if there's a suffix after the model name (like :completions or :responses)
         if ":" in parts[1]:
             _, suffix = parts[1].rsplit(":", 1)
-            return f"{provider_prefix}/this-model-does-not-exist-12345:{suffix}"
-        return f"{provider_prefix}/this-model-does-not-exist-12345"
+            return f"{model_scope}/this-model-does-not-exist-12345:{suffix}"
+        return f"{model_scope}/this-model-does-not-exist-12345"
     return "nonexistent-model-12345"
 
 

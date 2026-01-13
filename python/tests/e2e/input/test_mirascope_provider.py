@@ -33,11 +33,11 @@ def test_mirascope_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         base_url="http://localhost:3000/router/v0",
     )
 
-    model_developer, model_name = model_id.split("/", 1)
+    model_scope, model_name = model_id.split("/", 1)
 
     with snapshot_test(snapshot) as snap:
         response = add_numbers(4200, 42)
-        assert response.provider_id == model_developer
+        assert response.provider_id == model_scope
         assert model_name in response.provider_model_name
         snap.set_response(response)
         assert "4242" in response.pretty(), (
@@ -61,11 +61,11 @@ def test_mirascope_provider_streaming(
         base_url="http://localhost:3000/router/v0",
     )
 
-    model_developer, model_name = model_id.split("/", 1)
+    model_scope, model_name = model_id.split("/", 1)
 
     with snapshot_test(snapshot) as snap:
         stream = add_numbers.stream(4200, 42)
-        assert stream.provider_id == model_developer
+        assert stream.provider_id == model_scope
         assert model_name in stream.provider_model_name
 
         stream.finish()
