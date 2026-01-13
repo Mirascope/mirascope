@@ -59,7 +59,6 @@
  */
 
 import { Effect, Option } from "effect";
-import { and, eq, desc, sql, inArray } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -68,6 +67,7 @@ import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
 import {
   AlreadyExistsError,
+  ClickHouseError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
@@ -77,8 +77,22 @@ import {
   SpansIngestQueueService,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
+import { ClickHouseSearch } from "@/clickhouse/search";
 import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
+
+/** Public type for trace API responses. */
+export type PublicTrace = {
+  id: string;
+  otelTraceId: string;
+  environmentId: string;
+  projectId: string;
+  organizationId: string;
+  serviceName: string | null;
+  serviceVersion: string | null;
+  resourceAttributes: Record<string, unknown> | null;
+  createdAt: Date | null;
+};
 
 export type CreateTraceResponse = {
   acceptedSpans: number;
@@ -447,7 +461,7 @@ export class Traces extends BaseAuthenticatedEffectService<
   /**
    * Retrieves traces associated with a specific function version hash.
    *
-   * Queries spans for the `mirascope.version.hash` attribute and returns
+   * Queries ClickHouse spans for the `mirascope.version.hash` attribute and returns
    * the distinct traces containing matching spans. This enables querying
    * traces by function version for regression testing and version comparison.
    *
@@ -463,7 +477,7 @@ export class Traces extends BaseAuthenticatedEffectService<
    * @returns Object with traces array and total count (before pagination)
    * @throws NotFoundError - If the environment doesn't exist or user lacks access
    * @throws PermissionDeniedError - If the user lacks read permission
-   * @throws DatabaseError - If the database query fails
+   * @throws ClickHouseError - If the ClickHouse query fails
    */
   findByFunctionHash({
     userId,
@@ -483,12 +497,10 @@ export class Traces extends BaseAuthenticatedEffectService<
     offset?: number;
   }): Effect.Effect<
     { traces: PublicTrace[]; total: number },
-    NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    NotFoundError | PermissionDeniedError | DatabaseError | ClickHouseError,
+    DrizzleORM | ClickHouseSearch
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-
       yield* this.authorize({
         userId,
         action: "read",
@@ -498,52 +510,59 @@ export class Traces extends BaseAuthenticatedEffectService<
         traceId: "",
       });
 
-      // First, find trace IDs from spans that have the matching function hash
-      const matchingSpans = yield* client
-        .selectDistinct({ traceId: spans.traceId })
-        .from(spans)
-        .where(
-          and(
-            eq(spans.environmentId, environmentId),
-            sql`${spans.attributes}->>'mirascope.version.hash' = ${functionHash}`,
-          ),
-        )
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to query spans by function hash",
-                cause: e,
-              }),
-          ),
-        );
+      const searchService = yield* ClickHouseSearch;
 
-      if (matchingSpans.length === 0) {
+      // Search ClickHouse for spans with the matching function hash
+      // Use 30-day range (max for search) - function hash queries are typically recent
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const searchResult = yield* searchService.search({
+        environmentId,
+        startTime: thirtyDaysAgo,
+        endTime: now,
+        attributeFilters: [
+          {
+            key: "mirascope.version.hash",
+            operator: "eq",
+            value: functionHash,
+          },
+        ],
+        limit: 1000, // Fetch more to get unique traces
+        sortBy: "start_time",
+        sortOrder: "desc",
+      });
+
+      if (searchResult.spans.length === 0) {
         return { traces: [], total: 0 };
       }
 
-      const traceIds = matchingSpans.map((s) => s.traceId);
-      const total = traceIds.length;
+      // Extract unique traces from spans, preserving order
+      // Note: SpanSearchResult has limited fields, so we use input context for org/project/env IDs
+      const seenTraceIds = new Set<string>();
+      const uniqueTraces: PublicTrace[] = [];
 
-      // Then fetch the full trace records with pagination
-      const traceResults = yield* client
-        .select()
-        .from(traces)
-        .where(inArray(traces.id, traceIds))
-        .orderBy(desc(traces.createdAt))
-        .limit(limit)
-        .offset(offset)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to list traces by function hash",
-                cause: e,
-              }),
-          ),
-        );
+      for (const span of searchResult.spans) {
+        if (!seenTraceIds.has(span.traceId)) {
+          seenTraceIds.add(span.traceId);
+          uniqueTraces.push({
+            id: span.traceId,
+            otelTraceId: span.traceId,
+            environmentId,
+            projectId,
+            organizationId,
+            serviceName: null,
+            serviceVersion: null,
+            resourceAttributes: null,
+            createdAt: new Date(span.startTime),
+          });
+        }
+      }
 
-      return { traces: traceResults, total };
+      const total = uniqueTraces.length;
+      const paginatedTraces = uniqueTraces.slice(offset, offset + limit);
+
+      return { traces: paginatedTraces, total };
     });
   }
 

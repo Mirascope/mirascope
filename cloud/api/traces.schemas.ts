@@ -208,5 +208,6 @@ export class TracesApi extends HttpApiGroup.make("traces")
       .addError(PermissionDeniedError, {
         status: PermissionDeniedError.status,
       })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(ClickHouseError, { status: ClickHouseError.status }),
   ) {}

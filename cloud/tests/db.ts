@@ -5,11 +5,17 @@ import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
-import { CONNECTION_FILE } from "@/tests/global-setup";
+import {
+  CONNECTION_FILE,
+  CLICKHOUSE_CONNECTION_FILE,
+} from "@/tests/global-setup";
 import { Payments } from "@/payments";
 import { DefaultMockPayments } from "@/tests/payments";
 import { SpansIngestQueueService } from "@/workers/spanIngestQueue";
 import { RealtimeSpans } from "@/realtimeSpans";
+import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouseSearch } from "@/clickhouse/search";
+import { SettingsService } from "@/settings";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -28,6 +34,24 @@ function getTestDatabaseUrl(): string {
 }
 
 export const TEST_DATABASE_URL = getTestDatabaseUrl();
+
+interface ClickHouseConfig {
+  url: string;
+  user: string;
+  password: string;
+  database: string;
+}
+
+function getClickHouseConfig(): ClickHouseConfig {
+  try {
+    const content = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
+    return JSON.parse(content) as ClickHouseConfig;
+  } catch {
+    throw new Error(
+      "ClickHouse config not found. Ensure global-setup.ts ran successfully.",
+    );
+  }
+}
 
 /**
  * PgClient layer configured for test database.
@@ -56,7 +80,7 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
  * tests that don't use `it.effect`).
  */
 export const TestDatabase: Layer.Layer<
-  Database | DrizzleORM | SqlClient.SqlClient
+  Database | DrizzleORM | SqlClient.SqlClient | ClickHouseSearch
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { DefaultMockPayments } = yield* Effect.promise(
@@ -80,6 +104,20 @@ export const TestDatabase: Layer.Layer<
     existsSpan: () => Effect.succeed(true),
   });
 
+  // ClickHouse layer from Docker container config
+  const clickhouseConfig = getClickHouseConfig();
+  const settingsLayer = Layer.succeed(SettingsService, {
+    env: "test",
+    CLICKHOUSE_URL: clickhouseConfig.url,
+    CLICKHOUSE_USER: clickhouseConfig.user,
+    CLICKHOUSE_PASSWORD: clickhouseConfig.password,
+    CLICKHOUSE_DATABASE: clickhouseConfig.database,
+  });
+  const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
+    Layer.provide(ClickHouse.Default),
+    Layer.provide(settingsLayer),
+  );
+
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provideMerge(TestDrizzleORM),
@@ -87,6 +125,7 @@ export const TestDatabase: Layer.Layer<
     ),
     queueLayer,
     realtimeLayer,
+    clickHouseSearchLayer,
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -148,7 +187,11 @@ const withRollback = <A, E, R>(
 /**
  * Services that are automatically provided to all `it.effect` tests.
  */
-export type TestServices = Database | DrizzleORM | SqlClient.SqlClient;
+export type TestServices =
+  | Database
+  | DrizzleORM
+  | SqlClient.SqlClient
+  | ClickHouseSearch;
 
 /**
  * Wraps a test function to automatically provide TestDatabase

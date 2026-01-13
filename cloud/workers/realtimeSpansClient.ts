@@ -1,7 +1,7 @@
 /**
  * @fileoverview Durable Object client for realtime span access.
  *
- * Provides an Effect-native layer that targets the RecentSpansDO
+ * Provides an Effect-native layer that targets the RecentSpansDurableObject
  * for realtime search, trace detail, and span existence checks.
  */
 
@@ -43,13 +43,15 @@ const fetchJson = <T>(
     try: async () => {
       const response = await stub.fetch(buildUrl(path), init);
       if (!response.ok) {
-        throw new Error(`RecentSpansDO request failed: ${response.status}`);
+        throw new Error(
+          `RecentSpansDurableObject request failed: ${response.status}`,
+        );
       }
       return (await response.json()) as T;
     },
     catch: (error) =>
       new Error(
-        `RecentSpansDO request failed: ${error instanceof Error ? error.message : String(error)}`,
+        `RecentSpansDurableObject request failed: ${error instanceof Error ? error.message : String(error)}`,
       ),
   });
 
@@ -62,12 +64,14 @@ const fetchNoContent = (
     try: async () => {
       const response = await stub.fetch(buildUrl(path), init);
       if (!response.ok) {
-        throw new Error(`RecentSpansDO request failed: ${response.status}`);
+        throw new Error(
+          `RecentSpansDurableObject request failed: ${response.status}`,
+        );
       }
     },
     catch: (error) =>
       new Error(
-        `RecentSpansDO request failed: ${error instanceof Error ? error.message : String(error)}`,
+        `RecentSpansDurableObject request failed: ${error instanceof Error ? error.message : String(error)}`,
       ),
   });
 

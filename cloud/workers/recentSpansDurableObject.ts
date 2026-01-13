@@ -447,7 +447,7 @@ const computeTraceStats = (
 // Durable Object
 // =============================================================================
 
-export class RecentSpansDO {
+export class RecentSpansDurableObject {
   private readonly state: DurableObjectState;
 
   constructor(state: DurableObjectState) {

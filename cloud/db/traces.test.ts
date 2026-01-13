@@ -16,11 +16,30 @@ import {
   SpansIngestQueueService,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import { vi } from "vitest";
+import { vi, afterAll } from "vitest";
 import { createCustomIt } from "@/tests/shared";
 import { DefaultMockPayments } from "@/tests/payments";
 import { DrizzleORM } from "@/db/client";
 import { SqlClient } from "@effect/sql";
+import { ClickHouse } from "@/clickhouse/client";
+import { TestClickHouse, clickHouseAvailable } from "@/tests/clickhouse";
+
+const CLICKHOUSE_DATABASE =
+  process.env.CLICKHOUSE_DATABASE ?? "mirascope_analytics";
+
+const cleanupClickHouse = Effect.gen(function* () {
+  const client = yield* ClickHouse;
+  yield* client.command(
+    `TRUNCATE TABLE ${CLICKHOUSE_DATABASE}.spans_analytics`,
+  );
+});
+
+afterAll(async () => {
+  if (!clickHouseAvailable) return;
+  await Effect.runPromise(
+    cleanupClickHouse.pipe(Effect.provide(TestClickHouse)),
+  );
+});
 
 type QueueSend = (message: SpansIngestMessage) => Effect.Effect<void, Error>;
 
@@ -513,49 +532,106 @@ describe("Traces", () => {
   });
 
   describe("findByFunctionHash", () => {
+    // Helper to build a ClickHouse span row with timestamps within 30-day search range
+    const buildClickHouseSpan = (params: {
+      traceId: string;
+      spanId: string;
+      environmentId: string;
+      projectId: string;
+      organizationId: string;
+      functionHash: string;
+      offsetMinutes?: number;
+    }) => {
+      // Use current time minus offset to ensure within 30-day search window
+      const now = new Date();
+      const startTimeDate = new Date(
+        now.getTime() - (params.offsetMinutes ?? 5) * 60 * 1000,
+      );
+      const endTimeDate = new Date(startTimeDate.getTime() + 1000);
+
+      const formatClickHouseTime = (date: Date) => {
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(date.getUTCDate()).padStart(2, "0");
+        const hours = String(date.getUTCHours()).padStart(2, "0");
+        const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+        const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+        const milliseconds = String(date.getUTCMilliseconds()).padStart(3, "0");
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}000000`;
+      };
+
+      const formatCreatedAt = (date: Date) => {
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(date.getUTCDate()).padStart(2, "0");
+        const hours = String(date.getUTCHours()).padStart(2, "0");
+        const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+        const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+        const milliseconds = String(date.getUTCMilliseconds()).padStart(3, "0");
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+      };
+
+      return {
+        trace_id: params.traceId,
+        span_id: params.spanId,
+        parent_span_id: null,
+        environment_id: params.environmentId,
+        project_id: params.projectId,
+        organization_id: params.organizationId,
+        start_time: formatClickHouseTime(startTimeDate),
+        end_time: formatClickHouseTime(endTimeDate),
+        duration_ms: 1000,
+        name: "test-span",
+        kind: 1,
+        status_code: 0,
+        status_message: null,
+        model: "gpt-4",
+        provider: "openai",
+        input_tokens: 100,
+        output_tokens: 50,
+        total_tokens: 150,
+        cost_usd: 0.01,
+        function_id: null,
+        function_name: "my_function",
+        function_version: "v1",
+        error_type: null,
+        error_message: null,
+        attributes: JSON.stringify({
+          "mirascope.version.hash": params.functionHash,
+        }),
+        events: null,
+        links: null,
+        service_name: "test-service",
+        service_version: "1.0.0",
+        resource_attributes: null,
+        created_at: formatCreatedAt(startTimeDate),
+        _version: Date.now(),
+      };
+    };
+
     it.effect("retrieves traces by function version hash", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
-        // Create a trace with spans that have function hash in attributes
-        const resourceSpans = [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "test-service" } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-func-hash-1",
-                    spanId: "span-func-hash-1",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                    attributes: [
-                      {
-                        key: "mirascope.version.hash",
-                        value: { stringValue: "abc123" },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
+        // Insert test span directly into ClickHouse
+        const testSpan = buildClickHouseSpan({
+          traceId: "trace-func-hash-1",
+          spanId: "span-func-hash-1",
           environmentId: environment.id,
-          data: { resourceSpans },
+          projectId: project.id,
+          organizationId: org.id,
+          functionHash: "abc123",
+        });
+
+        yield* Effect.promise(async () => {
+          await Effect.runPromise(
+            Effect.gen(function* () {
+              const client = yield* ClickHouse;
+              yield* client.insert("spans_analytics", [testSpan]);
+            }).pipe(Effect.provide(TestClickHouse)),
+          );
         });
 
         const result =
@@ -570,7 +646,7 @@ describe("Traces", () => {
           );
 
         expect(result.traces).toHaveLength(1);
-        expect(result.traces[0].otelTraceId).toBe("trace-func-hash-1");
+        expect(result.traces[0]?.otelTraceId).toBe("trace-func-hash-1");
         expect(result.total).toBe(1);
       }),
     );
@@ -603,42 +679,28 @@ describe("Traces", () => {
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
-        // Create multiple traces with the same function hash
-        for (let i = 1; i <= 5; i++) {
-          const resourceSpans = [
-            {
-              resource: { attributes: [] },
-              scopeSpans: [
-                {
-                  scope: { name: "test" },
-                  spans: [
-                    {
-                      traceId: `trace-paginate-${i}`,
-                      spanId: `span-paginate-${i}`,
-                      name: "test-span",
-                      startTimeUnixNano: `${1000000000 + i * 1000000}`,
-                      endTimeUnixNano: `${2000000000 + i * 1000000}`,
-                      attributes: [
-                        {
-                          key: "mirascope.version.hash",
-                          value: { stringValue: "paginate-hash" },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ];
-
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
+        // Insert 5 spans with same function hash into ClickHouse
+        // Use different offsetMinutes to ensure distinct timestamps for sorting
+        const testSpans = Array.from({ length: 5 }, (_unused, index) =>
+          buildClickHouseSpan({
+            traceId: `trace-paginate-${index + 1}`,
+            spanId: `span-paginate-${index + 1}`,
             environmentId: environment.id,
-            data: { resourceSpans },
-          });
-        }
+            projectId: project.id,
+            organizationId: org.id,
+            functionHash: "paginate-hash",
+            offsetMinutes: 10 + index, // Different times for proper ordering
+          }),
+        );
+
+        yield* Effect.promise(async () => {
+          await Effect.runPromise(
+            Effect.gen(function* () {
+              const client = yield* ClickHouse;
+              yield* client.insert("spans_analytics", testSpans);
+            }).pipe(Effect.provide(TestClickHouse)),
+          );
+        });
 
         const limitedResult =
           yield* db.organizations.projects.environments.traces.findByFunctionHash(
@@ -674,6 +736,62 @@ describe("Traces", () => {
       }),
     );
 
+    it.effect("deduplicates traces when spans have same trace ID", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        // Insert multiple spans with the SAME trace ID (different span IDs)
+        // This tests the deduplication logic in findByFunctionHash
+        const testSpans = [
+          buildClickHouseSpan({
+            traceId: "trace-duplicate-test",
+            spanId: "span-duplicate-1",
+            environmentId: environment.id,
+            projectId: project.id,
+            organizationId: org.id,
+            functionHash: "dedupe-hash",
+            offsetMinutes: 5,
+          }),
+          buildClickHouseSpan({
+            traceId: "trace-duplicate-test", // Same trace ID
+            spanId: "span-duplicate-2",
+            environmentId: environment.id,
+            projectId: project.id,
+            organizationId: org.id,
+            functionHash: "dedupe-hash",
+            offsetMinutes: 6,
+          }),
+        ];
+
+        yield* Effect.promise(async () => {
+          await Effect.runPromise(
+            Effect.gen(function* () {
+              const client = yield* ClickHouse;
+              yield* client.insert("spans_analytics", testSpans);
+            }).pipe(Effect.provide(TestClickHouse)),
+          );
+        });
+
+        const result =
+          yield* db.organizations.projects.environments.traces.findByFunctionHash(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              functionHash: "dedupe-hash",
+            },
+          );
+
+        // Should return only 1 unique trace, not 2
+        expect(result.traces).toHaveLength(1);
+        expect(result.traces[0]?.otelTraceId).toBe("trace-duplicate-test");
+        expect(result.total).toBe(1);
+      }),
+    );
+
     it.effect(
       "returns NotFoundError when non-member tries to query (hides project)",
       () =>
@@ -694,91 +812,6 @@ describe("Traces", () => {
 
           expect(result).toBeInstanceOf(NotFoundError);
         }),
-    );
-
-    it.effect("returns DatabaseError when spans query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .findByFunctionHash({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            functionHash: "test-hash",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to query spans by function hash");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .selectDistinct(new Error("Spans query failed"))
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when traces query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .findByFunctionHash({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            functionHash: "test-hash",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to list traces by function hash");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .selectDistinct([{ traceId: "trace-123" }]) // Spans query succeeds
-            .select(new Error("Traces query failed")) // Traces query fails
-            .build(),
-        ),
-      ),
     );
   });
 

@@ -1,10 +1,10 @@
 /**
- * @fileoverview Tests for RecentSpansDO realtime cache behavior.
+ * @fileoverview Tests for RecentSpansDurableObject realtime cache behavior.
  */
 
 import { describe, it, expect } from "vitest";
 import type { DurableObjectState } from "@cloudflare/workers-types";
-import { RecentSpansDO } from "@/workers/recentSpansDO";
+import { RecentSpansDurableObject } from "@/workers/recentSpansDurableObject";
 
 // =============================================================================
 // Mocks
@@ -103,10 +103,10 @@ const createPayload = (overrides?: Partial<Record<string, unknown>>) => {
 // Tests
 // =============================================================================
 
-describe("RecentSpansDO", () => {
+describe("RecentSpansDurableObject", () => {
   it("upserts spans and checks existence", async () => {
     const state = createState();
-    const durableObject = new RecentSpansDO(state);
+    const durableObject = new RecentSpansDurableObject(state);
 
     const upsertResponse = await durableObject.fetch(
       new Request("https://recent-spans/upsert", {
@@ -136,7 +136,7 @@ describe("RecentSpansDO", () => {
 
   it("searches spans within time range", async () => {
     const state = createState();
-    const durableObject = new RecentSpansDO(state);
+    const durableObject = new RecentSpansDurableObject(state);
 
     await durableObject.fetch(
       new Request("https://recent-spans/upsert", {
@@ -173,7 +173,7 @@ describe("RecentSpansDO", () => {
 
   it("returns trace detail spans", async () => {
     const state = createState();
-    const durableObject = new RecentSpansDO(state);
+    const durableObject = new RecentSpansDurableObject(state);
 
     await durableObject.fetch(
       new Request("https://recent-spans/upsert", {
@@ -200,7 +200,7 @@ describe("RecentSpansDO", () => {
 
   it("keeps long-running spans when endTime exceeds query range", async () => {
     const state = createState();
-    const durableObject = new RecentSpansDO(state);
+    const durableObject = new RecentSpansDurableObject(state);
 
     const nowMs = Date.now();
     const start = BigInt(nowMs - 5_000) * 1_000_000n;

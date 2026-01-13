@@ -3,6 +3,7 @@
  */
 
 import { Effect, Layer } from "effect";
+import { it as effectIt } from "@effect/vitest";
 import { it as vitestIt } from "vitest";
 import {
   describe,
@@ -114,30 +115,45 @@ describe("Annotations", () => {
         expect((result as NotFoundError).resource).toBe("span");
       }).pipe(
         Effect.provide(
-          Layer.succeed(ClickHouseSearch, {
-            search: () =>
-              Effect.succeed({ spans: [], total: 0, hasMore: false }),
-            getTraceDetail: () =>
-              Effect.succeed({
-                traceId: "nonexistenttraceid0123456789ab",
-                spans: [],
-                rootSpanId: null,
-                totalDurationMs: null,
-              }),
-            getAnalyticsSummary: () =>
-              Effect.succeed({
-                totalSpans: 0,
-                avgDurationMs: null,
-                p50DurationMs: null,
-                p95DurationMs: null,
-                p99DurationMs: null,
-                errorRate: 0,
-                totalTokens: 0,
-                totalCostUsd: 0,
-                topModels: [],
-                topFunctions: [],
-              }),
-          }),
+          Layer.mergeAll(
+            Layer.succeed(RealtimeSpans, {
+              upsert: () => Effect.void,
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.succeed({
+                  traceId: "nonexistenttraceid0123456789ab",
+                  spans: [],
+                  rootSpanId: null,
+                  totalDurationMs: null,
+                }),
+              existsSpan: () => Effect.succeed(false),
+            }),
+            Layer.succeed(ClickHouseSearch, {
+              search: () =>
+                Effect.succeed({ spans: [], total: 0, hasMore: false }),
+              getTraceDetail: () =>
+                Effect.succeed({
+                  traceId: "nonexistenttraceid0123456789ab",
+                  spans: [],
+                  rootSpanId: null,
+                  totalDurationMs: null,
+                }),
+              getAnalyticsSummary: () =>
+                Effect.succeed({
+                  totalSpans: 0,
+                  avgDurationMs: null,
+                  p50DurationMs: null,
+                  p95DurationMs: null,
+                  p99DurationMs: null,
+                  errorRate: 0,
+                  totalTokens: 0,
+                  totalCostUsd: 0,
+                  topModels: [],
+                  topFunctions: [],
+                }),
+            }),
+          ),
         ),
       ),
     );
@@ -416,29 +432,35 @@ describe("Annotations", () => {
       ),
     );
 
-    it.effect(
-      "creates annotation when realtime and ClickHouse services missing",
+    // Use vitestIt directly to bypass TestDatabase wrapper and test without RealtimeSpans/ClickHouseSearch
+    // When neither service is available, checkSpanExists returns false (fail-closed), causing NotFoundError
+    effectIt.effect(
+      "returns NotFoundError when neither RealtimeSpans nor ClickHouseSearch is available",
       () =>
         Effect.gen(function* () {
           const db = yield* Database;
 
-          const annotation =
-            yield* db.organizations.projects.environments.traces.annotations.create(
-              {
+          const result =
+            yield* db.organizations.projects.environments.traces.annotations
+              .create({
                 userId: "00000000-0000-0000-0000-000000000000",
                 organizationId: "00000000-0000-0000-0000-000000000003",
                 projectId: "00000000-0000-0000-0000-000000000002",
                 environmentId: "00000000-0000-0000-0000-000000000001",
                 data: {
-                  otelSpanId: "missing-services-span",
-                  otelTraceId: "missing-services-trace",
+                  otelSpanId: "no-services-span",
+                  otelTraceId: "no-services-trace",
                   label: "pass",
                 },
-              },
-            );
+              })
+              .pipe(Effect.flip);
 
-          expect(annotation.otelSpanId).toBe("missing-services-span");
+          // When neither service is available, span check returns false (fail-closed)
+          // which results in NotFoundError
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect((result as NotFoundError).resource).toBe("span");
         }).pipe(
+          // Only provide Database via MockDrizzleORM, no RealtimeSpans or ClickHouseSearch
           Effect.provide(
             new MockDrizzleORM()
               .select([
@@ -465,24 +487,80 @@ describe("Annotations", () => {
                   createdAt: new Date(),
                 },
               ])
-              .select([])
-              .insert([
-                {
-                  id: "annotation-id",
-                  otelSpanId: "missing-services-span",
-                  otelTraceId: "missing-services-trace",
-                  label: "pass",
-                  reasoning: null,
-                  metadata: null,
-                  environmentId: "00000000-0000-0000-0000-000000000001",
-                  projectId: "00000000-0000-0000-0000-000000000002",
-                  organizationId: "00000000-0000-0000-0000-000000000003",
-                  createdBy: "00000000-0000-0000-0000-000000000000",
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                },
-              ])
               .build(),
+          ),
+        ),
+    );
+
+    // Test when RealtimeSpans returns false but ClickHouseSearch is not available
+    // This covers the onNone branch at line 134 in annotations.ts
+    effectIt.effect(
+      "returns NotFoundError when RealtimeSpans returns false and ClickHouseSearch unavailable",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result =
+            yield* db.organizations.projects.environments.traces.annotations
+              .create({
+                userId: "00000000-0000-0000-0000-000000000000",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                environmentId: "00000000-0000-0000-0000-000000000001",
+                data: {
+                  otelSpanId: "realtime-only-span",
+                  otelTraceId: "realtime-only-trace",
+                  label: "pass",
+                },
+              })
+              .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect((result as NotFoundError).resource).toBe("span");
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([
+                  {
+                    role: "MEMBER",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([
+                  {
+                    role: "ADMIN",
+                    projectId: "00000000-0000-0000-0000-000000000002",
+                    memberId: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                  },
+                ])
+                .build(),
+              // Provide RealtimeSpans that returns false, but no ClickHouseSearch
+              Layer.succeed(RealtimeSpans, {
+                upsert: () => Effect.void,
+                search: () =>
+                  Effect.succeed({ spans: [], total: 0, hasMore: false }),
+                getTraceDetail: () =>
+                  Effect.succeed({
+                    traceId: "realtime-only-trace",
+                    spans: [],
+                    rootSpanId: null,
+                    totalDurationMs: null,
+                  }),
+                existsSpan: () => Effect.succeed(false),
+              }),
+            ),
           ),
         ),
     );

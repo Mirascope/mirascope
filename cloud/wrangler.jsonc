@@ -33,9 +33,13 @@
     ],
   },
   "durable_objects": {
-    "bindings": [{ "name": "RECENT_SPANS_DO", "class_name": "RecentSpansDO" }],
+    "bindings": [{ "name": "RECENT_SPANS_DO", "class_name": "RecentSpansDurableObject" }],
   },
-  "migrations": [{ "tag": "v1", "new_classes": ["RecentSpansDO"] }],
+  // Migration v2: Renamed RecentSpansDO -> RecentSpansDurableObject
+  // Note: If RecentSpansDO was already deployed to production, add it to deleted_classes
+  "migrations": [
+    { "tag": "v2", "new_classes": ["RecentSpansDurableObject"], "deleted_classes": ["RecentSpansDO"] }
+  ],
   //   "env": {
   //     "production": {
   //       "name": "mirascope",
