@@ -7,6 +7,7 @@ from typing import Any, Generic, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from ..types import NoneType
+from .primitives import create_wrapper_model, is_primitive_type
 from .types import FormattableT, FormattingMode, HasFormattingInstructions
 
 TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
@@ -132,11 +133,14 @@ def format(
 ) -> Format[FormattableT] | None:
     """Returns a `Format` that describes structured output for a Formattable type.
 
-    This function converts a Formattable type (e.g. Pydantic BaseModel) into a `Format`
-    object that describes how the object should be formatted. Calling `llm.format`
-    is optional, as all the APIs that expect a `Format` can also take the Formattable
-    type directly. However, calling `llm.format` is necessary in order to specify the
-    formatting mode that will be used.
+    This function converts a Formattable type (e.g. Pydantic BaseModel or primitive type)
+    into a `Format` object that describes how the object should be formatted. Calling
+    `llm.format` is optional, as all the APIs that expect a `Format` can also take the
+    Formattable type directly. However, calling `llm.format` is necessary in order to
+    specify the formatting mode that will be used.
+
+    Primitive types are automatically wrapped in a BaseModel with an "output" field
+    for schema generation, then unwrapped during parsing.
 
     Args:
         mode: The format mode to use, one of the following:
@@ -189,6 +193,24 @@ def format(
 
     if formattable is None or formattable is NoneType:
         return None
+
+    # Check for primitive types and wrap them
+    if is_primitive_type(formattable):
+        wrapper_model = create_wrapper_model(formattable)
+        schema = wrapper_model.model_json_schema()
+        name = (
+            formattable.__name__
+            if hasattr(formattable, "__name__")
+            else str(formattable)
+        )
+
+        return Format[FormattableT](
+            name=name,
+            description=None,  # Primitives don't have docstrings
+            schema=schema,
+            mode=mode,
+            formattable=formattable,
+        )
 
     description = None
     if formattable.__doc__:

@@ -6,7 +6,13 @@ from types import NoneType
 from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
 from ..content import AssistantContentPart, Text, Thought, ToolCall
-from ..formatting import Format, FormattableT, Partial
+from ..formatting import (
+    Format,
+    FormattableT,
+    Partial,
+    create_wrapper_model,
+    is_primitive_type,
+)
 from ..messages import Message
 from ..tools import ToolkitT
 from . import _utils
@@ -107,8 +113,13 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     ) -> FormattableT | Partial[FormattableT] | None:
         """Format the response according to the response format parser.
 
+        Supports both Pydantic BaseModel types and primitive types. Primitive types
+        are automatically unwrapped from their wrapper model to return the raw value.
+
         Returns:
-            The formatted response object of type FormatT.
+            The formatted response object of type FormatT. For BaseModel types, returns
+            the model instance. For primitive types, returns the unwrapped value (e.g.,
+            a string, list, dict, etc.).
 
         Raises:
             json.JSONDecodeError: If the response's textual content can't be parsed as
@@ -130,6 +141,11 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
 
         text = "".join(text.text for text in self.texts)
         json_text = _utils.extract_serialized_json(text)
+
+        if is_primitive_type(formattable):
+            wrapper_model = create_wrapper_model(formattable)
+            wrapper_instance = wrapper_model.model_validate_json(json_text)
+            return wrapper_instance.output
 
         return formattable.model_validate_json(json_text)
 
