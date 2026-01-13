@@ -27,6 +27,7 @@ import {
   SpansIngestQueueService,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/realtimeSpans";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
@@ -49,13 +50,35 @@ export { expect };
  * Creates a Database layer with MockPayments for testing.
  * Provides both Database and Payments services.
  */
-function createTestDatabaseLayer(connectionString: string) {
+const DefaultQueueLayer = Layer.succeed(SpansIngestQueueService, {
+  send: () => Effect.void,
+});
+const DefaultRealtimeLayer = Layer.succeed(RealtimeSpans, {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  existsSpan: () => Effect.succeed(false),
+});
+
+function createTestDatabaseLayer(
+  connectionString: string,
+  queueLayer: Layer.Layer<SpansIngestQueueService> = DefaultQueueLayer,
+  realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
+) {
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provide(DrizzleORM.layer({ connectionString }).pipe(Layer.orDie)),
       Layer.provide(DefaultMockPayments),
     ).pipe(Layer.orDie),
     DefaultMockPayments,
+    queueLayer,
+    realtimeLayer,
   );
 }
 
@@ -147,6 +170,7 @@ function createTestWebHandler(
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
   queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
+  realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
 ) {
   // ClickHouse services layer for test environment
   const clickhouseConfig = getTestClickHouseConfig();
@@ -164,14 +188,15 @@ function createTestWebHandler(
     Layer.provide(settingsLayer),
   );
 
+  const queueLayer = Layer.succeed(SpansIngestQueueService, {
+    send: queueSend ?? (() => Effect.void),
+  });
+
   const services = Layer.mergeAll(
     settingsLayer,
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
-    createTestDatabaseLayer(databaseUrl),
-    Layer.succeed(SpansIngestQueueService, {
-      send: queueSend ?? (() => Effect.void),
-    }),
+    createTestDatabaseLayer(databaseUrl, queueLayer, realtimeLayer),
     clickHouseSearchLayer,
   );
 
@@ -216,12 +241,14 @@ export async function createApiClient(
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
   queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
+  realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
   const webHandler = createTestWebHandler(
     databaseUrl,
     user,
     apiKeyInfo,
     queueSend,
+    realtimeLayer,
   );
   const HandlerHttpClient = createHandlerHttpClient(webHandler);
   const HandlerHttpClientLayer = Layer.succeed(

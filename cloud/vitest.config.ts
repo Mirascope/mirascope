@@ -16,7 +16,8 @@ export default defineConfig({
         "auth",
         "db",
         "payments",
-        "workers/routerMeteringQueue.ts", // TODO: get full coverage on workers module
+        "workers/routerMeteringQueue.ts",
+        "workers/spanIngestQueue.ts",
       ],
       exclude: [
         "**/index.ts",

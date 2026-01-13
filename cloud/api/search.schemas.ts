@@ -72,7 +72,6 @@ export const SearchRequestSchema = Schema.Struct({
 export type SearchRequest = typeof SearchRequestSchema.Type;
 
 const SpanSearchResultSchema = Schema.Struct({
-  id: Schema.String,
   traceId: Schema.String,
   spanId: Schema.String,
   name: Schema.String,
@@ -100,8 +99,6 @@ export type SearchResponse = typeof SearchResponseSchema.Type;
 // =============================================================================
 
 const SpanDetailSchema = Schema.Struct({
-  id: Schema.String,
-  traceDbId: Schema.String,
   traceId: Schema.String,
   spanId: Schema.String,
   parentSpanId: Schema.NullOr(Schema.String),

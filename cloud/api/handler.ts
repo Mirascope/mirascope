@@ -6,7 +6,9 @@ import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
 import { ClickHouseSearch } from "@/clickhouse/search";
+import { RealtimeSpans } from "@/realtimeSpans";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { SpansIngestQueueService } from "@/workers/spanIngestQueue";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
@@ -15,19 +17,23 @@ export type HandleRequestOptions = {
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
+  realtimeSpans?: Context.Tag.Service<RealtimeSpans>;
+  spansIngestQueue: Context.Tag.Service<SpansIngestQueueService>;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
+  realtimeSpans?: Context.Tag.Service<RealtimeSpans>;
+  spansIngestQueue: Context.Tag.Service<SpansIngestQueueService>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
-  const services = Layer.mergeAll(
+  const baseServices = Layer.mergeAll(
     Layer.succeed(SettingsService, {
       ...getSettings(),
       env: options.environment,
@@ -40,7 +46,15 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
+    Layer.succeed(SpansIngestQueueService, options.spansIngestQueue),
   );
+
+  const services = options.realtimeSpans
+    ? Layer.merge(
+        baseServices,
+        Layer.succeed(RealtimeSpans, options.realtimeSpans),
+      )
+    : baseServices;
 
   const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
@@ -79,6 +93,8 @@ export const handleRequest = (
       apiKeyInfo: options.apiKeyInfo,
       environment: options.environment,
       clickHouseSearch: options.clickHouseSearch,
+      realtimeSpans: options.realtimeSpans,
+      spansIngestQueue: options.spansIngestQueue,
     });
 
     const result = yield* Effect.tryPromise({

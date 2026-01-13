@@ -5,6 +5,8 @@ import type { PublicUser } from "@/db/schema";
 import { HandlerError } from "@/errors";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
+import { RealtimeSpans } from "@/realtimeSpans";
+import { SpansIngestQueueService } from "@/workers/spanIngestQueue";
 import { SettingsService, getSettings } from "@/settings";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import fs from "fs";
@@ -49,8 +51,48 @@ const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
   Layer.provide(ClickHouse.Default),
   Layer.provide(settingsLayer),
 );
+const spansIngestQueueLayer = Layer.succeed(SpansIngestQueueService, {
+  send: () => Effect.void,
+});
+const realtimeSpansLayer = Layer.succeed(RealtimeSpans, {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  existsSpan: () => Effect.succeed(false),
+});
 
 describe("handleRequest", () => {
+  it.effect("should return 404 without realtime spans configured", () =>
+    Effect.gen(function* () {
+      const clickHouseSearch = yield* ClickHouseSearch;
+      const req = new Request(
+        "http://localhost/api/v0/this-route-does-not-exist",
+        { method: "GET" },
+      );
+
+      const { matched, response } = yield* handleRequest(req, {
+        user: mockUser,
+        environment: "test",
+        prefix: "/api/v0",
+        clickHouseSearch,
+        spansIngestQueue: yield* SpansIngestQueueService,
+      });
+
+      expect(response.status).toBe(404);
+      expect(matched).toBe(false);
+    }).pipe(
+      Effect.provide(
+        Layer.mergeAll(clickHouseSearchLayer, spansIngestQueueLayer),
+      ),
+    ),
+  );
+
   it.effect("should return 404 for non-existing routes", () =>
     Effect.gen(function* () {
       const clickHouseSearch = yield* ClickHouseSearch;
@@ -64,11 +106,21 @@ describe("handleRequest", () => {
         environment: "test",
         prefix: "/api/v0",
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueueService,
       });
 
       expect(response.status).toBe(404);
       expect(matched).toBe(false);
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(
+      Effect.provide(
+        Layer.mergeAll(
+          clickHouseSearchLayer,
+          spansIngestQueueLayer,
+          realtimeSpansLayer,
+        ),
+      ),
+    ),
   );
 
   it.effect(
@@ -83,12 +135,22 @@ describe("handleRequest", () => {
           environment: "test",
           prefix: "/api/v0",
           clickHouseSearch,
+          realtimeSpans: yield* RealtimeSpans,
+          spansIngestQueue: yield* SpansIngestQueueService,
         });
 
         // The path becomes "/" after stripping prefix, which doesn't match any route
         expect(response.status).toBe(404);
         expect(matched).toBe(false);
-      }).pipe(Effect.provide(clickHouseSearchLayer)),
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            clickHouseSearchLayer,
+            spansIngestQueueLayer,
+            realtimeSpansLayer,
+          ),
+        ),
+      ),
   );
 
   it.effect(
@@ -109,13 +171,23 @@ describe("handleRequest", () => {
           user: mockUser,
           environment: "test",
           clickHouseSearch,
+          realtimeSpans: yield* RealtimeSpans,
+          spansIngestQueue: yield* SpansIngestQueueService,
         }).pipe(Effect.flip);
 
         expect(error).toBeInstanceOf(HandlerError);
         expect(error.message).toContain(
           "[Effect API] Error handling request: boom",
         );
-      }).pipe(Effect.provide(clickHouseSearchLayer)),
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            clickHouseSearchLayer,
+            spansIngestQueueLayer,
+            realtimeSpansLayer,
+          ),
+        ),
+      ),
   );
 
   it.effect("should handle POST requests with body", () =>
@@ -136,11 +208,21 @@ describe("handleRequest", () => {
         environment: "test",
         prefix: "/api/v0",
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueueService,
       });
 
       expect(matched).toBe(true);
       expect(response.status).toBeGreaterThanOrEqual(400);
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(
+      Effect.provide(
+        Layer.mergeAll(
+          clickHouseSearchLayer,
+          spansIngestQueueLayer,
+          realtimeSpansLayer,
+        ),
+      ),
+    ),
   );
 
   it.effect("should transform _tag in JSON error responses", () =>
@@ -159,6 +241,8 @@ describe("handleRequest", () => {
         environment: "test",
         prefix: "/api/v0",
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueueService,
       });
 
       const body = yield* Effect.promise(() => response.text());
@@ -168,6 +252,14 @@ describe("handleRequest", () => {
       // Ensure _tag is transformed to tag in error responses
       expect(body).toContain('"tag"');
       expect(body).not.toContain('"_tag"');
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(
+      Effect.provide(
+        Layer.mergeAll(
+          clickHouseSearchLayer,
+          spansIngestQueueLayer,
+          realtimeSpansLayer,
+        ),
+      ),
+    ),
   );
 });

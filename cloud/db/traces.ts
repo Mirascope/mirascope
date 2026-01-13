@@ -73,7 +73,6 @@ import {
   PermissionDeniedError,
   ImmutableResourceError,
 } from "@/errors";
-import { type CreateTraceResponse } from "@/db/schema/traces";
 import {
   SpansIngestQueueService,
   type SpansIngestMessage,
@@ -81,7 +80,10 @@ import {
 import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
 
-export type { CreateTraceResponse };
+export type CreateTraceResponse = {
+  acceptedSpans: number;
+  rejectedSpans: number;
+};
 
 /** Input type for trace ingestion via OTLP format. */
 export type TraceCreateInput = {

@@ -184,7 +184,6 @@ export interface AnalyticsSummaryInput {
  * excluded for query cost reduction. Use getTraceDetail() for full span data.
  */
 export interface SpanSearchResult {
-  id: string;
   traceId: string;
   spanId: string;
   name: string;
@@ -206,8 +205,6 @@ export interface SearchResponse {
 
 /** Full span data for trace detail view. */
 export interface SpanDetail {
-  id: string;
-  traceDbId: string;
   traceId: string;
   spanId: string;
   parentSpanId: string | null;
@@ -270,7 +267,6 @@ interface SpanSummaryRow {
   environment_id: string;
   trace_id: string;
   span_id: string;
-  id: string;
   name: string;
   start_time: string;
   duration_ms: number | null;
@@ -282,8 +278,6 @@ interface SpanSummaryRow {
 }
 
 interface SpanDetailRow {
-  id: string;
-  trace_db_id: string;
   trace_id: string;
   span_id: string;
   parent_span_id: string | null;
@@ -405,7 +399,6 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
                   s.environment_id,
                   s.trace_id,
                   s.span_id,
-                  argMax(s.id, s._version) as id,
                   argMax(s.name, s._version) as name,
                   argMax(s.start_time, s._version) as start_time,
                   argMax(s.duration_ms, s._version) as duration_ms,
@@ -451,8 +444,6 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
             const rows = yield* client.unsafeQuery<SpanDetailRow>(
               `
               SELECT
-                id,
-                trace_db_id,
                 trace_id,
                 span_id,
                 parent_span_id,
@@ -970,7 +961,6 @@ function buildOrderByClause(
  */
 function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
   return {
-    id: row.id,
     traceId: row.trace_id,
     spanId: row.span_id,
     name: row.name,
@@ -989,8 +979,6 @@ function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
  */
 function transformToSpanDetail(row: SpanDetailRow): SpanDetail {
   return {
-    id: row.id,
-    traceDbId: row.trace_db_id,
     traceId: row.trace_id,
     spanId: row.span_id,
     parentSpanId: row.parent_span_id,

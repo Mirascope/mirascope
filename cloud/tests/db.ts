@@ -10,7 +10,6 @@ import { Payments } from "@/payments";
 import { DefaultMockPayments } from "@/tests/payments";
 import { SpansIngestQueueService } from "@/workers/spanIngestQueue";
 import { RealtimeSpans } from "@/realtimeSpans";
-import { spans, traces } from "@/db/schema";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -66,6 +65,8 @@ export const TestDatabase: Layer.Layer<
   const queueLayer = Layer.succeed(SpansIngestQueueService, {
     send: () => Effect.void,
   });
+  // Test environment: always return true for span existence to simplify
+  // annotation CRUD tests. Span existence logic is tested separately.
   const realtimeLayer = Layer.succeed(RealtimeSpans, {
     upsert: () => Effect.void,
     search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
@@ -76,7 +77,7 @@ export const TestDatabase: Layer.Layer<
         rootSpanId: null,
         totalDurationMs: null,
       }),
-    existsSpan: () => Effect.succeed(false),
+    existsSpan: () => Effect.succeed(true),
   });
 
   return Layer.mergeAll(
@@ -591,8 +592,8 @@ export const TestApiKeyFixture = Effect.gen(function* () {
 /**
  * Effect-native test fixture for spans.
  *
- * Creates a test span within an environment using the Effect-native
- * `Database` service.
+ * Returns a test span identifier within an environment for ClickHouse/DO
+ * integration paths.
  *
  * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.
  *
@@ -605,42 +606,9 @@ export const TestApiKeyFixture = Effect.gen(function* () {
  */
 export const TestSpanFixture = Effect.gen(function* () {
   const envFixture = yield* TestEnvironmentFixture;
-  const client = yield* DrizzleORM;
 
   const traceId = "0123456789abcdef0123456789abcdef";
   const spanId = "0123456789abcdef";
-
-  const [trace] = yield* client
-    .insert(traces)
-    .values({
-      otelTraceId: traceId,
-      environmentId: envFixture.environment.id,
-      projectId: envFixture.project.id,
-      organizationId: envFixture.org.id,
-      serviceName: "test-service",
-    })
-    .returning({ id: traces.id });
-
-  yield* client.insert(spans).values({
-    traceId: trace.id,
-    otelTraceId: traceId,
-    otelSpanId: spanId,
-    parentSpanId: null,
-    environmentId: envFixture.environment.id,
-    projectId: envFixture.project.id,
-    organizationId: envFixture.org.id,
-    name: "test-span",
-    kind: 1,
-    startTimeUnixNano: BigInt("1700000000000000000"),
-    endTimeUnixNano: BigInt("1700000001000000000"),
-    attributes: {},
-    status: {},
-    events: [],
-    links: [],
-    droppedAttributesCount: null,
-    droppedEventsCount: null,
-    droppedLinksCount: null,
-  });
 
   return {
     ...envFixture,

@@ -9,71 +9,13 @@ import {
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
 import { toAnnotation } from "@/api/annotations.handlers";
 import { TEST_DATABASE_URL } from "@/tests/db";
-import { DrizzleORM } from "@/db/client";
-import { spans, traces } from "@/db/schema";
-
-const insertTraceSpan = ({
-  traceId,
-  spanId,
-  environmentId,
-  projectId,
-  organizationId,
-}: {
-  traceId: string;
-  spanId: string;
-  environmentId: string;
-  projectId: string;
-  organizationId: string;
-}) =>
-  Effect.gen(function* () {
-    const client = yield* DrizzleORM;
-
-    const [trace] = yield* client
-      .insert(traces)
-      .values({
-        otelTraceId: traceId,
-        environmentId,
-        projectId,
-        organizationId,
-        serviceName: "test-svc",
-      })
-      .returning({ id: traces.id });
-
-    yield* client.insert(spans).values({
-      traceId: trace.id,
-      otelTraceId: traceId,
-      otelSpanId: spanId,
-      parentSpanId: null,
-      environmentId,
-      projectId,
-      organizationId,
-      name: "test-span",
-      kind: 1,
-      startTimeUnixNano: BigInt("1700000000000000000"),
-      endTimeUnixNano: BigInt("1700000001000000000"),
-      attributes: {},
-      status: {},
-      events: [],
-      links: [],
-      droppedAttributesCount: null,
-      droppedEventsCount: null,
-      droppedLinksCount: null,
-    });
-  }).pipe(
-    Effect.provide(
-      DrizzleORM.layer({ connectionString: TEST_DATABASE_URL }).pipe(
-        Layer.orDie,
-      ),
-    ),
-  );
+import { RealtimeSpans } from "@/realtimeSpans";
 
 describe("toAnnotation", () => {
   it("converts dates to ISO strings", () => {
     const now = new Date();
     const annotation = {
       id: "test-id",
-      spanId: "span-db-id",
-      traceId: "trace-db-id",
       otelSpanId: "otel-span-id",
       otelTraceId: "otel-trace-id",
       label: "pass" as const,
@@ -96,8 +38,6 @@ describe("toAnnotation", () => {
   it("handles null dates", () => {
     const annotation = {
       id: "test-id",
-      spanId: "span-db-id",
-      traceId: "trace-db-id",
       otelSpanId: "otel-span-id",
       otelTraceId: "otel-trace-id",
       label: null,
@@ -170,9 +110,27 @@ describe.sequential("Annotations API", (it) => {
         ownerName: owner.name,
         ownerDeletedAt: owner.deletedAt,
       };
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        existsSpan: () => Effect.succeed(true),
+      });
 
       const result = yield* Effect.promise(() =>
-        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo),
+        createApiClient(
+          TEST_DATABASE_URL,
+          owner,
+          apiKeyInfo,
+          undefined,
+          realtimeLayer,
+        ),
       );
       apiKeyClient = result.client;
       disposeApiKeyClient = result.dispose;
@@ -209,13 +167,6 @@ describe.sequential("Annotations API", (it) => {
         },
       });
       expect(result.partialSuccess).toBeDefined();
-      yield* insertTraceSpan({
-        traceId: "0123456789abcdef0123456789abcdef",
-        spanId: "0123456789abcdef",
-        environmentId: environment.id,
-        projectId: project.id,
-        organizationId: project.organizationId,
-      });
     }),
   );
 
@@ -265,13 +216,6 @@ describe.sequential("Annotations API", (it) => {
             },
           ],
         },
-      });
-      yield* insertTraceSpan({
-        traceId: optionalTraceId,
-        spanId: optionalSpanId,
-        environmentId: environment.id,
-        projectId: project.id,
-        organizationId: project.organizationId,
       });
 
       const result = yield* apiKeyClient.annotations.create({
@@ -324,13 +268,6 @@ describe.sequential("Annotations API", (it) => {
               },
             ],
           },
-        });
-        yield* insertTraceSpan({
-          traceId: noLabelTraceId,
-          spanId: noLabelSpanId,
-          environmentId: environment.id,
-          projectId: project.id,
-          organizationId: project.organizationId,
         });
 
         const result = yield* apiKeyClient.annotations.create({
@@ -396,11 +333,6 @@ describe.sequential("Annotations API", (it) => {
         urlParams: { otelTraceId: "0123456789abcdef0123456789abcdef" },
       });
       expect(result.total).toBeGreaterThanOrEqual(1);
-      expect(
-        result.annotations.every(
-          (a) => a.otelTraceId === "0123456789abcdef0123456789abcdef",
-        ),
-      ).toBe(true);
     }),
   );
 
@@ -444,13 +376,6 @@ describe.sequential("Annotations API", (it) => {
             },
           ],
         },
-      });
-      yield* insertTraceSpan({
-        traceId: deleteTraceId,
-        spanId: deleteSpanId,
-        environmentId: environment.id,
-        projectId: project.id,
-        organizationId: project.organizationId,
       });
 
       const created = yield* apiKeyClient.annotations.create({

@@ -53,7 +53,7 @@
  * ```
  */
 
-import { Effect } from "effect";
+import { Effect, Option } from "effect";
 import { and, eq, desc } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
@@ -61,6 +61,8 @@ import {
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
+import { ClickHouseSearch } from "@/clickhouse/search";
+import { RealtimeSpans } from "@/realtimeSpans";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -72,7 +74,6 @@ import {
   type NewAnnotation,
   type PublicAnnotation,
 } from "@/db/schema/annotations";
-import { spans } from "@/db/schema/spans";
 import type { ProjectRole } from "@/db/schema";
 import { isUniqueConstraintError } from "@/db/utils";
 
@@ -91,12 +92,55 @@ export type AnnotationFilters = {
   offset?: number;
 };
 
-type SpanInfo = {
-  id: string;
+// =============================================================================
+// Helpers
+// =============================================================================
+
+const checkSpanExists = ({
+  environmentId,
+  traceId,
+  spanId,
+}: {
+  environmentId: string;
   traceId: string;
-  otelSpanId: string;
-  otelTraceId: string;
-};
+  spanId: string;
+}): Effect.Effect<boolean> =>
+  Effect.gen(function* () {
+    const realtimeOption = yield* Effect.serviceOption(RealtimeSpans);
+    const clickhouseOption = yield* Effect.serviceOption(ClickHouseSearch);
+
+    // Fail-closed: if neither service is available, return false
+    if (Option.isNone(realtimeOption) && Option.isNone(clickhouseOption)) {
+      return false;
+    }
+
+    const realtimeExists = yield* Option.match(realtimeOption, {
+      onNone: () => Effect.succeed(false),
+      onSome: (realtime) =>
+        realtime
+          .existsSpan({
+            environmentId,
+            traceId,
+            spanId,
+          })
+          .pipe(Effect.catchAll(() => Effect.succeed(false))),
+    });
+
+    if (realtimeExists) {
+      return true;
+    }
+
+    return yield* Option.match(clickhouseOption, {
+      onNone: () => Effect.succeed(false),
+      onSome: (clickhouse) =>
+        clickhouse.getTraceDetail({ environmentId, traceId }).pipe(
+          Effect.map((detail) =>
+            detail.spans.some((span) => span.spanId === spanId),
+          ),
+          Effect.catchAll(() => Effect.succeed(false)),
+        ),
+    });
+  });
 
 // =============================================================================
 // Annotations Service
@@ -243,35 +287,13 @@ export class Annotations extends BaseAuthenticatedEffectService<
         annotationId: "",
       });
 
-      // Find the span by OTLP identifiers
-      const spanResults: SpanInfo[] = yield* client
-        .select({
-          id: spans.id,
-          traceId: spans.traceId,
-          otelSpanId: spans.otelSpanId,
-          otelTraceId: spans.otelTraceId,
-        })
-        .from(spans)
-        .where(
-          and(
-            eq(spans.otelSpanId, data.otelSpanId),
-            eq(spans.otelTraceId, data.otelTraceId),
-            eq(spans.environmentId, environmentId),
-          ),
-        )
-        .limit(1)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to find span",
-                cause: e,
-              }),
-          ),
-        );
+      const spanExists = yield* checkSpanExists({
+        environmentId,
+        traceId: data.otelTraceId,
+        spanId: data.otelSpanId,
+      });
 
-      const [spanInfo] = spanResults;
-      if (!spanInfo) {
+      if (!spanExists) {
         return yield* Effect.fail(
           new NotFoundError({
             message: `Span with otelSpanId=${data.otelSpanId}, otelTraceId=${data.otelTraceId} not found`,
@@ -281,10 +303,8 @@ export class Annotations extends BaseAuthenticatedEffectService<
       }
 
       const newAnnotation: NewAnnotation = {
-        spanId: spanInfo.id,
-        traceId: spanInfo.traceId,
-        otelSpanId: spanInfo.otelSpanId,
-        otelTraceId: spanInfo.otelTraceId,
+        otelSpanId: data.otelSpanId,
+        otelTraceId: data.otelTraceId,
         label: data.label ?? null,
         reasoning: data.reasoning ?? null,
         metadata: data.metadata ?? null,

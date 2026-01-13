@@ -7,7 +7,10 @@ import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
+import { RealtimeSpans } from "@/realtimeSpans";
 import { SettingsService, getSettings } from "@/settings";
+import { spansIngestQueueLayer, realtimeSpansLayer } from "@/server-entry";
+import { SpansIngestQueueService } from "@/workers/spanIngestQueue";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -65,6 +68,8 @@ export const Route = createFileRoute("/api/v0/$")({
           const authResult = yield* authenticate(request, pathParams);
 
           const clickHouseSearch = yield* ClickHouseSearch;
+          const realtimeSpans = yield* RealtimeSpans;
+          const spansIngestQueue = yield* SpansIngestQueueService;
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v0",
@@ -72,6 +77,8 @@ export const Route = createFileRoute("/api/v0/$")({
             apiKeyInfo: authResult.apiKeyInfo,
             environment: process.env.ENVIRONMENT || "development",
             clickHouseSearch,
+            realtimeSpans,
+            spansIngestQueue,
           });
 
           if (!result.matched) {
@@ -99,6 +106,8 @@ export const Route = createFileRoute("/api/v0/$")({
                   }),
                 ),
               ),
+              spansIngestQueueLayer,
+              realtimeSpansLayer,
             ),
           ),
           handleErrors,

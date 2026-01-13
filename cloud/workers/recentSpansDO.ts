@@ -318,7 +318,6 @@ const matchesSearchFilters = (
 const buildSearchResult = (span: CachedSpan): SpanSearchResult => {
   const startTime = getSpanStartDate(span);
   return {
-    id: createSpanCacheKey(span.traceId, span.spanId),
     traceId: span.traceId,
     spanId: span.spanId,
     name: span.name,
@@ -337,8 +336,6 @@ const buildSpanDetail = (span: CachedSpan): SpanDetail => {
   const endTime = getSpanEndDate(span) ?? startTime;
 
   return {
-    id: createSpanCacheKey(span.traceId, span.spanId),
-    traceDbId: span.traceId,
     traceId: span.traceId,
     spanId: span.spanId,
     parentSpanId: span.parentSpanId ?? null,
