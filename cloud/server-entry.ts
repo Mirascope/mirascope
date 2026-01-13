@@ -12,6 +12,7 @@ import spanIngestQueue, {
 } from "@/workers/spanIngestQueue";
 import { RealtimeSpans } from "@/realtimeSpans";
 import { RealtimeSpansLive } from "@/workers/realtimeSpansClient";
+export { RecentSpansDurableObject } from "@/workers/recentSpansDurableObject";
 import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
 import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
 import type { MessageBatch } from "@cloudflare/workers-types";
