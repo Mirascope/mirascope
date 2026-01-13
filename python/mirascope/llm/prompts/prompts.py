@@ -1,10 +1,12 @@
 """Concrete Prompt classes for generating messages with tools and formatting."""
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic, overload
 
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
+from ..messages import Message
 from ..models import Model
 from ..responses import (
     AsyncContextResponse,
@@ -52,6 +54,10 @@ class Prompt(Generic[P, FormattableT]):
     format: type[FormattableT] | Format[FormattableT] | None
     """The response format for the generated response."""
 
+    def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
+        """Return the `Messages` from invoking this prompt."""
+        return _utils.promote_to_messages(self.fn(*args, **kwargs))
+
     @overload
     def __call__(
         self: "Prompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
@@ -82,8 +88,7 @@ class Prompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> Response | Response[FormattableT]:
         """Generates a response using the provided model."""
-        result = self.fn(*args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = self.messages(*args, **kwargs)
         return model.call(messages=messages, tools=self.toolkit, format=self.format)
 
     @overload
@@ -100,8 +105,7 @@ class Prompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generates a streaming response using the provided model."""
-        result = self.fn(*args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = self.messages(*args, **kwargs)
         return model.stream(messages=messages, tools=self.toolkit, format=self.format)
 
 
@@ -124,6 +128,10 @@ class AsyncPrompt(Generic[P, FormattableT]):
 
     format: type[FormattableT] | Format[FormattableT] | None
     """The response format for the generated response."""
+
+    async def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
+        """Return the `Messages` from invoking this prompt."""
+        return _utils.promote_to_messages(await self.fn(*args, **kwargs))
 
     @overload
     async def __call__(
@@ -161,8 +169,7 @@ class AsyncPrompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generates a response using the provided model asynchronously."""
-        result = await self.fn(*args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = await self.messages(*args, **kwargs)
         return await model.call_async(
             messages=messages, tools=self.toolkit, format=self.format
         )
@@ -184,8 +191,7 @@ class AsyncPrompt(Generic[P, FormattableT]):
         self, model: Model, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generates a streaming response using the provided model asynchronously."""
-        result = await self.fn(*args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = await self.messages(*args, **kwargs)
         return await model.stream_async(
             messages=messages, tools=self.toolkit, format=self.format
         )
@@ -211,6 +217,12 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
 
     format: type[FormattableT] | Format[FormattableT] | None
     """The response format for the generated response."""
+
+    def messages(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Sequence[Message]:
+        """Return the `Messages` from invoking this prompt."""
+        return _utils.promote_to_messages(self.fn(ctx, *args, **kwargs))
 
     @overload
     def __call__(
@@ -266,8 +278,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
         **kwargs: P.kwargs,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generates a response using the provided model."""
-        result = self.fn(ctx, *args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = self.messages(ctx, *args, **kwargs)
         return model.context_call(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
@@ -300,8 +311,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the provided model."""
-        result = self.fn(ctx, *args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = self.messages(ctx, *args, **kwargs)
         return model.context_stream(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
@@ -327,6 +337,12 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
 
     format: type[FormattableT] | Format[FormattableT] | None
     """The response format for the generated response."""
+
+    async def messages(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Sequence[Message]:
+        """Return the `Messages` from invoking this prompt."""
+        return _utils.promote_to_messages(await self.fn(ctx, *args, **kwargs))
 
     @overload
     async def __call__(
@@ -382,8 +398,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
         **kwargs: P.kwargs,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generates a response using the provided model asynchronously."""
-        result = await self.fn(ctx, *args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = await self.messages(ctx, *args, **kwargs)
         return await model.context_call_async(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
@@ -417,8 +432,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the provided model asynchronously."""
-        result = await self.fn(ctx, *args, **kwargs)
-        messages = _utils.promote_to_messages(result)
+        messages = await self.messages(ctx, *args, **kwargs)
         return await model.context_stream_async(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
