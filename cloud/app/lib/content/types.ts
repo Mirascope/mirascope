@@ -78,6 +78,8 @@ export type DocContent = Content<DocMeta>;
  * Policy-specific metadata extends the base ContentMeta
  */
 export interface PolicyMeta extends ContentMeta {
+  title: string;
+  description: string;
   lastUpdated: string; // Last update date of the policy
 }
 

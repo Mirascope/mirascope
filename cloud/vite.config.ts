@@ -33,7 +33,10 @@ export default defineConfig(() => {
           maxRedirects: 5,
           failOnError: true,
           filter: (page: { path: string }) =>
-            page.path.startsWith("/docs") || page.path.startsWith("/blog"),
+            page.path.startsWith("/docs") ||
+            page.path.startsWith("/blog") ||
+            page.path.startsWith("/terms") ||
+            page.path.startsWith("/privacy"),
           // todo(sebastian): Consider post-processing sitemap/pages to set the changefreq.
           // When using autoStaticPathsDiscovery, you can't set the sitemap changefreq or
           // other sitemap options per page—frequency can only be set on a per-page basis if you provide

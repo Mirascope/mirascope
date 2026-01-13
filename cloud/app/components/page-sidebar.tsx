@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import { cn } from "@/app/lib/utils";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
@@ -213,8 +213,8 @@ const SidebarLink = ({
 
   return (
     <Link
-      to={to}
-      params={params}
+      to={to as LinkProps["to"]}
+      {...(params && { params: params as LinkProps["params"] })}
       style={style}
       className={cn(
         "font-handwriting-descent block rounded-md py-1 text-base",
@@ -248,8 +248,8 @@ const SectionTab = ({
 
   return (
     <Link
-      to={to}
-      params={params}
+      to={to as LinkProps["to"]}
+      {...(params && { params: params as LinkProps["params"] })}
       className={cn(
         "font-handwriting-descent w-full rounded-md px-3 py-1 text-base",
         className,
