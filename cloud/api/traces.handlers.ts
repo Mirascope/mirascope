@@ -41,7 +41,7 @@ export const createTraceHandler = (payload: CreateTraceRequest) =>
   });
 
 // Convert Date to ISO string for API response
-const toTrace = (trace: PublicTrace) => ({
+export const toTrace = (trace: PublicTrace) => ({
   ...trace,
   createdAt: trace.createdAt?.toISOString() ?? null,
 });

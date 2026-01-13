@@ -28,7 +28,9 @@ export const traces = pgTable(
       .notNull(),
     serviceName: text("service_name"),
     serviceVersion: text("service_version"),
-    resourceAttributes: jsonb("resource_attributes"),
+    resourceAttributes: jsonb("resource_attributes").$type<
+      Record<string, unknown>
+    >(),
     createdAt: timestamp("created_at").defaultNow(),
   },
   (table) => ({

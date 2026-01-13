@@ -1264,7 +1264,7 @@ describe("Traces", () => {
               },
             ])
             .select([{ id: "project-id" }])
-            .select(new Error("Spans query failed"))
+            .selectDistinct(new Error("Spans query failed"))
             .build(),
         ),
       ),
@@ -1306,7 +1306,7 @@ describe("Traces", () => {
               },
             ])
             .select([{ id: "project-id" }])
-            .select([{ traceId: "trace-123" }]) // Spans query succeeds
+            .selectDistinct([{ traceId: "trace-123" }]) // Spans query succeeds
             .select(new Error("Traces query failed")) // Traces query fails
             .build(),
         ),

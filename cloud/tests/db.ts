@@ -210,12 +210,18 @@ type MockEffectResult = unknown[] | Error;
  */
 export class MockDrizzleORM {
   private selectResults: MockEffectResult[] = [];
+  private selectDistinctResults: MockEffectResult[] = [];
   private insertResults: MockEffectResult[] = [];
   private updateResults: MockEffectResult[] = [];
   private deleteResults: MockEffectResult[] = [];
 
   select(result: MockEffectResult): this {
     this.selectResults.push(result);
+    return this;
+  }
+
+  selectDistinct(result: MockEffectResult): this {
+    this.selectDistinctResults.push(result);
     return this;
   }
 
@@ -241,6 +247,7 @@ export class MockDrizzleORM {
    */
   build(paymentsLayer?: Layer.Layer<Payments>): Layer.Layer<Database> {
     let selectIndex = 0;
+    let selectDistinctIndex = 0;
     let insertIndex = 0;
     let updateIndex = 0;
     let deleteIndex = 0;
@@ -293,6 +300,10 @@ export class MockDrizzleORM {
       select: () => {
         const idx = selectIndex++;
         return createChainableProxy(this.selectResults, idx);
+      },
+      selectDistinct: () => {
+        const idx = selectDistinctIndex++;
+        return createChainableProxy(this.selectDistinctResults, idx);
       },
       insert: () => {
         const idx = insertIndex++;

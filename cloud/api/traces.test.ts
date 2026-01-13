@@ -1,7 +1,53 @@
 import { Effect } from "effect";
-import { describe, expect, TestApiContext, createApiClient } from "@/tests/api";
+import {
+  describe,
+  expect,
+  it,
+  TestApiContext,
+  createApiClient,
+} from "@/tests/api";
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
+import { toTrace } from "@/api/traces.handlers";
+
+describe("toTrace", () => {
+  it("converts dates to ISO strings", () => {
+    const now = new Date();
+    const trace = {
+      id: "test-id",
+      otelTraceId: "test-otel-trace-id",
+      environmentId: "env-id",
+      projectId: "project-id",
+      organizationId: "org-id",
+      serviceName: "test-service",
+      serviceVersion: "1.0.0",
+      resourceAttributes: { "service.name": "test-service" },
+      createdAt: now,
+    };
+
+    const result = toTrace(trace);
+
+    expect(result.createdAt).toBe(now.toISOString());
+  });
+
+  it("handles null dates", () => {
+    const trace = {
+      id: "test-id",
+      otelTraceId: "test-otel-trace-id",
+      environmentId: "env-id",
+      projectId: "project-id",
+      organizationId: "org-id",
+      serviceName: "test-service",
+      serviceVersion: "1.0.0",
+      resourceAttributes: { "service.name": "test-service" },
+      createdAt: null,
+    };
+
+    const result = toTrace(trace);
+
+    expect(result.createdAt).toBeNull();
+  });
+});
 
 describe.sequential("Traces API", (it) => {
   let project: PublicProject;
