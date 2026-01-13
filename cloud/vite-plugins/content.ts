@@ -19,11 +19,12 @@
  * ```
  */
 
-import type { Plugin } from "vite";
+import type { Plugin, ViteDevServer } from "vite";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import { glob } from "glob";
 import path from "node:path";
+
 import {
   CONTENT_TYPES,
   type ContentType,
@@ -55,6 +56,23 @@ export function viteContent(options: ViteContentOptions): Plugin {
   const contentDir = path.resolve(options.contentDir);
   const processor = new ContentProcessor(contentDir, true);
   let isBuild = false;
+  let serverInstance: ViteDevServer | null = null;
+
+  // Debounced processing for HMR - prevents rapid-fire reprocessing
+  // when multiple files change in quick succession (e.g., git operations, autosave)
+  const debouncedProcessAndInvalidate = debounce(async () => {
+    await processor.processAllContent();
+
+    // Invalidate the virtual meta module after processing
+    if (serverInstance) {
+      const metaModule = serverInstance.moduleGraph.getModuleById(
+        RESOLVED_VIRTUAL_MODULE_ID,
+      );
+      if (metaModule) {
+        serverInstance.moduleGraph.invalidateModule(metaModule);
+      }
+    }
+  }, 100);
 
   return {
     name: "vite-plugin-content",
@@ -64,7 +82,8 @@ export function viteContent(options: ViteContentOptions): Plugin {
       isBuild = command === "build";
     },
 
-    async configureServer() {
+    async configureServer(server) {
+      serverInstance = server;
       // Scan content directory on startup
       await processor.processAllContent();
     },
@@ -91,22 +110,24 @@ export function viteContent(options: ViteContentOptions): Plugin {
       }
     },
 
-    // Enable HMR for content meta updates
-    async handleHotUpdate({ file, server }) {
-      if (file.endsWith(".mdx") && file.startsWith(contentDir)) {
-        console.log(`[content] Updating meta for ${file}`);
-
-        // todo(sebastian): debounce?
-        await processor.processAllContent();
-
-        // Invalidate the virtual meta module so it regenerates
-        const metaModule = server.moduleGraph.getModuleById(
-          RESOLVED_VIRTUAL_MODULE_ID,
-        );
-        if (metaModule) {
-          server.moduleGraph.invalidateModule(metaModule);
-        }
+    // Watch for file additions and deletions
+    watchChange(id, { event }) {
+      if (!processor.isRelevantMdxFile(id)) {
+        return;
       }
+      if (event === "create" || event === "delete") {
+        console.log(`[content] File ${event}: ${id}`);
+        void debouncedProcessAndInvalidate();
+      }
+    },
+
+    // Enable HMR for content meta updates (modifications)
+    async handleHotUpdate({ file }) {
+      if (!processor.isRelevantMdxFile(file)) {
+        return;
+      }
+      console.log(`[content] Updating meta for ${file}`);
+      await debouncedProcessAndInvalidate();
     },
   };
 }
@@ -162,10 +183,26 @@ export default class ContentProcessor {
   }
 
   /**
+   * Check if a file path is a relevant MDX file in the content directory
+   */
+  isRelevantMdxFile(filePath: string): boolean {
+    return filePath.endsWith(".mdx") && filePath.startsWith(this.contentDir);
+  }
+
+  /**
    * Process all content types
    */
   async processAllContent(): Promise<void> {
     if (this.verbose) console.log("[content] Processing all content...");
+
+    // Clear existing metadata to prevent accumulation on HMR updates
+    this.metadata = {
+      blog: [],
+      docs: [],
+      policy: [],
+      dev: [],
+    };
+    this.errors = [];
 
     // Process each content type
     for (const contentType of SOURCE_CONTENT_TYPES) {
@@ -541,4 +578,71 @@ export default class ContentProcessor {
       }
     }
   }
+}
+
+/**
+ * Creates a debounced version of an async function.
+ * Multiple calls within the delay period will only execute once after the delay.
+ * If processing is already running when the timer fires, it will queue another run
+ * after the current one completes.
+ */
+function debounce<T extends (...args: unknown[]) => Promise<void>>(
+  fn: T,
+  ms: number,
+): (...args: Parameters<T>) => Promise<void> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let pendingPromise: Promise<void> | null = null;
+  let resolvePending: (() => void) | null = null;
+  let isProcessing = false;
+  const queue: Array<{
+    args: Parameters<T>;
+    resolve: () => void;
+  }> = [];
+
+  const execute = async (args: Parameters<T>): Promise<void> => {
+    if (isProcessing) {
+      // If already processing, queue this run for after completion
+      return new Promise<void>((resolve) => {
+        queue.push({ args, resolve });
+      });
+    }
+
+    isProcessing = true;
+    try {
+      await fn(...args);
+    } finally {
+      isProcessing = false;
+
+      // Resolve the current pending promise
+      resolvePending?.();
+      pendingPromise = null;
+      resolvePending = null;
+      timeoutId = null;
+
+      // Process queued runs sequentially
+      if (queue.length > 0) {
+        const next = queue.shift()!;
+        // Execute the queued run and resolve its promise
+        void execute(next.args).then(() => {
+          next.resolve();
+        });
+      }
+    }
+  };
+
+  return (...args: Parameters<T>): Promise<void> => {
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (!pendingPromise) {
+      pendingPromise = new Promise<void>((resolve) => {
+        resolvePending = resolve;
+      });
+    }
+
+    timeoutId = setTimeout(() => {
+      void execute(args);
+    }, ms);
+
+    return pendingPromise;
+  };
 }
