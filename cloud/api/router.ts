@@ -1,10 +1,7 @@
 import { HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
 import { checkHealthHandler } from "@/api/health.handlers";
-import {
-  createTraceHandler,
-  listByFunctionHashHandler,
-} from "@/api/traces.handlers";
+import { createTraceHandler } from "@/api/traces.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
 import {
   listOrganizationsHandler,
@@ -76,9 +73,6 @@ const TracesHandlersLive = HttpApiBuilder.group(
       )
       .handle("getAnalyticsSummary", ({ urlParams }) =>
         getAnalyticsSummaryHandler(urlParams),
-      )
-      .handle("listByFunctionHash", ({ path, urlParams }) =>
-        listByFunctionHashHandler(path.hash, urlParams),
       ),
 );
 

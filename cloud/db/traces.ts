@@ -4,7 +4,7 @@
  * Provides authenticated CRUD operations for traces with role-based access
  * control. Traces belong to environments and inherit authorization from the
  * project's membership system. Traces are ingested via the OTLP (OpenTelemetry
- * Protocol) format and stored with their associated spans.
+ * Protocol) format and ingested into ClickHouse via a durable queue.
  *
  * ## Architecture
  *
@@ -31,8 +31,7 @@
  * ## OTLP Ingestion
  *
  * The `create` method accepts OTLP ResourceSpans format and:
- * - Upserts traces based on traceId + environmentId
- * - Inserts spans with conflict handling (duplicates are rejected)
+ * - Enqueues spans for ClickHouse ingestion
  * - Returns ingestion statistics (acceptedSpans, rejectedSpans)
  *
  * @example
@@ -59,8 +58,7 @@
  * ```
  */
 
-import { Effect } from "effect";
-import { and, eq, desc, sql, inArray } from "drizzle-orm";
+import { Effect, Option } from "effect";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -74,18 +72,15 @@ import {
   PermissionDeniedError,
   ImmutableResourceError,
 } from "@/errors";
+import { type CreateTraceResponse, type PublicTrace } from "@/db/schema/traces";
 import {
-  traces,
-  type NewTrace,
-  type PublicTrace,
-  type CreateTraceResponse,
-} from "@/db/schema/traces";
-import { spans, type NewSpan } from "@/db/schema/spans";
-import { spansOutbox } from "@/db/schema/spansOutbox";
+  SpansIngestQueueService,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
 import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
 
-export type { PublicTrace, CreateTraceResponse };
+export type { CreateTraceResponse, PublicTrace };
 
 /** Input type for trace ingestion via OTLP format. */
 export type TraceCreateInput = {
@@ -174,6 +169,24 @@ function extractServiceVersion(
   return attr?.value?.stringValue ?? null;
 }
 
+/**
+ * Chunk spans into fixed-size batches for queue ingestion.
+ */
+const chunkSpans = <T>(spans: readonly T[], size: number): T[][] => {
+  if (spans.length <= size) return [spans.slice()];
+  const chunks: T[][] = [];
+  for (let i = 0; i < spans.length; i += size) {
+    chunks.push(spans.slice(i, i + size));
+  }
+  return chunks;
+};
+
+const normalizeUnixNano = (value: string | undefined): string | undefined => {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+};
+
 // =============================================================================
 // Traces Service
 // =============================================================================
@@ -206,7 +219,7 @@ type TracePath =
  * - Spans are inserted with conflict handling (duplicates are rejected)
  */
 export class Traces extends BaseAuthenticatedEffectService<
-  PublicTrace,
+  CreateTraceResponse,
   TracePath,
   TraceCreateInput,
   never,
@@ -279,8 +292,8 @@ export class Traces extends BaseAuthenticatedEffectService<
    * Ingests OTLP traces and spans into the database.
    *
    * Requires ADMIN or DEVELOPER role on the project.
-   * Traces are upserted based on traceId + environmentId.
-   * Spans are inserted with conflict handling - duplicates are rejected.
+   * Spans are enqueued for asynchronous ingestion into ClickHouse.
+   * Accepted/rejected counts are based on queue enqueue success.
    *
    * @param args.userId - The user ingesting the traces
    * @param args.organizationId - The organization containing the project
@@ -310,7 +323,7 @@ export class Traces extends BaseAuthenticatedEffectService<
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
+      const queue = yield* Effect.serviceOption(SpansIngestQueueService);
 
       yield* this.authorize({
         userId,
@@ -324,7 +337,8 @@ export class Traces extends BaseAuthenticatedEffectService<
       // Process OTLP resource spans
       let acceptedSpans = 0;
       let rejectedSpans = 0;
-      let firstTrace: PublicTrace | null = null;
+      const receivedAt = Date.now();
+      const maxSpansPerMessage = 50;
 
       for (const rs of data.resourceSpans) {
         const serviceName = extractServiceName(rs.resource?.attributes);
@@ -333,146 +347,51 @@ export class Traces extends BaseAuthenticatedEffectService<
           rs.resource?.attributes,
         );
 
-        for (const scopeSpan of rs.scopeSpans) {
-          for (const span of scopeSpan.spans) {
-            const result = yield* Effect.gen(function* () {
-              const traceData: NewTrace = {
-                otelTraceId: span.traceId,
-                environmentId,
-                projectId,
-                organizationId,
-                serviceName,
-                serviceVersion,
-                resourceAttributes,
-              };
+        const spansForResource = rs.scopeSpans.flatMap((scopeSpan) =>
+          scopeSpan.spans.map((span) => ({
+            ...span,
+            startTimeUnixNano: normalizeUnixNano(span.startTimeUnixNano),
+            endTimeUnixNano: normalizeUnixNano(span.endTimeUnixNano),
+            attributes: keyValueArrayToObject(span.attributes),
+          })),
+        );
 
-              // Upsert the trace
-              const [upsertedTrace] = yield* client
-                .insert(traces)
-                .values(traceData)
-                .onConflictDoUpdate({
-                  target: [traces.otelTraceId, traces.environmentId],
-                  set: {
-                    serviceName: traceData.serviceName,
-                    serviceVersion: traceData.serviceVersion,
-                    resourceAttributes: traceData.resourceAttributes,
-                  },
-                })
-                .returning()
-                .pipe(
-                  Effect.mapError(
-                    (e) =>
-                      new DatabaseError({
-                        message: "Failed to upsert trace",
-                        cause: e,
-                      }),
-                  ),
-                );
+        if (spansForResource.length === 0) {
+          continue;
+        }
 
-              if (!firstTrace && upsertedTrace) {
-                firstTrace = upsertedTrace;
-              }
+        const batches = chunkSpans(spansForResource, maxSpansPerMessage);
 
-              const spanData: NewSpan = {
-                traceId: upsertedTrace.id,
-                otelTraceId: span.traceId,
-                otelSpanId: span.spanId,
-                parentSpanId: span.parentSpanId,
-                environmentId,
-                projectId,
-                organizationId,
-                name: span.name,
-                kind: span.kind,
-                startTimeUnixNano: span.startTimeUnixNano
-                  ? BigInt(span.startTimeUnixNano)
-                  : null,
-                endTimeUnixNano: span.endTimeUnixNano
-                  ? BigInt(span.endTimeUnixNano)
-                  : null,
-                attributes: keyValueArrayToObject(span.attributes),
-                status: span.status,
-                events: span.events,
-                links: span.links,
-                droppedAttributesCount: span.droppedAttributesCount,
-                droppedEventsCount: span.droppedEventsCount,
-                droppedLinksCount: span.droppedLinksCount,
-              };
+        for (const batch of batches) {
+          const message: SpansIngestMessage = {
+            environmentId,
+            projectId,
+            organizationId,
+            receivedAt,
+            serviceName,
+            serviceVersion,
+            resourceAttributes,
+            spans: batch,
+          };
 
-              // Insert the span
-              const insertedSpans = yield* client
-                .insert(spans)
-                .values(spanData)
-                .onConflictDoNothing({
-                  target: [
-                    spans.otelSpanId,
-                    spans.otelTraceId,
-                    spans.environmentId,
-                  ],
-                })
-                .returning({ id: spans.id })
-                .pipe(
-                  Effect.mapError(
-                    (e) =>
-                      new DatabaseError({
-                        message: "Failed to insert span",
-                        cause: e,
-                      }),
-                  ),
-                );
+          const enqueued = yield* Option.match(queue, {
+            onNone: () => Effect.succeed(false),
+            onSome: (service) =>
+              service.send(message).pipe(
+                Effect.as(true),
+                Effect.catchAll(() => Effect.succeed(false)),
+              ),
+          });
 
-              // Write to outbox for ClickHouse sync (all inserted spans).
-              // This is intentionally not wrapped in a transaction so that
-              // a failed outbox write does not roll back the span insert.
-              // If the outbox insert fails we mark the span as rejected below.
-              if (insertedSpans.length > 0) {
-                const outboxRows = insertedSpans.map((s) => ({
-                  spanId: s.id,
-                  operation: "INSERT" as const,
-                }));
-                yield* client
-                  .insert(spansOutbox)
-                  .values(outboxRows)
-                  .onConflictDoNothing({
-                    target: [spansOutbox.spanId, spansOutbox.operation],
-                  })
-                  .pipe(
-                    Effect.mapError(
-                      (e) =>
-                        new DatabaseError({
-                          message: "Failed to write to outbox",
-                          cause: e,
-                        }),
-                    ),
-                  );
-              }
-
-              return insertedSpans.length > 0;
-            }).pipe(Effect.catchAll(() => Effect.succeed(false)));
-
-            if (result) {
-              acceptedSpans++;
-            } else {
-              rejectedSpans++;
-            }
+          if (enqueued) {
+            acceptedSpans += batch.length;
+          } else {
+            rejectedSpans += batch.length;
           }
         }
       }
 
-      // Return first trace info with ingestion stats
-      const traceInfo: PublicTrace = firstTrace ?? {
-        id: "",
-        otelTraceId: "",
-        environmentId,
-        projectId,
-        organizationId,
-        serviceName: null,
-        serviceVersion: null,
-        resourceAttributes: null,
-        createdAt: null,
-      };
-
       return {
-        ...traceInfo,
         acceptedSpans,
         rejectedSpans,
       };
@@ -504,13 +423,11 @@ export class Traces extends BaseAuthenticatedEffectService<
     projectId: string;
     environmentId: string;
   }): Effect.Effect<
-    PublicTrace[],
+    CreateTraceResponse[],
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-
       yield* this.authorize({
         userId,
         action: "read",
@@ -520,122 +437,7 @@ export class Traces extends BaseAuthenticatedEffectService<
         traceId: "",
       });
 
-      return yield* client
-        .select()
-        .from(traces)
-        .where(eq(traces.environmentId, environmentId))
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to list traces",
-                cause: e,
-              }),
-          ),
-        );
-    });
-  }
-
-  /**
-   * Retrieves traces associated with a specific function version hash.
-   *
-   * Queries spans for the `mirascope.version.hash` attribute and returns
-   * the distinct traces containing matching spans. This enables querying
-   * traces by function version for regression testing and version comparison.
-   *
-   * Requires any role on the project (ADMIN, DEVELOPER, VIEWER, or ANNOTATOR).
-   *
-   * @param args.userId - The authenticated user
-   * @param args.organizationId - The organization containing the project
-   * @param args.projectId - The project containing the environment
-   * @param args.environmentId - The environment to search in
-   * @param args.functionHash - The function version hash to search for
-   * @param args.limit - Maximum number of traces to return (default: 100)
-   * @param args.offset - Number of traces to skip for pagination (default: 0)
-   * @returns Object with traces array and total count (before pagination)
-   * @throws NotFoundError - If the environment doesn't exist or user lacks access
-   * @throws PermissionDeniedError - If the user lacks read permission
-   * @throws DatabaseError - If the database query fails
-   */
-  findByFunctionHash({
-    userId,
-    organizationId,
-    projectId,
-    environmentId,
-    functionHash,
-    limit = 100,
-    offset = 0,
-  }: {
-    userId: string;
-    organizationId: string;
-    projectId: string;
-    environmentId: string;
-    functionHash: string;
-    limit?: number;
-    offset?: number;
-  }): Effect.Effect<
-    { traces: PublicTrace[]; total: number },
-    NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
-  > {
-    return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-
-      yield* this.authorize({
-        userId,
-        action: "read",
-        organizationId,
-        projectId,
-        environmentId,
-        traceId: "",
-      });
-
-      // First, find trace IDs from spans that have the matching function hash
-      const matchingSpans = yield* client
-        .selectDistinct({ traceId: spans.traceId })
-        .from(spans)
-        .where(
-          and(
-            eq(spans.environmentId, environmentId),
-            sql`${spans.attributes}->>'mirascope.version.hash' = ${functionHash}`,
-          ),
-        )
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to query spans by function hash",
-                cause: e,
-              }),
-          ),
-        );
-
-      if (matchingSpans.length === 0) {
-        return { traces: [], total: 0 };
-      }
-
-      const traceIds = matchingSpans.map((s) => s.traceId);
-      const total = traceIds.length;
-
-      // Then fetch the full trace records with pagination
-      const traceResults = yield* client
-        .select()
-        .from(traces)
-        .where(inArray(traces.id, traceIds))
-        .orderBy(desc(traces.createdAt))
-        .limit(limit)
-        .offset(offset)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to list traces by function hash",
-                cause: e,
-              }),
-          ),
-        );
-
-      return { traces: traceResults, total };
+      return [];
     });
   }
 
@@ -667,13 +469,11 @@ export class Traces extends BaseAuthenticatedEffectService<
     environmentId: string;
     traceId: string;
   }): Effect.Effect<
-    PublicTrace,
+    CreateTraceResponse,
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-
       yield* this.authorize({
         userId,
         action: "read",
@@ -683,34 +483,11 @@ export class Traces extends BaseAuthenticatedEffectService<
         traceId,
       });
 
-      const [row] = yield* client
-        .select()
-        .from(traces)
-        .where(
-          and(
-            eq(traces.otelTraceId, traceId),
-            eq(traces.environmentId, environmentId),
-          ),
-        )
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to get trace",
-                cause: e,
-              }),
-          ),
-        );
-
-      if (!row) {
-        return yield* Effect.fail(
-          new NotFoundError({
-            message: `Trace ${traceId} not found`,
-          }),
-        );
-      }
-
-      return row;
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: `Trace ${traceId} not found`,
+        }),
+      );
     });
   }
 
@@ -736,7 +513,7 @@ export class Traces extends BaseAuthenticatedEffectService<
     traceId: string;
     data: never;
   }): Effect.Effect<
-    PublicTrace,
+    CreateTraceResponse,
     | NotFoundError
     | PermissionDeniedError
     | ImmutableResourceError
@@ -795,8 +572,6 @@ export class Traces extends BaseAuthenticatedEffectService<
     DrizzleORM
   > {
     return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-
       yield* this.authorize({
         userId,
         action: "delete",
@@ -806,56 +581,10 @@ export class Traces extends BaseAuthenticatedEffectService<
         traceId,
       });
 
-      // Use transaction to ensure spans and trace are deleted atomically
-      yield* client.withTransaction(
-        Effect.gen(function* () {
-          // Delete spans first (foreign key constraint)
-          yield* client
-            .delete(spans)
-            .where(
-              and(
-                eq(spans.otelTraceId, traceId),
-                eq(spans.environmentId, environmentId),
-              ),
-            )
-            .pipe(
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to delete spans",
-                    cause: e,
-                  }),
-              ),
-            );
-
-          // Delete the trace
-          const [row] = yield* client
-            .delete(traces)
-            .where(
-              and(
-                eq(traces.otelTraceId, traceId),
-                eq(traces.environmentId, environmentId),
-              ),
-            )
-            .returning({ id: traces.id })
-            .pipe(
-              Effect.mapError(
-                (e) =>
-                  new DatabaseError({
-                    message: "Failed to delete trace",
-                    cause: e,
-                  }),
-              ),
-            );
-
-          if (!row) {
-            return yield* Effect.fail(
-              new NotFoundError({
-                message: `Trace ${traceId} not found`,
-                resource: "trace",
-              }),
-            );
-          }
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: `Trace ${traceId} not found`,
+          resource: "trace",
         }),
       );
     });

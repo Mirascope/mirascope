@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   describe,
   it,
@@ -9,6 +9,63 @@ import {
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
 import { toAnnotation } from "@/api/annotations.handlers";
 import { TEST_DATABASE_URL } from "@/tests/db";
+import { DrizzleORM } from "@/db/client";
+import { spans, traces } from "@/db/schema";
+
+const insertTraceSpan = ({
+  traceId,
+  spanId,
+  environmentId,
+  projectId,
+  organizationId,
+}: {
+  traceId: string;
+  spanId: string;
+  environmentId: string;
+  projectId: string;
+  organizationId: string;
+}) =>
+  Effect.gen(function* () {
+    const client = yield* DrizzleORM;
+
+    const [trace] = yield* client
+      .insert(traces)
+      .values({
+        otelTraceId: traceId,
+        environmentId,
+        projectId,
+        organizationId,
+        serviceName: "test-svc",
+      })
+      .returning({ id: traces.id });
+
+    yield* client.insert(spans).values({
+      traceId: trace.id,
+      otelTraceId: traceId,
+      otelSpanId: spanId,
+      parentSpanId: null,
+      environmentId,
+      projectId,
+      organizationId,
+      name: "test-span",
+      kind: 1,
+      startTimeUnixNano: BigInt("1700000000000000000"),
+      endTimeUnixNano: BigInt("1700000001000000000"),
+      attributes: {},
+      status: {},
+      events: [],
+      links: [],
+      droppedAttributesCount: null,
+      droppedEventsCount: null,
+      droppedLinksCount: null,
+    });
+  }).pipe(
+    Effect.provide(
+      DrizzleORM.layer({ connectionString: TEST_DATABASE_URL }).pipe(
+        Layer.orDie,
+      ),
+    ),
+  );
 
 describe("toAnnotation", () => {
   it("converts dates to ISO strings", () => {
@@ -152,6 +209,13 @@ describe.sequential("Annotations API", (it) => {
         },
       });
       expect(result.partialSuccess).toBeDefined();
+      yield* insertTraceSpan({
+        traceId: "0123456789abcdef0123456789abcdef",
+        spanId: "0123456789abcdef",
+        environmentId: environment.id,
+        projectId: project.id,
+        organizationId: project.organizationId,
+      });
     }),
   );
 
@@ -201,6 +265,13 @@ describe.sequential("Annotations API", (it) => {
             },
           ],
         },
+      });
+      yield* insertTraceSpan({
+        traceId: optionalTraceId,
+        spanId: optionalSpanId,
+        environmentId: environment.id,
+        projectId: project.id,
+        organizationId: project.organizationId,
       });
 
       const result = yield* apiKeyClient.annotations.create({
@@ -253,6 +324,13 @@ describe.sequential("Annotations API", (it) => {
               },
             ],
           },
+        });
+        yield* insertTraceSpan({
+          traceId: noLabelTraceId,
+          spanId: noLabelSpanId,
+          environmentId: environment.id,
+          projectId: project.id,
+          organizationId: project.organizationId,
         });
 
         const result = yield* apiKeyClient.annotations.create({
@@ -366,6 +444,13 @@ describe.sequential("Annotations API", (it) => {
             },
           ],
         },
+      });
+      yield* insertTraceSpan({
+        traceId: deleteTraceId,
+        spanId: deleteSpanId,
+        environmentId: environment.id,
+        projectId: project.id,
+        organizationId: project.organizationId,
       });
 
       const created = yield* apiKeyClient.annotations.create({

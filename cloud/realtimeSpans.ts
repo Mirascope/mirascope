@@ -79,7 +79,7 @@ export class RealtimeSpans extends Context.Tag("RealtimeSpans")<
     readonly getTraceDetail: (
       input: TraceDetailInput,
     ) => Effect.Effect<TraceDetailResponse, Error>;
-    readonly existsSpan: (
+    readonly exists: (
       input: RealtimeSpanExistsInput,
     ) => Effect.Effect<boolean, Error>;
   }

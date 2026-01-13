@@ -96,7 +96,7 @@ export type PublicTrace = Pick<
 >;
 
 // Type for the create response (includes ingestion stats)
-export type CreateTraceResponse = PublicTrace & {
+export type CreateTraceResponse = {
   acceptedSpans: number;
   rejectedSpans: number;
 };

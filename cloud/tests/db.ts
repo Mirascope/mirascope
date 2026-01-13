@@ -8,6 +8,9 @@ import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
 import { Payments } from "@/payments";
 import { DefaultMockPayments } from "@/tests/payments";
+import { SpansIngestQueueService } from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/realtimeSpans";
+import { spans, traces } from "@/db/schema";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -60,9 +63,29 @@ export const TestDatabase: Layer.Layer<
   const { DefaultMockPayments } = yield* Effect.promise(
     () => import("@/tests/payments"),
   );
-  return Database.Default.pipe(
-    Layer.provideMerge(TestDrizzleORM),
-    Layer.provide(DefaultMockPayments),
+  const queueLayer = Layer.succeed(SpansIngestQueueService, {
+    send: () => Effect.void,
+  });
+  const realtimeLayer = Layer.succeed(RealtimeSpans, {
+    upsert: () => Effect.void,
+    search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+    getTraceDetail: () =>
+      Effect.succeed({
+        traceId: "",
+        spans: [],
+        rootSpanId: null,
+        totalDurationMs: null,
+      }),
+    exists: () => Effect.succeed(false),
+  });
+
+  return Layer.mergeAll(
+    Database.Default.pipe(
+      Layer.provideMerge(TestDrizzleORM),
+      Layer.provide(DefaultMockPayments),
+    ),
+    queueLayer,
+    realtimeLayer,
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -582,49 +605,42 @@ export const TestApiKeyFixture = Effect.gen(function* () {
  */
 export const TestSpanFixture = Effect.gen(function* () {
   const envFixture = yield* TestEnvironmentFixture;
-  const db = yield* Database;
+  const client = yield* DrizzleORM;
 
   const traceId = "0123456789abcdef0123456789abcdef";
   const spanId = "0123456789abcdef";
 
-  const result = yield* db.organizations.projects.environments.traces.create({
-    userId: envFixture.owner.id,
-    organizationId: envFixture.org.id,
-    projectId: envFixture.project.id,
-    environmentId: envFixture.environment.id,
-    data: {
-      resourceSpans: [
-        {
-          resource: {
-            attributes: [
-              { key: "service.name", value: { stringValue: "test-service" } },
-            ],
-          },
-          scopeSpans: [
-            {
-              scope: { name: "test-scope" },
-              spans: [
-                {
-                  traceId,
-                  spanId,
-                  name: "test-span",
-                  kind: 1,
-                  startTimeUnixNano: "1700000000000000000",
-                  endTimeUnixNano: "1700000001000000000",
-                  attributes: [],
-                  status: {},
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  });
+  const [trace] = yield* client
+    .insert(traces)
+    .values({
+      otelTraceId: traceId,
+      environmentId: envFixture.environment.id,
+      projectId: envFixture.project.id,
+      organizationId: envFixture.org.id,
+      serviceName: "test-service",
+    })
+    .returning({ id: traces.id });
 
-  if (result.acceptedSpans !== 1) {
-    throw new Error("Failed to create test span");
-  }
+  yield* client.insert(spans).values({
+    traceId: trace.id,
+    otelTraceId: traceId,
+    otelSpanId: spanId,
+    parentSpanId: null,
+    environmentId: envFixture.environment.id,
+    projectId: envFixture.project.id,
+    organizationId: envFixture.org.id,
+    name: "test-span",
+    kind: 1,
+    startTimeUnixNano: BigInt("1700000000000000000"),
+    endTimeUnixNano: BigInt("1700000001000000000"),
+    attributes: {},
+    status: {},
+    events: [],
+    links: [],
+    droppedAttributesCount: null,
+    droppedEventsCount: null,
+    droppedLinksCount: null,
+  });
 
   return {
     ...envFixture,

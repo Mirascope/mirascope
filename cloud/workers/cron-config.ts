@@ -3,7 +3,9 @@
  */
 
 import type { CloudflareEnvironment } from "@/settings";
+import type { DurableObjectNamespace } from "@cloudflare/workers-types";
 import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
+import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
 
 /**
  * Cloudflare Scheduled Event type.
@@ -39,4 +41,8 @@ export interface WorkerEnv extends BillingCronTriggerEnv {
   readonly ROUTER_METERING_QUEUE?: {
     send: (message: RouterMeteringMessage) => Promise<void>;
   };
+  readonly SPANS_INGEST_QUEUE?: {
+    send: (message: SpansIngestMessage) => Promise<void>;
+  };
+  readonly RECENT_SPANS_DURABLE_OBJECT?: DurableObjectNamespace;
 }
