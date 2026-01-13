@@ -20,7 +20,12 @@ from ..content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ..formatting import Format, FormattableT, Partial
+from ..formatting import (
+    Format,
+    FormattableT,
+    Partial,
+    is_output_parser,
+)
 from ..messages import AssistantMessage, Message
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from ..types import Jsonable
@@ -536,20 +541,43 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
     def structured_stream(
         self,
     ) -> Iterator[Partial[FormattableT]]:
-        """Returns an iterator that yields partial structured objects as content streams.
+        """Drive the stream forward, yielding partial formatted outputs as they arrive.
 
-        Returns:
-            Iterator[Partial[FormatT]]: Synchronous iterator yielding partial structured objects
+        This method consumes the underlying stream chunk by chunk, yielding parsed
+        partial outputs each time new content arrives. Each yielded value is a
+        Partial[FormattableT] with optional fields that may be None until fully received.
 
-        This method yields Partial[FormatT] objects as the response content is streamed,
-        allowing you to access partial structured data before the response is fully complete.
-        Each yielded object represents the current state of the parsed structure with all
-        fields optional.
+        Example:
+            >>> response = recommend_book.stream("fantasy")
+            >>> for partial in response.structured_stream():
+            >>>     print(f"Title so far: {partial.title}")
+            >>> book = response.parse()  # Get final complete result
 
         Fully iterating through this iterator will fully consume the underlying stream,
         updating the Response with all collected content.
+
+        Yields:
+            Partial[FormattableT]: Partial objects with fields populated as they arrive.
+                Fields not yet received will be None.
+
+        Raises:
+            ValueError: If format parameter not set.
+            NotImplementedError: If format uses OutputParser (not supported).
         """
-        raise NotImplementedError()
+        if self.format is None:
+            raise ValueError("structured_stream() requires format parameter")
+
+        if is_output_parser(self.format.formattable):
+            raise NotImplementedError(
+                "structured_stream() not supported for OutputParser. "
+                "Use BaseModel or primitive types."
+            )
+
+        for chunk in self.chunk_stream():
+            if chunk.type == "text_chunk":
+                partial = self.parse(partial=True)
+                if partial:
+                    yield partial
 
 
 class BaseAsyncStreamResponse(
@@ -714,20 +742,43 @@ class BaseAsyncStreamResponse(
         if not printed:
             yield "**[No Content]**"
 
-    def structured_stream(
+    async def structured_stream(
         self,
     ) -> AsyncIterator[Partial[FormattableT]]:
-        """Returns an async iterator that yields partial structured objects as content streams.
+        """Drive the stream forward, yielding partial formatted outputs as they arrive.
 
-        Returns:
-            AsyncIterator[Partial[FormatT]]: Async iterator yielding partial structured objects
+        This method consumes the underlying stream chunk by chunk, yielding parsed
+        partial outputs each time new content arrives. Each yielded value is a
+        Partial[FormattableT] with optional fields that may be None until fully received.
 
-        This method yields Partial[FormatT] objects as the response content is streamed,
-        allowing you to access partial structured data before the response is fully complete.
-        Each yielded object represents the current state of the parsed structure with all
-        fields optional.
+        Example:
+            >>> response = await recommend_book.stream("fantasy")
+            >>> async for partial in response.structured_stream():
+            >>>     print(f"Title so far: {partial.title}")
+            >>> book = response.parse()  # Get final complete result
 
         Fully iterating through this iterator will fully consume the underlying stream,
         updating the Response with all collected content.
+
+        Yields:
+            Partial[FormattableT]: Partial objects with fields populated as they arrive.
+                Fields not yet received will be None.
+
+        Raises:
+            ValueError: If format parameter not set.
+            NotImplementedError: If format uses OutputParser (not supported).
         """
-        raise NotImplementedError()
+        if self.format is None:
+            raise ValueError("structured_stream() requires format parameter")
+
+        if is_output_parser(self.format.formattable):
+            raise NotImplementedError(
+                "structured_stream() not supported for OutputParser. "
+                "Use BaseModel or primitive types."
+            )
+
+        async for chunk in self.chunk_stream():
+            if chunk.type == "text_chunk":
+                partial = self.parse(partial=True)
+                if partial:
+                    yield partial

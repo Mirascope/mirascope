@@ -36,7 +36,7 @@ then unwrapped after validation to return the primitive value.
 """
 
 
-class _WrapperModel(Protocol):
+class PrimitiveWrapperModel(Protocol):
     """Protocol for wrapper models with an output field."""
 
     output: Any
@@ -48,7 +48,7 @@ class _WrapperModel(Protocol):
     def model_json_schema(cls) -> dict[str, Any]: ...
 
     @classmethod
-    def model_validate_json(cls, json_data: str) -> "_WrapperModel": ...
+    def model_validate_json(cls, json_data: str) -> "PrimitiveWrapperModel": ...
 
 
 def is_primitive_type(
@@ -152,7 +152,7 @@ def _get_type_name(type_: Any) -> str:  # noqa: ANN401
 
 def create_wrapper_model(
     primitive_type: Any,  # noqa: ANN401
-) -> type[_WrapperModel]:
+) -> type[PrimitiveWrapperModel]:
     """Create a wrapper BaseModel for a primitive type.
 
     The wrapper has a single field called "output" containing the primitive value.
@@ -189,4 +189,4 @@ def create_wrapper_model(
         output=(primitive_type, ...),  # ... means required
     )
 
-    return cast(type[_WrapperModel], wrapper)
+    return cast(type[PrimitiveWrapperModel], wrapper)

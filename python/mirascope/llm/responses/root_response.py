@@ -116,33 +116,41 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     ) -> FormattableT | Partial[FormattableT] | None:
         """Format the response according to the response format parser.
 
+        Args:
+            partial: If True, parse incomplete JSON as Partial model. Only works with
+                streaming responses that have accumulated JSON. Returns None if JSON
+                is not yet available or cannot be parsed.
+
         Supports:
         - Pydantic BaseModel types (JSON schema validation)
         - Primitive types (automatically unwrapped from wrapper model)
         - Custom OutputParsers (custom parsing logic)
+        - Partial parsing during streaming (when partial=True)
 
         Returns:
             The formatted response object of type FormatT. For BaseModel types, returns
             the model instance. For primitive types, returns the unwrapped value (e.g.,
             a string, list, dict, etc.). For OutputParsers, returns whatever the parser
-            returns.
+            returns. When partial=True, returns None if JSON is incomplete or unparsable.
 
         Raises:
             json.JSONDecodeError: If the response's textual content can't be parsed as
-                JSON (BaseModel/primitive types).
+                JSON (BaseModel/primitive types, when partial=False).
             pydantic.ValidationError: If the response's content fails validation for the
-                format type (BaseModel/primitive types).
+                format type (BaseModel/primitive types, when partial=False).
             Any exception raised by the custom parser (OutputParser).
         """
         if self.format is None:
             return None
 
-        if partial:
-            raise NotImplementedError
-
         formattable = self.format.formattable
 
         if is_output_parser(formattable):
+            if partial:
+                raise NotImplementedError(
+                    "parse(partial=True) not supported with OutputParser. "
+                    "Use BaseModel or primitive types."
+                )
             return formattable(self)
 
         if formattable is None or formattable is NoneType:  # pyright: ignore[reportUnnecessaryComparison]
@@ -151,14 +159,17 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
             return None  # pragma: no cover
 
         text = "".join(text.text for text in self.texts)
-        json_text = _utils.extract_serialized_json(text)
 
-        if is_primitive_type(formattable):
-            wrapper_model = create_wrapper_model(formattable)
-            wrapper_instance = wrapper_model.model_validate_json(json_text)
-            return wrapper_instance.output
+        if partial:
+            return _utils.parse_partial_json(text, formattable)
+        else:
+            json_text = _utils.extract_serialized_json(text)
+            if is_primitive_type(formattable):
+                wrapper_model = create_wrapper_model(formattable)
+                wrapper_instance = wrapper_model.model_validate_json(json_text)
+                return wrapper_instance.output
 
-        return formattable.model_validate_json(json_text)
+            return formattable.model_validate_json(json_text)
 
     def pretty(self) -> str:
         """Return a string representation of all response content.
