@@ -130,7 +130,7 @@ export function replaceProviderVariables(
 import { temporarilyEnableSyncHighlighting } from "@/app/lib/code-highlight";
 
 // Create a context to share the selected provider
-interface ProviderContextType {
+interface ModelProviderProviderType {
   provider: Provider;
   setProvider: (provider: Provider) => void;
   providerInfo: {
@@ -139,7 +139,7 @@ interface ProviderContextType {
   };
 }
 
-const ProviderContext = createContext<ProviderContextType | undefined>(
+const ProviderContext = createContext<ModelProviderProviderType | undefined>(
   undefined,
 );
 
@@ -155,7 +155,7 @@ const validateProvider = (
 };
 
 // Provider component that wraps the content and provides the state
-export function ProviderContextProvider({
+export function ModelProviderProvider({
   children,
   defaultProvider = "openai",
   onProviderChange,

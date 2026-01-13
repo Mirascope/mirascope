@@ -1,5 +1,5 @@
-import { useProvider } from "@/app/components/blocks/model-provider-provider";
-import type { Provider } from "@/app/components/blocks/model-provider-provider";
+import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
+import type { Provider } from "@/app/components/mdx/elements/model-provider-provider";
 // import { AnalyticsCodeBlock } from "@/app/components/blocks/mdx/AnalyticsCodeBlock";
 import { cn } from "@/app/lib/utils";
 import { TabbedSection, Tab } from "./tabbed-section";

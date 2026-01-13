@@ -10,8 +10,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import type { ProcessedMDX, Frontmatter } from "@/app/lib/mdx/types";
 import type { TOCItem } from "@/app/lib/content/types";
 import { parseFrontmatter } from "./frontmatter";
-import { extractTOC } from "./toc";
-
+import { extractHeadings } from "../mdx/heading-utils";
 export interface CompileMDXOptions {
   /** Skip syntax highlighting (faster for tests) */
   skipHighlighting?: boolean;
@@ -41,7 +40,7 @@ export async function compileMDXContent(
   const { frontmatter, content } = parseFrontmatter(rawContent);
 
   // Extract TOC
-  const tableOfContents = extractTOC(content);
+  const tableOfContents = extractHeadings(content);
 
   // Build compile options
   const compileOptions: CompileOptions = {

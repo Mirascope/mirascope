@@ -1,10 +1,10 @@
 import React from "react";
-import PageLayout from "@/app/components/page-layout";
+import ContentLayout from "@/app/components/content-layout";
 import LoadingContent from "@/app/components/blocks/loading-content";
-import { ProviderContextProvider } from "@/app/components/blocks/model-provider-provider";
-// import TocSidebar from "@/app/components/toc-sidebar";
+import { ModelProviderProvider } from "@/app/components/mdx/elements/model-provider-provider";
+import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
 import MainContent from "@/app/components/blocks/docs/main-content";
-import DocsSidebar from "@/app/components/blocks/docs/sidebar";
+import DocsSidebar from "@/app/components/docs-sidebar";
 import type { DocContent } from "@/app/lib/content/types";
 
 type DocsPageProps = {
@@ -21,36 +21,35 @@ type DocsPageProps = {
 const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
   return (
     <>
-      <ProviderContextProvider>
-        <PageLayout>
-          <PageLayout.LeftSidebar className="pt-1" collapsible={true}>
+      <ModelProviderProvider>
+        <ContentLayout>
+          <ContentLayout.LeftSidebar className="pt-1" collapsible={true}>
             <DocsSidebar />
-          </PageLayout.LeftSidebar>
+          </ContentLayout.LeftSidebar>
 
-          <PageLayout.Content>
+          <ContentLayout.Content>
             {isLoading ? (
               <LoadingContent fullHeight={true} />
             ) : (
               document && <MainContent document={document} />
             )}
-          </PageLayout.Content>
+          </ContentLayout.Content>
 
-          <PageLayout.RightSidebar
+          <ContentLayout.RightSidebar
             className="pt-1"
             mobileCollapsible={true}
             mobileTitle="On this page"
           >
-            Sidebar content
-            {/* {isLoading ? (
+            {isLoading ? (
               <div className="h-full">
                 <div className="bg-muted mx-4 mt-16 h-6 animate-pulse rounded-md"></div>
               </div>
             ) : (
-              document && <TocSidebar document={document} />
-            )} */}
-          </PageLayout.RightSidebar>
-        </PageLayout>
-      </ProviderContextProvider>
+              document && <DocsTocSidebar document={document} />
+            )}
+          </ContentLayout.RightSidebar>
+        </ContentLayout>
+      </ModelProviderProvider>
     </>
   );
 };

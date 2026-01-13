@@ -1,13 +1,13 @@
 import { docRegistry } from "@/app/lib/content/doc-registry";
 import type { DocSpec, SectionSpec } from "@/app/lib/content/spec";
-import { type Provider } from "@/app/components/blocks/model-provider-provider";
-import Sidebar from "@/app/components/page-sidebar";
+import { type Provider } from "@/app/components/mdx/elements/model-provider-provider";
+import Sidebar from "@/app/components/blocks/navigation/sidebar";
 import type {
   SidebarConfig,
   SidebarItem,
   SidebarGroup,
   SidebarSection,
-} from "@/app/components/page-sidebar";
+} from "@/app/components/blocks/navigation/sidebar";
 import { docsSpec } from "@/content/docs/_meta";
 
 interface DocsSidebarProps {
