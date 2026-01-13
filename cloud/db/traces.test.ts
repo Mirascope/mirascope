@@ -1044,6 +1044,276 @@ describe("Traces", () => {
     );
   });
 
+  describe("findByFunctionHash", () => {
+    it.effect("retrieves traces by function version hash", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        // Create a trace with spans that have function hash in attributes
+        const resourceSpans = [
+          {
+            resource: {
+              attributes: [
+                { key: "service.name", value: { stringValue: "test-service" } },
+              ],
+            },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: "trace-func-hash-1",
+                    spanId: "span-func-hash-1",
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                    attributes: [
+                      {
+                        key: "mirascope.version.hash",
+                        value: { stringValue: "abc123" },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        yield* db.organizations.projects.environments.traces.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          data: { resourceSpans },
+        });
+
+        const result =
+          yield* db.organizations.projects.environments.traces.findByFunctionHash(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              functionHash: "abc123",
+            },
+          );
+
+        expect(result.traces).toHaveLength(1);
+        expect(result.traces[0].otelTraceId).toBe("trace-func-hash-1");
+        expect(result.total).toBe(1);
+      }),
+    );
+
+    it.effect("returns empty array when no traces match function hash", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.findByFunctionHash(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              functionHash: "non-existent-hash",
+            },
+          );
+
+        expect(result.traces).toHaveLength(0);
+        expect(result.total).toBe(0);
+      }),
+    );
+
+    it.effect("respects limit and offset parameters", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        // Create multiple traces with the same function hash
+        for (let i = 1; i <= 5; i++) {
+          const resourceSpans = [
+            {
+              resource: { attributes: [] },
+              scopeSpans: [
+                {
+                  scope: { name: "test" },
+                  spans: [
+                    {
+                      traceId: `trace-paginate-${i}`,
+                      spanId: `span-paginate-${i}`,
+                      name: "test-span",
+                      startTimeUnixNano: `${1000000000 + i * 1000000}`,
+                      endTimeUnixNano: `${2000000000 + i * 1000000}`,
+                      attributes: [
+                        {
+                          key: "mirascope.version.hash",
+                          value: { stringValue: "paginate-hash" },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          });
+        }
+
+        const limitedResult =
+          yield* db.organizations.projects.environments.traces.findByFunctionHash(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              functionHash: "paginate-hash",
+              limit: 2,
+              offset: 0,
+            },
+          );
+
+        expect(limitedResult.traces).toHaveLength(2);
+        expect(limitedResult.total).toBe(5);
+
+        const offsetResult =
+          yield* db.organizations.projects.environments.traces.findByFunctionHash(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              functionHash: "paginate-hash",
+              limit: 2,
+              offset: 2,
+            },
+          );
+
+        expect(offsetResult.traces).toHaveLength(2);
+        expect(offsetResult.total).toBe(5);
+      }),
+    );
+
+    it.effect(
+      "returns NotFoundError when non-member tries to query (hides project)",
+      () =>
+        Effect.gen(function* () {
+          const { environment, project, org, nonMember } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.traces
+            .findByFunctionHash({
+              userId: nonMember.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              functionHash: "any-hash",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }),
+    );
+
+    it.effect("returns DatabaseError when spans query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .findByFunctionHash({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            functionHash: "test-hash",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to query spans by function hash");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .selectDistinct(new Error("Spans query failed"))
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns DatabaseError when traces query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .findByFunctionHash({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            functionHash: "test-hash",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to list traces by function hash");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .selectDistinct([{ traceId: "trace-123" }]) // Spans query succeeds
+            .select(new Error("Traces query failed")) // Traces query fails
+            .build(),
+        ),
+      ),
+    );
+  });
+
   describe("update", () => {
     it.effect("returns PermissionDeniedError (traces are immutable)", () =>
       Effect.gen(function* () {

@@ -60,7 +60,7 @@
  */
 
 import { Effect } from "effect";
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc, sql, inArray } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -533,6 +533,109 @@ export class Traces extends BaseAuthenticatedEffectService<
               }),
           ),
         );
+    });
+  }
+
+  /**
+   * Retrieves traces associated with a specific function version hash.
+   *
+   * Queries spans for the `mirascope.version.hash` attribute and returns
+   * the distinct traces containing matching spans. This enables querying
+   * traces by function version for regression testing and version comparison.
+   *
+   * Requires any role on the project (ADMIN, DEVELOPER, VIEWER, or ANNOTATOR).
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization containing the project
+   * @param args.projectId - The project containing the environment
+   * @param args.environmentId - The environment to search in
+   * @param args.functionHash - The function version hash to search for
+   * @param args.limit - Maximum number of traces to return (default: 100)
+   * @param args.offset - Number of traces to skip for pagination (default: 0)
+   * @returns Object with traces array and total count (before pagination)
+   * @throws NotFoundError - If the environment doesn't exist or user lacks access
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
+  findByFunctionHash({
+    userId,
+    organizationId,
+    projectId,
+    environmentId,
+    functionHash,
+    limit = 100,
+    offset = 0,
+  }: {
+    userId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    functionHash: string;
+    limit?: number;
+    offset?: number;
+  }): Effect.Effect<
+    { traces: PublicTrace[]; total: number },
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        projectId,
+        environmentId,
+        traceId: "",
+      });
+
+      // First, find trace IDs from spans that have the matching function hash
+      const matchingSpans = yield* client
+        .selectDistinct({ traceId: spans.traceId })
+        .from(spans)
+        .where(
+          and(
+            eq(spans.environmentId, environmentId),
+            sql`${spans.attributes}->>'mirascope.version.hash' = ${functionHash}`,
+          ),
+        )
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to query spans by function hash",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (matchingSpans.length === 0) {
+        return { traces: [], total: 0 };
+      }
+
+      const traceIds = matchingSpans.map((s) => s.traceId);
+      const total = traceIds.length;
+
+      // Then fetch the full trace records with pagination
+      const traceResults = yield* client
+        .select()
+        .from(traces)
+        .where(inArray(traces.id, traceIds))
+        .orderBy(desc(traces.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to list traces by function hash",
+                cause: e,
+              }),
+          ),
+        );
+
+      return { traces: traceResults, total };
     });
   }
 
