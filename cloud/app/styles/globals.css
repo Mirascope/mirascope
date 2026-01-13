@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "./pages.css";
+
 @custom-variant dark (&:is(.dark *));
 
 /* Williams Handwriting font import */

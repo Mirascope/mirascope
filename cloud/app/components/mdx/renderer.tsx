@@ -6,12 +6,14 @@
 
 import React from "react";
 import type { ProcessedMDX } from "@/app/lib/mdx/types";
+import type { MDXComponents } from "mdx/types";
+import componentRegistry from "@/app/components/mdx/component-registry";
 
 interface MDXRendererProps {
   /** Processed MDX content */
   mdx: ProcessedMDX;
   /** Optional custom components to override defaults */
-  components?: Record<string, React.ComponentType<unknown>>;
+  components?: MDXComponents;
   /** Optional className for the wrapper div */
   className?: string;
 }
@@ -129,11 +131,12 @@ export function MDXRenderer({
   // The mdx import is the React component itself (with metadata attached)
   const mergedComponents = {
     ...defaultComponents,
+    ...componentRegistry,
     ...components,
   };
 
   return (
-    <div className={className || "prose max-w-none"}>
+    <div className={className || "prose max-w-none"} id="mdx-container">
       <MDXComponent components={mergedComponents} />
     </div>
   );

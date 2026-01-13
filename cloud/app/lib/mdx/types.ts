@@ -7,6 +7,7 @@ import type { TOCItem } from "@/app/lib/content/types";
  */
 
 import type React from "react";
+import type { MDXComponents } from "mdx/types";
 
 /**
  * Frontmatter extracted from MDX files
@@ -24,10 +25,7 @@ export interface Frontmatter {
  * This is a React component with metadata attached as properties
  */
 export type ProcessedMDX = React.ComponentType<{
-  components?: Record<
-    string,
-    React.ComponentType<React.HTMLAttributes<unknown>>
-  >;
+  components?: MDXComponents;
 }> & {
   /** Extracted frontmatter metadata */
   frontmatter: Frontmatter;

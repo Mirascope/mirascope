@@ -1,14 +1,15 @@
+import type { ReactNode } from "react";
 import type { ProcessedMDX } from "@/app/lib/mdx/types";
 
 /**
  * Table of contents item extracted from MDX headings
  */
-export interface TOCItem {
+export type TOCItem = {
   id: string;
-  text: string;
+  content: string | ReactNode;
   level: number;
   children?: TOCItem[];
-}
+};
 
 /* ========== CONTENT TYPES =========== */
 

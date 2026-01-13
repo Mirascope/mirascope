@@ -1,0 +1,245 @@
+/* Base styling for the Mermaid diagram wrapper */
+.mermaidWrapper {
+  background-color: var(--color-background);
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border-radius: 0.375rem;
+  padding: 1rem;
+}
+
+/* Flowchart node styling */
+.mermaidWrapper :global(.flowchart .node rect),
+.mermaidWrapper :global(.flowchart .node circle),
+.mermaidWrapper :global(.flowchart .node ellipse),
+.mermaidWrapper :global(.flowchart .node polygon),
+.mermaidWrapper :global(.flowchart .node path) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(span.nodeLabel),
+.mermaidWrapper :global(div.label),
+.mermaidWrapper :global(span.edgeLabel) {
+  background-color: transparent !important;
+}
+
+/* Handle node text color - expanded selectors */
+.mermaidWrapper :global(.flowchart .node .label text),
+.mermaidWrapper :global(.flowchart .node .nodeLabel),
+.mermaidWrapper :global(.label text),
+.mermaidWrapper :global(.nodeLabel),
+.mermaidWrapper :global(.node .label text),
+.mermaidWrapper :global(.node text),
+.mermaidWrapper :global(.actor text tspan),
+.mermaidWrapper :global(.actor-box),
+.mermaidWrapper :global(text.actor > tspan) {
+  fill: var(--color-primary-foreground) !important;
+  color: var(--color-primary-foreground) !important;
+}
+
+/* Target edges/connectors */
+.mermaidWrapper :global(.flowchart .edgePath .path),
+.mermaidWrapper :global(.flowchart-link) {
+  stroke: var(--color-primary) !important;
+}
+
+/* Override edge labels */
+.mermaidWrapper :global(.edgeLabel),
+.mermaidWrapper :global(.edgeLabel span),
+.mermaidWrapper :global(.edgeLabel p) {
+  background-color: var(--color-background) !important;
+  color: var(--color-foreground) !important;
+  fill: var(--color-foreground) !important;
+}
+
+.mermaidWrapper :global(.edgeLabel rect),
+.mermaidWrapper :global(.labelBkg),
+.mermaidWrapper :global(.edgeLabel foreignObject),
+.mermaidWrapper :global(.edgeLabel div) {
+  fill: transparent !important;
+  background-color: transparent !important;
+  opacity: 1 !important;
+}
+
+.mermaidWrapper :global(.edgeLabel div.labelBkg),
+.mermaidWrapper :global(.edgeLabel div) {
+  background-color: transparent !important;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Fix edge label width to prevent text cutoff */
+.mermaidWrapper :global(.edgeLabel foreignObject),
+.mermaidWrapper :global(.edgeLabel foreignObject div) {
+  overflow: visible !important;
+}
+
+.mermaidWrapper :global(.arrowMarkerPath),
+.mermaidWrapper :global(.arrowheadPath) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+/* Sequence diagram styling */
+.mermaidWrapper :global(.actor) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.actor-line) {
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.messageLine0),
+.mermaidWrapper :global(.messageLine1) {
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.messageText) {
+  fill: var(--color-foreground) !important;
+}
+
+/* Class diagram styling */
+.mermaidWrapper :global(.classGroup rect) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.classGroup .label) {
+  fill: var(--color-primary-foreground) !important;
+}
+
+.mermaidWrapper :global(.relation) {
+  stroke: var(--color-primary) !important;
+}
+
+/* State diagram styling */
+.mermaidWrapper :global(.stateGroup rect),
+.mermaidWrapper :global(.stateGroup circle) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.stateGroup .label) {
+  fill: var(--color-primary-foreground) !important;
+}
+
+.mermaidWrapper :global(.transition) {
+  stroke: var(--color-primary) !important;
+}
+
+/* Entity Relationship diagram styling */
+.mermaidWrapper :global(.entityBox) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.entityLabel) {
+  fill: var(--color-primary-foreground) !important;
+}
+
+/* Gantt chart styling */
+.mermaidWrapper :global(.task) {
+  fill: var(--color-primary) !important;
+  stroke: var(--color-primary) !important;
+}
+
+.mermaidWrapper :global(.taskText) {
+  fill: var(--color-primary-foreground) !important;
+}
+
+.mermaidWrapper :global(.taskTextOutside) {
+  fill: var(--color-foreground) !important;
+}
+
+.mermaidWrapper :global(.grid .tick line) {
+  stroke: var(--color-muted) !important;
+}
+
+/* Pie chart styling */
+.mermaidWrapper :global(.pieTitleText) {
+  fill: var(--color-foreground) !important;
+}
+/* Loop styling - use secondary color */
+.mermaidWrapper :global(.loopLine) {
+  stroke: var(--color-secondary) !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: 2, 2 !important;
+  fill: none !important;
+}
+
+.mermaidWrapper :global(.loopText),
+.mermaidWrapper :global(.loopText > tspan) {
+  fill: var(--color-secondary-foreground) !important;
+  color: var(--color-secondary-foreground) !important;
+}
+
+/* Label box for loops */
+.mermaidWrapper :global(.labelBox) {
+  stroke: var(--color-secondary) !important;
+  fill: var(--color-secondary) !important;
+}
+
+.mermaidWrapper :global(.labelText),
+.mermaidWrapper :global(.labelText > tspan) {
+  fill: var(--color-secondary-foreground) !important;
+  color: var(--color-secondary-foreground) !important;
+}
+
+/* Note styling (like the "Standard Response" and "Streaming Response" boxes) */
+.mermaidWrapper :global(.note) {
+  fill: var(--color-secondary) !important;
+  stroke: var(--color-secondary-dark) !important;
+}
+
+.mermaidWrapper :global(.noteText),
+.mermaidWrapper :global(.noteText > tspan) {
+  fill: var(--color-secondary-foreground) !important;
+  color: var(--color-secondary-foreground) !important;
+}
+
+/* Edge labels styling */
+.mermaidWrapper :global(.edgeLabel),
+.mermaidWrapper :global(.edgeLabel span) {
+  background-color: var(--color-background) !important;
+  color: var(--color-foreground) !important;
+  fill: var(--color-foreground) !important;
+}
+
+.mermaidWrapper :global(.edgeLabel rect),
+.mermaidWrapper :global(.labelBkg) {
+  fill: var(--color-background) !important;
+  background-color: var(--color-background) !important;
+  opacity: 0.8 !important;
+}
+
+/* Fix edge label container background */
+.mermaidWrapper :global(.edgeLabel div) {
+  background-color: var(--color-background) !important;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+/* Cluster styling (subgraphs like "Researcher") */
+.mermaidWrapper :global(.cluster rect) {
+  fill: var(--color-muted) !important;
+  stroke: var(--color-border) !important;
+  stroke-width: 1px !important;
+  rx: 4px !important; /* Optional: rounded corners */
+  ry: 4px !important;
+}
+
+.mermaidWrapper :global(.cluster-label text),
+.mermaidWrapper :global(.cluster-label span),
+.mermaidWrapper :global(.cluster-label foreignObject div),
+.mermaidWrapper :global(.cluster-label .nodeLabel) {
+  fill: var(--color-card-foreground) !important;
+  color: var(--color-card-foreground) !important;
+  font-weight: 500 !important;
+}
+
+/* Make sure the title stands out */
+.mermaidWrapper :global(.cluster-label) {
+  fill: var(--color-card-foreground) !important;
+  color: var(--color-card-foreground) !important;
+}
