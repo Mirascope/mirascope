@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
     "preview": "vite preview",
     "deploy": "bun run build && wrangler deploy",
     "cron:dev": "bun run build && wrangler dev --test-scheduled --config dist/server/wrangler.json --port 8787",
