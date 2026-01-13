@@ -1,0 +1,113 @@
+---
+title: Welcome
+description: Mirascope is a Python library that streamlines working with LLMs
+---
+
+# Welcome to Mirascope 
+
+<div className="badge-container">
+    <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
+    <a href="https://app.codecov.io/github/Mirascope/mirascope" target="_blank"><img src="https://codecov.io/github/Mirascope/mirascope/graph/badge.svg?token=HAEAWT3KC9" alt="Coverage"/></a>
+    <a href="https://pypi.org/project/mirascope/" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
+    <a href="https://pypi.org/project/mirascope/" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
+    <a href="https://github.com/Mirascope/mirascope/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
+</div>
+
+Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Google (Gemini/Vertex)](https://googleapis.github.io/python-genai/), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Bedrock](https://aws.amazon.com/bedrock/).
+
+Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
+
+<div className="flex flex-col md:flex-row justify-center items-center gap-4 my-8 w-full px-4">
+    <ButtonLink href="./getting-started/why" className="w-full md:w-1/3 justify-center">
+        <Icon name="lightbulb" className="size-3.5" aria-hidden="true" /> Why Use Mirascope
+    </ButtonLink>
+    <ButtonLink href="https://mirascope.com/discord-invite" className="w-full md:w-1/3 justify-center">
+        <Icon name="users" className="size-3.5" aria-hidden="true" /> Join Our Community
+    </ButtonLink>
+    <ButtonLink href="https://github.com/Mirascope/mirascope" className="w-full md:w-1/3 justify-center">
+        <Icon name="github" className="size-3.5" aria-hidden="true" /> Star the Repo
+    </ButtonLink>
+</div>
+
+## Getting Started
+
+Install Mirascope, specifying the provider you intend to use, and set your API key:
+
+<InstallSnippet className="mt-4" />
+
+## Mirascope API
+
+Mirascope provides a consistent, easy-to-use API across all providers:
+
+<TabbedSection showLogo={true}>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    """An extracted book."""
+ 
+    title: str
+    author: str
+
+
+# [!code highlight:6]
+@llm.call(
+    provider="$PROVIDER", 
+    model="$MODEL", 
+    response_model=Book
+) 
+def extract_book(text: str) -> str:
+    return f"Extract {text}"
+
+
+book: Book = extract_book("The Name of the Wind by Patrick Rothfuss") # [!code highlight]
+print(book)
+# Output: title='The Name of the Wind' author='Patrick Rothfuss' # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    """An extracted book."""
+ 
+    title: str
+    author: str
+
+
+# [!code highlight:6]
+@llm.call(
+    provider="$PROVIDER", 
+    model="$MODEL", 
+    response_model=Book
+) 
+@prompt_template("Extract {text}")
+def extract_book(text: str): ...
+
+
+book: Book = extract_book("The Name of the Wind by Patrick Rothfuss") # [!code highlight]
+print(book)
+# Output: title='The Name of the Wind' author='Patrick Rothfuss' # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+## Provider SDK Equivalent
+
+For comparison, here's how you would achieve the same result using the provider's native SDK:
+
+<Info title="Official SDK" collapsible={true}>
+<ProviderCodeBlock 
+  examplePath="v1/getting-started/quickstart/sdk"
+/>
+</Info>
+
+If you'd like a more in-depth guide to getting started with Mirascope, check out our [quickstart guide](/docs/mirascope/guides/getting-started/quickstart/)
+
+We're excited to see what you'll build with Mirascope, and we're here to help! Don't hesitate to reach out :)

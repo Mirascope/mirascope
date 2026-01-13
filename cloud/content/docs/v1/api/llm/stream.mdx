@@ -1,0 +1,164 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.llm.stream
+description: API documentation for mirascope.llm.stream
+---
+
+# mirascope.llm.stream
+
+This module contains the Stream class that inherits from BaseStream.
+
+## <ApiType type="Class" path="llm/stream" symbolName="Stream" /> Stream
+
+A non-pydantic class that inherits from BaseStream.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[BaseCallResponse, BaseCallResponseChunk, BaseMessageParam, BaseMessageParam, BaseMessageParam, BaseMessageParam, BaseTool, Any, BaseDynamicConfig, BaseCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "BaseCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/call_response#basecallresponse"}, {"type_str": "BaseCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/call_response_chunk#basecallresponsechunk"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"}, {"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/tool#basetool"}, {"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}, {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#basedynamicconfig"}, {"type_str": "BaseCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/call_params#basecallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost",
+    "type_info": {
+      "type_str": "float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="llm/stream" symbolName="construct_call_response" /> construct_call_response
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "CallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/llm/call_response#callresponse"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="llm/stream" symbolName="tool_message_params" /> tool_message_params
+
+Returns the tool message parameters for tool call results.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tools_and_outputs",
+    "type_info": {
+      "type_str": "list[tuple[Tool, JsonableType]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "tuple[Tool, JsonableType]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "Tool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/mirascope/api/llm/tool#tool"
+            },
+            {
+              "type_str": "JsonableType",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/mirascope/api/core/base/types#jsonabletype"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The list of tools and their outputs from which the tool\nmessage parameters should be constructed."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[BaseMessageParam]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "BaseMessageParam",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"
+      }
+    ]
+  }
+}}
+/>
+
+
+

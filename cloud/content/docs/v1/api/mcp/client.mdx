@@ -1,0 +1,609 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.mcp.client
+description: API documentation for mirascope.mcp.client
+---
+
+# mirascope.mcp.client
+
+## <ApiType type="Module" path="mcp/client" symbolName="client" /> client
+
+The `MCPServer` Class and context managers.
+
+## <ApiType type="Class" path="mcp/client" symbolName="MCPClient" /> MCPClient
+
+The SSE client session that connects to the MCP server.
+
+All of the results from the server are converted into Mirascope-friendly types.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ClientSession", "description": null, "kind": "simple", "doc_identifier": "ClientSession"}} />
+
+## <ApiType type="Function" path="mcp/client" symbolName="list_resources" /> list_resources
+
+List all resources available on the MCP server.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[Resource]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "Resource",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "Resource"
+      }
+    ]
+  },
+  "description": "A list of Resource objects"
+}}
+/>
+
+
+## <ApiType type="Function" path="mcp/client" symbolName="read_resource" /> read_resource
+
+Read a resource from the MCP server.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "uri",
+    "type_info": {
+      "type_str": "str | AnyUrl",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "AnyUrl",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "AnyUrl"
+        }
+      ]
+    },
+    "description": "URI of the resource to read"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[TextPart | BlobResourceContents]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "TextPart | BlobResourceContents",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "TextPart",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/mirascope/api/core/base/message_param#textpart"
+          },
+          {
+            "type_str": "BlobResourceContents",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "BlobResourceContents"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "Contents of the resource, either as string or BlobResourceContents"
+}}
+/>
+
+
+## <ApiType type="Function" path="mcp/client" symbolName="list_prompts" /> list_prompts
+
+List all prompts available on the MCP server.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[Any]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "Any",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+      }
+    ]
+  },
+  "description": "A list of Prompt objects"
+}}
+/>
+
+
+## <ApiType type="Function" path="mcp/client" symbolName="get_prompt_template" /> get_prompt_template
+
+Get a prompt template from the MCP server.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Name of the prompt template"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Callable[..., Awaitable[list[BaseMessageParam]]]",
+    "description": null,
+    "kind": "callable",
+    "base_type": {
+      "type_str": "Callable",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+    },
+    "parameters": [
+      {
+        "type_str": "...",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "..."
+      },
+      {
+        "type_str": "Awaitable[list[BaseMessageParam]]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "Awaitable",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "Awaitable"
+        },
+        "parameters": [
+          {
+            "type_str": "list[BaseMessageParam]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "list",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+            },
+            "parameters": [
+              {
+                "type_str": "BaseMessageParam",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "description": "A callable that accepts keyword arguments and returns a list of BaseMessageParam"
+}}
+/>
+
+
+## <ApiType type="Function" path="mcp/client" symbolName="list_tools" /> list_tools
+
+List all tools available on the MCP server.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[type[BaseTool]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "type[BaseTool]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "type",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#type"
+        },
+        "parameters": [
+          {
+            "type_str": "BaseTool",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/mirascope/api/core/base/tool#basetool"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "A list of dynamically created `BaseTool` types."
+}}
+/>
+
+
+
+## <ApiType type="Function" path="mcp/client" symbolName="sse_client" /> sse_client
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "url",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "list_roots_callback",
+    "type_info": {
+      "type_str": "ListRootsFnT | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ListRootsFnT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ListRootsFnT"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None"
+  },
+  {
+    "name": "read_timeout_seconds",
+    "type_info": {
+      "type_str": "timedelta | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "timedelta",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "timedelta"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None"
+  },
+  {
+    "name": "sampling_callback",
+    "type_info": {
+      "type_str": "SamplingFnT | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "SamplingFnT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "SamplingFnT"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None"
+  },
+  {
+    "name": "session",
+    "type_info": {
+      "type_str": "ClientSession | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ClientSession",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ClientSession"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncIterator[MCPClient]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncIterator",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "AsyncIterator"
+    },
+    "parameters": [
+      {
+        "type_str": "MCPClient",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/mirascope/api/mcp/client#mcpclient"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="mcp/client" symbolName="stdio_client" /> stdio_client
+
+Create a MCPClient instance with the given server parameters and exception handler.
+
+Returns:
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "server_parameters",
+    "type_info": {
+      "type_str": "StdioServerParameters",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "StdioServerParameters"
+    }
+  },
+  {
+    "name": "read_stream_exception_handler",
+    "type_info": {
+      "type_str": "Callable[[Exception], None] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Callable[[Exception], None]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "[Exception]",
+              "description": null,
+              "kind": "tuple",
+              "base_type": {
+                "type_str": "tuple",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+              },
+              "parameters": [
+                {
+                  "type_str": "Exception",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "Exception"
+                }
+              ]
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AsyncIterator[MCPClient]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "AsyncIterator",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "AsyncIterator"
+    },
+    "parameters": [
+      {
+        "type_str": "MCPClient",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/mirascope/api/mcp/client#mcpclient"
+      }
+    ]
+  }
+}}
+/>
+
+
+

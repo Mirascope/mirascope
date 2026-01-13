@@ -1,0 +1,322 @@
+---
+title: Streams
+description: Learn how to process LLM responses in real-time as they are generated using Mirascope's streaming capabilities for more interactive and responsive applications.
+---
+
+# Streams
+
+<Note>
+  If you haven't already, we recommend first reading the section on [Calls](/docs/mirascope/learn/calls)
+</Note>
+
+Streaming is a powerful feature when using LLMs that allows you to process chunks of an LLM response in real-time as they are generated. This can be particularly useful for long-running tasks, providing immediate feedback to users, or implementing more responsive applications.
+
+<Info title="Diagram illustrating standard vs. streaming responses" collapsible={true} defaultOpen={false}>
+    ```mermaid
+    sequenceDiagram
+        participant User
+        participant App
+        participant LLM
+
+        User->>App: Request
+        App->>LLM: Query
+        Note right of LLM: Standard Response
+        LLM-->>App: Complete Response
+        App-->>User: Display Result
+
+        User->>App: Request
+        App->>LLM: Query (Stream)
+        Note right of LLM: Streaming Response
+        loop For each chunk
+            LLM-->>App: Response Chunk
+            App-->>User: Display Chunk
+        end
+    ```
+</Info>
+
+This approach offers several benefits:
+
+1. **Immediate feedback**: Users can see responses as they're being generated, creating a more interactive experience.
+2. **Reduced latency**: For long responses, users don't have to wait for the entire generation to complete before seeing results.
+3. **Incremental processing**: Applications can process and act on partial results as they arrive.
+4. **Efficient resource use**: Memory usage can be optimized by processing chunks instead of storing the entire response.
+5. **Early termination**: If the desired information is found early in the response, processing can be stopped without waiting for the full generation.
+
+<Callout type="api">
+    [`mirascope.core.base.stream`](/docs/mirascope/api/core/base/stream)
+</Callout>
+
+## Basic Usage and Syntax
+
+To use streaming, simply set the `stream` parameter to `True` in your [`call`](/docs/mirascope/learn/calls) decorator:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True) # [!code highlight]
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy") # [!code highlight]
+for chunk, _ in stream: # [!code highlight]
+    print(chunk.content, end="", flush=True) # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True) # [!code highlight]
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+stream = recommend_book("fantasy") # [!code highlight]
+for chunk, _ in stream: # [!code highlight]
+    print(chunk.content, end="", flush=True) # [!code highlight]
+
+print(f"Content: {stream.content}")
+
+call_response = stream.construct_call_response()
+print(f"Usage: {call_response.usage}")
+```
+</Tab>
+</TabbedSection>
+
+In this example:
+
+1. We use the `call` decorator with `stream=True` to enable streaming.
+2. The `recommend_book` function now returns a generator that yields `(chunk, tool)` tuples of the response.
+3. We iterate over the chunks, printing each one as it's received.
+4. We use `end=""` and `flush=True` parameters in the print function to ensure that the output is displayed in real-time without line breaks.
+
+## Handling Streamed Responses
+
+<Callout type="api">
+    [`mirascope.core.base.call_response_chunk`](/docs/mirascope/api/core/base/call_response_chunk)
+</Callout>
+
+When streaming, the initial response will be a provider-specific [`BaseStream`](/docs/mirascope/api) instance (e.g. `OpenAIStream`), which is a generator that yields tuples `(chunk, tool)` where `chunk` is a provider-specific [`BaseCallResponseChunk`](/docs/mirascope/api) (e.g. `OpenAICallResponseChunk`) that wraps the original chunk in the provider's response. These objects provide a consistent interface across providers while still allowing access to provider-specific details.
+
+<Note title="Streaming Tools">
+    You'll notice in the above example that we ignore the `tool` in each tuple. If no tools are set in the call, then `tool` will always be `None` and can be safely ignored. For more details, check out the documentation on [streaming tools](/docs/mirascope/learn/tools#streaming-tools)
+</Note>
+
+### Common Chunk Properties and Methods
+
+All `BaseCallResponseChunk` objects share these common properties:
+
+- `content`: The main text content of the response. If no content is present, this will be the empty string.
+- `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.
+- `model`: The name of the model used for generation.
+- `id`: A unique identifier for the response if available. Otherwise this will be `None`.
+- `usage`: Information about token usage for the call if available. Otherwise this will be `None`.
+- `input_tokens`: The number of input tokens used if available. Otherwise this will be `None`.
+- `output_tokens`: The number of output tokens generated if available. Otherwise this will be `None`.
+
+### Common Stream Properties and Methods
+
+<Info title="Must Exhaust Stream">
+    To access these properties, you must first exhaust the stream by iterating through it.
+</Info>
+
+Once exhausted, all `BaseStream` objects share the [same common properties and methods as `BaseCallResponse`](/docs/mirascope/learn/calls#common-response-properties-and-methods), except for `usage`, `tools`, `tool`, and `__str__`.
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+
+print(f"Content: {stream.content}") # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+stream = recommend_book("fantasy")
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+
+print(f"Content: {stream.content}") # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+You can access the additional missing properties by using the method `construct_call_response` to reconstruct a provider-specific `BaseCallResponse` instance:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+
+print(f"Content: {stream.content}")
+
+call_response = stream.construct_call_response() # [!code highlight]
+print(f"Usage: {call_response.usage}") # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+stream = recommend_book("fantasy")
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+
+print(f"Content: {stream.content}")
+
+call_response = stream.construct_call_response() # [!code highlight]
+print(f"Usage: {call_response.usage}") # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+<Warning title="Reconstructed Response Limitations">
+    While we try our best to reconstruct the `BaseCallResponse` instance from the stream, there's always a chance that some information present in a standard call might be missing from the stream.
+</Warning>
+
+### Provider-Specific Response Details
+
+While Mirascope provides a consistent interface, you can always access the full, provider-specific response object if needed. This is available through the `chunk` property of the `BaseCallResponseChunk` object:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")
+for chunk, _ in stream:
+    print(f"Original chunk: {chunk.chunk}") # [!code highlight]
+    print(chunk.content, end="", flush=True)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
+
+
+stream = recommend_book("fantasy")
+for chunk, _ in stream:
+    print(f"Original chunk: {chunk.chunk}") # [!code highlight]
+    print(chunk.content, end="", flush=True)
+```
+</Tab>
+</TabbedSection>
+
+<Note title="Reasoning For Provider-Specific BaseCallResponseChunk Objects">
+    The reason that we have provider-specific response objects (e.g. `OpenAICallResponseChunk`) is to provide proper type hints and safety when accessing the original response chunk.
+</Note>
+
+## Multi-Modal Outputs
+
+While most LLM providers focus on text streaming, some providers support streaming additional output modalities like audio. The availability of multi-modal streaming varies among providers:
+
+| Provider      | Text | Audio | Image |
+|---------------|:------:|:-------:|:-------:|
+| OpenAI        | ✓    | ✓     | —     |
+| Anthropic     | ✓    | —     | —     |
+| Mistral       | ✓    | —     | —     |
+| Google Gemini | ✓    | —     | —     |
+| Groq          | ✓    | —     | —     |
+| Cohere        | ✓    | —     | —     |
+| LiteLLM       | ✓    | —     | —     |
+| Azure AI      | ✓    | —     | —     |
+
+*Legend: ✓ (Supported), — (Not Supported)*
+
+
+### Audio Streaming
+
+For providers that support audio outputs, you can stream both text and audio responses simultaneously:
+
+<ProviderCodeBlock examplePath="v1/learn/streams/multi_modal_outputs"/>
+
+Each stream chunk provides access to:
+
+- `chunk.audio`: Raw audio data in bytes format
+- `chunk.audio_transcript`: The transcript of the audio
+
+This allows you to process both text and audio streams concurrently. Since audio data is received in chunks, you could technically begin playback before receiving the complete response.
+
+<Warning title="Audio Playback Requirements">
+    The example above uses `pydub` and `ffmpeg` for audio playback, but you can use any audio processing libraries or media players that can handle WAV format audio data. Choose the tools that best fit your needs and environment.
+
+    If you decide to use pydub:
+    - Install [pydub](https://github.com/jiaaro/pydub): `pip install pydub`
+    - Install ffmpeg: Available from [ffmpeg.org](https://www.ffmpeg.org/) or through system package managers
+</Warning>
+
+<Note title="Voice Options">
+    For providers that support audio outputs, refer to their documentation for available voice options and configurations:
+    
+    - OpenAI: [Text to Speech Guide](https://platform.openai.com/docs/guides/text-to-speech)
+</Note>
+
+## Error Handling
+
+Error handling in streams is similar to standard non-streaming calls. However, it's important to note that errors may occur during iteration rather than at the initial function call:
+
+<ProviderCodeBlock examplePath="v1/learn/streams/error_handling"/>
+
+In these examples we show provider-specific error handling, though you can also catch generic exceptions.
+
+Note how we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming.
+
+<Warning title="When Errors Occur">
+    The initial response when calling an LLM function with `stream=True` will return a generator. Any errors that may occur during streaming will not happen until you actually iterate through the generator. This is why we wrap the generation loop in the try/except block and not just the call to `recommend_book`.
+</Warning>
+
+## Next Steps
+
+By leveraging streaming effectively, you can create more responsive and efficient LLM-powered applications with Mirascope's streaming capabilities.
+
+Next, we recommend taking a look at the [Chaining](/docs/mirascope/learn/chaining) documentation, which shows you how to break tasks down into smaller, more directed calls and chain them together.

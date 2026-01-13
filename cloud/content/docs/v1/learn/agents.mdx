@@ -1,0 +1,634 @@
+---
+title: Agents
+description: Learn how to build autonomous and semi-autonomous LLM-powered agents with Mirascope that can use tools, maintain state, and execute multi-step reasoning processes.
+---
+
+# Agents
+
+> __Definition__: a person who acts on behalf of another person or group
+
+When working with Large Language Models (LLMs), an "agent" refers to an autonomous or semi-autonomous system that can act on your behalf. The core concept is the use of tools to enable the LLM to interact with its environment.
+
+In this section we will implement a toy `Librarian` agent to demonstrate key concepts in Mirascope that will help you build agents.
+
+<Note>
+  If you haven't already, we recommend first reading the section on [Tools](/docs/mirascope/learn/tools)
+</Note>
+
+<Info title="Diagram illustrating the agent flow" collapsible={true} defaultOpen={false}>
+  ```mermaid
+  sequenceDiagram
+      participant YC as Your Code
+      participant LLM
+
+      loop Agent Loop
+          YC->>LLM: Call with prompt + history + function definitions
+          loop Tool Calling Cycle
+              LLM->>LLM: Decide to respond or call functions
+              LLM->>YC: Respond with function to call and arguments
+              YC->>YC: Execute function with given arguments
+              YC->>YC: Add tool call message parameters to history
+              YC->>LLM: Call with prompt + history including function result
+          end
+          LLM->>YC: Finish calling tools and return final response
+          YC->>YC: Update history with final response
+      end
+  ```
+</Info>
+
+## State Management
+
+Since an agent needs to operate across multiple LLM API calls, the first concept to cover is state. The goal of providing state to the agent is to give it memory. For example, we can think of local variables as "working memory" and a database as "long-term memory".
+
+Let's take a look at a basic chatbot (not an agent) that uses a class to maintain the chat's history:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import Messages, llm, BaseMessageParam
+from pydantic import BaseModel
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = [] # [!code highlight]
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    def _call(self, query: str) -> Messages.Type:
+        return [
+            Messages.System("You are a librarian"),
+            *self.history, # [!code highlight]
+            Messages.User(query),
+        ]
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            response = self._call(query)
+            print(response.content)
+            self.history += [ # [!code highlight]
+                Messages.User(query), # [!code highlight]
+                response.message_param, # [!code highlight]
+            ] # [!code highlight]
+
+
+Librarian().run()
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import Messages, llm, BaseMessageParam, prompt_template
+from pydantic import BaseModel
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = [] # [!code highlight]
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    @prompt_template(
+        """
+        SYSTEM: You are a librarian
+        MESSAGES: {self.history} # [!code highlight]
+        USER: {query}
+        """
+    )
+    def _call(self, query: str): ...
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            response = self._call(query)
+            print(response.content)
+            self.history += [ # [!code highlight]
+                Messages.User(query), # [!code highlight]
+                response.message_param, # [!code highlight]
+            ] # [!code highlight]
+
+
+Librarian().run()
+```
+</Tab>
+</TabbedSection>
+
+In this example we:
+
+- Create a `Librarian` class with a `history` attribute.
+- Implement a private `_call` method that injects `history`.
+- Run the `_call` method in a loop, saving the history at each step.
+
+A chatbot with memory, while more advanced, is still not an agent.
+
+<Info title="Provider-Agnostic Agent" collapsible={true} defaultOpen={false}>
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseMessageParam, Messages, llm
+from pydantic import BaseModel
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    def _call(self, query: str) -> Messages.Type:
+        return [
+            Messages.System("You are a librarian"),
+            *self.history,
+            Messages.User(query),
+        ]
+
+    def run(
+        self,
+        provider: llm.Provider, # [!code highlight]
+        model: str, # [!code highlight]
+    ) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            response = llm.override(self._call, provider=provider, model=model)(query) # [!code highlight]
+            print(response.content)
+            self.history += [
+                response.user_message_param,
+                response.message_param,
+            ]
+
+
+Librarian().run("anthropic", "claude-3-5-sonnet-latest")
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseMessageParam, llm, prompt_template
+from pydantic import BaseModel
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+
+    @llm.call(provider="$PROVIDER", model="$MODEL") # [!code highlight]
+    @prompt_template(
+        """
+        SYSTEM: You are a librarian
+        MESSAGES: {self.history}
+        USER: {query}
+        """
+    )
+    def _call(self, query: str): ...
+
+    def run(
+        self,
+        provider: llm.Provider,
+        model: str,
+    ) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            response = llm.override(self._call, provider=provider, model=model)(query) # [!code highlight]
+            print(response.content)
+            self.history += [
+                response.user_message_param,
+                response.message_param,
+            ]
+
+
+Librarian().run("anthropic", "claude-3-5-sonnet-latest")
+```
+</Tab>
+</TabbedSection>
+</Info>
+
+## Integrating Tools
+
+The next concept to cover is introducing tools to our chatbot, turning it into an agent capable of acting on our behalf. The most basic agent flow is to call tools on behalf of the agent, providing them back through the chat history until the agent is ready to response to the initial query.
+
+Let's take a look at a basic example where the `Librarian` can access the books available in the library:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+import json
+
+from mirascope import BaseDynamicConfig, Messages, llm, BaseMessageParam
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = [] # [!code highlight]
+    library: list[Book] = [ # [!code highlight]
+        Book(title="The Name of the Wind", author="Patrick Rothfuss"), # [!code highlight]
+        Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"), # [!code highlight]
+    ] # [!code highlight]
+
+    def _available_books(self) -> str: # [!code highlight]
+        """Returns the list of books available in the library.""" # [!code highlight]
+        return json.dumps([book.model_dump() for book in self.library]) # [!code highlight]
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    def _call(self, query: str) -> BaseDynamicConfig:
+        messages = [
+            Messages.System("You are a librarian"),
+            *self.history,
+        ]
+        if query:
+            messages.append(Messages.User(query))
+        return {"messages": messages, "tools": [self._available_books]} # [!code highlight]
+
+    def _step(self, query: str) -> str:
+        response = self._call(query)
+        if query:
+            self.history.append(Messages.User(query))
+        self.history.append(response.message_param)
+        tools_and_outputs = [] # [!code highlight]
+        if tools := response.tools: # [!code highlight]
+            for tool in tools: # [!code highlight]
+                print(f"[Calling Tool '{tool._name()}' with args {tool.args}]") # [!code highlight]
+                tools_and_outputs.append((tool, tool.call())) # [!code highlight]
+            self.history += response.tool_message_params(tools_and_outputs) # [!code highlight]
+            return self._step("") # [!code highlight]
+        else:
+            return response.content
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            step_output = self._step(query)
+            print(step_output)
+
+
+Librarian().run()
+```
+</Tab>
+<Tab value="Template">
+```python
+import json
+
+from mirascope import (
+    BaseDynamicConfig,
+    Messages,
+    llm,
+    BaseMessageParam,
+    prompt_template,
+)
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+    library: list[Book] = [ # [!code highlight]
+        Book(title="The Name of the Wind", author="Patrick Rothfuss"), # [!code highlight]
+        Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"), # [!code highlight]
+    ] # [!code highlight]
+
+    def _available_books(self) -> str: # [!code highlight]
+        """Returns the list of books available in the library.""" # [!code highlight]
+        return json.dumps([book.model_dump() for book in self.library]) # [!code highlight]
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    @prompt_template(
+        """
+        SYSTEM: You are a librarian
+        MESSAGES: {self.history}
+        USER: {query}
+        """
+    )
+    def _call(self, query: str) -> BaseDynamicConfig:
+        return {"tools": [self._available_books]} # [!code highlight]
+
+    def _step(self, query: str) -> str:
+        response = self._call(query)
+        if query:
+            self.history.append(Messages.User(query))
+        self.history.append(response.message_param)
+        tools_and_outputs = [] # [!code highlight]
+        if tools := response.tools: # [!code highlight]
+            for tool in tools: # [!code highlight]
+                print(f"[Calling Tool '{tool._name()}' with args {tool.args}]") # [!code highlight]
+                tools_and_outputs.append((tool, tool.call())) # [!code highlight]
+            self.history += response.tool_message_params(tools_and_outputs) # [!code highlight]
+            return self._step("") # [!code highlight]
+        else:
+            return response.content
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            step_output = self._step(query)
+            print(step_output)
+
+
+Librarian().run()
+```
+</Tab>
+</TabbedSection>
+
+In this example we:
+
+1. Added the `library` state to maintain the list of available books.
+2. Implemented the `_available_books` tool that returns the library as a string.
+3. Updated `_call` to give the LLM access to the tool.
+    - We used the `tools` dynamic configuration field so the tool has access to the library through `self`.
+4. Added a `_step` method that implements a full step from user input to assistant output.
+5. For each step, we call the LLM and see if there are any tool calls.
+    - If yes, we call the tools, collect the outputs, and insert the tool calls into the chat history. We then recursively call `_step` again with an empty user query until the LLM is done calling tools and is ready to response
+    - If no, the LLM is ready to respond and we return the response content.
+
+Now that our chatbot is capable of using tools, we have a basic agent.
+
+## Human-In-The-Loop
+
+While it would be nice to have fully autonomous agents, LLMs are far from perfect and often need assistance to ensure they continue down the right path in an agent flow.
+
+One common and easy way to help guide LLM agents is to give the agent the ability to ask for help. This "human-in-the-loop" flow lets the agent ask for help if it determines it needs it:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseDynamicConfig, Messages, llm, BaseMessageParam
+from pydantic import BaseModel
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+
+    def _ask_for_help(self, question: str) -> str: # [!code highlight]
+        """Asks for help from an expert.""" # [!code highlight]
+        print("[Assistant Needs Help]") # [!code highlight]
+        print(f"[QUESTION]: {question}") # [!code highlight]
+        answer = input("[ANSWER]: ") # [!code highlight]
+        print("[End Help]") # [!code highlight]
+        return answer # [!code highlight]
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    def _call(self, query: str) -> BaseDynamicConfig:
+        messages = [
+            Messages.System("You are a librarian"),
+            *self.history,
+        ]
+        if query:
+            messages.append(Messages.User(query))
+        return {"messages": messages, "tools": [self._ask_for_help]} # [!code highlight]
+
+    def _step(self, query: str) -> str:
+        response = self._call(query)
+        if query:
+            self.history.append(Messages.User(query))
+        self.history.append(response.message_param)
+        tools_and_outputs = []
+        if tools := response.tools:
+            for tool in tools:
+                print(f"[Calling Tool '{tool._name()}' with args {tool.args}]")
+                tools_and_outputs.append((tool, tool.call()))
+            self.history += response.tool_message_params(tools_and_outputs)
+            return self._step("")
+        else:
+            return response.content
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            step_output = self._step(query)
+            print(step_output)
+
+
+Librarian().run()
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import (
+    BaseDynamicConfig,
+    Messages,
+    llm,
+    BaseMessageParam,
+    prompt_template,
+)
+from pydantic import BaseModel
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+
+    def _ask_for_help(self, question: str) -> str: # [!code highlight]
+        """Asks for help from an expert.""" # [!code highlight]
+        print("[Assistant Needs Help]") # [!code highlight]
+        print(f"[QUESTION]: {question}") # [!code highlight]
+        answer = input("[ANSWER]: ") # [!code highlight]
+        print("[End Help]") # [!code highlight]
+        return answer # [!code highlight]
+
+    @llm.call(provider="$PROVIDER", model="$MODEL")
+    @prompt_template(
+        """
+        SYSTEM: You are a librarian
+        MESSAGES: {self.history}
+        USER: {query}
+        """
+    )
+    def _call(self, query: str) -> BaseDynamicConfig:
+        return {"tools": [self._ask_for_help]} # [!code highlight]
+
+    def _step(self, query: str) -> str:
+        response = self._call(query)
+        if query:
+            self.history.append(Messages.User(query))
+        self.history.append(response.message_param)
+        tools_and_outputs = []
+        if tools := response.tools:
+            for tool in tools:
+                print(f"[Calling Tool '{tool._name()}' with args {tool.args}]")
+                tools_and_outputs.append((tool, tool.call()))
+            self.history += response.tool_message_params(tools_and_outputs)
+            return self._step("")
+        else:
+            return response.content
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            step_output = self._step(query)
+            print(step_output)
+
+
+Librarian().run()
+```
+</Tab>
+</TabbedSection>
+
+## Streaming
+
+The previous examples print each tool call so you can see what the agent is doing before the final response; however, you still need to wait for the agent to generate its entire final response before you see the output.
+
+Streaming can help to provide an even more real-time experience:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+import json
+
+from mirascope import BaseDynamicConfig, Messages, llm, BaseMessageParam
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+    library: list[Book] = [
+        Book(title="The Name of the Wind", author="Patrick Rothfuss"),
+        Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"),
+    ]
+
+    def _available_books(self) -> str:
+        """Returns the list of books available in the library."""
+        return json.dumps([book.model_dump() for book in self.library])
+
+    @llm.call(provider="$PROVIDER", model="$MODEL", stream=True) # [!code highlight]
+    def _stream(self, query: str) -> BaseDynamicConfig: # [!code highlight]
+        messages = [
+            Messages.System("You are a librarian"),
+            *self.history,
+        ]
+        if query:
+            messages.append(Messages.User(query))
+        return {"messages": messages, "tools": [self._available_books]}
+
+    def _step(self, query: str) -> None:
+        stream = self._stream(query) # [!code highlight]
+        if query:
+            self.history.append(Messages.User(query))
+        tools_and_outputs = [] # [!code highlight]
+        for chunk, tool in stream: # [!code highlight]
+            if tool: # [!code highlight]
+                print(f"[Calling Tool '{tool._name()}' with args {tool.args}]") # [!code highlight]
+                tools_and_outputs.append((tool, tool.call())) # [!code highlight]
+            else: # [!code highlight]
+                print(chunk.content, end="", flush=True) # [!code highlight]
+        self.history.append(stream.message_param) # [!code highlight]
+        if tools_and_outputs: # [!code highlight]
+            self.history += stream.tool_message_params(tools_and_outputs) # [!code highlight]
+            self._step("") # [!code highlight]
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            self._step(query)
+            print()
+
+
+Librarian().run()
+```
+</Tab>
+<Tab value="Template">
+```python
+import json
+
+from mirascope import (
+    BaseDynamicConfig,
+    Messages,
+    llm,
+    BaseMessageParam,
+    prompt_template,
+)
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+class Librarian(BaseModel):
+    history: list[BaseMessageParam] = []
+    library: list[Book] = [
+        Book(title="The Name of the Wind", author="Patrick Rothfuss"),
+        Book(title="Mistborn: The Final Empire", author="Brandon Sanderson"),
+    ]
+
+    def _available_books(self) -> str:
+        """Returns the list of books available in the library."""
+        return json.dumps([book.model_dump() for book in self.library])
+
+    @llm.call(provider="$PROVIDER", model="$MODEL", stream=True) # [!code highlight]
+    @prompt_template(
+        """
+        SYSTEM: You are a librarian
+        MESSAGES: {self.history}
+        USER: {query}
+        """
+    )
+    def _stream(self, query: str) -> BaseDynamicConfig: # [!code highlight]
+        return {"tools": [self._available_books]}
+
+    def _step(self, query: str) -> None:
+        stream = self._stream(query) # [!code highlight]
+        if query:
+            self.history.append(Messages.User(query))
+        tools_and_outputs = [] # [!code highlight]
+        for chunk, tool in stream: # [!code highlight]
+            if tool: # [!code highlight]
+                print(f"[Calling Tool '{tool._name()}' with args {tool.args}]") # [!code highlight]
+                tools_and_outputs.append((tool, tool.call())) # [!code highlight]
+            else: # [!code highlight]
+                print(chunk.content, end="", flush=True) # [!code highlight]
+        self.history.append(stream.message_param) # [!code highlight]
+        if tools_and_outputs: # [!code highlight]
+            self.history += stream.tool_message_params(tools_and_outputs) # [!code highlight]
+            self._step("") # [!code highlight]
+
+    def run(self) -> None:
+        while True:
+            query = input("(User): ")
+            if query in ["exit", "quit"]:
+                break
+            print("(Assistant): ", end="", flush=True)
+            self._step(query)
+            print()
+
+
+Librarian().run()
+```
+</Tab>
+</TabbedSection>
+
+## Next Steps
+
+This section is just the tip of the iceberg when it comes to building agents, implementing just one type of simple agent flow. It's important to remember that "agent" is quite a general term and can mean different things for different use-cases. Mirascope's various features make building agents easier, but it will be up to you to determine the architecture that best suits your goals.
+
+Next, we recommend taking a look at our [Agent Tutorials](/docs/mirascope/guides/agents/web-search-agent) to see examples of more complex, real-world agents.

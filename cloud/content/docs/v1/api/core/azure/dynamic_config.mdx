@@ -1,0 +1,38 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.azure.dynamic_config
+description: API documentation for mirascope.core.azure.dynamic_config
+---
+
+# mirascope.core.azure.dynamic_config
+
+## <ApiType type="Module" path="core/azure/dynamic_config" symbolName="dynamic_config" /> dynamic_config
+
+This module defines the function return type for functions as LLM calls.
+
+## <ApiType type="Attribute" path="core/azure/dynamic_config" symbolName="AsyncAzureDynamicConfig" /> AsyncAzureDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[ChatRequestMessage | BaseMessageParam, AzureCallParams, AsyncChatCompletionsClient]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "ChatRequestMessage | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ChatRequestMessage", "description": null, "kind": "simple", "doc_identifier": "ChatRequestMessage"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"}]}, {"type_str": "AzureCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/call_params#azurecallparams"}, {"type_str": "AsyncChatCompletionsClient", "description": null, "kind": "simple", "doc_identifier": "AsyncChatCompletionsClient"}]}} />
+
+
+## <ApiType type="Attribute" path="core/azure/dynamic_config" symbolName="AzureDynamicConfig" /> AzureDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[ChatRequestMessage | BaseMessageParam, AzureCallParams, ChatCompletionsClient]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "ChatRequestMessage | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ChatRequestMessage", "description": null, "kind": "simple", "doc_identifier": "ChatRequestMessage"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"}]}, {"type_str": "AzureCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/call_params#azurecallparams"}, {"type_str": "ChatCompletionsClient", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionsClient"}]}} />
+
+The function return type for functions wrapped with the `azure_call` decorator.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.azure import AzureDynamicConfig, azure_call
+
+
+@azure_call("gpt-4o-mini")
+@prompt_template("Recommend a {capitalized_genre} book")
+def recommend_book(genre: str) -> AzureDynamicConfig:
+    return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
+```
+
+
+

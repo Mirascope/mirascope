@@ -1,0 +1,92 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.groq.stream
+description: API documentation for mirascope.core.groq.stream
+---
+
+# mirascope.core.groq.stream
+
+## <ApiType type="Module" path="core/groq/stream" symbolName="stream" /> stream
+
+The `GroqStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/mirascope/learn/streams)
+
+</Info>
+
+## <ApiType type="Attribute" path="core/groq/stream" symbolName="FinishReason" /> FinishReason
+
+**Type:** <TypeLink type={{"type_str": "Choice.__annotations__['finish_reason']", "description": null, "kind": "generic", "base_type": {"type_str": "Choice.__annotations__", "description": null, "kind": "simple", "doc_identifier": "Choice.__annotations__"}, "parameters": [{"type_str": "'finish_reason'", "description": null, "kind": "simple", "doc_identifier": "'finish_reason'"}]}} />
+
+
+## <ApiType type="Class" path="core/groq/stream" symbolName="GroqStream" /> GroqStream
+
+A class for convenience around streaming Groq LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.groq import groq_call
+
+
+@groq_call("llama-3.1-8b-instant", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+stream = recommend_book("fantasy")  # returns `GroqStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[GroqCallResponse, GroqCallResponseChunk, ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam, ChatCompletionToolMessageParam, ChatCompletionMessageParam, GroqTool, ChatCompletionToolParam, AsyncGroqDynamicConfig | GroqDynamicConfig, GroqCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "GroqCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/groq/call_response#groqcallresponse"}, {"type_str": "GroqCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/groq/call_response_chunk#groqcallresponsechunk"}, {"type_str": "ChatCompletionUserMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionUserMessageParam"}, {"type_str": "ChatCompletionAssistantMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionAssistantMessageParam"}, {"type_str": "ChatCompletionToolMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionToolMessageParam"}, {"type_str": "ChatCompletionMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionMessageParam"}, {"type_str": "GroqTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/groq/tool#groqtool"}, {"type_str": "ChatCompletionToolParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionToolParam"}, {"type_str": "AsyncGroqDynamicConfig | GroqDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncGroqDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/groq/dynamic_config#asyncgroqdynamicconfig"}, {"type_str": "GroqDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/groq/dynamic_config#groqdynamicconfig"}]}, {"type_str": "GroqCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/groq/call_params#groqcallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/groq/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed GroqStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "GroqCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/mirascope/api/core/groq/call_response#groqcallresponse"
+  }
+}}
+/>
+
+
+
+
