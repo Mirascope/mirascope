@@ -249,6 +249,8 @@ cloud/
 ├── clickhouse/                    # ClickHouse analytics services
 │   ├── client.ts                  # Effect service for ClickHouse access
 │   ├── search.ts                  # Analytics/search queries and transforms
+│   ├── transform.ts               # Span-to-ClickHouse row transform utilities
+│   ├── realtimeSpans.ts           # Effect interface for realtime span access (Durable Object)
 │   ├── migrate.sh                 # Schema migration runner (run: bun run clickhouse:migrate)
 │   ├── migrations/                # SQL migration files (versioned, applied on startup)
 │   │   ├── *.up.sql
@@ -259,7 +261,10 @@ cloud/
 │   └── outboxProcessor.ts         # Shared processing logic
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
-│   └── db.ts                      # Database test utilities
+│   ├── db.ts                      # Database test utilities
+│   ├── clickhouse.ts              # ClickHouse test utilities
+│   └── clickhouse/                # ClickHouse test fixtures
+│       └── fixtures.ts            # Effect-native transform test fixtures
 ├── docker/                        # Docker configuration
 │   ├── compose.yml
 │   └── data/                      # Docker data directory (gitignored)
