@@ -6,16 +6,11 @@
 
 import { compile, type CompileOptions } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
-import rehypePrettyCode from "rehype-pretty-code";
 import { rehypeCodeMeta } from "./rehype-code-meta";
 import type { ProcessedMDX, Frontmatter } from "@/app/lib/mdx/types";
 import type { TOCItem } from "@/app/lib/content/types";
 import { parseFrontmatter } from "./frontmatter";
 import { extractHeadings } from "../mdx/heading-utils";
-export interface CompileMDXOptions {
-  /** Skip syntax highlighting (faster for tests) */
-  skipHighlighting?: boolean;
-}
 
 export interface CompiledMDXResult {
   /** The compiled JSX code string */
@@ -35,7 +30,6 @@ export interface CompiledMDXResult {
  */
 export async function compileMDXContent(
   rawContent: string,
-  options: CompileMDXOptions = {},
 ): Promise<CompiledMDXResult> {
   // Parse frontmatter
   const { frontmatter, content } = parseFrontmatter(rawContent);
@@ -48,16 +42,7 @@ export async function compileMDXContent(
     development: process.env.NODE_ENV === "development",
     outputFormat: "program",
     remarkPlugins: [remarkGfm],
-    rehypePlugins: [
-      [
-        rehypeCodeMeta,
-        options.skipHighlighting ? undefined : rehypePrettyCode,
-        {
-          theme: "github-dark",
-          keepBackground: false,
-        },
-      ],
-    ],
+    rehypePlugins: [rehypeCodeMeta],
   };
 
   // Compile MDX to JSX
