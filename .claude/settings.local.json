@@ -31,7 +31,8 @@
       "Bash(mkdir:*)",
       "Bash(bun run test:coverage:*)",
       "Bash(bun run test:*)",
-      "Bash(/dev/null)"
+      "Bash(uv run pytest:*)",
+      "Bash(uv run rg:*)"
     ],
     "deny": []
   }
