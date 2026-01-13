@@ -76,15 +76,6 @@ async function main(): Promise<void> {
     }
   }
 
-  // Generate MDX file with all generated examples
-  const docsRoot = join(dirname(scriptPath), "..", "..", "docs");
-  const outputPath = join(docsRoot, "content", "examples.mdx");
-  generateExamplesMdx(
-    generatedFiles,
-    join(dirname(scriptPath), "..", "examples"),
-    outputPath
-  );
-
   console.log(`Generated ${generatedFiles.length} example files`);
 }
 

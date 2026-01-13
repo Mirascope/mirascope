@@ -1,0 +1,27 @@
+---
+title: Streaming
+description: Learn how to stream LLM responses in real-time for more responsive applications.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/streams.mdx (streaming basics, async streaming)
+- legacy/legacy-content-v2/streams.mdx (updated streaming patterns)
+- index.mdx "About Stream Responses" section (stream iterators, finishing streams)
+- python/mirascope/llm/responses/base_stream_response.py
+</Info>
+
+# Streaming
+
+This document covers streaming responses from LLMs for real-time output.
+
+## Topics Covered
+
+- General overview of streaming and why it's desirable
+- Getting a stream response via `call.stream()` or `model.stream()`
+- Stream iterators: `chunk_stream()`, `pretty_stream()`, `streams()`
+- How Mirascope models streaming chunk content (`llm.AssistantContentChunk`)
+- Substreams for individual content pieces (`TextStream`, `ToolCallStream`, etc.)
+- Finalizing a stream with `response.finish()`
+- Accessing accumulated content after streaming
+- How streaming intersects with tools

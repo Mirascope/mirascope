@@ -1,0 +1,23 @@
+---
+title: Chaining
+description: Learn how to combine multiple LLM calls in sequence to solve complex tasks through functional chaining, nested chains, and parallel processing.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/chaining.mdx (function chaining, nested chains, conditional/parallel/iterative patterns)
+</Info>
+
+# Chaining
+
+This document covers chaining multiple LLM calls together to solve complex, multi-step tasks.
+
+## Topics Covered
+
+- Introduction to chaining: breaking complex problems into smaller steps
+- Function chaining: composing calls like regular Python functions
+- Nested chains: calling one prompt function inside another for better observability
+- Conditional chaining: routing to different calls based on prior outputs
+- Parallel chaining: using `asyncio.gather()` for concurrent independent calls
+- Iterative chaining: refining outputs through multiple passes
+- Best practices for chain design and debugging

@@ -1,0 +1,22 @@
+---
+title: Reliability
+description: Learn about retry strategies and fallback patterns for building reliable LLM applications.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/retries.mdx (tenacity retry, error reinsertion, fallback decorator)
+Note: Retry patterns carry over from v1
+</Info>
+
+# Reliability
+
+This document covers reliability patterns for LLM applications.
+
+## Topics Covered
+
+- Using `tenacity` for retry with exponential backoff
+- Retrying calls, streams, and tool executions
+- Error reinsertion: feeding errors back to the LLM to self-correct
+- Catching specific errors and falling back to alternative providers/models
+- Combining retries with fallbacks for maximum reliability

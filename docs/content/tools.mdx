@@ -1,0 +1,26 @@
+---
+title: Tools
+description: Learn how to extend LLM capabilities with tools that allow models to call functions on your behalf.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/tools.mdx (tool definition, BaseTool, tool calling patterns)
+- index.mdx "Tools and Tool calling" section (execute_tools, resume with tool outputs)
+</Info>
+
+# Tools
+
+This document covers tool calling - giving LLMs the ability to invoke functions.
+
+## Topics Covered
+
+- Introduction to the concept of tool calling
+- The `@llm.tool` decorator for defining tools
+- Tool schemas: how function signatures and docstrings become tool definitions
+- The `llm.ToolCall` content type in responses
+- Checking for tool calls via `response.tool_calls`
+- Executing tools with `response.execute_tools()`
+- Providing tool outputs back to the LLM with `response.resume()`
+- The `llm.Toolkit` concept for grouping related tools
+- Async tools and `llm.AsyncTool`

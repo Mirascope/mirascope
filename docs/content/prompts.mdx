@@ -1,0 +1,24 @@
+---
+title: Prompts
+description: Learn how to use the @llm.prompt decorator for creating reusable prompt templates.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/prompts.mdx (prompt templates, dynamic config)
+- legacy/legacy-content-v2/prompt_templates.mdx (template syntax)
+- python/mirascope/llm/prompts/prompts.py
+- python/mirascope/llm/prompts/decorator.py
+</Info>
+
+# Prompts
+
+This document covers creating reusable prompts with the `@llm.prompt` decorator.
+
+## Topics Covered
+
+- The `@llm.prompt` decorator for creating reusable prompts without a bundled model
+- Prompt functions: functions that return messages for an LLM
+- Using prompts with `llm.Model` directly
+- Dynamic prompt construction with function parameters
+- Template syntax and patterns

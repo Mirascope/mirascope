@@ -322,7 +322,6 @@ docs/
 ├── content/               # Documentation content
 │   ├── _meta.ts             # Navigation metadata
 │   ├── index.mdx            # Home page
-│   └── examples.mdx         # Examples page
 ├── config/                # Build configuration
 │   └── [build output]       # Generated build files
 ├── scripts/               # Documentation build scripts

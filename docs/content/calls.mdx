@@ -1,0 +1,26 @@
+---
+title: Calls
+description: Learn how to use the @llm.call decorator for bundling a model with a prompt function.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/calls.mdx (call decorator basics, provider-agnostic usage)
+- legacy/legacy-content-v2/calls.mdx (updated call patterns)
+- index.mdx "The Call Decorator" section
+- python/mirascope/llm/calls/calls.py
+- python/mirascope/llm/calls/decorator.py
+</Info>
+
+# Calls
+
+This document covers the `@llm.call` decorator for bundling a model with a prompt function.
+
+## Topics Covered
+
+- The decorator pattern: why it's useful for LLM interactions
+- The `@llm.call` decorator for bundling a model with a prompt function
+- Passing tools and format to the call decorator (links to Tools, Structured Output docs)
+- Creating async calls with async prompt functions (link to Async doc)
+- Passing model params to the call decorator
+- Relationship between decorators and the underlying `llm.Model`

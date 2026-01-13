@@ -1,0 +1,25 @@
+---
+title: Agents
+description: Learn how to build autonomous and semi-autonomous LLM agents using Mirascope's tool calling and response patterns.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/agents.mdx (state management, tool integration, human-in-the-loop, streaming agents)
+</Info>
+
+# Agents
+
+This document covers building agents - LLM-powered systems that can act on your behalf.
+
+## Topics Covered
+
+- What an agent is: autonomous systems that use tools to accomplish tasks
+- The core agent pattern: tool calling + response resumption
+- Building a simple agent loop with `response.tool_calls` and `response.resume()`
+- Managing conversation history via `response.messages`
+- Human-in-the-loop patterns
+- Streaming agent responses for real-time feedback
+- Async agents for concurrent tool execution
+- State management strategies
+- Example: A complete agent implementation
