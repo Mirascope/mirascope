@@ -59,3 +59,36 @@ export interface BlogMeta extends ContentMeta {
 }
 
 export type BlogContent = Content<BlogMeta>;
+
+/* ========== DOC CONTENT TYPES =========== */
+
+/**
+ * Documentation-specific metadata extends the base ContentMeta
+ */
+export interface DocMeta extends ContentMeta {
+  sectionPath: string; // Hierarchical section path (e.g. "docs>mirascope>learn")
+  searchWeight: number; // Computed weight based on hierarchical position
+}
+
+export type DocContent = Content<DocMeta>;
+
+/* ========== POLICY CONTENT TYPES =========== */
+
+/**
+ * Policy-specific metadata extends the base ContentMeta
+ */
+export interface PolicyMeta extends ContentMeta {
+  lastUpdated: string; // Last update date of the policy
+}
+
+export type PolicyContent = Content<PolicyMeta>;
+
+/* ========== DEV CONTENT TYPES =========== */
+
+/**
+ * Dev-specific metadata (currently same as base ContentMeta)
+ * Add dev-specific fields here if needed in the future
+ */
+export type DevMeta = ContentMeta;
+
+export type DevContent = Content<DevMeta>;
