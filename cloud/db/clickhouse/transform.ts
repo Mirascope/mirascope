@@ -5,7 +5,7 @@
  * consistent mapping from OTLP spans into the `spans_analytics` schema.
  */
 
-import type { RealtimeSpanInput } from "@/clickhouse/realtimeSpans";
+import type { SpanInput } from "@/db/clickhouse/types";
 
 // =============================================================================
 // Types
@@ -49,7 +49,7 @@ export type SpansAnalyticsRow = {
 };
 
 export type SpanTransformInput = {
-  span: RealtimeSpanInput;
+  span: SpanInput;
   environmentId: string;
   projectId: string;
   organizationId: string;

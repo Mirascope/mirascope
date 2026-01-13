@@ -15,6 +15,8 @@ import spansMeteringQueue, {
   type SpanMeteringMessage,
   SpansMeteringQueueService,
   chargeSpanMeter,
+  spansMeteringQueueLayer,
+  setSpansMeteringQueueLayer,
 } from "./spansMeteringQueue";
 
 // =============================================================================
@@ -63,7 +65,7 @@ function createMockBatch(
     queue: "spans-metering",
     ackAll: vi.fn(),
     retryAll: vi.fn(),
-  } as unknown as MessageBatch<SpanMeteringMessage>;
+  } as MessageBatch<SpanMeteringMessage>;
 }
 
 /**
@@ -158,16 +160,11 @@ describe("Spans Metering Queue", () => {
         return yield* queue.send(testMessage);
       });
 
-      const result = await Effect.runPromise(
-        program.pipe(Effect.provide(layer), Effect.either),
+      const error = await Effect.runPromise(
+        program.pipe(Effect.provide(layer), Effect.flip),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to enqueue span metering",
-        );
-      }
+      expect(error.message).toContain("Failed to enqueue span metering");
     });
   });
 
@@ -304,6 +301,49 @@ describe("Spans Metering Queue", () => {
       // Both messages should be retried
       expect(message1.retryCalled).toBe(true);
       expect(message2.retryCalled).toBe(true);
+    });
+  });
+
+  describe("global layer", () => {
+    it("default layer returns error when not initialized", async () => {
+      const program = Effect.gen(function* () {
+        const queue = yield* SpansMeteringQueueService;
+        return yield* queue.send(createTestMessage());
+      });
+
+      const error = await Effect.runPromise(
+        program.pipe(Effect.provide(spansMeteringQueueLayer), Effect.flip),
+      );
+
+      expect(error.message).toBe("SpansMeteringQueue not initialized");
+    });
+
+    it("setSpansMeteringQueueLayer updates the global layer", async () => {
+      const mockSend = vi.fn().mockReturnValue(Effect.void);
+      const newLayer = Layer.succeed(SpansMeteringQueueService, {
+        send: mockSend,
+      });
+
+      setSpansMeteringQueueLayer(newLayer);
+
+      const program = Effect.gen(function* () {
+        const queue = yield* SpansMeteringQueueService;
+        return yield* queue.send(createTestMessage());
+      });
+
+      await Effect.runPromise(
+        program.pipe(Effect.provide(spansMeteringQueueLayer)),
+      );
+
+      expect(mockSend).toHaveBeenCalled();
+
+      // Reset global layer to default
+      setSpansMeteringQueueLayer(
+        Layer.succeed(SpansMeteringQueueService, {
+          send: () =>
+            Effect.fail(new Error("SpansMeteringQueue not initialized")),
+        }),
+      );
     });
   });
 });

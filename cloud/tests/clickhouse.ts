@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it as vitestIt } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
 import { SettingsService, type Settings } from "@/settings";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import fs from "fs";

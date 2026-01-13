@@ -78,39 +78,50 @@ describe("cron-config", () => {
   });
 
   describe("WorkerEnv", () => {
-    it("extends BillingCronTriggerEnv with queue bindings", () => {
+    it("extends BillingCronTriggerEnv with required bindings", () => {
       const mockRouterQueue = {
         send: async () => {},
       };
 
-      const mockSpansQueue = {
+      const mockSpansIngestQueue = {
         send: async () => {},
       };
 
-      const env: WorkerEnv = {
+      const mockSpansMeteringQueue = {
+        send: async () => {},
+      };
+
+      const mockDurableObject = {
+        get: () => ({}),
+        idFromName: () => ({}),
+        newUniqueId: () => ({}),
+        idFromString: () => ({}),
+        getByName: () => ({}),
+        jurisdiction: () => ({}),
+      };
+
+      const env = {
         ENVIRONMENT: "test",
         CLICKHOUSE_URL: "http://localhost:8123",
         DATABASE_URL: "postgres://test:test@localhost:5432/test",
         STRIPE_SECRET_KEY: "sk_test_xxx",
         STRIPE_ROUTER_PRICE_ID: "price_test",
         STRIPE_ROUTER_METER_ID: "meter_test",
+        STRIPE_CLOUD_FREE_PRICE_ID: "price_free",
+        STRIPE_CLOUD_PRO_PRICE_ID: "price_pro",
+        STRIPE_CLOUD_TEAM_PRICE_ID: "price_team",
+        STRIPE_CLOUD_SPANS_PRICE_ID: "price_spans",
+        STRIPE_CLOUD_SPANS_METER_ID: "meter_spans",
         ROUTER_METERING_QUEUE: mockRouterQueue,
-        SPANS_METERING_QUEUE: mockSpansQueue,
-      };
+        SPANS_INGEST_QUEUE: mockSpansIngestQueue,
+        SPANS_METERING_QUEUE: mockSpansMeteringQueue,
+        REALTIME_SPANS_DURABLE_OBJECT: mockDurableObject,
+      } as unknown as WorkerEnv;
 
       expect(env.ROUTER_METERING_QUEUE).toBe(mockRouterQueue);
-      expect(env.SPANS_METERING_QUEUE).toBe(mockSpansQueue);
-    });
-
-    it("allows optional queue bindings", () => {
-      const env: WorkerEnv = {
-        ENVIRONMENT: "test",
-        CLICKHOUSE_URL: "http://localhost:8123",
-        DATABASE_URL: "postgres://test:test@localhost:5432/test",
-      };
-
-      expect(env.ROUTER_METERING_QUEUE).toBeUndefined();
-      expect(env.SPANS_METERING_QUEUE).toBeUndefined();
+      expect(env.SPANS_INGEST_QUEUE).toBe(mockSpansIngestQueue);
+      expect(env.SPANS_METERING_QUEUE).toBe(mockSpansMeteringQueue);
+      expect(env.REALTIME_SPANS_DURABLE_OBJECT).toBe(mockDurableObject);
     });
   });
 });

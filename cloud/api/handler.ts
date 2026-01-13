@@ -6,7 +6,7 @@ import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";

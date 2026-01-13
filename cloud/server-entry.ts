@@ -2,17 +2,28 @@ import {
   createStartHandler,
   defaultStreamHandler,
 } from "@tanstack/react-start/server";
-import clickhouseCron, { type CronTriggerEnv } from "@/workers/clickhouseCron";
 import reservationExpiryCron from "@/workers/reservationExpiryCron";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
 import routerMeteringQueue, {
   RouterMeteringQueueService,
+  setRouterMeteringQueueLayer,
 } from "@/workers/routerMeteringQueue";
+import spanIngestQueue, {
+  SpansIngestQueue,
+  setSpansIngestQueueLayer,
+} from "@/workers/spanIngestQueue";
 import spansMeteringQueue, {
   SpansMeteringQueueService,
+  setSpansMeteringQueueLayer,
 } from "@/workers/spansMeteringQueue";
+import { RealtimeSpans, setRealtimeSpansLayer } from "@/workers/realtimeSpans";
+import { RealtimeSpansDurableObjectBase } from "@/workers/realtimeSpans/durableObject";
+import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
+import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
+import type { SpanMeteringMessage } from "@/workers/spansMeteringQueue";
+import type { MessageBatch } from "@cloudflare/workers-types";
 import { type WorkerEnv } from "@/workers/cron-config";
-import { Effect, Layer, Context } from "effect";
+import { Layer, Context } from "effect";
 
 /**
  * ExecutionContext service tag for Effect dependency injection.
@@ -60,31 +71,8 @@ interface ScheduledEvent {
 const fetchHandler = createStartHandler(defaultStreamHandler);
 
 /**
- * Global router metering queue layer.
- *
- * Set by the fetch handler and exported for route handlers to include
- * when providing Effect layers.
- */
-export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
-  Layer.succeed(RouterMeteringQueueService, {
-    send: () => Effect.fail(new Error("RouterMeteringQueue not initialized")),
-  });
-
-/**
- * Global spans metering queue layer.
- *
- * Set by the fetch handler and exported for route handlers to include
- * when providing Effect layers.
- */
-export let spansMeteringQueueLayer: Layer.Layer<SpansMeteringQueueService> =
-  Layer.succeed(SpansMeteringQueueService, {
-    send: () => Effect.fail(new Error("SpansMeteringQueue not initialized")),
-  });
-
-/**
  * Scheduled event handler that routes to the appropriate cron job.
  *
- * - `* /1 * * * *`: ClickHouse synchronization (every minute)
  * - `* /5 * * * *`: Reservation expiry + billing reconciliation (every 5 minutes)
  *
  * @param event - Cloudflare scheduled event containing the cron expression
@@ -92,12 +80,9 @@ export let spansMeteringQueueLayer: Layer.Layer<SpansMeteringQueueService> =
  */
 const scheduled = async (
   event: ScheduledEvent,
-  env: CronTriggerEnv,
+  env: WorkerEnv,
 ): Promise<void> => {
-  if (event.cron === "*/1 * * * *" || event.cron === "local") {
-    // ClickHouse synchronization runs every minute
-    await clickhouseCron.scheduled(event, env);
-  } else if (event.cron === "*/5 * * * *") {
+  if (event.cron === "*/5 * * * *" || event.cron === "local") {
     // Reservation expiry must run before billing reconciliation
     // to ensure expired reservations are properly marked
     await reservationExpiryCron.scheduled(event, env);
@@ -109,17 +94,23 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
   // Set execution context layer for route handlers
   executionContextLayer = Layer.succeed(ExecutionContext, ctx);
 
-  // Set router metering queue layer for route handlers
+  // Initialize queue layers from Cloudflare bindings
   if (env.ROUTER_METERING_QUEUE) {
-    routerMeteringQueueLayer = RouterMeteringQueueService.Live(
-      env.ROUTER_METERING_QUEUE,
+    setRouterMeteringQueueLayer(
+      RouterMeteringQueueService.Live(env.ROUTER_METERING_QUEUE),
     );
   }
-
-  // Set spans metering queue layer for route handlers
+  if (env.SPANS_INGEST_QUEUE) {
+    setSpansIngestQueueLayer(SpansIngestQueue.Live(env.SPANS_INGEST_QUEUE));
+  }
   if (env.SPANS_METERING_QUEUE) {
-    spansMeteringQueueLayer = SpansMeteringQueueService.Live(
-      env.SPANS_METERING_QUEUE,
+    setSpansMeteringQueueLayer(
+      SpansMeteringQueueService.Live(env.SPANS_METERING_QUEUE),
+    );
+  }
+  if (env.REALTIME_SPANS_DURABLE_OBJECT) {
+    setRealtimeSpansLayer(
+      RealtimeSpans.Live(env.REALTIME_SPANS_DURABLE_OBJECT),
     );
   }
 
@@ -146,19 +137,43 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
   return fetchHandler(request);
 };
 
+const queue = async (batch: MessageBatch, env: WorkerEnv): Promise<void> => {
+  if (batch.queue === "router-metering") {
+    await routerMeteringQueue.queue(
+      batch as MessageBatch<RouterMeteringMessage>,
+      env,
+    );
+    return;
+  }
+  if (batch.queue === "spans-ingest") {
+    await spanIngestQueue.queue(batch as MessageBatch<SpansIngestMessage>, env);
+    return;
+  }
+  if (batch.queue === "spans-metering") {
+    await spansMeteringQueue.queue(
+      batch as MessageBatch<SpanMeteringMessage>,
+      env,
+    );
+    return;
+  }
+
+  console.error(`[queue] Unhandled queue: ${batch.queue}`);
+  batch.retryAll();
+};
+
+/**
+ * Durable Object class for Cloudflare Workers.
+ *
+ * Cloudflare Workers requires Durable Object classes to be defined and
+ * exported from the main entry point. This class extends the base
+ * implementation to satisfy the class discovery requirements.
+ *
+ * The class_name in wrangler.jsonc must match this exported class name.
+ */
+export class RealtimeSpansDurableObject extends RealtimeSpansDurableObjectBase {}
+
 export default {
   fetch,
   scheduled,
-  queue(batch: unknown, env: WorkerEnv) {
-    // Route to appropriate queue handler based on queue name
-    // Cloudflare Workers passes the queue name in the batch metadata
-    const queueName = (batch as { queue?: string }).queue;
-
-    if (queueName === "spans-metering") {
-      return spansMeteringQueue.queue(batch as never, env);
-    }
-
-    // Default to router metering queue for backwards compatibility
-    return routerMeteringQueue.queue(batch as never, env);
-  },
+  queue,
 };

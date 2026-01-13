@@ -5,10 +5,10 @@ import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
-import { spansMeteringQueueLayer } from "@/server-entry";
+import { spansMeteringQueueLayer } from "@/workers/spansMeteringQueue";
 
 /**
  * Extract path parameters from the splat path for API key validation.

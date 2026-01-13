@@ -244,25 +244,31 @@ cloud/
 │   ├── services/                  # Database services
 │   │   ├── base.ts                # Base service
 │   │   └── [other files]          # users.ts, organizations.ts, tests, etc.
+│   ├── clickhouse/                # ClickHouse analytics services
+│   │   ├── client.ts              # Effect service for ClickHouse access
+│   │   ├── search.ts              # Analytics/search queries and transforms
+│   │   ├── transform.ts           # Span-to-ClickHouse row transform utilities
+│   │   ├── migrate.sh             # Schema migration runner (run: bun run clickhouse:migrate)
+│   │   ├── migrations/            # SQL migration files (versioned, applied on startup)
+│   │   │   ├── *.up.sql
+│   │   │   └── *.down.sql
+│   │   └── [other files]          # utils.ts, tests, etc.
 │   ├── errors.ts                  # Database errors
 │   └── utils.ts                   # Database utilities
-├── clickhouse/                    # ClickHouse analytics services
-│   ├── client.ts                  # Effect service for ClickHouse access
-│   ├── search.ts                  # Analytics/search queries and transforms
-│   ├── transform.ts               # Span-to-ClickHouse row transform utilities
-│   ├── realtimeSpans.ts           # Effect interface for realtime span access (Durable Object)
-│   ├── migrate.sh                 # Schema migration runner (run: bun run clickhouse:migrate)
-│   ├── migrations/                # SQL migration files (versioned, applied on startup)
-│   │   ├── *.up.sql
-│   │   └── *.down.sql
-│   └── [other files]              # utils.ts, tests, etc.
-├── workers/                       # Cloudflare Workers (cron)
+├── workers/                       # Cloudflare Workers
+│   ├── realtimeSpans/             # Realtime spans Durable Object and client
+│   │   ├── durableObject.ts       # Durable Object implementation (cache)
+│   │   ├── client.ts              # Effect service client
+│   │   └── index.ts               # Barrel exports
+│   ├── spanIngestQueue.ts         # Queue consumer for span ingestion
 │   ├── clickhouseCron.ts          # Cron trigger for outbox sync
 │   └── outboxProcessor.ts         # Shared processing logic
 ├── tests/                         # Test utilities
 │   ├── api.ts                     # API test utilities
 │   ├── db.ts                      # Database test utilities
 │   ├── clickhouse.ts              # ClickHouse test utilities
+│   ├── workers/                   # Worker test utilities
+│   │   └── realtimeSpans.ts       # Realtime spans mock storage and fixtures
 │   └── clickhouse/                # ClickHouse test fixtures
 │       └── fixtures.ts            # Effect-native transform test fixtures
 ├── docker/                        # Docker configuration

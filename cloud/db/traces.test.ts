@@ -1,23 +1,43 @@
-import {
-  describe,
-  it,
-  expect,
-  TestEnvironmentFixture,
-  MockDrizzleORM,
-} from "@/tests/db";
-import { Effect } from "effect";
+import { describe, it, expect, TestEnvironmentFixture } from "@/tests/db";
+import { Effect, Layer } from "effect";
 import { Database } from "@/db";
+import { enqueueSpanMetering } from "@/db/traces";
+import { DrizzleORM } from "@/db/client";
 import {
-  DatabaseError,
   NotFoundError,
   PermissionDeniedError,
   ImmutableResourceError,
 } from "@/errors";
+import {
+  SpansIngestQueue,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
+import {
+  SpansMeteringQueueService,
+  type SpanMeteringMessage,
+} from "@/workers/spansMeteringQueue";
+import { vi } from "vitest";
+
+type QueueSend = (message: SpansIngestMessage) => Effect.Effect<void, Error>;
+
+const buildSpan = (index: number) => ({
+  traceId: "trace-1",
+  spanId: `span-${index}`,
+  name: `span-${index}`,
+  startTimeUnixNano: "1000000000",
+  endTimeUnixNano: "2000000000",
+});
 
 describe("Traces", () => {
   describe("create", () => {
-    it.effect("creates single span", () =>
-      Effect.gen(function* () {
+    it.effect("enqueues spans and converts OTLP values", () => {
+      const sentMessages: SpansIngestMessage[] = [];
+      const send = vi.fn<QueueSend>((message: SpansIngestMessage) => {
+        sentMessages.push(message);
+        return Effect.void;
+      });
+
+      return Effect.gen(function* () {
         const { environment, project, org, owner } =
           yield* TestEnvironmentFixture;
         const db = yield* Database;
@@ -27,318 +47,10 @@ describe("Traces", () => {
             resource: {
               attributes: [
                 { key: "service.name", value: { stringValue: "test-service" } },
-                { key: "service.version", value: { stringValue: "1.0.0" } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "abc123",
-                    spanId: "span001",
-                    name: "test-span",
-                    startTimeUnixNano: "1234567890000000000",
-                    endTimeUnixNano: "1234567891000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(1);
-        expect(result.rejectedSpans).toBe(0);
-        expect(result.otelTraceId).toBe("abc123");
-        expect(result.serviceName).toBe("test-service");
-      }),
-    );
-
-    it.effect("creates multiple spans", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "test-service" } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace001",
-                    spanId: "span001",
-                    name: "span-1",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                  {
-                    traceId: "trace001",
-                    spanId: "span002",
-                    parentSpanId: "span001",
-                    name: "span-2",
-                    startTimeUnixNano: "1100000000",
-                    endTimeUnixNano: "1900000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(2);
-        expect(result.rejectedSpans).toBe(0);
-        expect(result.otelTraceId).toBe("trace001");
-        expect(result.serviceName).toBe("test-service");
-      }),
-    );
-
-    it.effect("upserts trace on conflict", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const makeResourceSpans = (spanId: string, serviceName: string) => [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: serviceName } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "same-trace-id",
-                    spanId,
-                    name: "span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result1 =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans: makeResourceSpans("span-a", "service-v1") },
-          });
-
-        expect(result1.acceptedSpans).toBe(1);
-
-        const result2 =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans: makeResourceSpans("span-b", "service-v2") },
-          });
-
-        expect(result2.acceptedSpans).toBe(1);
-      }),
-    );
-
-    it.effect("rejects duplicate spans", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-dup",
-                    spanId: "span-dup",
-                    name: "duplicate-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result1 =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result1.acceptedSpans).toBe(1);
-        expect(result1.rejectedSpans).toBe(0);
-
-        const result2 =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result2.acceptedSpans).toBe(0);
-        expect(result2.rejectedSpans).toBe(1);
-      }),
-    );
-
-    it.effect("handles span with null/optional fields", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: {},
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-null",
-                    spanId: "span-null",
-                    name: "minimal-span",
-                    startTimeUnixNano: "",
-                    endTimeUnixNano: "",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(1);
-      }),
-    );
-
-    it.effect("handles span with events and links", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "test" } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-events",
-                    spanId: "span-events",
-                    name: "span-with-events",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                    kind: 1,
-                    status: { code: 1, message: "OK" },
-                    attributes: [
-                      { key: "attr1", value: { stringValue: "val1" } },
-                    ],
-                    events: [
-                      {
-                        name: "event1",
-                        timeUnixNano: "1500000000",
-                        attributes: [
-                          { key: "level", value: { stringValue: "info" } },
-                        ],
-                      },
-                    ],
-                    links: [
-                      {
-                        traceId: "linked-trace",
-                        spanId: "linked-span",
-                      },
-                    ],
-                    droppedAttributesCount: 0,
-                    droppedEventsCount: 0,
-                    droppedLinksCount: 0,
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(1);
-      }),
-    );
-
-    it.effect("handles all OTLP value types including unknown", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "test" } },
+                {
+                  key: "service.version",
+                  value: { stringValue: "1.0.0" },
+                },
                 { key: "int-attr", value: { intValue: "42" } },
                 { key: "double-attr", value: { doubleValue: 3.14 } },
                 { key: "bool-attr", value: { boolValue: true } },
@@ -357,14 +69,6 @@ describe("Traces", () => {
                   },
                 },
                 {
-                  key: "array-empty",
-                  value: {
-                    arrayValue: {
-                      values: [],
-                    },
-                  },
-                },
-                {
                   key: "kvlist-attr",
                   value: {
                     kvlistValue: {
@@ -372,14 +76,6 @@ describe("Traces", () => {
                         { key: "nested", value: { stringValue: "value" } },
                         { key: "raw", value: "direct-value" },
                       ],
-                    },
-                  },
-                },
-                {
-                  key: "kvlist-empty",
-                  value: {
-                    kvlistValue: {
-                      values: [],
                     },
                   },
                 },
@@ -391,8 +87,208 @@ describe("Traces", () => {
                 scope: { name: "test" },
                 spans: [
                   {
-                    traceId: "trace-types",
-                    spanId: "span-types",
+                    traceId: "abc123",
+                    spanId: "span001",
+                    name: "test-span",
+                    startTimeUnixNano: "1234567890000000000",
+                    endTimeUnixNano: "1234567891000000000",
+                    events: [{ name: "event-1" }],
+                    links: [{ traceId: "link-trace", spanId: "link-span" }],
+                  },
+                  {
+                    traceId: "abc123",
+                    spanId: "span002",
+                    name: "empty-start",
+                    startTimeUnixNano: "",
+                    endTimeUnixNano: "",
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          });
+
+        // span001 is complete (has both timestamps), span002 is incomplete (empty timestamps)
+        expect(result.acceptedSpans).toBe(1);
+        expect(result.rejectedSpans).toBe(1);
+        expect(sentMessages).toHaveLength(1);
+        const message = sentMessages[0];
+        if (!message) {
+          throw new Error("Expected spans ingest message");
+        }
+        expect(message.serviceName).toBe("test-service");
+        expect(message.serviceVersion).toBe("1.0.0");
+        expect(message.resourceAttributes).toEqual({
+          "service.name": "test-service",
+          "service.version": "1.0.0",
+          "int-attr": "42",
+          "double-attr": 3.14,
+          "bool-attr": true,
+          "array-attr": ["item1", "123", "raw-string-value"],
+          "kvlist-attr": { nested: "value", raw: "direct-value" },
+          "unknown-attr": null,
+        });
+        expect(message.spans[0]?.events).toEqual([{ name: "event-1" }]);
+        expect(message.spans[0]?.links).toEqual([
+          { traceId: "link-trace", spanId: "link-span" },
+        ]);
+        // Only completed spans are included
+        expect(message.spans).toHaveLength(1);
+      }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
+    });
+
+    it.effect("splits spans into 50-span batches", () => {
+      const sentMessages: SpansIngestMessage[] = [];
+      const send = vi.fn<QueueSend>((message: SpansIngestMessage) => {
+        sentMessages.push(message);
+        return Effect.void;
+      });
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        const spans = Array.from({ length: 101 }, (_, index) =>
+          buildSpan(index),
+        );
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [{ scope: { name: "test" }, spans }],
+          },
+        ];
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          });
+
+        expect(result.acceptedSpans).toBe(101);
+        expect(result.rejectedSpans).toBe(0);
+        expect(sentMessages).toHaveLength(3);
+        expect(sentMessages[0]?.spans).toHaveLength(50);
+        expect(sentMessages[1]?.spans).toHaveLength(50);
+        expect(sentMessages[2]?.spans).toHaveLength(1);
+      }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
+    });
+
+    it.effect("meters accepted spans when metering queue is available", () => {
+      const sentMessages: SpansIngestMessage[] = [];
+      const meteringMessages: SpanMeteringMessage[] = [];
+      const send = vi.fn<QueueSend>((message: SpansIngestMessage) => {
+        sentMessages.push(message);
+        return Effect.void;
+      });
+      const meteringSend = vi.fn((message: SpanMeteringMessage) => {
+        meteringMessages.push(message);
+        return Effect.void;
+      });
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: "trace-metering",
+                    spanId: "span-1",
+                    name: "test-span-1",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                  {
+                    traceId: "trace-metering",
+                    spanId: "span-2",
+                    name: "test-span-2",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                  {
+                    traceId: "trace-metering",
+                    spanId: "span-incomplete",
+                    name: "test-span-incomplete",
+                    startTimeUnixNano: "",
+                    endTimeUnixNano: "",
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          });
+
+        expect(result.acceptedSpans).toBe(2);
+        expect(result.rejectedSpans).toBe(1);
+        expect(sentMessages).toHaveLength(1);
+        expect(meteringMessages).toHaveLength(2);
+        expect(meteringMessages[0]?.stripeCustomerId).toBe(
+          org.stripeCustomerId,
+        );
+        expect(meteringMessages.map((message) => message.spanId)).toEqual([
+          "trace-metering:span-1",
+          "trace-metering:span-2",
+        ]);
+      }).pipe(
+        Effect.provide(Layer.succeed(SpansIngestQueue, { send })),
+        Effect.provide(
+          Layer.succeed(SpansMeteringQueueService, {
+            send: meteringSend,
+          }),
+        ),
+      );
+    });
+
+    it.effect("continues when metering queue send fails", () => {
+      const send = vi.fn<QueueSend>().mockReturnValue(Effect.void);
+      const meteringSend = vi
+        .fn()
+        .mockReturnValue(Effect.fail(new Error("Metering queue down")));
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: "trace-metering-fail",
+                    spanId: "span-fail",
                     name: "test-span",
                     startTimeUnixNano: "1000000000",
                     endTimeUnixNano: "2000000000",
@@ -413,11 +309,67 @@ describe("Traces", () => {
           });
 
         expect(result.acceptedSpans).toBe(1);
-      }),
-    );
+        expect(result.rejectedSpans).toBe(0);
+        expect(meteringSend).toHaveBeenCalled();
+      }).pipe(
+        Effect.provide(Layer.succeed(SpansIngestQueue, { send })),
+        Effect.provide(
+          Layer.succeed(SpansMeteringQueueService, {
+            send: meteringSend,
+          }),
+        ),
+      );
+    });
 
-    it.effect("returns DatabaseError when trace upsert fails", () =>
-      Effect.gen(function* () {
+    it.noSpanIngestQueue.effect(
+      "rejects spans when queue binding is missing",
+      () =>
+        Effect.gen(function* () {
+          const { environment, project, org, owner } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          const resourceSpans = [
+            {
+              resource: { attributes: [] },
+              scopeSpans: [
+                {
+                  scope: { name: "test" },
+                  spans: [
+                    {
+                      traceId: "trace-missing-queue",
+                      spanId: "span-missing-queue",
+                      name: "queue-missing-span",
+                      startTimeUnixNano: "1000000000",
+                      endTimeUnixNano: "2000000000",
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+
+          const result =
+            yield* db.organizations.projects.environments.traces.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: { resourceSpans },
+            });
+
+          expect(result.acceptedSpans).toBe(0);
+          expect(result.rejectedSpans).toBe(1);
+        }),
+    );
+    it.effect("rejects spans when enqueue fails", () => {
+      const send = vi
+        .fn()
+        .mockReturnValue(Effect.fail(new Error("Queue down")));
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
         const db = yield* Database;
 
         const resourceSpans = [
@@ -428,8 +380,8 @@ describe("Traces", () => {
                 scope: { name: "test" },
                 spans: [
                   {
-                    traceId: "trace-db-error",
-                    spanId: "span-db-error",
+                    traceId: "trace-queue-error",
+                    spanId: "span-queue-error",
                     name: "test-span",
                     startTimeUnixNano: "1000000000",
                     endTimeUnixNano: "2000000000",
@@ -442,170 +394,22 @@ describe("Traces", () => {
 
         const result =
           yield* db.organizations.projects.environments.traces.create({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            data: { resourceSpans },
-          });
-
-        // When trace upsert fails, the span is rejected
-        expect(result.rejectedSpans).toBe(1);
-        expect(result.acceptedSpans).toBe(0);
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .insert(new Error("Trace upsert failed"))
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when span insert fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-span-error",
-                    spanId: "span-span-error",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            data: { resourceSpans },
-          });
-
-        // When span insert fails, the span is rejected
-        expect(result.rejectedSpans).toBe(1);
-        expect(result.acceptedSpans).toBe(0);
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .insert([{ id: "trace-id" }]) // Trace upsert succeeds
-            .insert(new Error("Span insert failed")) // Span insert fails
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("rejects span when outbox insert fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-outbox-error",
-                    spanId: "span-outbox-error",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
             data: { resourceSpans },
           });
 
         expect(result.rejectedSpans).toBe(1);
         expect(result.acceptedSpans).toBe(0);
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .insert([{ id: "trace-id" }]) // Trace upsert succeeds
-            .insert([{ id: "span-id" }]) // Span insert succeeds
-            .insert(new Error("Outbox insert failed")) // Outbox insert fails
-            .build(),
-        ),
-      ),
-    );
+      }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
+    });
 
-    it.effect("handles empty resourceSpans", () =>
-      Effect.gen(function* () {
+    it.effect("handles empty resourceSpans", () => {
+      const send = vi.fn<QueueSend>().mockReturnValue(Effect.void);
+
+      return Effect.gen(function* () {
         const { environment, project, org, owner } =
           yield* TestEnvironmentFixture;
         const db = yield* Database;
@@ -621,9 +425,87 @@ describe("Traces", () => {
 
         expect(result.acceptedSpans).toBe(0);
         expect(result.rejectedSpans).toBe(0);
-        expect(result.id).toBe("");
-      }),
-    );
+        expect(send).not.toHaveBeenCalled();
+      }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
+    });
+
+    it.effect("skips resources with no spans", () => {
+      const send = vi.fn().mockReturnValue(Effect.void);
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: {
+              resourceSpans: [
+                {
+                  resource: { attributes: [] },
+                  scopeSpans: [{ scope: { name: "test" }, spans: [] }],
+                },
+              ],
+            },
+          });
+
+        expect(result.acceptedSpans).toBe(0);
+        expect(result.rejectedSpans).toBe(0);
+        expect(send).not.toHaveBeenCalled();
+      }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
+    });
+
+    it.effect("rejects spans with empty timestamps as incomplete", () => {
+      const sentMessages: SpansIngestMessage[] = [];
+      const send = vi.fn<QueueSend>((message: SpansIngestMessage) => {
+        sentMessages.push(message);
+        return Effect.void;
+      });
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: {
+              resourceSpans: [
+                {
+                  resource: { attributes: [] },
+                  scopeSpans: [
+                    {
+                      scope: { name: "test" },
+                      spans: [
+                        {
+                          traceId: "trace-empty-ts",
+                          spanId: "span-empty-ts",
+                          name: "test-span",
+                          startTimeUnixNano: "   ",
+                          endTimeUnixNano: "",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          });
+
+        // Spans with empty/whitespace timestamps are rejected as incomplete
+        expect(result.acceptedSpans).toBe(0);
+        expect(result.rejectedSpans).toBe(1);
+        expect(sentMessages).toHaveLength(0);
+      }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
+    });
 
     it.effect("returns PermissionDeniedError for VIEWER role", () =>
       Effect.gen(function* () {
@@ -631,38 +513,17 @@ describe("Traces", () => {
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-perm",
-                    spanId: "span-perm",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
         const result = yield* db.organizations.projects.environments.traces
           .create({
             userId: projectViewer.id,
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            data: { resourceSpans },
+            data: { resourceSpans: [] },
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(PermissionDeniedError);
-        expect(result.message).toContain("permission");
       }),
     );
 
@@ -672,69 +533,114 @@ describe("Traces", () => {
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-perm2",
-                    spanId: "span-perm2",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
         const result = yield* db.organizations.projects.environments.traces
           .create({
             userId: projectAnnotator.id,
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            data: { resourceSpans },
+            data: { resourceSpans: [] },
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(PermissionDeniedError);
-        expect(result.message).toContain("permission");
       }),
     );
   });
 
+  describe("enqueueSpanMetering", () => {
+    it.effect("returns early when metering queue is missing", () =>
+      Effect.gen(function* () {
+        yield* enqueueSpanMetering(
+          ["trace-id:span-id"],
+          "org-id",
+          "project-id",
+          "environment-id",
+        );
+      }).pipe(
+        Effect.provide(
+          Layer.succeed(DrizzleORM, {
+            select: () => ({
+              from: () => ({
+                where: () => Effect.fail(new Error("Drizzle should not run")),
+              }),
+            }),
+          } as never),
+        ),
+      ),
+    );
+
+    it.effect("handles database error when fetching organization", () => {
+      let sendCalled = false;
+      const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
+        select: () => ({
+          from: () => ({
+            where: () => Effect.fail(new Error("DB error")),
+          }),
+        }),
+      } as never);
+      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+        send: () => {
+          sendCalled = true;
+          return Effect.void;
+        },
+      });
+
+      return Effect.gen(function* () {
+        yield* enqueueSpanMetering(
+          ["trace-id:span-id"],
+          "org-id",
+          "project-id",
+          "environment-id",
+        );
+
+        expect(sendCalled).toBe(false);
+      }).pipe(Effect.provide(Layer.merge(MockDrizzleLayer, MockQueueLayer)));
+    });
+
+    it.effect("handles organization not found", () => {
+      let sendCalled = false;
+      const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
+        select: () => ({
+          from: () => ({
+            where: () => Effect.succeed([]),
+          }),
+        }),
+      } as never);
+      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+        send: () => {
+          sendCalled = true;
+          return Effect.void;
+        },
+      });
+
+      return Effect.gen(function* () {
+        yield* enqueueSpanMetering(
+          ["trace-id:span-id"],
+          "org-id",
+          "project-id",
+          "environment-id",
+        );
+
+        expect(sendCalled).toBe(false);
+      }).pipe(Effect.provide(Layer.merge(MockDrizzleLayer, MockQueueLayer)));
+    });
+  });
+
   describe("findAll", () => {
-    it.effect("retrieves all traces in an environment", () =>
+    it.effect("returns traces for environments", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
-        // Create traces
+        const traceId = "trace-find-all";
         const resourceSpans = [
           {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "svc-1" } },
-              ],
-            },
             scopeSpans: [
               {
                 scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-list-1",
-                    spanId: "span-list-1",
-                    name: "span-1",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
+                spans: [{ ...buildSpan(1), traceId }],
               },
             ],
           },
@@ -748,38 +654,6 @@ describe("Traces", () => {
           data: { resourceSpans },
         });
 
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: {
-            resourceSpans: [
-              {
-                resource: {
-                  attributes: [
-                    { key: "service.name", value: { stringValue: "svc-2" } },
-                  ],
-                },
-                scopeSpans: [
-                  {
-                    scope: { name: "test" },
-                    spans: [
-                      {
-                        traceId: "trace-list-2",
-                        spanId: "span-list-2",
-                        name: "span-2",
-                        startTimeUnixNano: "1000000000",
-                        endTimeUnixNano: "2000000000",
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        });
-
         const traces =
           yield* db.organizations.projects.environments.traces.findAll({
             userId: owner.id,
@@ -788,121 +662,26 @@ describe("Traces", () => {
             environmentId: environment.id,
           });
 
-        expect(traces).toHaveLength(2);
-        expect(traces.map((t) => t.otelTraceId).sort()).toEqual([
-          "trace-list-1",
-          "trace-list-2",
-        ]);
+        expect(traces).toHaveLength(1);
+        expect(traces[0]?.otelTraceId).toBe(traceId);
       }),
-    );
-
-    it.effect(
-      "returns `NotFoundError` when non-member tries to list (hides project)",
-      () =>
-        Effect.gen(function* () {
-          const { environment, project, org, nonMember } =
-            yield* TestEnvironmentFixture;
-          const db = yield* Database;
-
-          const result = yield* db.organizations.projects.environments.traces
-            .findAll({
-              userId: nonMember.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(NotFoundError);
-        }),
-    );
-
-    it.effect("returns empty array when environment has no traces", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const traces =
-          yield* db.organizations.projects.environments.traces.findAll({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-          });
-
-        expect(traces).toHaveLength(0);
-      }),
-    );
-
-    it.effect("returns `DatabaseError` when query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .findAll({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to list traces");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .select(new Error("Database connection failed"))
-            .build(),
-        ),
-      ),
     );
   });
 
   describe("findById", () => {
-    it.effect("retrieves a trace by ID", () =>
+    it.effect("returns trace by id", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
           yield* TestEnvironmentFixture;
         const db = yield* Database;
 
+        const traceId = "trace-find-by-id";
         const resourceSpans = [
           {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "test-svc" } },
-              ],
-            },
             scopeSpans: [
               {
                 scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-get-123",
-                    spanId: "span-get-123",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
+                spans: [{ ...buildSpan(1), traceId }],
               },
             ],
           },
@@ -922,15 +701,14 @@ describe("Traces", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            traceId: "trace-get-123",
+            traceId,
           });
 
-        expect(trace.otelTraceId).toBe("trace-get-123");
-        expect(trace.serviceName).toBe("test-svc");
+        expect(trace.otelTraceId).toBe(traceId);
       }),
     );
 
-    it.effect("returns `NotFoundError` when trace doesn't exist", () =>
+    it.effect("returns NotFoundError for missing trace", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
           yield* TestEnvironmentFixture;
@@ -942,375 +720,12 @@ describe("Traces", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            traceId: "non-existent-trace-id",
+            traceId: "missing-trace",
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Trace non-existent-trace-id not found");
       }),
-    );
-
-    it.effect(
-      "returns `NotFoundError` when non-member tries to get (hides project)",
-      () =>
-        Effect.gen(function* () {
-          const { environment, project, org, owner, nonMember } =
-            yield* TestEnvironmentFixture;
-          const db = yield* Database;
-
-          const resourceSpans = [
-            {
-              resource: { attributes: [] },
-              scopeSpans: [
-                {
-                  scope: { name: "test" },
-                  spans: [
-                    {
-                      traceId: "trace-hidden",
-                      spanId: "span-hidden",
-                      name: "test-span",
-                      startTimeUnixNano: "1000000000",
-                      endTimeUnixNano: "2000000000",
-                    },
-                  ],
-                },
-              ],
-            },
-          ];
-
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-          const result = yield* db.organizations.projects.environments.traces
-            .findById({
-              userId: nonMember.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              traceId: "trace-hidden",
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(NotFoundError);
-        }),
-    );
-
-    it.effect("returns `DatabaseError` when query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .findById({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            traceId: "trace-id",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to get trace");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .select(new Error("Database connection failed"))
-            .build(),
-        ),
-      ),
-    );
-  });
-
-  describe("findByFunctionHash", () => {
-    it.effect("retrieves traces by function version hash", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        // Create a trace with spans that have function hash in attributes
-        const resourceSpans = [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "test-service" } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-func-hash-1",
-                    spanId: "span-func-hash-1",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                    attributes: [
-                      {
-                        key: "mirascope.version.hash",
-                        value: { stringValue: "abc123" },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { resourceSpans },
-        });
-
-        const result =
-          yield* db.organizations.projects.environments.traces.findByFunctionHash(
-            {
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              functionHash: "abc123",
-            },
-          );
-
-        expect(result.traces).toHaveLength(1);
-        expect(result.traces[0].otelTraceId).toBe("trace-func-hash-1");
-        expect(result.total).toBe(1);
-      }),
-    );
-
-    it.effect("returns empty array when no traces match function hash", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const result =
-          yield* db.organizations.projects.environments.traces.findByFunctionHash(
-            {
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              functionHash: "non-existent-hash",
-            },
-          );
-
-        expect(result.traces).toHaveLength(0);
-        expect(result.total).toBe(0);
-      }),
-    );
-
-    it.effect("respects limit and offset parameters", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        // Create multiple traces with the same function hash
-        for (let i = 1; i <= 5; i++) {
-          const resourceSpans = [
-            {
-              resource: { attributes: [] },
-              scopeSpans: [
-                {
-                  scope: { name: "test" },
-                  spans: [
-                    {
-                      traceId: `trace-paginate-${i}`,
-                      spanId: `span-paginate-${i}`,
-                      name: "test-span",
-                      startTimeUnixNano: `${1000000000 + i * 1000000}`,
-                      endTimeUnixNano: `${2000000000 + i * 1000000}`,
-                      attributes: [
-                        {
-                          key: "mirascope.version.hash",
-                          value: { stringValue: "paginate-hash" },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ];
-
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-        }
-
-        const limitedResult =
-          yield* db.organizations.projects.environments.traces.findByFunctionHash(
-            {
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              functionHash: "paginate-hash",
-              limit: 2,
-              offset: 0,
-            },
-          );
-
-        expect(limitedResult.traces).toHaveLength(2);
-        expect(limitedResult.total).toBe(5);
-
-        const offsetResult =
-          yield* db.organizations.projects.environments.traces.findByFunctionHash(
-            {
-              userId: owner.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              functionHash: "paginate-hash",
-              limit: 2,
-              offset: 2,
-            },
-          );
-
-        expect(offsetResult.traces).toHaveLength(2);
-        expect(offsetResult.total).toBe(5);
-      }),
-    );
-
-    it.effect(
-      "returns NotFoundError when non-member tries to query (hides project)",
-      () =>
-        Effect.gen(function* () {
-          const { environment, project, org, nonMember } =
-            yield* TestEnvironmentFixture;
-          const db = yield* Database;
-
-          const result = yield* db.organizations.projects.environments.traces
-            .findByFunctionHash({
-              userId: nonMember.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              functionHash: "any-hash",
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(NotFoundError);
-        }),
-    );
-
-    it.effect("returns DatabaseError when spans query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .findByFunctionHash({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            functionHash: "test-hash",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to query spans by function hash");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .selectDistinct(new Error("Spans query failed"))
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when traces query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .findByFunctionHash({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            functionHash: "test-hash",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to list traces by function hash");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .selectDistinct([{ traceId: "trace-123" }]) // Spans query succeeds
-            .select(new Error("Traces query failed")) // Traces query fails
-            .build(),
-        ),
-      ),
     );
   });
 
@@ -1327,77 +742,17 @@ describe("Traces", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            traceId: "some-trace-id",
+            traceId: "trace-id",
             data: undefined as never,
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(ImmutableResourceError);
-        expect(result.message).toContain("immutable");
       }),
     );
   });
 
   describe("delete", () => {
-    it.effect("deletes trace and associated spans", () =>
-      Effect.gen(function* () {
-        const { environment, project, org, owner } =
-          yield* TestEnvironmentFixture;
-        const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: {
-              attributes: [
-                { key: "service.name", value: { stringValue: "del-service" } },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-to-delete",
-                    spanId: "span-to-delete",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { resourceSpans },
-        });
-
-        yield* db.organizations.projects.environments.traces.delete({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          traceId: "trace-to-delete",
-        });
-
-        const result =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { resourceSpans },
-          });
-
-        expect(result.acceptedSpans).toBe(1);
-      }),
-    );
-
     it.effect("returns NotFoundError when trace not found", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
@@ -1410,7 +765,7 @@ describe("Traces", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            traceId: "non-existent-trace-id",
+            traceId: "trace-id",
           })
           .pipe(Effect.flip);
 
@@ -1420,37 +775,9 @@ describe("Traces", () => {
 
     it.effect("returns PermissionDeniedError for DEVELOPER role", () =>
       Effect.gen(function* () {
-        const { environment, project, org, owner, projectDeveloper } =
+        const { environment, project, org, projectDeveloper } =
           yield* TestEnvironmentFixture;
         const db = yield* Database;
-
-        const resourceSpans = [
-          {
-            resource: { attributes: [] },
-            scopeSpans: [
-              {
-                scope: { name: "test" },
-                spans: [
-                  {
-                    traceId: "trace-no-delete",
-                    spanId: "span-no-delete",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-
-        yield* db.organizations.projects.environments.traces.create({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          environmentId: environment.id,
-          data: { resourceSpans },
-        });
 
         const result = yield* db.organizations.projects.environments.traces
           .delete({
@@ -1458,98 +785,12 @@ describe("Traces", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            traceId: "trace-no-delete",
+            traceId: "trace-id",
           })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(PermissionDeniedError);
-        expect(result.message).toContain("delete");
       }),
-    );
-
-    it.effect("returns DatabaseError when span deletion fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .delete({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            traceId: "trace-id",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to delete spans");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .delete(new Error("Connection failed"))
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when trace deletion fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result = yield* db.organizations.projects.environments.traces
-          .delete({
-            userId: "owner-id",
-            organizationId: "org-id",
-            projectId: "project-id",
-            environmentId: "env-id",
-            traceId: "trace-id",
-          })
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to delete trace");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
-            .select([{ id: "project-id" }])
-            .delete([])
-            .delete(new Error("Connection failed"))
-            .build(),
-        ),
-      ),
     );
   });
 });

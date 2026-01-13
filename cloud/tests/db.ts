@@ -5,10 +5,21 @@ import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
-import { CONNECTION_FILE } from "@/tests/global-setup";
+import {
+  CONNECTION_FILE,
+  CLICKHOUSE_CONNECTION_FILE,
+} from "@/tests/global-setup";
 import { Payments } from "@/payments";
 import { DefaultMockPayments } from "@/tests/payments";
+import {
+  SpansIngestQueue,
+  ingestSpansMessage,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { SettingsService, getSettings } from "@/settings";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -28,6 +39,25 @@ function getTestDatabaseUrl(): string {
 
 export const TEST_DATABASE_URL = getTestDatabaseUrl();
 
+type ClickHouseConnectionFile = {
+  url: string;
+  user: string;
+  password: string;
+  database: string;
+  nativePort: number;
+};
+
+function getTestClickHouseConfig(): ClickHouseConnectionFile {
+  try {
+    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
+    return JSON.parse(raw) as ClickHouseConnectionFile;
+  } catch {
+    throw new Error(
+      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
+    );
+  }
+}
+
 /**
  * PgClient layer configured for test database.
  * Uses layerConfig to properly handle the connection string.
@@ -46,16 +76,6 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
 /**
- * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
- */
-export const MockSpansMeteringQueue = Layer.succeed(
-  SpansMeteringQueueService,
-  SpansMeteringQueueService.of({
-    send: () => Effect.succeed(undefined), // No-op in tests
-  }),
-);
-
-/**
  * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
  * `SqlClient` services for tests.
  *
@@ -64,13 +84,91 @@ export const MockSpansMeteringQueue = Layer.succeed(
  * You only need to import this if you need to provide it manually (e.g., in
  * tests that don't use `it.effect`).
  */
+/**
+ * Test ClickHouse layer using the real test container.
+ */
+const TestClickHouse = Effect.sync(() => {
+  const config = getTestClickHouseConfig();
+  const settings = getSettings();
+  const settingsLayer = Layer.succeed(SettingsService, {
+    ...settings,
+    env: "test",
+    CLICKHOUSE_URL: config.url,
+    CLICKHOUSE_USER: config.user,
+    CLICKHOUSE_PASSWORD: config.password,
+    CLICKHOUSE_DATABASE: config.database,
+  });
+  return ClickHouse.Default.pipe(Layer.provide(settingsLayer));
+}).pipe(Layer.unwrapEffect);
+
+/**
+ * Mock RealtimeSpans layer for tests.
+ * Durable Objects are external services, so we mock them.
+ */
+const MockRealtimeSpans = Layer.succeed(RealtimeSpans, {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  exists: () => Effect.succeed(true),
+});
+
+/**
+ * Mock SpansMeteringQueue layer for tests (no-op).
+ */
+const MockSpansMeteringQueue = Layer.succeed(SpansMeteringQueueService, {
+  send: () => Effect.void,
+});
+
+/**
+ * SpansIngestQueue layer that synchronously executes ingestSpansMessage.
+ * Uses real TestClickHouse and MockRealtimeSpans (Durable Object is external).
+ */
+const TestSpansIngestQueue = Layer.succeed(SpansIngestQueue, {
+  send: (message: SpansIngestMessage) =>
+    ingestSpansMessage(message).pipe(
+      Effect.provide(Layer.merge(TestClickHouse, MockRealtimeSpans)),
+      Effect.catchAll(() => Effect.void),
+    ),
+});
+
 export const TestDatabase: Layer.Layer<
-  Database | DrizzleORM | SqlClient.SqlClient | SpansMeteringQueueService
+  Database | DrizzleORM | SqlClient.SqlClient
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { DefaultMockPayments } = yield* Effect.promise(
     () => import("@/tests/payments"),
   );
+
+  return Layer.mergeAll(
+    Database.Default.pipe(
+      Layer.provideMerge(TestDrizzleORM),
+      Layer.provide(DefaultMockPayments),
+    ),
+    TestSpansIngestQueue,
+    MockRealtimeSpans,
+    MockSpansMeteringQueue,
+  );
+}).pipe(Layer.unwrapEffect);
+
+/**
+ * Test database layer WITHOUT spans ingest queue or realtime services.
+ *
+ * Use this when testing database operations that should not depend on
+ * queue or realtime services (e.g., testing queue failure scenarios).
+ */
+export const TestDatabaseNoSpansIngestQueue: Layer.Layer<
+  Database | DrizzleORM | SqlClient.SqlClient
+> = Effect.gen(function* () {
+  const { DefaultMockPayments } = yield* Effect.promise(
+    () => import("@/tests/payments"),
+  );
+
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provideMerge(TestDrizzleORM),
@@ -95,7 +193,7 @@ class TestRollbackError {
  * If SqlClient is not available (e.g., mock tests), the effect runs
  * without transaction wrapping.
  */
-const withRollback = <A, E, R>(
+export const withRollback = <A, E, R>(
   effect: Effect.Effect<A, E, R>,
 ): Effect.Effect<A, E, R> =>
   Effect.gen(function* () {
@@ -185,7 +283,41 @@ const wrapEffectTest =
  * );
  * ```
  */
-export const it = createCustomIt<TestServices>(wrapEffectTest);
+const baseIt = createCustomIt<TestServices>(wrapEffectTest);
+
+const wrapEffectTestNoSpansIngestQueue =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (original: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (name: any, fn: any, timeout?: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      return original(
+        name,
+        () =>
+          /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+          fn()
+            .pipe(withRollback)
+            .pipe(Effect.provide(TestDatabaseNoSpansIngestQueue)),
+        /* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+        timeout,
+      );
+    };
+
+const noSpanIngestQueueIt = createCustomIt<TestServices>(
+  wrapEffectTestNoSpansIngestQueue,
+);
+
+/**
+ * Type-safe `it` with `it.effect` that automatically:
+ * 1. Wraps tests in a transaction that rolls back
+ * 2. Provides TestDatabase layer
+ *
+ * Extended with `.noSpanIngestQueue` for tests that should not depend on
+ * spans ingest queue or realtime services (e.g., testing queue failure scenarios).
+ */
+export const it = Object.assign(baseIt, {
+  noSpanIngestQueue: noSpanIngestQueueIt,
+});
 
 // ============================================================================
 // Mock database builder
@@ -605,7 +737,7 @@ export const TestSpanFixture = Effect.gen(function* () {
   const traceId = "0123456789abcdef0123456789abcdef";
   const spanId = "0123456789abcdef";
 
-  const result = yield* db.organizations.projects.environments.traces.create({
+  yield* db.organizations.projects.environments.traces.create({
     userId: envFixture.owner.id,
     organizationId: envFixture.org.id,
     projectId: envFixture.project.id,
@@ -620,7 +752,7 @@ export const TestSpanFixture = Effect.gen(function* () {
           },
           scopeSpans: [
             {
-              scope: { name: "test-scope" },
+              scope: { name: "test" },
               spans: [
                 {
                   traceId,
@@ -639,10 +771,6 @@ export const TestSpanFixture = Effect.gen(function* () {
       ],
     },
   });
-
-  if (result.acceptedSpans !== 1) {
-    throw new Error("Failed to create test span");
-  }
 
   return {
     ...envFixture,

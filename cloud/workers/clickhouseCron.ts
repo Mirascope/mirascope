@@ -20,7 +20,7 @@ import { Effect, Layer } from "effect";
 import { DrizzleORM } from "@/db/client";
 import { spansOutbox } from "@/db/schema";
 import { and, eq, lt, or, isNull, lte } from "drizzle-orm";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
 import {
   SettingsService,
   getSettingsFromEnvironment,
@@ -170,7 +170,9 @@ export const clickhouseCronProgram = (workerId: string) =>
 
     yield* processOutboxMessages(
       messages,
+      /* v8 ignore next - No-op callback, not called in tests */
       () => {},
+      /* v8 ignore next - No-op callback, not called in tests */
       () => {},
       workerId,
     );

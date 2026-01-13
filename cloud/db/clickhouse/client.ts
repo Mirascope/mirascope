@@ -22,7 +22,7 @@
  *
  * @example
  * ```ts
- * import { ClickHouse, ClickHouseLive } from "@/clickhouse/client";
+ * import { ClickHouse, ClickHouseLive } from "@/db/clickhouse/client";
  *
  * const program = Effect.gen(function* () {
  *   const client = yield* ClickHouse;

@@ -80,6 +80,32 @@ export class RouterMeteringQueueService extends Context.Tag(
 }
 
 // =============================================================================
+// Global Layer
+// =============================================================================
+
+/**
+ * Global router metering queue layer.
+ *
+ * Initialized by server-entry.ts when the Cloudflare binding is available.
+ * Route handlers can import this layer to access the queue service.
+ */
+export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
+  Layer.succeed(RouterMeteringQueueService, {
+    send: () => Effect.fail(new Error("RouterMeteringQueue not initialized")),
+  });
+
+/**
+ * Sets the global router metering queue layer.
+ *
+ * Called by server-entry.ts to initialize the layer with the Cloudflare binding.
+ */
+export const setRouterMeteringQueueLayer = (
+  layer: Layer.Layer<RouterMeteringQueueService>,
+): void => {
+  routerMeteringQueueLayer = layer;
+};
+
+// =============================================================================
 // Message Processing
 // =============================================================================
 

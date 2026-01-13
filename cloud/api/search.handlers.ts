@@ -24,7 +24,7 @@ import {
   type TraceDetailInput,
   type AnalyticsSummaryInput,
   type AttributeFilter,
-} from "@/clickhouse/search";
+} from "@/db/clickhouse/search";
 import type {
   SearchRequest,
   AnalyticsSummaryRequest,

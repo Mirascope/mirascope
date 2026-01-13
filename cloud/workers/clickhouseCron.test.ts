@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
 import { DrizzleORM } from "@/db/client";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
 import clickhouseCron, { clickhouseCronProgram } from "./clickhouseCron";
 import type { CronTriggerEnv } from "./clickhouseCron";
 

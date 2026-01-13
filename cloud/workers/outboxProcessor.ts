@@ -9,7 +9,7 @@
 import { Duration, Effect, Schedule } from "effect";
 import { and, eq, lte } from "drizzle-orm";
 import { DrizzleORM } from "@/db/client";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
 import { spansOutbox, spans, traces } from "@/db/schema";
 import type { Span } from "@/db/schema/spans";
 import type { Trace } from "@/db/schema/traces";

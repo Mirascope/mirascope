@@ -76,6 +76,32 @@ export class SpansMeteringQueueService extends Context.Tag(
 }
 
 // =============================================================================
+// Global Layer
+// =============================================================================
+
+/**
+ * Global spans metering queue layer.
+ *
+ * Initialized by server-entry.ts when the Cloudflare binding is available.
+ * Route handlers can import this layer to access the queue service.
+ */
+export let spansMeteringQueueLayer: Layer.Layer<SpansMeteringQueueService> =
+  Layer.succeed(SpansMeteringQueueService, {
+    send: () => Effect.fail(new Error("SpansMeteringQueue not initialized")),
+  });
+
+/**
+ * Sets the global spans metering queue layer.
+ *
+ * Called by server-entry.ts to initialize the layer with the Cloudflare binding.
+ */
+export const setSpansMeteringQueueLayer = (
+  layer: Layer.Layer<SpansMeteringQueueService>,
+): void => {
+  spansMeteringQueueLayer = layer;
+};
+
+// =============================================================================
 // Message Processing
 // =============================================================================
 

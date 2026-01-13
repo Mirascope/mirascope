@@ -7,7 +7,7 @@ import { Effect } from "effect";
 import {
   transformSpanForClickHouse,
   formatDateTime64,
-} from "@/clickhouse/transform";
+} from "@/db/clickhouse/transform";
 import { TestTransformInputFixture } from "@/tests/clickhouse/fixtures";
 
 // =============================================================================

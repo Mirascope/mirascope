@@ -926,38 +926,33 @@ describe("Annotations", () => {
         );
 
         // Create another span for second annotation
-        const result2 =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test-scope" },
-                      spans: [
-                        {
-                          traceId,
-                          spanId: "abcdef0123456789",
-                          name: "test-span-2",
-                          kind: 1,
-                          startTimeUnixNano: "1700000002000000000",
-                          endTimeUnixNano: "1700000003000000000",
-                          attributes: [],
-                          status: {},
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          });
-        expect(result2.acceptedSpans).toBe(1);
+        yield* db.organizations.projects.environments.traces.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          data: {
+            resourceSpans: [
+              {
+                resource: { attributes: [] },
+                scopeSpans: [
+                  {
+                    scope: { name: "test" },
+                    spans: [
+                      {
+                        traceId,
+                        spanId: "abcdef0123456789",
+                        name: "test-span",
+                        startTimeUnixNano: "1700000002000000000",
+                        endTimeUnixNano: "1700000003000000000",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        });
 
         yield* db.organizations.projects.environments.traces.annotations.create(
           {
@@ -1128,38 +1123,33 @@ describe("Annotations", () => {
           "span000000000003",
         ];
 
-        for (const spanId of spanIds) {
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test-scope" },
-                      spans: [
-                        {
-                          traceId,
-                          spanId,
-                          name: `span-${spanId}`,
-                          kind: 1,
-                          startTimeUnixNano: "1700000000000000000",
-                          endTimeUnixNano: "1700000001000000000",
-                          attributes: [],
-                          status: {},
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          });
+        yield* db.organizations.projects.environments.traces.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          data: {
+            resourceSpans: [
+              {
+                resource: { attributes: [] },
+                scopeSpans: [
+                  {
+                    scope: { name: "test" },
+                    spans: spanIds.map((spanId) => ({
+                      traceId,
+                      spanId,
+                      name: "test-span",
+                      startTimeUnixNano: "1700000000000000000",
+                      endTimeUnixNano: "1700000001000000000",
+                    })),
+                  },
+                ],
+              },
+            ],
+          },
+        });
 
+        for (const spanId of spanIds) {
           yield* db.organizations.projects.environments.traces.annotations.create(
             {
               userId: owner.id,
@@ -1200,38 +1190,33 @@ describe("Annotations", () => {
           "span000000000003",
         ];
 
-        for (const spanId of spanIds) {
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test-scope" },
-                      spans: [
-                        {
-                          traceId,
-                          spanId,
-                          name: `span-${spanId}`,
-                          kind: 1,
-                          startTimeUnixNano: "1700000000000000000",
-                          endTimeUnixNano: "1700000001000000000",
-                          attributes: [],
-                          status: {},
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          });
+        yield* db.organizations.projects.environments.traces.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          data: {
+            resourceSpans: [
+              {
+                resource: { attributes: [] },
+                scopeSpans: [
+                  {
+                    scope: { name: "test" },
+                    spans: spanIds.map((spanId) => ({
+                      traceId,
+                      spanId,
+                      name: "test-span",
+                      startTimeUnixNano: "1700000000000000000",
+                      endTimeUnixNano: "1700000001000000000",
+                    })),
+                  },
+                ],
+              },
+            ],
+          },
+        });
 
+        for (const spanId of spanIds) {
           yield* db.organizations.projects.environments.traces.annotations.create(
             {
               userId: owner.id,

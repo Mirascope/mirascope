@@ -6,9 +6,17 @@ import {
   TestApiContext,
   createApiClient,
 } from "@/tests/api";
+import {
+  it as itDb,
+  TEST_DATABASE_URL,
+  TestEnvironmentFixture,
+} from "@/tests/db";
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
-import { TEST_DATABASE_URL } from "@/tests/db";
-import { toTrace } from "@/api/traces.handlers";
+import { toTrace, listByFunctionHashHandler } from "@/api/traces.handlers";
+import { Authentication } from "@/auth";
+import { Database } from "@/db";
+import { NotFoundError } from "@/errors";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 
 describe("toTrace", () => {
   it("converts dates to ISO strings", () => {
@@ -48,12 +56,6 @@ describe("toTrace", () => {
     expect(result.createdAt).toBeNull();
   });
 });
-import { DrizzleORM } from "@/db/client";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
-import { createTraceHandler } from "@/api/traces.handlers";
-import { Authentication } from "@/auth";
-import { Database } from "@/db";
-import { DatabaseError } from "@/errors";
 
 describe.sequential("Traces API", (it) => {
   let project: PublicProject;
@@ -184,121 +186,35 @@ describe.sequential("Traces API", (it) => {
         ],
       };
 
-      const result = yield* apiKeyClient.traces.create({ payload });
-      expect(result.partialSuccess?.rejectedSpans).toBe(1);
-      expect(result.partialSuccess?.errorMessage).toContain("1 spans");
+      const { org, owner } = yield* TestApiContext;
+
+      const apiKeyInfo = {
+        apiKeyId: "test-api-key-id",
+        organizationId: org.id,
+        projectId: project.id,
+        environmentId: environment.id,
+        ownerId: owner.id,
+        ownerEmail: owner.email,
+        ownerName: owner.name,
+        ownerDeletedAt: owner.deletedAt,
+      };
+
+      const { client: apiKeyClient, dispose } = yield* Effect.promise(() =>
+        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo, () =>
+          Effect.fail(new Error("Queue send failed")),
+        ),
+      );
+
+      let result;
+      try {
+        result = yield* apiKeyClient.traces.create({ payload });
+      } finally {
+        yield* Effect.promise(dispose);
+      }
+
+      expect(result.partialSuccess?.rejectedSpans).toBe(2);
+      expect(result.partialSuccess?.errorMessage).toContain("2 spans");
     }),
-  );
-
-  it.effect(
-    "GET /traces/function/hash/:hash - returns traces by function hash",
-    () =>
-      Effect.gen(function* () {
-        const payload = {
-          resourceSpans: [
-            {
-              resource: {
-                attributes: [
-                  {
-                    key: "service.name",
-                    value: { stringValue: "hash-test-service" },
-                  },
-                ],
-              },
-              scopeSpans: [
-                {
-                  scope: { name: "test-scope", version: "1.0.0" },
-                  spans: [
-                    {
-                      traceId: "trace-with-func-hash",
-                      spanId: "span-with-func-hash",
-                      name: "versioned-span",
-                      startTimeUnixNano: "1000000000",
-                      endTimeUnixNano: "2000000000",
-                      attributes: [
-                        {
-                          key: "mirascope.version.hash",
-                          value: { stringValue: "api-test-hash-123" },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        };
-
-        yield* apiKeyClient.traces.create({ payload });
-
-        const result = yield* apiKeyClient.traces.listByFunctionHash({
-          path: { hash: "api-test-hash-123" },
-          urlParams: {},
-        });
-
-        expect(result.traces).toHaveLength(1);
-        expect(result.traces[0].otelTraceId).toBe("trace-with-func-hash");
-        expect(result.total).toBe(1);
-      }),
-  );
-
-  it.effect(
-    "GET /traces/function/hash/:hash - returns empty array for non-existent hash",
-    () =>
-      Effect.gen(function* () {
-        const result = yield* apiKeyClient.traces.listByFunctionHash({
-          path: { hash: "non-existent-hash" },
-          urlParams: {},
-        });
-
-        expect(result.traces).toHaveLength(0);
-        expect(result.total).toBe(0);
-      }),
-  );
-
-  it.effect(
-    "GET /traces/function/hash/:hash - supports pagination with limit and offset",
-    () =>
-      Effect.gen(function* () {
-        for (let i = 1; i <= 3; i++) {
-          const payload = {
-            resourceSpans: [
-              {
-                resource: { attributes: [] },
-                scopeSpans: [
-                  {
-                    scope: { name: "test-scope", version: "1.0.0" },
-                    spans: [
-                      {
-                        traceId: `paginate-api-trace-${i}`,
-                        spanId: `paginate-api-span-${i}`,
-                        name: "paginated-span",
-                        startTimeUnixNano: `${1000000000 + i * 1000000}`,
-                        endTimeUnixNano: `${2000000000 + i * 1000000}`,
-                        attributes: [
-                          {
-                            key: "mirascope.version.hash",
-                            value: { stringValue: "paginate-api-hash" },
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          };
-          yield* apiKeyClient.traces.create({ payload });
-        }
-
-        const result = yield* apiKeyClient.traces.listByFunctionHash({
-          path: { hash: "paginate-api-hash" },
-          urlParams: { limit: 2, offset: 0 },
-        });
-
-        expect(result.traces).toHaveLength(2);
-        expect(result.total).toBe(3);
-      }),
   );
 
   it.effect("Dispose API key client", () =>
@@ -310,335 +226,248 @@ describe.sequential("Traces API", (it) => {
   );
 });
 
-describe("Traces Handler - Metering", () => {
-  it.rollback("handles empty span IDs gracefully (no metering queued)", () =>
+describe("listByFunctionHashHandler", () => {
+  itDb.effect("returns traces for function hash", () =>
     Effect.gen(function* () {
+      const { environment, project, org, owner } =
+        yield* TestEnvironmentFixture;
       const db = yield* Database;
 
-      // Create a real user in the database
-      const user = yield* db.users.create({
-        data: {
-          email: "test-metering-empty@example.com",
-          name: "Test User Metering Empty",
-        },
-      });
-
-      // Create org, project, and environment for this test
-      const org = yield* db.organizations.create({
-        userId: user.id,
-        data: { name: "Test Org", slug: "test-org-metering-empty" },
-      });
-      const proj = yield* db.organizations.projects.create({
-        userId: user.id,
-        organizationId: org.id,
-        data: { name: "Test Project", slug: "test-proj-metering-empty" },
-      });
-      const env = yield* db.organizations.projects.environments.create({
-        userId: user.id,
-        organizationId: org.id,
-        projectId: proj.id,
-        data: { name: "Test Env", slug: "test-env-metering-empty" },
-      });
-
-      // Track if queue.send was called
-      let sendCalled = false;
-      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-        send: () => {
-          sendCalled = true;
-          return Effect.succeed(undefined);
-        },
-      });
-
-      // Empty payload - no spans
-      const payload = { resourceSpans: [] };
-
-      const authLayer = Layer.succeed(Authentication, {
-        user,
-        apiKeyInfo: {
-          apiKeyId: "test-key",
+      // Create a function with a known hash
+      const fn = yield* db.organizations.projects.environments.functions.create(
+        {
+          userId: owner.id,
           organizationId: org.id,
-          projectId: proj.id,
-          environmentId: env.id,
-          ownerId: user.id,
-          ownerEmail: user.email,
-          ownerName: user.name,
-          ownerDeletedAt: user.deletedAt,
-        },
-      });
-
-      const result = yield* createTraceHandler(payload).pipe(
-        Effect.provide(authLayer),
-        Effect.provide(MockQueueLayer),
-      );
-
-      // Should complete without error and not call queue
-      expect(result.partialSuccess).toBeDefined();
-      expect(sendCalled).toBe(false);
-    }),
-  );
-
-  it.rollback(
-    "handles database error when fetching organization (logs and continues)",
-    () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        // Create a real user in the database
-        const user = yield* db.users.create({
+          projectId: project.id,
+          environmentId: environment.id,
           data: {
-            email: "test-metering-dberror@example.com",
-            name: "Test User Metering DB Error",
+            name: "test-function",
+            hash: "test-hash-for-traces",
+            code: "def test(): pass",
+            signature: "def test()",
+            signatureHash: "sig-hash",
           },
-        });
-
-        // Create org, project, and environment
-        const org = yield* db.organizations.create({
-          userId: user.id,
-          data: { name: "Test Org 2", slug: "test-org-metering-dberror" },
-        });
-        const proj = yield* db.organizations.projects.create({
-          userId: user.id,
-          organizationId: org.id,
-          data: { name: "Test Project 2", slug: "test-proj-metering-dberror" },
-        });
-        const env = yield* db.organizations.projects.environments.create({
-          userId: user.id,
-          organizationId: org.id,
-          projectId: proj.id,
-          data: { name: "Test Env 2", slug: "test-env-metering-dberror" },
-        });
-
-        // Mock DrizzleORM to throw error when selecting org
-        const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
-          select: () => ({
-            from: () => ({
-              where: () =>
-                Effect.fail(
-                  new DatabaseError({
-                    message: "Simulated database error",
-                  }),
-                ),
-            }),
-          }),
-        } as never);
-
-        const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-          send: () => Effect.succeed(undefined),
-        });
-
-        const payload = {
-          resourceSpans: [
-            {
-              scopeSpans: [
-                {
-                  spans: [
-                    {
-                      traceId: "trace-db-error",
-                      spanId: "span-db-error",
-                      name: "test-span",
-                      startTimeUnixNano: "1000000000",
-                      endTimeUnixNano: "2000000000",
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        };
-
-        const authLayer = Layer.succeed(Authentication, {
-          user,
-          apiKeyInfo: {
-            apiKeyId: "test-key-2",
-            organizationId: org.id,
-            projectId: proj.id,
-            environmentId: env.id,
-            ownerId: user.id,
-            ownerEmail: user.email,
-            ownerName: user.name,
-            ownerDeletedAt: user.deletedAt,
-          },
-        });
-
-        // Should complete without error despite DB error
-        const result = yield* createTraceHandler(payload).pipe(
-          Effect.provide(authLayer),
-          Effect.provide(MockDrizzleLayer),
-          Effect.provide(MockQueueLayer),
-        );
-
-        expect(result.partialSuccess).toBeDefined();
-      }),
-  );
-
-  it.rollback("handles organization not found (logs and continues)", () =>
-    Effect.gen(function* () {
-      const db = yield* Database;
-
-      // Create a real user in the database
-      const user = yield* db.users.create({
-        data: {
-          email: "test-metering-notfound@example.com",
-          name: "Test User Metering Not Found",
         },
-      });
+      );
 
-      // Create org, project, and environment
-      const org = yield* db.organizations.create({
-        userId: user.id,
-        data: { name: "Test Org 3", slug: "test-org-metering-notfound" },
-      });
-      const proj = yield* db.organizations.projects.create({
-        userId: user.id,
-        organizationId: org.id,
-        data: {
-          name: "Test Project 3",
-          slug: "test-proj-metering-notfound",
-        },
-      });
-      const env = yield* db.organizations.projects.environments.create({
-        userId: user.id,
-        organizationId: org.id,
-        projectId: proj.id,
-        data: { name: "Test Env 3", slug: "test-env-metering-notfound" },
-      });
-
-      // Mock DrizzleORM to return empty result
-      const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
-        select: () => ({
-          from: () => ({
-            where: () => Effect.succeed([]), // Empty array = org not found
-          }),
-        }),
-      } as never);
-
-      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-        send: () => Effect.succeed(undefined),
-      });
-
-      const payload = {
-        resourceSpans: [
-          {
-            scopeSpans: [
+      // Mock ClickHouseSearch to return spans with this function
+      const mockClickHouseSearch = Layer.succeed(ClickHouseSearch, {
+        search: () =>
+          Effect.succeed({
+            spans: [
               {
-                spans: [
-                  {
-                    traceId: "trace-notfound",
-                    spanId: "span-notfound",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
+                id: "span-1",
+                traceId: "trace-1",
+                spanId: "otel-span-1",
+                name: "test-span",
+                startTime: "2024-01-01T00:00:00Z",
+                durationMs: 100,
+                model: "gpt-4",
+                provider: "openai",
+                totalTokens: 100,
+                functionId: fn.id,
+                functionName: "test-function",
+              },
+              {
+                id: "span-2",
+                traceId: "trace-1",
+                spanId: "otel-span-2",
+                name: "test-span-2",
+                startTime: "2024-01-01T00:00:01Z",
+                durationMs: 50,
+                model: "gpt-4",
+                provider: "openai",
+                totalTokens: 50,
+                functionId: fn.id,
+                functionName: "test-function",
+              },
+              {
+                id: "span-3",
+                traceId: "trace-2",
+                spanId: "otel-span-3",
+                name: "test-span-3",
+                startTime: "2024-01-01T00:00:02Z",
+                durationMs: 75,
+                model: "gpt-4",
+                provider: "openai",
+                totalTokens: 75,
+                functionId: fn.id,
+                functionName: "test-function",
               },
             ],
-          },
-        ],
-      };
+            total: 3,
+            hasMore: false,
+          }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
 
       const authLayer = Layer.succeed(Authentication, {
-        user,
+        user: owner,
         apiKeyInfo: {
           apiKeyId: "test-key",
           organizationId: org.id,
-          projectId: proj.id,
-          environmentId: env.id,
-          ownerId: user.id,
-          ownerEmail: user.email,
-          ownerName: user.name,
-          ownerDeletedAt: user.deletedAt,
+          projectId: project.id,
+          environmentId: environment.id,
+          ownerId: owner.id,
+          ownerEmail: owner.email,
+          ownerName: owner.name,
+          ownerDeletedAt: owner.deletedAt,
         },
       });
 
-      // Should complete without error despite org not found
-      const result = yield* createTraceHandler(payload).pipe(
-        Effect.provide(authLayer),
-        Effect.provide(MockDrizzleLayer),
-        Effect.provide(MockQueueLayer),
-      );
+      const result = yield* listByFunctionHashHandler("test-hash-for-traces", {
+        limit: 100,
+        offset: 0,
+      }).pipe(Effect.provide(Layer.mergeAll(authLayer, mockClickHouseSearch)));
 
-      expect(result.partialSuccess).toBeDefined();
+      // Should return unique traces (2 traces from 3 spans)
+      expect(result.traces).toHaveLength(2);
+      expect(result.traces[0]?.otelTraceId).toBe("trace-1");
+      expect(result.traces[1]?.otelTraceId).toBe("trace-2");
+      expect(result.total).toBe(3);
     }),
   );
 
-  it.rollback("handles queue send error (logs and continues)", () =>
+  itDb.effect("returns NotFoundError for non-existent function hash", () =>
     Effect.gen(function* () {
-      const db = yield* Database;
+      const { environment, project, org, owner } =
+        yield* TestEnvironmentFixture;
 
-      // Create a real user in the database
-      const user = yield* db.users.create({
-        data: {
-          email: "test-metering-queueerror@example.com",
-          name: "Test User Metering Queue Error",
-        },
+      const mockClickHouseSearch = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
       });
-
-      // Create org, project, and environment
-      const org = yield* db.organizations.create({
-        userId: user.id,
-        data: { name: "Test Org 4", slug: "test-org-metering-queueerror" },
-      });
-      const proj = yield* db.organizations.projects.create({
-        userId: user.id,
-        organizationId: org.id,
-        data: {
-          name: "Test Project 4",
-          slug: "test-proj-metering-queueerror",
-        },
-      });
-      const env = yield* db.organizations.projects.environments.create({
-        userId: user.id,
-        organizationId: org.id,
-        projectId: proj.id,
-        data: { name: "Test Env 4", slug: "test-env-metering-queueerror" },
-      });
-
-      // Mock queue to throw error
-      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-        send: () => Effect.fail(new Error("Queue send failed")),
-      });
-
-      const payload = {
-        resourceSpans: [
-          {
-            scopeSpans: [
-              {
-                spans: [
-                  {
-                    traceId: "trace-queue-error",
-                    spanId: "span-queue-error",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      };
 
       const authLayer = Layer.succeed(Authentication, {
-        user,
+        user: owner,
         apiKeyInfo: {
-          apiKeyId: "test-key-4",
+          apiKeyId: "test-key",
           organizationId: org.id,
-          projectId: proj.id,
-          environmentId: env.id,
-          ownerId: user.id,
-          ownerEmail: user.email,
-          ownerName: user.name,
-          ownerDeletedAt: user.deletedAt,
+          projectId: project.id,
+          environmentId: environment.id,
+          ownerId: owner.id,
+          ownerEmail: owner.email,
+          ownerName: owner.name,
+          ownerDeletedAt: owner.deletedAt,
         },
       });
 
-      // Should complete without error despite queue error
-      const result = yield* createTraceHandler(payload).pipe(
-        Effect.provide(authLayer),
-        Effect.provide(MockQueueLayer),
+      const result = yield* listByFunctionHashHandler(
+        "non-existent-hash",
+        {},
+      ).pipe(
+        Effect.provide(Layer.mergeAll(authLayer, mockClickHouseSearch)),
+        Effect.flip,
       );
 
-      expect(result.partialSuccess).toBeDefined();
+      expect(result).toBeInstanceOf(NotFoundError);
+    }),
+  );
+
+  itDb.effect("returns empty traces when no spans match function", () =>
+    Effect.gen(function* () {
+      const { environment, project, org, owner } =
+        yield* TestEnvironmentFixture;
+      const db = yield* Database;
+
+      // Create a function
+      yield* db.organizations.projects.environments.functions.create({
+        userId: owner.id,
+        organizationId: org.id,
+        projectId: project.id,
+        environmentId: environment.id,
+        data: {
+          name: "empty-function",
+          hash: "empty-hash-for-traces",
+          code: "def empty(): pass",
+          signature: "def empty()",
+          signatureHash: "empty-sig-hash",
+        },
+      });
+
+      // Mock ClickHouseSearch to return empty spans
+      const mockClickHouseSearch = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed({
+            traceId: "",
+            spans: [],
+            rootSpanId: null,
+            totalDurationMs: null,
+          }),
+        getAnalyticsSummary: () =>
+          Effect.succeed({
+            totalSpans: 0,
+            avgDurationMs: null,
+            p50DurationMs: null,
+            p95DurationMs: null,
+            p99DurationMs: null,
+            errorRate: 0,
+            totalTokens: 0,
+            totalCostUsd: 0,
+            topModels: [],
+            topFunctions: [],
+          }),
+      });
+
+      const authLayer = Layer.succeed(Authentication, {
+        user: owner,
+        apiKeyInfo: {
+          apiKeyId: "test-key",
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          ownerId: owner.id,
+          ownerEmail: owner.email,
+          ownerName: owner.name,
+          ownerDeletedAt: owner.deletedAt,
+        },
+      });
+
+      const result = yield* listByFunctionHashHandler("empty-hash-for-traces", {
+        limit: 50,
+      }).pipe(Effect.provide(Layer.mergeAll(authLayer, mockClickHouseSearch)));
+
+      expect(result.traces).toHaveLength(0);
+      expect(result.total).toBe(0);
     }),
   );
 });

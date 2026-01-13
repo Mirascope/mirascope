@@ -86,7 +86,7 @@ const acquireClickhouseContainer = Effect.tryPromise({
 const runClickhouseMigrations = (clickhouseUrl: string, nativePort: number) =>
   Effect.try({
     try: () => {
-      execFileSync("bash", ["clickhouse/migrate.sh", "migrate"], {
+      execFileSync("bash", ["db/clickhouse/migrate.sh", "migrate"], {
         cwd: path.resolve(__dirname, ".."),
         env: {
           ...process.env,

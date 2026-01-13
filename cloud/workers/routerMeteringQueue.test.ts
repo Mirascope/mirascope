@@ -15,6 +15,8 @@ import routerMeteringQueue, {
   type RouterMeteringMessage,
   RouterMeteringQueueService,
   updateAndSettleRouterRequest,
+  routerMeteringQueueLayer,
+  setRouterMeteringQueueLayer,
 } from "./routerMeteringQueue";
 
 // =============================================================================
@@ -63,7 +65,7 @@ function createMockBatch(
     queue: "router-metering",
     ackAll: vi.fn(),
     retryAll: vi.fn(),
-  } as unknown as MessageBatch<RouterMeteringMessage>;
+  } as MessageBatch<RouterMeteringMessage>;
 }
 
 /**
@@ -483,11 +485,6 @@ describe("routerMeteringQueue", () => {
         STRIPE_SECRET_KEY: "sk_test_xxx",
         STRIPE_ROUTER_PRICE_ID: "price_xxx",
         STRIPE_ROUTER_METER_ID: "meter_xxx",
-        STRIPE_CLOUD_FREE_PRICE_ID: undefined,
-        STRIPE_CLOUD_PRO_PRICE_ID: undefined,
-        STRIPE_CLOUD_TEAM_PRICE_ID: undefined,
-        STRIPE_CLOUD_SPANS_PRICE_ID: undefined,
-        STRIPE_CLOUD_SPANS_METER_ID: undefined,
       } as WorkerEnv;
 
       await routerMeteringQueue.queue(batch, env);
@@ -716,6 +713,49 @@ describe("routerMeteringQueue", () => {
       expect(message.retryOptions?.delaySeconds).toBe(60);
 
       consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe("global layer", () => {
+    it("default layer returns error when not initialized", async () => {
+      const program = Effect.gen(function* () {
+        const queue = yield* RouterMeteringQueueService;
+        return yield* queue.send(createTestMessage());
+      });
+
+      const error = await Effect.runPromise(
+        program.pipe(Effect.provide(routerMeteringQueueLayer), Effect.flip),
+      );
+
+      expect(error.message).toBe("RouterMeteringQueue not initialized");
+    });
+
+    it("setRouterMeteringQueueLayer updates the global layer", async () => {
+      const mockSend = vi.fn().mockReturnValue(Effect.void);
+      const newLayer = Layer.succeed(RouterMeteringQueueService, {
+        send: mockSend,
+      });
+
+      setRouterMeteringQueueLayer(newLayer);
+
+      const program = Effect.gen(function* () {
+        const queue = yield* RouterMeteringQueueService;
+        return yield* queue.send(createTestMessage());
+      });
+
+      await Effect.runPromise(
+        program.pipe(Effect.provide(routerMeteringQueueLayer)),
+      );
+
+      expect(mockSend).toHaveBeenCalled();
+
+      // Reset global layer to default
+      setRouterMeteringQueueLayer(
+        Layer.succeed(RouterMeteringQueueService, {
+          send: () =>
+            Effect.fail(new Error("RouterMeteringQueue not initialized")),
+        }),
+      );
     });
   });
 });

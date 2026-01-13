@@ -7,8 +7,8 @@ import {
   clickHouseAvailable,
 } from "@/tests/clickhouse";
 import { Effect, Layer } from "effect";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { beforeAll, afterAll } from "vitest";
 
 // Test data IDs

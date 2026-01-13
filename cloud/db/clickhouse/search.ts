@@ -48,7 +48,7 @@
  */
 
 import { Context, Effect, Layer } from "effect";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseError } from "@/errors";
 
 // =============================================================================

@@ -3,7 +3,7 @@
  */
 
 import { Effect } from "effect";
-import type { SpanTransformInput } from "@/clickhouse/transform";
+import type { SpanTransformInput } from "@/db/clickhouse/transform";
 
 // =============================================================================
 // Fixtures
@@ -81,3 +81,15 @@ export const TestTransformInputFixture = (
     span: { ...TestTransformSpanFixtureData, ...spanOverrides },
   });
 };
+
+// =============================================================================
+// Search Test Fixtures
+// =============================================================================
+
+/**
+ * Creates a time window for search tests (past 24 hours to now).
+ */
+export const createSearchTimeWindow = () => ({
+  startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+  endTime: new Date().toISOString(),
+});

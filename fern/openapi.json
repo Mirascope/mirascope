@@ -1628,11 +1628,18 @@
             }
           },
           "500": {
-            "description": "DatabaseError",
+            "description": "ClickHouseError",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ClickHouseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
                 }
               }
             }

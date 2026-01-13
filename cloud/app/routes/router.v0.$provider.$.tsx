@@ -13,7 +13,7 @@ import {
 } from "@/api/router/utils";
 import { handleStreamingResponse } from "@/api/router/streaming";
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
-import { routerMeteringQueueLayer } from "@/server-entry";
+import { routerMeteringQueueLayer } from "@/workers/routerMeteringQueue";
 
 /**
  * Unified Provider Proxy Route

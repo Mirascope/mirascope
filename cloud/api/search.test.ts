@@ -13,9 +13,10 @@ import type {
   PublicUser,
 } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
+import { createSearchTimeWindow } from "@/tests/clickhouse/fixtures";
 import { Authentication } from "@/auth";
-import { ClickHouseSearch } from "@/clickhouse/search";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { ClickHouse } from "@/db/clickhouse/client";
 import { SettingsService, getSettings } from "@/settings";
 import { searchHandler } from "@/api/search.handlers";
 import type {
@@ -90,10 +91,7 @@ describe.sequential("Search API", (it) => {
     () =>
       Effect.gen(function* () {
         const result = yield* apiKeyClient.traces.search({
-          payload: {
-            startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-            endTime: new Date().toISOString(),
-          },
+          payload: createSearchTimeWindow(),
         });
 
         expect(result.spans).toBeDefined();
@@ -107,8 +105,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.search({
         payload: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           query: "test",
         },
       });
@@ -121,8 +118,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.search({
         payload: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           model: ["gpt-4"],
         },
       });
@@ -135,8 +131,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.search({
         payload: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           provider: ["openai"],
         },
       });
@@ -149,8 +144,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.search({
         payload: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           limit: 10,
           offset: 0,
         },
@@ -164,8 +158,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.search({
         payload: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           sortBy: "duration_ms",
           sortOrder: "desc",
         },
@@ -200,8 +193,7 @@ describe.sequential("Search API", (it) => {
         );
 
         const result = yield* searchHandler({
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           attributeFilters: [
             {
               key: "span.type",
@@ -235,8 +227,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.getAnalyticsSummary({
         urlParams: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
         },
       });
 
@@ -253,8 +244,7 @@ describe.sequential("Search API", (it) => {
     Effect.gen(function* () {
       const result = yield* apiKeyClient.traces.getAnalyticsSummary({
         urlParams: {
-          startTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date().toISOString(),
+          ...createSearchTimeWindow(),
           functionId: "00000000-0000-0000-0000-000000000001",
         },
       });

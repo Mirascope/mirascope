@@ -21,8 +21,13 @@ import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { AuthenticatedUser, Authentication } from "@/auth";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import {
+  SpansIngestQueue,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
@@ -32,8 +37,6 @@ import type { StreamMeteringContext } from "@/api/router/streaming";
 import type { ProviderName } from "@/api/router/providers";
 import { eq } from "drizzle-orm";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
-import { SqlClient } from "@effect/sql";
 import fs from "fs";
 
 // Re-export expect from vitest
@@ -44,69 +47,8 @@ export { expect };
 // ============================================================================
 
 /**
- * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
- */
-const MockSpansMeteringQueue = Layer.succeed(
-  SpansMeteringQueueService,
-  SpansMeteringQueueService.of({
-    send: () => Effect.succeed(undefined), // No-op in tests
-  }),
-);
-
-// =============================================================================
-// Rollback transaction wrapper (from @/tests/db)
-// =============================================================================
-
-// Sentinel error used to force transaction rollback
-class TestRollbackError {
-  readonly _tag = "TestRollbackError";
-}
-
-/**
- * Wraps a test effect in a transaction that always rolls back.
- *
- * If SqlClient is not available (e.g., mock tests), the effect runs
- * without transaction wrapping.
- */
-const withRollback = <A, E, R>(
-  effect: Effect.Effect<A, E, R>,
-): Effect.Effect<A, E, R> =>
-  Effect.gen(function* () {
-    // Check if SqlClient is available (won't be for mock tests)
-    const sqlOption = yield* Effect.serviceOption(SqlClient.SqlClient);
-
-    if (Option.isNone(sqlOption)) {
-      // No SqlClient available (mock test), run without transaction
-      return yield* effect;
-    }
-
-    const sql = sqlOption.value;
-    let result: A;
-
-    yield* sql
-      .withTransaction(
-        Effect.gen(function* () {
-          // Run the test effect and capture its result
-          result = yield* effect;
-          // Always fail to trigger rollback
-          return yield* Effect.fail(new TestRollbackError());
-        }),
-      )
-      .pipe(
-        // Catch the rollback error - this is expected
-        Effect.catchIf(
-          (e): e is TestRollbackError => e instanceof TestRollbackError,
-          () => Effect.void,
-        ),
-      );
-
-    // @ts-expect-error - result is assigned before we get here
-    return result;
-  }) as Effect.Effect<A, E, R>;
-
-/**
  * Creates a Database layer with MockPayments for testing.
- * Provides Database, Payments, DrizzleORM, SqlClient, and SpansMeteringQueueService.
+ * Provides Database, DrizzleORM, and Payments services.
  */
 function createTestDatabaseLayer(connectionString: string) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
@@ -117,7 +59,6 @@ function createTestDatabaseLayer(connectionString: string) {
     ).pipe(Layer.orDie),
     drizzleLayer,
     DefaultMockPayments,
-    MockSpansMeteringQueue,
   );
 }
 
@@ -167,36 +108,10 @@ const wrapEffectTest =
     };
 
 /**
- * Wraps a test function to automatically provide Database layers AND wrap in rollback transaction.
+ * Type-safe `it` with `it.effect` that automatically provides Database.
  *
- * Like wrapEffectTest but also wraps the test in a transaction that rolls back,
- * ensuring test isolation and cleanup.
- */
-const wrapEffectTestWithRollback =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (original: any) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (name: any, fn: any, timeout?: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-      return original(
-        name,
-        () =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-          fn()
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            .pipe(withRollback)
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            .pipe(Effect.provide(TestDatabaseLayer)),
-        timeout,
-      );
-    };
-
-/**
- * Type-safe `it` with `it.effect` and `it.rollback` for API tests.
- *
- * Works as a regular `it` for synchronous tests, and provides:
- * - `it.effect` for Effect-based tests with automatic Database layer provision
- * - `it.rollback` for Effect-based tests that also wrap in a transaction rollback
+ * Works as a regular `it` for synchronous tests, and provides `it.effect`
+ * for Effect-based tests with automatic Database layer provision.
  *
  * @example
  * ```ts
@@ -216,38 +131,12 @@ const wrapEffectTestWithRollback =
  *       // ... test code
  *     })
  *   );
- *
- *   // Effect-based test with rollback (for test isolation)
- *   it.rollback("creates user without polluting DB", () =>
- *     Effect.gen(function* () {
- *       const db = yield* Database;
- *       const user = yield* db.users.create({ ... });
- *       // User will be rolled back after test
- *     })
- *   );
  * });
  * ```
  */
-export const it = Object.assign(
-  createCustomIt<
-    | Database
-    | Payments
-    | SpansMeteringQueueService
-    | DrizzleORM
-    | SqlClient.SqlClient
-  >(wrapEffectTest),
-  {
-    rollback: Object.assign(wrapEffectTestWithRollback(vitestIt.effect), {
-      skip: wrapEffectTestWithRollback(vitestIt.effect.skip),
-      only: wrapEffectTestWithRollback(vitestIt.effect.only),
-      fails: wrapEffectTestWithRollback(vitestIt.effect.fails),
-      skipIf: (condition: unknown) =>
-        wrapEffectTestWithRollback(vitestIt.effect.skipIf(condition)),
-      runIf: (condition: unknown) =>
-        wrapEffectTestWithRollback(vitestIt.effect.runIf(condition)),
-    }),
-  },
-);
+export const it = createCustomIt<
+  Database | Payments | SpansMeteringQueueService | DrizzleORM
+>(wrapEffectTest);
 
 // ============================================================================
 // API Client Creation
@@ -262,6 +151,7 @@ function createTestWebHandler(
   databaseUrl: string,
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
+  queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
 ) {
   // ClickHouse services layer for test environment
   const clickhouseConfig = getTestClickHouseConfig();
@@ -284,7 +174,12 @@ function createTestWebHandler(
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl),
-    DrizzleORM.layer({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    Layer.succeed(SpansIngestQueue, {
+      send: queueSend ?? (() => Effect.void),
+    }),
+    Layer.succeed(SpansMeteringQueueService, {
+      send: () => Effect.void,
+    }),
     clickHouseSearchLayer,
   );
 
@@ -328,8 +223,14 @@ export async function createApiClient(
   databaseUrl: string,
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
+  queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
-  const webHandler = createTestWebHandler(databaseUrl, user, apiKeyInfo);
+  const webHandler = createTestWebHandler(
+    databaseUrl,
+    user,
+    apiKeyInfo,
+    queueSend,
+  );
   const HandlerHttpClient = createHandlerHttpClient(webHandler);
   const HandlerHttpClientLayer = Layer.succeed(
     HttpClient.HttpClient,
@@ -570,7 +471,12 @@ function createSimpleTestWebHandler() {
     Layer.succeed(AuthenticatedUser, mockUser),
     Layer.succeed(Authentication, authResult),
     createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie),
-    DrizzleORM.layer({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    Layer.succeed(SpansIngestQueue, {
+      send: () => Effect.void,
+    }),
+    Layer.succeed(SpansMeteringQueueService, {
+      send: () => Effect.void,
+    }),
     clickHouseSearchLayer,
   );
 

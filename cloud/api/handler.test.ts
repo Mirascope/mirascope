@@ -3,9 +3,10 @@ import { describe, it, expect } from "@/tests/api";
 import { handleRequest } from "@/api/handler";
 import type { PublicUser } from "@/db/schema";
 import { HandlerError } from "@/errors";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import fs from "fs";
 
@@ -50,6 +51,15 @@ const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
   Layer.provide(settingsLayer),
 );
 
+const mockSpansMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+  send: () => Effect.void,
+});
+
+const testLayer = Layer.mergeAll(
+  clickHouseSearchLayer,
+  mockSpansMeteringQueueLayer,
+);
+
 describe("handleRequest", () => {
   it.effect("should return 404 for non-existing routes", () =>
     Effect.gen(function* () {
@@ -68,7 +78,7 @@ describe("handleRequest", () => {
 
       expect(response.status).toBe(404);
       expect(matched).toBe(false);
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(Effect.provide(testLayer)),
   );
 
   it.effect(
@@ -88,7 +98,7 @@ describe("handleRequest", () => {
         // The path becomes "/" after stripping prefix, which doesn't match any route
         expect(response.status).toBe(404);
         expect(matched).toBe(false);
-      }).pipe(Effect.provide(clickHouseSearchLayer)),
+      }).pipe(Effect.provide(testLayer)),
   );
 
   it.effect(
@@ -115,7 +125,7 @@ describe("handleRequest", () => {
         expect(error.message).toContain(
           "[Effect API] Error handling request: boom",
         );
-      }).pipe(Effect.provide(clickHouseSearchLayer)),
+      }).pipe(Effect.provide(testLayer)),
   );
 
   it.effect("should handle POST requests with body", () =>
@@ -140,7 +150,7 @@ describe("handleRequest", () => {
 
       expect(matched).toBe(true);
       expect(response.status).toBeGreaterThanOrEqual(400);
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(Effect.provide(testLayer)),
   );
 
   it.effect("should transform _tag in JSON error responses", () =>
@@ -168,6 +178,6 @@ describe("handleRequest", () => {
       // Ensure _tag is transformed to tag in error responses
       expect(body).toContain('"tag"');
       expect(body).not.toContain('"_tag"');
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(Effect.provide(testLayer)),
   );
 });
