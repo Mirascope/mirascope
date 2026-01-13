@@ -250,7 +250,7 @@ Also in the example we use Mirascope and Pydantic to prompt the judges and enfor
 
 Mirascope in particular follows a “use-when-you-need” design philosophy that lets you choose modules off the shelf and easily slot these into existing workflows, **rather than having to adopt [larger abstractions](/blog/langchain-runnables/) wholesale and cope with their lack of transparency**, as other [frameworks](/blog/llm-frameworks/) might encourage you to do.
 
-The example below is from the Mirascope docs about [evaluations](/docs/mirascope/learn/evals/#panel-of-judges).
+The example below is from the Mirascope docs about [evaluations](/docs/v1/learn/evals/#panel-of-judges).
 
 ### Set Up the Environment
 
@@ -329,7 +329,7 @@ This involves creating a list of judges, each making a call to a specific provid
 
 Mirascope call functions like `openai.call` let you easily switch providers using minimal boilerplate since Mirascope abstracts away the details of working with their APIs.
 
-We also support a range of [popular providers](/docs/mirascope/), like OpenAI, Mistral, Gemini, Groq, and more.
+We also support a range of [popular providers](/docs/v1/), like OpenAI, Mistral, Gemini, Groq, and more.
 
 Next, we run `evaluate_helpfulness` with a sample text through both LLMs as judges and parse the response of each with `Eval` to ensure structured and validated output.
 

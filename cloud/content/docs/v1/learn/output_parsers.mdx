@@ -6,7 +6,7 @@ description: Learn how to process and structure raw LLM outputs into usable form
 # Output Parsers
 
 <Note>
-  If you haven't already, we recommend first reading the section on [Calls](/docs/mirascope/learn/calls)
+  If you haven't already, we recommend first reading the section on [Calls](/docs/v1/learn/calls)
 </Note>
 
 Output Parsers in Mirascope provide a flexible way to process and structure the raw output from Large Language Models (LLMs). They allow you to transform the LLM's response into a more usable format, enabling easier integration with your application logic and improving the overall reliability of your LLM-powered features.
@@ -14,7 +14,7 @@ Output Parsers in Mirascope provide a flexible way to process and structure the 
 ## Basic Usage and Syntax
 
 <Callout type="api">
-  [`mirascope.llm.call.output_parser`](/docs/mirascope/api/llm/call)
+  [`mirascope.llm.call.output_parser`](/docs/v1/api/llm/call)
 </Callout>
 
 Output Parsers are functions that take the call response object as input and return an output of a specified type. When you supply an output parser to a `call` decorator, it modifies the return type of the decorated function to match the output type of the parser.
@@ -194,4 +194,4 @@ print(json.loads(json_response))
 
 By leveraging Output Parsers effectively, you can create more robust and reliable LLM-powered applications, ensuring that the raw model outputs are transformed into structured data that's easy to work with in your application logic.
 
-Next, we recommend taking a look at the section on [Tools](/docs/mirascope/learn/tools) to learn how to extend the capabilities of LLMs with custom functions.
+Next, we recommend taking a look at the section on [Tools](/docs/v1/learn/tools) to learn how to extend the capabilities of LLMs with custom functions.

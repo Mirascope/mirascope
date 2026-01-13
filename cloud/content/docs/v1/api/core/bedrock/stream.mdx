@@ -10,7 +10,7 @@ The `BedrockStream` class for convenience around streaming LLM calls.
 
 <Info title="Usage">
 
-[Streams](/docs/mirascope/learn/streams)
+[Streams](/docs/v1/learn/streams)
 
 </Info>
 
@@ -37,7 +37,7 @@ for chunk, _ in stream:
 ```
 
 **Bases:** 
-<TypeLink type={{"type_str": "BaseStream[BedrockCallResponse, BedrockCallResponseChunk, UserMessageTypeDef, AssistantMessageTypeDef, ToolUseBlockMessageTypeDef, InternalBedrockMessageParam, BedrockTool, ToolTypeDef, AsyncBedrockDynamicConfig | BedrockDynamicConfig, BedrockCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "BedrockCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/call_response#bedrockcallresponse"}, {"type_str": "BedrockCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/call_response_chunk#bedrockcallresponsechunk"}, {"type_str": "UserMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "UserMessageTypeDef"}, {"type_str": "AssistantMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "AssistantMessageTypeDef"}, {"type_str": "ToolUseBlockMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "ToolUseBlockMessageTypeDef"}, {"type_str": "InternalBedrockMessageParam", "description": null, "kind": "simple", "doc_identifier": "InternalBedrockMessageParam"}, {"type_str": "BedrockTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/tool#bedrocktool"}, {"type_str": "ToolTypeDef", "description": null, "kind": "simple", "doc_identifier": "ToolTypeDef"}, {"type_str": "AsyncBedrockDynamicConfig | BedrockDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncBedrockDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/dynamic_config#asyncbedrockdynamicconfig"}, {"type_str": "BedrockDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/dynamic_config#bedrockdynamicconfig"}]}, {"type_str": "BedrockCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/bedrock/call_params#bedrockcallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+<TypeLink type={{"type_str": "BaseStream[BedrockCallResponse, BedrockCallResponseChunk, UserMessageTypeDef, AssistantMessageTypeDef, ToolUseBlockMessageTypeDef, InternalBedrockMessageParam, BedrockTool, ToolTypeDef, AsyncBedrockDynamicConfig | BedrockDynamicConfig, BedrockCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/stream#basestream"}, "parameters": [{"type_str": "BedrockCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/call_response#bedrockcallresponse"}, {"type_str": "BedrockCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/call_response_chunk#bedrockcallresponsechunk"}, {"type_str": "UserMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "UserMessageTypeDef"}, {"type_str": "AssistantMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "AssistantMessageTypeDef"}, {"type_str": "ToolUseBlockMessageTypeDef", "description": null, "kind": "simple", "doc_identifier": "ToolUseBlockMessageTypeDef"}, {"type_str": "InternalBedrockMessageParam", "description": null, "kind": "simple", "doc_identifier": "InternalBedrockMessageParam"}, {"type_str": "BedrockTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/tool#bedrocktool"}, {"type_str": "ToolTypeDef", "description": null, "kind": "simple", "doc_identifier": "ToolTypeDef"}, {"type_str": "AsyncBedrockDynamicConfig | BedrockDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncBedrockDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/dynamic_config#asyncbedrockdynamicconfig"}, {"type_str": "BedrockDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/dynamic_config#bedrockdynamicconfig"}]}, {"type_str": "BedrockCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/call_params#bedrockcallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />
 
 <AttributesTable
   attributes={[
@@ -47,7 +47,7 @@ for chunk, _ in stream:
       "type_str": "CostMetadata",
       "description": null,
       "kind": "simple",
-      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
     },
     "description": "Get metadata required for cost calculation."
   }
@@ -78,7 +78,7 @@ Constructs the call response from a consumed BedrockStream.
     "type_str": "BedrockCallResponse",
     "description": null,
     "kind": "simple",
-    "doc_url": "/docs/mirascope/api/core/bedrock/call_response#bedrockcallresponse"
+    "doc_url": "/docs/v1/api/core/bedrock/call_response#bedrockcallresponse"
   }
 }}
 />

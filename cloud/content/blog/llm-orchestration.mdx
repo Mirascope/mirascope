@@ -76,7 +76,7 @@ def recommend_movie_prompt(movie_titles: list[str]) -> openai.OpenAIDynamicConfi
 response = recommend_movie_propmt(["The Dark Knight", "Forrest Gump"])
 ```
 
-This uses Mirascope's [`prompt_template`](/docs/mirascope/learn/prompts) decorator in tandem with the [`openai.call`](/docs/mirascope/learn/calls) decorator, which centralizes internal prompt logic and turns the prompt into an actual LLM API call, respectively.
+This uses Mirascope's [`prompt_template`](/docs/v1/learn/prompts) decorator in tandem with the [`openai.call`](/docs/v1/learn/calls) decorator, which centralizes internal prompt logic and turns the prompt into an actual LLM API call, respectively.
 
 The above code also illustrates our principle of colocation, where everything impacting the quality of a call is colocated and versioned together. This can be seen in the computed field `titles_in_quotes` computed within the prompt function.
 
@@ -149,7 +149,7 @@ if tool := response.tool:
 
 ```
 
-In the above code, we set up the function `get_flight_information` to generate a function call with its docstring, and then we register this function as a tool with OpenAI (Mirascope also provides ways of turning functions into tools [without needing a docstring](/docs/mirascope/learn/tools)).
+In the above code, we set up the function `get_flight_information` to generate a function call with its docstring, and then we register this function as a tool with OpenAI (Mirascope also provides ways of turning functions into tools [without needing a docstring](/docs/v1/learn/tools)).
 
 ### 2. Data Preparation
 
@@ -193,7 +193,7 @@ This includes maintaining [version control of prompts](/blog/prompt-versioning) 
 
 #### Changing Model Providers
 
-Mirascope allows you to [change model providers](/docs/mirascope/learn/calls) in just three lines (corresponding to the highlighted code below):
+Mirascope allows you to [change model providers](/docs/v1/learn/calls) in just three lines (corresponding to the highlighted code below):
 
 1. Change the `from mirascope.core import {provider}` import to the new provider.
 2. Update any specific call params such as `model`.
@@ -253,7 +253,7 @@ To support scalability, frameworks leverage technologies that enable high throug
 
 #### Streaming Model Responses
 
-A common strategy is to stream large responses as chunks, rather than waiting for the entire response to be generated. Mirascope [streams](/docs/mirascope/learn/streams), which you can enable by setting `stream=True` in the [`call`](/docs/mirascope/learn/calls) decorator, provide `BaseCallResponseChunk` convenience wrappers around the original response chunks, as well as tools (if provided) that are constructed on your behalf:
+A common strategy is to stream large responses as chunks, rather than waiting for the entire response to be generated. Mirascope [streams](/docs/v1/learn/streams), which you can enable by setting `stream=True` in the [`call`](/docs/v1/learn/calls) decorator, provide `BaseCallResponseChunk` convenience wrappers around the original response chunks, as well as tools (if provided) that are constructed on your behalf:
 
 ```python
 from mirascope.core import openai, prompt_template
@@ -277,7 +277,7 @@ Streaming reduces the wait time associated with generating and delivering large 
 
 #### Async Streaming
 
-[Asynchronous streaming](/docs/mirascope/learn/async/#async-streaming) supports concurrency, as offered by our `stream_book_recommendation` function that sets up an asynchronous stream to get responses from the natural language processing model:
+[Asynchronous streaming](/docs/v1/learn/async/#async-streaming) supports concurrency, as offered by our `stream_book_recommendation` function that sets up an asynchronous stream to get responses from the natural language processing model:
 
 ```python
 import asyncio

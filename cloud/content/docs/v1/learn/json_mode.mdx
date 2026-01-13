@@ -6,7 +6,7 @@ description: Learn how to request structured JSON outputs from LLMs with Mirasco
 # JSON Mode
 
 <Note>
-  If you haven't already, we recommend first reading the section on [Calls](/docs/mirascope/learn/calls)
+  If you haven't already, we recommend first reading the section on [Calls](/docs/v1/learn/calls)
 </Note>
 
 JSON Mode is a feature in Mirascope that allows you to request structured JSON output from Large Language Models (LLMs). This mode is particularly useful when you need to extract structured information from the model's responses, making it easier to parse and use the data in your applications.
@@ -124,11 +124,11 @@ except json.JSONDecodeError: # [!code highlight]
 <Warning title="Beyond JSON Validation">
   While this example catches errors for invalid JSON, there's always a chance that the LLM returns valid JSON that doesn't conform to your expected schema (such as missing fields or incorrect types).
 
-  For more robust validation, we recommend using [Response Models](/docs/mirascope/learn/response_models) for easier structuring and validation of LLM outputs.
+  For more robust validation, we recommend using [Response Models](/docs/v1/learn/response_models) for easier structuring and validation of LLM outputs.
 </Warning>
 
 ## Next Steps
 
 By leveraging JSON Mode, you can create more robust and data-driven applications that efficiently process and utilize LLM outputs. This approach allows for easy integration with databases, APIs, or user interfaces, demonstrating the power of JSON Mode in creating robust, data-driven applications.
 
-Next, we recommend reading the section on [Output Parsers](/docs/mirascope/learn/output_parsers) to see how to engineer prompts with specific output structures and parse the outputs automatically on every call.
+Next, we recommend reading the section on [Output Parsers](/docs/v1/learn/output_parsers) to see how to engineer prompts with specific output structures and parse the outputs automatically on every call.

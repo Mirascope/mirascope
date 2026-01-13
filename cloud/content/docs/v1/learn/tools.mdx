@@ -6,7 +6,7 @@ description: Learn how to define, use, and chain together LLM-powered tools in M
 # Tools
 
 <Note>
-  If you haven't already, we recommend first reading the section on [Calls](/docs/mirascope/learn/calls)
+  If you haven't already, we recommend first reading the section on [Calls](/docs/v1/learn/calls)
 </Note>
 
 Tools are user-defined functions that an LLM (Large Language Model) can ask the user to invoke on its behalf. This greatly enhances the capabilities of LLMs by enabling them to perform specific tasks, access external data, interact with other systems, and more.
@@ -14,7 +14,7 @@ Tools are user-defined functions that an LLM (Large Language Model) can ask the 
 Mirascope enables defining tools in a provider-agnostic way, which can be used across all supported LLM providers without modification.
 
 <Info title="Diagram illustrating how tools are called" collapsible={true} defaultOpen={false}>
-  When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, check out the [Tool Message Parameters](#tool-message-parameters) section below as well as the section on [Agents](/docs/mirascope/learn/agents).
+  When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, check out the [Tool Message Parameters](#tool-message-parameters) section below as well as the section on [Agents](/docs/v1/learn/agents).
 
   ```mermaid
   sequenceDiagram
@@ -35,7 +35,7 @@ Mirascope enables defining tools in a provider-agnostic way, which can be used a
 ## Basic Usage and Syntax
 
 <Callout type="api">
-  [`mirascope.llm.tool`](/docs/mirascope/api)
+  [`mirascope.llm.tool`](/docs/v1/api)
 </Callout>
 
 There are two ways of defining tools in Mirascope: `BaseTool` and functions.
@@ -203,7 +203,7 @@ The core idea to understand here is that the LLM is asking us to call the tool o
 
 This is particularly important for buildling applications with access to live information and external systems.
 
-For the purposes of this example we are showing just a single tool call. Generally, you would then give the tool call's output back to the LLM and make another call so the LLM can generate a response based on the output of the tool. We cover this in more detail in the section on [Agents](/docs/mirascope/learn/agents)
+For the purposes of this example we are showing just a single tool call. Generally, you would then give the tool call's output back to the LLM and make another call so the LLM can generate a response based on the output of the tool. We cover this in more detail in the section on [Agents](/docs/v1/learn/agents)
 
 ### Accessing Original Tool Call
 
@@ -375,7 +375,7 @@ While Mirascope provides a consistent interface, type support varies among provi
 
 *Legend: ✓ (Supported), — (Not Supported)*
 
-Consider provider-specific capabilities when working with advanced type structures. Even for supported types, LLM outputs may sometimes be incorrect or of the wrong type. In such cases, prompt engineering or error handling (like [retries](/docs/mirascope/learn/retries) and [reinserting validation errors](/docs/mirascope/learn/retries#error-reinsertion)) may be necessary.
+Consider provider-specific capabilities when working with advanced type structures. Even for supported types, LLM outputs may sometimes be incorrect or of the wrong type. In such cases, prompt engineering or error handling (like [retries](/docs/v1/learn/retries) and [reinserting validation errors](/docs/v1/learn/retries#error-reinsertion)) may be necessary.
 
 ## Parallel Tool Calls
 
@@ -526,7 +526,7 @@ else:
 </Tab>
 </TabbedSection>
 
-If your tool calls are I/O-bound, it's often worth writing [async tools](/docs/mirascope/learn/async#async-tools) so that you can run all of the tools calls [in parallel](/docs/mirascope/learn/async#parallel-async-calls) for better efficiency.
+If your tool calls are I/O-bound, it's often worth writing [async tools](/docs/v1/learn/async#async-tools) so that you can run all of the tools calls [in parallel](/docs/v1/learn/async#parallel-async-calls) for better efficiency.
 
 ## Streaming Tools
 
@@ -863,7 +863,7 @@ for chunk, tool in stream:
 ## Tool Message Parameters
 
 <Note>
-  Calling tools and inserting their outputs into subsequent LLM API calls in a loop in the most basic form of an agent. While we cover this briefly here, we recommend reading the section on [Agents](/docs/mirascope/learn/agents) for more details and examples.
+  Calling tools and inserting their outputs into subsequent LLM API calls in a loop in the most basic form of an agent. While we cover this briefly here, we recommend reading the section on [Agents](/docs/v1/learn/agents) for more details and examples.
 </Note>
 
 Generally the next step after the LLM returns a tool call is for you to call the tool on its behalf and supply the output in a subsequent call.
@@ -1243,7 +1243,7 @@ In this example we've added additional validation, but it's important that you s
 
 ## Few-Shot Examples
 
-Just like with [Response Models](/docs/mirascope/learn/response_models#few-shot-examples), you can add few-shot examples to your tools:
+Just like with [Response Models](/docs/v1/learn/response_models#few-shot-examples), you can add few-shot examples to your tools:
 
 <TabbedSection>
 <Tab value="BaseTool">
@@ -1439,7 +1439,7 @@ Both approaches will result in the same tool schema with examples included. The 
 ## ToolKit
 
 <Callout type="api">
-  [`mirascope.llm.toolkit`](/docs/mirascope/api)
+  [`mirascope.llm.toolkit`](/docs/v1/api)
 </Callout>
 
 The `BaseToolKit` class enables:
@@ -1576,18 +1576,18 @@ Mirascope provides several pre-made tools and toolkits to help you get started q
 ### Pre-Made Tools
 
 <Callout type="api">
-  - [`mirascope.tools.web.DuckDuckGoSearch`](/docs/mirascope/api/tools/web/duckduckgo)
-  - [`mirascope.tools.web.HTTPX`](/docs/mirascope/api/tools/web/httpx)
-  - [`mirascope.tools.web.ParseURLContent`](/docs/mirascope/api/tools/web/parse_url_content)
-  - [`mirascope.tools.web.Requests`](/docs/mirascope/api/tools/web/requests)
+  - [`mirascope.tools.web.DuckDuckGoSearch`](/docs/v1/api/tools/web/duckduckgo)
+  - [`mirascope.tools.web.HTTPX`](/docs/v1/api/tools/web/httpx)
+  - [`mirascope.tools.web.ParseURLContent`](/docs/v1/api/tools/web/parse_url_content)
+  - [`mirascope.tools.web.Requests`](/docs/v1/api/tools/web/requests)
 </Callout>
 
 | Tool                                                                    | Primary Use            | Dependencies                                                                                             | Key Features                                                                                                                  | Characteristics                                                                                                      |
 |------                                                                   |-------------           |--------------                                                                                            |--------------                                                                                                                 |-----------------                                                                                                     |
-| [`DuckDuckGoSearch`](/docs/mirascope/api/tools/web/duckduckgo)       | Web Searching          | [`duckduckgo-search`](https://pypi.org/project/duckduckgo-search/)                                       | • Multiple query support<br/>• Title/URL/snippet extraction<br/>• Result count control<br/>• Automated formatting                | • Privacy-focused search<br/>• Async support (AsyncDuckDuckGoSearch)<br/>• Automatic filtering<br/>• Structured results |
-| [`HTTPX`](/docs/mirascope/api/tools/web/httpx)                       | Advanced HTTP Requests | [`httpx`](https://pypi.org/project/httpx/)                                                               | • Full HTTP method support (GET/POST/PUT/DELETE)<br/>• Custom header support<br/>• File upload/download<br/>• Form data handling | • Async support (AsyncHTTPX)<br/>• Configurable timeouts<br/>• Comprehensive error handling<br/>• Redirect control      |
-| [`ParseURLContent`](/docs/mirascope/api/tools/web/parse_url_content) | Web Content Extraction | [`beautifulsoup4`](https://pypi.org/project/beautifulsoup4/), [`httpx`](https://pypi.org/project/httpx/) | • HTML content fetching<br/>• Main content extraction<br/>• Element filtering<br/>• Text normalization                           | • Automatic cleaning<br/>• Configurable parser<br/>• Timeout settings<br/>• Error handling                              |
-| [`Requests`](/docs/mirascope/api/tools/web/requests)                 | Simple HTTP Requests   | [`requests`](https://pypi.org/project/requests/)                                                         | • Basic HTTP methods<br/>• Simple API<br/>• Response text retrieval<br/>• Basic authentication                                   | • Minimal configuration<br/>• Intuitive interface<br/>• Basic error handling<br/>• Lightweight implementation           |
+| [`DuckDuckGoSearch`](/docs/v1/api/tools/web/duckduckgo)       | Web Searching          | [`duckduckgo-search`](https://pypi.org/project/duckduckgo-search/)                                       | • Multiple query support<br/>• Title/URL/snippet extraction<br/>• Result count control<br/>• Automated formatting                | • Privacy-focused search<br/>• Async support (AsyncDuckDuckGoSearch)<br/>• Automatic filtering<br/>• Structured results |
+| [`HTTPX`](/docs/v1/api/tools/web/httpx)                       | Advanced HTTP Requests | [`httpx`](https://pypi.org/project/httpx/)                                                               | • Full HTTP method support (GET/POST/PUT/DELETE)<br/>• Custom header support<br/>• File upload/download<br/>• Form data handling | • Async support (AsyncHTTPX)<br/>• Configurable timeouts<br/>• Comprehensive error handling<br/>• Redirect control      |
+| [`ParseURLContent`](/docs/v1/api/tools/web/parse_url_content) | Web Content Extraction | [`beautifulsoup4`](https://pypi.org/project/beautifulsoup4/), [`httpx`](https://pypi.org/project/httpx/) | • HTML content fetching<br/>• Main content extraction<br/>• Element filtering<br/>• Text normalization                           | • Automatic cleaning<br/>• Configurable parser<br/>• Timeout settings<br/>• Error handling                              |
+| [`Requests`](/docs/v1/api/tools/web/requests)                 | Simple HTTP Requests   | [`requests`](https://pypi.org/project/requests/)                                                         | • Basic HTTP methods<br/>• Simple API<br/>• Response text retrieval<br/>• Basic authentication                                   | • Minimal configuration<br/>• Intuitive interface<br/>• Basic error handling<br/>• Lightweight implementation           |
 
 Example using DuckDuckGoSearch:
 
@@ -1675,14 +1675,14 @@ if tool := response.tool:
 ### Pre-Made ToolKits
 
 <Callout type="api">
-  - [`mirascope.tools.system.FileSystemToolKit`](/docs/mirascope/api/tools/system/file_system)
-  - [`mirascope.tools.system.DockerOperationToolKit`](/docs/mirascope/api/tools/system/docker_operation)
+  - [`mirascope.tools.system.FileSystemToolKit`](/docs/v1/api/tools/system/file_system)
+  - [`mirascope.tools.system.DockerOperationToolKit`](/docs/v1/api/tools/system/docker_operation)
 </Callout>
 
 | ToolKit                                                             | Primary Use              | Dependencies                                                                                             | Tools and Features                                                                                                                                                                 | Characteristics                                                                                                                          |
 |---------                                                            |--------------------------|-------------------------------------------------------------------                                       |-------------------                                                                                                                                                                 |-----------------                                                                                                                         |
-| [`FileSystemToolKit`](/docs/mirascope/api/tools/system/file_system)           | File System Operations   | None                                                                                                     | • ReadFile: File content reading<br/>• WriteFile: Content writing<br/>• ListDirectory: Directory listing<br/>• CreateDirectory: Directory creation<br/>• DeleteFile: File deletion | • Path traversal protection<br/>• File size limits<br/>• Extension validation<br/>• Robust error handling<br/>• Base directory isolation |
-| [`DockerOperationToolKit`](/docs/mirascope/api/tools/system/docker_operation) | Code & Command Execution | [`docker`](https://pypi.org/project/docker/), [`docker engine`](https://docs.docker.com/engine/install/) | • ExecutePython: Python code execution with optional package installation<br/>• ExecuteShell: Shell command execution                                                              | • Docker container isolation<br/>• Memory limits<br/>• Network control<br/>• Security restrictions<br/>• Resource cleanup                |
+| [`FileSystemToolKit`](/docs/v1/api/tools/system/file_system)           | File System Operations   | None                                                                                                     | • ReadFile: File content reading<br/>• WriteFile: Content writing<br/>• ListDirectory: Directory listing<br/>• CreateDirectory: Directory creation<br/>• DeleteFile: File deletion | • Path traversal protection<br/>• File size limits<br/>• Extension validation<br/>• Robust error handling<br/>• Base directory isolation |
+| [`DockerOperationToolKit`](/docs/v1/api/tools/system/docker_operation) | Code & Command Execution | [`docker`](https://pypi.org/project/docker/), [`docker engine`](https://docs.docker.com/engine/install/) | • ExecutePython: Python code execution with optional package installation<br/>• ExecuteShell: Shell command execution                                                              | • Docker container isolation<br/>• Memory limits<br/>• Network control<br/>• Security restrictions<br/>• Resource cleanup                |
 
 
 Example using FileSystemToolKit:
@@ -1751,4 +1751,4 @@ Tools can significantly extend LLM capabilities, enabling more interactive and d
 
 Mirascope hopes to provide a simple and clean interface that is both easy to learn and easy to use; however, we understand that LLM tools can be a difficult concept regardless of the supporting tooling.
 
-Next, we recommend learning about how to build [Agents](/docs/mirascope/learn/agents) that take advantage of these tools.
+Next, we recommend learning about how to build [Agents](/docs/v1/learn/agents) that take advantage of these tools.

@@ -12,7 +12,7 @@ The `AnthropicStream` class for convenience around streaming LLM calls.
 
 <Info title="Usage">
 
-[Streams](/docs/mirascope/learn/streams)
+[Streams](/docs/v1/learn/streams)
 
 </Info>
 
@@ -43,7 +43,7 @@ for chunk, _ in stream:
 ```
 
 **Bases:** 
-<TypeLink type={{"type_str": "BaseStream[AnthropicCallResponse, AnthropicCallResponseChunk, MessageParam, MessageParam, MessageParam, MessageParam, AnthropicTool, ToolParam, AsyncAnthropicDynamicConfig | AnthropicDynamicConfig, AnthropicCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "AnthropicCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/anthropic/call_response#anthropiccallresponse"}, {"type_str": "AnthropicCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/anthropic/call_response_chunk#anthropiccallresponsechunk"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "AnthropicTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/anthropic/tool#anthropictool"}, {"type_str": "ToolParam", "description": null, "kind": "simple", "doc_identifier": "ToolParam"}, {"type_str": "AsyncAnthropicDynamicConfig | AnthropicDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncAnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/anthropic/dynamic_config#asyncanthropicdynamicconfig"}, {"type_str": "AnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/anthropic/dynamic_config#anthropicdynamicconfig"}]}, {"type_str": "AnthropicCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/anthropic/call_params#anthropiccallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"}]}} />
+<TypeLink type={{"type_str": "BaseStream[AnthropicCallResponse, AnthropicCallResponseChunk, MessageParam, MessageParam, MessageParam, MessageParam, AnthropicTool, ToolParam, AsyncAnthropicDynamicConfig | AnthropicDynamicConfig, AnthropicCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/stream#basestream"}, "parameters": [{"type_str": "AnthropicCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_response#anthropiccallresponse"}, {"type_str": "AnthropicCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_response_chunk#anthropiccallresponsechunk"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "AnthropicTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/tool#anthropictool"}, {"type_str": "ToolParam", "description": null, "kind": "simple", "doc_identifier": "ToolParam"}, {"type_str": "AsyncAnthropicDynamicConfig | AnthropicDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncAnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/dynamic_config#asyncanthropicdynamicconfig"}, {"type_str": "AnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/dynamic_config#anthropicdynamicconfig"}]}, {"type_str": "AnthropicCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_params#anthropiccallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />
 
 <AttributesTable
   attributes={[
@@ -53,7 +53,7 @@ for chunk, _ in stream:
       "type_str": "CostMetadata",
       "description": null,
       "kind": "simple",
-      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
     },
     "description": "Get metadata required for cost calculation."
   }
@@ -84,7 +84,7 @@ Constructs the call response from a consumed AnthropicStream.
     "type_str": "AnthropicCallResponse",
     "description": null,
     "kind": "simple",
-    "doc_url": "/docs/mirascope/api/core/anthropic/call_response#anthropiccallresponse"
+    "doc_url": "/docs/v1/api/core/anthropic/call_response#anthropiccallresponse"
   }
 }}
 />
