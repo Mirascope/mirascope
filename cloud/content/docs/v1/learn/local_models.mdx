@@ -5,7 +5,7 @@ description: Learn how to use Mirascope with locally hosted open-source models t
 
 # Local (Open-Source) Models
 
-You can use the [`llm.call`](/docs/mirascope/api) decorator to interact with models running with [Ollama](https://github.com/ollama/ollama) or [vLLM](https://github.com/vllm-project/vllm):
+You can use the [`llm.call`](/docs/v1/api) decorator to interact with models running with [Ollama](https://github.com/ollama/ollama) or [vLLM](https://github.com/vllm-project/vllm):
 
 <TabbedSection>
 <Tab value="Ollama">
@@ -87,7 +87,7 @@ print(book)
 
 ## OpenAI Compatibility
 
-When hosting (fine-tuned) open-source LLMs yourself locally or in your own cloud with tools that have OpenAI compatibility, you can use the [`openai.call`](/docs/mirascope/api) decorator with a [custom client](/docs/mirascope/learn/calls#custom-client) to interact with your model using all of Mirascope's various features.
+When hosting (fine-tuned) open-source LLMs yourself locally or in your own cloud with tools that have OpenAI compatibility, you can use the [`openai.call`](/docs/v1/api) decorator with a [custom client](/docs/v1/learn/calls#custom-client) to interact with your model using all of Mirascope's various features.
 
 <TabbedSection>
 <Tab value="Ollama">

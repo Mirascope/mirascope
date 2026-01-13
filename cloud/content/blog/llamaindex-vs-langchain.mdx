@@ -116,7 +116,7 @@ When it comes to prompt versioning, LangChain offers this capability in its Lang
 
 ### Mirascope: One Prompt That Type Checks Inputs Automatically
 
-Rather than attempt to tell you how you should formulate prompts, Mirascope provides its [`prompt_template`](/docs/mirascope/learn/prompts) decorator so you can write prompt templates as standard Python functions.
+Rather than attempt to tell you how you should formulate prompts, Mirascope provides its [`prompt_template`](/docs/v1/learn/prompts) decorator so you can write prompt templates as standard Python functions.
 
 Our `prompt_template` decorator allows you to automatically generate prompt messages simply by calling the function, which returns the list of `BaseMessageParam` instances.
 
@@ -334,7 +334,7 @@ Therefore all you need to know is vanilla Python and the Pydantic library. We al
 
 And unlike other frameworks, we believe that everything that can impact the quality of an LLM call (from model parameters to prompts) should live together with the call. The LLM call is therefore the [central organizing unit of our code](/blog/engineers-should-handle-prompting-llms) around which everything gets versioned and tested.
 
-A prime example of this is Mirascope’s use of [`call_params`](/docs/mirascope/learn/calls/#provider-specific-parameters), which contains all the parameters of the LLM call and typically lives inside the call:
+A prime example of this is Mirascope’s use of [`call_params`](/docs/v1/learn/calls/#provider-specific-parameters), which contains all the parameters of the LLM call and typically lives inside the call:
 
 ```python
 from mirascope.core import openai

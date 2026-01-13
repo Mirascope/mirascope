@@ -178,9 +178,9 @@ First, the `prompt_template` decorator wraps the function with a prompt string (
 BaseMessageParam(role='user', content='Recommend a comedy movie')
 ```
 
-The model-agnostic [`llm.call` decorator](/docs/mirascope/learn/calls/) sends this structured message to the model and the return value is a `CallResponse` object that includes generated content, a full list of input messages, model parameters, usage metrics, and any tool or modality-specific metadata.
+The model-agnostic [`llm.call` decorator](/docs/v1/learn/calls/) sends this structured message to the model and the return value is a `CallResponse` object that includes generated content, a full list of input messages, model parameters, usage metrics, and any tool or modality-specific metadata.
 
-[`CallResponse`](/docs/mirascope/api/core/base/call_response/) is useful because whether you're calling OpenAI, Anthropic, Google, or another provider, the shape of the response remains the same. That means you can build [LLM tools](/blog/llm-tools/), logging, analytics, or debugging features once and reuse them everywhere.
+[`CallResponse`](/docs/v1/api/core/base/call_response/) is useful because whether you're calling OpenAI, Anthropic, Google, or another provider, the shape of the response remains the same. That means you can build [LLM tools](/blog/llm-tools/), logging, analytics, or debugging features once and reuse them everywhere.
 
 It also includes fields like `.messages` for the exact prompt, `.usage` for token tracking, and `.model` to confirm which backend handled the call (among others).
 

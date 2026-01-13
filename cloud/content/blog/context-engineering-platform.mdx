@@ -116,11 +116,11 @@ This provides a snapshot of all that directly influences an LLM call's outcome.
 
 Both Lilypad and Mirascope (for which Lilypad gives first-class support) provide out-of-the box pythonic abstractions for managing the context fed into the prompt.
 
-For example, in the code above, [Mirascope’s `@llm.call` decorator](/docs/mirascope/learn/calls) turns the prompt function into a call with minimal boilerplate code.
+For example, in the code above, [Mirascope’s `@llm.call` decorator](/docs/v1/learn/calls) turns the prompt function into a call with minimal boilerplate code.
 
 `@llm.call` provides a unified interface for working with model providers like OpenAI, Grok, Google (Gemini/Vertex), Anthropic, and many others, and you can change the provider by changing the values for model and provider in the decorator’s arguments.
 
-This decorator also provides an interface for [tool calling](/docs/mirascope/learn/tools), [structured outputs and schema](/docs/mirascope/learn/output_parsers), Pydantic-based input validation, [prompt chaining](/blog/prompt-chaining), type hints (integrated into your IDE), and others.
+This decorator also provides an interface for [tool calling](/docs/v1/learn/tools), [structured outputs and schema](/docs/v1/learn/output_parsers), Pydantic-based input validation, [prompt chaining](/blog/prompt-chaining), type hints (integrated into your IDE), and others.
 
 You can work with prompts and their associated code within the Lilypad UI, a no-code environment that lets non-technical users test, edit, and evaluate prompts while keeping them tied to the exact versioned code that runs in production.
 

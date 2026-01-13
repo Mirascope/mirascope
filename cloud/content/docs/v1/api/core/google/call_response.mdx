@@ -10,7 +10,7 @@ This module contains the `GoogleCallResponse` class.
 
 <Info title="Usage">
 
-[Calls](/docs/mirascope/learn/calls#handling-responses)
+[Calls](/docs/v1/learn/calls#handling-responses)
 
 </Info>
 
@@ -40,7 +40,7 @@ print(response.content)
 ```
 
 **Bases:** 
-<TypeLink type={{"type_str": "BaseCallResponse[GenerateContentResponse, GoogleTool, Tool, GoogleDynamicConfig, ContentListUnion | ContentListUnionDict, GoogleCallParams, ContentDict, GoogleMessageParamConverter]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/call_response#basecallresponse"}, "parameters": [{"type_str": "GenerateContentResponse", "description": null, "kind": "simple", "doc_identifier": "GenerateContentResponse"}, {"type_str": "GoogleTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/tool#googletool"}, {"type_str": "Tool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/llm/tool#tool"}, {"type_str": "GoogleDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/dynamic_config#googledynamicconfig"}, {"type_str": "ContentListUnion | ContentListUnionDict", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ContentListUnion", "description": null, "kind": "simple", "doc_identifier": "ContentListUnion"}, {"type_str": "ContentListUnionDict", "description": null, "kind": "simple", "doc_identifier": "ContentListUnionDict"}]}, {"type_str": "GoogleCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/google/call_params#googlecallparams"}, {"type_str": "ContentDict", "description": null, "kind": "simple", "doc_identifier": "ContentDict"}, {"type_str": "GoogleMessageParamConverter", "description": null, "kind": "simple", "doc_identifier": "GoogleMessageParamConverter"}]}} />
+<TypeLink type={{"type_str": "BaseCallResponse[GenerateContentResponse, GoogleTool, Tool, GoogleDynamicConfig, ContentListUnion | ContentListUnionDict, GoogleCallParams, ContentDict, GoogleMessageParamConverter]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"}, "parameters": [{"type_str": "GenerateContentResponse", "description": null, "kind": "simple", "doc_identifier": "GenerateContentResponse"}, {"type_str": "GoogleTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/google/tool#googletool"}, {"type_str": "Tool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/llm/tool#tool"}, {"type_str": "GoogleDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/google/dynamic_config#googledynamicconfig"}, {"type_str": "ContentListUnion | ContentListUnionDict", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ContentListUnion", "description": null, "kind": "simple", "doc_identifier": "ContentListUnion"}, {"type_str": "ContentListUnionDict", "description": null, "kind": "simple", "doc_identifier": "ContentListUnionDict"}]}, {"type_str": "GoogleCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/google/call_params#googlecallparams"}, {"type_str": "ContentDict", "description": null, "kind": "simple", "doc_identifier": "ContentDict"}, {"type_str": "GoogleMessageParamConverter", "description": null, "kind": "simple", "doc_identifier": "GoogleMessageParamConverter"}]}} />
 
 <AttributesTable
   attributes={[
@@ -270,7 +270,7 @@ print(response.content)
               "type_str": "GoogleTool",
               "description": null,
               "kind": "simple",
-              "doc_url": "/docs/mirascope/api/core/google/tool#googletool"
+              "doc_url": "/docs/v1/api/core/google/tool#googletool"
             }
           ]
         },
@@ -301,7 +301,7 @@ print(response.content)
           "type_str": "GoogleTool",
           "description": null,
           "kind": "simple",
-          "doc_url": "/docs/mirascope/api/core/google/tool#googletool"
+          "doc_url": "/docs/v1/api/core/google/tool#googletool"
         },
         {
           "type_str": "None",
@@ -341,7 +341,7 @@ print(response.content)
               "type_str": "FinishReason",
               "description": null,
               "kind": "simple",
-              "doc_url": "/docs/mirascope/api/core/openai/call_response_chunk#finishreason"
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
             }
           ]
         },
@@ -360,7 +360,7 @@ print(response.content)
       "type_str": "BaseMessageParam",
       "description": null,
       "kind": "simple",
-      "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"
+      "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
     }
   },
   {
@@ -380,7 +380,7 @@ print(response.content)
           "type_str": "BaseMessageParam",
           "description": null,
           "kind": "simple",
-          "doc_url": "/docs/mirascope/api/core/base/message_param#basemessageparam"
+          "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
         },
         {
           "type_str": "None",
@@ -397,7 +397,7 @@ print(response.content)
       "type_str": "CostMetadata",
       "description": null,
       "kind": "simple",
-      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
     }
   }
 ]}
@@ -446,7 +446,7 @@ Returns the tool message parameters for tool call results.
               "type_str": "GoogleTool",
               "description": null,
               "kind": "simple",
-              "doc_url": "/docs/mirascope/api/core/google/tool#googletool"
+              "doc_url": "/docs/v1/api/core/google/tool#googletool"
             },
             {
               "type_str": "str",

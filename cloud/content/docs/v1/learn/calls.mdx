@@ -6,7 +6,7 @@ description: Learn how to make API calls to various LLM providers using Mirascop
 # Calls
 
 <Note>
-  If you haven't already, we recommend first reading the section on writing [Prompts](/docs/mirascope/learn/prompts)
+  If you haven't already, we recommend first reading the section on writing [Prompts](/docs/v1/learn/prompts)
 </Note>
 
 When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers to making a request to a LLM provider's API with a particular setting and prompt.
@@ -18,7 +18,7 @@ We currently support [OpenAI](https://openai.com/), [Anthropic](https://www.anth
 If there are any providers we don't yet support that you'd like to see supported, let us know!
 
 <Callout type="api">
-  [`mirascope.llm.call`](/docs/mirascope/api/llm/call)
+  [`mirascope.llm.call`](/docs/v1/api/llm/call)
 </Callout>
 
 ## Basic Usage and Syntax
@@ -134,10 +134,10 @@ print(override_response.content)
 ### Common Response Properties and Methods
 
 <Callout type="api">
-  [`mirascope.core.base.call_response`](/docs/mirascope/api/core/base/call_response)
+  [`mirascope.core.base.call_response`](/docs/v1/api/core/base/call_response)
 </Callout>
 
-All [`BaseCallResponse`](/docs/mirascope/api) objects share these common properties:
+All [`BaseCallResponse`](/docs/v1/api) objects share these common properties:
 
 - `content`: The main text content of the response. If no content is present, this will be the empty string.
 - `finish_reasons`: A list of reasons why the generation finished (e.g., "stop", "length"). These will be typed specifically for the provider used. If no finish reasons are present, this will be `None`.
@@ -148,8 +148,8 @@ All [`BaseCallResponse`](/docs/mirascope/api) objects share these common propert
 - `output_tokens`: The number of output tokens generated if available. Otherwise this will be `None`.
 - `cost`: An estimated cost of the API call if available. Otherwise this will be `None`.
 - `message_param`: The assistant's response formatted as a message parameter.
-- `tools`: A list of provider-specific tools used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](/docs/mirascope/learn/tools) documentation for more details.
-- `tool`: The first tool used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](/docs/mirascope/learn/tools) documentation for more details.
+- `tools`: A list of provider-specific tools used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](/docs/v1/learn/tools) documentation for more details.
+- `tool`: The first tool used in the response, if any. Otherwise this will be `None`. Check out the [`Tools`](/docs/v1/learn/tools) documentation for more details.
 - `tool_types`: A list of tool types used in the call, if any. Otherwise this will be `None`.
 - `prompt_template`: The prompt template used for the call.
 - `fn_args`: The arguments passed to the function.
@@ -165,7 +165,7 @@ All [`BaseCallResponse`](/docs/mirascope/api) objects share these common propert
 There are also two common methods:
 
 - `__str__`: Returns the `content` property of the response for easy printing.
-- `tool_message_params`: Creates message parameters for tool call results. Check out the [`Tools`](/docs/mirascope/learn/tools) documentation for more information.
+- `tool_message_params`: Creates message parameters for tool call results. Check out the [`Tools`](/docs/v1/learn/tools) documentation for more information.
 
 ## Multi-Modal Outputs
 
@@ -218,11 +218,11 @@ When using models that support audio outputs, you'll have access to:
 There are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:
 
 - `model`: The only required parameter for all providers, which may be passed in as a standard argument (whereas all others are optional and must be provided as keyword arguments). It specifies which language model to use for the generation. Each provider has its own set of available models.
-- `stream`: A boolean that determines whether the response should be streamed or returned as a complete response. We cover this in more detail in the [`Streams`](/docs/mirascope/learn/streams) documentation.
-- `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](/docs/mirascope/learn/response_models) documentation.
-- `output_parser`: A function for parsing the response output. We cover this in more detail in the [`Output Parsers`](/docs/mirascope/learn/output_parsers) documentation.
-- `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](/docs/mirascope/learn/json_mode) documentation.
-- `tools`: A list of tools that the model may request to use in its response. We cover this in more detail in the [`Tools`](/docs/mirascope/learn/tools) documentation.
+- `stream`: A boolean that determines whether the response should be streamed or returned as a complete response. We cover this in more detail in the [`Streams`](/docs/v1/learn/streams) documentation.
+- `response_model`: A Pydantic `BaseModel` type that defines how to structure the response. We cover this in more detail in the [`Response Models`](/docs/v1/learn/response_models) documentation.
+- `output_parser`: A function for parsing the response output. We cover this in more detail in the [`Output Parsers`](/docs/v1/learn/output_parsers) documentation.
+- `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](/docs/v1/learn/json_mode) documentation.
+- `tools`: A list of tools that the model may request to use in its response. We cover this in more detail in the [`Tools`](/docs/v1/learn/tools) documentation.
 - `client`: A custom client to use when making the call to the LLM. We cover this in more detail in the [`Custom Client`](#custom-client) section below.
 - `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Usage`](#provider-specific-usage) section below.
 
@@ -354,16 +354,16 @@ print(response.content)
 <Callout type="api">
   For details on provider-specific modules, see the API documentation for each provider:
   
-  - [`mirascope.core.openai.call`](/docs/mirascope/api/core/openai/call)
-  - [`mirascope.core.anthropic.call`](/docs/mirascope/api/core/anthropic/call)
-  - [`mirascope.core.mistral.call`](/docs/mirascope/api/core/mistral/call)
-  - [`mirascope.core.google.call`](/docs/mirascope/api/core/google/call)
-  - [`mirascope.core.azure.call`](/docs/mirascope/api/core/azure/call)
-  - [`mirascope.core.cohere.call`](/docs/mirascope/api/core/cohere/call)
-  - [`mirascope.core.groq.call`](/docs/mirascope/api/core/groq/call)
-  - [`mirascope.core.xai.call`](/docs/mirascope/api/core/xai/call)
-  - [`mirascope.core.bedrock.call`](/docs/mirascope/api/core/bedrock/call)
-  - [`mirascope.core.litellm.call`](/docs/mirascope/api/core/litellm/call)
+  - [`mirascope.core.openai.call`](/docs/v1/api/core/openai/call)
+  - [`mirascope.core.anthropic.call`](/docs/v1/api/core/anthropic/call)
+  - [`mirascope.core.mistral.call`](/docs/v1/api/core/mistral/call)
+  - [`mirascope.core.google.call`](/docs/v1/api/core/google/call)
+  - [`mirascope.core.azure.call`](/docs/v1/api/core/azure/call)
+  - [`mirascope.core.cohere.call`](/docs/v1/api/core/cohere/call)
+  - [`mirascope.core.groq.call`](/docs/v1/api/core/groq/call)
+  - [`mirascope.core.xai.call`](/docs/v1/api/core/xai/call)
+  - [`mirascope.core.bedrock.call`](/docs/v1/api/core/bedrock/call)
+  - [`mirascope.core.litellm.call`](/docs/v1/api/core/litellm/call)
 </Callout>
 
 While Mirascope provides a consistent interface across different LLM providers, you can also use provider-specific modules with refined typing for an individual provider.
@@ -422,7 +422,7 @@ You can also configure the client dynamically at runtime through the dynamic con
 </TabbedSection>
 
 <Warning title="Make sure to use the correct client!" collapsible={true} defaultOpen={false}>
-  A common mistake is to use the synchronous client with async calls. Read the section on [Async Custom Client](/docs/mirascope/learn/async#custom-client) to see how to use a custom client with asynchronous calls.
+  A common mistake is to use the synchronous client with async calls. Read the section on [Async Custom Client](/docs/v1/learn/async#custom-client) to see how to use a custom client with asynchronous calls.
 </Warning>
 
 ## Error Handling
@@ -474,10 +474,10 @@ By mastering calls in Mirascope, you'll be well-equipped to build robust, flexib
 
 Next, we recommend choosing one of:
 
-- [Streams](/docs/mirascope/learn/streams) to see how to stream call responses for a more real-time interaction.
-- [Chaining](/docs/mirascope/learn/chaining) to see how to chain calls together.
-- [Response Models](/docs/mirascope/learn/response_models) to see how to generate structured outputs.
-- [Tools](/docs/mirascope/learn/tools) to see how to give LLMs access to custom tools to extend their capabilities.
-- [Async](/docs/mirascope/learn/async) to see how to better take advantage of asynchronous programming and parallelization for improved performance.
+- [Streams](/docs/v1/learn/streams) to see how to stream call responses for a more real-time interaction.
+- [Chaining](/docs/v1/learn/chaining) to see how to chain calls together.
+- [Response Models](/docs/v1/learn/response_models) to see how to generate structured outputs.
+- [Tools](/docs/v1/learn/tools) to see how to give LLMs access to custom tools to extend their capabilities.
+- [Async](/docs/v1/learn/async) to see how to better take advantage of asynchronous programming and parallelization for improved performance.
 
 Pick whichever path aligns best with what you're hoping to get from Mirascope.

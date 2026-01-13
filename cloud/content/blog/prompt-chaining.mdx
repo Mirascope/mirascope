@@ -959,7 +959,7 @@ Each prompt should also perform a specific function and have a single responsibi
 
 ### Manage Data Carefully
 
-Ensure that the format of the desired output of one prompt matches the expected input format of the next prompt to avoid errors. Schemas can easily help you achieve this, and the Mirascope library offers its [`response_model`](/docs/mirascope/learn/response_models) argument, which is built on top of Pydantic, to help you define schemas, extract structured outputs from large language models, and validate those outputs.
+Ensure that the format of the desired output of one prompt matches the expected input format of the next prompt to avoid errors. Schemas can easily help you achieve this, and the Mirascope library offers its [`response_model`](/docs/v1/learn/response_models) argument, which is built on top of Pydantic, to help you define schemas, extract structured outputs from large language models, and validate those outputs.
 
 For example, if a prompt expects a JSON object with specific fields, ensure the preceding prompt generates data in that exact structure. As well, be prepared to transform data to meet the input requirements of subsequent prompts. This might involve parsing JSON, reformatting strings, or converting data types.
 

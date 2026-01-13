@@ -9,9 +9,9 @@ In this recipe, we'll explore using Mirascope to enhance our Large Language Mode
 
 <Info title="Mirascope Concepts Used" collapsible={true} defaultOpen={false}>
 <ul>
-<li><a href="/docs/mirascope/learn/prompts/">Prompts</a></li>
-<li><a href="/docs/mirascope/learn/calls/">Calls</a></li>
-<li><a href="/docs/mirascope/learn/agents/">Agents</a></li>
+<li><a href="/docs/v1/learn/prompts/">Prompts</a></li>
+<li><a href="/docs/v1/learn/calls/">Calls</a></li>
+<li><a href="/docs/v1/learn/agents/">Agents</a></li>
 </ul>
 </Info>
 
@@ -45,7 +45,7 @@ We'll use two pre-made tools from `mirascope.tools`:
 
 The `DuckDuckGoSearch` tool provides search results with URLs while `ParseURLContent` handles the content extraction. We save our search results into `search_history` to provide context for future searches.
 
-For a full list of available pre-made tools and their capabilities, check out the <a href="/docs/mirascope/learn/tools#pre-made-tools-and-toolkits">Pre-made Tools documentation</a>.
+For a full list of available pre-made tools and their capabilities, check out the <a href="/docs/v1/learn/tools#pre-made-tools-and-toolkits">Pre-made Tools documentation</a>.
 
 ## Add Q&A Functionality
 
@@ -219,7 +219,7 @@ await web_assistant.run()
 
 Note that by giving the LLM the current date, it'll automatically search for the most up-to-date information.
 
-Check out [Evaluating Web Search Agent](/docs/mirascope/guides/evals/evaluating-web-search-agent) for an in-depth guide on how we evaluate the quality of our agent.
+Check out [Evaluating Web Search Agent](/docs/v1/guides/evals/evaluating-web-search-agent) for an in-depth guide on how we evaluate the quality of our agent.
 
 <Info title="Additional Real-World Applications">
   <ul>

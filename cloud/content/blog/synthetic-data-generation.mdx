@@ -134,7 +134,7 @@ Plus, evaluating the quality and relevance of the data further complicates the p
 
 As we’ve seen, language models are great at learning and representing complex patterns from vast amounts of data.
 
-Below, we walk you through [an example](/docs/mirascope/guides/more-advanced/generating-synthetic-data/) of using OpenAI's GPT-4o-mini to create ecommerce data on home appliances, including attributes like name, price, and inventory.
+Below, we walk you through [an example](/docs/v1/guides/more-advanced/generating-synthetic-data/) of using OpenAI's GPT-4o-mini to create ecommerce data on home appliances, including attributes like name, price, and inventory.
 
 The main libraries we’ll use are:
 
@@ -222,7 +222,7 @@ Colocation simplifies development by keeping the logic, structure, and [prompt](
 
 This differs from practices encouraged by other major [LLM frameworks](/blog/llm-frameworks/) that don’t promote colocation, with the effect that prompts, logic, and configuration can get scattered around the codebase, leading to greater challenges in debugging, testing, and iterating on functionality.
 
-Mirascope’s call decorators are also model agnostic, requiring minimal code changes for switching LLM providers (our library interfaces with [many popular providers](/docs/mirascope/)).
+Mirascope’s call decorators are also model agnostic, requiring minimal code changes for switching LLM providers (our library interfaces with [many popular providers](/docs/v1/)).
 
 Mirascope’s `response_model` parameter lets you take full advantage of Pydantic’s type annotations, which integrate features like autocomplete, type hints, and linting directly in your IDE.
 
