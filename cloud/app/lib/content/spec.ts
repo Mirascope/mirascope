@@ -77,8 +77,9 @@ export function processDocSpec(
   // Calculate the current weight by multiplying parent weight with this item's weight
   const currentWeight = parentWeight * (docSpec.weight || 1.0);
 
-  // Simple path construction for content loading - always include the slug
-  const path = pathPrefix ? `${pathPrefix}/${slug}` : slug;
+  // Path construction for content loading - always include the slug
+  const relativePath = pathPrefix ? `${pathPrefix}/${slug}` : slug;
+  const docPath = `docs/${relativePath}`;
 
   // For URL route path: handle index pages with trailing slashes
   let routePath = pathPrefix ? `/docs/${pathPrefix}` : "/docs";
@@ -92,7 +93,7 @@ export function processDocSpec(
     result.push({
       label: docSpec.label,
       slug: docSpec.slug,
-      path,
+      path: docPath,
       routePath,
       type: "docs",
       searchWeight: currentWeight,
@@ -102,7 +103,7 @@ export function processDocSpec(
   // Process children recursively with updated section path and weight
   if (docSpec.children && docSpec.children.length > 0) {
     docSpec.children.forEach((childSpec) => {
-      const childItems = processDocSpec(childSpec, path, currentWeight);
+      const childItems = processDocSpec(childSpec, relativePath, currentWeight);
       result.push(...childItems);
     });
   }
