@@ -12,7 +12,7 @@ from .base_stream_response import (
 )
 from .finish_reason import FinishReason, FinishReasonChunk
 from .response import AsyncContextResponse, AsyncResponse, ContextResponse, Response
-from .root_response import RootResponse
+from .root_response import AnyResponse, RootResponse
 from .stream_response import (
     AsyncContextStreamResponse,
     AsyncStreamResponse,
@@ -32,6 +32,7 @@ from .streams import (
 from .usage import Usage, UsageDeltaChunk
 
 __all__ = [
+    "AnyResponse",
     "AsyncChunkIterator",
     "AsyncContextResponse",
     "AsyncContextStreamResponse",

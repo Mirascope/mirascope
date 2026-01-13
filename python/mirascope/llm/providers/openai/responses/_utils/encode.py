@@ -33,6 +33,7 @@ from .....exceptions import FeatureNotSupportedError
 from .....formatting import (
     Format,
     FormattableT,
+    OutputParser,
     resolve_format,
 )
 from .....messages import AssistantMessage, Message, UserMessage
@@ -273,7 +274,10 @@ def encode_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: type[FormattableT]
+    | Format[FormattableT]
+    | OutputParser[FormattableT]
+    | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""

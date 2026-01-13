@@ -1,5 +1,7 @@
 """The `llm.format` decorator for defining response formats as classes."""
 
+from __future__ import annotations
+
 import inspect
 import json
 from dataclasses import dataclass
@@ -7,6 +9,7 @@ from typing import Any, Generic, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from ..types import NoneType
+from .output_parser import OutputParser, is_output_parser
 from .primitives import create_wrapper_model, is_primitive_type
 from .types import FormattableT, FormattingMode, HasFormattingInstructions
 
@@ -50,35 +53,45 @@ class Format(Generic[FormattableT]):
     """JSON schema representation of the structured output format."""
 
     mode: FormattingMode
-    """The decorator-provided mode of the response format. 
-    
+    """The decorator-provided mode of the response format.
+
     Determines how the LLM call may be modified in order to extract the expected format.
     """
 
-    formattable: type[FormattableT]
-    """The `Formattable` type that this `Format` describes.
-    
-    While the `FormattbleT` typevar allows for `None`, a `Format` will never be
-    constructed when the `FormattableT` is `None`, so you may treat this as 
-    a `RequiredFormattableT` in practice.
+    formattable: type[FormattableT] | OutputParser[FormattableT]
+    """The formattable type or custom output parser.
+
+    Can be one of:
+    - type[BaseModel]: A Pydantic model class for structured output
+    - PrimitiveType: A primitive type (str, int, list, etc.) for simple output
+    - OutputParser[FormattableT]: A custom parser created with @llm.output_parser
+
+    The type determines how the response will be parsed in response.parse().
+    OutputParser uses Any for the response type since it works with any response.
     """
 
     @property
     def formatting_instructions(self) -> str | None:
         """The formatting instructions that will be added to the LLM system prompt.
 
-        If the format type has a `formatting_instructions` class method, the output of that
-        call will be used for instructions. Otherwise, instructions may be auto-generated
-        based on the formatting mode.
+        If the format has a custom `OutputParser`, its formatting instructions will be used.
+        Otherwise, if the format type has a `formatting_instructions` class method,
+        the output of that call will be used. Otherwise, instructions may be
+        auto-generated based on the formatting mode.
         """
-        if isinstance(self.formattable, HasFormattingInstructions):
+        if is_output_parser(self.formattable) or isinstance(
+            self.formattable, HasFormattingInstructions
+        ):
             return self.formattable.formatting_instructions()
+
         if self.mode == "tool":
             return TOOL_MODE_INSTRUCTIONS
         elif self.mode == "json":
             json_schema = json.dumps(self.schema, indent=2)
             instructions = JSON_MODE_INSTRUCTIONS.format(json_schema=json_schema)
             return inspect.cleandoc(instructions)
+        elif self.mode == "parser":
+            return None  # pragma: no cover
 
     def create_tool_schema(
         self,
@@ -127,28 +140,34 @@ class Format(Generic[FormattableT]):
 
 
 def format(
-    formattable: type[FormattableT] | None,
+    formattable: type[FormattableT] | OutputParser[FormattableT] | None,
     *,
     mode: FormattingMode,
 ) -> Format[FormattableT] | None:
-    """Returns a `Format` that describes structured output for a Formattable type.
+    """Returns a `Format` that describes structured output or custom parsing.
 
-    This function converts a Formattable type (e.g. Pydantic BaseModel or primitive type)
-    into a `Format` object that describes how the object should be formatted. Calling
-    `llm.format` is optional, as all the APIs that expect a `Format` can also take the
-    Formattable type directly. However, calling `llm.format` is necessary in order to
-    specify the formatting mode that will be used.
+    This function converts a Formattable type (e.g. Pydantic `BaseModel` or primitive type)
+    or an `OutputParser` into a `Format` object that describes how the output should be
+    formatted and parsed. Calling `llm.format` is optional, as all the APIs that expect
+    a `Format` can also take the Formattable type or `OutputParser` directly. However,
+    calling `llm.format` is necessary in order to specify the formatting mode for
+    `BaseModel`/primitive types.
 
-    Primitive types are automatically wrapped in a BaseModel with an "output" field
+    Primitive types are automatically wrapped in a `BaseModel` with an "output" field
     for schema generation, then unwrapped during parsing.
 
     Args:
-        mode: The format mode to use, one of the following:
+        formattable: The type or parser to format:
+            - BaseModel type: Uses structured output with JSON schema
+            - Primitive type: Wrapped in schema for structured output
+            - OutputParser: Uses custom parsing with instructions
+        mode: The format mode to use (required):
             - "strict": Use model strict structured outputs, or fail if unavailable.
             - "tool": Use forced tool calling with a special tool that represents a
               formatted response.
             - "json": Use provider json mode if available, or modify prompt to request
               json if not.
+            - "parser": Must be used for OutputParser types.
 
     The Formattable type may provide custom formatting instructions via a
     `formatting_instructions(cls)` classmethod. If that method is present, it will be called,
@@ -159,16 +178,14 @@ def format(
     you can add the `formatting_instructions` classmethod and have it return `None`.
 
     Returns:
-      A `Format` object describing the Formattable type.
+      A `Format` object describing the format type or parser.
 
     Example:
-      Using with an LLM call:
+      Using with a BaseModel:
 
       ```python
       from pydantic import BaseModel
-
       from mirascope import llm
-
 
       class Book(BaseModel):
           title: str
@@ -176,17 +193,29 @@ def format(
 
       format = llm.format(Book, mode="strict")
 
-      @llm.call(
-          provider_id="openai",
-          model_id="openai/gpt-5-mini",
-          format=format,
-      )
+      @llm.call("openai/gpt-5-mini", format=format)
       def recommend_book(genre: str):
           return f"Recommend a {genre} book."
 
       response = recommend_book("fantasy")
       book: Book = response.parse()
-      print(f"{book.title} by {book.author}")
+      ```
+
+    Example:
+
+      Using with an `OutputParser`:
+
+      ```python
+      @llm.output_parser(
+          formatting_instructions="Return XML: <book><title>...</title></book>"
+      )
+      def parse_book_xml(response: llm.AnyResponse) -> Book:
+          # ... parsing logic ...
+          return Book(...)
+
+      @llm.call("openai/gpt-5-mini", format=parse_book_xml)
+      def recommend_book(genre: str):
+          return f"Recommend a {genre} book."
       ```
     """
     # TODO: Add caching or memoization to this function (e.g. functools.lru_cache)
@@ -194,7 +223,17 @@ def format(
     if formattable is None or formattable is NoneType:
         return None
 
-    # Check for primitive types and wrap them
+    if is_output_parser(formattable):
+        if mode != "parser":
+            raise ValueError(f"mode must be 'parser' for OutputParser, got '{mode}'")
+        return Format[Any](
+            name=formattable.__name__,
+            description=formattable.__doc__,
+            schema={},
+            mode="parser",
+            formattable=formattable,
+        )
+
     if is_primitive_type(formattable):
         wrapper_model = create_wrapper_model(formattable)
         schema = wrapper_model.model_json_schema()
@@ -206,7 +245,7 @@ def format(
 
         return Format[FormattableT](
             name=name,
-            description=None,  # Primitives don't have docstrings
+            description=None,
             schema=schema,
             mode=mode,
             formattable=formattable,
@@ -228,11 +267,27 @@ def format(
 
 
 def resolve_format(
-    formattable: type[FormattableT] | Format[FormattableT] | None,
+    formattable: (
+        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
+    ),
     default_mode: FormattingMode,
 ) -> Format[FormattableT] | None:
-    """Resolve a `Format` (or None) from a possible `Format` or Formattable."""
+    """Resolve a `Format` (or None) from a possible `Format`, Formattable, or `OutputParser`.
+
+    Args:
+        formattable: The format specification:
+            - Format: Returned as-is
+            - BaseModel/primitive type: Converted to Format with default_mode
+            - OutputParser: Converted to Format with mode='parser'
+        default_mode: The mode to use for BaseModel/primitive types.
+
+    Returns:
+        A Format object or None.
+    """
     if isinstance(formattable, Format):
         return formattable
-    else:
-        return format(formattable, mode=default_mode)
+
+    if is_output_parser(formattable):
+        return format(formattable, mode="parser")
+
+    return format(formattable, mode=default_mode)

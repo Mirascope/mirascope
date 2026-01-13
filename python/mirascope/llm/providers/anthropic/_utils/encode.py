@@ -13,6 +13,7 @@ from ....exceptions import FeatureNotSupportedError, FormattingModeNotSupportedE
 from ....formatting import (
     Format,
     FormattableT,
+    OutputParser,
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
@@ -333,7 +334,10 @@ def encode_request(
     model_id: AnthropicModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: type[FormattableT]
+    | Format[FormattableT]
+    | OutputParser[FormattableT]
+    | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the Anthropic messages.create method."""

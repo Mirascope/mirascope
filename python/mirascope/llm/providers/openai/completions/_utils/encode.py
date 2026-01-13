@@ -12,11 +12,7 @@ from .....exceptions import (
     FeatureNotSupportedError,
     FormattingModeNotSupportedError,
 )
-from .....formatting import (
-    Format,
-    FormattableT,
-    resolve_format,
-)
+from .....formatting import Format, FormattableT, OutputParser, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
@@ -280,7 +276,10 @@ def encode_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-    format: type[FormattableT] | Format[FormattableT] | None,
+    format: type[FormattableT]
+    | Format[FormattableT]
+    | OutputParser[FormattableT]
+    | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
