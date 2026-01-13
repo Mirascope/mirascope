@@ -1,5 +1,5 @@
 import React from "react";
-import { PageTOC } from "@/app/components/page-toc";
+import { ContentTOC } from "@/app/components/content-toc";
 import { Server } from "lucide-react";
 import { ModelProviderDropdown } from "@/app/components/mdx/elements/model-provider-dropdown";
 import { type DocContent } from "@/app/lib/content/types";
@@ -42,7 +42,7 @@ const DocsTocSidebar: React.FC<TocSidebarProps> = ({ document }) => {
             On this page
           </h4>
         </div>
-        <PageTOC
+        <ContentTOC
           headings={document?.mdx?.tableOfContents || []}
           observeHeadings={true}
         />

@@ -3,7 +3,10 @@ import { createContext, useContext, useEffect } from "react";
 import { cn } from "@/app/lib/utils";
 import { Button } from "@/app/components/ui/button";
 import { ChevronLeft, ChevronRight, X, type LucideIcon } from "lucide-react";
-import { useSidebar, isMobileView } from "@/app/components/page-sidebar";
+import {
+  useSidebar,
+  isMobileView,
+} from "@/app/components/blocks/navigation/sidebar";
 
 // Shared positioning for sidebar toggle buttons
 const SIDEBAR_TOGGLE_POSITION = "calc(var(--header-height) - 1.63rem)";
@@ -87,7 +90,7 @@ const SidebarToggle = ({
 };
 
 /**
- * PageLayout - Comprehensive layout component with composable parts
+ * ContentLayout - Comprehensive layout component with composable parts
  *
  * Provides a consistent page structure with main content area and
  * optional sidebars. Sidebars use fixed positioning for scrolling behavior.
@@ -96,14 +99,14 @@ const SidebarToggle = ({
  *
  * Usage example:
  * ```tsx
- * <PageLayout>
- *   <PageLayout.LeftSidebar>Left sidebar content</PageLayout.LeftSidebar>
- *   <PageLayout.Content>Main content</PageLayout.Content>
- *   <PageLayout.RightSidebar>Right sidebar content</PageLayout.RightSidebar>
- * </PageLayout>
+ * <ContentLayout>
+ *   <ContentLayout.LeftSidebar>Left sidebar content</ContentLayout.LeftSidebar>
+ *   <ContentLayout.Content>Main content</ContentLayout.Content>
+ *   <ContentLayout.RightSidebar>Right sidebar content</ContentLayout.RightSidebar>
+ * </ContentLayout>
  * ```
  */
-const PageLayout = ({ children }: { children: ReactNode }) => {
+const ContentLayout = ({ children }: { children: ReactNode }) => {
   // Create sidebar controllers with coordinated behavior
   // The hook now handles only mobile behavior
   const leftSidebar = useSidebar({
@@ -178,7 +181,7 @@ const SidebarBackdrop = ({
  * Handles responsive collapsing on small screens with CSS media queries.
  * Sidebar content scrolls independently from main content.
  */
-PageLayout.LeftSidebar = ({
+ContentLayout.LeftSidebar = ({
   children,
   className,
   collapsible = true,
@@ -295,7 +298,7 @@ PageLayout.LeftSidebar = ({
  *
  * Expands to fill available space between sidebars and scrolls independently.
  */
-PageLayout.Content = ({ children, className }: SidebarProps) => {
+ContentLayout.Content = ({ children, className }: SidebarProps) => {
   return <div className={cn("min-w-0 flex-1", className)}>{children}</div>;
 };
 
@@ -308,7 +311,7 @@ PageLayout.Content = ({ children, className }: SidebarProps) => {
  * When mobileCollapsible is true, the sidebar will be accessible on mobile
  * devices via a toggle button that shows a slide-in panel.
  */
-PageLayout.RightSidebar = ({
+ContentLayout.RightSidebar = ({
   children,
   className,
   mobileCollapsible = false,
@@ -389,4 +392,4 @@ PageLayout.RightSidebar = ({
   );
 };
 
-export default PageLayout;
+export default ContentLayout;

@@ -3,10 +3,10 @@ import { ButtonLink } from "@/app/components/ui/button-link";
 import { MDXRenderer } from "@/app/components/mdx/renderer";
 import { CopyMarkdownButton } from "@/app/components/blocks/copy-markdown-button";
 import LoadingContent from "@/app/components/blocks/loading-content";
-import { PageTOC } from "@/app/components/page-toc";
+import { ContentTOC } from "@/app/components/content-toc";
 // import { PagefindMeta } from "@/app/components/pagefind-meta";
 import type { BlogContent } from "@/app/lib/content/types";
-import PageLayout from "@/app/components/page-layout";
+import ContentLayout from "@/app/components/content-layout";
 import { useEffect, useState } from "react";
 
 // Reusable component for "Back to Blog" button
@@ -131,7 +131,7 @@ export function BlogPostPage({
 
       <div className="grow overflow-y-auto pr-4 pb-6 pl-4">
         {/* todo(sebastian): Make sure the headings have IDs in the mdx content */}
-        <PageTOC
+        <ContentTOC
           headings={post.mdx?.tableOfContents || []}
           observeHeadings={true}
         />
@@ -152,23 +152,23 @@ export function BlogPostPage({
           author: author,
         }}
       /> */}
-      <PageLayout>
-        <PageLayout.LeftSidebar className="pt-1" collapsible={false}>
+      <ContentLayout>
+        <ContentLayout.LeftSidebar className="pt-1" collapsible={false}>
           <div className="pr-10">
             <BackToBlogLink />
           </div>
-        </PageLayout.LeftSidebar>
+        </ContentLayout.LeftSidebar>
 
-        <PageLayout.Content>{mainContent}</PageLayout.Content>
+        <ContentLayout.Content>{mainContent}</ContentLayout.Content>
 
-        <PageLayout.RightSidebar
+        <ContentLayout.RightSidebar
           className={isLoading ? undefined : "pt-1"}
           mobileCollapsible={true}
           mobileTitle="Table of Contents"
         >
           {rightSidebarContent}
-        </PageLayout.RightSidebar>
-      </PageLayout>
+        </ContentLayout.RightSidebar>
+      </ContentLayout>
     </>
   );
 }

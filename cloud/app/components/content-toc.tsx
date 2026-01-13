@@ -25,7 +25,7 @@ export interface TableOfContentsProps {
  * Takes explicit props instead of extracting content from the DOM.
  * Can optionally track which heading is currently active by observing heading elements.
  */
-export const PageTOC: React.FC<TableOfContentsProps> = ({
+export const ContentTOC: React.FC<TableOfContentsProps> = ({
   headings,
   activeId: initialActiveId = "",
   observeHeadings = false,
