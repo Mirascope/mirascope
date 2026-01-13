@@ -115,7 +115,12 @@ describe.sequential("Annotations API", (it) => {
       };
 
       const result = yield* Effect.promise(() =>
-        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo),
+        createApiClient(
+          TEST_DATABASE_URL,
+          owner,
+          apiKeyInfo,
+          () => Effect.void,
+        ),
       );
       apiKeyClient = result.client;
       disposeApiKeyClient = result.dispose;

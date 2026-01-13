@@ -268,6 +268,7 @@ cloud/
 │   ├── db.ts                      # Database test utilities
 │   ├── clickhouse.ts              # ClickHouse test utilities
 │   ├── workers/                   # Worker test utilities
+│   │   ├── fixtures.ts            # Shared worker queue message fixtures
 │   │   └── realtimeSpans.ts       # Realtime spans mock storage and fixtures
 │   └── clickhouse/                # ClickHouse test fixtures
 │       └── fixtures.ts            # Effect-native transform test fixtures

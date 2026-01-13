@@ -1,61 +1,86 @@
 /**
- * @fileoverview Tests for spans ingest queue global layer and setter.
+ * @fileoverview Tests for span ingest queue consumer.
  */
 
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "@/tests/db";
 import { Effect, Layer } from "effect";
+import { afterEach, vi } from "vitest";
 
-import {
+import spanIngestQueue, {
   SpansIngestQueue,
+  ingestSpansMessage,
   spansIngestQueueLayer,
   setSpansIngestQueueLayer,
-  ingestSpansMessage,
-  type SpansIngestMessage,
 } from "./spanIngestQueue";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
+import { buildSpansIngestMessage } from "@/tests/clickhouse/fixtures";
+import {
+  createMockQueueBatch,
+  createMockQueueMessage,
+} from "@/tests/workers/fixtures";
 
-// =============================================================================
-// Test Helpers
-// =============================================================================
-
-/**
- * Creates a valid test message.
- */
-function createTestMessage(
-  overrides: Partial<SpansIngestMessage> = {},
-): SpansIngestMessage {
-  return {
-    environmentId: "test-env-id",
-    projectId: "test-project-id",
-    organizationId: "test-org-id",
-    receivedAt: Date.now(),
-    serviceName: "test-service",
-    serviceVersion: "1.0.0",
-    resourceAttributes: { key: "value" },
-    spans: [
-      {
-        traceId: "test-trace-id",
-        spanId: "test-span-id",
-        name: "test-span",
-        startTimeUnixNano: "1000000000",
-        endTimeUnixNano: "2000000000",
-      },
-    ],
-    ...overrides,
-  };
-}
+/** Alias for shared fixture builder to match local naming convention. */
+const createTestMessage = buildSpansIngestMessage;
 
 // =============================================================================
 // Tests
 // =============================================================================
 
-describe("SpansIngestQueue", () => {
-  describe("global layer", () => {
-    it("default layer returns error when not initialized", async () => {
+describe("spanIngestQueue", () => {
+  const originalSpansIngestQueueLayer = spansIngestQueueLayer;
+
+  afterEach(() => {
+    setSpansIngestQueueLayer(originalSpansIngestQueueLayer);
+  });
+
+  describe("SpansIngestQueue", () => {
+    it("Live method creates working service layer", async () => {
+      const mockQueue = {
+        send: vi.fn().mockResolvedValue(undefined),
+      };
+
+      const layer = SpansIngestQueue.Live(mockQueue);
+
+      const testMessage = createTestMessage();
+
       const program = Effect.gen(function* () {
         const queue = yield* SpansIngestQueue;
-        return yield* queue.send(createTestMessage());
+        yield* queue.send(testMessage);
+      });
+
+      await Effect.runPromise(program.pipe(Effect.provide(layer)));
+
+      expect(mockQueue.send).toHaveBeenCalledWith(testMessage);
+    });
+
+    it("Live method handles send failures", async () => {
+      const mockQueue = {
+        send: vi.fn().mockRejectedValue(new Error("Queue send failed")),
+      };
+
+      const layer = SpansIngestQueue.Live(mockQueue);
+
+      const testMessage = createTestMessage();
+
+      const program = Effect.gen(function* () {
+        const queue = yield* SpansIngestQueue;
+        yield* queue.send(testMessage);
+      });
+
+      await expect(
+        Effect.runPromise(program.pipe(Effect.provide(layer))),
+      ).rejects.toThrow("Failed to enqueue spans");
+    });
+  });
+
+  describe("global layer", () => {
+    it("fails when global layer is not initialized", async () => {
+      const testMessage = createTestMessage();
+
+      const program = Effect.gen(function* () {
+        const queue = yield* SpansIngestQueue;
+        yield* queue.send(testMessage);
       });
 
       const error = await Effect.runPromise(
@@ -66,65 +91,283 @@ describe("SpansIngestQueue", () => {
     });
 
     it("setSpansIngestQueueLayer updates the global layer", async () => {
-      const mockSend = vi.fn().mockReturnValue(Effect.void);
-      const newLayer = Layer.succeed(SpansIngestQueue, {
-        send: mockSend,
-      });
+      const testMessage = createTestMessage();
+      const send = vi.fn(() => Effect.void);
+      const layer = Layer.succeed(SpansIngestQueue, { send });
 
-      setSpansIngestQueueLayer(newLayer);
+      setSpansIngestQueueLayer(layer);
 
       const program = Effect.gen(function* () {
         const queue = yield* SpansIngestQueue;
-        return yield* queue.send(createTestMessage());
+        yield* queue.send(testMessage);
       });
 
       await Effect.runPromise(
         program.pipe(Effect.provide(spansIngestQueueLayer)),
       );
 
-      expect(mockSend).toHaveBeenCalled();
-
-      // Reset global layer to default
-      setSpansIngestQueueLayer(
-        Layer.succeed(SpansIngestQueue, {
-          send: () =>
-            Effect.fail(new Error("SpansIngestQueue not initialized")),
-        }),
-      );
+      expect(send).toHaveBeenCalledWith(testMessage);
     });
   });
 
   describe("ingestSpansMessage", () => {
-    it("inserts spans to ClickHouse and upserts to RealtimeSpans", async () => {
-      const insertMock = vi.fn().mockReturnValue(Effect.void);
-      const upsertMock = vi.fn().mockReturnValue(Effect.void);
+    it("writes to ClickHouse before DurableObject upsert", async () => {
+      const callOrder: string[] = [];
 
       const mockClickHouseLayer = Layer.succeed(ClickHouse, {
-        insert: insertMock,
+        insert: vi.fn(() => {
+          callOrder.push("clickhouse");
+          return Effect.succeed(undefined);
+        }),
         unsafeQuery: vi.fn(),
         command: vi.fn(),
       });
 
       const mockRealtimeLayer = Layer.succeed(RealtimeSpans, {
-        upsert: upsertMock,
+        upsert: vi.fn(() => {
+          callOrder.push("realtime");
+          return Effect.succeed(undefined);
+        }),
         search: vi.fn(),
         getTraceDetail: vi.fn(),
         exists: vi.fn(),
       });
 
-      const message = createTestMessage();
+      const testMessage = createTestMessage();
 
       await Effect.runPromise(
-        ingestSpansMessage(message).pipe(
-          Effect.provide(Layer.merge(mockClickHouseLayer, mockRealtimeLayer)),
+        ingestSpansMessage(testMessage).pipe(
+          Effect.provide(
+            Layer.mergeAll(mockClickHouseLayer, mockRealtimeLayer),
+          ),
         ),
       );
 
-      expect(insertMock).toHaveBeenCalledWith(
-        "spans_analytics",
-        expect.any(Array),
+      expect(callOrder).toEqual(["clickhouse", "realtime"]);
+    });
+
+    it("continues ClickHouse insert even when DurableObject upsert fails (best-effort)", async () => {
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
+
+      const clickhouseInsertMock = vi.fn(() => Effect.succeed(undefined));
+
+      const mockClickHouseLayer = Layer.succeed(ClickHouse, {
+        insert: clickhouseInsertMock,
+        unsafeQuery: vi.fn(),
+        command: vi.fn(),
+      });
+
+      const mockRealtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: vi.fn(() =>
+          Effect.fail(new Error("DurableObject unavailable")),
+        ),
+        search: vi.fn(),
+        getTraceDetail: vi.fn(),
+        exists: vi.fn(),
+      });
+
+      const testMessage = createTestMessage();
+
+      await Effect.runPromise(
+        ingestSpansMessage(testMessage).pipe(
+          Effect.provide(
+            Layer.mergeAll(mockClickHouseLayer, mockRealtimeLayer),
+          ),
+        ),
       );
-      expect(upsertMock).toHaveBeenCalledWith(message);
+
+      expect(clickhouseInsertMock).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "[spanIngestQueue] DurableObject upsert failed (best-effort):",
+        expect.any(Error),
+      );
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it("does not fail when DurableObject upsert fails (no queue retry)", async () => {
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
+
+      const mockClickHouseLayer = Layer.succeed(ClickHouse, {
+        insert: vi.fn(() => Effect.succeed(undefined)),
+        unsafeQuery: vi.fn(),
+        command: vi.fn(),
+      });
+
+      const mockRealtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: vi.fn(() =>
+          Effect.fail(new Error("DurableObject unavailable")),
+        ),
+        search: vi.fn(),
+        getTraceDetail: vi.fn(),
+        exists: vi.fn(),
+      });
+
+      const testMessage = createTestMessage();
+
+      await Effect.runPromise(
+        ingestSpansMessage(testMessage).pipe(
+          Effect.provide(
+            Layer.mergeAll(mockClickHouseLayer, mockRealtimeLayer),
+          ),
+        ),
+      );
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it("transforms spans for ClickHouse correctly", async () => {
+      let insertedData: unknown[] = [];
+
+      const mockClickHouseLayer = Layer.succeed(ClickHouse, {
+        insert: vi.fn((_table: string, data: unknown[]) => {
+          insertedData = data;
+          return Effect.succeed(undefined);
+        }),
+        unsafeQuery: vi.fn(),
+        command: vi.fn(),
+      });
+
+      const mockRealtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: vi.fn(() => Effect.succeed(undefined)),
+        search: vi.fn(),
+        getTraceDetail: vi.fn(),
+        exists: vi.fn(),
+      });
+
+      const testMessage = createTestMessage();
+
+      await Effect.runPromise(
+        ingestSpansMessage(testMessage).pipe(
+          Effect.provide(
+            Layer.mergeAll(mockClickHouseLayer, mockRealtimeLayer),
+          ),
+        ),
+      );
+
+      expect(insertedData).toHaveLength(1);
+      expect(insertedData[0]).toMatchObject({
+        trace_id: "0123456789abcdef0123456789abcdef",
+        span_id: "0123456789abcdef",
+        name: "LLM.Call",
+        environment_id: "00000000-0000-0000-0000-000000000020",
+        project_id: "00000000-0000-0000-0000-000000000030",
+        organization_id: "00000000-0000-0000-0000-000000000040",
+        service_name: "test-service",
+        service_version: "1.0.0",
+      });
+    });
+  });
+
+  describe("configuration validation", () => {
+    it("retries when CLICKHOUSE_URL is missing", async () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const message = createMockQueueMessage(createTestMessage());
+      const batch = createMockQueueBatch([message], "spans-ingest");
+      const env = {
+        ENVIRONMENT: "test",
+        REALTIME_SPANS_DURABLE_OBJECT: {},
+      };
+
+      await spanIngestQueue.queue(batch, env as never);
+
+      expect(message.retryCalled).toBe(true);
+      expect(message.retryOptions?.delaySeconds).toBe(60);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[spanIngestQueue] Missing CLICKHOUSE_URL binding",
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
+
+    it("logs error and retries when REALTIME_SPANS_DURABLE_OBJECT is missing", async () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const message = createMockQueueMessage(createTestMessage());
+      const batch = createMockQueueBatch([message], "spans-ingest");
+      const env = {
+        ENVIRONMENT: "test",
+        CLICKHOUSE_URL: "http://localhost:8123",
+        CLICKHOUSE_USER: "default",
+        CLICKHOUSE_PASSWORD: "",
+        CLICKHOUSE_DATABASE: "default",
+        // No REALTIME_SPANS_DURABLE_OBJECT - causes error when trying to create stub
+      };
+
+      await spanIngestQueue.queue(batch, env as never);
+
+      // Missing DurableObject causes error during layer creation, caught by outer catchAll
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "[spanIngestQueue] Error processing message:",
+        expect.anything(),
+      );
+      expect(message.retryCalled).toBe(true);
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe("batch processing", () => {
+    it("processes multiple messages in batch", async () => {
+      const message1 = createMockQueueMessage(createTestMessage());
+      const message2 = createMockQueueMessage(createTestMessage());
+      const batch = createMockQueueBatch([message1, message2], "spans-ingest");
+
+      const env = {
+        ENVIRONMENT: "test",
+      };
+
+      await spanIngestQueue.queue(batch, env as never);
+
+      expect(message1.retryCalled).toBe(true);
+      expect(message2.retryCalled).toBe(true);
+    });
+  });
+
+  describe("error handling", () => {
+    it("logs error and retries on processing failure", async () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const message = createMockQueueMessage(createTestMessage());
+      const batch = createMockQueueBatch([message], "spans-ingest");
+
+      const mockDurableObject = {
+        idFromName: vi.fn().mockReturnValue({ toString: () => "test-id" }),
+        get: vi.fn().mockReturnValue({
+          fetch: vi.fn().mockRejectedValue(new Error("DurableObject error")),
+        }),
+      };
+
+      const env = {
+        ENVIRONMENT: "test",
+        CLICKHOUSE_URL: "http://localhost:8123",
+        CLICKHOUSE_USER: "default",
+        CLICKHOUSE_PASSWORD: "",
+        CLICKHOUSE_DATABASE: "default",
+        RECENT_SPANS_DURABLE_OBJECT: mockDurableObject,
+      };
+
+      await spanIngestQueue.queue(batch, env as never);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining("[spanIngestQueue] Error processing message:"),
+        expect.anything(),
+      );
+      expect(message.retryCalled).toBe(true);
+      expect(message.retryOptions?.delaySeconds).toBe(60);
+
+      consoleErrorSpy.mockRestore();
     });
   });
 });

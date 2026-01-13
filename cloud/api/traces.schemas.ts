@@ -14,7 +14,7 @@ import {
   SearchRequestSchema,
   SearchResponseSchema,
   TraceDetailResponseSchema,
-} from "@/api/search.schemas";
+} from "@/api/traces-search.schemas";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,

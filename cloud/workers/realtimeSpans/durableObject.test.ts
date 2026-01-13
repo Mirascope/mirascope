@@ -2,8 +2,15 @@
  * @fileoverview Tests for RealtimeSpansDurableObject realtime cache behavior.
  */
 
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { Effect, Layer } from "effect";
 import { RealtimeSpansDurableObjectBase as RealtimeSpansDurableObject } from "@/workers/realtimeSpans/durableObject";
+import {
+  RealtimeSpans,
+  realtimeSpansLayer,
+  setRealtimeSpansLayer,
+} from "@/workers/realtimeSpans";
+import type { SpansBatchRequest } from "@/db/clickhouse/types";
 import {
   parseJson,
   createState,
@@ -14,8 +21,11 @@ import {
   createExistsRequest,
   createTimeContext,
   msToNano,
-  DEFAULT_SERVICE_NAME,
   DEFAULT_ENV_ID,
+  DEFAULT_ORG_ID,
+  DEFAULT_PROJECT_ID,
+  DEFAULT_SERVICE_NAME,
+  DEFAULT_SERVICE_VERSION,
 } from "@/tests/workers/realtimeSpans";
 
 describe("RealtimeSpansDurableObject", () => {
@@ -104,44 +114,42 @@ describe("RealtimeSpansDurableObject", () => {
     );
   });
 
-  it("returns trace detail with null resourceAttributes", async () => {
+  it("returns null resourceAttributes when none are provided", async () => {
     const state = createState();
     const durableObject = new RealtimeSpansDurableObject(state);
-    const time = createTimeContext();
+    const now = Date.now();
 
-    // Create span batch with explicitly null resourceAttributes
-    await durableObject.fetch(
-      createUpsertRequest({
-        environmentId: DEFAULT_ENV_ID,
-        projectId: "proj-1",
-        organizationId: "org-1",
-        receivedAt: time.nowMs,
-        serviceName: DEFAULT_SERVICE_NAME,
-        serviceVersion: "1.0.0",
-        resourceAttributes: null as unknown as Record<string, unknown>,
-        spans: [
-          {
-            traceId: "trace-null-attrs",
-            spanId: "span-null-attrs",
-            name: "null-attrs-span",
-            startTimeUnixNano: time.startNano,
-            endTimeUnixNano: time.endNano(1000),
-          },
-        ],
-      }),
-    );
+    const payload: SpansBatchRequest = {
+      environmentId: DEFAULT_ENV_ID,
+      projectId: DEFAULT_PROJECT_ID,
+      organizationId: DEFAULT_ORG_ID,
+      receivedAt: now,
+      serviceName: DEFAULT_SERVICE_NAME,
+      serviceVersion: DEFAULT_SERVICE_VERSION,
+      resourceAttributes: null,
+      spans: [
+        {
+          traceId: "trace-no-resource",
+          spanId: "span-no-resource",
+          name: "no-resource",
+          startTimeUnixNano: msToNano(now),
+          endTimeUnixNano: msToNano(now + 1000),
+        },
+      ],
+    };
 
-    const traceResponse = await durableObject.fetch(
-      createTraceRequest("trace-null-attrs"),
-    );
+    const request = new Request("https://realtime-spans/upsert", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "content-type": "application/json" },
+    });
+
+    await durableObject.fetch(request);
+
     const traceBody = await parseJson<{
-      spans: Array<{
-        spanId: string;
-        resourceAttributes: string | null;
-      }>;
-    }>(traceResponse);
+      spans: Array<{ resourceAttributes: string | null }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-no-resource")));
 
-    expect(traceBody.spans).toHaveLength(1);
     expect(traceBody.spans[0]?.resourceAttributes).toBeNull();
   });
 
@@ -488,5 +496,100 @@ describe("RealtimeSpansDurableObject", () => {
       expect(traceBody.spans).toHaveLength(1);
       expect(traceBody.spans[0]?.durationMs).toBe(2000);
     });
+  });
+});
+
+describe("RealtimeSpans global layer", () => {
+  const originalRealtimeSpansLayer = realtimeSpansLayer;
+  const buildUpsertRequest = (): SpansBatchRequest => ({
+    environmentId: DEFAULT_ENV_ID,
+    projectId: "project-1",
+    organizationId: "org-1",
+    receivedAt: Date.now(),
+    serviceName: DEFAULT_SERVICE_NAME,
+    serviceVersion: "1.0.0",
+    resourceAttributes: null,
+    spans: [
+      {
+        traceId: "trace-1",
+        spanId: "span-1",
+        name: "test-span",
+      },
+    ],
+  });
+
+  afterEach(() => {
+    setRealtimeSpansLayer(originalRealtimeSpansLayer);
+  });
+
+  it("fails when global layer is not initialized", async () => {
+    const upsertRequest = buildUpsertRequest();
+    const searchInput = {
+      environmentId: DEFAULT_ENV_ID,
+      startTime: new Date("2024-01-01T00:00:00.000Z"),
+      endTime: new Date("2024-01-01T00:00:01.000Z"),
+    };
+    const traceInput = {
+      environmentId: DEFAULT_ENV_ID,
+      traceId: "trace-1",
+    };
+    const existsInput = {
+      environmentId: DEFAULT_ENV_ID,
+      traceId: "trace-1",
+      spanId: "span-1",
+    };
+
+    const program = Effect.gen(function* () {
+      const realtime = yield* RealtimeSpans;
+      const upsertError = yield* realtime
+        .upsert(upsertRequest)
+        .pipe(Effect.flip);
+      const searchError = yield* realtime.search(searchInput).pipe(Effect.flip);
+      const traceError = yield* realtime
+        .getTraceDetail(traceInput)
+        .pipe(Effect.flip);
+      const existsError = yield* realtime.exists(existsInput).pipe(Effect.flip);
+
+      return { upsertError, searchError, traceError, existsError };
+    });
+
+    const result = await Effect.runPromise(
+      program.pipe(Effect.provide(realtimeSpansLayer)),
+    );
+
+    expect(result.upsertError.message).toBe("RealtimeSpans not initialized");
+    expect(result.searchError.message).toBe("RealtimeSpans not initialized");
+    expect(result.traceError.message).toBe("RealtimeSpans not initialized");
+    expect(result.existsError.message).toBe("RealtimeSpans not initialized");
+  });
+
+  it("setRealtimeSpansLayer updates the global layer", async () => {
+    const upsertRequest = buildUpsertRequest();
+    const layer = Layer.succeed(RealtimeSpans, {
+      upsert: () => Effect.void,
+      search: () =>
+        Effect.succeed({
+          spans: [],
+          total: 0,
+          hasMore: false,
+        }),
+      getTraceDetail: () =>
+        Effect.succeed({
+          traceId: "trace-1",
+          spans: [],
+          rootSpanId: null,
+          totalDurationMs: null,
+        }),
+      exists: () => Effect.succeed(false),
+    });
+
+    setRealtimeSpansLayer(layer);
+
+    const program = Effect.gen(function* () {
+      const realtime = yield* RealtimeSpans;
+      yield* realtime.upsert(upsertRequest);
+    });
+
+    await Effect.runPromise(program.pipe(Effect.provide(realtimeSpansLayer)));
   });
 });

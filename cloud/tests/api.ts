@@ -150,8 +150,8 @@ type ApiClient = Effect.Effect.Success<typeof makeClient>;
 function createTestWebHandler(
   databaseUrl: string,
   user: PublicUser,
-  apiKeyInfo?: ApiKeyInfo,
-  queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
+  apiKeyInfo: ApiKeyInfo,
+  queueSend: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
 ) {
   // ClickHouse services layer for test environment
   const clickhouseConfig = getTestClickHouseConfig();
@@ -174,9 +174,7 @@ function createTestWebHandler(
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl),
-    Layer.succeed(SpansIngestQueue, {
-      send: queueSend ?? (() => Effect.void),
-    }),
+    Layer.succeed(SpansIngestQueue, { send: queueSend }),
     Layer.succeed(SpansMeteringQueueService, {
       send: () => Effect.void,
     }),
@@ -222,8 +220,8 @@ function createHandlerHttpClient(
 export async function createApiClient(
   databaseUrl: string,
   user: PublicUser,
-  apiKeyInfo?: ApiKeyInfo,
-  queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
+  apiKeyInfo: ApiKeyInfo,
+  queueSend: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
   const webHandler = createTestWebHandler(
     databaseUrl,
@@ -324,8 +322,8 @@ function createSequentialDescribe(
       // Create database layer for setup operations
       const dbLayer = createTestDatabaseLayer(databaseUrl);
 
-      // Create user and organization
-      const { owner, org } = await Effect.runPromise(
+      // Create user, organization, and default API key context
+      const { owner, org, apiKeyInfo } = await Effect.runPromise(
         Effect.gen(function* () {
           const db = yield* Database;
 
@@ -346,7 +344,18 @@ function createSequentialDescribe(
             },
           });
 
-          return { owner, org };
+          const apiKeyInfo: ApiKeyInfo = {
+            apiKeyId: "00000000-0000-0000-0000-000000000001",
+            organizationId: org.id,
+            projectId: "00000000-0000-0000-0000-000000000002",
+            environmentId: "00000000-0000-0000-0000-000000000003",
+            ownerId: owner.id,
+            ownerEmail: owner.email,
+            ownerName: owner.name,
+            ownerDeletedAt: owner.deletedAt,
+          };
+
+          return { owner, org, apiKeyInfo };
         }).pipe(Effect.provide(dbLayer)),
       );
 
@@ -354,7 +363,12 @@ function createSequentialDescribe(
       orgRef = org;
 
       // Create API client authenticated as this user
-      const result = await createApiClient(databaseUrl, owner);
+      const result = await createApiClient(
+        databaseUrl,
+        owner,
+        apiKeyInfo,
+        () => Effect.void,
+      );
       dispose = result.dispose;
 
       // Create the layer that tests will use

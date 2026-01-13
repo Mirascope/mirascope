@@ -105,10 +105,39 @@ describe.sequential("Traces API", (it) => {
       };
 
       const result = yield* Effect.promise(() =>
-        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo),
+        createApiClient(
+          TEST_DATABASE_URL,
+          owner,
+          apiKeyInfo,
+          () => Effect.void,
+        ),
       );
       apiKeyClient = result.client;
       disposeApiKeyClient = result.dispose;
+    }),
+  );
+
+  it.effect("GET /traces/function/hash/:hash - defaults limit and offset", () =>
+    Effect.gen(function* () {
+      const hash = `traces-test-hash-${Date.now()}`;
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          name: "traces_list_by_hash",
+          hash,
+          code: "def traces_list_by_hash(): pass",
+          signature: "def traces_list_by_hash()",
+          signatureHash: "traces-list-by-hash",
+        },
+      });
+
+      const result = yield* apiKeyClient.traces.listByFunctionHash({
+        path: { hash },
+        urlParams: {},
+      });
+
+      expect(result.traces).toEqual([]);
+      expect(result.total).toBe(0);
     }),
   );
 

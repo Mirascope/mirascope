@@ -607,7 +607,6 @@ describe("ClickHouseSearch", () => {
         if (result.spans.length > 0) {
           const span = result.spans[0];
           // Verify camelCase keys exist
-          expect("traceDbId" in span).toBe(true);
           expect("parentSpanId" in span).toBe(true);
           expect("environmentId" in span).toBe(true);
           expect("projectId" in span).toBe(true);

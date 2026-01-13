@@ -2,7 +2,7 @@
  * @fileoverview Tests for spans metering queue consumer.
  */
 
-import { describe, expect, vi, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Effect, Layer } from "effect";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
@@ -90,6 +90,12 @@ function createTestMessage(
 // =============================================================================
 
 describe("Spans Metering Queue", () => {
+  const originalSpansMeteringQueueLayer = spansMeteringQueueLayer;
+
+  afterEach(() => {
+    setSpansMeteringQueueLayer(originalSpansMeteringQueueLayer);
+  });
+
   describe("chargeSpanMeter", () => {
     it("charges the spans meter for the customer", async () => {
       const message = createTestMessage();
@@ -165,6 +171,42 @@ describe("Spans Metering Queue", () => {
       );
 
       expect(error.message).toContain("Failed to enqueue span metering");
+    });
+  });
+
+  describe("global layer", () => {
+    it("fails when global layer is not initialized", async () => {
+      const testMessage = createTestMessage();
+
+      const program = Effect.gen(function* () {
+        const queue = yield* SpansMeteringQueueService;
+        yield* queue.send(testMessage);
+      });
+
+      const error = await Effect.runPromise(
+        program.pipe(Effect.provide(spansMeteringQueueLayer), Effect.flip),
+      );
+
+      expect(error.message).toBe("SpansMeteringQueue not initialized");
+    });
+
+    it("setSpansMeteringQueueLayer updates the global layer", async () => {
+      const testMessage = createTestMessage();
+      const send = vi.fn(() => Effect.void);
+      const layer = Layer.succeed(SpansMeteringQueueService, { send });
+
+      setSpansMeteringQueueLayer(layer);
+
+      const program = Effect.gen(function* () {
+        const queue = yield* SpansMeteringQueueService;
+        yield* queue.send(testMessage);
+      });
+
+      await Effect.runPromise(
+        program.pipe(Effect.provide(spansMeteringQueueLayer)),
+      );
+
+      expect(send).toHaveBeenCalledWith(testMessage);
     });
   });
 

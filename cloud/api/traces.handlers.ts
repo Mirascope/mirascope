@@ -108,7 +108,7 @@ export const listByFunctionHashHandler = (
     for (const span of searchResult.spans) {
       if (!uniqueTraces.has(span.traceId)) {
         uniqueTraces.set(span.traceId, {
-          id: span.id,
+          id: span.traceId,
           otelTraceId: span.traceId,
           environmentId: apiKeyInfo.environmentId,
           projectId: apiKeyInfo.projectId,

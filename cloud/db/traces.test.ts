@@ -1,9 +1,16 @@
-import { describe, it, expect, TestEnvironmentFixture } from "@/tests/db";
+import {
+  describe,
+  it,
+  expect,
+  TestEnvironmentFixture,
+  MockDrizzleORM,
+} from "@/tests/db";
 import { Effect, Layer } from "effect";
 import { Database } from "@/db";
 import { enqueueSpanMetering } from "@/db/traces";
 import { DrizzleORM } from "@/db/client";
 import {
+  DatabaseError,
   NotFoundError,
   PermissionDeniedError,
   ImmutableResourceError,
@@ -16,7 +23,7 @@ import {
   SpansMeteringQueueService,
   type SpanMeteringMessage,
 } from "@/workers/spansMeteringQueue";
-import { vi } from "vitest";
+import { vi, it as vitestIt } from "vitest";
 
 type QueueSend = (message: SpansIngestMessage) => Effect.Effect<void, Error>;
 
@@ -406,6 +413,200 @@ describe("Traces", () => {
       }).pipe(Effect.provide(Layer.succeed(SpansIngestQueue, { send })));
     });
 
+    it.effect("returns DatabaseError when trace lookup fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .create({
+            userId: "user-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            data: {
+              resourceSpans: [
+                {
+                  resource: { attributes: [] },
+                  scopeSpans: [
+                    {
+                      scope: { name: "test" },
+                      spans: [buildSpan(0)],
+                    },
+                  ],
+                },
+              ],
+            },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to query trace");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([{ role: "OWNER" }])
+            .select([
+              {
+                memberId: "user-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .select(new Error("Database connection failed"))
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect("returns DatabaseError when trace insert fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .create({
+            userId: "user-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            data: {
+              resourceSpans: [
+                {
+                  resource: { attributes: [] },
+                  scopeSpans: [
+                    {
+                      scope: { name: "test" },
+                      spans: [buildSpan(1)],
+                    },
+                  ],
+                },
+              ],
+            },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to insert trace");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([{ role: "OWNER" }])
+            .select([
+              {
+                memberId: "user-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .select([])
+            .insert(new Error("Database connection failed"))
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect(
+      "increments rejectedSpans when trace insert returns no id",
+      () => {
+        const send = vi.fn<QueueSend>(() => Effect.void);
+
+        return Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result =
+            yield* db.organizations.projects.environments.traces.create({
+              userId: "user-id",
+              organizationId: "org-id",
+              projectId: "project-id",
+              environmentId: "env-id",
+              data: {
+                resourceSpans: [
+                  {
+                    resource: { attributes: [] },
+                    scopeSpans: [
+                      {
+                        scope: { name: "test" },
+                        spans: [buildSpan(0)],
+                      },
+                    ],
+                  },
+                ],
+              },
+            });
+
+          expect(result.acceptedSpans).toBe(1);
+          expect(result.rejectedSpans).toBe(1);
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                .select([{ role: "OWNER" }])
+                .select([
+                  {
+                    memberId: "user-id",
+                    role: "OWNER",
+                    createdAt: new Date(),
+                  },
+                ])
+                .select([{ id: "project-id" }])
+                .select([])
+                .insert([])
+                .build(),
+              Layer.succeed(SpansIngestQueue, { send }),
+            ),
+          ),
+        );
+      },
+    );
+
+    it.effect("returns DatabaseError when span insert fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .create({
+            userId: "user-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            data: {
+              resourceSpans: [
+                {
+                  resource: { attributes: [] },
+                  scopeSpans: [
+                    {
+                      scope: { name: "test" },
+                      spans: [buildSpan(1)],
+                    },
+                  ],
+                },
+              ],
+            },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to insert span");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([{ role: "OWNER" }])
+            .select([
+              {
+                memberId: "user-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .select([{ id: "trace-db-id" }])
+            .insert(new Error("Database connection failed"))
+            .build(),
+        ),
+      ),
+    );
+
     it.effect("handles empty resourceSpans", () => {
       const send = vi.fn<QueueSend>().mockReturnValue(Effect.void);
 
@@ -549,26 +750,26 @@ describe("Traces", () => {
   });
 
   describe("enqueueSpanMetering", () => {
-    it.effect("returns early when metering queue is missing", () =>
-      Effect.gen(function* () {
-        yield* enqueueSpanMetering(
+    vitestIt("returns early when metering queue is missing", async () => {
+      await Effect.runPromise(
+        enqueueSpanMetering(
           ["trace-id:span-id"],
           "org-id",
           "project-id",
           "environment-id",
-        );
-      }).pipe(
-        Effect.provide(
-          Layer.succeed(DrizzleORM, {
-            select: () => ({
-              from: () => ({
-                where: () => Effect.fail(new Error("Drizzle should not run")),
+        ).pipe(
+          Effect.provide(
+            Layer.succeed(DrizzleORM, {
+              select: () => ({
+                from: () => ({
+                  where: () => Effect.fail(new Error("Drizzle should not run")),
+                }),
               }),
-            }),
-          } as never),
+            } as never),
+          ),
         ),
-      ),
-    );
+      );
+    });
 
     it.effect("handles database error when fetching organization", () => {
       let sendCalled = false;
@@ -666,6 +867,39 @@ describe("Traces", () => {
         expect(traces[0]?.otelTraceId).toBe(traceId);
       }),
     );
+
+    it.effect("returns DatabaseError when list query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .findAll({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to list traces");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([{ role: "OWNER" }])
+            .select([
+              {
+                memberId: "owner-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .select(new Error("Database connection failed"))
+            .build(),
+        ),
+      ),
+    );
   });
 
   describe("findById", () => {
@@ -695,8 +929,8 @@ describe("Traces", () => {
           data: { resourceSpans },
         });
 
-        const trace = yield* db.organizations.projects.environments.traces
-          .findById({
+        const trace =
+          yield* db.organizations.projects.environments.traces.findById({
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
@@ -726,6 +960,40 @@ describe("Traces", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
       }),
+    );
+
+    it.effect("returns DatabaseError when trace lookup fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.environments.traces
+          .findById({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+            environmentId: "env-id",
+            traceId: "trace-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to get trace");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([{ role: "OWNER" }])
+            .select([
+              {
+                memberId: "owner-id",
+                role: "OWNER",
+                createdAt: new Date(),
+              },
+            ])
+            .select([{ id: "project-id" }])
+            .select(new Error("Database connection failed"))
+            .build(),
+        ),
+      ),
     );
   });
 

@@ -8,15 +8,15 @@ import { Database } from "@/db";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
 import type { WorkerEnv } from "./cron-config";
-import { vi } from "vitest";
+import { afterEach, vi } from "vitest";
 
 // Import the queue handler and types
 import routerMeteringQueue, {
   type RouterMeteringMessage,
   RouterMeteringQueueService,
-  updateAndSettleRouterRequest,
   routerMeteringQueueLayer,
   setRouterMeteringQueueLayer,
+  updateAndSettleRouterRequest,
 } from "./routerMeteringQueue";
 
 // =============================================================================
@@ -100,6 +100,12 @@ function createTestMessage(
 // =============================================================================
 
 describe("routerMeteringQueue", () => {
+  const originalRouterMeteringQueueLayer = routerMeteringQueueLayer;
+
+  afterEach(() => {
+    setRouterMeteringQueueLayer(originalRouterMeteringQueueLayer);
+  });
+
   describe("updateAndSettleRouterRequest", () => {
     it("successfully updates router request and settles funds", async () => {
       const message = createTestMessage();
@@ -404,6 +410,43 @@ describe("routerMeteringQueue", () => {
       await expect(
         Effect.runPromise(program.pipe(Effect.provide(layer))),
       ).rejects.toThrow("Failed to enqueue metering");
+    });
+  });
+
+  describe("global layer", () => {
+    it("fails when global layer is not initialized", async () => {
+      const testMessage = createTestMessage();
+
+      const program = Effect.gen(function* () {
+        const queue = yield* RouterMeteringQueueService;
+        yield* queue.send(testMessage);
+      });
+
+      const error = await Effect.runPromise(
+        program.pipe(Effect.provide(routerMeteringQueueLayer), Effect.flip),
+      );
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe("RouterMeteringQueue not initialized");
+    });
+
+    it("setRouterMeteringQueueLayer updates the global layer", async () => {
+      const testMessage = createTestMessage();
+      const send = vi.fn(() => Effect.void);
+      const layer = Layer.succeed(RouterMeteringQueueService, { send });
+
+      setRouterMeteringQueueLayer(layer);
+
+      const program = Effect.gen(function* () {
+        const queue = yield* RouterMeteringQueueService;
+        yield* queue.send(testMessage);
+      });
+
+      await Effect.runPromise(
+        program.pipe(Effect.provide(routerMeteringQueueLayer)),
+      );
+
+      expect(send).toHaveBeenCalledWith(testMessage);
     });
   });
 
