@@ -2,12 +2,19 @@ import {
   createStartHandler,
   defaultStreamHandler,
 } from "@tanstack/react-start/server";
-import clickhouseCron, { type CronTriggerEnv } from "@/workers/clickhouseCron";
 import reservationExpiryCron from "@/workers/reservationExpiryCron";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
 import routerMeteringQueue, {
   RouterMeteringQueueService,
 } from "@/workers/routerMeteringQueue";
+import spanIngestQueue, {
+  SpansIngestQueueService,
+} from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/realtimeSpans";
+import { RealtimeSpansLive } from "@/workers/realtimeSpansClient";
+import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
+import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
+import type { MessageBatch } from "@cloudflare/workers-types";
 import { type WorkerEnv } from "@/workers/cron-config";
 import { Effect, Layer } from "effect";
 
@@ -30,9 +37,40 @@ export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
   });
 
 /**
+ * Global spans ingest queue layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers.
+ */
+export let spansIngestQueueLayer: Layer.Layer<SpansIngestQueueService> =
+  Layer.succeed(SpansIngestQueueService, {
+    send: () => Effect.fail(new Error("SpansIngestQueue not initialized")),
+  });
+
+/**
+ * Global realtime spans layer.
+ *
+ * Set by the fetch handler when RECENT_SPANS_DO binding is available.
+ */
+export let realtimeSpansLayer: Layer.Layer<RealtimeSpans> = Layer.succeed(
+  RealtimeSpans,
+  {
+    upsert: () => Effect.void,
+    search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+    getTraceDetail: () =>
+      Effect.succeed({
+        traceId: "",
+        spans: [],
+        rootSpanId: null,
+        totalDurationMs: null,
+      }),
+    existsSpan: () => Effect.succeed(false),
+  },
+);
+
+/**
  * Scheduled event handler that routes to the appropriate cron job.
  *
- * - `* /1 * * * *`: ClickHouse synchronization (every minute)
  * - `* /5 * * * *`: Reservation expiry + billing reconciliation (every 5 minutes)
  *
  * @param event - Cloudflare scheduled event containing the cron expression
@@ -40,12 +78,9 @@ export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
  */
 const scheduled = async (
   event: ScheduledEvent,
-  env: CronTriggerEnv,
+  env: WorkerEnv,
 ): Promise<void> => {
-  if (event.cron === "*/1 * * * *" || event.cron === "local") {
-    // ClickHouse synchronization runs every minute
-    await clickhouseCron.scheduled(event, env);
-  } else if (event.cron === "*/5 * * * *") {
+  if (event.cron === "*/5 * * * *" || event.cron === "local") {
     // Reservation expiry must run before billing reconciliation
     // to ensure expired reservations are properly marked
     await reservationExpiryCron.scheduled(event, env);
@@ -59,6 +94,14 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
     routerMeteringQueueLayer = RouterMeteringQueueService.Live(
       env.ROUTER_METERING_QUEUE,
     );
+  }
+  if (env.SPANS_INGEST_QUEUE) {
+    spansIngestQueueLayer = SpansIngestQueueService.Live(
+      env.SPANS_INGEST_QUEUE,
+    );
+  }
+  if (env.RECENT_SPANS_DO) {
+    realtimeSpansLayer = RealtimeSpansLive(env.RECENT_SPANS_DO);
   }
 
   if (env.ENVIRONMENT === "local") {
@@ -84,8 +127,25 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
   return fetchHandler(request);
 };
 
+const queue = async (batch: MessageBatch, env: WorkerEnv): Promise<void> => {
+  if (batch.queue === "router-metering") {
+    await routerMeteringQueue.queue(
+      batch as MessageBatch<RouterMeteringMessage>,
+      env,
+    );
+    return;
+  }
+  if (batch.queue === "spans-ingest") {
+    await spanIngestQueue.queue(batch as MessageBatch<SpansIngestMessage>, env);
+    return;
+  }
+
+  console.error(`[queue] Unhandled queue: ${batch.queue}`);
+  batch.retryAll();
+};
+
 export default {
   fetch,
   scheduled,
-  queue: routerMeteringQueue.queue.bind(routerMeteringQueue),
+  queue,
 };

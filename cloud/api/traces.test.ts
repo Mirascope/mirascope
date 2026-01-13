@@ -178,9 +178,34 @@ describe.sequential("Traces API", (it) => {
         ],
       };
 
-      const result = yield* apiKeyClient.traces.create({ payload });
-      expect(result.partialSuccess?.rejectedSpans).toBe(1);
-      expect(result.partialSuccess?.errorMessage).toContain("1 spans");
+      const { org, owner } = yield* TestApiContext;
+
+      const apiKeyInfo = {
+        apiKeyId: "test-api-key-id",
+        organizationId: org.id,
+        projectId: project.id,
+        environmentId: environment.id,
+        ownerId: owner.id,
+        ownerEmail: owner.email,
+        ownerName: owner.name,
+        ownerDeletedAt: owner.deletedAt,
+      };
+
+      const { client: apiKeyClient, dispose } = yield* Effect.promise(() =>
+        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo, () =>
+          Effect.fail(new Error("Queue send failed")),
+        ),
+      );
+
+      let result;
+      try {
+        result = yield* apiKeyClient.traces.create({ payload });
+      } finally {
+        yield* Effect.promise(dispose);
+      }
+
+      expect(result.partialSuccess?.rejectedSpans).toBe(2);
+      expect(result.partialSuccess?.errorMessage).toContain("2 spans");
     }),
   );
 

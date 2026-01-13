@@ -23,6 +23,10 @@ import { Payments } from "@/payments";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
+import {
+  SpansIngestQueueService,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
@@ -142,6 +146,7 @@ function createTestWebHandler(
   databaseUrl: string,
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
+  queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
 ) {
   // ClickHouse services layer for test environment
   const clickhouseConfig = getTestClickHouseConfig();
@@ -164,6 +169,9 @@ function createTestWebHandler(
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl),
+    Layer.succeed(SpansIngestQueueService, {
+      send: queueSend ?? (() => Effect.void),
+    }),
     clickHouseSearchLayer,
   );
 
@@ -207,8 +215,14 @@ export async function createApiClient(
   databaseUrl: string,
   user: PublicUser,
   apiKeyInfo?: ApiKeyInfo,
+  queueSend?: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
-  const webHandler = createTestWebHandler(databaseUrl, user, apiKeyInfo);
+  const webHandler = createTestWebHandler(
+    databaseUrl,
+    user,
+    apiKeyInfo,
+    queueSend,
+  );
   const HandlerHttpClient = createHandlerHttpClient(webHandler);
   const HandlerHttpClientLayer = Layer.succeed(
     HttpClient.HttpClient,
