@@ -1,8 +1,51 @@
 import type React from "react";
 import { redirect, useLoaderData } from "@tanstack/react-router";
-import type { Content, ContentMeta } from "@/app/lib/content/types";
+import type { ErrorComponentProps } from "@tanstack/react-router";
+import type { BlogMeta, Content, ContentMeta } from "@/app/lib/content/types";
 import { NotFound } from "@/app/components/not-found";
+import { DefaultCatchBoundary } from "@/app/components/error/default-catch-boundary";
+import LoadingContent from "@/app/components/blocks/loading-content";
 import type { ModuleMap } from "./virtual-module";
+import {
+  createPageHead,
+  canonicalizePath,
+  routeToImagePath,
+  generateOpenGraphMeta,
+  generateTwitterMeta,
+  generateArticleMeta,
+  generateArticleJsonLd,
+  type HeadMetaEntry,
+  type HeadLinkEntry,
+  type HeadScriptEntry,
+  type HeadResult,
+} from "@/app/lib/seo/head";
+import { BASE_URL } from "@/app/lib/site";
+
+// Re-export types for consumers
+export type { HeadMetaEntry, HeadLinkEntry, HeadScriptEntry, HeadResult };
+
+// Re-export createPageHead for standalone usage
+export { createPageHead };
+
+/* ========== CONTENT ROUTE CONFIG =========== */
+
+/**
+ * Return type of createContentRouteConfig.
+ * Defines the shape expected by TanStack Router's createFileRoute.
+ */
+export interface ContentRouteConfig<TMeta extends ContentMeta> {
+  ssr: false;
+  head: (ctx: {
+    match: { pathname: string };
+    loaderData?: Content<TMeta> | undefined;
+  }) => HeadResult;
+  loader: (context: {
+    params: Record<string, string | undefined>;
+  }) => Promise<Content<TMeta> | undefined>;
+  component: () => React.JSX.Element;
+  pendingComponent: () => React.JSX.Element;
+  errorComponent: (props: ErrorComponentProps) => React.JSX.Element;
+}
 
 /* ========== CONTENT ROUTE OPTIONS =========== */
 
@@ -24,12 +67,19 @@ export interface ContentRouteOptions<TMeta extends ContentMeta> {
   fixedPath?: string;
   /** The page component to render when content is loaded */
   component: React.ComponentType<{ content: Content<TMeta> }>;
-  /** Title to show while loading (defaults to "Loading...") */
-  loadingTitle?: string;
   /** Redirect configuration for empty splat routes */
   redirectOnEmptySplat?: { to: string; params: Record<string, string> };
   /** Custom module map for testing */
   _testModuleMap?: ModuleMap;
+
+  /* ========== SEO OPTIONS =========== */
+
+  /** Content type for Open Graph (defaults to "website") */
+  ogType?: "website" | "article";
+  /** Robots directive (e.g., "noindex, nofollow") */
+  robots?: string;
+  /** Function to generate social card image path from meta */
+  getImagePath?: (meta: TMeta) => string;
 }
 
 /* ========== CONTENT ROUTE FACTORY =========== */
@@ -57,7 +107,8 @@ export interface ContentRouteOptions<TMeta extends ContentMeta> {
 export function createContentRouteConfig<TMeta extends ContentMeta>(
   path: string,
   options: ContentRouteOptions<TMeta>,
-) {
+): ContentRouteConfig<TMeta> {
+  const allMetas = options.getMeta();
   const moduleMap = options._testModuleMap ?? options.moduleMap;
 
   // Create the component that will render the content
@@ -66,23 +117,12 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
   return {
     ssr: false as const,
 
-    head: (ctx: { loaderData?: Content<TMeta> | undefined }) => {
-      const meta = ctx.loaderData?.meta;
-      if (!meta) {
-        return {
-          meta: [
-            { title: options.loadingTitle ?? "Loading..." },
-            { name: "description", content: "Loading content" },
-          ],
-        };
-      }
-      return {
-        meta: [
-          { title: `${meta.title} | Mirascope` },
-          { name: "description", content: meta.description },
-        ],
-      };
-    },
+    head: createContentHead<TMeta>({
+      allMetas,
+      ogType: options.ogType,
+      robots: options.robots,
+      getImagePath: options.getImagePath,
+    }),
 
     loader: async (context: {
       params: Record<string, string | undefined>;
@@ -104,10 +144,9 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
       const metaPath = buildMetaPath(context.params, options);
 
       // Find metadata (with universal /index fallback)
-      const metas = options.getMeta();
-      let meta = metas.find((m) => m.path === metaPath);
+      let meta = allMetas.find((m) => m.path === metaPath);
       if (!meta) {
-        meta = metas.find((m) => m.path === `${metaPath}/index`);
+        meta = allMetas.find((m) => m.path === `${metaPath}/index`);
       }
 
       if (!meta) {
@@ -133,10 +172,145 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
     },
 
     component: contentComponent,
+    // todo(sebastian): add the pending component
+    pendingComponent: () => <LoadingContent />,
+    // todo(sebastian): add the error component
+    errorComponent: DefaultCatchBoundary,
   };
 }
 
 /* ========== INTERNAL HELPERS =========== */
+
+/**
+ * Type guard to check if metadata is BlogMeta (has article-specific fields).
+ */
+function isBlogMeta(meta: ContentMeta): meta is BlogMeta {
+  return meta.type === "blog" && "author" in meta && "date" in meta;
+}
+
+/**
+ * SEO options for createContentHead function.
+ */
+interface CreateContentHeadOptions<TMeta extends ContentMeta> {
+  allMetas: TMeta[];
+  ogType?: "website" | "article";
+  robots?: string;
+  getImagePath?: (meta: TMeta) => string;
+}
+
+/**
+ * Create a head function for content routes that looks up metadata by route.
+ *
+ * This is a specialized wrapper around createPageHead that:
+ * - Looks up content metadata by route path
+ * - Auto-detects article type for blog posts
+ * - Generates article JSON-LD for blog content
+ */
+function createContentHead<TMeta extends ContentMeta>(
+  options: CreateContentHeadOptions<TMeta>,
+) {
+  const { allMetas, ogType = "website", robots, getImagePath } = options;
+
+  return (ctx: {
+    match: { pathname: string };
+    loaderData?: Content<TMeta> | undefined;
+  }): HeadResult => {
+    const route = ctx.match.pathname;
+    const meta = allMetas.find((m) => m.route === route);
+
+    if (!meta) {
+      console.warn(`Content meta data not found for route: ${route}`);
+      return { meta: [], links: [] };
+    }
+
+    // Build SEO values
+    const pageTitle = `${meta.title} | Mirascope`;
+    const canonicalPath = canonicalizePath(meta.route);
+    const canonicalUrl = `${BASE_URL}${canonicalPath}`;
+
+    // Compute image path - use custom function or auto-generate from route
+    const imagePath = getImagePath
+      ? getImagePath(meta)
+      : routeToImagePath(meta.route);
+    const ogImage = imagePath.startsWith("http")
+      ? imagePath
+      : `${BASE_URL}${imagePath}`;
+
+    // Determine actual OG type based on content
+    const actualOgType = isBlogMeta(meta) ? "article" : ogType;
+
+    // Build meta tags array
+    const metaTags: HeadMetaEntry[] = [
+      { title: pageTitle },
+      { name: "description", content: meta.description },
+    ];
+
+    // Add robots if specified
+    if (robots) {
+      metaTags.push({ name: "robots", content: robots });
+    }
+
+    // Add Open Graph tags
+    metaTags.push(
+      ...generateOpenGraphMeta({
+        type: actualOgType,
+        url: canonicalUrl,
+        title: pageTitle,
+        description: meta.description,
+        image: ogImage,
+      }),
+    );
+
+    // Add Twitter tags
+    metaTags.push(
+      ...generateTwitterMeta({
+        url: canonicalUrl,
+        title: pageTitle,
+        description: meta.description,
+        image: ogImage,
+      }),
+    );
+
+    // Add article-specific meta tags for blog posts
+    if (isBlogMeta(meta)) {
+      metaTags.push(
+        ...generateArticleMeta({
+          publishedTime: meta.date,
+          modifiedTime: meta.lastUpdated,
+          author: meta.author,
+        }),
+      );
+    }
+
+    // Build links array (canonical URL)
+    const links: HeadLinkEntry[] = [{ rel: "canonical", href: canonicalUrl }];
+
+    // Build scripts array (JSON-LD for articles)
+    const scripts: HeadScriptEntry[] = [];
+    if (isBlogMeta(meta)) {
+      scripts.push({
+        type: "application/ld+json",
+        children: generateArticleJsonLd({
+          title: meta.title,
+          description: meta.description,
+          url: canonicalUrl,
+          image: ogImage,
+          article: {
+            publishedTime: meta.date,
+            modifiedTime: meta.lastUpdated,
+            author: meta.author,
+          },
+        }),
+      });
+    }
+
+    return {
+      meta: metaTags,
+      links,
+      scripts: scripts.length > 0 ? scripts : undefined,
+    };
+  };
+}
 
 /**
  * Build the metadata path from route params and content options.
