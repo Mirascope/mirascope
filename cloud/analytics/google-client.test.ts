@@ -74,9 +74,7 @@ describe("GoogleAnalytics", () => {
         yield* ga.initialize();
 
         // Verify script was created and appended
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).toHaveBeenCalledWith("script");
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.head.appendChild).toHaveBeenCalled();
 
         // Verify script properties
@@ -116,7 +114,6 @@ describe("GoogleAnalytics", () => {
         yield* ga.initialize();
 
         // Script should only be created once
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).toHaveBeenCalledTimes(1);
       });
 

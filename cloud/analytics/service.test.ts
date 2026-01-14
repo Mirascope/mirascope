@@ -7,6 +7,7 @@ import { Effect, Layer } from "effect";
 import { Analytics } from "@/analytics/service";
 import { GoogleAnalytics } from "@/analytics/google-client";
 import { PostHog } from "@/analytics/posthog-client";
+import { MockGoogleAnalytics, MockPostHog } from "@/tests/analytics";
 
 describe("Analytics", () => {
   describe("service composition", () => {
@@ -65,27 +66,15 @@ describe("Analytics", () => {
 
   describe("initialize", () => {
     it("calls initialize on both providers", async () => {
-      // Create mock providers
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -99,30 +88,56 @@ describe("Analytics", () => {
 
       await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
     });
+
+    it("catches and logs errors from providers", async () => {
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      // Make one provider fail
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      mockGA.initialize = vi.fn(() =>
+        Effect.fail(new Error("GA init failed")),
+      ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      const analyticsLayer = Analytics.Default.pipe(
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
+      );
+
+      const program = Effect.gen(function* () {
+        const analytics = yield* Analytics;
+        yield* analytics.initialize();
+
+        // Should still succeed (errors caught internally)
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Analytics initialize failed:",
+          expect.any(Error),
+        );
+      });
+
+      await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe("trackEvent", () => {
     it("calls trackEvent on both providers with correct parameters", async () => {
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -151,26 +166,15 @@ describe("Analytics", () => {
     });
 
     it("tracks events without properties", async () => {
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -189,30 +193,56 @@ describe("Analytics", () => {
 
       await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
     });
+
+    it("catches and logs errors from providers", async () => {
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      // Make one provider fail
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      mockPH.trackEvent = vi.fn(() =>
+        Effect.fail(new Error("PH failed")),
+      ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      const analyticsLayer = Analytics.Default.pipe(
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
+      );
+
+      const program = Effect.gen(function* () {
+        const analytics = yield* Analytics;
+        yield* analytics.trackEvent({ name: "test_event" });
+
+        // Should still succeed (errors caught internally)
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Analytics trackEvent failed:",
+          expect.any(Error),
+        );
+      });
+
+      await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe("trackPageView", () => {
     it("calls trackPageView on both providers", async () => {
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -231,33 +261,24 @@ describe("Analytics", () => {
 
         // Verify PostHog was called
         expect(mockPH.trackPageView).toHaveBeenCalledTimes(1);
-        expect(mockPH.trackPageView).toHaveBeenCalledWith();
+        expect(mockPH.trackPageView).toHaveBeenCalledWith({
+          distinctId: undefined,
+        });
       });
 
       await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
     });
 
     it("tracks page views without parameters", async () => {
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -268,35 +289,63 @@ describe("Analytics", () => {
           pagePath: undefined,
           pageTitle: undefined,
         });
-        expect(mockPH.trackPageView).toHaveBeenCalledWith();
+        expect(mockPH.trackPageView).toHaveBeenCalledWith({
+          distinctId: undefined,
+        });
       });
 
       await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
+    });
+
+    it("catches and logs errors from providers", async () => {
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      // Make one provider fail
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      mockGA.trackPageView = vi.fn(() =>
+        Effect.fail(new Error("GA failed")),
+      ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      const analyticsLayer = Analytics.Default.pipe(
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
+      );
+
+      const program = Effect.gen(function* () {
+        const analytics = yield* Analytics;
+        yield* analytics.trackPageView();
+
+        // Should still succeed (errors caught internally)
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Analytics trackPageView failed:",
+          expect.any(Error),
+        );
+      });
+
+      await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
+      consoleErrorSpy.mockRestore();
     });
   });
 
   describe("identify", () => {
     it("calls identify/setUserId on both providers", async () => {
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -322,26 +371,15 @@ describe("Analytics", () => {
     });
 
     it("identifies users without properties", async () => {
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {
@@ -357,32 +395,58 @@ describe("Analytics", () => {
 
       await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
     });
+
+    it("catches and logs errors from providers", async () => {
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      // Make one provider fail
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      mockGA.setUserId = vi.fn(() =>
+        Effect.fail(new Error("GA failed")),
+      ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      const analyticsLayer = Analytics.Default.pipe(
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
+      );
+
+      const program = Effect.gen(function* () {
+        const analytics = yield* Analytics;
+        yield* analytics.identify({ userId: "user_123" });
+
+        // Should still succeed (errors caught internally)
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Analytics identify failed:",
+          expect.any(Error),
+        );
+      });
+
+      await Effect.runPromise(program.pipe(Effect.provide(analyticsLayer)));
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe("error isolation", () => {
     it("both providers are called independently", async () => {
       // Note: Real providers catch errors internally and return Effect<void, never>
       // This test verifies that both providers are called in parallel
-      const mockGA = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        setUserId: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const mockPH = {
-        type: "noop" as const,
-        initialize: vi.fn(() => Effect.succeed(void 0)),
-        trackEvent: vi.fn(() => Effect.succeed(void 0)),
-        trackPageView: vi.fn(() => Effect.succeed(void 0)),
-        identify: vi.fn(() => Effect.succeed(void 0)),
-      };
-
-      const gaLayer = Layer.succeed(GoogleAnalytics, mockGA);
-      const phLayer = Layer.succeed(PostHog, mockPH);
+      const mockGA = MockGoogleAnalytics();
+      const mockPH = MockPostHog();
       const analyticsLayer = Analytics.Default.pipe(
-        Layer.provide(Layer.merge(gaLayer, phLayer)),
+        Layer.provide(
+          Layer.merge(
+            Layer.succeed(GoogleAnalytics, mockGA),
+            Layer.succeed(PostHog, mockPH),
+          ),
+        ),
       );
 
       const program = Effect.gen(function* () {

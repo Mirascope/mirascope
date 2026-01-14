@@ -1,0 +1,104 @@
+/**
+ * @fileoverview Analytics proxy API endpoint.
+ *
+ * This endpoint acts as a server-side proxy for analytics events, allowing
+ * the frontend to send events to our own domain instead of directly to
+ * third-party analytics services. This bypasses ad blockers and provides
+ * better reliability.
+ *
+ * ## Flow
+ * ```
+ * Frontend → /api/analytics → Google Analytics + PostHog
+ * ```
+ *
+ * All analytics calls are fire-and-forget - errors are logged but never
+ * fail the request (always returns 200).
+ */
+
+import { createFileRoute } from "@tanstack/react-router";
+import { Effect } from "effect";
+import { Analytics } from "@/analytics";
+
+/**
+ * Analytics event request payload from the frontend.
+ */
+type AnalyticsEventRequest = {
+  /** Type of analytics event */
+  type: "event" | "pageview" | "identify";
+  /** Event name (for trackEvent) */
+  name?: string;
+  /** Event or user properties */
+  properties?: Record<string, unknown>;
+  /** Page path (for trackPageView) */
+  path?: string;
+  /** Page title (for trackPageView) */
+  title?: string;
+  /** User ID (for identify) */
+  userId?: string;
+  /** PostHog distinct ID for user attribution */
+  distinctId?: string;
+};
+
+export const Route = createFileRoute("/api/analytics")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        try {
+          const body: AnalyticsEventRequest = await request.json();
+
+          const config = {
+            googleAnalytics: {
+              measurementId: process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
+              apiSecret: process.env.GOOGLE_ANALYTICS_API_SECRET,
+            },
+            postHog: {
+              apiKey: process.env.POSTHOG_API_KEY,
+              host: process.env.POSTHOG_HOST || "https://app.posthog.com",
+            },
+          };
+
+          const analyticsLayer = Analytics.Live(config);
+
+          await Effect.runPromise(
+            Effect.gen(function* () {
+              const analytics = yield* Analytics;
+
+              switch (body.type) {
+                case "event":
+                  if (body.name) {
+                    yield* analytics.trackEvent({
+                      name: body.name,
+                      properties: body.properties,
+                      distinctId: body.distinctId,
+                    });
+                  }
+                  break;
+                case "pageview":
+                  yield* analytics.trackPageView({
+                    path: body.path,
+                    title: body.title,
+                    distinctId: body.distinctId,
+                  });
+                  break;
+                case "identify":
+                  if (body.userId) {
+                    yield* analytics.identify({
+                      userId: body.userId,
+                      properties: body.properties,
+                    });
+                  }
+                  break;
+              }
+            }).pipe(Effect.provide(analyticsLayer)),
+          );
+
+          return Response.json({ success: true });
+        } catch (error) {
+          // Never fail on analytics errors
+          console.error("Analytics proxy error:", error);
+          return Response.json({ success: false }, { status: 200 }); // Return 200 anyway
+        }
+      },
+    },
+  },
+});

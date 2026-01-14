@@ -25,6 +25,11 @@ export type Settings = {
   readonly CLICKHOUSE_TLS_SKIP_VERIFY?: boolean;
   readonly CLICKHOUSE_TLS_HOSTNAME_VERIFY?: boolean;
   readonly CLICKHOUSE_TLS_MIN_VERSION?: string;
+  // Analytics settings
+  readonly GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
+  readonly GOOGLE_ANALYTICS_API_SECRET?: string;
+  readonly POSTHOG_API_KEY?: string;
+  readonly POSTHOG_HOST?: string;
 };
 
 export class SettingsService extends Context.Tag("SettingsService")<
@@ -64,6 +69,12 @@ export function getSettings(): Settings {
     CLICKHOUSE_TLS_HOSTNAME_VERIFY: clickhouseTlsHostnameVerifyEnv !== "false",
     CLICKHOUSE_TLS_MIN_VERSION:
       process.env.CLICKHOUSE_TLS_MIN_VERSION || "TLSv1.2",
+    // Analytics settings
+    GOOGLE_ANALYTICS_MEASUREMENT_ID:
+      process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
+    GOOGLE_ANALYTICS_API_SECRET: process.env.GOOGLE_ANALYTICS_API_SECRET,
+    POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
+    POSTHOG_HOST: process.env.POSTHOG_HOST || "https://app.posthog.com",
   };
 
   // Production environment validation (Node.js environment)

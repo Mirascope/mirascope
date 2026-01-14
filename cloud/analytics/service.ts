@@ -31,13 +31,15 @@
  *   // Track events across both platforms
  *   yield* analytics.trackEvent({
  *     name: "sign_up",
- *     properties: { method: "email" }
+ *     properties: { method: "email" },
+ *     distinctId: "user_123", // For PostHog user attribution
  *   });
  *
  *   // Track page views
  *   yield* analytics.trackPageView({
  *     path: "/dashboard",
- *     title: "Dashboard"
+ *     title: "Dashboard",
+ *     distinctId: "user_123",
  *   });
  *
  *   // Identify users
@@ -92,6 +94,8 @@ export interface TrackEventParams {
   name: string;
   /** Event properties */
   properties?: Record<string, unknown>;
+  /** PostHog distinct ID for user attribution */
+  distinctId?: string;
 }
 
 /**
@@ -102,6 +106,8 @@ export interface TrackPageViewParams {
   path?: string;
   /** Page title */
   title?: string;
+  /** PostHog distinct ID for user attribution */
+  distinctId?: string;
 }
 
 /**
@@ -146,7 +152,8 @@ export interface AnalyticsService {
  *   yield* analytics.initialize();
  *   yield* analytics.trackEvent({
  *     name: "purchase",
- *     properties: { currency: "USD", value: 50 }
+ *     properties: { currency: "USD", value: 50 },
+ *     distinctId: "user_123", // PostHog user attribution
  *   });
  * });
  *
@@ -181,7 +188,13 @@ export class Analytics extends Context.Tag("Analytics")<
         initialize: () =>
           Effect.all([googleAnalytics.initialize(), postHog.initialize()], {
             concurrency: "unbounded",
-          }).pipe(Effect.map(() => undefined)),
+          }).pipe(
+            Effect.map(() => undefined),
+            Effect.catchAll((error) => {
+              console.error("Analytics initialize failed:", error);
+              return Effect.void;
+            }),
+          ),
 
         trackEvent: (params: TrackEventParams) =>
           Effect.all(
@@ -192,11 +205,18 @@ export class Analytics extends Context.Tag("Analytics")<
               }),
               postHog.trackEvent({
                 event: params.name,
+                distinctId: params.distinctId,
                 properties: params.properties,
               }),
             ],
             { concurrency: "unbounded" },
-          ).pipe(Effect.map(() => undefined)),
+          ).pipe(
+            Effect.map(() => undefined),
+            Effect.catchAll((error) => {
+              console.error("Analytics trackEvent failed:", error);
+              return Effect.void;
+            }),
+          ),
 
         trackPageView: (params?: TrackPageViewParams) =>
           Effect.all(
@@ -205,10 +225,18 @@ export class Analytics extends Context.Tag("Analytics")<
                 pagePath: params?.path,
                 pageTitle: params?.title,
               }),
-              postHog.trackPageView(),
+              postHog.trackPageView({
+                distinctId: params?.distinctId,
+              }),
             ],
             { concurrency: "unbounded" },
-          ).pipe(Effect.map(() => undefined)),
+          ).pipe(
+            Effect.map(() => undefined),
+            Effect.catchAll((error) => {
+              console.error("Analytics trackPageView failed:", error);
+              return Effect.void;
+            }),
+          ),
 
         identify: (params: IdentifyParams) =>
           Effect.all(
@@ -220,9 +248,43 @@ export class Analytics extends Context.Tag("Analytics")<
               }),
             ],
             { concurrency: "unbounded" },
-          ).pipe(Effect.map(() => undefined)),
+          ).pipe(
+            Effect.map(() => undefined),
+            Effect.catchAll((error) => {
+              console.error("Analytics identify failed:", error);
+              return Effect.void;
+            }),
+          ),
       };
     }),
+  ).pipe(
+    /* v8 ignore start */
+    // Graceful fallback: if Analytics layer construction fails, log and continue
+    Layer.catchAll((error) => {
+      console.error("Analytics layer construction failed:", error);
+      // Return a minimal no-op Analytics service
+      return Layer.succeed(Analytics, {
+        googleAnalytics: {
+          type: "noop" as const,
+          initialize: () => Effect.void,
+          trackEvent: () => Effect.void,
+          trackPageView: () => Effect.void,
+          setUserId: () => Effect.void,
+        },
+        postHog: {
+          type: "noop" as const,
+          initialize: () => Effect.void,
+          trackEvent: () => Effect.void,
+          trackPageView: () => Effect.void,
+          identify: () => Effect.void,
+        },
+        initialize: () => Effect.void,
+        trackEvent: () => Effect.void,
+        trackPageView: () => Effect.void,
+        identify: () => Effect.void,
+      });
+    }),
+    /* v8 ignore end */
   );
 
   /**

@@ -767,6 +767,9 @@ function processAuthenticatedUser(
     // 4. Build redirect response with session cookie
     const redirectUrl = new URL(returnUrl || siteUrl);
     redirectUrl.searchParams.set("success", "true");
+    if (!existingUser) {
+      redirectUrl.searchParams.set("new_user", "true");
+    }
 
     return new Response(null, {
       status: 302,

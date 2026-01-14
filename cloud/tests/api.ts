@@ -20,6 +20,7 @@ import { SettingsService, getSettings } from "@/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
+import { Analytics } from "@/analytics";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
@@ -42,6 +43,18 @@ export { expect };
 // ============================================================================
 // it.effect with automatic Database layer provision
 // ============================================================================
+
+/**
+ * Mock layer for Analytics that provides a no-op implementation for tests.
+ */
+const MockAnalytics = Layer.succeed(Analytics, {
+  googleAnalytics: null as never,
+  postHog: null as never,
+  trackEvent: () => Effect.void,
+  trackPageView: () => Effect.void,
+  identify: () => Effect.void,
+  initialize: () => Effect.void,
+});
 
 /**
  * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
@@ -105,8 +118,8 @@ const withRollback = <A, E, R>(
   }) as Effect.Effect<A, E, R>;
 
 /**
- * Creates a Database layer with MockPayments for testing.
- * Provides Database, Payments, DrizzleORM, SqlClient, and SpansMeteringQueueService.
+ * Creates a Database layer with MockPayments and MockAnalytics for testing.
+ * Provides Database, Payments, Analytics, DrizzleORM, SqlClient, and SpansMeteringQueueService.
  */
 function createTestDatabaseLayer(connectionString: string) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
@@ -117,6 +130,7 @@ function createTestDatabaseLayer(connectionString: string) {
     ).pipe(Layer.orDie),
     drizzleLayer,
     DefaultMockPayments,
+    MockAnalytics,
     MockSpansMeteringQueue,
   );
 }
@@ -232,6 +246,7 @@ export const it = Object.assign(
   createCustomIt<
     | Database
     | Payments
+    | Analytics
     | SpansMeteringQueueService
     | DrizzleORM
     | SqlClient.SqlClient
