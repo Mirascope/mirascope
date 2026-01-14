@@ -384,6 +384,41 @@ export class ProxyError extends Schema.TaggedError<ProxyError>()("ProxyError", {
 // =============================================================================
 
 /**
+ * Error that occurs during analytics operations (Google Analytics, PostHog, etc.).
+ *
+ * NOTE: Analytics errors are typically caught internally and logged rather than
+ * thrown, ensuring analytics failures never break the application. This error is
+ * defined for consistency with other services but should rarely be seen by
+ * consumers.
+ *
+ * This error wraps failures from analytics providers, including:
+ * - Script loading errors
+ * - Network errors
+ * - API errors
+ * - Configuration errors
+ *
+ * @example
+ * ```ts
+ * const result = yield* analytics.trackEvent({ name: "signup" }).pipe(
+ *   Effect.catchTag("AnalyticsError", (error) => {
+ *     console.error(`${error.provider} tracking failed:`, error.message);
+ *     return Effect.succeed(void 0);
+ *   })
+ * );
+ * ```
+ */
+export class AnalyticsError extends Schema.TaggedError<AnalyticsError>()(
+  "AnalyticsError",
+  {
+    message: Schema.String,
+    provider: Schema.optional(Schema.Literal("GoogleAnalytics", "PostHog")),
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
+
+/**
  * Error that occurs during ClickHouse operations.
  *
  * This error wraps any failures from ClickHouse client operations, including:
