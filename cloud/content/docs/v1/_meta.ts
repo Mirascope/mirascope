@@ -11,10 +11,6 @@ const docsSection: SectionSpec = {
       label: "Welcome",
     },
     {
-      slug: "placeholder",
-      label: "Test Document",
-    },
-    {
       slug: "getting-started",
       label: "Getting Started",
       children: [
