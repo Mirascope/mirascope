@@ -222,6 +222,39 @@ export class SubscriptionPastDueError extends Schema.TaggedError<SubscriptionPas
   static readonly status = 409 as const;
 }
 
+// =============================================================================
+// Email Errors
+// =============================================================================
+
+/**
+ * Error that occurs during Resend API operations.
+ *
+ * This error wraps any failures from the Resend SDK, including:
+ * - Network errors
+ * - API errors (invalid parameters, authentication failures, etc.)
+ * - Rate limiting
+ * - Server errors
+ *
+ * @example
+ * ```ts
+ * const email = yield* resend.emails.send({ ... }).pipe(
+ *   Effect.catchTag("ResendError", (error) => {
+ *     console.error("Resend operation failed:", error.message);
+ *     return Effect.succeed(null);
+ *   })
+ * );
+ * ```
+ */
+export class ResendError extends Schema.TaggedError<ResendError>()(
+  "ResendError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
+
 /**
  * Error that occurs when attempting to reserve funds but insufficient balance is available.
  *
