@@ -45,7 +45,7 @@
  */
 
 import { Effect, Layer, Context } from "effect";
-import OriginalStripe from "stripe";
+import StripeAPI from "stripe";
 import { StripeError, ConfigError } from "@/errors";
 
 /**
@@ -186,8 +186,8 @@ function validateStripeConfig(
  * ```
  */
 export const wrapStripeClient = (
-  stripe: OriginalStripe,
-): WrapWithEffect<OriginalStripe> => {
+  stripe: StripeAPI,
+): WrapWithEffect<StripeAPI> => {
   // Cache wrapped objects to preserve identity across multiple accesses
   const wrappedObjects = new WeakMap<object, object>();
 
@@ -263,7 +263,7 @@ export const wrapStripeClient = (
     });
   };
 
-  return wrapObject(stripe) as WrapWithEffect<OriginalStripe>;
+  return wrapObject(stripe) as WrapWithEffect<StripeAPI>;
 };
 
 /**
@@ -305,7 +305,7 @@ export const wrapStripeClient = (
 /**
  * Stripe service interface that includes both the wrapped client and configuration.
  */
-export interface StripeClient extends WrapWithEffect<OriginalStripe> {
+export interface StripeClient extends WrapWithEffect<StripeAPI> {
   /** Stripe configuration (includes routerPriceId for metered billing) */
   config: StripeConfig;
 }
@@ -345,7 +345,7 @@ export class Stripe extends Context.Tag("Stripe")<Stripe, StripeClient>() {
         const validatedConfig = yield* validateStripeConfig(config);
 
         // Create Stripe client with validated config
-        const originalStripe = new OriginalStripe(validatedConfig.apiKey, {
+        const originalStripe = new StripeAPI(validatedConfig.apiKey, {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
           apiVersion: validatedConfig.apiVersion as any,
           typescript: true,
