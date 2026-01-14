@@ -1176,6 +1176,7 @@ source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
     { name = "httpx" },
+    { name = "jiter" },
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
@@ -1256,6 +1257,7 @@ requires-dist = [
     { name = "docstring-parser", specifier = ">=0.17.0" },
     { name = "google-genai", marker = "extra == 'google'", specifier = ">=1.57.0,<2" },
     { name = "httpx", specifier = ">=0.27.0" },
+    { name = "jiter", specifier = ">=0.7.0" },
     { name = "libcst", marker = "extra == 'ops'", specifier = ">=1.8.6" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.25.0,<2" },
     { name = "mirascope", extras = ["anthropic", "api", "google", "openai", "mcp", "ops", "mlx"], marker = "extra == 'all'" },

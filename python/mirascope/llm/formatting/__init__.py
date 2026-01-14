@@ -12,7 +12,12 @@ from .format import Format, format, resolve_format
 from .from_call_args import FromCallArgs
 from .output_parser import OutputParser, is_output_parser, output_parser
 from .partial import Partial
-from .primitives import create_wrapper_model, is_primitive_type
+from .primitives import (
+    PrimitiveType,
+    PrimitiveWrapperModel,
+    create_wrapper_model,
+    is_primitive_type,
+)
 from .types import FormattableT, FormattingMode
 
 __all__ = [
@@ -23,6 +28,8 @@ __all__ = [
     "FromCallArgs",
     "OutputParser",
     "Partial",
+    "PrimitiveType",
+    "PrimitiveWrapperModel",
     "create_wrapper_model",
     "format",
     "is_output_parser",
