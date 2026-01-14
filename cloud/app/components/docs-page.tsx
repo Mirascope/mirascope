@@ -1,6 +1,5 @@
 import React from "react";
 import ContentLayout from "@/app/components/content-layout";
-import LoadingContent from "@/app/components/blocks/loading-content";
 import { ModelProviderProvider } from "@/app/components/mdx/elements/model-provider-provider";
 import DocsTocSidebar from "@/app/components/docs-toc-sidebar";
 import MainContent from "@/app/components/blocks/docs/main-content";
@@ -8,17 +7,15 @@ import DocsSidebar from "@/app/components/docs-sidebar";
 import type { DocContent } from "@/app/lib/content/types";
 
 type DocsPageProps = {
-  document?: DocContent;
-  isLoading?: boolean;
+  content: DocContent;
 };
 
 /**
  * DocsPage component - Top-level documentation page component
  *
  * Handles metadata, layout and content rendering for all documentation pages
- * Supports both loaded and loading states
  */
-const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
+const DocsPage: React.FC<DocsPageProps> = ({ content }) => {
   return (
     <>
       <ModelProviderProvider>
@@ -28,11 +25,7 @@ const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
           </ContentLayout.LeftSidebar>
 
           <ContentLayout.Content>
-            {isLoading ? (
-              <LoadingContent fullHeight={true} />
-            ) : (
-              document && <MainContent document={document} />
-            )}
+            <MainContent document={content} />
           </ContentLayout.Content>
 
           <ContentLayout.RightSidebar
@@ -40,13 +33,7 @@ const DocsPage: React.FC<DocsPageProps> = ({ document, isLoading = false }) => {
             mobileCollapsible={true}
             mobileTitle="On this page"
           >
-            {isLoading ? (
-              <div className="h-full">
-                <div className="bg-muted mx-4 mt-16 h-6 animate-pulse rounded-md"></div>
-              </div>
-            ) : (
-              document && <DocsTocSidebar document={document} />
-            )}
+            <DocsTocSidebar document={content} />
           </ContentLayout.RightSidebar>
         </ContentLayout>
       </ModelProviderProvider>
