@@ -189,9 +189,14 @@ async function processMessage(
   const layer = Database.Live({
     database: { connectionString: databaseUrl },
     payments: {
-      apiKey: env.STRIPE_SECRET_KEY,
-      routerPriceId: env.STRIPE_ROUTER_PRICE_ID,
-      routerMeterId: env.STRIPE_ROUTER_METER_ID,
+      apiKey: env.STRIPE_SECRET_KEY || "",
+      routerPriceId: env.STRIPE_ROUTER_PRICE_ID || "",
+      routerMeterId: env.STRIPE_ROUTER_METER_ID || "",
+      cloudFreePriceId: env.STRIPE_CLOUD_FREE_PRICE_ID || "",
+      cloudProPriceId: env.STRIPE_CLOUD_PRO_PRICE_ID || "",
+      cloudTeamPriceId: env.STRIPE_CLOUD_TEAM_PRICE_ID || "",
+      cloudSpansPriceId: env.STRIPE_CLOUD_SPANS_PRICE_ID || "",
+      cloudSpansMeterId: env.STRIPE_CLOUD_SPANS_METER_ID || "",
     },
   });
 

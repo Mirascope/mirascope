@@ -3,7 +3,6 @@ import { Effect, Layer } from "effect";
 import { Database } from "@/db";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { InternalError } from "@/errors";
-import { getRouterConfig, validateRouterConfig } from "@/api/router/config";
 import { PROVIDER_CONFIGS, getProviderApiKey } from "@/api/router/providers";
 import { proxyToProvider } from "@/api/router/proxy";
 import {
@@ -47,18 +46,15 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
       }) => {
         const provider = params.provider.toLowerCase();
 
-        // Validate configuration early
-        const configError = validateRouterConfig();
-        if (configError) {
+        // Get database URL
+        const databaseUrl = process.env.DATABASE_URL;
+        if (!databaseUrl) {
           return Effect.runPromise(
-            Effect.fail(new InternalError({ message: configError })).pipe(
-              handleErrors,
-              handleDefects,
-            ),
+            Effect.fail(
+              new InternalError({ message: "Database not configured" }),
+            ).pipe(handleErrors, handleDefects),
           );
         }
-
-        const config = getRouterConfig();
 
         const handler = Effect.gen(function* () {
           // Step 1: Validate request and authenticate user
@@ -151,8 +147,17 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
           Effect.provide(
             Layer.merge(
               Database.Live({
-                database: { connectionString: config.databaseUrl },
-                payments: config.stripe,
+                database: { connectionString: databaseUrl },
+                payments: {
+                  apiKey: process.env.STRIPE_SECRET_KEY,
+                  routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
+                  routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
+                  cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
+                  cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
+                  cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
+                  cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
+                  cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
+                },
               }),
               routerMeteringQueueLayer,
             ),

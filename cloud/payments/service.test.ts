@@ -168,6 +168,11 @@ describe("Payments", () => {
         apiKey: "sk_test_key",
         routerPriceId: "price_test",
         routerMeterId: "meter_test",
+        cloudFreePriceId: "price_cloud_free",
+        cloudProPriceId: "price_cloud_pro",
+        cloudTeamPriceId: "price_cloud_team",
+        cloudSpansPriceId: "price_cloud_spans",
+        cloudSpansMeterId: "meter_cloud_spans",
       });
 
       // Verify it returns a Layer
