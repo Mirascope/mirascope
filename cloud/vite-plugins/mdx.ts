@@ -23,7 +23,7 @@
  */
 
 import type { Plugin } from "vite";
-import fs from "node:fs";
+import { preprocessMdx } from "../app/lib/content/mdx-preprocessing";
 import { compileMDXContent } from "../app/lib/content/mdx-compile";
 
 export function viteMDX(): Plugin {
@@ -38,12 +38,12 @@ export function viteMDX(): Plugin {
       }
 
       try {
-        // Read the MDX file content
-        const rawContent = fs.readFileSync(id, "utf-8");
+        // Read the preprocessed MDX file examples inlined into content
+        const fullContent = await preprocessMdx(id);
 
         // Compile MDX using shared utility
         const { jsxCode, frontmatter, tableOfContents, content } =
-          await compileMDXContent(rawContent);
+          await compileMDXContent(fullContent);
 
         // Export as a named export 'mdx' containing component and metadata
         const moduleCode = `
