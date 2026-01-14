@@ -6,6 +6,7 @@ import path from "path";
 import { viteMDX } from "./vite-plugins/mdx";
 import { viteContent } from "./vite-plugins/content";
 import { viteImages } from "./vite-plugins/images";
+import { viteRobots } from "./vite-plugins/robots";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
@@ -32,7 +33,10 @@ export default defineConfig(() => {
           retryDelay: 0,
           maxRedirects: 5,
           failOnError: true,
+          // for now, pages not included in prerendering will be disallowed in robots.txt
           filter: (page: { path: string }) =>
+            page.path.startsWith("/home") ||
+            page.path.startsWith("/pricing") ||
             page.path.startsWith("/docs") ||
             page.path.startsWith("/blog") ||
             page.path.startsWith("/terms") ||
@@ -51,6 +55,7 @@ export default defineConfig(() => {
           host: "https://mirascope.com",
         },
       }),
+      viteRobots(), // Generate robots disallow paths from sitemap (must be after tanstackStart)
       viteReact(),
       tailwindcss(),
     ],

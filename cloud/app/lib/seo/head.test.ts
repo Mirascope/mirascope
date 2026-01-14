@@ -296,9 +296,6 @@ describe("createPageHead", () => {
         content: "summary_large_image",
       });
 
-      // No robots
-      expect(findMeta(result.meta, "robots")).toBeUndefined();
-
       // No scripts (not an article)
       expect(result.scripts).toBeUndefined();
     });
@@ -446,23 +443,7 @@ describe("createPageHead", () => {
     });
   });
 
-  describe("Test Case 7: With robots noindex", () => {
-    it("includes robots meta tag", () => {
-      const result = createPageHead({
-        route: "/dev/tools",
-        title: "Dev Tools",
-        description: "Development tools",
-        robots: "noindex, nofollow",
-      });
-
-      expect(findMeta(result.meta, "robots")).toEqual({
-        name: "robots",
-        content: "noindex, nofollow",
-      });
-    });
-  });
-
-  describe("Test Case 8: Empty description", () => {
+  describe("Test Case 7: Empty description", () => {
     it("handles empty description", () => {
       const result = createPageHead({
         route: "/empty-desc",
