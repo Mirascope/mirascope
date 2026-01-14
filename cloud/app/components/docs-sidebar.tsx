@@ -49,16 +49,29 @@ function createSidebarConfig(): SidebarConfig {
     allSections.unshift(defaultSection);
   }
 
+  // Helper to check if dev content should be filtered out in non-development
+  function shouldFilterDevContent(itemPath: string): boolean {
+    if (process.env.NODE_ENV === "development") {
+      return false;
+    }
+    return itemPath === "v1/placeholder";
+  }
+
   // Convert doc specs to sidebar items
   function convertDocToSidebarItem(
     doc: DocSpec,
     parentPath: string,
-  ): SidebarItem {
+  ): SidebarItem | undefined {
     // Construct the logical path for this item (used to look up routePath)
     const itemPath = parentPath ? `${parentPath}/${doc.slug}` : doc.slug;
 
     // Look up the routePath from DocInfo if available
     const routePath = slugToRoutePathMap.get(itemPath);
+
+    // todo(sebastian): reconcile placeholder with dev content
+    if (shouldFilterDevContent(itemPath)) {
+      return undefined;
+    }
 
     // Determine hasContent: explicit value from doc, or default based on children
     const hasContent = doc.hasContent ?? !doc.children;
@@ -80,7 +93,7 @@ function createSidebarConfig(): SidebarConfig {
 
       doc.children.forEach((childDoc) => {
         const childItem = convertDocToSidebarItem(childDoc, itemPath);
-        if (item.items) {
+        if (childItem && item.items) {
           item.items[childDoc.slug] = childItem;
         }
       });
@@ -117,11 +130,21 @@ function createSidebarConfig(): SidebarConfig {
     const groups: Record<string, SidebarGroup> = {};
 
     section.children.forEach((child) => {
+      // Check if this item should be filtered out
+      const childPath = pathPrefix ? `${pathPrefix}/${child.slug}` : child.slug;
+      // todo(sebastian): reconcile placeholder with dev content
+      if (shouldFilterDevContent(childPath)) {
+        return; // Skip this item in non-dev environments
+      }
+
       const hasContent = child.hasContent ?? !child.children;
 
       if (hasContent) {
         // This item has content, add it to items (even if it also has children)
-        items[child.slug] = convertDocToSidebarItem(child, pathPrefix);
+        const sidebarItem = convertDocToSidebarItem(child, pathPrefix);
+        if (sidebarItem) {
+          items[child.slug] = sidebarItem;
+        }
       } else {
         // This is a pure folder (no content), add it as a group
         const groupItems: Record<string, SidebarItem> = {};
@@ -139,16 +162,20 @@ function createSidebarConfig(): SidebarConfig {
               grandchild,
               groupPathPrefix,
             );
-            groupItems[grandchild.slug] = sidebarItem;
+            if (sidebarItem) {
+              groupItems[grandchild.slug] = sidebarItem;
+            }
           });
         }
 
-        // Add the group
-        groups[child.slug] = {
-          slug: child.slug,
-          label: child.label,
-          items: groupItems,
-        };
+        // Add the group only if it has items
+        if (Object.keys(groupItems).length > 0) {
+          groups[child.slug] = {
+            slug: child.slug,
+            label: child.label,
+            items: groupItems,
+          };
+        }
       }
     });
 

@@ -25,7 +25,6 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
-import { Route as DocsV1PlaceholderRouteImport } from './routes/docs.v1.placeholder'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
@@ -117,11 +116,6 @@ const AuthGithubRoute = AuthGithubRouteImport.update({
   path: '/auth/github',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsV1PlaceholderRoute = DocsV1PlaceholderRouteImport.update({
-  id: '/v1/placeholder',
-  path: '/v1/placeholder',
-  getParentRoute: () => DocsRoute,
-} as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
@@ -199,7 +193,6 @@ export interface FileRoutesByFullPath {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesByTo {
@@ -227,7 +220,6 @@ export interface FileRoutesByTo {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesById {
@@ -257,7 +249,6 @@ export interface FileRoutesById {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
-  '/docs/v1/placeholder': typeof DocsV1PlaceholderRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRouteTypes {
@@ -288,7 +279,6 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
-    | '/docs/v1/placeholder'
     | '/router/v0/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -316,7 +306,6 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
-    | '/docs/v1/placeholder'
     | '/router/v0/$provider/$'
   id:
     | '__root__'
@@ -345,7 +334,6 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/docs/v1/$'
-    | '/docs/v1/placeholder'
     | '/router/v0/$provider/$'
   fileRoutesById: FileRoutesById
 }
@@ -485,13 +473,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGithubRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/docs/v1/placeholder': {
-      id: '/docs/v1/placeholder'
-      path: '/v1/placeholder'
-      fullPath: '/docs/v1/placeholder'
-      preLoaderRoute: typeof DocsV1PlaceholderRouteImport
-      parentRoute: typeof DocsRoute
-    }
     '/docs/v1/$': {
       id: '/docs/v1/$'
       path: '/v1/$'
@@ -579,12 +560,10 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface DocsRouteChildren {
   DocsV1SplatRoute: typeof DocsV1SplatRoute
-  DocsV1PlaceholderRoute: typeof DocsV1PlaceholderRoute
 }
 
 const DocsRouteChildren: DocsRouteChildren = {
   DocsV1SplatRoute: DocsV1SplatRoute,
-  DocsV1PlaceholderRoute: DocsV1PlaceholderRoute,
 }
 
 const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
