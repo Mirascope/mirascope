@@ -17,11 +17,15 @@ const toplevelDocs: SectionSpec = {
       slug: "index",
       label: "Welcome",
     },
+    {
+      slug: "examples",
+      label: "Examples (For LLMs)",
+    },
   ],
 };
 
 export const docsSpec: FullDocsSpec = {
-  sections: [toplevelDocs, v1DocsSection, v1GuidesSection, v1ApiSection],
+  sections: [toplevelDocs, v1GuidesSection, v1ApiSection, v1DocsSection],
 };
 
 export const docInfos = getDocsFromSpec(docsSpec);
