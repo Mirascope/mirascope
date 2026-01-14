@@ -18,7 +18,7 @@ describe("RouterConfig", () => {
   describe("getRouterConfig", () => {
     it("should return config when all env vars are set", () => {
       process.env.DATABASE_URL = "postgresql://test";
-      process.env.STRIPE_SECRET_KEY = "sk_test_123";
+      process.env.STRIPE_SECRET_KEY = "sk_test_mock";
       process.env.STRIPE_ROUTER_PRICE_ID = "price_123";
       process.env.STRIPE_ROUTER_METER_ID = "meter_123";
 
@@ -27,7 +27,7 @@ describe("RouterConfig", () => {
       expect(config).toEqual({
         databaseUrl: "postgresql://test",
         stripe: {
-          apiKey: "sk_test_123",
+          apiKey: "sk_test_mock",
           routerPriceId: "price_123",
           routerMeterId: "meter_123",
         },
@@ -36,7 +36,7 @@ describe("RouterConfig", () => {
 
     it("should throw when DATABASE_URL is missing", () => {
       delete process.env.DATABASE_URL;
-      process.env.STRIPE_SECRET_KEY = "sk_test_123";
+      process.env.STRIPE_SECRET_KEY = "sk_test_mock";
       process.env.STRIPE_ROUTER_PRICE_ID = "price_123";
       process.env.STRIPE_ROUTER_METER_ID = "meter_123";
 
@@ -58,7 +58,7 @@ describe("RouterConfig", () => {
 
     it("should throw when STRIPE_ROUTER_PRICE_ID is missing", () => {
       process.env.DATABASE_URL = "postgresql://test";
-      process.env.STRIPE_SECRET_KEY = "sk_test_123";
+      process.env.STRIPE_SECRET_KEY = "sk_test_mock";
       delete process.env.STRIPE_ROUTER_PRICE_ID;
       process.env.STRIPE_ROUTER_METER_ID = "meter_123";
 
@@ -69,7 +69,7 @@ describe("RouterConfig", () => {
 
     it("should throw when STRIPE_ROUTER_METER_ID is missing", () => {
       process.env.DATABASE_URL = "postgresql://test";
-      process.env.STRIPE_SECRET_KEY = "sk_test_123";
+      process.env.STRIPE_SECRET_KEY = "sk_test_mock";
       process.env.STRIPE_ROUTER_PRICE_ID = "price_123";
       delete process.env.STRIPE_ROUTER_METER_ID;
 
@@ -82,7 +82,7 @@ describe("RouterConfig", () => {
   describe("validateRouterConfig", () => {
     it("should return null when all env vars are set", () => {
       process.env.DATABASE_URL = "postgresql://test";
-      process.env.STRIPE_SECRET_KEY = "sk_test_123";
+      process.env.STRIPE_SECRET_KEY = "sk_test_mock";
       process.env.STRIPE_ROUTER_PRICE_ID = "price_123";
       process.env.STRIPE_ROUTER_METER_ID = "meter_123";
 
@@ -91,7 +91,7 @@ describe("RouterConfig", () => {
 
     it("should return error message when DATABASE_URL is missing", () => {
       delete process.env.DATABASE_URL;
-      process.env.STRIPE_SECRET_KEY = "sk_test_123";
+      process.env.STRIPE_SECRET_KEY = "sk_test_mock";
       process.env.STRIPE_ROUTER_PRICE_ID = "price_123";
       process.env.STRIPE_ROUTER_METER_ID = "meter_123";
 

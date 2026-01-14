@@ -18,8 +18,8 @@ describe("customers", () => {
           email: "test@example.com",
         });
 
-        expect(result.customerId).toBeDefined();
-        expect(result.customerId).toMatch(/^cus_mock_/);
+        expect(result.stripeCustomerId).toBeDefined();
+        expect(result.stripeCustomerId).toMatch(/^cus_mock_/);
         expect(result.subscriptionId).toBeDefined();
         expect(result.subscriptionId).toMatch(/^sub_mock_/);
       }).pipe(Effect.provide(DefaultMockPayments)),
@@ -206,7 +206,7 @@ describe("customers", () => {
         const payments = yield* Payments;
 
         yield* payments.customers.update({
-          customerId: "cus_123",
+          stripeCustomerId: "cus_123",
           organizationName: "New Name",
           organizationSlug: "new-slug",
         });
@@ -224,7 +224,7 @@ describe("customers", () => {
         const payments = yield* Payments;
 
         yield* payments.customers.update({
-          customerId: "cus_123",
+          stripeCustomerId: "cus_123",
           organizationSlug: "updated-slug-only",
         });
 
@@ -296,7 +296,7 @@ describe("customers", () => {
         const payments = yield* Payments;
 
         yield* payments.customers.update({
-          customerId: "cus_123",
+          stripeCustomerId: "cus_123",
           organizationSlug: "new-slug",
         });
 
@@ -357,7 +357,7 @@ describe("customers", () => {
         const payments = yield* Payments;
 
         yield* payments.customers.update({
-          customerId: "cus_123",
+          stripeCustomerId: "cus_123",
         });
 
         // Should not call update if nothing to change
@@ -399,7 +399,7 @@ describe("customers", () => {
       return Effect.gen(function* () {
         const payments = yield* Payments;
 
-        yield* payments.customers.cancelSubscriptions("cus_123");
+        yield* payments.customers.subscriptions.cancel("cus_123");
 
         expect(subscriptionIds).toEqual(["sub_1", "sub_2"]);
       }).pipe(
@@ -455,7 +455,7 @@ describe("customers", () => {
       Effect.gen(function* () {
         const payments = yield* Payments;
 
-        yield* payments.customers.cancelSubscriptions("cus_123");
+        yield* payments.customers.subscriptions.cancel("cus_123");
 
         // Test passes if no errors thrown
       }).pipe(Effect.provide(DefaultMockPayments)),
@@ -465,8 +465,8 @@ describe("customers", () => {
       Effect.gen(function* () {
         const payments = yield* Payments;
 
-        const result = yield* payments.customers
-          .cancelSubscriptions("cus_123")
+        const result = yield* payments.customers.subscriptions
+          .cancel("cus_123")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(StripeError);
@@ -506,8 +506,8 @@ describe("customers", () => {
       Effect.gen(function* () {
         const payments = yield* Payments;
 
-        const result = yield* payments.customers
-          .cancelSubscriptions("cus_123")
+        const result = yield* payments.customers.subscriptions
+          .cancel("cus_123")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(StripeError);

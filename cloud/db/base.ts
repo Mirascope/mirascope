@@ -46,6 +46,7 @@ import {
   type NotFoundError,
   PermissionDeniedError,
   StripeError,
+  SubscriptionPastDueError,
 } from "@/errors";
 
 // =============================================================================
@@ -641,7 +642,11 @@ export abstract class BaseAuthenticatedEffectService<
     args: { userId: string } & PathParams<TPath>,
   ): Effect.Effect<
     void,
-    NotFoundError | PermissionDeniedError | DatabaseError | StripeError,
+    | NotFoundError
+    | PermissionDeniedError
+    | DatabaseError
+    | SubscriptionPastDueError
+    | StripeError,
     DrizzleORM | Payments
   >;
 }

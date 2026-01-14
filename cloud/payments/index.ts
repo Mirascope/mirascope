@@ -7,17 +7,21 @@
  * ## Quick Start
  *
  * ```ts
- * import { Payments } from "@/payments";
+ * import { Payments, type StripeConfig } from "@/payments";
  *
  * const program = Effect.gen(function* () {
  *   const payments = yield* Payments;
  *
+ *   // Customer operations
  *   const result = yield* payments.customers.create({
  *     organizationId: "org_123",
  *     organizationName: "Acme Corp",
  *     organizationSlug: "acme-corp",
  *     email: "billing@acme.com",
  *   });
+ *
+ *   // Subscription operations
+ *   const details = yield* payments.customers.subscriptions.get(result.stripeCustomerId);
  *
  *   return result;
  * });
@@ -29,6 +33,6 @@
  * ```
  */
 
-export * from "@/payments/client";
-export * from "@/payments/customers";
-export * from "@/payments/service";
+// Export the main service and its configuration type
+export { Payments } from "@/payments/service";
+export type { StripeConfig } from "@/payments/client";

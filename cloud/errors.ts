@@ -189,6 +189,40 @@ export class StripeError extends Schema.TaggedError<StripeError>()(
 }
 
 /**
+ * Error that occurs when attempting to cancel subscriptions but past_due subscriptions exist.
+ *
+ * This error is raised when trying to cancel all subscriptions (e.g., during org deletion)
+ * but one or more subscriptions have a past_due status, indicating failed payments.
+ * Past_due subscriptions represent outstanding debt and should be resolved before
+ * allowing cancellation or org deletion.
+ *
+ * The HTTP status code is 409 (Conflict) to indicate that the operation conflicts
+ * with the current state of the subscriptions.
+ *
+ * @example
+ * ```ts
+ * yield* payments.customers.subscriptions.cancel(stripeCustomerId).pipe(
+ *   Effect.catchTag("SubscriptionPastDueError", (error) => {
+ *     console.error("Cannot cancel - resolve past_due subscriptions first");
+ *     return Effect.fail(new HandlerError({
+ *       message: "Resolve outstanding payments before deletion"
+ *     }));
+ *   })
+ * );
+ * ```
+ */
+export class SubscriptionPastDueError extends Schema.TaggedError<SubscriptionPastDueError>()(
+  "SubscriptionPastDueError",
+  {
+    message: Schema.String,
+    stripeCustomerId: Schema.String,
+    pastDueSubscriptionIds: Schema.Array(Schema.String),
+  },
+) {
+  static readonly status = 409 as const;
+}
+
+/**
  * Error that occurs when attempting to reserve funds but insufficient balance is available.
  *
  * This error is returned when:

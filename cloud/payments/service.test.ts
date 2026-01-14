@@ -16,7 +16,7 @@ describe("Payments", () => {
           expect(typeof payments.customers.create).toBe("function");
           expect(typeof payments.customers.update).toBe("function");
           expect(typeof payments.customers.delete).toBe("function");
-          expect(typeof payments.customers.cancelSubscriptions).toBe(
+          expect(typeof payments.customers.subscriptions.cancel).toBe(
             "function",
           );
 
@@ -83,13 +83,13 @@ describe("Payments", () => {
             create,
             update,
             delete: del,
-            cancelSubscriptions,
+            subscriptions,
           } = payments.customers;
 
           expect(typeof create).toBe("function");
           expect(typeof update).toBe("function");
           expect(typeof del).toBe("function");
-          expect(typeof cancelSubscriptions).toBe("function");
+          expect(typeof subscriptions.cancel).toBe("function");
 
           return true;
         }).pipe(
@@ -116,7 +116,7 @@ describe("Payments", () => {
           expect(keys).toContain("create");
           expect(keys).toContain("update");
           expect(keys).toContain("delete");
-          expect(keys).toContain("cancelSubscriptions");
+          expect(keys).toContain("subscriptions");
 
           return true;
         }).pipe(

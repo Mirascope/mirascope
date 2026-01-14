@@ -647,7 +647,7 @@ export class Router {
    * price. Grants are marked with category "paid" to distinguish them from
    * promotional credits.
    *
-   * @param params.customerId - The Stripe customer ID
+   * @param params.stripeCustomerId - The Stripe customer ID
    * @param params.amountInDollars - The credit amount in dollars (e.g., 50 for $50)
    * @param params.expiresAt - Optional expiration date for the credits
    * @param params.metadata - Optional metadata to attach to the credit grant
@@ -657,19 +657,19 @@ export class Router {
    * @example
    * ```ts
    * const creditGrantId = yield* payments.products.router.createCreditGrant({
-   *   customerId: "cus_123",
+   *   stripeCustomerId: "cus_123",
    *   amountInDollars: 50,
    *   metadata: { source: "payment_intent" }
    * });
    * ```
    */
   createCreditGrant({
-    customerId,
+    stripeCustomerId,
     amountInDollars,
     expiresAt,
     metadata,
   }: {
-    customerId: string;
+    stripeCustomerId: string;
     amountInDollars: number;
     expiresAt?: Date;
     metadata?: Record<string, string>;
@@ -682,7 +682,7 @@ export class Router {
 
       // Create the credit grant scoped to the router price
       const creditGrant = yield* stripe.billing.creditGrants.create({
-        customer: customerId,
+        customer: stripeCustomerId,
         amount: {
           type: "monetary",
           monetary: {

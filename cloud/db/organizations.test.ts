@@ -789,7 +789,7 @@ describe("Organizations", () => {
       () => {
         // Capture the params passed to updateCustomer
         type CapturedParams = {
-          customerId: string;
+          stripeCustomerId: string;
           organizationName?: string;
           organizationSlug?: string;
         };
@@ -823,7 +823,9 @@ describe("Organizations", () => {
 
           // Verify updateCustomer was called with correct parameters
           assert(capturedParams !== null);
-          expect(capturedParams.customerId).toBe(organization.stripeCustomerId);
+          expect(capturedParams.stripeCustomerId).toBe(
+            organization.stripeCustomerId,
+          );
           expect(capturedParams.organizationName).toBe(newName);
           expect(capturedParams.organizationSlug).toBe(newSlug);
         }).pipe(
@@ -850,7 +852,7 @@ describe("Organizations", () => {
                       },
                     ) => {
                       capturedParams = {
-                        customerId: id,
+                        stripeCustomerId: id,
                         organizationName: params.name,
                         organizationSlug: params.metadata?.organizationSlug,
                       };
@@ -1078,7 +1080,7 @@ describe("Organizations", () => {
     );
 
     it.effect("calls cancelSubscriptions with correct stripeCustomerId", () => {
-      // Capture the customerId passed to cancelSubscriptions (via subscriptions.list)
+      // Capture the stripeCustomerId passed to cancelSubscriptions (via subscriptions.list)
       let capturedCustomerId: string | null = null;
 
       return Effect.gen(function* () {
@@ -1102,7 +1104,7 @@ describe("Organizations", () => {
           organizationId: organization.id,
         });
 
-        // Verify cancelSubscriptions was called with correct customerId
+        // Verify cancelSubscriptions was called with correct stripeCustomerId
         assert(capturedCustomerId !== null);
         expect(capturedCustomerId).toBe(organization.stripeCustomerId);
       }).pipe(

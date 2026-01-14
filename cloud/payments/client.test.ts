@@ -1,5 +1,5 @@
-import { describe, it, expect, assert } from "@/tests/payments";
-import { vi, beforeEach } from "vitest";
+import { describe, it, expect } from "@/tests/payments";
+import { vi, beforeEach, assert } from "vitest";
 import { Effect, Layer } from "effect";
 import { Stripe, wrapStripeClient } from "@/payments/client";
 import { StripeError, ConfigError } from "@/errors";
@@ -84,7 +84,7 @@ describe("Stripe", () => {
   describe("layer", () => {
     it("creates a layer with provided configuration", () => {
       const layer = Stripe.layer({
-        apiKey: "sk_test_123",
+        apiKey: "sk_test_mock",
         routerPriceId: "price_test",
         routerMeterId: "meter_test",
         cloudFreePriceId: "price_cloud_free",
@@ -101,7 +101,7 @@ describe("Stripe", () => {
 
     it.effect("validates configuration and creates client", () => {
       const layer = Stripe.layer({
-        apiKey: "sk_test_123",
+        apiKey: "sk_test_mock",
         routerPriceId: "price_test",
         routerMeterId: "meter_test",
         cloudFreePriceId: "price_cloud_free",
@@ -118,13 +118,13 @@ describe("Stripe", () => {
         const stripe = yield* Stripe;
 
         // Accessing the stripe service should have triggered constructor call
-        expect(OriginalStripe).toHaveBeenCalledWith("sk_test_123", {
+        expect(OriginalStripe).toHaveBeenCalledWith("sk_test_mock", {
           apiVersion: undefined,
           typescript: true,
         });
 
         // Verify the service is properly configured
-        expect(stripe.config.apiKey).toBe("sk_test_123");
+        expect(stripe.config.apiKey).toBe("sk_test_mock");
         expect(stripe.config.routerPriceId).toBe("price_test");
       }).pipe(Effect.provide(layer));
     });

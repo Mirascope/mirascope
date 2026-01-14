@@ -14,7 +14,7 @@ import { StripeError } from "@/errors";
  */
 export interface CreateRouterCreditsPurchaseIntentParams {
   /** Stripe customer ID */
-  customerId: string;
+  stripeCustomerId: string;
   /** Credit amount in dollars (e.g., 50 for $50) */
   amountInDollars: number;
   /** Optional metadata to attach to the PaymentIntent */
@@ -44,7 +44,7 @@ export interface CreatePaymentIntentResult {
  *   const payments = yield* Payments;
  *
  *   const result = yield* payments.paymentIntents.createRouterCreditsPurchaseIntent({
- *     customerId: "cus_123",
+ *     stripeCustomerId: "cus_123",
  *     amountInDollars: 50,
  *   });
  *
@@ -77,7 +77,7 @@ export class PaymentIntents {
 
       // Create PaymentIntent
       const paymentIntent = yield* stripe.paymentIntents.create({
-        customer: params.customerId,
+        customer: params.stripeCustomerId,
         amount: amountInCents,
         currency: "usd",
         automatic_payment_methods: {
@@ -85,7 +85,7 @@ export class PaymentIntents {
         },
         description: `Mirascope Router Credits - $${params.amountInDollars.toFixed(2)}`,
         metadata: {
-          customerId: params.customerId,
+          stripeCustomerId: params.stripeCustomerId,
           creditAmountInCents: amountInCents.toString(),
           ...params.metadata,
         },
