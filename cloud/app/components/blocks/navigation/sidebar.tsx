@@ -692,7 +692,7 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
 
   // Use the most specific match (if any), otherwise undefined
   const activeSection =
-    matchingSections.length > 0 ? matchingSections[0].slug : undefined;
+    matchingSections.length > 0 ? matchingSections[0].basePath : undefined;
 
   return (
     <aside className="flex h-full flex-col overflow-hidden">
@@ -707,7 +707,7 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
               <SectionTab
                 key={section.slug}
                 to={section.basePath}
-                isActive={section.slug === activeSection}
+                isActive={section.basePath === activeSection}
               >
                 {section.label}
               </SectionTab>
@@ -728,7 +728,9 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
             {/* Show content for active section */}
             {activeSection ? (
               <SectionContent
-                section={config.sections.find((s) => s.slug === activeSection)!}
+                section={
+                  config.sections.find((s) => s.basePath === activeSection)!
+                }
                 isActivePath={isActivePath}
               />
             ) : (
