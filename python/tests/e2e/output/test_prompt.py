@@ -22,8 +22,7 @@ def test_prompt_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         return f"What is {a} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
-        response = add_numbers(model, 4200, 42)
+        response = add_numbers(model_id, 4200, 42)
         snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
@@ -40,9 +39,8 @@ def test_prompt_sync_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         return f"What is {ctx.deps} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
         ctx = llm.Context(deps=4200)
-        response = add_numbers(model, ctx, 42)
+        response = add_numbers(model_id, ctx, 42)
         snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
@@ -63,8 +61,7 @@ async def test_prompt_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         return f"What is {a} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
-        response = await add_numbers(model, 4200, 42)
+        response = await add_numbers(model_id, 4200, 42)
         snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
@@ -82,9 +79,8 @@ async def test_prompt_async_context(model_id: llm.ModelId, snapshot: Snapshot) -
         return f"What is {ctx.deps} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
         ctx = llm.Context(deps=4200)
-        response = await add_numbers(model, ctx, 42)
+        response = await add_numbers(model_id, ctx, 42)
         snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
@@ -104,8 +100,7 @@ def test_prompt_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         return f"What is {a} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
-        response = add_numbers.stream(model, 4200, 42)
+        response = add_numbers.stream(model_id, 4200, 42)
         response.finish()
         snap.set_response(response)
         assert "4242" in response.pretty(), (
@@ -123,9 +118,8 @@ def test_prompt_stream_context(model_id: llm.ModelId, snapshot: Snapshot) -> Non
         return f"What is {ctx.deps} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
         ctx = llm.Context(deps=4200)
-        response = add_numbers.stream(model, ctx, 42)
+        response = add_numbers.stream(model_id, ctx, 42)
         response.finish()
         snap.set_response(response)
         assert "4242" in response.pretty(), (
@@ -147,8 +141,7 @@ async def test_prompt_async_stream(model_id: llm.ModelId, snapshot: Snapshot) ->
         return f"What is {a} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
-        response = await add_numbers.stream(model, 4200, 42)
+        response = await add_numbers.stream(model_id, 4200, 42)
         await response.finish()
         snap.set_response(response)
         assert "4242" in response.pretty(), (
@@ -169,9 +162,8 @@ async def test_prompt_async_stream_context(
         return f"What is {ctx.deps} + {b}?"
 
     with snapshot_test(snapshot) as snap:
-        model = llm.Model(model_id)
         ctx = llm.Context(deps=4200)
-        response = await add_numbers.stream(model, ctx, 42)
+        response = await add_numbers.stream(model_id, ctx, 42)
         await response.finish()
         snap.set_response(response)
         assert "4242" in response.pretty(), (
