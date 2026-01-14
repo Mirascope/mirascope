@@ -8,6 +8,7 @@ from ..context import Context, DepsT
 from ..formatting import Format, FormattableT, OutputParser
 from ..messages import Message
 from ..models import Model
+from ..providers import ModelId
 from ..responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -62,51 +63,73 @@ class Prompt(Generic[P, FormattableT]):
 
     @overload
     def __call__(
-        self: "Prompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "Prompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Response: ...
 
     @overload
     def __call__(
-        self: "Prompt[P, FormattableT]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "Prompt[P, FormattableT]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Response[FormattableT]: ...
 
     def __call__(
-        self, model: Model, *args: P.args, **kwargs: P.kwargs
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> Response | Response[FormattableT]:
         """Generates a response using the provided model."""
         return self.call(model, *args, **kwargs)
 
     @overload
     def call(
-        self: "Prompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "Prompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Response: ...
 
     @overload
     def call(
-        self: "Prompt[P, FormattableT]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "Prompt[P, FormattableT]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Response[FormattableT]: ...
 
     def call(
-        self, model: Model, *args: P.args, **kwargs: P.kwargs
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> Response | Response[FormattableT]:
         """Generates a response using the provided model."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = self.messages(*args, **kwargs)
         return model.call(messages=messages, tools=self.toolkit, format=self.format)
 
     @overload
     def stream(
-        self: "Prompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "Prompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> StreamResponse: ...
 
     @overload
     def stream(
-        self: "Prompt[P, FormattableT]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "Prompt[P, FormattableT]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> StreamResponse[FormattableT]: ...
 
     def stream(
-        self, model: Model, *args: P.args, **kwargs: P.kwargs
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generates a streaming response using the provided model."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = self.messages(*args, **kwargs)
         return model.stream(messages=messages, tools=self.toolkit, format=self.format)
 
@@ -139,40 +162,48 @@ class AsyncPrompt(Generic[P, FormattableT]):
 
     @overload
     async def __call__(
-        self: "AsyncPrompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "AsyncPrompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> AsyncResponse: ...
 
     @overload
     async def __call__(
         self: "AsyncPrompt[P, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> AsyncResponse[FormattableT]: ...
 
     async def __call__(
-        self, model: Model, *args: P.args, **kwargs: P.kwargs
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generates a response using the provided model asynchronously."""
         return await self.call(model, *args, **kwargs)
 
     @overload
     async def call(
-        self: "AsyncPrompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "AsyncPrompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> AsyncResponse: ...
 
     @overload
     async def call(
         self: "AsyncPrompt[P, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> AsyncResponse[FormattableT]: ...
 
     async def call(
-        self, model: Model, *args: P.args, **kwargs: P.kwargs
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generates a response using the provided model asynchronously."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = await self.messages(*args, **kwargs)
         return await model.call_async(
             messages=messages, tools=self.toolkit, format=self.format
@@ -180,21 +211,26 @@ class AsyncPrompt(Generic[P, FormattableT]):
 
     @overload
     async def stream(
-        self: "AsyncPrompt[P, None]", model: Model, *args: P.args, **kwargs: P.kwargs
+        self: "AsyncPrompt[P, None]",
+        model: Model | ModelId,
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> AsyncStreamResponse: ...
 
     @overload
     async def stream(
         self: "AsyncPrompt[P, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> AsyncStreamResponse[FormattableT]: ...
 
     async def stream(
-        self, model: Model, *args: P.args, **kwargs: P.kwargs
+        self, model: Model | ModelId, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generates a streaming response using the provided model asynchronously."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = await self.messages(*args, **kwargs)
         return await model.stream_async(
             messages=messages, tools=self.toolkit, format=self.format
@@ -233,7 +269,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     def __call__(
         self: "ContextPrompt[P, DepsT, None]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -242,7 +278,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     def __call__(
         self: "ContextPrompt[P, DepsT, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -250,7 +286,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
 
     def __call__(
         self,
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -261,7 +297,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     def call(
         self: "ContextPrompt[P, DepsT, None]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -270,7 +306,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     def call(
         self: "ContextPrompt[P, DepsT, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -278,12 +314,14 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
 
     def call(
         self,
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generates a response using the provided model."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = self.messages(ctx, *args, **kwargs)
         return model.context_call(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
@@ -292,7 +330,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     def stream(
         self: "ContextPrompt[P, DepsT, None]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -301,7 +339,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     def stream(
         self: "ContextPrompt[P, DepsT, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -309,7 +347,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
 
     def stream(
         self,
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -317,6 +355,8 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the provided model."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = self.messages(ctx, *args, **kwargs)
         return model.context_stream(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
@@ -355,7 +395,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     async def __call__(
         self: "AsyncContextPrompt[P, DepsT, None]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -364,7 +404,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     async def __call__(
         self: "AsyncContextPrompt[P, DepsT, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -372,7 +412,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
 
     async def __call__(
         self,
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -383,7 +423,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     async def call(
         self: "AsyncContextPrompt[P, DepsT, None]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -392,7 +432,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     async def call(
         self: "AsyncContextPrompt[P, DepsT, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -400,12 +440,14 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
 
     async def call(
         self,
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generates a response using the provided model asynchronously."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = await self.messages(ctx, *args, **kwargs)
         return await model.context_call_async(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
@@ -414,7 +456,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     async def stream(
         self: "AsyncContextPrompt[P, DepsT, None]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -423,7 +465,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     @overload
     async def stream(
         self: "AsyncContextPrompt[P, DepsT, FormattableT]",
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -431,7 +473,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
 
     async def stream(
         self,
-        model: Model,
+        model: Model | ModelId,
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
@@ -440,6 +482,8 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the provided model asynchronously."""
+        if isinstance(model, str):
+            model = Model(model)
         messages = await self.messages(ctx, *args, **kwargs)
         return await model.context_stream_async(
             ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
