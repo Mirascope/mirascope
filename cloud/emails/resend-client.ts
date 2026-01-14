@@ -15,7 +15,7 @@
  * ## Usage
  *
  * ```ts
- * import { Resend } from "@/email";
+ * import { Resend } from "@/emails";
  *
  * const sendWelcomeEmail = (to: string) =>
  *   Effect.gen(function* () {
@@ -89,8 +89,28 @@ function validateResendConfig(
 }
 
 /**
+ * Type helper to unwrap Resend's Response<T> format to just T.
+ *
+ * Resend methods return Response<T> which is a union:
+ * - { data: T; error: null } & { headers: ... } (success)
+ * - { data: null; error: ErrorResponse } & { headers: ... } (error)
+ *
+ * Since wrapResendClient unwraps this at runtime (returns response.data),
+ * we need to unwrap it at the type level too. This extracts T from the success case
+ * by using Extract to get the success branch (where error is null) and then
+ * extracting the data property's type.
+ */
+type UnwrapResendResponse<R> =
+  Extract<R, { error: null }> extends {
+    data: infer T;
+  }
+    ? T
+    : R;
+
+/**
  * Type helper to convert a single Resend resource method to an Effect-returning method.
  * Preserves all overloads by mapping each signature individually.
+ * Unwraps Resend's Response<T> format to match runtime behavior.
  */
 type EffectifyMethod<T> = T extends {
   (...args: infer A1): Promise<infer R1>;
@@ -99,10 +119,10 @@ type EffectifyMethod<T> = T extends {
   (...args: infer A4): Promise<infer R4>;
 }
   ? {
-      (...args: A1): Effect.Effect<R1, ResendError>;
-      (...args: A2): Effect.Effect<R2, ResendError>;
-      (...args: A3): Effect.Effect<R3, ResendError>;
-      (...args: A4): Effect.Effect<R4, ResendError>;
+      (...args: A1): Effect.Effect<UnwrapResendResponse<R1>, ResendError>;
+      (...args: A2): Effect.Effect<UnwrapResendResponse<R2>, ResendError>;
+      (...args: A3): Effect.Effect<UnwrapResendResponse<R3>, ResendError>;
+      (...args: A4): Effect.Effect<UnwrapResendResponse<R4>, ResendError>;
     }
   : T extends {
         (...args: infer A1): Promise<infer R1>;
@@ -110,20 +130,20 @@ type EffectifyMethod<T> = T extends {
         (...args: infer A3): Promise<infer R3>;
       }
     ? {
-        (...args: A1): Effect.Effect<R1, ResendError>;
-        (...args: A2): Effect.Effect<R2, ResendError>;
-        (...args: A3): Effect.Effect<R3, ResendError>;
+        (...args: A1): Effect.Effect<UnwrapResendResponse<R1>, ResendError>;
+        (...args: A2): Effect.Effect<UnwrapResendResponse<R2>, ResendError>;
+        (...args: A3): Effect.Effect<UnwrapResendResponse<R3>, ResendError>;
       }
     : T extends {
           (...args: infer A1): Promise<infer R1>;
           (...args: infer A2): Promise<infer R2>;
         }
       ? {
-          (...args: A1): Effect.Effect<R1, ResendError>;
-          (...args: A2): Effect.Effect<R2, ResendError>;
+          (...args: A1): Effect.Effect<UnwrapResendResponse<R1>, ResendError>;
+          (...args: A2): Effect.Effect<UnwrapResendResponse<R2>, ResendError>;
         }
       : T extends (...args: infer A) => Promise<infer R>
-        ? (...args: A) => Effect.Effect<R, ResendError>
+        ? (...args: A) => Effect.Effect<UnwrapResendResponse<R>, ResendError>
         : T;
 
 /**

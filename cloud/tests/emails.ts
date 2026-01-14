@@ -1,3 +1,48 @@
+import { Effect, Layer, Context } from "effect";
+import { Resend } from "@/emails/resend-client";
+
+// ============================================================================
+// Mock Resend layer for service testing
+// ============================================================================
+
+/**
+ * Creates a mock Resend layer for testing the Emails service.
+ *
+ * Provides a consistent way to mock the Resend client without manually
+ * constructing the layer structure in each test.
+ *
+ * @example
+ * ```ts
+ * // Simple mock that returns success
+ * const layer = MockResend.layer(() => Effect.succeed({ id: "email_123" }));
+ *
+ * // Mock that captures parameters
+ * let capturedParams: unknown;
+ * const layer = MockResend.layer((params) => {
+ *   capturedParams = params;
+ *   return Effect.succeed({ id: "email_123" });
+ * });
+ *
+ * // Mock that returns an error
+ * const layer = MockResend.layer(() =>
+ *   Effect.fail(new ResendError({ message: "Failed to send" }))
+ * );
+ * ```
+ */
+export const MockResend = {
+  layer: (
+    sendFn: (params: unknown) => Effect.Effect<{ id: string }, unknown, never>,
+  ) =>
+    Layer.succeed(Resend, {
+      emails: {
+        send: sendFn,
+      },
+      config: {
+        apiKey: "re_test_mock",
+      },
+    } as unknown as Context.Tag.Service<typeof Resend>),
+};
+
 // ============================================================================
 // Test fixtures for email testing
 // ============================================================================
@@ -140,6 +185,58 @@ export function TestApiKeyResponseFixture(
   return {
     id: "key_123",
     token: "re_new_token",
+    ...overrides,
+  };
+}
+
+/**
+ * Factory for creating test email service send parameters.
+ *
+ * @example
+ * ```ts
+ * const params = TestEmailSendParamsFixture();
+ * const multiRecipient = TestEmailSendParamsFixture({ to: ["user1@example.com", "user2@example.com"] });
+ * const withCc = TestEmailSendParamsFixture({ cc: "cc@example.com" });
+ * ```
+ */
+export function TestEmailSendParamsFixture(
+  overrides?: Partial<{
+    from: string;
+    to: string | string[];
+    cc?: string | string[];
+    bcc?: string | string[];
+    replyTo?: string | string[];
+    subject: string;
+    html?: string;
+    text?: string;
+    attachments?: Array<{ filename: string; content: string }>;
+  }>,
+) {
+  return {
+    from: "noreply@example.com",
+    to: "user@example.com",
+    subject: "Test Email",
+    html: "<p>Test content</p>",
+    ...overrides,
+  };
+}
+
+/**
+ * Factory for creating test email service send response.
+ *
+ * @example
+ * ```ts
+ * const response = TestEmailSendResponseFixture();
+ * const customResponse = TestEmailSendResponseFixture({ id: "email_custom_456" });
+ * ```
+ */
+export function TestEmailSendResponseFixture(
+  overrides?: Partial<{
+    id: string;
+  }>,
+) {
+  return {
+    id: "email_test_123",
     ...overrides,
   };
 }
