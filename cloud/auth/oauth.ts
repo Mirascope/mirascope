@@ -12,10 +12,13 @@
  * tested via integration tests rather than unit tests.
  */
 import { Effect, Schema, Schedule, Layer } from "effect";
+import * as React from "react";
 import { Database, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
 import { Emails } from "@/emails";
+import { renderEmailTemplate } from "@/emails/render";
+import { WelcomeEmail } from "@/emails/templates";
 import { ExecutionContext } from "@/server-entry";
 import {
   OAuthError,
@@ -621,59 +624,48 @@ function sendWelcomeEmail(
   return Effect.gen(function* () {
     const emails = yield* Emails;
 
-    // Compose the email content
-    const greeting = name ? `Hi ${name}` : "Hello";
-    // TODO: make this email actually good in the next PR, but wait to do it
-    // so the change can be reviewed individually
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333;">
-          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #2563eb;">Welcome to Mirascope Cloud!</h1>
-            <p style="font-size: 16px;">${greeting},</p>
-            <p style="font-size: 16px;">
-              Thank you for signing up! We're excited to have you on board.
-            </p>
-            <p style="font-size: 16px;">
-              You can now start building with Mirascope Cloud. If you have any questions, feel free to reach out.
-            </p>
-            <p style="font-size: 16px; margin-top: 30px;">
-              Best regards,<br>
-              The Mirascope Team
-            </p>
-          </div>
-        </body>
-      </html>
-    `;
+    const htmlContent = yield* renderEmailTemplate(
+      React.createElement(WelcomeEmail, { name }),
+    ).pipe(
+      // If rendering fails, log error and skip sending email
+      Effect.catchAll((error) =>
+        Effect.gen(function* () {
+          yield* Effect.logError(
+            "Failed to render welcome email template",
+          ).pipe(Effect.annotateLogs({ error: String(error), email }));
+          // Return null to signal no email should be sent
+          return null;
+        }),
+      ),
+    );
 
-    // Send the email with retry logic
-    yield* emails
-      .send({
-        from: "william@mirascope.com",
-        to: email,
-        subject: "Welcome to Mirascope Cloud!",
-        html: htmlContent,
-      })
-      .pipe(
-        // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
-        Effect.retry(
-          Schedule.exponential("100 millis").pipe(
-            Schedule.compose(Schedule.recurs(4)),
+    // Only send email if rendering succeeded
+    if (htmlContent !== null) {
+      yield* emails
+        .send({
+          from: "william@mirascope.com",
+          replyTo: "william@mirascope.com",
+          to: email,
+          subject: "Welcome to Mirascope Cloud!",
+          html: htmlContent,
+        })
+        .pipe(
+          // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
+          Effect.retry(
+            Schedule.exponential("100 millis").pipe(
+              Schedule.compose(Schedule.recurs(4)),
+            ),
           ),
-        ),
-        // Catch all errors and log them, but don't fail the Effect
-        // This ensures email failures don't break signup
-        Effect.catchAllCause((cause) =>
-          Effect.logWarning(`Failed to send welcome email to ${email}`).pipe(
-            Effect.annotateLogs({ cause: String(cause) }),
-            Effect.as(undefined),
+          // Catch all errors and log them, but don't fail the Effect
+          // This ensures email failures don't break signup
+          Effect.catchAllCause((cause) =>
+            Effect.logWarning(`Failed to send welcome email to ${email}`).pipe(
+              Effect.annotateLogs({ cause: String(cause) }),
+              Effect.as(undefined),
+            ),
           ),
-        ),
-      );
+        );
+    }
 
     // Add user to marketing audience with retry logic
     yield* emails.audience.add(email).pipe(

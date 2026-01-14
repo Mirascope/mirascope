@@ -256,6 +256,35 @@ export class ResendError extends Schema.TaggedError<ResendError>()(
 }
 
 /**
+ * Error that occurs when rendering an email template fails.
+ *
+ * This error is raised when React Email's render() function fails to convert
+ * a React component to HTML. This can happen due to:
+ * - Invalid JSX in the template
+ * - Errors thrown during component render
+ * - Missing or invalid props
+ *
+ * @example
+ * ```ts
+ * const html = yield* renderEmailTemplate(component).pipe(
+ *   Effect.catchTag("EmailRenderError", (error) => {
+ *     console.error("Template rendering failed:", error.message);
+ *     return Effect.succeed(null);
+ *   })
+ * );
+ * ```
+ */
+export class EmailRenderError extends Schema.TaggedError<EmailRenderError>()(
+  "EmailRenderError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static readonly status = 500 as const;
+}
+
+/**
  * Error that occurs when attempting to reserve funds but insufficient balance is available.
  *
  * This error is returned when:
