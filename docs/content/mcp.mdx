@@ -1,0 +1,25 @@
+---
+title: MCP
+description: Learn how to use Model Context Protocol (MCP) servers to provide tools to your LLM applications.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/mcp/client.mdx (MCP client usage, stdio/sse connections, tools/prompts/resources)
+- python/mirascope/llm/mcp/mcp_client.py
+- python/tests/e2e/input/test_call_with_mcp_tools.py
+</Info>
+
+# MCP
+
+This document covers integrating MCP (Model Context Protocol) servers with Mirascope.
+
+## Topics Covered
+
+- Introduction to MCP and what it provides
+- The `llm.mcp` module
+- Connecting to MCP servers with `llm.mcp.MCPClient`
+- Getting async tools from MCP servers
+- Using MCP tools with Mirascope calls
+- MCP tool execution patterns
+- Combining MCP tools with native Mirascope tools

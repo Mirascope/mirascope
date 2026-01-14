@@ -1,0 +1,24 @@
+---
+title: Async
+description: Learn how to use asynchronous programming with Mirascope for concurrent LLM operations.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/async.mdx (async calls, parallel async, async streaming)
+</Info>
+
+# Async
+
+This document covers asynchronous programming patterns in Mirascope.
+
+## Topics Covered
+
+- General concept of async and why it's relevant for LLM applications
+- Async prompt functions and async calls
+- The consistency requirement: async prompts require async tools
+- Async response types: `llm.AsyncResponse`, `llm.AsyncStreamResponse`
+- Async tool execution with `await response.execute_tools()`
+- Async streaming with `async for` loops
+- Parallel async calls using `asyncio.gather()`
+- Best practices for async LLM applications

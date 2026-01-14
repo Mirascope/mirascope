@@ -11,8 +11,76 @@ const docsSection = {
       label: "Welcome",
     },
     {
-      slug: "examples",
-      label: "Examples (For LLMs)",
+      slug: "messages",
+      label: "Messages",
+    },
+    {
+      slug: "models",
+      label: "Models",
+    },
+    {
+      slug: "responses",
+      label: "Responses",
+    },
+    {
+      slug: "prompts",
+      label: "Prompts",
+    },
+    {
+      slug: "calls",
+      label: "Calls",
+    },
+    {
+      slug: "thinking",
+      label: "Thinking",
+    },
+    {
+      slug: "tools",
+      label: "Tools",
+    },
+    {
+      slug: "structured-output",
+      label: "Structured Output",
+    },
+    {
+      slug: "streaming",
+      label: "Streaming",
+    },
+    {
+      slug: "agents",
+      label: "Agents",
+    },
+    {
+      slug: "async",
+      label: "Async",
+    },
+    {
+      slug: "context",
+      label: "Context",
+    },
+    {
+      slug: "chaining",
+      label: "Chaining",
+    },
+    {
+      slug: "errors",
+      label: "Errors",
+    },
+    {
+      slug: "reliability",
+      label: "Reliability",
+    },
+    {
+      slug: "providers",
+      label: "Providers & Supported Features",
+    },
+    {
+      slug: "local-models",
+      label: "Local Models",
+    },
+    {
+      slug: "mcp",
+      label: "MCP",
     },
   ],
 };

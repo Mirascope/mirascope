@@ -1,0 +1,28 @@
+---
+title: Providers & Supported Features
+description: Learn how to configure providers and understand supported features across different LLM providers.
+---
+
+<Info>
+Reference: This doc should draw from:
+- index.mdx "Provider Registration" section
+- python/mirascope/llm/providers/provider_registry.py
+- python/mirascope/llm/providers/base/base_provider.py
+- python/tests/e2e/input/test_provider_overriding.py
+- python/tests/e2e/input/test_openai_compatibility_providers.py
+- legacy/legacy-content-v1/extensions/custom_provider.mdx (custom provider patterns)
+</Info>
+
+# Providers & Supported Features
+
+This document covers provider configuration and feature support in Mirascope.
+
+## Topics Covered
+
+- The `llm.Provider` interface
+- Built-in providers: OpenAI, Anthropic, Google, and others
+- Provider registration with `llm.register_provider()`
+- Customizing provider settings: base URL, API keys, clients
+- Routing models to providers (e.g., OpenAI-compatible APIs)
+- Supported features matrix across providers
+- Resetting provider configuration with `llm.reset_provider_registry()`

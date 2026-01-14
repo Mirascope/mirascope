@@ -1,0 +1,29 @@
+---
+title: Errors
+description: Learn about Mirascope's unified error types for handling LLM API errors.
+---
+
+<Info>
+Reference: This doc should draw from:
+- python/mirascope/llm/exceptions.py
+Note: Error types are new unified v2 abstractions
+</Info>
+
+# Errors
+
+This document covers Mirascope's unified error handling system.
+
+## Topics Covered
+
+- Overview of Mirascope's unified exception hierarchy
+- Base exception: `llm.MirascopeLLMError`
+- API errors: `llm.APIError` and its subclasses
+- Specific error types:
+  - `llm.AuthenticationError` - Invalid API keys
+  - `llm.RateLimitError` - Rate limits exceeded
+  - `llm.BadRequestError` - Malformed requests
+  - `llm.NotFoundError` - Resource not found
+  - `llm.ServerError` - Provider server errors
+  - `llm.ConnectionError` - Network issues
+  - `llm.TimeoutError` - Request timeouts
+- Feature support errors: `llm.FeatureNotSupportedError`, `llm.FormattingModeNotSupportedError`

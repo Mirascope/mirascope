@@ -1,0 +1,25 @@
+---
+title: Context
+description: Learn how to use the llm.Context system for dependency injection in prompts and tools.
+---
+
+<Info>
+Reference: This doc should draw from:
+- index.mdx "Context Prompts & Context Tools" section (context usage patterns)
+Note: Context is a new v2 feature with no direct v1 equivalent
+</Info>
+
+# Context
+
+This document covers Mirascope's Context system for injecting dependencies at call time.
+
+## Topics Covered
+
+- Introduction to the `llm.Context` class and why it's useful
+- Creating context subclasses to hold dependencies
+- Context prompts: prompts that take `ctx` as their first argument
+- Context tools: tools that receive context for accessing shared state
+- Passing context when calling: `call(ctx)`, `response.resume(ctx)`, `response.execute_tools(ctx)`
+- Type safety: ensuring prompts and tools agree on context type
+- Mixing context tools with non-context tools
+- The `llm.ContextResponse` type and its generic parameters

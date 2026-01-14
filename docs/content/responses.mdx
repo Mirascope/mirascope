@@ -1,0 +1,25 @@
+---
+title: Responses
+description: Learn how to work with LLM responses in Mirascope.
+---
+
+<Info>
+Reference: This doc should draw from:
+- legacy/legacy-content-v1/calls.mdx (response content, message params)
+- index.mdx "LLM Responses" section (response properties, stream responses)
+- python/mirascope/llm/responses/base_response.py
+</Info>
+
+# Responses
+
+This document covers how to work with responses from LLMs.
+
+## Topics Covered
+
+- The core concept of an `llm.Response`
+- Using `response.pretty()` for unified, human-readable output
+- Accessing specific content: `response.content`, `response.texts`, `response.tool_calls`
+- Response metadata: `response.usage`, `response.finish_reason`
+- The full message history via `response.messages`
+- Continuing conversations with `response.resume()`
+- Accessing the raw provider response via `response.raw`

@@ -1,0 +1,33 @@
+---
+title: Structured Output
+description: Learn how to get structured, validated responses from LLMs using Pydantic models.
+---
+
+<Info>
+Reference: This doc should draw from:
+- index.mdx "Response Formatting" section (format parameter, formatting modes)
+- python/mirascope/llm/formatting/format.py
+- python/tests/e2e/output/test_structured_output.py
+- python/tests/e2e/output/test_structured_output_with_tools.py
+- python/tests/e2e/input/test_structured_output_with_formatting_instructions.py
+- legacy/legacy-content-v1/response_models.mdx (Pydantic response models, validation)
+- legacy/legacy-content-v1/json_mode.mdx (JSON mode basics, provider support)
+- legacy/legacy-content-v1/output_parsers.mdx (custom parsing: regex, XML, etc.)
+</Info>
+
+# Structured Output
+
+This document covers generating structured output from LLMs using format classes.
+
+## Topics Covered
+
+- Introduction to structured output and why it's useful
+- Format classes: Pydantic `BaseModel` subclasses that define response structure
+- Passing a format via the `format=` parameter
+- Using `llm.format()` to specify formatting modes (`strict`, `json`, `tool`, `parser`)
+- How different formatting modes work under the hood
+- Parsing responses with `response.parse()`
+- Partial parsing during streaming with `response.parse(partial=True)`
+- The `llm.Partial` type for streaming structured output
+- Validation and error handling with Pydantic
+- Custom output parsers for non-standard formats (XML, regex, etc.)
