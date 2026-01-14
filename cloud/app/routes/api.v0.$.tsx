@@ -8,6 +8,7 @@ import { Database } from "@/db";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
+import { spansMeteringQueueLayer } from "@/server-entry";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -104,6 +105,7 @@ export const Route = createFileRoute("/api/v0/$")({
                   }),
                 ),
               ),
+              spansMeteringQueueLayer,
             ),
           ),
           handleErrors,

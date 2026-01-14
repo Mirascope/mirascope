@@ -84,6 +84,7 @@ import { spans, type NewSpan } from "@/db/schema/spans";
 import { spansOutbox } from "@/db/schema/spansOutbox";
 import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
+import { Payments } from "@/payments";
 
 export type { PublicTrace, CreateTraceResponse };
 
@@ -307,7 +308,7 @@ export class Traces extends BaseAuthenticatedEffectService<
   }): Effect.Effect<
     CreateTraceResponse,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -324,6 +325,7 @@ export class Traces extends BaseAuthenticatedEffectService<
       // Process OTLP resource spans
       let acceptedSpans = 0;
       let rejectedSpans = 0;
+      const acceptedSpanIds: string[] = [];
       let firstTrace: PublicTrace | null = null;
 
       for (const rs of data.resourceSpans) {
@@ -446,11 +448,15 @@ export class Traces extends BaseAuthenticatedEffectService<
                   );
               }
 
-              return insertedSpans.length > 0;
-            }).pipe(Effect.catchAll(() => Effect.succeed(false)));
+              return insertedSpans.length > 0 ? insertedSpans : null;
+            }).pipe(Effect.catchAll(() => Effect.succeed(null)));
 
             if (result) {
               acceptedSpans++;
+              // Collect span IDs for metering
+              for (const insertedSpan of result) {
+                acceptedSpanIds.push(insertedSpan.id);
+              }
             } else {
               rejectedSpans++;
             }
@@ -475,6 +481,7 @@ export class Traces extends BaseAuthenticatedEffectService<
         ...traceInfo,
         acceptedSpans,
         rejectedSpans,
+        acceptedSpanIds,
       };
     });
   }

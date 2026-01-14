@@ -8,6 +8,7 @@ import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
 import { Payments } from "@/payments";
 import { DefaultMockPayments } from "@/tests/payments";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -45,6 +46,16 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
 /**
+ * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
+ */
+export const MockSpansMeteringQueue = Layer.succeed(
+  SpansMeteringQueueService,
+  SpansMeteringQueueService.of({
+    send: () => Effect.succeed(undefined), // No-op in tests
+  }),
+);
+
+/**
  * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
  * `SqlClient` services for tests.
  *
@@ -54,15 +65,18 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
  * tests that don't use `it.effect`).
  */
 export const TestDatabase: Layer.Layer<
-  Database | DrizzleORM | SqlClient.SqlClient
+  Database | DrizzleORM | SqlClient.SqlClient | SpansMeteringQueueService
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { DefaultMockPayments } = yield* Effect.promise(
     () => import("@/tests/payments"),
   );
-  return Database.Default.pipe(
-    Layer.provideMerge(TestDrizzleORM),
-    Layer.provide(DefaultMockPayments),
+  return Layer.mergeAll(
+    Database.Default.pipe(
+      Layer.provideMerge(TestDrizzleORM),
+      Layer.provide(DefaultMockPayments),
+    ),
+    MockSpansMeteringQueue,
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -124,7 +138,11 @@ const withRollback = <A, E, R>(
 /**
  * Services that are automatically provided to all `it.effect` tests.
  */
-export type TestServices = Database | DrizzleORM | SqlClient.SqlClient;
+export type TestServices =
+  | Database
+  | DrizzleORM
+  | SqlClient.SqlClient
+  | SpansMeteringQueueService;
 
 /**
  * Wraps a test function to automatically provide TestDatabase

@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   describe,
   expect,
@@ -48,6 +48,12 @@ describe("toTrace", () => {
     expect(result.createdAt).toBeNull();
   });
 });
+import { DrizzleORM } from "@/db/client";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import { createTraceHandler } from "@/api/traces.handlers";
+import { Authentication } from "@/auth";
+import { Database } from "@/db";
+import { DatabaseError } from "@/errors";
 
 describe.sequential("Traces API", (it) => {
   let project: PublicProject;
@@ -300,6 +306,339 @@ describe.sequential("Traces API", (it) => {
       if (disposeApiKeyClient) {
         yield* Effect.promise(disposeApiKeyClient);
       }
+    }),
+  );
+});
+
+describe("Traces Handler - Metering", () => {
+  it.rollback("handles empty span IDs gracefully (no metering queued)", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+
+      // Create a real user in the database
+      const user = yield* db.users.create({
+        data: {
+          email: "test-metering-empty@example.com",
+          name: "Test User Metering Empty",
+        },
+      });
+
+      // Create org, project, and environment for this test
+      const org = yield* db.organizations.create({
+        userId: user.id,
+        data: { name: "Test Org", slug: "test-org-metering-empty" },
+      });
+      const proj = yield* db.organizations.projects.create({
+        userId: user.id,
+        organizationId: org.id,
+        data: { name: "Test Project", slug: "test-proj-metering-empty" },
+      });
+      const env = yield* db.organizations.projects.environments.create({
+        userId: user.id,
+        organizationId: org.id,
+        projectId: proj.id,
+        data: { name: "Test Env", slug: "test-env-metering-empty" },
+      });
+
+      // Track if queue.send was called
+      let sendCalled = false;
+      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+        send: () => {
+          sendCalled = true;
+          return Effect.succeed(undefined);
+        },
+      });
+
+      // Empty payload - no spans
+      const payload = { resourceSpans: [] };
+
+      const authLayer = Layer.succeed(Authentication, {
+        user,
+        apiKeyInfo: {
+          apiKeyId: "test-key",
+          organizationId: org.id,
+          projectId: proj.id,
+          environmentId: env.id,
+          ownerId: user.id,
+          ownerEmail: user.email,
+          ownerName: user.name,
+          ownerDeletedAt: user.deletedAt,
+        },
+      });
+
+      const result = yield* createTraceHandler(payload).pipe(
+        Effect.provide(authLayer),
+        Effect.provide(MockQueueLayer),
+      );
+
+      // Should complete without error and not call queue
+      expect(result.partialSuccess).toBeDefined();
+      expect(sendCalled).toBe(false);
+    }),
+  );
+
+  it.rollback(
+    "handles database error when fetching organization (logs and continues)",
+    () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        // Create a real user in the database
+        const user = yield* db.users.create({
+          data: {
+            email: "test-metering-dberror@example.com",
+            name: "Test User Metering DB Error",
+          },
+        });
+
+        // Create org, project, and environment
+        const org = yield* db.organizations.create({
+          userId: user.id,
+          data: { name: "Test Org 2", slug: "test-org-metering-dberror" },
+        });
+        const proj = yield* db.organizations.projects.create({
+          userId: user.id,
+          organizationId: org.id,
+          data: { name: "Test Project 2", slug: "test-proj-metering-dberror" },
+        });
+        const env = yield* db.organizations.projects.environments.create({
+          userId: user.id,
+          organizationId: org.id,
+          projectId: proj.id,
+          data: { name: "Test Env 2", slug: "test-env-metering-dberror" },
+        });
+
+        // Mock DrizzleORM to throw error when selecting org
+        const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
+          select: () => ({
+            from: () => ({
+              where: () =>
+                Effect.fail(
+                  new DatabaseError({
+                    message: "Simulated database error",
+                  }),
+                ),
+            }),
+          }),
+        } as never);
+
+        const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+          send: () => Effect.succeed(undefined),
+        });
+
+        const payload = {
+          resourceSpans: [
+            {
+              scopeSpans: [
+                {
+                  spans: [
+                    {
+                      traceId: "trace-db-error",
+                      spanId: "span-db-error",
+                      name: "test-span",
+                      startTimeUnixNano: "1000000000",
+                      endTimeUnixNano: "2000000000",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        };
+
+        const authLayer = Layer.succeed(Authentication, {
+          user,
+          apiKeyInfo: {
+            apiKeyId: "test-key-2",
+            organizationId: org.id,
+            projectId: proj.id,
+            environmentId: env.id,
+            ownerId: user.id,
+            ownerEmail: user.email,
+            ownerName: user.name,
+            ownerDeletedAt: user.deletedAt,
+          },
+        });
+
+        // Should complete without error despite DB error
+        const result = yield* createTraceHandler(payload).pipe(
+          Effect.provide(authLayer),
+          Effect.provide(MockDrizzleLayer),
+          Effect.provide(MockQueueLayer),
+        );
+
+        expect(result.partialSuccess).toBeDefined();
+      }),
+  );
+
+  it.rollback("handles organization not found (logs and continues)", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+
+      // Create a real user in the database
+      const user = yield* db.users.create({
+        data: {
+          email: "test-metering-notfound@example.com",
+          name: "Test User Metering Not Found",
+        },
+      });
+
+      // Create org, project, and environment
+      const org = yield* db.organizations.create({
+        userId: user.id,
+        data: { name: "Test Org 3", slug: "test-org-metering-notfound" },
+      });
+      const proj = yield* db.organizations.projects.create({
+        userId: user.id,
+        organizationId: org.id,
+        data: {
+          name: "Test Project 3",
+          slug: "test-proj-metering-notfound",
+        },
+      });
+      const env = yield* db.organizations.projects.environments.create({
+        userId: user.id,
+        organizationId: org.id,
+        projectId: proj.id,
+        data: { name: "Test Env 3", slug: "test-env-metering-notfound" },
+      });
+
+      // Mock DrizzleORM to return empty result
+      const MockDrizzleLayer = Layer.succeed(DrizzleORM, {
+        select: () => ({
+          from: () => ({
+            where: () => Effect.succeed([]), // Empty array = org not found
+          }),
+        }),
+      } as never);
+
+      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+        send: () => Effect.succeed(undefined),
+      });
+
+      const payload = {
+        resourceSpans: [
+          {
+            scopeSpans: [
+              {
+                spans: [
+                  {
+                    traceId: "trace-notfound",
+                    spanId: "span-notfound",
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const authLayer = Layer.succeed(Authentication, {
+        user,
+        apiKeyInfo: {
+          apiKeyId: "test-key",
+          organizationId: org.id,
+          projectId: proj.id,
+          environmentId: env.id,
+          ownerId: user.id,
+          ownerEmail: user.email,
+          ownerName: user.name,
+          ownerDeletedAt: user.deletedAt,
+        },
+      });
+
+      // Should complete without error despite org not found
+      const result = yield* createTraceHandler(payload).pipe(
+        Effect.provide(authLayer),
+        Effect.provide(MockDrizzleLayer),
+        Effect.provide(MockQueueLayer),
+      );
+
+      expect(result.partialSuccess).toBeDefined();
+    }),
+  );
+
+  it.rollback("handles queue send error (logs and continues)", () =>
+    Effect.gen(function* () {
+      const db = yield* Database;
+
+      // Create a real user in the database
+      const user = yield* db.users.create({
+        data: {
+          email: "test-metering-queueerror@example.com",
+          name: "Test User Metering Queue Error",
+        },
+      });
+
+      // Create org, project, and environment
+      const org = yield* db.organizations.create({
+        userId: user.id,
+        data: { name: "Test Org 4", slug: "test-org-metering-queueerror" },
+      });
+      const proj = yield* db.organizations.projects.create({
+        userId: user.id,
+        organizationId: org.id,
+        data: {
+          name: "Test Project 4",
+          slug: "test-proj-metering-queueerror",
+        },
+      });
+      const env = yield* db.organizations.projects.environments.create({
+        userId: user.id,
+        organizationId: org.id,
+        projectId: proj.id,
+        data: { name: "Test Env 4", slug: "test-env-metering-queueerror" },
+      });
+
+      // Mock queue to throw error
+      const MockQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+        send: () => Effect.fail(new Error("Queue send failed")),
+      });
+
+      const payload = {
+        resourceSpans: [
+          {
+            scopeSpans: [
+              {
+                spans: [
+                  {
+                    traceId: "trace-queue-error",
+                    spanId: "span-queue-error",
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const authLayer = Layer.succeed(Authentication, {
+        user,
+        apiKeyInfo: {
+          apiKeyId: "test-key-4",
+          organizationId: org.id,
+          projectId: proj.id,
+          environmentId: env.id,
+          ownerId: user.id,
+          ownerEmail: user.email,
+          ownerName: user.name,
+          ownerDeletedAt: user.deletedAt,
+        },
+      });
+
+      // Should complete without error despite queue error
+      const result = yield* createTraceHandler(payload).pipe(
+        Effect.provide(authLayer),
+        Effect.provide(MockQueueLayer),
+      );
+
+      expect(result.partialSuccess).toBeDefined();
     }),
   );
 });

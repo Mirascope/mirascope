@@ -99,4 +99,5 @@ export type PublicTrace = Pick<
 export type CreateTraceResponse = PublicTrace & {
   acceptedSpans: number;
   rejectedSpans: number;
+  acceptedSpanIds: string[]; // Span IDs for metering
 };

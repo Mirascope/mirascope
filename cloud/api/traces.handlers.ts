@@ -1,6 +1,13 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
 import { Authentication } from "@/auth";
+import { DrizzleORM } from "@/db/client";
+import { organizations } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import {
+  SpansMeteringQueueService,
+  type SpanMeteringMessage,
+} from "@/workers/spansMeteringQueue";
 import type {
   CreateTraceRequest,
   CreateTraceResponse,
@@ -9,6 +16,79 @@ import type {
 import type { PublicTrace } from "@/db/traces";
 
 export * from "@/api/traces.schemas";
+
+/**
+ * Enqueues span metering messages for accepted spans.
+ *
+ * Fetches the organization's Stripe customer ID and enqueues a metering
+ * message for each accepted span. Errors are logged but don't fail the
+ * trace creation - eventual consistency via reconciliation is acceptable.
+ *
+ * @param spanIds - Array of accepted span IDs
+ * @param organizationId - Organization ID
+ * @param projectId - Project ID
+ * @param environmentId - Environment ID
+ * @returns Effect that completes when messages are enqueued
+ */
+function enqueueSpanMetering(
+  spanIds: string[],
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+): Effect.Effect<void, never, DrizzleORM | SpansMeteringQueueService> {
+  return Effect.gen(function* () {
+    if (spanIds.length === 0) {
+      return;
+    }
+
+    const client = yield* DrizzleORM;
+    const queue = yield* SpansMeteringQueueService;
+
+    // Fetch organization to get stripe customer ID
+    const [org] = yield* client
+      .select({ stripeCustomerId: organizations.stripeCustomerId })
+      .from(organizations)
+      .where(eq(organizations.id, organizationId))
+      .pipe(
+        Effect.catchAll((error) => {
+          console.error(
+            `[traces] Failed to fetch organization ${organizationId} for span metering:`,
+            error,
+          );
+          return Effect.succeed([]);
+        }),
+      );
+
+    if (!org) {
+      console.error(
+        `[traces] Organization ${organizationId} not found for span metering`,
+      );
+      return;
+    }
+
+    // Enqueue metering message for each accepted span
+    for (const spanId of spanIds) {
+      const message: SpanMeteringMessage = {
+        spanId,
+        organizationId,
+        projectId,
+        environmentId,
+        stripeCustomerId: org.stripeCustomerId,
+        timestamp: Date.now(),
+      };
+
+      yield* queue.send(message).pipe(
+        Effect.catchAll((error) => {
+          console.error(
+            `[traces] Failed to enqueue span metering for span ${spanId}:`,
+            error,
+          );
+          return Effect.succeed(undefined);
+        }),
+      );
+    }
+  });
+}
 
 /**
  * Handler for creating traces from OTLP trace data.
@@ -26,6 +106,14 @@ export const createTraceHandler = (payload: CreateTraceRequest) =>
       environmentId: apiKeyInfo.environmentId,
       data: { resourceSpans: payload.resourceSpans },
     });
+
+    // Enqueue metering for accepted spans (fire-and-forget, errors logged)
+    yield* enqueueSpanMetering(
+      result.acceptedSpanIds,
+      apiKeyInfo.organizationId,
+      apiKeyInfo.projectId,
+      apiKeyInfo.environmentId,
+    );
 
     const response: CreateTraceResponse = {
       partialSuccess:
