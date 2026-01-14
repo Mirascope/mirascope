@@ -62,7 +62,7 @@ const BATCH_LIMIT = 100;
  *
  * For each, attempts to settle (charge + release).
  */
-const reconcileSuccessfulRequests = Effect.gen(function* () {
+export const reconcileSuccessfulRequests = Effect.gen(function* () {
   const client = yield* DrizzleORM;
   const payments = yield* Payments;
   const now = new Date();
@@ -133,7 +133,7 @@ const reconcileSuccessfulRequests = Effect.gen(function* () {
  *
  * For each, releases the reservation without charging.
  */
-const reconcileFailedRequests = Effect.gen(function* () {
+export const reconcileFailedRequests = Effect.gen(function* () {
   const client = yield* DrizzleORM;
   const now = new Date();
 
@@ -184,7 +184,7 @@ const reconcileFailedRequests = Effect.gen(function* () {
  * This indicates the request processing failed before completion.
  * Updates both to failure/released state.
  */
-const reconcilePendingExpiredRequests = Effect.gen(function* () {
+export const reconcilePendingExpiredRequests = Effect.gen(function* () {
   const client = yield* DrizzleORM;
   const now = new Date();
 
@@ -278,7 +278,7 @@ const reconcilePendingExpiredRequests = Effect.gen(function* () {
  * Logs a warning for records older than DLQ_THRESHOLD_MS (24 hours).
  * These require manual intervention.
  */
-const detectStaleReconciliation = Effect.gen(function* () {
+export const detectStaleReconciliation = Effect.gen(function* () {
   const client = yield* DrizzleORM;
   const dlqThreshold = new Date(Date.now() - DLQ_THRESHOLD_MS);
 
@@ -329,7 +329,7 @@ const detectStaleReconciliation = Effect.gen(function* () {
  * This state should never occur in normal operation.
  * Logs a critical warning if found.
  */
-const detectInvalidState = Effect.gen(function* () {
+export const detectInvalidState = Effect.gen(function* () {
   const client = yield* DrizzleORM;
 
   // Find pending + released records (invalid state)
@@ -366,6 +366,37 @@ const detectInvalidState = Effect.gen(function* () {
       invalidRecords,
     );
   }
+});
+
+// =============================================================================
+// Main Reconciliation Program
+// =============================================================================
+
+/**
+ * Main billing reconciliation program.
+ *
+ * Runs all reconciliation steps in sequence:
+ * 1. Reconcile successful requests (charge + release)
+ * 2. Reconcile failed requests (release only)
+ * 3. Handle pending + expired (mark failure + release)
+ * 4. Detect stale records (log warning)
+ * 5. Detect invalid state (log critical warning)
+ */
+export const reconcileBilling = Effect.gen(function* () {
+  // Step 1: Reconcile successful requests (charge + release)
+  yield* reconcileSuccessfulRequests;
+
+  // Step 2: Reconcile failed requests (release only)
+  yield* reconcileFailedRequests;
+
+  // Step 3: Handle pending + expired (mark failure + release)
+  yield* reconcilePendingExpiredRequests;
+
+  // Step 4: Detect stale records (log warning)
+  yield* detectStaleReconciliation;
+
+  // Step 5: Detect invalid state (log critical warning)
+  yield* detectInvalidState;
 });
 
 // =============================================================================
@@ -411,23 +442,6 @@ export default {
       return;
     }
 
-    const program = Effect.gen(function* () {
-      // Step 1: Reconcile successful requests (charge + release)
-      yield* reconcileSuccessfulRequests;
-
-      // Step 2: Reconcile failed requests (release only)
-      yield* reconcileFailedRequests;
-
-      // Step 3: Handle pending + expired (mark failure + release)
-      yield* reconcilePendingExpiredRequests;
-
-      // Step 4: Detect stale records (log warning)
-      yield* detectStaleReconciliation;
-
-      // Step 5: Detect invalid state (log critical warning)
-      yield* detectInvalidState;
-    });
-
     // Build layers
     const settingsLayer = Layer.succeed(
       SettingsService,
@@ -451,7 +465,7 @@ export default {
 
     // Run the program
     await Effect.runPromise(
-      program.pipe(
+      reconcileBilling.pipe(
         Effect.provide(paymentsLayer),
         Effect.provide(drizzleLayer),
         Effect.provide(settingsLayer),

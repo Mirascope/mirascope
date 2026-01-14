@@ -26,6 +26,48 @@ import { type ScheduledEvent, type CronTriggerEnv } from "./cron-config";
 export type { CronTriggerEnv };
 
 // =============================================================================
+// Expiry Program
+// =============================================================================
+
+/**
+ * Expires stale active reservations.
+ *
+ * Finds all active reservations where expiresAt < NOW() and marks them as 'expired'.
+ * This is the core Effect program, exported for testing.
+ */
+export const expireStaleReservations = Effect.gen(function* () {
+  const client = yield* DrizzleORM;
+  const now = new Date();
+
+  // Find and expire stale active reservations
+  const expiredRows = yield* client
+    .update(creditReservations)
+    .set({ status: "expired" })
+    .where(
+      and(
+        eq(creditReservations.status, "active"),
+        lt(creditReservations.expiresAt, now),
+      ),
+    )
+    .returning({ id: creditReservations.id })
+    .pipe(
+      Effect.mapError(
+        (error) =>
+          new DatabaseError({
+            message: "Failed to expire stale reservations",
+            cause: error,
+          }),
+      ),
+    );
+
+  if (expiredRows.length > 0) {
+    console.log(
+      `[reservationExpiryCron] Expired ${expiredRows.length} stale reservations`,
+    );
+  }
+});
+
+// =============================================================================
 // Cron Handler
 // =============================================================================
 
@@ -50,38 +92,6 @@ export default {
       return;
     }
 
-    const program = Effect.gen(function* () {
-      const client = yield* DrizzleORM;
-      const now = new Date();
-
-      // Find and expire stale active reservations
-      const expiredRows = yield* client
-        .update(creditReservations)
-        .set({ status: "expired" })
-        .where(
-          and(
-            eq(creditReservations.status, "active"),
-            lt(creditReservations.expiresAt, now),
-          ),
-        )
-        .returning({ id: creditReservations.id })
-        .pipe(
-          Effect.mapError(
-            (error) =>
-              new DatabaseError({
-                message: "Failed to expire stale reservations",
-                cause: error,
-              }),
-          ),
-        );
-
-      if (expiredRows.length > 0) {
-        console.log(
-          `[reservationExpiryCron] Expired ${expiredRows.length} stale reservations`,
-        );
-      }
-    });
-
     // Build layers
     const settingsLayer = Layer.succeed(
       SettingsService,
@@ -91,7 +101,7 @@ export default {
 
     // Run the program
     await Effect.runPromise(
-      program.pipe(
+      expireStaleReservations.pipe(
         Effect.provide(drizzleLayer),
         Effect.provide(settingsLayer),
         Effect.catchAll((error) => {

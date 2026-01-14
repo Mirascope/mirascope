@@ -2,12 +2,13 @@
  * @fileoverview Tests for spans metering queue consumer.
  */
 
-import { describe, expect, it, TEST_DATABASE_URL } from "@/tests/db";
+import { describe, expect, vi, it } from "vitest";
 import { Effect, Layer } from "effect";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
 import type { WorkerEnv } from "./cron-config";
-import { vi } from "vitest";
+
+const TEST_DATABASE_URL = "postgres://test:test@localhost:5432/test";
 
 // Import the queue handler and types
 import spansMeteringQueue, {
@@ -88,39 +89,39 @@ function createTestMessage(
 
 describe("Spans Metering Queue", () => {
   describe("chargeSpanMeter", () => {
-    it.effect("charges the spans meter for the customer", () =>
-      Effect.gen(function* () {
-        const message = createTestMessage();
+    it("charges the spans meter for the customer", async () => {
+      const message = createTestMessage();
 
-        // Create a mock to capture the call
-        let capturedParams: {
-          stripeCustomerId: string;
-          spanId: string;
-        } | null = null;
+      // Create a mock to capture the call
+      let capturedParams: {
+        stripeCustomerId: string;
+        spanId: string;
+      } | null = null;
 
-        const MockPaymentsLayer = Layer.succeed(Payments, {
-          customers: {} as never,
-          products: {
-            router: {} as never,
-            spans: {
-              chargeMeter: (params) => {
-                capturedParams = params;
-                return Effect.succeed(undefined);
-              },
+      const MockPaymentsLayer = Layer.succeed(Payments, {
+        customers: {} as never,
+        products: {
+          router: {} as never,
+          spans: {
+            chargeMeter: (params) => {
+              capturedParams = params;
+              return Effect.succeed(undefined);
             },
           },
-          paymentIntents: {} as never,
-        });
+        },
+        paymentIntents: {} as never,
+      });
 
-        yield* chargeSpanMeter(message).pipe(Effect.provide(MockPaymentsLayer));
+      await Effect.runPromise(
+        chargeSpanMeter(message).pipe(Effect.provide(MockPaymentsLayer)),
+      );
 
-        // Verify the meter was charged with correct parameters
-        expect(capturedParams).toEqual({
-          stripeCustomerId: message.stripeCustomerId,
-          spanId: message.spanId,
-        });
-      }),
-    );
+      // Verify the meter was charged with correct parameters
+      expect(capturedParams).toEqual({
+        stripeCustomerId: message.stripeCustomerId,
+        spanId: message.spanId,
+      });
+    });
   });
 
   describe("SpansMeteringQueueService", () => {

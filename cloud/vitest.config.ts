@@ -11,19 +11,14 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: [
-        "api",
-        "auth",
-        "db",
-        "payments",
-        "workers/spansMeteringQueue.ts",
-        // "workers", // TODO: get full coverage on workers module
-      ],
+      include: ["api", "auth", "db", "payments", "workers"],
       exclude: [
         "**/index.ts",
         "db/migrations/**",
         "db/schema/**",
         "tests/**",
+        "workers/clickhouseCron.ts", // TODO: remove this when we switch to ClickHouse + Durable Objects
+        "workers/outboxProcessor.ts", // TODO: remove this when we switch to ClickHouse + Durable Objects
         ...coverageConfigDefaults.exclude,
       ],
       thresholds: {
