@@ -5,6 +5,7 @@ import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
+import { DrizzleORM } from "@/db/client";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans, realtimeSpansLayer } from "@/workers/realtimeSpans";
@@ -13,7 +14,10 @@ import {
   SpansIngestQueue,
   spansIngestQueueLayer,
 } from "@/workers/spanIngestQueue";
-import { spansMeteringQueueLayer } from "@/workers/spansMeteringQueue";
+import {
+  SpansMeteringQueueService,
+  spansMeteringQueueLayer,
+} from "@/workers/spansMeteringQueue";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -70,18 +74,22 @@ export const Route = createFileRoute("/api/v0/$")({
           const pathParams = extractPathParameters(params["*"]);
           const authResult = yield* authenticate(request, pathParams);
 
+          const drizzle = yield* DrizzleORM;
           const clickHouseSearch = yield* ClickHouseSearch;
           const realtimeSpans = yield* RealtimeSpans;
           const spansIngestQueue = yield* SpansIngestQueue;
+          const spansMeteringQueue = yield* SpansMeteringQueueService;
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v0",
             user: authResult.user,
             apiKeyInfo: authResult.apiKeyInfo,
             environment: process.env.ENVIRONMENT || "development",
+            drizzle,
             clickHouseSearch,
             realtimeSpans,
             spansIngestQueue,
+            spansMeteringQueue,
           });
 
           if (!result.matched) {
@@ -115,8 +123,8 @@ export const Route = createFileRoute("/api/v0/$")({
                 ),
               ),
               spansIngestQueueLayer,
-              realtimeSpansLayer,
               spansMeteringQueueLayer,
+              realtimeSpansLayer,
             ),
           ),
           handleErrors,

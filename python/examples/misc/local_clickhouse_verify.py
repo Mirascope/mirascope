@@ -7,8 +7,7 @@ Complete end-to-end test:
 
 Prerequisites:
 1. Start Docker: `cd cloud && docker compose -f docker/compose.yml up -d`
-2. Start cloud server: `bun run cloud:dev`
-3. Start sync worker: `cd cloud && bun run tsx workers/clickhouseSyncLocal.ts`
+2. Start cloud server: `cd cloud && bun run dev`
 
 Usage:
     MIRASCOPE_API_KEY=mk_xxx uv run python examples/misc/local_clickhouse_verify.py

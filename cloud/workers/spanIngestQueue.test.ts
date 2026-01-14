@@ -315,7 +315,7 @@ describe("spanIngestQueue", () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it("does not warn when RECENT_SPANS_DURABLE_OBJECT is configured", async () => {
+    it("does not warn when REALTIME_SPANS_DURABLE_OBJECT is configured", async () => {
       const consoleWarnSpy = vi
         .spyOn(console, "warn")
         .mockImplementation(() => {});
@@ -331,7 +331,7 @@ describe("spanIngestQueue", () => {
         CLICKHOUSE_USER: "default",
         CLICKHOUSE_PASSWORD: "",
         CLICKHOUSE_DATABASE: "default",
-        RECENT_SPANS_DURABLE_OBJECT: {
+        REALTIME_SPANS_DURABLE_OBJECT: {
           idFromName: () => ({ toString: () => "test-id" }),
           get: () => ({
             fetch: () => Promise.resolve(new Response("ok")),
@@ -342,7 +342,7 @@ describe("spanIngestQueue", () => {
       await spanIngestQueue.queue(batch, env as never);
 
       expect(consoleWarnSpy).not.toHaveBeenCalledWith(
-        "[spanIngestQueue] RECENT_SPANS_DURABLE_OBJECT not configured, skipping realtime cache",
+        "[spanIngestQueue] REALTIME_SPANS_DURABLE_OBJECT not configured, skipping realtime cache",
       );
 
       consoleWarnSpy.mockRestore();
@@ -389,7 +389,7 @@ describe("spanIngestQueue", () => {
         CLICKHOUSE_USER: "default",
         CLICKHOUSE_PASSWORD: "",
         CLICKHOUSE_DATABASE: "default",
-        RECENT_SPANS_DURABLE_OBJECT: mockDurableObject,
+        REALTIME_SPANS_DURABLE_OBJECT: mockDurableObject,
       };
 
       await spanIngestQueue.queue(batch, env as never);

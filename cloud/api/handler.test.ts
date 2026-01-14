@@ -5,10 +5,13 @@ import type { PublicUser } from "@/db/schema";
 import { HandlerError } from "@/errors";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { DrizzleORM } from "@/db/client";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
+import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { SettingsService, getSettings } from "@/settings";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
+import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 import fs from "fs";
 
 const mockUser: PublicUser = {
@@ -51,7 +54,11 @@ const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
   Layer.provide(ClickHouse.Default),
   Layer.provide(settingsLayer),
 );
+const drizzleLayer = MockDrizzleORMLayer;
 const spansIngestQueueLayer = Layer.succeed(SpansIngestQueue, {
+  send: () => Effect.void,
+});
+const spansMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
   send: () => Effect.void,
 });
 const realtimeSpansLayer = Layer.succeed(RealtimeSpans, {
@@ -80,9 +87,11 @@ describe("handleRequest", () => {
         user: mockUser,
         environment: "test",
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       expect(response.status).toBe(404);
@@ -90,8 +99,10 @@ describe("handleRequest", () => {
     }).pipe(
       Effect.provide(
         Layer.mergeAll(
+          drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
+          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),
@@ -110,9 +121,11 @@ describe("handleRequest", () => {
         user: mockUser,
         environment: "test",
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       expect(response.status).toBe(404);
@@ -120,8 +133,10 @@ describe("handleRequest", () => {
     }).pipe(
       Effect.provide(
         Layer.mergeAll(
+          drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
+          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),
@@ -139,9 +154,11 @@ describe("handleRequest", () => {
           user: mockUser,
           environment: "test",
           prefix: "/api/v0",
+          drizzle: yield* DrizzleORM,
           clickHouseSearch,
           realtimeSpans: yield* RealtimeSpans,
           spansIngestQueue: yield* SpansIngestQueue,
+          spansMeteringQueue: yield* SpansMeteringQueueService,
         });
 
         // The path becomes "/" after stripping prefix, which doesn't match any route
@@ -150,8 +167,10 @@ describe("handleRequest", () => {
       }).pipe(
         Effect.provide(
           Layer.mergeAll(
+            drizzleLayer,
             clickHouseSearchLayer,
             spansIngestQueueLayer,
+            spansMeteringQueueLayer,
             realtimeSpansLayer,
           ),
         ),
@@ -175,9 +194,11 @@ describe("handleRequest", () => {
         const error = yield* handleRequest(faultyRequest, {
           user: mockUser,
           environment: "test",
+          drizzle: yield* DrizzleORM,
           clickHouseSearch,
           realtimeSpans: yield* RealtimeSpans,
           spansIngestQueue: yield* SpansIngestQueue,
+          spansMeteringQueue: yield* SpansMeteringQueueService,
         }).pipe(Effect.flip);
 
         expect(error).toBeInstanceOf(HandlerError);
@@ -187,8 +208,10 @@ describe("handleRequest", () => {
       }).pipe(
         Effect.provide(
           Layer.mergeAll(
+            drizzleLayer,
             clickHouseSearchLayer,
             spansIngestQueueLayer,
+            spansMeteringQueueLayer,
             realtimeSpansLayer,
           ),
         ),
@@ -212,9 +235,11 @@ describe("handleRequest", () => {
         user: mockUser,
         environment: "test",
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       expect(matched).toBe(true);
@@ -222,8 +247,10 @@ describe("handleRequest", () => {
     }).pipe(
       Effect.provide(
         Layer.mergeAll(
+          drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
+          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),
@@ -245,9 +272,11 @@ describe("handleRequest", () => {
         user: mockUser,
         environment: "test",
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
+        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       const body = yield* Effect.promise(() => response.text());
@@ -260,8 +289,10 @@ describe("handleRequest", () => {
     }).pipe(
       Effect.provide(
         Layer.mergeAll(
+          drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
+          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),

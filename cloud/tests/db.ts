@@ -713,7 +713,7 @@ export const TestApiKeyFixture = Effect.gen(function* () {
 /**
  * Effect-native test fixture for spans.
  *
- * Returns a test span identifier within an environment for ClickHouse/DurableObjects
+ * Returns a test span identifier within an environment for ClickHouse/DurableObject
  * integration paths.
  *
  * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.

@@ -54,6 +54,9 @@ export { expect };
 const DefaultQueueLayer = Layer.succeed(SpansIngestQueue, {
   send: () => Effect.void,
 });
+const DefaultMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
+  send: () => Effect.void,
+});
 export const DefaultRealtimeLayer = Layer.succeed(RealtimeSpans, {
   upsert: () => Effect.void,
   search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
@@ -71,6 +74,7 @@ function createTestDatabaseLayer(
   connectionString: string,
   queueLayer: Layer.Layer<SpansIngestQueue> = DefaultQueueLayer,
   realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
+  meteringQueueLayer: Layer.Layer<SpansMeteringQueueService> = DefaultMeteringQueueLayer,
 ) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
   return Layer.mergeAll(
@@ -82,6 +86,7 @@ function createTestDatabaseLayer(
     DefaultMockPayments,
     queueLayer,
     realtimeLayer,
+    meteringQueueLayer,
   );
 }
 
