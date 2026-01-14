@@ -12,20 +12,18 @@ from mirascope.llm.providers.mirascope.provider import MirascopeProvider
 class TestMirascopeUtils:
     """Tests for Mirascope utility functions."""
 
-    def test_extract_provider_prefix_valid(self) -> None:
-        """Test extracting provider prefix from valid model IDs."""
-        assert _utils.extract_provider_prefix("openai/gpt-4") == "openai"
-        assert _utils.extract_provider_prefix("anthropic/claude-3") == "anthropic"
-        assert _utils.extract_provider_prefix("google/gemini-pro") == "google"
-        assert (
-            _utils.extract_provider_prefix("openai/gpt-4-with-extra/stuff") == "openai"
-        )
+    def test_extract_model_scope_valid(self) -> None:
+        """Test extracting model scope from valid model IDs."""
+        assert _utils.extract_model_scope("openai/gpt-4") == "openai"
+        assert _utils.extract_model_scope("anthropic/claude-3") == "anthropic"
+        assert _utils.extract_model_scope("google/gemini-pro") == "google"
+        assert _utils.extract_model_scope("openai/gpt-4-with-extra/stuff") == "openai"
 
-    def test_extract_provider_prefix_invalid(self) -> None:
-        """Test extracting provider prefix from invalid model IDs."""
-        assert _utils.extract_provider_prefix("gpt-4") is None
-        assert _utils.extract_provider_prefix("") is None
-        assert _utils.extract_provider_prefix("no-slash") is None
+    def test_extract_model_scope_invalid(self) -> None:
+        """Test extracting model scope from invalid model IDs."""
+        assert _utils.extract_model_scope("gpt-4") is None
+        assert _utils.extract_model_scope("") is None
+        assert _utils.extract_model_scope("no-slash") is None
 
     def test_get_default_router_base_url_default(self) -> None:
         """Test getting default router base URL."""
@@ -53,7 +51,7 @@ class TestMirascopeUtils:
     def test_create_underlying_provider_openai(self) -> None:
         """Test creating OpenAI provider."""
         provider = _utils.create_underlying_provider(
-            provider_prefix="openai",
+            model_scope="openai",
             api_key="test-key",
             router_base_url="http://localhost:3000/router/v0",
         )
@@ -63,7 +61,7 @@ class TestMirascopeUtils:
     def test_create_underlying_provider_anthropic(self) -> None:
         """Test creating Anthropic provider."""
         provider = _utils.create_underlying_provider(
-            provider_prefix="anthropic",
+            model_scope="anthropic",
             api_key="test-key",
             router_base_url="http://localhost:3000/router/v0",
         )
@@ -73,7 +71,7 @@ class TestMirascopeUtils:
     def test_create_underlying_provider_google(self) -> None:
         """Test creating Google provider."""
         provider = _utils.create_underlying_provider(
-            provider_prefix="google",
+            model_scope="google",
             api_key="test-key",
             router_base_url="http://localhost:3000/router/v0",
         )
@@ -83,7 +81,7 @@ class TestMirascopeUtils:
         """Test creating provider with unsupported prefix."""
         with pytest.raises(ValueError) as exc_info:
             _utils.create_underlying_provider(
-                provider_prefix="unknown",
+                model_scope="unknown",
                 api_key="test-key",
                 router_base_url="http://localhost:3000/router/v0",
             )
@@ -93,12 +91,12 @@ class TestMirascopeUtils:
     def test_create_underlying_provider_caching(self) -> None:
         """Test that provider creation is cached."""
         provider1 = _utils.create_underlying_provider(
-            provider_prefix="openai",
+            model_scope="openai",
             api_key="test-key",
             router_base_url="http://localhost:3000/router/v0",
         )
         provider2 = _utils.create_underlying_provider(
-            provider_prefix="openai",
+            model_scope="openai",
             api_key="test-key",
             router_base_url="http://localhost:3000/router/v0",
         )
@@ -107,7 +105,7 @@ class TestMirascopeUtils:
 
         # Different parameters should create different instances
         provider3 = _utils.create_underlying_provider(
-            provider_prefix="openai",
+            model_scope="openai",
             api_key="different-key",
             router_base_url="http://localhost:3000/router/v0",
         )
@@ -177,7 +175,7 @@ class TestMirascopeProvider:
         with pytest.raises(ValueError) as exc_info:
             provider._get_underlying_provider("gpt-4")  # pyright: ignore[reportPrivateUsage]
         assert "Invalid model ID format: gpt-4" in str(exc_info.value)
-        assert "'provider/model-name'" in str(exc_info.value)
+        assert "'scope/model-name'" in str(exc_info.value)
 
     def test_get_underlying_provider_valid_openai(self) -> None:
         """Test _get_underlying_provider with valid OpenAI model ID."""
