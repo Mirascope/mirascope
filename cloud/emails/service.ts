@@ -2,7 +2,7 @@
  * @fileoverview Emails service layer.
  *
  * This module provides the `Emails` service which wraps Resend for sending
- * transactional emails through Effect's dependency injection system.
+ * transactional emails and managing marketing audience through Effect's dependency injection system.
  *
  * ## Usage
  *
@@ -12,6 +12,7 @@
  * const sendWelcomeEmail = Effect.gen(function* () {
  *   const emails = yield* Emails;
  *
+ *   // Send a transactional email
  *   const result = yield* emails.send({
  *     from: "noreply@example.com",
  *     to: "user@example.com",
@@ -19,24 +20,32 @@
  *     html: "<p>Welcome to our platform!</p>",
  *   });
  *
+ *   // Add user to marketing audience
+ *   yield* emails.audience.add("user@example.com");
+ *
  *   return result;
  * });
  *
  * // Provide the Emails layer
  * sendWelcomeEmail.pipe(
- *   Effect.provide(Emails.Live({ apiKey: "re_..." }))
+ *   Effect.provide(Emails.Live({
+ *     apiKey: "re_...",
+ *     audienceSegmentId: "seg_..."
+ *   }))
  * );
  * ```
  *
  * ## Architecture
  *
  * ```
- * Email (service layer)
- *   └── send: (params) => Effect<SendEmailResult, ResendError>
+ * Emails (service layer)
+ *   ├── send: (params) => Effect<SendEmailResult, ResendError>
+ *   └── audience: Ready<Audience>
+ *       └── add: (email) => Effect<AddContactResult, ResendError>
  *
- * The service uses `yield* Resend` internally. The `makeReady` wrapper
- * provides the Resend client, so consumers see methods returning
- * Effect<T, E> with no additional dependencies.
+ * Each service (EmailService, Audience) uses `yield* Resend` internally.
+ * The `dependencyProvider` wrapper provides the Resend client, so consumers
+ * see methods returning Effect<T, E> with no additional dependencies.
  * ```
  */
 
@@ -44,6 +53,7 @@ import { Context, Layer, Effect } from "effect";
 import { Resend, type ResendConfig } from "@/emails/resend-client";
 import { ResendError } from "@/errors";
 import { dependencyProvider, type Ready } from "@/utils";
+import { Audience } from "@/emails/audience";
 import type { CreateEmailOptions, CreateEmailResponseSuccess } from "resend";
 
 /**
@@ -51,6 +61,9 @@ import type { CreateEmailOptions, CreateEmailResponseSuccess } from "resend";
  *
  * Provides methods for sending emails through Resend. This service wraps
  * the Resend client and provides a clean interface for email operations.
+ *
+ * Note: This class only contains the `send` method. The `audience` service
+ * is provided separately through the Emails.Audience service layer.
  *
  * @example
  * ```ts
@@ -64,6 +77,9 @@ import type { CreateEmailOptions, CreateEmailResponseSuccess } from "resend";
  *     subject: "Welcome!",
  *     html: "<p>Welcome to our platform!</p>",
  *   });
+ *
+ *   // Add to marketing audience
+ *   yield* emails.audience.add("user@example.com");
  *
  *   return result;
  * });
@@ -107,16 +123,25 @@ export class EmailService {
  *     html: "<p>Welcome to our platform!</p>",
  *   });
  *
+ *   // Add to marketing audience
+ *   yield* emails.audience.add("user@example.com");
+ *
  *   return result;
  * });
  *
  * // Provide the Emails layer
- * program.pipe(Effect.provide(Emails.Live({ apiKey: "re_..." })));
+ * program.pipe(Effect.provide(Emails.Live({
+ *   apiKey: "re_...",
+ *   audienceSegmentId: "seg_..."
+ * })));
  * ```
  */
 export class Emails extends Context.Tag("Email")<
   Emails,
-  Ready<EmailService>
+  {
+    readonly send: Ready<EmailService>["send"];
+    readonly audience: Ready<Audience>;
+  }
 >() {
   /**
    * Default layer that creates the Emails service.
@@ -132,7 +157,13 @@ export class Emails extends Context.Tag("Email")<
         { tag: Resend, instance: resend },
       ]);
 
-      return provideDependencies(new EmailService());
+      const emailService = provideDependencies(new EmailService());
+      const audienceService = provideDependencies(new Audience());
+
+      return {
+        send: emailService.send,
+        audience: audienceService,
+      };
     }),
   );
 
@@ -146,6 +177,7 @@ export class Emails extends Context.Tag("Email")<
    * ```ts
    * const EmailsLive = Emails.Live({
    *   apiKey: process.env.RESEND_API_KEY,
+   *   audienceSegmentId: process.env.RESEND_AUDIENCE_SEGMENT_ID,
    * });
    *
    * program.pipe(Effect.provide(EmailsLive));

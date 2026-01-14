@@ -36,6 +36,7 @@ function createAppServicesLayer(databaseUrl: string) {
     Layer.succeed(AuthService, createAuthService()),
     Emails.Live({
       apiKey: process.env.RESEND_API_KEY,
+      audienceSegmentId: process.env.RESEND_AUDIENCE_SEGMENT_ID,
     }),
     executionContextLayer,
   );
