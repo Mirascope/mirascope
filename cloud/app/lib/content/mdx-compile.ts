@@ -4,6 +4,10 @@
  * Shared MDX compilation logic used by both the vite plugin and tests.
  */
 
+// NOTE: All imports in this file must use relative paths.
+// Vite plugins cannot resolve path aliases such as "@/app/...",
+// so using aliases here will cause module resolution failures.
+// This ensures compatibility in both the vite plugin and other consumers.
 import { compile, type CompileOptions } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 import { rehypeCodeMeta } from "./rehype-code-meta";
