@@ -3,23 +3,122 @@ title: Responses
 description: Learn how to work with LLM responses in Mirascope.
 ---
 
-<Info>
-Reference: This doc should draw from:
-- legacy/legacy-content-v1/calls.mdx (response content, message params)
-- index.mdx "LLM Responses" section (response properties, stream responses)
-- python/mirascope/llm/responses/base_response.py
-</Info>
-
 # Responses
 
-This document covers how to work with responses from LLMs.
+When you call an LLM, you get back an `llm.Response`. This object contains everything about the interaction: the generated content, the full message history, token usage, and metadata about the model that produced it.
 
-## Topics Covered
+<CodeExample file="examples/responses/basic.py" />
 
-- The core concept of an `llm.Response`
-- Using `response.pretty()` for unified, human-readable output
-- Accessing specific content: `response.content`, `response.texts`, `response.tool_calls`
-- Response metadata: `response.usage`, `response.finish_reason`
-- The full message history via `response.messages`
-- Continuing conversations with `response.resume()`
-- Accessing the raw provider response via `response.raw`
+## Accessing Content
+
+The LLM's output is available through several properties:
+
+<CodeExample file="examples/responses/content_access.py" lines="3-" />
+
+### Content Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `content` | `Sequence[AssistantContentPart]` | All content parts in generation order |
+| `texts` | `Sequence[Text]` | Only the text portions of the response |
+| `tool_calls` | `Sequence[ToolCall]` | Tool calls the LLM wants executed  |
+| `thoughts` | `Sequence[Thought]` | Reasoning from the model's thinking process |
+
+In many cases, the response contains a single `Text` part, accessible via `response.texts[0].text`. For robustness with zero or multiple text parts, use `"".join(part.text for part in response.texts)`. 
+
+You can use `response.pretty()` to get a human-readable string representation of all content in the response, including thoughts or tool calls. This is particularly useful for development and debugging.
+
+<Note>
+`tool_calls` and `thoughts` are populated only when relevant. See [Tools](/docs/mirascope/v2/tools) and [Thinking](/docs/mirascope/v2/thinking) for details.
+</Note>
+
+## Continuing Conversations
+
+The `messages` property contains the complete conversation history, including all input messages and the assistant's response. Use `response.resume()` to continue the conversation—it appends your new content to this history and calls the LLM again:
+
+<CodeExample file="examples/responses/resume.py" lines="3-" />
+
+The `resume()` method preserves the response's model, parameters, tools, and format settings. You can override the model at call time using `with llm.model(...)`:
+
+```python
+with llm.model("anthropic/claude-sonnet-4-5"):
+    followup = response.resume("Please answer this follow-up question...")
+```
+
+## Response Metadata
+
+Every response includes metadata about how it was generated:
+
+<CodeExample file="examples/responses/metadata.py" lines="3-" />
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `provider_id` | `ProviderId` | The provider (e.g., `"openai"`, `"anthropic"`) |
+| `model_id` | `ModelId` | The full model identifier |
+| `params` | `Params` | Parameters used for generation |
+| `model` | `Model` | A `Model` instance matching this response |
+| `raw` | `Any` | The unprocessed provider response |
+
+The `raw` property gives you access to the original response object from the provider's SDK, in case you want to peek below Mirascope's abstraction layer to the provider's raw output.
+
+### Token Usage
+
+Access token consumption through `response.usage`:
+
+<CodeExample file="examples/responses/usage.py" lines="3-" />
+
+<Note title="Usage Properties" collapsible={true} defaultOpen={false}>
+| Property | Type | Description |
+| --- | --- | --- |
+| `input_tokens` | `int` | Tokens in the prompt (includes cached tokens) |
+| `output_tokens` | `int` | Tokens generated (includes reasoning tokens) |
+| `total_tokens` | `int` | Sum of input and output tokens |
+| `cache_read_tokens` | `int` | Tokens read from cache |
+| `cache_write_tokens` | `int` | Tokens written to cache |
+| `reasoning_tokens` | `int` | Tokens used for thinking/reasoning |
+
+Not all providers report all usage fields. Unsupported fields default to 0.
+</Note>
+
+### Finish Reason
+
+The `finish_reason` property indicates why the LLM stopped generating. It's `None` when the response completes normally:
+
+<CodeExample file="examples/responses/finish_reason.py" lines="3-" />
+
+| Finish Reason | Description |
+| --- | --- |
+| `None` | Response completed normally |
+| `MAX_TOKENS` | Hit the token limit before completing |
+| `REFUSAL` | Model refused to respond |
+| `CONTEXT_LENGTH_EXCEEDED` | Input exceeded context window |
+
+## Response Variants
+
+Mirascope has several response types for different calling patterns:
+
+**Standard:** `Response`, `AsyncResponse`
+
+**Streaming:** `StreamResponse`, `AsyncStreamResponse`
+
+**Context-aware:** `ContextResponse`, `AsyncContextResponse`, `ContextStreamResponse`, `AsyncContextStreamResponse`
+
+All variants share the same core properties. Retrieving data via `response.content`, `response.messages`, etc. works the same for all of them.
+
+- **Streaming:** The response content gets populated by iterating through the stream. See [Streaming](/docs/mirascope/v2/streaming).
+- **Async:** Methods like `resume()` are async. See [Async](/docs/mirascope/v2/async).
+- **Context:** Methods like `resume()` require a context argument. See [Context](/docs/mirascope/v2/context).
+
+Sometimes you'll want to write a function that can accept any response, whether it is a regular `Response`, a `StreamResponse`, an `AsyncResponse`, et cetera. If so, you can use the type alias `llm.AnyResponse`, which will have all of the core properties shared by every response class.
+
+## Structured Output
+
+When the response was generated with a `format` parameter, use `response.parse()` to extract structured data. See [Structured Output](/docs/mirascope/v2/structured-output) for the full guide on structured output.
+
+## Next Steps
+
+Now that you understand responses, explore:
+
+- [Streaming](/docs/mirascope/v2/streaming) — Process responses as they're generated
+- [Tools](/docs/mirascope/v2/tools) — Let LLMs call your functions
+- [Structured Output](/docs/mirascope/v2/structured-output) — Extract structured data from responses
