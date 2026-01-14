@@ -172,3 +172,54 @@ The plugin looks for source images in `public/` and processes them on-the-fly du
 After the build completes, the plugin scans `dist/client/assets/` and **fails the build** if any `.png`, `.jpg`, or `.jpeg` files are found. This ensures all images are WebP format in production.
 
 SVG and GIF files are allowed (they're valid non-raster or animated formats).
+
+## Robots Plugin (`robots.ts`)
+
+Generates a production `robots.txt` from the sitemap, disallowing low-priority URLs.
+
+### Features
+
+- **Sitemap-driven**: Reads the generated `sitemap.xml` after build
+- **Selective disallow**: URLs without a `<changefreq>` tag are disallowed (considered low-priority)
+- **Post-build generation**: Runs after sitemap generation to ensure sitemap exists
+- **Environment-aware**: Different behavior for development vs production
+
+### How It Works
+
+1. After the build completes, the plugin reads `dist/client/sitemap.xml`
+2. It parses all `<url>` entries and identifies those without a `<changefreq>` tag
+3. URLs without `changefreq` are added as `Disallow` rules in robots.txt
+4. The generated `robots.txt` is written to `dist/client/robots.txt`
+
+The logic assumes that URLs with `changefreq` are high-value pages (docs, blog posts) that should be crawled, while URLs without it (app routes, utility pages) should be excluded from search engines.
+
+### Build-time vs Runtime
+
+- **Development**: `public/robots.txt` is served directly (permissive, allows all)
+- **Production**: `dist/client/robots.txt` is generated with selective disallow rules
+
+### Generated Output Example
+
+```txt
+# robots.txt for https://mirascope.com
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /api/health
+
+Sitemap: https://mirascope.com/sitemap.xml
+```
+
+### Dependencies
+
+The plugin uses helper functions from `app/lib/robots.ts`:
+- `parseSitemapForUrlsWithoutChangefreq()` - Extracts URLs without changefreq from sitemap XML
+- `generateRobotsTxt()` - Generates the robots.txt content string
+
+### Error Handling
+
+The plugin will **fail the build** if:
+- The sitemap file does not exist at `dist/client/sitemap.xml`
+
+This ensures the sitemap plugin runs before the robots plugin.
