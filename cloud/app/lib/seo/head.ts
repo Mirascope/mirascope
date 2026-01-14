@@ -11,7 +11,7 @@ import { BASE_URL } from "@/app/lib/site";
 
 /**
  * Head metadata entry for routes.
- * Supports title, name-based meta tags (e.g., description, robots),
+ * Supports title, name-based meta tags (e.g., description),
  * property-based meta tags (e.g., og:title, twitter:card), and charset.
  */
 export type HeadMetaEntry =
@@ -70,8 +70,6 @@ export interface PageHeadOptions {
   ogType?: "website" | "article";
   /** Custom image path or URL for social cards */
   image?: string;
-  /** Robots directive (e.g., "noindex, nofollow") */
-  robots?: string;
   /** Article metadata for blog posts */
   article?: ArticleMeta;
 }
@@ -252,7 +250,6 @@ export function createPageHead(options: PageHeadOptions): HeadResult {
     description,
     ogType = "website",
     image,
-    robots,
     article,
   } = options;
 
@@ -272,11 +269,6 @@ export function createPageHead(options: PageHeadOptions): HeadResult {
     { title: pageTitle },
     { name: "description", content: description },
   ];
-
-  // Add robots if specified
-  if (robots) {
-    metaTags.push({ name: "robots", content: robots });
-  }
 
   // Add Open Graph tags
   metaTags.push(

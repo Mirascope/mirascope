@@ -1,9 +1,13 @@
 /**
  * Vite plugin for generating robots.txt from sitemap
  *
- * This plugin reads the generated sitemap.xml after build and extracts
- * URLs that don't have a changefreq tag at all, then generates a static
- * robots.txt file in dist/client/ that disallows those URLs.
+ * Generates a production robots.txt from the sitemap, disallowing low-priority URLs.
+ * The sitemap is generated during prerendering and only included entries have a
+ * changefreq. Entries without changefreq will be disallowed.
+ *
+ * This plugin reads the generated sitemap.xml after build and extracts URLs that
+ * don't have a changefreq tag at all, then generates a static robots.txt file in
+ * dist/client/ that disallows those URLs.
  *
  * In development, public/robots.txt is served (allow all).
  * In production, dist/client/robots.txt (generated) is served.

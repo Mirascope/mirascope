@@ -61,6 +61,7 @@ readTime: "5 min read"
 ### Type Safety
 
 TypeScript types are provided in:
+
 - `app/types/mdx.d.ts` - types for MDX imports
 
 ## Content Plugin (`content.ts`)
@@ -93,6 +94,7 @@ blogPosts.forEach(post => {
 ### Content Types
 
 The plugin recognizes content types based on directory structure:
+
 - `content/blog/` → type: "blog"
 - `content/docs/` → type: "docs"
 - `content/policy/` → type: "policy"
@@ -101,6 +103,7 @@ The plugin recognizes content types based on directory structure:
 ### Blog Metadata
 
 Blog posts include additional fields:
+
 - `date`: Publication date
 - `author`: Author name
 - `readTime`: Estimated reading time
@@ -116,6 +119,7 @@ Blog posts include additional fields:
 ### Type Safety
 
 TypeScript types are provided in:
+
 - `app/types/virtual-content-meta.d.ts` - types for the virtual module
 - `app/lib/content/types.ts` - `ContentMeta` and `BlogMeta` interfaces
 
@@ -175,12 +179,12 @@ SVG and GIF files are allowed (they're valid non-raster or animated formats).
 
 ## Robots Plugin (`robots.ts`)
 
-Generates a production `robots.txt` from the sitemap, disallowing low-priority URLs.
+Generates a production `robots.txt` from the sitemap, disallowing low-priority URLs. The sitemap is generated during prerendering and only included entries have a `changefreq` tag. Entries without `changefreq` will be disallowed.
 
 ### Features
 
 - **Sitemap-driven**: Reads the generated `sitemap.xml` after build
-- **Selective disallow**: URLs without a `<changefreq>` tag are disallowed (considered low-priority)
+- **Selective disallow**: URLs without a `<changefreq>` tag are disallowed (not included in prerender, considered low-priority)
 - **Post-build generation**: Runs after sitemap generation to ensure sitemap exists
 - **Environment-aware**: Different behavior for development vs production
 
@@ -214,12 +218,14 @@ Sitemap: https://mirascope.com/sitemap.xml
 ### Dependencies
 
 The plugin uses helper functions from `app/lib/robots.ts`:
+
 - `parseSitemapForUrlsWithoutChangefreq()` - Extracts URLs without changefreq from sitemap XML
 - `generateRobotsTxt()` - Generates the robots.txt content string
 
 ### Error Handling
 
 The plugin will **fail the build** if:
+
 - The sitemap file does not exist at `dist/client/sitemap.xml`
 
 This ensures the sitemap plugin runs before the robots plugin.

@@ -76,8 +76,6 @@ export interface ContentRouteOptions<TMeta extends ContentMeta> {
 
   /** Content type for Open Graph (defaults to "website") */
   ogType?: "website" | "article";
-  /** Robots directive (e.g., "noindex, nofollow") */
-  robots?: string;
   /** Function to generate social card image path from meta */
   getImagePath?: (meta: TMeta) => string;
 }
@@ -120,7 +118,6 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
     head: createContentHead<TMeta>({
       allMetas,
       ogType: options.ogType,
-      robots: options.robots,
       getImagePath: options.getImagePath,
     }),
 
@@ -194,7 +191,6 @@ function isBlogMeta(meta: ContentMeta): meta is BlogMeta {
 interface CreateContentHeadOptions<TMeta extends ContentMeta> {
   allMetas: TMeta[];
   ogType?: "website" | "article";
-  robots?: string;
   getImagePath?: (meta: TMeta) => string;
 }
 
@@ -209,7 +205,7 @@ interface CreateContentHeadOptions<TMeta extends ContentMeta> {
 function createContentHead<TMeta extends ContentMeta>(
   options: CreateContentHeadOptions<TMeta>,
 ) {
-  const { allMetas, ogType = "website", robots, getImagePath } = options;
+  const { allMetas, ogType = "website", getImagePath } = options;
 
   return (ctx: {
     match: { pathname: string };
@@ -244,11 +240,6 @@ function createContentHead<TMeta extends ContentMeta>(
       { title: pageTitle },
       { name: "description", content: meta.description },
     ];
-
-    // Add robots if specified
-    if (robots) {
-      metaTags.push({ name: "robots", content: robots });
-    }
 
     // Add Open Graph tags
     metaTags.push(
