@@ -241,6 +241,7 @@ describe("Email", () => {
     it("creates a layer with provided configuration", () => {
       const layer = Emails.Live({
         apiKey: "re_test_mock",
+        audienceSegmentId: "seg_test_mock",
       });
 
       expect(layer).toBeDefined();

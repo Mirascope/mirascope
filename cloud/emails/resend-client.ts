@@ -56,6 +56,8 @@ import { ResendError, ConfigError } from "@/errors";
 export interface ResendConfig {
   /** Resend API key (re_...) */
   apiKey: string;
+  /** Resend audience segment ID for marketing emails */
+  audienceSegmentId: string;
 }
 
 /**
@@ -73,8 +75,8 @@ function validateResendConfig(
 ): Effect.Effect<ResendConfig, ConfigError> {
   const errors: string[] = [];
 
-  // Validate API key is present and non-empty
   if (!config.apiKey?.trim()) errors.push("apiKey");
+  if (!config.audienceSegmentId?.trim()) errors.push("audienceSegmentId");
 
   if (errors.length > 0) {
     return Effect.fail(

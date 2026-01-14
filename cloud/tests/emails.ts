@@ -39,6 +39,57 @@ export const MockResend = {
       },
       config: {
         apiKey: "re_test_mock",
+        audienceSegmentId: "seg_test_mock",
+      },
+    } as unknown as Context.Tag.Service<typeof Resend>),
+};
+
+/**
+ * Creates a mock Resend layer for testing the Emails.Audience service.
+ *
+ * Provides a consistent way to mock the Resend audience operations without
+ * manually constructing the layer structure in each test.
+ *
+ * @example
+ * ```ts
+ * // Simple mock that returns success
+ * const layer = MockResendAudience.layer(() => Effect.succeed({ id: "contact_123" }));
+ *
+ * // Mock with custom segment ID
+ * const layer = MockResendAudience.layer(
+ *   () => Effect.succeed({ id: "contact_123" }),
+ *   "seg_custom_123"
+ * );
+ *
+ * // Mock that captures parameters
+ * let capturedParams: unknown;
+ * const layer = MockResendAudience.layer((params) => {
+ *   capturedParams = params;
+ *   return Effect.succeed({ id: "contact_123" });
+ * });
+ *
+ * // Mock that returns an error
+ * const layer = MockResendAudience.layer(() =>
+ *   Effect.fail(new ResendError({ message: "Failed to add contact" }))
+ * );
+ * ```
+ */
+export const MockResendAudience = {
+  layer: <P = unknown>(
+    addFn: (params: P) => Effect.Effect<{ id: string }, unknown, never>,
+    audienceSegmentId = "seg_test_mock",
+  ) =>
+    Layer.succeed(Resend, {
+      contacts: {
+        segments: {
+          add: addFn as (
+            params: unknown,
+          ) => Effect.Effect<{ id: string }, unknown, never>,
+        },
+      },
+      config: {
+        apiKey: "re_test_mock",
+        audienceSegmentId,
       },
     } as unknown as Context.Tag.Service<typeof Resend>),
 };
@@ -237,6 +288,48 @@ export function TestEmailSendResponseFixture(
 ) {
   return {
     id: "email_test_123",
+    ...overrides,
+  };
+}
+
+/**
+ * Factory for creating test audience add parameters.
+ *
+ * @example
+ * ```ts
+ * const params = TestAudienceAddParamsFixture();
+ * const customParams = TestAudienceAddParamsFixture({ email: "custom@example.com" });
+ * ```
+ */
+export function TestAudienceAddParamsFixture(
+  overrides?: Partial<{
+    email: string;
+    segmentId: string;
+  }>,
+) {
+  return {
+    email: "user@example.com",
+    segmentId: "seg_test_mock",
+    ...overrides,
+  };
+}
+
+/**
+ * Factory for creating test audience add response.
+ *
+ * @example
+ * ```ts
+ * const response = TestAudienceAddResponseFixture();
+ * const customResponse = TestAudienceAddResponseFixture({ id: "contact_456" });
+ * ```
+ */
+export function TestAudienceAddResponseFixture(
+  overrides?: Partial<{
+    id: string;
+  }>,
+) {
+  return {
+    id: "contact_test_123",
     ...overrides,
   };
 }

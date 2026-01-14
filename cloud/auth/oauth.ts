@@ -11,7 +11,7 @@
  * These functions involve network requests to external OAuth providers and are
  * tested via integration tests rather than unit tests.
  */
-import { Effect, Schema, Schedule, Fiber } from "effect";
+import { Effect, Schema, Schedule, Layer } from "effect";
 import { Database, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
@@ -603,15 +603,16 @@ function fetchUserInfo(
 // =============================================================================
 
 /**
- * Sends a welcome email to a newly registered user.
+ * Sends a welcome email to a newly registered user and adds them to the marketing audience.
  *
  * This function is designed to be forked (run in the background) so it doesn't
  * block the signup flow. It includes retry logic with exponential backoff to
- * handle transient email delivery failures.
+ * handle transient failures. Both email sending and audience addition are
+ * performed independently with separate error handling.
  *
  * @param email - The user's email address
  * @param name - The user's name (optional)
- * @returns An Effect that sends the welcome email
+ * @returns An Effect that sends the welcome email and adds to audience
  */
 function sendWelcomeEmail(
   email: string,
@@ -673,6 +674,24 @@ function sendWelcomeEmail(
           ),
         ),
       );
+
+    // Add user to marketing audience with retry logic
+    yield* emails.audience.add(email).pipe(
+      // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
+      Effect.retry(
+        Schedule.exponential("100 millis").pipe(
+          Schedule.compose(Schedule.recurs(4)),
+        ),
+      ),
+      // Catch all errors and log them, but don't fail the Effect
+      // This ensures audience addition failures don't break signup
+      Effect.catchAllCause((cause) =>
+        Effect.logWarning(`Failed to add ${email} to marketing audience`).pipe(
+          Effect.annotateLogs({ cause: String(cause) }),
+          Effect.as(undefined),
+        ),
+      ),
+    );
   });
 }
 
@@ -737,12 +756,13 @@ function processAuthenticatedUser(
         });
 
     // Send welcome email for new users in the background
-    // Fork the effect and use ctx.waitUntil() to keep worker alive
     if (!existingUser) {
-      const fiber = yield* Effect.fork(
-        sendWelcomeEmail(userInfo.email, userInfo.name),
+      // Get services first so we can provide them to the background task
+      const emails = yield* Emails;
+      const emailEffect = sendWelcomeEmail(userInfo.email, userInfo.name).pipe(
+        Effect.provide(Layer.succeed(Emails, emails)),
       );
-      ctx.waitUntil(Effect.runPromise(Fiber.await(fiber)));
+      ctx.waitUntil(Effect.runPromise(emailEffect));
     }
 
     // 3. Create a new session
