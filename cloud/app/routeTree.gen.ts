@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
+import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
@@ -91,6 +92,11 @@ const TermsSplatRoute = TermsSplatRouteImport.update({
   id: '/terms/$',
   path: '/terms/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DocsSplatRoute = DocsSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => DocsRoute,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/dashboard/settings',
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/docs/$': typeof DocsSplatRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/docs/$': typeof DocsSplatRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/docs/$': typeof DocsSplatRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/dashboard/settings'
+    | '/docs/$'
     | '/terms/$'
     | '/blog/'
     | '/dashboard'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/dashboard/settings'
+    | '/docs/$'
     | '/terms/$'
     | '/blog'
     | '/dashboard'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/dashboard/settings'
+    | '/docs/$'
     | '/terms/$'
     | '/blog/'
     | '/dashboard/'
@@ -450,6 +462,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/terms/$'
       preLoaderRoute: typeof TermsSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/docs/$': {
+      id: '/docs/$'
+      path: '/$'
+      fullPath: '/docs/$'
+      preLoaderRoute: typeof DocsSplatRouteImport
+      parentRoute: typeof DocsRoute
     }
     '/dashboard/settings': {
       id: '/dashboard/settings'
@@ -579,10 +598,12 @@ const BlogRouteChildren: BlogRouteChildren = {
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface DocsRouteChildren {
+  DocsSplatRoute: typeof DocsSplatRoute
   DocsV1SplatRoute: typeof DocsV1SplatRoute
 }
 
 const DocsRouteChildren: DocsRouteChildren = {
+  DocsSplatRoute: DocsSplatRoute,
   DocsV1SplatRoute: DocsV1SplatRoute,
 }
 

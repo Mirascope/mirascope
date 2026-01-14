@@ -2,13 +2,26 @@ import {
   getDocsFromSpec,
   type DocInfo,
   type FullDocsSpec,
+  type SectionSpec,
 } from "../../app/lib/content/spec";
 import v1DocsSection from "./v1/_meta";
 import v1ApiSection from "./v1/api/_meta";
 import v1GuidesSection from "./v1/guides/_meta";
 
+const toplevelDocs: SectionSpec = {
+  label: "Docs",
+  slug: "index",
+  weight: 2,
+  children: [
+    {
+      slug: "index",
+      label: "Welcome",
+    },
+  ],
+};
+
 export const docsSpec: FullDocsSpec = {
-  sections: [v1DocsSection, v1GuidesSection, v1ApiSection],
+  sections: [toplevelDocs, v1DocsSection, v1GuidesSection, v1ApiSection],
 };
 
 export const docInfos = getDocsFromSpec(docsSpec);
