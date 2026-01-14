@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PricingPage } from "@/app/components/pricing-page";
 import { ButtonLink } from "@/app/components/ui/button-link";
+import { createPageHead } from "@/app/lib/seo/head";
 
 const marketingActions = {
   hosted: {
@@ -52,15 +53,11 @@ const marketingActions = {
 };
 
 export const Route = createFileRoute("/pricing")({
-  // todo(sebastian): simplify and add other SEO metadata
-  head: () => ({
-    meta: [
-      { title: "Pricing" },
-      {
-        name: "description",
-        content: "Mirascope cloud's pricing plans and features",
-      },
-    ],
-  }),
+  head: () =>
+    createPageHead({
+      route: "/pricing",
+      title: "Pricing",
+      description: "Mirascope cloud's pricing plans and features",
+    }),
   component: () => <PricingPage actions={marketingActions} />,
 });
