@@ -11,10 +11,12 @@
  * These functions involve network requests to external OAuth providers and are
  * tested via integration tests rather than unit tests.
  */
-import { Effect, Schema } from "effect";
+import { Effect, Schema, Schedule, Fiber } from "effect";
 import { Database, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
+import { Emails } from "@/emails";
+import { ExecutionContext } from "@/server-entry";
 import {
   OAuthError,
   InvalidStateError,
@@ -601,6 +603,80 @@ function fetchUserInfo(
 // =============================================================================
 
 /**
+ * Sends a welcome email to a newly registered user.
+ *
+ * This function is designed to be forked (run in the background) so it doesn't
+ * block the signup flow. It includes retry logic with exponential backoff to
+ * handle transient email delivery failures.
+ *
+ * @param email - The user's email address
+ * @param name - The user's name (optional)
+ * @returns An Effect that sends the welcome email
+ */
+function sendWelcomeEmail(
+  email: string,
+  name: string | null,
+): Effect.Effect<void, never, Emails> {
+  return Effect.gen(function* () {
+    const emails = yield* Emails;
+
+    // Compose the email content
+    const greeting = name ? `Hi ${name}` : "Hello";
+    // TODO: make this email actually good in the next PR, but wait to do it
+    // so the change can be reviewed individually
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #2563eb;">Welcome to Mirascope Cloud!</h1>
+            <p style="font-size: 16px;">${greeting},</p>
+            <p style="font-size: 16px;">
+              Thank you for signing up! We're excited to have you on board.
+            </p>
+            <p style="font-size: 16px;">
+              You can now start building with Mirascope Cloud. If you have any questions, feel free to reach out.
+            </p>
+            <p style="font-size: 16px; margin-top: 30px;">
+              Best regards,<br>
+              The Mirascope Team
+            </p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Send the email with retry logic
+    yield* emails
+      .send({
+        from: "william@mirascope.com",
+        to: email,
+        subject: "Welcome to Mirascope Cloud!",
+        html: htmlContent,
+      })
+      .pipe(
+        // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
+        Effect.retry(
+          Schedule.exponential("100 millis").pipe(
+            Schedule.compose(Schedule.recurs(4)),
+          ),
+        ),
+        // Catch all errors and log them, but don't fail the Effect
+        // This ensures email failures don't break signup
+        Effect.catchAllCause((cause) =>
+          Effect.logWarning(`Failed to send welcome email to ${email}`).pipe(
+            Effect.annotateLogs({ cause: String(cause) }),
+            Effect.as(undefined),
+          ),
+        ),
+      );
+  });
+}
+
+/**
  * Processes an authenticated user from OAuth.
  *
  * Creates or updates the user in the database, creates a new session,
@@ -623,7 +699,7 @@ function processAuthenticatedUser(
   | NotFoundError
   | AlreadyExistsError
   | DatabaseError,
-  Database
+  Database | Emails | ExecutionContext
 > {
   return Effect.gen(function* () {
     // 1. Validate email is present
@@ -636,6 +712,7 @@ function processAuthenticatedUser(
     }
 
     const db = yield* Database;
+    const ctx = yield* ExecutionContext;
 
     // 2. Try to find existing user by email, or create if not found
     const existingUser = yield* db.users.findByEmail(userInfo.email).pipe(
@@ -658,6 +735,15 @@ function processAuthenticatedUser(
         yield* db.users.create({
           data: { email: userInfo.email, name: userInfo.name },
         });
+
+    // Send welcome email for new users in the background
+    // Fork the effect and use ctx.waitUntil() to keep worker alive
+    if (!existingUser) {
+      const fiber = yield* Effect.fork(
+        sendWelcomeEmail(userInfo.email, userInfo.name),
+      );
+      ctx.waitUntil(Effect.runPromise(Fiber.await(fiber)));
+    }
 
     // 3. Create a new session
     const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);

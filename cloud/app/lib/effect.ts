@@ -2,13 +2,20 @@ import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
 import { Database } from "@/db";
 import { SettingsService, getSettings } from "@/settings";
+import { Emails } from "@/emails";
+import { ExecutionContext, executionContextLayer } from "@/server-entry";
 import type { Result } from "./types";
 export type { Result } from "./types";
 
-export type AppServices = SettingsService | Database | AuthService;
+export type AppServices =
+  | SettingsService
+  | Database
+  | AuthService
+  | Emails
+  | ExecutionContext;
 
 /**
- * Creates the application services layer with Database, Settings, and Auth.
+ * Creates the application services layer with Database, Settings, Auth, Emails, and ExecutionContext.
  */
 function createAppServicesLayer(databaseUrl: string) {
   return Layer.mergeAll(
@@ -27,6 +34,10 @@ function createAppServicesLayer(databaseUrl: string) {
       },
     }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
+    Emails.Live({
+      apiKey: process.env.RESEND_API_KEY,
+    }),
+    executionContextLayer,
   );
 }
 

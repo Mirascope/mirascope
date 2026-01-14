@@ -12,7 +12,45 @@ import spansMeteringQueue, {
   SpansMeteringQueueService,
 } from "@/workers/spansMeteringQueue";
 import { type WorkerEnv } from "@/workers/cron-config";
-import { Effect, Layer } from "effect";
+import { Effect, Layer, Context } from "effect";
+
+/**
+ * ExecutionContext service tag for Effect dependency injection.
+ *
+ * Provides access to the Cloudflare Workers ExecutionContext, which allows
+ * route handlers to use ctx.waitUntil() for background tasks.
+ *
+ * @example
+ * ```ts
+ * const program = Effect.gen(function* () {
+ *   const ctx = yield* ExecutionContext;
+ *
+ *   // Fork a background task and keep worker alive
+ *   const fiber = yield* Effect.fork(backgroundTask);
+ *   ctx.waitUntil(Effect.runPromise(Fiber.await(fiber)));
+ * });
+ * ```
+ */
+export class ExecutionContext extends Context.Tag("ExecutionContext")<
+  ExecutionContext,
+  globalThis.ExecutionContext
+>() {}
+
+/**
+ * Global execution context layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers. This allows route handlers to use
+ * ctx.waitUntil() for background tasks.
+ */
+export let executionContextLayer: Layer.Layer<ExecutionContext> = Layer.succeed(
+  ExecutionContext,
+  {
+    waitUntil: () => {},
+    passThroughOnException: () => {},
+    props: undefined,
+  } as globalThis.ExecutionContext,
+);
 
 interface ScheduledEvent {
   readonly scheduledTime: number;
@@ -68,6 +106,9 @@ const scheduled = async (
 };
 
 const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
+  // Set execution context layer for route handlers
+  executionContextLayer = Layer.succeed(ExecutionContext, ctx);
+
   // Set router metering queue layer for route handlers
   if (env.ROUTER_METERING_QUEUE) {
     routerMeteringQueueLayer = RouterMeteringQueueService.Live(
