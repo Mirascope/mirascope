@@ -37,7 +37,7 @@ In this article, we explain how LLM agents work, their core components and use c
 
 ## Components of an LLM Agent
 
-[LLM agents](/docs/mirascope/learn/agents) are built around four key parts that work together to enable reasoning, planning, and execution.
+[LLM agents](/docs/v1/learn/agents) are built around four key parts that work together to enable reasoning, planning, and execution.
 
 These components include:
 
@@ -62,7 +62,7 @@ Planning refers to the process where the agent figures out the steps needed to c
 
 For instance, if the agent is built for customer support, it might plan by first identifying the user’s question, then retrieving the necessary information, and finally generating a helpful response.
 
-Popular techniques like [Chain-of-thought (CoT)](/docs/mirascope/guides/prompt-engineering/text-based/chain-of-thought/) and Tree-of-thought (ToT) prompting or decision trees can help structure this process - enabling the agent to think through problems step by step, especially when dealing with complex multi-step tasks.  
+Popular techniques like [Chain-of-thought (CoT)](/docs/v1/guides/prompt-engineering/text-based/chain-of-thought/) and Tree-of-thought (ToT) prompting or decision trees can help structure this process - enabling the agent to think through problems step by step, especially when dealing with complex multi-step tasks.  
 
 It can also use feedback mechanisms allowing the agent to iteratively refine its execution plan based on past actions and observations.
 
@@ -109,7 +109,7 @@ Below are some of the most notable examples of [frameworks](/blog/llm-frameworks
 
 ### Mirascope
 
-Mirascope lets you build autonomous or semi-autonomous systems that handle tasks, make decisions, and interact with users to integrate with tools, manage state, and even bring [humans into the loop](/docs/mirascope/learn/agents/) when needed.
+Mirascope lets you build autonomous or semi-autonomous systems that handle tasks, make decisions, and interact with users to integrate with tools, manage state, and even bring [humans into the loop](/docs/v1/learn/agents/) when needed.
 
 Mirascope provides several key benefits, such as:
 
@@ -157,7 +157,7 @@ if tool := response.tool:
 
 ```
 
-If the function doesn’t contain a docstring or can’t be changed for some reason (like if it’s third-party code) then you can use Mirascope’s [`BaseTool` class](/docs/mirascope/learn/tools/#__tabbed_2_1) to define the tool.
+If the function doesn’t contain a docstring or can’t be changed for some reason (like if it’s third-party code) then you can use Mirascope’s [`BaseTool` class](/docs/v1/learn/tools/#__tabbed_2_1) to define the tool.
 
 Below, we specify the `GetCityPopulation` class to be a tool with a defined argument:
 
@@ -353,7 +353,7 @@ A typical [LLM pipeline](/blog/llm-pipeline/) uses retrieved data or documents t
 
 That means if our agent (here a chatbot) believes it already has enough context or can handle a request in another way, it might skip retrieval entirely.
 
-You can find more details about the code below in our [tutorial library](/docs/mirascope/guides/agents/local-chat-with-codebase/).
+You can find more details about the code below in our [tutorial library](/docs/v1/guides/agents/local-chat-with-codebase/).
 
 **Prerequisites**:
 

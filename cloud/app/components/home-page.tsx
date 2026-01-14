@@ -244,7 +244,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
 
       <div className="mt-2 flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
         <ButtonLink
-          href="/docs/mirascope"
+          href="/docs/v1"
           variant="default"
           size="default"
           className="box-shade w-full min-w-[200px] bg-mirple px-6 py-4 text-center font-handwriting font-medium text-white hover:bg-mirple-dark/90 sm:w-auto"

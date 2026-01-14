@@ -54,7 +54,7 @@ It was important to us to be able to just code in Python, without having to lear
 
 For instance, we don’t make you implement directed acyclic graphs in the context of sequencing function calls. We provide code that’s eminently readable, lightweight, and maintainable.
 
-An example of this is our [`prompt_template`](/docs/mirascope/learn/prompts/#prompt-templates-messages) decorator, which encapsulates as much logic within the prompt as feasible.
+An example of this is our [`prompt_template`](/docs/v1/learn/prompts/#prompt-templates-messages) decorator, which encapsulates as much logic within the prompt as feasible.
 
 Within a decorated function, the return value can be used as the prompt template. The following example requests book recommendations based on particular genre:
 
@@ -293,7 +293,7 @@ except ValidationError as e:
 
 ```
 
-You can also validate data in ways that are difficult if not impossible to code successfully, but that LLMs excel at, such as analyzing sentiment. For instance, you can add Pydantic’s [`AfterValidator`](/docs/mirascope/learn/response_models/#validation-and-error-handling) annotation to Mirascope’s extracted output as shown below:
+You can also validate data in ways that are difficult if not impossible to code successfully, but that LLMs excel at, such as analyzing sentiment. For instance, you can add Pydantic’s [`AfterValidator`](/docs/v1/learn/response_models/#validation-and-error-handling) annotation to Mirascope’s extracted output as shown below:
 
 ```python
 from typing import Annotated, Literal
@@ -384,7 +384,7 @@ print(response.content)
 
 We also made sure that Mirascope works well with or integrates directly with tools such as Logfire, OpenTelemetry, HyperDX, Langfuse, and more for easily tracking machine learning experiments and visualizing data as well as improving prompt effectiveness through automated refinement and testing. All together these tools work together with Mirascope as [an alternative to LangChain](/blog/langchain-alternatives).
 
-Beyond OpenAI, Mirascope supports currently these [other LLM providers](/docs/mirascope/learn/calls):
+Beyond OpenAI, Mirascope supports currently these [other LLM providers](/docs/v1/learn/calls):
 
 - Anthropic
 - Mistral
@@ -399,7 +399,7 @@ We've made sure that every example in our documentation shows how to use each pr
 
 We consistently add support for new providers, so if there is a provider you want to see supported that isn't yet, let us know!
 
-If you want to switch to another model provider (like [Anthropic](/docs/mirascope/api/core/anthropic/call/) or [Mistral](/docs/mirascope/api/core/mistral/call/), for instance), you just need to change the decorator and the corresponding call parameters:
+If you want to switch to another model provider (like [Anthropic](/docs/v1/api/core/anthropic/call/) or [Mistral](/docs/v1/api/core/mistral/call/), for instance), you just need to change the decorator and the corresponding call parameters:
 
 ```python
 from mirascope.core import anthropic
@@ -414,7 +414,7 @@ print(response.content)
 
 ### Expand LLM Capabilities with Tools
 
-Although LLMs are known mostly for text generation, you can provide them with specific tools (also known as [function calling](/docs/mirascope/learn/tools)) to extend their capabilities.
+Although LLMs are known mostly for text generation, you can provide them with specific tools (also known as [function calling](/docs/v1/learn/tools)) to extend their capabilities.
 
 Examples of what you can do with tools include:
 
@@ -423,7 +423,7 @@ Examples of what you can do with tools include:
 - Allowing access to the Google Cloud Natural Language API for evaluating customer feedback and reviews to determine sentiment and help businesses quickly identify areas for improvement.
 - Providing a Machine Learning (ML) recommendation engine API for giving personalized content or product recommendations for an e-commerce website, based on natural language interactions with users.
 
-Mirascope lets you easily [define tools](/docs/mirascope/learn/tools/#basic-usage-and-syntax) by documenting any function using a docstring as shown below. It automatically converts this into a tool, saving you additional work.
+Mirascope lets you easily [define tools](/docs/v1/learn/tools/#basic-usage-and-syntax) by documenting any function using a docstring as shown below. It automatically converts this into a tool, saving you additional work.
 
 ```python
 from typing import Literal
@@ -472,7 +472,7 @@ class GetWeather(BaseTool):
 
 Tools allow you to dynamically generate prompts based on current or user-specified data such as extracting current weather data in a given city before generating a prompt like, "Given the current weather conditions in Tokyo, what are fun outdoor activities?"
 
-See our [documentation](/docs/mirascope/learn/tools) for details on generating prompts in this way (for instance, by calling the `call` method).
+See our [documentation](/docs/v1/learn/tools) for details on generating prompts in this way (for instance, by calling the `call` method).
 
 ### Extract Structured Data from LLM-Generated Text
 
@@ -483,7 +483,7 @@ LLMs are great at producing conversations in text, which is unstructured informa
 - Pulling out specific medical data such as symptoms, diagnoses, medication names, dosages, and patient history from clinical notes.
 - Extracting financial metrics, stock data, company performance indicators, and market trends from financial reports and news articles.
 
-To handle such scenarios, we support extraction with the [`response_model`](/docs/mirascope/learn/response_models) argument in the decorator, which leverages tools (or optionally `json_mode=True`) to reliably extract structured data from the outputs of LLMs according to the schema defined in a Pydantic `BaseModel`. In the example below you can see how due dates, priorities, and descriptions are being extracted:
+To handle such scenarios, we support extraction with the [`response_model`](/docs/v1/learn/response_models) argument in the decorator, which leverages tools (or optionally `json_mode=True`) to reliably extract structured data from the outputs of LLMs according to the schema defined in a Pydantic `BaseModel`. In the example below you can see how due dates, priorities, and descriptions are being extracted:
 
 ```python
 from typing import Literal
@@ -513,7 +513,7 @@ print(task_details)
 
 ```
 
-You can define schema parameters against which to extract data in Pydantic’s `BaseModel` class, by setting certain attributes and fields in that class. Mirascope also lets you set the number of retries to extract data in case a failure occurs. But you also don’t have to use a detailed schema like `BaseModel` if you’re [extracting built-in types](/docs/mirascope/learn/response_models/#built-in-types) like strings, integers, booleans, etc. The code sample below shows how extraction for a simple structure like a list of strings doesn’t need a full-fledged schema definition.
+You can define schema parameters against which to extract data in Pydantic’s `BaseModel` class, by setting certain attributes and fields in that class. Mirascope also lets you set the number of retries to extract data in case a failure occurs. But you also don’t have to use a detailed schema like `BaseModel` if you’re [extracting built-in types](/docs/v1/learn/response_models/#built-in-types) like strings, integers, booleans, etc. The code sample below shows how extraction for a simple structure like a list of strings doesn’t need a full-fledged schema definition.
 
 ```python
 from mirascope.core import openai

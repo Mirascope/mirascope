@@ -6,7 +6,7 @@ description: Learn how to evaluate LLM outputs using multiple approaches includi
 # Evals: Evaluating LLM Outputs
 
 <Note>
-If you haven't already, we recommend first reading the section on [Response Models](/docs/mirascope/learn/response_models)
+If you haven't already, we recommend first reading the section on [Response Models](/docs/v1/learn/response_models)
 </Note>
 
 Evaluating the outputs of Large Language Models (LLMs) is a crucial step in developing robust and reliable AI applications. This section covers various approaches to evaluating LLM outputs, including using LLMs as evaluators as well as implementing hardcoded evaluation criteria.
@@ -284,10 +284,10 @@ for evaluation in evaluations:
 </Tab>
 </TabbedSection>
 
-We are taking advantage of [provider-agnostic prompts](/docs/mirascope/learn/calls#provider-agnostic-usage) in this example to easily call multiple providers with the same prompt. Of course, you can always engineer each judge specifically for a given provider instead.
+We are taking advantage of [provider-agnostic prompts](/docs/v1/learn/calls#provider-agnostic-usage) in this example to easily call multiple providers with the same prompt. Of course, you can always engineer each judge specifically for a given provider instead.
 
 <Info title="Async for parallel evaluations" collapsible={true} defaultOpen={false}>
-  We highly recommend using [parallel asynchronous calls](/docs/mirascope/learn/async#parallel-async-calls) to run your evaluations more quickly since each call can (and should) be run in parallel.
+  We highly recommend using [parallel asynchronous calls](/docs/v1/learn/async#parallel-async-calls) to run your evaluations more quickly since each call can (and should) be run in parallel.
 </Info>
 
 ## Hardcoded Evaluation Criteria

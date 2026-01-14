@@ -10,7 +10,7 @@ The `AzureStream` class for convenience around streaming LLM calls.
 
 <Info title="Usage">
 
-[Streams](/docs/mirascope/learn/streams)
+[Streams](/docs/v1/learn/streams)
 
 </Info>
 
@@ -36,7 +36,7 @@ for chunk, _ in stream:
 ```
 
 **Bases:** 
-<TypeLink type={{"type_str": "BaseStream[AzureCallResponse, AzureCallResponseChunk, UserMessage, AssistantMessage, ToolMessage, ChatRequestMessage, AzureTool, ChatCompletionsToolDefinition, AsyncAzureDynamicConfig | AzureDynamicConfig, AzureCallParams, CompletionsFinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/base/stream#basestream"}, "parameters": [{"type_str": "AzureCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/call_response#azurecallresponse"}, {"type_str": "AzureCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/call_response_chunk#azurecallresponsechunk"}, {"type_str": "UserMessage", "description": null, "kind": "simple", "doc_identifier": "UserMessage"}, {"type_str": "AssistantMessage", "description": null, "kind": "simple", "doc_identifier": "AssistantMessage"}, {"type_str": "ToolMessage", "description": null, "kind": "simple", "doc_identifier": "ToolMessage"}, {"type_str": "ChatRequestMessage", "description": null, "kind": "simple", "doc_identifier": "ChatRequestMessage"}, {"type_str": "AzureTool", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/tool#azuretool"}, {"type_str": "ChatCompletionsToolDefinition", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionsToolDefinition"}, {"type_str": "AsyncAzureDynamicConfig | AzureDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncAzureDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/dynamic_config#asyncazuredynamicconfig"}, {"type_str": "AzureDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/dynamic_config#azuredynamicconfig"}]}, {"type_str": "AzureCallParams", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/core/azure/call_params#azurecallparams"}, {"type_str": "CompletionsFinishReason", "description": null, "kind": "simple", "doc_identifier": "CompletionsFinishReason"}]}} />
+<TypeLink type={{"type_str": "BaseStream[AzureCallResponse, AzureCallResponseChunk, UserMessage, AssistantMessage, ToolMessage, ChatRequestMessage, AzureTool, ChatCompletionsToolDefinition, AsyncAzureDynamicConfig | AzureDynamicConfig, AzureCallParams, CompletionsFinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/stream#basestream"}, "parameters": [{"type_str": "AzureCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/azure/call_response#azurecallresponse"}, {"type_str": "AzureCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/azure/call_response_chunk#azurecallresponsechunk"}, {"type_str": "UserMessage", "description": null, "kind": "simple", "doc_identifier": "UserMessage"}, {"type_str": "AssistantMessage", "description": null, "kind": "simple", "doc_identifier": "AssistantMessage"}, {"type_str": "ToolMessage", "description": null, "kind": "simple", "doc_identifier": "ToolMessage"}, {"type_str": "ChatRequestMessage", "description": null, "kind": "simple", "doc_identifier": "ChatRequestMessage"}, {"type_str": "AzureTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/azure/tool#azuretool"}, {"type_str": "ChatCompletionsToolDefinition", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionsToolDefinition"}, {"type_str": "AsyncAzureDynamicConfig | AzureDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncAzureDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/azure/dynamic_config#asyncazuredynamicconfig"}, {"type_str": "AzureDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/azure/dynamic_config#azuredynamicconfig"}]}, {"type_str": "AzureCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/azure/call_params#azurecallparams"}, {"type_str": "CompletionsFinishReason", "description": null, "kind": "simple", "doc_identifier": "CompletionsFinishReason"}]}} />
 
 <AttributesTable
   attributes={[
@@ -46,7 +46,7 @@ for chunk, _ in stream:
       "type_str": "CostMetadata",
       "description": null,
       "kind": "simple",
-      "doc_url": "/docs/mirascope/api/core/base/types#costmetadata"
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
     },
     "description": "Get metadata required for cost calculation."
   }
@@ -77,7 +77,7 @@ Constructs the call response from a consumed AzureStream.
     "type_str": "AzureCallResponse",
     "description": null,
     "kind": "simple",
-    "doc_url": "/docs/mirascope/api/core/azure/call_response#azurecallresponse"
+    "doc_url": "/docs/v1/api/core/azure/call_response#azurecallresponse"
   }
 }}
 />
