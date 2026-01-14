@@ -69,6 +69,54 @@ export const CreatePaymentIntentResponseSchema = Schema.Struct({
   amount: Schema.Number,
 });
 
+// Subscription schemas
+export const PlanTierSchema = Schema.Literal("free", "pro", "team");
+
+export const SubscriptionDetailsSchema = Schema.Struct({
+  subscriptionId: Schema.String,
+  currentPlan: PlanTierSchema,
+  status: Schema.String,
+  currentPeriodEnd: Schema.Date,
+  hasPaymentMethod: Schema.Boolean,
+  paymentMethod: Schema.optional(
+    Schema.Struct({
+      brand: Schema.String,
+      last4: Schema.String,
+      expMonth: Schema.Number,
+      expYear: Schema.Number,
+    }),
+  ),
+  scheduledChange: Schema.optional(
+    Schema.Struct({
+      targetPlan: PlanTierSchema,
+      effectiveDate: Schema.Date,
+      scheduleId: Schema.String,
+    }),
+  ),
+});
+
+export const PreviewSubscriptionChangeRequestSchema = Schema.Struct({
+  targetPlan: PlanTierSchema,
+});
+
+export const SubscriptionChangePreviewSchema = Schema.Struct({
+  isUpgrade: Schema.Boolean,
+  proratedAmountInDollars: Schema.Number,
+  nextBillingDate: Schema.Date,
+  recurringAmountInDollars: Schema.Number,
+});
+
+export const UpdateSubscriptionRequestSchema = Schema.Struct({
+  targetPlan: PlanTierSchema,
+});
+
+export const UpdateSubscriptionResponseSchema = Schema.Struct({
+  requiresPayment: Schema.Boolean,
+  clientSecret: Schema.optional(Schema.String),
+  scheduledFor: Schema.optional(Schema.Date),
+  scheduleId: Schema.optional(Schema.String),
+});
+
 export type Organization = typeof OrganizationSchema.Type;
 export type OrganizationWithMembership =
   typeof OrganizationWithMembershipSchema.Type;
@@ -82,6 +130,16 @@ export type CreatePaymentIntentRequest =
   typeof CreatePaymentIntentRequestSchema.Type;
 export type CreatePaymentIntentResponse =
   typeof CreatePaymentIntentResponseSchema.Type;
+export type PlanTier = typeof PlanTierSchema.Type;
+export type SubscriptionDetails = typeof SubscriptionDetailsSchema.Type;
+export type PreviewSubscriptionChangeRequest =
+  typeof PreviewSubscriptionChangeRequestSchema.Type;
+export type SubscriptionChangePreview =
+  typeof SubscriptionChangePreviewSchema.Type;
+export type UpdateSubscriptionRequest =
+  typeof UpdateSubscriptionRequestSchema.Type;
+export type UpdateSubscriptionResponse =
+  typeof UpdateSubscriptionResponseSchema.Type;
 
 export class OrganizationsApi extends HttpApiGroup.make("organizations")
   .add(
@@ -145,6 +203,53 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .setPath(Schema.Struct({ id: Schema.String }))
       .setPayload(CreatePaymentIntentRequestSchema)
       .addSuccess(CreatePaymentIntentResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("subscription", "/organizations/:id/subscription")
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(SubscriptionDetailsSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "previewSubscriptionChange",
+      "/organizations/:id/subscription/preview",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .setPayload(PreviewSubscriptionChangeRequestSchema)
+      .addSuccess(SubscriptionChangePreviewSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "updateSubscription",
+      "/organizations/:id/subscription/update",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .setPayload(UpdateSubscriptionRequestSchema)
+      .addSuccess(UpdateSubscriptionResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(StripeError, { status: StripeError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "cancelScheduledDowngrade",
+      "/organizations/:id/subscription/cancel-downgrade",
+    )
+      .setPath(Schema.Struct({ id: Schema.String }))
+      .addSuccess(Schema.Void)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(StripeError, { status: StripeError.status })

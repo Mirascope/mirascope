@@ -6,6 +6,8 @@ import type {
   CreateOrganizationRequest,
   UpdateOrganizationRequest,
   CreatePaymentIntentRequest,
+  PreviewSubscriptionChangeRequest,
+  UpdateSubscriptionRequest,
 } from "@/api/organizations.schemas";
 
 export * from "@/api/organizations.schemas";
@@ -107,4 +109,84 @@ export const createPaymentIntentHandler = (
       clientSecret: result.clientSecret,
       amount: result.amountInDollars,
     };
+  });
+
+export const getSubscriptionHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    // Verify user has access to this organization
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    // Get subscription details from Stripe
+    return yield* payments.customers.subscriptions.get(
+      organization.stripeCustomerId,
+    );
+  });
+
+export const previewSubscriptionChangeHandler = (
+  organizationId: string,
+  payload: PreviewSubscriptionChangeRequest,
+) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    // Verify user has access to this organization
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    // Preview the subscription change
+    return yield* payments.customers.subscriptions.previewChange({
+      stripeCustomerId: organization.stripeCustomerId,
+      targetPlan: payload.targetPlan,
+    });
+  });
+
+export const updateSubscriptionHandler = (
+  organizationId: string,
+  payload: UpdateSubscriptionRequest,
+) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    // Verify user has access to this organization
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    // Update the subscription
+    return yield* payments.customers.subscriptions.update({
+      stripeCustomerId: organization.stripeCustomerId,
+      targetPlan: payload.targetPlan,
+    });
+  });
+
+export const cancelScheduledDowngradeHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const payments = yield* Payments;
+
+    // Verify user has access to this organization
+    const organization = yield* db.organizations.findById({
+      organizationId,
+      userId: user.id,
+    });
+
+    // Cancel the scheduled downgrade
+    yield* payments.customers.subscriptions.cancelScheduledDowngrade(
+      organization.stripeCustomerId,
+    );
   });

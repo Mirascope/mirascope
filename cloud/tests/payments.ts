@@ -2317,7 +2317,7 @@ export function TestUpgradeWithPaymentIntentFixture(params: {
  *     });
  *
  *     expect(result.proratedAmount).toBe(-5000);
- *     expect(result.recurringAmount).toBe(0);
+ *     expect(result.recurringAmountInDollars).toBe(0);
  *   }).pipe(
  *     Effect.provide(
  *       TestPreviewChangeFixture({
