@@ -814,3 +814,190 @@ def test_response_tools_initialization() -> None:
         assistant_message=assistant_message,
     )
     assert isinstance(response.toolkit, llm.AsyncContextToolkit)
+
+
+def test_parse_primitive_str() -> None:
+    """Test parsing response with str format."""
+    text_content = [llm.Text(text='{"output": "Hello, World!"}')]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(str, mode="json")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    result = response.parse()
+    assert result == "Hello, World!"
+    assert isinstance(result, str)
+
+
+def test_parse_primitive_int() -> None:
+    """Test parsing response with int format."""
+    text_content = [llm.Text(text='{"output": 42}')]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(int, mode="json")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    result = response.parse()
+    assert result == 42
+    assert isinstance(result, int)
+
+
+def test_parse_primitive_list() -> None:
+    """Test parsing response with list[int] format."""
+    text_content = [llm.Text(text='{"output": [1, 2, 3, 4, 5]}')]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(list[int], mode="json")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    result = response.parse()
+    assert result == [1, 2, 3, 4, 5]
+    assert isinstance(result, list)
+    assert all(isinstance(x, int) for x in result)
+
+
+def test_parse_list_of_models() -> None:
+    """Test parsing response with list[Book] format."""
+
+    class Book(BaseModel):
+        """A book model."""
+
+        title: str
+        author: str
+
+    json_data = {
+        "output": [
+            {"title": "Book 1", "author": "Author 1"},
+            {"title": "Book 2", "author": "Author 2"},
+        ]
+    }
+    import json
+
+    text_content = [llm.Text(text=json.dumps(json_data))]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(list[Book], mode="json")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    result = response.parse()
+    assert len(result) == 2
+    assert result[0].title == "Book 1"
+    assert result[0].author == "Author 1"
+    assert isinstance(result[0], Book)
+    assert result[1].title == "Book 2"
+
+
+def test_parse_dict_primitive() -> None:
+    """Test parsing response with dict[str, int] format."""
+    text_content = [llm.Text(text='{"output": {"a": 1, "b": 2, "c": 3}}')]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(dict[str, int], mode="json")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    result = response.parse()
+    assert result == {"a": 1, "b": 2, "c": 3}
+    assert isinstance(result, dict)
+    assert all(isinstance(k, str) and isinstance(v, int) for k, v in result.items())
+
+
+def test_parse_primitive_validation_error() -> None:
+    """Test that validation errors propagate correctly for primitives."""
+    text_content = [llm.Text(text='{"output": "not an int"}')]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(int, mode="json")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    with pytest.raises(pydantic.ValidationError):
+        response.parse()

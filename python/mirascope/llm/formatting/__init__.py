@@ -8,6 +8,7 @@ outputs should be structured and parsed.
 from .format import Format, format, resolve_format
 from .from_call_args import FromCallArgs
 from .partial import Partial
+from .primitives import create_wrapper_model, is_primitive_type
 from .types import FormattableT, FormattingMode
 
 __all__ = [
@@ -17,6 +18,8 @@ __all__ = [
     "FormattingMode",
     "FromCallArgs",
     "Partial",
+    "create_wrapper_model",
     "format",
+    "is_primitive_type",
     "resolve_format",
 ]

@@ -5,13 +5,22 @@ from typing_extensions import TypeVar
 
 from pydantic import BaseModel
 
-# TODO: Support primitive types (e.g. `format=list[Book]`)
-FormattableT = TypeVar("FormattableT", bound=BaseModel | None, default=None)
+from .primitives import PrimitiveType
+
+FormattableT = TypeVar(
+    "FormattableT", bound=BaseModel | PrimitiveType | None, default=None
+)
 """Type variable for structured response format types.
 
 This TypeVar represents the type of structured output format that LLM responses
-can be parsed into, or None if no format is specified. 
-If format is specified, it must extend Pydantic BaseModel. 
+can be parsed into, or None if no format is specified.
+
+Supported format types:
+- Pydantic BaseModel subclasses
+- Primitive types: str, int, float, bool, bytes, list, set, tuple, dict
+- Generic collections: list[Book], dict[str, int], etc.
+- Union, Literal, and Annotated types
+- Enum types
 """
 
 
