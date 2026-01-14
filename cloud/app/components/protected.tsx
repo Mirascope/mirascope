@@ -10,7 +10,7 @@ export function Protected({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Only redirect on client-side after auth check completes
     if (!isLoading && !user) {
-      void navigate({ to: "/login", replace: true });
+      void navigate({ to: "/home", replace: true });
     }
   }, [user, isLoading, navigate]);
 
