@@ -10,7 +10,7 @@ from mlx_lm import stream_generate  # type: ignore[reportPrivateImportUsage]
 from mlx_lm.generate import GenerationResponse
 from transformers import PreTrainedTokenizer
 
-from ...formatting import Format, FormattableT
+from ...formatting import Format, FormattableT, OutputParser
 from ...messages import AssistantMessage, Message, assistant
 from ...responses import AsyncChunkIterator, ChunkIterator, StreamResponseChunk
 from ...tools import AnyToolSchema, BaseToolkit
@@ -133,7 +133,10 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
         params: Params,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChunkIterator]:
         """Stream response chunks synchronously.
@@ -156,7 +159,10 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
         params: Params,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, AsyncChunkIterator]:
         """Stream response chunks asynchronously.
@@ -180,7 +186,10 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
         params: Params,
     ) -> tuple[
         Sequence[Message],
@@ -216,7 +225,10 @@ class MLX:
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
         params: Params,
     ) -> tuple[
         Sequence[Message],

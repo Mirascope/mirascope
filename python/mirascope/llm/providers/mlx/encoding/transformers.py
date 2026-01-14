@@ -8,7 +8,7 @@ from mlx_lm.generate import GenerationResponse
 from transformers import PreTrainedTokenizer
 
 from ....content import ContentPart, TextChunk, TextEndChunk, TextStartChunk
-from ....formatting import Format, FormattableT
+from ....formatting import Format, FormattableT, OutputParser
 from ....messages import AssistantContent, Message
 from ....responses import (
     ChunkIterator,
@@ -81,7 +81,10 @@ class TransformersEncoder(BaseEncoder):
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
-        format: type[FormattableT] | Format[FormattableT] | None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None,
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode a request into a format suitable for the model."""
         tool_schemas = tools.tools if isinstance(tools, BaseToolkit) else tools or []

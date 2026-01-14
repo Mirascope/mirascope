@@ -68,7 +68,14 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
-from .formatting import Format, FormattingMode, Partial, format
+from .formatting import (
+    Format,
+    FormattingMode,
+    OutputParser,
+    Partial,
+    format,
+    output_parser,
+)
 from .messages import (
     AssistantContent,
     AssistantMessage,
@@ -98,6 +105,7 @@ from .providers import (
     reset_provider_registry,
 )
 from .responses import (
+    AnyResponse,
     AsyncChunkIterator,
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -136,6 +144,7 @@ from .tools import (
 
 __all__ = [
     "APIError",
+    "AnyResponse",
     "AssistantContent",
     "AssistantContentChunk",
     "AssistantContentPart",
@@ -186,6 +195,7 @@ __all__ = [
     "ModelId",
     "NoRegisteredProviderError",
     "NotFoundError",
+    "OutputParser",
     "Params",
     "Partial",
     "PermissionError",
@@ -241,6 +251,7 @@ __all__ = [
     "model",
     "model_from_context",
     "models",
+    "output_parser",
     "prompt",
     "prompts",
     "providers",

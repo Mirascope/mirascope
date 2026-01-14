@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from typing import Generic, cast, overload
 
 from ..context import DepsT
-from ..formatting import Format, FormattableT
+from ..formatting import Format, FormattableT, OutputParser
 from ..tools import (
     AsyncContextTool,
     AsyncContextToolkit,
@@ -46,13 +46,18 @@ class PromptDecorator(Generic[ToolT, FormattableT]):
     tools: Sequence[ToolT] | None
     """The tools that are included in the prompt, if any."""
 
-    format: type[FormattableT] | Format[FormattableT] | None
+    format: (
+        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
+    )
     """The structured output format off the prompt, if any."""
 
     def __init__(
         self,
         tools: Sequence[ToolT] | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
     ) -> None:
         """Initialize the decorator with optional tools and format."""
         self.tools = tools
@@ -168,7 +173,10 @@ def prompt(
 def prompt(
     *,
     tools: Sequence[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
+    format: type[FormattableT]
+    | Format[FormattableT]
+    | OutputParser[FormattableT]
+    | None = None,
 ) -> PromptDecorator[ToolT, FormattableT]:
     """Create a decorator for Prompt functions with tools and format"""
 
@@ -181,7 +189,10 @@ def prompt(
     | None = None,
     *,
     tools: Sequence[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
+    format: type[FormattableT]
+    | Format[FormattableT]
+    | OutputParser[FormattableT]
+    | None = None,
 ) -> (
     AsyncContextPrompt[P, DepsT, FormattableT]
     | ContextPrompt[P, DepsT, FormattableT]

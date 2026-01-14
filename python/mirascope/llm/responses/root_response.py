@@ -3,7 +3,7 @@
 from abc import ABC
 from collections.abc import Sequence
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Generic, Literal, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, overload
 
 from ..content import AssistantContentPart, Text, Thought, ToolCall
 from ..formatting import (
@@ -11,6 +11,7 @@ from ..formatting import (
     FormattableT,
     Partial,
     create_wrapper_model,
+    is_output_parser,
     is_primitive_type,
 )
 from ..messages import Message
@@ -22,6 +23,8 @@ from .usage import Usage
 if TYPE_CHECKING:
     from ..models import Model
     from ..providers import ModelId, Params, ProviderId
+
+AnyResponse: TypeAlias = "RootResponse[Any, Any]"
 
 
 class RootResponse(Generic[ToolkitT, FormattableT], ABC):
@@ -113,31 +116,39 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     ) -> FormattableT | Partial[FormattableT] | None:
         """Format the response according to the response format parser.
 
-        Supports both Pydantic BaseModel types and primitive types. Primitive types
-        are automatically unwrapped from their wrapper model to return the raw value.
+        Supports:
+        - Pydantic BaseModel types (JSON schema validation)
+        - Primitive types (automatically unwrapped from wrapper model)
+        - Custom OutputParsers (custom parsing logic)
 
         Returns:
             The formatted response object of type FormatT. For BaseModel types, returns
             the model instance. For primitive types, returns the unwrapped value (e.g.,
-            a string, list, dict, etc.).
+            a string, list, dict, etc.). For OutputParsers, returns whatever the parser
+            returns.
 
         Raises:
             json.JSONDecodeError: If the response's textual content can't be parsed as
-                JSON.
+                JSON (BaseModel/primitive types).
             pydantic.ValidationError: If the response's content fails validation for the
-                format type.
+                format type (BaseModel/primitive types).
+            Any exception raised by the custom parser (OutputParser).
         """
         if self.format is None:
             return None
 
+        if partial:
+            raise NotImplementedError
+
         formattable = self.format.formattable
+
+        if is_output_parser(formattable):
+            return formattable(self)
+
         if formattable is None or formattable is NoneType:  # pyright: ignore[reportUnnecessaryComparison]
             # note: pyright claims the None comparison is unnecessary, but removing it
             # introduces type errors.
             return None  # pragma: no cover
-
-        if partial:
-            raise NotImplementedError
 
         text = "".join(text.text for text in self.texts)
         json_text = _utils.extract_serialized_json(text)

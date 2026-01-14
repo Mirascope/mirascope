@@ -28,14 +28,15 @@ FormattingMode = Literal[
     "strict",
     "json",
     "tool",
+    "parser",
 ]
 """Available modes for response format generation.
 
 - "strict": Use strict mode for structured outputs, asking the LLM to strictly adhere
     to a given JSON schema. Not all providers or models support it, and may not be
-    compatible with tool calling. When making a call using this mode, an 
+    compatible with tool calling. When making a call using this mode, an
     `llm.FormattingModeNotSupportedError` error may be raised (if "strict" mode is wholly
-    unsupported), or an `llm.FeatureNotSupportedError` may be raised (if trying to use 
+    unsupported), or an `llm.FeatureNotSupportedError` may be raised (if trying to use
     strict along with tools and that is unsupported).
 
 - "json": Use JSON mode for structured outputs. In contrast to strict mode, we ask the
@@ -50,6 +51,10 @@ FormattingMode = Literal[
     tool, it will automatically be converted from a `ToolCall` into regular response
     content (abstracting over the tool call). If other tools are present, they will
     be handled as regular tool calls.
+
+- "parser": Use custom parsing with formatting instructions. No schema generation or
+    structured output features. The LLM receives only formatting instructions and the
+    response is parsed using a custom parser function created with `@llm.output_parser`.
 
 Note: When `llm.format` is not used, the provider will automatically choose a mode at call time.
 """

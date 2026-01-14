@@ -225,3 +225,55 @@ def test_format_literal_type() -> None:
 def test_format_none_returns_none() -> None:
     """Test that format(None) returns None."""
     assert llm.format(None, mode="json") is None
+
+
+def test_format_with_output_parser() -> None:
+    """Test `format` function with an OutputParser."""
+
+    @llm.output_parser(formatting_instructions="Return XML format")
+    def parse_xml(response: llm.AnyResponse) -> str:
+        """Parse XML response."""
+        return "parsed"
+
+    format = llm.format(parse_xml, mode="parser")
+
+    assert format is not None
+    assert format.name == "parse_xml"
+    assert format.description == "Parse XML response."
+    assert format.schema == {}
+    assert format.mode == "parser"
+    assert format.formattable is parse_xml
+    assert format.formatting_instructions == "Return XML format"
+
+
+def test_format_output_parser_wrong_mode_raises_error() -> None:
+    """Test that format() raises ValueError when mode is not 'parser' for OutputParser."""
+
+    @llm.output_parser(formatting_instructions="Return XML format")
+    def parse_xml(response: llm.AnyResponse) -> str:
+        """Parse XML response."""
+        return "parsed"
+
+    with pytest.raises(
+        ValueError,
+        match="mode must be 'parser' for OutputParser, got 'json'",
+    ):
+        llm.format(parse_xml, mode="json")
+
+
+def test_resolve_format_with_output_parser() -> None:
+    """Test `resolve_format` function with an OutputParser."""
+
+    @llm.output_parser(formatting_instructions="Return CSV format")
+    def parse_csv(response: llm.AnyResponse) -> list[str]:
+        """Parse CSV response."""
+        return []
+
+    format = llm.formatting.resolve_format(parse_csv, default_mode="json")
+
+    assert format is not None
+    assert format.name == "parse_csv"
+    assert format.description == "Parse CSV response."
+    assert format.schema == {}
+    assert format.mode == "parser"
+    assert format.formattable is parse_csv

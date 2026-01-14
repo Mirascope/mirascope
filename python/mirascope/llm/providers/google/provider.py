@@ -7,7 +7,7 @@ from google.genai import Client
 from google.genai.types import HttpOptions
 
 from ...context import Context, DepsT
-from ...formatting import Format, FormattableT
+from ...formatting import Format, FormattableT, OutputParser
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -64,7 +64,10 @@ class GoogleProvider(BaseProvider[Client]):
         model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling the Google GenAI API.
@@ -115,7 +118,10 @@ class GoogleProvider(BaseProvider[Client]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling the Google GenAI API.
@@ -164,7 +170,10 @@ class GoogleProvider(BaseProvider[Client]):
         model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling the Google GenAI API.
@@ -215,7 +224,10 @@ class GoogleProvider(BaseProvider[Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling the Google GenAI API.
@@ -264,7 +276,10 @@ class GoogleProvider(BaseProvider[Client]):
         model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from the Google GenAI API.
@@ -311,7 +326,10 @@ class GoogleProvider(BaseProvider[Client]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Google GenAI API.
@@ -356,7 +374,10 @@ class GoogleProvider(BaseProvider[Client]):
         model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Google GenAI API.
@@ -403,7 +424,10 @@ class GoogleProvider(BaseProvider[Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT]

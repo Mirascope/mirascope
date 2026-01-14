@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Generic, overload
 
 from ..context import Context, DepsT
-from ..formatting import Format, FormattableT
+from ..formatting import Format, FormattableT, OutputParser
 from ..messages import Message
 from ..models import Model
 from ..responses import (
@@ -51,7 +51,9 @@ class Prompt(Generic[P, FormattableT]):
     toolkit: Toolkit
     """The toolkit containing this prompt's tools."""
 
-    format: type[FormattableT] | Format[FormattableT] | None
+    format: (
+        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
+    )
     """The response format for the generated response."""
 
     def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
@@ -126,7 +128,9 @@ class AsyncPrompt(Generic[P, FormattableT]):
     toolkit: AsyncToolkit
     """The toolkit containing this prompt's async tools."""
 
-    format: type[FormattableT] | Format[FormattableT] | None
+    format: (
+        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
+    )
     """The response format for the generated response."""
 
     async def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
@@ -215,7 +219,9 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
     toolkit: ContextToolkit[DepsT]
     """The toolkit containing this prompt's context-aware tools."""
 
-    format: type[FormattableT] | Format[FormattableT] | None
+    format: (
+        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
+    )
     """The response format for the generated response."""
 
     def messages(
@@ -335,7 +341,9 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
     toolkit: AsyncContextToolkit[DepsT]
     """The toolkit containing this prompt's async context-aware tools."""
 
-    format: type[FormattableT] | Format[FormattableT] | None
+    format: (
+        type[FormattableT] | Format[FormattableT] | OutputParser[FormattableT] | None
+    )
     """The response format for the generated response."""
 
     async def messages(

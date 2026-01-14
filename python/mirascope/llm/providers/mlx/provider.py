@@ -8,7 +8,7 @@ from mlx_lm import load as mlx_load
 from transformers import PreTrainedTokenizer
 
 from ...context import Context, DepsT
-from ...formatting import Format, FormattableT
+from ...formatting import Format, FormattableT, OutputParser
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -85,7 +85,10 @@ class MLXProvider(BaseProvider[None]):
         model_id: MLXModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` using MLX model.
@@ -129,7 +132,10 @@ class MLXProvider(BaseProvider[None]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` using MLX model.
@@ -171,7 +177,10 @@ class MLXProvider(BaseProvider[None]):
         model_id: MLXModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` using MLX model by asynchronously calloing
@@ -219,7 +228,10 @@ class MLXProvider(BaseProvider[None]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncResponse` using MLX model by asynchronously calloing
@@ -265,7 +277,10 @@ class MLXProvider(BaseProvider[None]):
         model_id: MLXModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from MLX model output.
@@ -306,7 +321,10 @@ class MLXProvider(BaseProvider[None]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from MLX model output.
@@ -345,7 +363,10 @@ class MLXProvider(BaseProvider[None]):
         model_id: MLXModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from MLX model output.
@@ -386,7 +407,10 @@ class MLXProvider(BaseProvider[None]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT]

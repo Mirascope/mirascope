@@ -7,7 +7,7 @@ from openai import AsyncOpenAI, BadRequestError as OpenAIBadRequestError, OpenAI
 
 from ....context import Context, DepsT
 from ....exceptions import BadRequestError, NotFoundError
-from ....formatting import Format, FormattableT
+from ....formatting import Format, FormattableT, OutputParser
 from ....messages import Message
 from ....responses import (
     AsyncContextResponse,
@@ -67,7 +67,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling the OpenAI Responses API.
@@ -116,7 +119,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling the OpenAI Responses API.
@@ -165,7 +171,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate a `llm.StreamResponse` by synchronously streaming from the OpenAI Responses API.
@@ -214,7 +223,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate a `llm.AsyncStreamResponse` by asynchronously streaming from the OpenAI Responses API.
@@ -266,7 +278,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT] | ContextResponse[DepsT, FormattableT]:
         """Generate a `llm.ContextResponse` by synchronously calling the OpenAI Responses API with context.
@@ -319,7 +334,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate a `llm.AsyncContextResponse` by asynchronously calling the OpenAI Responses API with context.
@@ -372,7 +390,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate a `llm.ContextStreamResponse` by synchronously streaming from the OpenAI Responses API with context.
@@ -426,7 +447,10 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
-        format: type[FormattableT] | Format[FormattableT] | None = None,
+        format: type[FormattableT]
+        | Format[FormattableT]
+        | OutputParser[FormattableT]
+        | None = None,
         **params: Unpack[Params],
     ) -> (
         AsyncContextStreamResponse[DepsT]

@@ -1001,3 +1001,38 @@ def test_parse_primitive_validation_error() -> None:
 
     with pytest.raises(pydantic.ValidationError):
         response.parse()
+
+
+def test_parse_with_output_parser() -> None:
+    """Test response.parse() with an OutputParser."""
+
+    @llm.output_parser(formatting_instructions="Return comma-separated values")
+    def parse_csv(response: llm.AnyResponse) -> list[str]:
+        """Parse comma-separated values."""
+        text = "".join(part.text for part in response.texts)
+        return [item.strip() for item in text.split(",")]
+
+    text_content = [llm.Text(text="apple, banana, cherry")]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(parse_csv, mode="parser")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    result = response.parse()
+    assert result == ["apple", "banana", "cherry"]
+    assert isinstance(result, list)
