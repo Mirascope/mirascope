@@ -9,6 +9,7 @@ import {
   SubscriptionPastDueError,
 } from "@/errors";
 import { createSlugSchema } from "@/db/slug";
+import { PLAN_TIERS } from "@/payments/subscriptions";
 
 export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
@@ -70,7 +71,7 @@ export const CreatePaymentIntentResponseSchema = Schema.Struct({
 });
 
 // Subscription schemas
-export const PlanTierSchema = Schema.Literal("free", "pro", "team");
+export const PlanTierSchema = Schema.Literal(...PLAN_TIERS);
 
 export const SubscriptionDetailsSchema = Schema.Struct({
   subscriptionId: Schema.String,
@@ -130,7 +131,6 @@ export type CreatePaymentIntentRequest =
   typeof CreatePaymentIntentRequestSchema.Type;
 export type CreatePaymentIntentResponse =
   typeof CreatePaymentIntentResponseSchema.Type;
-export type PlanTier = typeof PlanTierSchema.Type;
 export type SubscriptionDetails = typeof SubscriptionDetailsSchema.Type;
 export type PreviewSubscriptionChangeRequest =
   typeof PreviewSubscriptionChangeRequestSchema.Type;

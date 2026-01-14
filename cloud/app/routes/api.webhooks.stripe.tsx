@@ -67,6 +67,60 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
             id: event.id,
           });
 
+          // Handle customer.subscription.updated events
+          if (event.type === "customer.subscription.updated") {
+            const subscription = event.data.object;
+
+            console.log("Processing customer.subscription.updated:", {
+              subscriptionId: subscription.id,
+              stripeCustomerId: subscription.customer,
+              status: subscription.status,
+            });
+
+            // Log subscription changes (no action needed, just informational)
+            return new Response(JSON.stringify({ received: true }), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          // Handle invoice.payment_succeeded events
+          if (event.type === "invoice.payment_succeeded") {
+            const invoice = event.data.object;
+
+            console.log("Processing invoice.payment_succeeded:", {
+              invoiceId: invoice.id,
+              stripeCustomerId: invoice.customer,
+              amount: invoice.amount_paid,
+              subscriptionId: invoice.subscription,
+            });
+
+            // Subscription upgrade payment succeeded
+            return new Response(JSON.stringify({ received: true }), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          // Handle invoice.payment_failed events
+          if (event.type === "invoice.payment_failed") {
+            const invoice = event.data.object;
+
+            console.error("Invoice payment failed:", {
+              invoiceId: invoice.id,
+              stripeCustomerId: invoice.customer,
+              amount: invoice.amount_due,
+              subscriptionId: invoice.subscription,
+            });
+
+            // Payment failed - subscription upgrade failed
+            // In a future PR, we could send an email notification here
+            return new Response(JSON.stringify({ received: true }), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           // Handle payment_intent.succeeded events
           if (event.type === "payment_intent.succeeded") {
             const paymentIntent = event.data.object;

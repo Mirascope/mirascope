@@ -20,7 +20,10 @@ import {
   useCreateEnvironment,
   useDeleteEnvironment,
 } from "@/app/api/environments";
-import { useDeleteOrganization } from "@/app/api/organizations";
+import {
+  useDeleteOrganization,
+  useCancelScheduledDowngrade,
+} from "@/app/api/organizations";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -29,6 +32,12 @@ import {
   CardContent,
 } from "@/app/components/ui/card";
 import { generateSlug } from "@/db/slug";
+import { BillingSettings } from "@/app/components/billing-settings";
+import { BillingErrorBoundary } from "@/app/components/billing-error-boundary";
+import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
+import { DowngradePlanDialog } from "@/app/components/downgrade-plan-dialog";
+import { useSubscription } from "@/app/api/organizations";
+import type { PlanTier } from "@/payments/subscriptions";
 
 export const Route = createFileRoute("/dashboard/settings")({
   component: SettingsPage,
@@ -38,6 +47,33 @@ function SettingsContent() {
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { selectedEnvironment } = useEnvironment();
+  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+  const [downgradeDialogOpen, setDowngradeDialogOpen] = useState(false);
+  const [selectedTargetPlan, setSelectedTargetPlan] = useState<PlanTier | null>(
+    null,
+  );
+
+  const { data: subscription } = useSubscription(selectedOrganization?.id);
+  const cancelDowngradeMutation = useCancelScheduledDowngrade();
+
+  const handleUpgrade = (targetPlan: PlanTier) => {
+    setSelectedTargetPlan(targetPlan);
+    setUpgradeDialogOpen(true);
+  };
+
+  const handleDowngrade = (targetPlan: PlanTier) => {
+    setSelectedTargetPlan(targetPlan);
+    setDowngradeDialogOpen(true);
+  };
+
+  const handleCancelDowngrade = async () => {
+    if (!selectedOrganization?.id) return;
+    try {
+      await cancelDowngradeMutation.mutateAsync(selectedOrganization.id);
+    } catch (error) {
+      console.error("Failed to cancel downgrade:", error);
+    }
+  };
 
   return (
     <div className="p-6 max-w-4xl">
@@ -57,10 +93,42 @@ function SettingsContent() {
           environmentId={selectedEnvironment?.id ?? null}
         />
 
+        {selectedOrganization?.id && (
+          <BillingErrorBoundary>
+            <BillingSettings
+              organizationId={selectedOrganization.id}
+              onUpgrade={handleUpgrade}
+              onDowngrade={handleDowngrade}
+              onCancelDowngrade={() => void handleCancelDowngrade()}
+            />
+          </BillingErrorBoundary>
+        )}
+
         <OrganizationSection
           organizationId={selectedOrganization?.id ?? null}
         />
       </div>
+
+      {selectedOrganization?.id && selectedTargetPlan && (
+        <>
+          <UpgradePlanDialog
+            organizationId={selectedOrganization.id}
+            targetPlan={selectedTargetPlan}
+            open={upgradeDialogOpen}
+            onOpenChange={setUpgradeDialogOpen}
+          />
+          {subscription && (
+            <DowngradePlanDialog
+              organizationId={selectedOrganization.id}
+              currentPlan={subscription.currentPlan}
+              targetPlan={selectedTargetPlan}
+              periodEnd={subscription.currentPeriodEnd}
+              open={downgradeDialogOpen}
+              onOpenChange={setDowngradeDialogOpen}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
