@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
-// import { AnalyticsCodeBlock } from "./AnalyticsCodeBlock";
+import { AnalyticsCodeBlock } from "./analytics-code-block";
 interface ProviderCodeBlockProps {
   examplePath: string; // Path relative to public/examples
   language?: string;
@@ -14,7 +14,7 @@ interface ProviderCodeBlockProps {
  */
 export default function ProviderCodeBlock({
   examplePath,
-  // language = "python",
+  language = "python",
   className = "",
 }: ProviderCodeBlockProps) {
   // Get the currently selected provider
@@ -81,8 +81,9 @@ export default function ProviderCodeBlock({
           Example for {provider} not available yet.
         </div>
       )}
-      {/* {currentProviderCode && <AnalyticsCodeBlock code={currentProviderCode} language={language} />} */}
-      {currentProviderCode && "AnalyticsCodeBlock"}
+      {currentProviderCode && (
+        <AnalyticsCodeBlock code={currentProviderCode} language={language} />
+      )}
     </>
   );
 }

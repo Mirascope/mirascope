@@ -173,15 +173,15 @@ More text.`;
     expect(result.jsxCode).toContain("Links");
   });
 
-  it("should skip syntax highlighting when skipHighlighting is true", async () => {
+  it("should compile code blocks with language identifiers", async () => {
     const content = `\`\`\`typescript
 const x = 1;
 \`\`\``;
 
-    const result = await compileMDXContent(content, { skipHighlighting: true });
+    const result = await compileMDXContent(content);
 
     expect(result.jsxCode).toBeDefined();
-    // The code should still compile, just without syntax highlighting
+    // The code should compile with the language identifier preserved
     expect(result.jsxCode).toContain("typescript");
   });
 

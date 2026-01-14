@@ -34,7 +34,7 @@ import { Button } from "@/app/components/ui/button";
 import { ButtonLink } from "@/app/components/ui/button-link";
 import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
 import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
-// import { ProviderCodeWrapper } from "./ProviderCodeWrapper";
+import { ModelProviderCodeWrapper } from "@/app/components/mdx/elements/model-provider-code-wrapper";
 // import { ResponsiveImage } from "@/src/components/mdx/providers/ResponsiveImage";
 // import { devComponents } from "@/app/components/mdx/elements/DevComponents";
 import { idSlugFromChildren } from "@/app/lib/mdx/heading-utils";
@@ -338,95 +338,95 @@ const mediaElements = {
   },
 };
 
-// todo(sebastian): bring back code elements
-// const codeElements = {
-//   // Inline code - this is only for inline elements, not code blocks
-//   code: (props: React.ComponentPropsWithoutRef<"code">) => {
-//     // Don't apply inline code styling to code blocks (which are children of pre tags)
-//     const isInPre = React.useRef<boolean>(false);
-//     React.useLayoutEffect(() => {
-//       // Type assertion for DOM properties access
-//       const element = props as unknown as {
-//         parentElement?: { tagName: string };
-//       };
-//       const parentIsPre =
-//         props.className?.includes("language-") ||
-//         props.className?.includes("shiki") ||
-//         element.parentElement?.tagName === "PRE";
-//       isInPre.current = !!parentIsPre;
-//     }, [props]);
+const codeElements = {
+  // Inline code - this is only for inline elements, not code blocks
+  code: (props: React.ComponentPropsWithoutRef<"code">) => {
+    // Don't apply inline code styling to code blocks (which are children of pre tags)
+    const isInPre = React.useRef<boolean>(false);
+    React.useLayoutEffect(() => {
+      // Type assertion for DOM properties access
+      const element = props as unknown as {
+        parentElement?: { tagName: string };
+      };
+      const parentIsPre =
+        props.className?.includes("language-") ||
+        props.className?.includes("shiki") ||
+        element.parentElement?.tagName === "PRE";
+      isInPre.current = !!parentIsPre;
+    }, [props]);
 
-//     // Only apply inline code styling to actual inline code, not code blocks
-//     if (isInPre.current) {
-//       return <code {...props} />;
-//     }
+    // Only apply inline code styling to actual inline code, not code blocks
+    if (isInPre.current) {
+      return <code {...props} />;
+    }
 
-//     return (
-//       <code
-//         className="bg-muted text-muted-foreground rounded px-1 py-0.5 font-mono text-[0.9em]"
-//         {...props}
-//       />
-//     );
-//   },
+    return (
+      <code
+        className="bg-muted text-muted-foreground rounded px-1 py-0.5 font-mono text-[0.9em]"
+        {...props}
+      />
+    );
+  },
 
-//   // Code blocks - use our custom CodeBlock component with provider substitution
-//   pre: (props: React.ComponentPropsWithoutRef<"pre">) => {
-//     // Get meta information from our data attribute or initialize to empty
-//     let meta = (props as any)["data-meta"] || "";
+  // Code blocks - use our custom CodeBlock component with provider substitution
+  pre: (props: React.ComponentPropsWithoutRef<"pre">) => {
+    // Get meta information from our data attribute or initialize to empty
+    let meta =
+      (props as unknown as { "data-meta"?: string })["data-meta"] || "";
 
-//     // Initialize variables for code content and language
-//     let codeContent = "";
-//     let language = "txt";
+    // Initialize variables for code content and language
+    let codeContent = "";
+    let language = "txt";
 
-//     // Process children to find code content and language
-//     if (props.children) {
-//       const children = React.Children.toArray(props.children);
+    // Process children to find code content and language
+    if (props.children) {
+      const children = React.Children.toArray(props.children);
 
-//       // Loop through children to find code content (typically there's only one child)
-//       for (const child of children) {
-//         if (!React.isValidElement(child)) continue;
+      // Loop through children to find code content (typically there's only one child)
+      for (const child of children) {
+        if (!React.isValidElement(child)) continue;
 
-//         // Check if this is a code element or has code-like properties
-//         const childProps = child.props as {
-//           className?: string;
-//           children?: React.ReactNode | string;
-//         };
+        // Check if this is a code element or has code-like properties
+        const childProps = child.props as {
+          className?: string;
+          children?: React.ReactNode | string;
+        };
 
-//         // Extract language from className
-//         if (childProps.className?.includes("language-")) {
-//           language =
-//             (childProps.className.match(/language-(\w+)/) || [])[1] || "txt";
+        // Extract language from className
+        if (childProps.className?.includes("language-")) {
+          language =
+            (childProps.className.match(/language-(\w+)/) || [])[1] || "txt";
 
-//           // Also check for meta in className (legacy approach)
-//           // This looks for patterns like {1-3} or {1,3} after the language
-//           if (!meta) {
-//             const metaMatch = childProps.className.match(/\{([^}]+)\}/);
-//             meta = metaMatch ? `{${metaMatch[1]}}` : "";
-//           }
-//         }
+          // Also check for meta in className (legacy approach)
+          // This looks for patterns like {1-3} or {1,3} after the language
+          if (!meta) {
+            const metaMatch = childProps.className.match(/\{([^}]+)\}/);
+            meta = metaMatch ? `{${metaMatch[1]}}` : "";
+          }
+        }
 
-//         // Get code content
-//         if (typeof childProps.children === "string") {
-//           codeContent = childProps.children;
-//           break;
-//         }
-//       }
-//     }
+        // Get code content
+        if (typeof childProps.children === "string") {
+          codeContent = childProps.children;
+          break;
+        }
+      }
+    }
 
-//     // Handle mermaid diagrams
-//     if (language === "mermaid" && codeContent) {
-//       return <MermaidDiagram chart={codeContent.trim()} />;
-//     }
+    // Handle mermaid diagrams
+    if (language === "mermaid" && codeContent) {
+      return <MermaidDiagram chart={codeContent.trim()} />;
+    }
 
-//     return (
-//       <ProviderCodeWrapper
-//         code={codeContent.replace(/\n$/, "")}
-//         language={language}
-//         meta={meta}
-//       />
-//     );
-//   },
-// };
+    return (
+      <ModelProviderCodeWrapper
+        code={codeContent.replace(/\n$/, "")}
+        language={language}
+        meta={meta}
+      />
+    );
+  },
+};
 
 // -----------------------------------------------------------------------------
 // Complete Component Registry
@@ -439,5 +439,5 @@ export default {
   ...listElements,
   ...tableElements,
   ...mediaElements,
-  //   ...codeElements,
+  ...codeElements,
 };
