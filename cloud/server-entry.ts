@@ -6,21 +6,12 @@ import reservationExpiryCron from "@/workers/reservationExpiryCron";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
 import routerMeteringQueue, {
   RouterMeteringQueueService,
-  setRouterMeteringQueueLayer,
 } from "@/workers/routerMeteringQueue";
-import spanIngestQueue, {
-  SpansIngestQueue,
-  setSpansIngestQueueLayer,
-} from "@/workers/spanIngestQueue";
-import spansMeteringQueue, {
-  SpansMeteringQueueService,
-  setSpansMeteringQueueLayer,
-} from "@/workers/spansMeteringQueue";
-import { RealtimeSpans, setRealtimeSpansLayer } from "@/workers/realtimeSpans";
+import spanIngestQueue, { SpansIngestQueue } from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { RealtimeSpansDurableObjectBase } from "@/workers/realtimeSpans/durableObject";
 import type { RouterMeteringMessage } from "@/workers/routerMeteringQueue";
 import type { SpansIngestMessage } from "@/workers/spanIngestQueue";
-import type { SpanMeteringMessage } from "@/workers/spansMeteringQueue";
 import type { MessageBatch } from "@cloudflare/workers-types";
 import { type WorkerEnv } from "@/workers/cron-config";
 import { Layer, Context } from "effect";
@@ -71,57 +62,98 @@ interface ScheduledEvent {
 const fetchHandler = createStartHandler(defaultStreamHandler);
 
 /**
+ * Global router metering queue layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers.
+ */
+export let routerMeteringQueueLayer: Layer.Layer<RouterMeteringQueueService> =
+  Layer.succeed(RouterMeteringQueueService, {
+    send: () => Effect.fail(new Error("RouterMeteringQueue not initialized")),
+  });
+
+/**
+ * Global spans ingest queue layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers.
+ */
+export let spansIngestQueueLayer: Layer.Layer<SpansIngestQueue> = Layer.succeed(
+  SpansIngestQueue,
+  {
+    send: () => Effect.fail(new Error("SpansIngestQueue not initialized")),
+  },
+);
+
+/**
+ * Global realtime spans layer.
+ *
+ * Set by the fetch handler when REALTIME_SPANS_DURABLE_OBJECT binding is available.
+ */
+export let realtimeSpansLayer: Layer.Layer<RealtimeSpans> = Layer.succeed(
+  RealtimeSpans,
+  {
+    upsert: () => Effect.fail(new Error("RealtimeSpans not initialized")),
+    search: () => Effect.fail(new Error("RealtimeSpans not initialized")),
+    getTraceDetail: () =>
+      Effect.fail(new Error("RealtimeSpans not initialized")),
+    exists: () => Effect.fail(new Error("RealtimeSpans not initialized")),
+  },
+);
+
+/**
  * Scheduled event handler that routes to the appropriate cron job.
  *
  * - `* /5 * * * *`: Reservation expiry + billing reconciliation (every 5 minutes)
  *
  * @param event - Cloudflare scheduled event containing the cron expression
- * @param env - Cloudflare Workers environment bindings
+ * @param environment - Cloudflare Workers environment bindings
  */
 const scheduled = async (
   event: ScheduledEvent,
-  env: WorkerEnv,
+  environment: WorkerEnv,
 ): Promise<void> => {
   if (event.cron === "*/5 * * * *" || event.cron === "local") {
     // Reservation expiry must run before billing reconciliation
     // to ensure expired reservations are properly marked
-    await reservationExpiryCron.scheduled(event, env);
-    await billingReconciliationCron.scheduled(event, env);
+    await reservationExpiryCron.scheduled(event, environment);
+    await billingReconciliationCron.scheduled(event, environment);
   }
 };
 
-const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
+const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (
+  request,
+  environment,
+  context,
+) => {
   // Set execution context layer for route handlers
-  executionContextLayer = Layer.succeed(ExecutionContext, ctx);
+  executionContextLayer = Layer.succeed(ExecutionContext, context);
 
-  // Initialize queue layers from Cloudflare bindings
-  if (env.ROUTER_METERING_QUEUE) {
-    setRouterMeteringQueueLayer(
-      RouterMeteringQueueService.Live(env.ROUTER_METERING_QUEUE),
+  // Set router metering queue layer for route handlers
+  if (environment.ROUTER_METERING_QUEUE) {
+    routerMeteringQueueLayer = RouterMeteringQueueService.Live(
+      environment.ROUTER_METERING_QUEUE,
     );
   }
-  if (env.SPANS_INGEST_QUEUE) {
-    setSpansIngestQueueLayer(SpansIngestQueue.Live(env.SPANS_INGEST_QUEUE));
-  }
-  if (env.SPANS_METERING_QUEUE) {
-    setSpansMeteringQueueLayer(
-      SpansMeteringQueueService.Live(env.SPANS_METERING_QUEUE),
+  if (environment.SPANS_INGEST_QUEUE) {
+    spansIngestQueueLayer = SpansIngestQueue.Live(
+      environment.SPANS_INGEST_QUEUE,
     );
   }
-  if (env.REALTIME_SPANS_DURABLE_OBJECT) {
-    setRealtimeSpansLayer(
-      RealtimeSpans.Live(env.REALTIME_SPANS_DURABLE_OBJECT),
+  if (environment.REALTIME_SPANS_DURABLE_OBJECT) {
+    realtimeSpansLayer = RealtimeSpans.Live(
+      environment.REALTIME_SPANS_DURABLE_OBJECT,
     );
   }
 
-  if (env.ENVIRONMENT === "local") {
+  if (environment.ENVIRONMENT === "local") {
     const { pathname } = new URL(request.url);
     if (pathname === "/__scheduled") {
       const event: ScheduledEvent = {
         cron: "local",
         scheduledTime: Date.now(),
       };
-      ctx.waitUntil(scheduled(event, env));
+      context.waitUntil(scheduled(event, environment));
       return new Response("Ran scheduled event");
     }
     if (pathname === "/__scheduled/billing") {
@@ -129,7 +161,7 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
         cron: "*/5 * * * *",
         scheduledTime: Date.now(),
       };
-      ctx.waitUntil(scheduled(event, env));
+      context.waitUntil(scheduled(event, environment));
       return new Response("Ran billing reconciliation cron");
     }
   }
@@ -137,22 +169,21 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
   return fetchHandler(request);
 };
 
-const queue = async (batch: MessageBatch, env: WorkerEnv): Promise<void> => {
+const queue = async (
+  batch: MessageBatch,
+  environment: WorkerEnv,
+): Promise<void> => {
   if (batch.queue === "router-metering") {
     await routerMeteringQueue.queue(
       batch as MessageBatch<RouterMeteringMessage>,
-      env,
+      environment,
     );
     return;
   }
   if (batch.queue === "spans-ingest") {
-    await spanIngestQueue.queue(batch as MessageBatch<SpansIngestMessage>, env);
-    return;
-  }
-  if (batch.queue === "spans-metering") {
-    await spansMeteringQueue.queue(
-      batch as MessageBatch<SpanMeteringMessage>,
-      env,
+    await spanIngestQueue.queue(
+      batch as MessageBatch<SpansIngestMessage>,
+      environment,
     );
     return;
   }

@@ -106,6 +106,32 @@ describe("routerMeteringQueue", () => {
     setRouterMeteringQueueLayer(originalRouterMeteringQueueLayer);
   });
 
+  describe("routerMeteringQueueLayer", () => {
+    it("uses the default layer and allows updates", async () => {
+      const originalLayer = routerMeteringQueueLayer;
+      const testMessage = createTestMessage();
+
+      const program = Effect.gen(function* () {
+        const queue = yield* RouterMeteringQueueService;
+        yield* queue.send(testMessage);
+      });
+
+      await expect(
+        Effect.runPromise(
+          program.pipe(Effect.provide(routerMeteringQueueLayer)),
+        ),
+      ).rejects.toThrow("RouterMeteringQueue not initialized");
+
+      const testLayer = Layer.succeed(RouterMeteringQueueService, {
+        send: () => Effect.void,
+      });
+      setRouterMeteringQueueLayer(testLayer);
+      expect(routerMeteringQueueLayer).toBe(testLayer);
+
+      setRouterMeteringQueueLayer(originalLayer);
+    });
+  });
+
   describe("updateAndSettleRouterRequest", () => {
     it("successfully updates router request and settles funds", async () => {
       const message = createTestMessage();

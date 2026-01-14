@@ -61,7 +61,7 @@ export const listByFunctionHashHandler = (
     const clickHouseSearch = yield* ClickHouseSearch;
 
     // First, find the function by hash
-    const fn =
+    const functionRecord =
       yield* db.organizations.projects.environments.functions.findByHash({
         userId: user.id,
         organizationId: apiKeyInfo.organizationId,
@@ -84,7 +84,7 @@ export const listByFunctionHashHandler = (
       environmentId: apiKeyInfo.environmentId,
       startTime,
       endTime,
-      functionId: fn.id,
+      functionId: functionRecord.id,
       limit,
       offset,
     });

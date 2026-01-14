@@ -5,19 +5,13 @@ import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
-import { DrizzleORM } from "@/db/client";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
-import { RealtimeSpans, realtimeSpansLayer } from "@/workers/realtimeSpans";
+import { DrizzleORM } from "@/db/client";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SettingsService, getSettings } from "@/settings";
-import {
-  SpansIngestQueue,
-  spansIngestQueueLayer,
-} from "@/workers/spanIngestQueue";
-import {
-  SpansMeteringQueueService,
-  spansMeteringQueueLayer,
-} from "@/workers/spansMeteringQueue";
+import { spansIngestQueueLayer, realtimeSpansLayer } from "@/server-entry";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -78,7 +72,6 @@ export const Route = createFileRoute("/api/v0/$")({
           const clickHouseSearch = yield* ClickHouseSearch;
           const realtimeSpans = yield* RealtimeSpans;
           const spansIngestQueue = yield* SpansIngestQueue;
-          const spansMeteringQueue = yield* SpansMeteringQueueService;
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v0",
@@ -89,7 +82,6 @@ export const Route = createFileRoute("/api/v0/$")({
             clickHouseSearch,
             realtimeSpans,
             spansIngestQueue,
-            spansMeteringQueue,
           });
 
           if (!result.matched) {
@@ -123,7 +115,6 @@ export const Route = createFileRoute("/api/v0/$")({
                 ),
               ),
               spansIngestQueueLayer,
-              spansMeteringQueueLayer,
               realtimeSpansLayer,
             ),
           ),

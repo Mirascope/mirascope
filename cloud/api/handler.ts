@@ -10,7 +10,6 @@ import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
@@ -22,7 +21,6 @@ export type HandleRequestOptions = {
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
   realtimeSpans: Context.Tag.Service<RealtimeSpans>;
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
-  spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
 };
 
 type WebHandlerOptions = {
@@ -32,7 +30,6 @@ type WebHandlerOptions = {
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
   realtimeSpans: Context.Tag.Service<RealtimeSpans>;
   spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
-  spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   environment: string;
@@ -54,7 +51,6 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(Payments, options.payments),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
     Layer.succeed(SpansIngestQueue, options.spansIngestQueue),
-    Layer.succeed(SpansMeteringQueueService, options.spansMeteringQueue),
   );
 
   const services = Layer.merge(
@@ -103,7 +99,6 @@ export const handleRequest = (
       clickHouseSearch: options.clickHouseSearch,
       realtimeSpans: options.realtimeSpans,
       spansIngestQueue: options.spansIngestQueue,
-      spansMeteringQueue: options.spansMeteringQueue,
     });
 
     const result = yield* Effect.tryPromise({

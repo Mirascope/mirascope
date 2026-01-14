@@ -27,7 +27,6 @@ import {
   SpansIngestQueue,
   type SpansIngestMessage,
 } from "@/workers/spanIngestQueue";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
@@ -54,9 +53,6 @@ export { expect };
 const DefaultQueueLayer = Layer.succeed(SpansIngestQueue, {
   send: () => Effect.void,
 });
-const DefaultMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-  send: () => Effect.void,
-});
 export const DefaultRealtimeLayer = Layer.succeed(RealtimeSpans, {
   upsert: () => Effect.void,
   search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
@@ -74,7 +70,6 @@ function createTestDatabaseLayer(
   connectionString: string,
   queueLayer: Layer.Layer<SpansIngestQueue> = DefaultQueueLayer,
   realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
-  meteringQueueLayer: Layer.Layer<SpansMeteringQueueService> = DefaultMeteringQueueLayer,
 ) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
   return Layer.mergeAll(
@@ -86,7 +81,6 @@ function createTestDatabaseLayer(
     DefaultMockPayments,
     queueLayer,
     realtimeLayer,
-    meteringQueueLayer,
   );
 }
 
@@ -162,9 +156,9 @@ const wrapEffectTest =
  * });
  * ```
  */
-export const it = createCustomIt<
-  Database | Payments | SpansMeteringQueueService | DrizzleORM
->(wrapEffectTest);
+export const it = createCustomIt<Database | Payments | DrizzleORM>(
+  wrapEffectTest,
+);
 
 // ============================================================================
 // API Client Creation
@@ -202,17 +196,12 @@ function createTestWebHandler(
     send: queueSend ?? (() => Effect.void),
   });
 
-  const spansMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-    send: () => Effect.void,
-  });
-
   const services = Layer.mergeAll(
     settingsLayer,
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl, queueLayer, realtimeLayer),
     clickHouseSearchLayer,
-    spansMeteringQueueLayer,
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -522,9 +511,6 @@ function createSimpleTestWebHandler() {
     Layer.succeed(Authentication, authResult),
     createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie),
     Layer.succeed(SpansIngestQueue, {
-      send: () => Effect.void,
-    }),
-    Layer.succeed(SpansMeteringQueueService, {
       send: () => Effect.void,
     }),
     clickHouseSearchLayer,

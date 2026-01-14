@@ -14,7 +14,6 @@
     "producers": [
       { "queue": "router-metering", "binding": "ROUTER_METERING_QUEUE" },
       { "queue": "spans-ingest", "binding": "SPANS_INGEST_QUEUE" },
-      { "queue": "spans-metering", "binding": "SPANS_METERING_QUEUE" },
     ],
     "consumers": [
       {
@@ -25,25 +24,11 @@
         "dead_letter_queue": "router-metering-dlq",
       },
       {
-        "queue": "spans-metering",
-        "max_batch_size": 10,
-        "max_batch_timeout": 5,
-        "max_retries": 5,
-        "dead_letter_queue": "spans-metering-dlq",
-      },
-      {
         "queue": "spans-ingest",
         "max_batch_size": 50,
         "max_batch_timeout": 5,
         "max_retries": 5,
         "dead_letter_queue": "spans-ingest-dlq",
-      },
-      {
-        "queue": "spans-metering",
-        "max_batch_size": 10,
-        "max_batch_timeout": 5,
-        "max_retries": 5,
-        "dead_letter_queue": "spans-metering-dlq",
       },
     ],
   },

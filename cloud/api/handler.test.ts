@@ -1,17 +1,19 @@
 import { Effect, Layer } from "effect";
 import { describe, it, expect } from "@/tests/api";
 import { handleRequest } from "@/api/handler";
+import type { ListByFunctionHashResponse } from "@/api/traces.schemas";
 import type { PublicUser } from "@/db/schema";
-import { HandlerError } from "@/errors";
+import { ClickHouseError, HandlerError } from "@/errors";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { SettingsService, getSettings } from "@/settings";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
+import type { PublicFunction } from "@/db/functions";
 import fs from "fs";
 
 const mockUser: PublicUser = {
@@ -19,6 +21,31 @@ const mockUser: PublicUser = {
   email: "test@example.com",
   name: "Test User",
   deletedAt: null,
+};
+
+const listByFunctionHashIdentifiers = {
+  organizationId: "organization-1",
+  projectId: "project-1",
+  environmentId: "environment-1",
+};
+
+const listByFunctionHashFunction: PublicFunction = {
+  id: "function-id",
+  hash: "hash-list-by-function",
+  signatureHash: "signature-hash-list-by-function",
+  name: "test-function",
+  description: null,
+  version: "1.0",
+  tags: null,
+  metadata: null,
+  code: "export const handler = () => null;",
+  signature: "function handler()",
+  dependencies: null,
+  environmentId: listByFunctionHashIdentifiers.environmentId,
+  projectId: listByFunctionHashIdentifiers.projectId,
+  organizationId: listByFunctionHashIdentifiers.organizationId,
+  createdAt: new Date(0),
+  updatedAt: new Date(0),
 };
 
 type ClickHouseConnectionFile = {
@@ -58,9 +85,6 @@ const drizzleLayer = MockDrizzleORMLayer;
 const spansIngestQueueLayer = Layer.succeed(SpansIngestQueue, {
   send: () => Effect.void,
 });
-const spansMeteringQueueLayer = Layer.succeed(SpansMeteringQueueService, {
-  send: () => Effect.void,
-});
 const realtimeSpansLayer = Layer.succeed(RealtimeSpans, {
   upsert: () => Effect.void,
   search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
@@ -91,7 +115,6 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
-        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       expect(response.status).toBe(404);
@@ -102,7 +125,6 @@ describe("handleRequest", () => {
           drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
-          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),
@@ -125,7 +147,6 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
-        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       expect(response.status).toBe(404);
@@ -136,7 +157,6 @@ describe("handleRequest", () => {
           drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
-          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),
@@ -158,7 +178,6 @@ describe("handleRequest", () => {
           clickHouseSearch,
           realtimeSpans: yield* RealtimeSpans,
           spansIngestQueue: yield* SpansIngestQueue,
-          spansMeteringQueue: yield* SpansMeteringQueueService,
         });
 
         // The path becomes "/" after stripping prefix, which doesn't match any route
@@ -170,7 +189,6 @@ describe("handleRequest", () => {
             drizzleLayer,
             clickHouseSearchLayer,
             spansIngestQueueLayer,
-            spansMeteringQueueLayer,
             realtimeSpansLayer,
           ),
         ),
@@ -198,7 +216,6 @@ describe("handleRequest", () => {
           clickHouseSearch,
           realtimeSpans: yield* RealtimeSpans,
           spansIngestQueue: yield* SpansIngestQueue,
-          spansMeteringQueue: yield* SpansMeteringQueueService,
         }).pipe(Effect.flip);
 
         expect(error).toBeInstanceOf(HandlerError);
@@ -211,7 +228,6 @@ describe("handleRequest", () => {
             drizzleLayer,
             clickHouseSearchLayer,
             spansIngestQueueLayer,
-            spansMeteringQueueLayer,
             realtimeSpansLayer,
           ),
         ),
@@ -239,7 +255,6 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
-        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       expect(matched).toBe(true);
@@ -250,7 +265,6 @@ describe("handleRequest", () => {
           drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
-          spansMeteringQueueLayer,
           realtimeSpansLayer,
         ),
       ),
@@ -276,7 +290,6 @@ describe("handleRequest", () => {
         clickHouseSearch,
         realtimeSpans: yield* RealtimeSpans,
         spansIngestQueue: yield* SpansIngestQueue,
-        spansMeteringQueue: yield* SpansMeteringQueueService,
       });
 
       const body = yield* Effect.promise(() => response.text());
@@ -292,8 +305,136 @@ describe("handleRequest", () => {
           drizzleLayer,
           clickHouseSearchLayer,
           spansIngestQueueLayer,
-          spansMeteringQueueLayer,
           realtimeSpansLayer,
+        ),
+      ),
+    ),
+  );
+
+  it.effect("should handle listByFunctionHash requests", () =>
+    Effect.gen(function* () {
+      const clickHouseSearch = yield* ClickHouseSearch;
+
+      const apiKeyInfo = {
+        apiKeyId: "api-key-id",
+        organizationId: listByFunctionHashIdentifiers.organizationId,
+        projectId: listByFunctionHashIdentifiers.projectId,
+        environmentId: listByFunctionHashIdentifiers.environmentId,
+        ownerId: mockUser.id,
+        ownerEmail: mockUser.email,
+        ownerName: mockUser.name,
+        ownerDeletedAt: mockUser.deletedAt,
+      };
+
+      const requestWithParams = new Request(
+        `http://localhost/api/v0/traces/function/hash/${listByFunctionHashFunction.hash}?limit=1&offset=0`,
+        { method: "GET" },
+      );
+
+      const { matched, response } = yield* handleRequest(requestWithParams, {
+        user: mockUser,
+        apiKeyInfo,
+        environment: "test",
+        prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
+        clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueue,
+      });
+
+      const body = (yield* Effect.promise(() =>
+        response.json(),
+      )) as ListByFunctionHashResponse;
+
+      expect(matched).toBe(true);
+      expect(response.status).toBe(200);
+      expect(body.total).toBe(2);
+      expect(body.traces).toHaveLength(1);
+      expect(body.traces[0]?.id).toBe("trace-1");
+      expect(body.traces[0]?.otelTraceId).toBe("trace-1");
+
+      const requestWithoutParams = new Request(
+        `http://localhost/api/v0/traces/function/hash/${listByFunctionHashFunction.hash}`,
+        { method: "GET" },
+      );
+
+      const { matched: matchedDefault, response: responseDefault } =
+        yield* handleRequest(requestWithoutParams, {
+          user: mockUser,
+          apiKeyInfo,
+          environment: "test",
+          prefix: "/api/v0",
+          drizzle: yield* DrizzleORM,
+          clickHouseSearch,
+          realtimeSpans: yield* RealtimeSpans,
+          spansIngestQueue: yield* SpansIngestQueue,
+        });
+
+      expect(matchedDefault).toBe(true);
+      expect(responseDefault.status).toBe(200);
+    }).pipe(
+      Effect.provide(
+        Layer.mergeAll(
+          drizzleLayer,
+          spansIngestQueueLayer,
+          realtimeSpansLayer,
+          Layer.succeed(Database, {
+            organizations: {
+              projects: {
+                environments: {
+                  functions: {
+                    findByHash: () =>
+                      Effect.succeed(listByFunctionHashFunction),
+                  },
+                },
+              },
+            },
+          } as never),
+          Layer.succeed(ClickHouseSearch, {
+            search: () =>
+              Effect.succeed({
+                spans: [
+                  {
+                    traceId: "trace-1",
+                    spanId: "span-1",
+                    name: "span",
+                    startTime: new Date().toISOString(),
+                    durationMs: 10,
+                    model: null,
+                    provider: null,
+                    totalTokens: null,
+                    functionId: "function-id",
+                    functionName: "test-function",
+                  },
+                  {
+                    traceId: "trace-1",
+                    spanId: "span-2",
+                    name: "span",
+                    startTime: new Date().toISOString(),
+                    durationMs: 20,
+                    model: null,
+                    provider: null,
+                    totalTokens: null,
+                    functionId: "function-id",
+                    functionName: "test-function",
+                  },
+                ],
+                total: 2,
+                hasMore: false,
+              }),
+            getTraceDetail: () =>
+              Effect.fail(
+                new ClickHouseError({
+                  message: "getTraceDetail not used",
+                }),
+              ),
+            getAnalyticsSummary: () =>
+              Effect.fail(
+                new ClickHouseError({
+                  message: "getAnalyticsSummary not used",
+                }),
+              ),
+          }),
         ),
       ),
     ),

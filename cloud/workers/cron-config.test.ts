@@ -87,10 +87,6 @@ describe("cron-config", () => {
         send: async () => {},
       };
 
-      const mockSpansMeteringQueue = {
-        send: async () => {},
-      };
-
       const mockDurableObject = {
         get: () => ({}),
         idFromName: () => ({}),
@@ -100,7 +96,7 @@ describe("cron-config", () => {
         jurisdiction: () => ({}),
       };
 
-      const env = {
+      const environment = {
         ENVIRONMENT: "test",
         CLICKHOUSE_URL: "http://localhost:8123",
         DATABASE_URL: "postgres://test:test@localhost:5432/test",
@@ -114,14 +110,12 @@ describe("cron-config", () => {
         STRIPE_CLOUD_SPANS_METER_ID: "meter_spans",
         ROUTER_METERING_QUEUE: mockRouterQueue,
         SPANS_INGEST_QUEUE: mockSpansIngestQueue,
-        SPANS_METERING_QUEUE: mockSpansMeteringQueue,
         REALTIME_SPANS_DURABLE_OBJECT: mockDurableObject,
       } as unknown as WorkerEnv;
 
-      expect(env.ROUTER_METERING_QUEUE).toBe(mockRouterQueue);
-      expect(env.SPANS_INGEST_QUEUE).toBe(mockSpansIngestQueue);
-      expect(env.SPANS_METERING_QUEUE).toBe(mockSpansMeteringQueue);
-      expect(env.REALTIME_SPANS_DURABLE_OBJECT).toBe(mockDurableObject);
+      expect(environment.ROUTER_METERING_QUEUE).toBe(mockRouterQueue);
+      expect(environment.SPANS_INGEST_QUEUE).toBe(mockSpansIngestQueue);
+      expect(environment.REALTIME_SPANS_DURABLE_OBJECT).toBe(mockDurableObject);
     });
   });
 });

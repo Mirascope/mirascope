@@ -1,8 +1,9 @@
 /**
  * @fileoverview Cloudflare Queue Consumer for span ingestion.
  *
- * Processes OTLP spans asynchronously, writing to ClickHouse (source of truth)
- * and updating the realtime spans cache (Durable Object). ClickHouse insert is
+ * Processes OTLP spans asynchronously, writing to ClickHouse (source of truth),
+ * charging span metering, and updating the realtime spans cache (Durable Object).
+ * ClickHouse insert is
  * prioritized; DurableObject upsert is best-effort and failures are logged but
  * don't block the ingestion. Failed ClickHouse inserts are retried via the
  * queue mechanism.
@@ -19,19 +20,26 @@
  * currently sends completed spans only, but the DurableObject layer is designed to handle
  * incremental updates without data loss.
  *
+ * **Metering**: Metering is executed after ClickHouse insert. Failures are logged
+ * but do not trigger queue retries to avoid duplicate ClickHouse inserts.
+ *
  * **Batching**: Messages are processed individually to ensure proper retry handling.
  * ClickHouse batching happens at the SDK level (buffered inserts). If throughput
  * becomes an issue, we can optimize by batching multiple messages into a single
  * ClickHouse insert within this consumer.
  */
 
-import { Context, Effect, Layer } from "effect";
+import { Context, Effect, Layer, Option } from "effect";
 import type {
   DurableObjectNamespace,
   MessageBatch,
 } from "@cloudflare/workers-types";
+import { Database } from "@/db";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { transformSpanForClickHouse } from "@/db/clickhouse/transform";
+import { DrizzleORM } from "@/db/client";
+import { organizations } from "@/db/schema";
+import { Payments } from "@/payments";
 import {
   SettingsService,
   getSettingsFromEnvironment,
@@ -39,6 +47,7 @@ import {
 } from "@/settings";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import type { CompletedSpansBatchRequest } from "@/db/clickhouse/types";
+import { eq } from "drizzle-orm";
 
 // =============================================================================
 // Types
@@ -127,6 +136,55 @@ export const setSpansIngestQueueLayer = (
 // Message Processing
 // =============================================================================
 
+const meterSpans = (
+  data: SpansIngestMessage,
+  client: Context.Tag.Service<DrizzleORM>,
+  payments: Context.Tag.Service<Payments>,
+): Effect.Effect<void, never> =>
+  Effect.gen(function* () {
+    if (data.spans.length === 0) {
+      return;
+    }
+
+    const [organizationRecord] = yield* client
+      .select({ stripeCustomerId: organizations.stripeCustomerId })
+      .from(organizations)
+      .where(eq(organizations.id, data.organizationId))
+      .pipe(
+        Effect.catchAll((error) => {
+          console.error(
+            `[spanIngestQueue] Failed to fetch organization ${data.organizationId} for span metering:`,
+            error,
+          );
+          return Effect.succeed([]);
+        }),
+      );
+
+    if (!organizationRecord) {
+      console.error(
+        `[spanIngestQueue] Organization ${data.organizationId} not found for span metering`,
+      );
+      return;
+    }
+
+    for (const span of data.spans) {
+      yield* payments.products.spans
+        .chargeMeter({
+          stripeCustomerId: organizationRecord.stripeCustomerId,
+          spanId: span.spanId,
+        })
+        .pipe(
+          Effect.catchAll((error) => {
+            console.error(
+              `[spanIngestQueue] Failed to meter span ${span.spanId}:`,
+              error,
+            );
+            return Effect.void;
+          }),
+        );
+    }
+  });
+
 /**
  * Effect program to ingest a spans message.
  *
@@ -139,10 +197,12 @@ export const setSpansIngestQueueLayer = (
  */
 export const ingestSpansMessage = (
   data: SpansIngestMessage,
-): Effect.Effect<void, Error, ClickHouse | RealtimeSpans> =>
+): Effect.Effect<void, Error, ClickHouse> =>
   Effect.gen(function* () {
     const clickhouse = yield* ClickHouse;
-    const realtimeSpans = yield* RealtimeSpans;
+    const realtimeOption = yield* Effect.serviceOption(RealtimeSpans);
+    const drizzleOption = yield* Effect.serviceOption(DrizzleORM);
+    const paymentsOption = yield* Effect.serviceOption(Payments);
 
     const clickhouseRows = data.spans.map((span) =>
       transformSpanForClickHouse({
@@ -159,17 +219,23 @@ export const ingestSpansMessage = (
 
     yield* clickhouse.insert("spans_analytics", clickhouseRows);
 
-    yield* realtimeSpans.upsert(data).pipe(
-      /* v8 ignore start - Best-effort fallback, covered by integration tests */
-      Effect.catchAll((error) => {
-        console.warn(
-          "[spanIngestQueue] DurableObject upsert failed (best-effort):",
-          error,
-        );
-        return Effect.void;
-      }),
-      /* v8 ignore stop */
-    );
+    if (Option.isSome(drizzleOption) && Option.isSome(paymentsOption)) {
+      yield* meterSpans(data, drizzleOption.value, paymentsOption.value);
+    }
+
+    if (Option.isSome(realtimeOption)) {
+      yield* realtimeOption.value.upsert(data).pipe(
+        /* v8 ignore start - Best-effort fallback, covered by integration tests */
+        Effect.catchAll((error) => {
+          console.warn(
+            "[spanIngestQueue] DurableObject upsert failed (best-effort):",
+            error,
+          );
+          return Effect.void;
+        }),
+        /* v8 ignore stop */
+      );
+    }
   });
 
 // =============================================================================
@@ -177,7 +243,18 @@ export const ingestSpansMessage = (
 // =============================================================================
 
 type SpanIngestEnvironment = CloudflareEnvironment & {
-  readonly REALTIME_SPANS_DURABLE_OBJECT: DurableObjectNamespace;
+  readonly REALTIME_SPANS_DURABLE_OBJECT?: DurableObjectNamespace;
+  readonly HYPERDRIVE?: {
+    readonly connectionString: string;
+  };
+  readonly STRIPE_SECRET_KEY?: string;
+  readonly STRIPE_ROUTER_PRICE_ID?: string;
+  readonly STRIPE_ROUTER_METER_ID?: string;
+  readonly STRIPE_CLOUD_FREE_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_PRO_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_TEAM_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_SPANS_PRICE_ID?: string;
+  readonly STRIPE_CLOUD_SPANS_METER_ID?: string;
 };
 
 /* v8 ignore start - Cloudflare Worker queue consumer, tested via integration */
@@ -186,13 +263,13 @@ export default {
    * Queue consumer handler for span ingestion messages.
    *
    * @param batch - Batch of messages from the queue
-   * @param env - Cloudflare Workers environment bindings
+   * @param environment - Cloudflare Workers environment bindings
    */
   async queue(
     batch: MessageBatch<SpansIngestMessage>,
-    env: SpanIngestEnvironment,
+    environment: SpanIngestEnvironment,
   ): Promise<void> {
-    if (!env.CLICKHOUSE_URL) {
+    if (!environment.CLICKHOUSE_URL) {
       console.error("[spanIngestQueue] Missing CLICKHOUSE_URL binding");
       for (const message of batch.messages) {
         message.retry({ delaySeconds: 60 });
@@ -202,21 +279,73 @@ export default {
 
     const settingsLayer = Layer.succeed(
       SettingsService,
-      getSettingsFromEnvironment(env),
+      getSettingsFromEnvironment(environment),
     );
 
     const clickhouseLayer = ClickHouse.Default.pipe(
       Layer.provide(settingsLayer),
     );
 
-    const realtimeLayer = RealtimeSpans.Live(env.REALTIME_SPANS_DURABLE_OBJECT);
+    const realtimeLayer = environment.REALTIME_SPANS_DURABLE_OBJECT
+      ? RealtimeSpans.Live(environment.REALTIME_SPANS_DURABLE_OBJECT)
+      : null;
+    const databaseUrl =
+      environment.HYPERDRIVE?.connectionString ?? environment.DATABASE_URL;
+    const stripeConfigReady = [
+      environment.STRIPE_SECRET_KEY,
+      environment.STRIPE_ROUTER_PRICE_ID,
+      environment.STRIPE_ROUTER_METER_ID,
+      environment.STRIPE_CLOUD_FREE_PRICE_ID,
+      environment.STRIPE_CLOUD_PRO_PRICE_ID,
+      environment.STRIPE_CLOUD_TEAM_PRICE_ID,
+      environment.STRIPE_CLOUD_SPANS_PRICE_ID,
+      environment.STRIPE_CLOUD_SPANS_METER_ID,
+    ].every((value) => typeof value === "string" && value.trim().length > 0);
+    const meteringLayer =
+      databaseUrl && stripeConfigReady
+        ? Database.Live({
+            database: { connectionString: databaseUrl },
+            payments: {
+              apiKey: environment.STRIPE_SECRET_KEY!,
+              routerPriceId: environment.STRIPE_ROUTER_PRICE_ID!,
+              routerMeterId: environment.STRIPE_ROUTER_METER_ID!,
+              cloudFreePriceId: environment.STRIPE_CLOUD_FREE_PRICE_ID!,
+              cloudProPriceId: environment.STRIPE_CLOUD_PRO_PRICE_ID!,
+              cloudTeamPriceId: environment.STRIPE_CLOUD_TEAM_PRICE_ID!,
+              cloudSpansPriceId: environment.STRIPE_CLOUD_SPANS_PRICE_ID!,
+              cloudSpansMeterId: environment.STRIPE_CLOUD_SPANS_METER_ID!,
+            },
+          })
+        : null;
+
+    if (!databaseUrl) {
+      console.warn(
+        "[spanIngestQueue] No database connection available, skipping span metering",
+      );
+    }
+    if (!stripeConfigReady) {
+      console.warn(
+        "[spanIngestQueue] Missing Stripe configuration for span metering (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID, STRIPE_CLOUD_FREE_PRICE_ID, STRIPE_CLOUD_PRO_PRICE_ID, STRIPE_CLOUD_TEAM_PRICE_ID, STRIPE_CLOUD_SPANS_PRICE_ID, STRIPE_CLOUD_SPANS_METER_ID required)",
+      );
+    }
+    if (!environment.REALTIME_SPANS_DURABLE_OBJECT) {
+      console.warn(
+        "[spanIngestQueue] REALTIME_SPANS_DURABLE_OBJECT not configured, skipping realtime cache",
+      );
+    }
+    const baseLayer = realtimeLayer
+      ? Layer.mergeAll(clickhouseLayer, realtimeLayer)
+      : clickhouseLayer;
+    const serviceLayer = meteringLayer
+      ? Layer.merge(baseLayer, meteringLayer)
+      : baseLayer;
 
     for (const message of batch.messages) {
       const program = ingestSpansMessage(message.body);
 
       await Effect.runPromise(
         program.pipe(
-          Effect.provide(Layer.mergeAll(clickhouseLayer, realtimeLayer)),
+          Effect.provide(serviceLayer),
           Effect.catchAll((error) => {
             console.error(`[spanIngestQueue] Error processing message:`, error);
             message.retry({ delaySeconds: 60 });
