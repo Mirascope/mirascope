@@ -1,26 +1,157 @@
 ---
 title: Tools
-description: Learn how to extend LLM capabilities with tools that allow models to call functions on your behalf.
+description: Learn how to extend LLM capabilities with tools that allow models to request function calls.
 ---
-
-<Info>
-Reference: This doc should draw from:
-- legacy/legacy-content-v1/tools.mdx (tool definition, BaseTool, tool calling patterns)
-- index.mdx "Tools and Tool calling" section (execute_tools, resume with tool outputs)
-</Info>
 
 # Tools
 
-This document covers tool calling - giving LLMs the ability to invoke functions.
+Tools let LLMs request that you execute functions and return the results. Instead of just generating text, the model can ask for specific operations (like fetching data, performing calculations, interacting with external systems) and then use those results to formulate its response.
 
-## Topics Covered
+<CodeExample file="examples/tools/loop.py" />
 
-- Introduction to the concept of tool calling
-- The `@llm.tool` decorator for defining tools
-- Tool schemas: how function signatures and docstrings become tool definitions
-- The `llm.ToolCall` content type in responses
-- Checking for tool calls via `response.tool_calls`
-- Executing tools with `response.execute_tools()`
-- Providing tool outputs back to the LLM with `response.resume()`
-- The `llm.Toolkit` concept for grouping related tools
-- Async tools and `llm.AsyncTool`
+Use `@llm.tool` to create a tool from a function, pass it to your call via `tools=[...]`, then loop until the model stops requesting tool calls. The loop pattern handles any number of tool-use rounds automatically.
+
+## Defining Tools
+
+The `@llm.tool` decorator turns a function into a tool. The function's name, docstring, and type hints become part of the tool schema that the LLM sees:
+
+```python
+@llm.tool
+def search_books(query: str, max_results: int = 5) -> list[str]:
+    """Search the library catalog for books.
+
+    Use this tool when the user wants to find books on a topic.
+    Returns a list of matching book titles.
+    """
+```
+
+In this example, the LLM knows it has a tool called `"search_books"` that takes a `query` string and optional `max_results` integer. The docstring becomes the tool's description, helping the LLM understand when to use it.
+
+### Tool Parameters
+
+Parameters are inferred from the function signature. Use type hints and docstrings to describe them:
+
+```python
+@llm.tool
+def create_event(
+    title: str,
+    date: str,
+    duration_minutes: int = 60,
+    attendees: list[str] | None = None,
+) -> str:
+    """Create a calendar event.
+
+    Args:
+        title: The name of the event.
+        date: Date in YYYY-MM-DD format.
+        duration_minutes: How long the event lasts.
+        attendees: List of email addresses to invite.
+    """
+```
+
+Mirascope extracts parameter descriptions from the docstring and includes them in the tool schema. Google, NumPy, ReST, and Epydoc docstring formats are all supported. With this calendar tool, the LLM knows that dates should have `"YYYY-MM-DD"` format.
+
+<Note>
+Clear parameter descriptions help the LLM provide correct arguments. Include format requirements, valid ranges, or examples where helpful.
+</Note>
+
+### Strict Mode
+
+The `@llm.tool` decorator accepts a `strict` parameter that controls whether the provider enforces the tool's JSON schema:
+
+```python
+from typing import Literal
+
+@llm.tool(strict=True)
+def get_current_temperature(
+    location: str,
+    units: Literal["fahrenheit", "celsius"],
+) -> float:
+    """Get the current temperature for a location."""
+```
+
+| Value | Behavior |
+| --- | --- |
+| `None` (default) | Uses the provider default (generally strict if well supported) |
+| `True` | Uses strict schema validation, if supported |
+| `False` | Disables strict mode even if the provider supports it |
+
+When strict mode is enabled, the provider guarantees the LLM's tool call arguments will match the schema exactly.
+
+## How Tool Calling Works
+
+When an LLM wants to use a tool, it doesn't call the function directly—it returns a `ToolCall` asking you to execute it. You run the tool and pass the result back so the model can continue.
+
+<CodeExample file="examples/tools/basic.py" />
+
+Here's what happens step by step:
+
+1. The model receives the prompt and sees `sqrt_tool` is available
+2. Instead of guessing, it returns a `ToolCall` with `name="sqrt_tool"` and `args={"number": 4242}`
+3. We execute via `response.toolkit.execute(tool_call)`, which looks up the tool by name and returns a `ToolOutput`
+4. We pass the output back with `response.resume(tool_output)`
+5. The model uses the result to formulate its final answer
+
+### Parallel Tool Calls
+
+LLMs can request multiple tools in a single response. Use `response.execute_tools()` to run them all:
+
+<CodeExample file="examples/tools/parallel.py" />
+
+This is more convenient than executing each tool manually, and it's what powers the loop pattern shown at the top of this page. For async tools, `execute_tools()` runs all tools concurrently using `asyncio.gather`.
+
+### The Toolkit
+
+Every response includes a `toolkit` property containing the tools that were available for that call. The toolkit provides methods to look up and execute tools by name:
+
+```python
+response = math_assistant("What's the square root of 4242?")
+
+# Access the toolkit
+toolkit = response.toolkit
+
+# Look up a tool by name from a ToolCall
+tool = toolkit.get(tool_call)  # Returns the Tool, or raises ToolNotFoundError
+
+# Execute a tool call (looks up and runs the tool)
+output = toolkit.execute(tool_call)  # Returns ToolOutput
+```
+
+The convenience method `response.execute_tools()` uses the toolkit internally to execute all tool calls in a response.
+
+## Async Tools
+
+For async operations like network requests or database queries, define async tool functions:
+
+<CodeExample file="examples/tools/async_tools.py" />
+
+When any tool is async, the call must be async too, and you use `await` with `execute_tools()` and `resume()`. See the [Async](/docs/mirascope/v2/async) guide for more details.
+
+<Note>
+If any tool in the toolkit is async, all tools must be async, and the entire call chain must use async/await.
+</Note>
+
+## Tools with Prompts and Models
+
+The examples above use `@llm.call`. You can also pass tools to `@llm.prompt` or directly to a model:
+
+<TabbedSection>
+<Tab value="@llm.call">
+<CodeExample file="examples/tools/with_call.py" />
+</Tab>
+<Tab value="@llm.prompt">
+<CodeExample file="examples/tools/with_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/tools/with_model.py" />
+</Tab>
+</TabbedSection>
+
+All three approaches work the same way: you provide tools and handle tool calls identically regardless of how you make the call.
+
+## Next Steps
+
+- [Structured Output](/docs/mirascope/v2/structured-output) — Parse responses into typed objects
+- [Streaming](/docs/mirascope/v2/streaming) — Stream responses with tool calls
+- [Context](/docs/mirascope/v2/context) — Inject dependencies into tools
+- [Agents](/docs/mirascope/v2/agents) — Build autonomous agents with tools
