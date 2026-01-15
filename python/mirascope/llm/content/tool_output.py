@@ -3,11 +3,11 @@
 from dataclasses import dataclass
 from typing import Generic, Literal
 
-from ..types import JsonableT
+from ..types import JsonableCovariantT
 
 
 @dataclass(kw_only=True)
-class ToolOutput(Generic[JsonableT]):
+class ToolOutput(Generic[JsonableCovariantT]):
     """Tool output content for a message.
 
     Represents the output from a tool call. This is part of a user message's
@@ -22,5 +22,5 @@ class ToolOutput(Generic[JsonableT]):
     name: str
     """The name of the tool that created this output."""
 
-    value: JsonableT
+    value: JsonableCovariantT
     """The output value from the tool call."""
