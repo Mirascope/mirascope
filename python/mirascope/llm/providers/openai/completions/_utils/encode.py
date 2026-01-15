@@ -232,13 +232,16 @@ def _convert_tool_to_tool_param(
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
     _base_utils.ensure_additional_properties_false(schema_dict)
+    strict = True if tool.strict is None else tool.strict
+    if strict:
+        _base_utils.ensure_all_properties_required(schema_dict)
     return openai_types.ChatCompletionToolParam(
         type="function",
         function={
             "name": tool.name,
             "description": tool.description,
             "parameters": schema_dict,
-            "strict": tool.strict,
+            "strict": strict,
         },
     )
 

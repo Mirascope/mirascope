@@ -130,7 +130,7 @@ sync_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -258,7 +258,7 @@ async_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -370,7 +370,7 @@ stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
@@ -492,7 +492,7 @@ async_stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {

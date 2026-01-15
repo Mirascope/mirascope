@@ -158,3 +158,113 @@ def test_add_system_instructions_empty_messages() -> None:
 
     expected = [llm.messages.system(additional_instructions)]
     assert result == expected
+
+
+def test_ensure_all_properties_required_basic() -> None:
+    """Test that all properties are added to required array."""
+    schema = {
+        "type": "object",
+        "properties": {
+            "location": {"type": "string"},
+            "unit": {"type": "string", "default": "fahrenheit"},
+        },
+        "required": ["location"],
+    }
+
+    _utils.ensure_all_properties_required(schema)
+
+    assert set(schema["required"]) == {"location", "unit"}
+
+
+def test_ensure_all_properties_required_nested() -> None:
+    """Test that nested objects also have all properties required."""
+    schema = {
+        "type": "object",
+        "properties": {
+            "outer": {"type": "string"},
+            "nested": {
+                "type": "object",
+                "properties": {
+                    "inner1": {"type": "string"},
+                    "inner2": {"type": "string", "default": "default_value"},
+                },
+                "required": ["inner1"],
+            },
+        },
+        "required": ["outer"],
+    }
+
+    _utils.ensure_all_properties_required(schema)
+
+    assert set(schema["required"]) == {"outer", "nested"}
+    assert set(schema["properties"]["nested"]["required"]) == {"inner1", "inner2"}
+
+
+def test_ensure_all_properties_required_with_defs() -> None:
+    """Test that $defs are also processed."""
+    schema = {
+        "type": "object",
+        "properties": {
+            "item": {"$ref": "#/$defs/Item"},
+        },
+        "required": [],
+        "$defs": {
+            "Item": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {"type": "integer", "default": 0},
+                },
+                "required": ["name"],
+            }
+        },
+    }
+
+    _utils.ensure_all_properties_required(schema)
+
+    assert set(schema["required"]) == {"item"}
+    assert set(schema["$defs"]["Item"]["required"]) == {"name", "value"}
+
+
+def test_ensure_all_properties_required_in_list() -> None:
+    """Test that objects within lists are processed."""
+    schema = {
+        "anyOf": [
+            {
+                "type": "object",
+                "properties": {
+                    "opt1": {"type": "string"},
+                    "opt2": {"type": "string", "default": "default"},
+                },
+                "required": ["opt1"],
+            },
+            {"type": "null"},
+        ]
+    }
+
+    _utils.ensure_all_properties_required(schema)
+
+    assert set(schema["anyOf"][0]["required"]) == {"opt1", "opt2"}
+
+
+def test_ensure_all_properties_required_empty_properties() -> None:
+    """Test handling of object with empty properties."""
+    schema = {
+        "type": "object",
+        "properties": {},
+        "required": [],
+    }
+
+    _utils.ensure_all_properties_required(schema)
+
+    assert schema["required"] == []
+
+
+def test_ensure_all_properties_required_no_properties_key() -> None:
+    """Test handling of object without properties key."""
+    schema = {"type": "object"}
+
+    _utils.ensure_all_properties_required(schema)
+
+    # Should not add a required key if there's no properties
+    assert "required" not in schema

@@ -369,4 +369,186 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21TW3OaQBh991cwPLWTJiJKNH1DtEYFkaBU0ul0VlkuCrtkd1Ewk//exUsCmfDA
+        sN8534XznX1tCIK4AciLPMAgFX8Kf3hEEF5P7xLDiEHEOHAN8WAKCPvgnp/Xyjen+BnasAgjDcRx
+        LfmCI5BAHuf1kzRj8J8frcUfn0mABPSL5DKdh1uS9Al4q53f6vVEFuIsCJkdBQiwjJzaa/TQV1f6
+        WEbHG48Ou7NV0w53Sm/4kLuhrUwcQn4xNZfHBzZqIlJ0ZkcHS0WeHNty+Axt9fnBfGyiw0FuJf2u
+        Z7BEjwPyuxlNxypy1x39iR3JXvU1Jq1dG6Pt5DnvYr+trOTBcDnc+8PBgzneuBtLwsAK1f5cl7Tc
+        0Jduq+ckppyAwst6o6aZ3yStziJ7Aelx7Zq7fEsGk35nfr+PkTMz/cLtr9pL15h2i2NIRjbqFMvE
+        6t/vtbUT6tsbnG8VdV/cq+t9G1vRKm1bju/mjq9bj+rcJE/W1tCkxWw6ZiOx8ZWifz/UFAmOT+ol
+        2IPxlf4ut+hHKKLhEwQUl3sS7YU5f1+uGCEP5jwsfeIbkFIQnOoaZV0hgAgS7kpPuJpJ2HA3faPf
+        7849y+FOY4lZmWlABriLwbtjxJRwd7EF3kGk4ezkYkU5t62Yvoa3uhecYQbiOiRfRq7WpQPeNYqr
+        t6FyUbhAII5YUf7UYrhaVCzOG9TGuqrYqIh9tWx9xE6vcVH7vAAHEhqdlQ5gwrW8le+UWz8GNDz1
+        EwmkKUYUjr2S05qkGPhteUZJ8sLofNfNBh01EBtvjf/wAVSsDgQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 15 Jan 2026 07:44:20 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3041
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is the 100th fibonacci number?"},{"role":"assistant","content":null,"tool_calls":[{"id":"google_unknown_tool_id","type":"function","function":{"name":"compute_fib","arguments":"{\"n\":
+      100}"}}]},{"role":"tool","content":"218922995834555169026","tool_call_id":"google_unknown_tool_id"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '614'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFJda9wwEHz3rxB6loPts53zvQYC/YAQKJRSgtFJa1utrFUluc0R7r8X
+        +S5nJ00hL3rY2RnN7O5TQghVku4IFQMPYrQ6vTncfBw+H+6Hx6+An/T1hzL/dTfeT9/udPaHssjA
+        /Q8Q4Zl1JXC0GoJCc4KFAx4gqubX9basN1mdz8CIEnSk9TakJaZFVpRptk2z+kwcUAnwdEe+J4QQ
+        8jS/0aKR8Eh3JGPPlRG85z3Q3aWJEOpQxwrl3isfuAmULaBAE8DMrr8MQPIsCwO5VXs0XAhFzDTu
+        wRHlSZFvWVMUrGkqtt2UrKoqltcNy4r6ai3ooJs8j3nMpPUK4MZg4HEec5SHM3K8mNfYW4d7/4pK
+        O2WUH1oH3KOJRn1AS2f0mBDyMA9pepGbWoejDW3AnzB/1+QnObpsZQGLzRkMGLhe6nlesjfkWgmB
+        K+1XU6aCiwHkQl1WwiepcAUkq9D/unlL+xRcmf498gsgBNgAsrUOpBIvEy9tDuLR/q/tMuTZMPXg
+        fisBbVDg4iIkdHzSp3ui/uADjG2nTA/OOnU6qs62EriQsurqjibH5C8AAAD//wMAxnVO2V0DAAA=
+    headers:
+      CF-RAY:
+      - 9be3bf546ac9df5b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 07:44:22 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=auA2UTxkozhCOTt9gcESSUKgkT7IzIFE.g5uF09OUQo-1768463062-1.0.1.1-R5fdL4._4WHOQra1Cu925I..cAuFVCB23Ffg2UO69en6AyTPNP2qj38K0DhgQ._CCnBSq1_LiB2JgH5Ty3ag8h75KIsb7XehEdEfDGERV8o;
+        path=/; expires=Thu, 15-Jan-26 08:14:22 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=9SKNwFNzj0Oll4fiWsaqqSwLoBuxY8i58UZPU8xiHYI-1768463062331-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '694'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '822'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799982'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_6c5063360c0c4663a114b4ce3f51755b
+    status:
+      code: 200
+      message: OK
 version: 1

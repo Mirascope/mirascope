@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What''s the weather
+      like in San Francisco?"}],"model":"claude-sonnet-4-0","tools":[{"name":"get_current_weather","description":"Get
+      the current weather in a given location.\n\nArgs:\n    location: The city and
+      state, e.g. San Francisco, CA\n    unit: The temperature unit to use (fahrenheit
+      or celsius)","input_schema":{"properties":{"location":{"description":"The city
+      and state, e.g. San Francisco, CA","title":"Location","type":"string"},"unit":{"default":"fahrenheit","description":"The
+      temperature unit to use (fahrenheit or celsius)","title":"Unit","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '739'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WRX0/CMBTFv0rTF1+GgTkk7g00M0Z4MBKiMaZpuitb6NrRP/yR7Lt7u7AAGp+2
+        3vPrPWdnB1rpHCRNqZDc59CzWilwvaQX9+NhfzhIaETLHPXKLll/EE8Vjx9mpZmO/fZt/r1YT3ZZ
+        hozb1xAosJYvAQdGyzDg1pbWceVwJLRygG/px6HjHeyC0j5S+nQlJREFiBVxBRDhjUGebIHj0ZBS
+        kVeuSGa4EqUVmnxpQ/baX9MmOm3UWjJvocsdzh6Tv8+eE76w7vH21r1sJvPpKCvgBinFq3BvCY4d
+        DdnRMKxQtcdkByq14K7UCsmLDBG5H9Om+YyodbpmBrhtobMYrWBh7UEJdFJeyoj6tiZc3Dowp1eg
+        LE2TuwR74tgBE7grOLJLot/pKOf/ad3dYAB1ARUYLtmw+suf1EHxW20iqr07H40G+DlgNqUA5kps
+        KKXh5+bc5FjCD8nLo+lNAgAA
+    headers:
+      CF-RAY:
+      - 9be77a484d757588-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 18:36:18 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-15T18:36:17Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-15T18:36:18Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-15T18:36:16Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-15T18:36:17Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CX9eW4VMRhKz3bJBovCAD
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1998'
+    status:
+      code: 200
+      message: OK
+version: 1

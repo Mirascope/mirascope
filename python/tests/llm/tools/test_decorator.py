@@ -20,7 +20,7 @@ class TestTool:
         assert isinstance(add_numbers, llm.Tool)
         assert add_numbers.name == "add_numbers"
         assert add_numbers.description == "Add two numbers together."
-        assert add_numbers.strict is False
+        assert add_numbers.strict is None
 
         params = add_numbers.parameters
         assert "a" in params.properties
@@ -140,7 +140,7 @@ class TestContextTool:
         assert isinstance(add_with_constant, llm.ContextTool)
         assert add_with_constant.name == "add_with_constant"
         assert add_with_constant.description == "Add number to constant from context."
-        assert add_with_constant.strict is False
+        assert add_with_constant.strict is None
 
         params = add_with_constant.parameters
         assert "a" in params.properties

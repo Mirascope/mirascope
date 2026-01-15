@@ -211,7 +211,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -419,7 +419,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -617,7 +617,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
@@ -825,7 +825,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {

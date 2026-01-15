@@ -36,7 +36,7 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_1SXJLcrPpnfEh9d043WcgHrE",
+                            id="call_TzRf0ocMScUqxwCo2gtxsXq5",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -49,7 +49,7 @@ sync_snapshot = snapshot(
                         "annotations": [],
                         "tool_calls": [
                             {
-                                "id": "call_1SXJLcrPpnfEh9d043WcgHrE",
+                                "id": "call_TzRf0ocMScUqxwCo2gtxsXq5",
                                 "function": {
                                     "arguments": '{"isbn":"0-7653-1178-X"}',
                                     "name": "get_book_info",
@@ -62,7 +62,7 @@ sync_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_1SXJLcrPpnfEh9d043WcgHrE",
+                            id="call_TzRf0ocMScUqxwCo2gtxsXq5",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -123,7 +123,7 @@ sync_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -157,7 +157,7 @@ async_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_G7xU4l9uoflCyWy400JLfwRB",
+                            id="call_3QgInSRw9t5zgK7zZimGFpLa",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -170,7 +170,7 @@ async_snapshot = snapshot(
                         "annotations": [],
                         "tool_calls": [
                             {
-                                "id": "call_G7xU4l9uoflCyWy400JLfwRB",
+                                "id": "call_3QgInSRw9t5zgK7zZimGFpLa",
                                 "function": {
                                     "arguments": '{"isbn":"0-7653-1178-X"}',
                                     "name": "get_book_info",
@@ -183,7 +183,7 @@ async_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_G7xU4l9uoflCyWy400JLfwRB",
+                            id="call_3QgInSRw9t5zgK7zZimGFpLa",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -244,7 +244,7 @@ async_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -268,7 +268,7 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_byrt8SHXR4qCw7vA8xDplwcU",
+                            id="call_bPE1oChhQJ1fwzno4hURbrvY",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -281,7 +281,7 @@ stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_byrt8SHXR4qCw7vA8xDplwcU",
+                            id="call_bPE1oChhQJ1fwzno4hURbrvY",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -290,10 +290,7 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="""\
-{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}
-{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}\
-"""
+                            text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                         )
                     ],
                     provider_id="openai",
@@ -341,19 +338,19 @@ stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
                 "input_tokens": 200,
-                "output_tokens": 64,
+                "output_tokens": 32,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": "None",
-                "total_tokens": 264,
+                "total_tokens": 232,
             },
-            "n_chunks": 57,
+            "n_chunks": 29,
         }
     }
 )
@@ -375,7 +372,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_tRYcze5T0J5lgxRx4XBCGpd6",
+                            id="call_XOIAQ8k2lu4cswlpQxOZV0kp",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -388,7 +385,7 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_tRYcze5T0J5lgxRx4XBCGpd6",
+                            id="call_XOIAQ8k2lu4cswlpQxOZV0kp",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -397,10 +394,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="""\
-{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}
-{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}\
-"""
+                            text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                         )
                     ],
                     provider_id="openai",
@@ -448,19 +442,19 @@ async_stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
                 "input_tokens": 200,
-                "output_tokens": 64,
+                "output_tokens": 32,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": "None",
-                "total_tokens": 264,
+                "total_tokens": 232,
             },
-            "n_chunks": 57,
+            "n_chunks": 29,
         }
     }
 )

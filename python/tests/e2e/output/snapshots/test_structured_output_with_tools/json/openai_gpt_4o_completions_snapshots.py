@@ -72,7 +72,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_PXmnw6FDiJhLZrN5DuUgM4L8",
+                            id="call_1gEiPnWN9DgKIVWghKD26GxY",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -85,7 +85,7 @@ Respond only with valid JSON that matches this exact schema:
                         "annotations": [],
                         "tool_calls": [
                             {
-                                "id": "call_PXmnw6FDiJhLZrN5DuUgM4L8",
+                                "id": "call_1gEiPnWN9DgKIVWghKD26GxY",
                                 "function": {
                                     "arguments": '{"isbn":"0-7653-1178-X"}',
                                     "name": "get_book_info",
@@ -98,7 +98,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_PXmnw6FDiJhLZrN5DuUgM4L8",
+                            id="call_1gEiPnWN9DgKIVWghKD26GxY",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -203,7 +203,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -219,12 +219,12 @@ async_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 278,
-                "output_tokens": 28,
+                "output_tokens": 41,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "CompletionUsage(completion_tokens=28, prompt_tokens=278, total_tokens=306, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
-                "total_tokens": 306,
+                "raw": "CompletionUsage(completion_tokens=41, prompt_tokens=278, total_tokens=319, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+                "total_tokens": 319,
             },
             "messages": [
                 SystemMessage(
@@ -272,7 +272,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_ZcgNpwZJ9bICeQkRzivbGKVh",
+                            id="call_7WE6AQaDeDrHh6qk7vgAQDiq",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -285,7 +285,7 @@ Respond only with valid JSON that matches this exact schema:
                         "annotations": [],
                         "tool_calls": [
                             {
-                                "id": "call_ZcgNpwZJ9bICeQkRzivbGKVh",
+                                "id": "call_7WE6AQaDeDrHh6qk7vgAQDiq",
                                 "function": {
                                     "arguments": '{"isbn":"0-7653-1178-X"}',
                                     "name": "get_book_info",
@@ -298,7 +298,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_ZcgNpwZJ9bICeQkRzivbGKVh",
+                            id="call_7WE6AQaDeDrHh6qk7vgAQDiq",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -307,14 +307,28 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         Text(
-                            text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                            text="""\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+"""
                         )
                     ],
                     provider_id="openai",
                     model_id="openai/gpt-4o:completions",
                     provider_model_name="gpt-4o:completions",
                     raw_message={
-                        "content": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                        "content": """\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+""",
                         "role": "assistant",
                         "annotations": [],
                     },
@@ -389,7 +403,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -448,7 +462,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_9qhsMKCctddBUS4uy92aNWVT",
+                            id="call_Cm6ai6TPVl11EAfcPSIuTl7l",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -461,7 +475,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_9qhsMKCctddBUS4uy92aNWVT",
+                            id="call_Cm6ai6TPVl11EAfcPSIuTl7l",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -555,7 +569,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
@@ -624,7 +638,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_aKyLr4ilNKClzFsAFibuUAMj",
+                            id="call_90wGnsBKTiMrRoc9EZLTLoTB",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -637,7 +651,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_aKyLr4ilNKClzFsAFibuUAMj",
+                            id="call_90wGnsBKTiMrRoc9EZLTLoTB",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -731,7 +745,7 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {

@@ -42,13 +42,14 @@ class Tool(
 
     @classmethod
     def from_function(  # pyright: ignore[reportIncompatibleMethodOverride]
-        cls, fn: ToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
+        cls, fn: ToolFn[AnyP, JsonableCovariantT], *, strict: bool | None = None
     ) -> Tool[AnyP, JsonableCovariantT]:
         """Create a `Tool` by inspecting a function and its docstring.
 
         Args:
             fn: The function to extract schema from
-            strict: Whether the tool should use strict mode when supported
+            strict: Whether the tool should use strict mode when supported.
+                If None, uses provider's default (usually as strict as possible).
 
         Returns:
             a `Tool` representing the function
@@ -88,13 +89,14 @@ class AsyncTool(
 
     @classmethod
     def from_function(  # pyright: ignore[reportIncompatibleMethodOverride]
-        cls, fn: AsyncToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
+        cls, fn: AsyncToolFn[AnyP, JsonableCovariantT], *, strict: bool | None = None
     ) -> AsyncTool[AnyP, JsonableCovariantT]:
         """Create an `AsyncTool` by inspecting a function and its docstring.
 
         Args:
             fn: The function to extract schema from
-            strict: Whether the tool should use strict mode when supported
+            strict: Whether the tool should use strict mode when supported.
+                If None, uses provider's default (usually as strict as possible).
 
         Returns:
             an `AsyncTool` representing the function
@@ -139,13 +141,14 @@ class ContextTool(
         cls,
         fn: ContextToolFn[DepsT, AnyP, JsonableCovariantT],
         *,
-        strict: bool = False,
+        strict: bool | None = None,
     ) -> ContextTool[DepsT, JsonableCovariantT, AnyP]:
         """Create a `ContextTool` by inspecting a function and its docstring.
 
         Args:
             fn: The function to extract schema from
-            strict: Whether the tool should use strict mode when supported
+            strict: Whether the tool should use strict mode when supported.
+                If None, uses provider's default (usually as strict as possible).
 
         Returns:
             a `ContextTool` representing the function
@@ -197,13 +200,14 @@ class AsyncContextTool(
         cls,
         fn: AsyncContextToolFn[DepsT, AnyP, JsonableCovariantT],
         *,
-        strict: bool = False,
+        strict: bool | None = None,
     ) -> AsyncContextTool[DepsT, JsonableCovariantT, AnyP]:
         """Create an `AsyncContextTool` by inspecting a function and its docstring.
 
         Args:
             fn: The function to extract schema from
-            strict: Whether the tool should use strict mode when supported
+            strict: Whether the tool should use strict mode when supported.
+                If None, uses provider's default (usually as strict as possible).
 
         Returns:
             an `AsyncContextTool` representing the function

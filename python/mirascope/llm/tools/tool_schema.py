@@ -157,8 +157,12 @@ class ToolSchema(Generic[ToolFnT]):
     it should **not be modified** after the ToolSchema is created.
     """
 
-    strict: bool
-    """Whether the tool should use strict mode when supported by the model."""
+    strict: bool | None
+    """Whether the tool should use strict mode when supported by the model.
+    
+    If set to None, will use the provider's default setting (usually as strict as 
+    possible).
+    """
 
     def __hash__(self) -> int:
         if not hasattr(self, "_hash"):
@@ -179,7 +183,7 @@ class ToolSchema(Generic[ToolFnT]):
         description: str,
         parameters: ToolParameterSchema,
         *,
-        strict: bool = False,
+        strict: bool | None = None,
     ) -> None:
         """Create a `ToolSchema` with the provided values.
 
@@ -188,7 +192,8 @@ class ToolSchema(Generic[ToolFnT]):
             name: The name of the tool
             description: Description of what the tool does
             parameters: JSON Schema describing the parameters accepted by the tool
-            strict: Whether the tool should use strict mode when supported
+            strict: Whether the tool should use strict mode when supported.
+                If None, uses provider's default (usually as strict as possible).
         """
         self.fn = fn
         self.name = name
@@ -201,7 +206,7 @@ class ToolSchema(Generic[ToolFnT]):
         cls,
         fn: AnyToolFn,
         *,
-        strict: bool = False,
+        strict: bool | None = None,
         is_context_tool: bool = False,
     ) -> ToolSchema[AnyToolFn]:
         """Create a `ToolSchema` by inspecting a function and its docstring.
@@ -212,7 +217,8 @@ class ToolSchema(Generic[ToolFnT]):
 
         Args:
             fn: The function to extract schema from
-            strict: Whether the tool should use strict mode when supported
+            strict: Whether the tool should use strict mode when supported.
+                If None, uses provider's default (usually as strict as possible).
             is_context_tool: Whether this is a context tool (skips the context parameter)
 
         Returns:

@@ -114,7 +114,7 @@ test_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {

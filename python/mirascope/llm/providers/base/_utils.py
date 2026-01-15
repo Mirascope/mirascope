@@ -31,6 +31,27 @@ def ensure_additional_properties_false(obj: object) -> None:
             ensure_additional_properties_false(item)
 
 
+def ensure_all_properties_required(obj: object) -> None:
+    """Recursively ensures all properties are in required array, needed for OpenAI strict mode.
+
+    OpenAI's strict mode requires that all properties in an object schema are listed
+    in the 'required' array, even if they have default values.
+    """
+    if isinstance(obj, dict):
+        obj = cast(dict[str, object], obj)
+        if obj.get("type") == "object" and "properties" in obj:
+            properties = obj.get("properties")
+            if isinstance(properties, dict):
+                property_keys = cast(dict[str, object], properties)
+                obj["required"] = list(property_keys.keys())
+        for value in obj.values():
+            ensure_all_properties_required(value)
+    elif isinstance(obj, list):
+        obj = cast(list[object], obj)
+        for item in obj:
+            ensure_all_properties_required(item)
+
+
 def add_system_instructions(
     messages: Sequence[Message], additional_system_instructions: str
 ) -> Sequence[Message]:
