@@ -38,6 +38,7 @@ import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
 import { DowngradePlanDialog } from "@/app/components/downgrade-plan-dialog";
 import { useSubscription } from "@/app/api/organizations";
 import type { PlanTier } from "@/payments/subscriptions";
+import { OrganizationInvitationsSection } from "@/app/components/organization-invitations-section";
 
 export const Route = createFileRoute("/dashboard/settings")({
   component: SettingsPage,
@@ -91,6 +92,11 @@ function SettingsContent() {
           organizationId={selectedOrganization?.id ?? null}
           projectId={selectedProject?.id ?? null}
           environmentId={selectedEnvironment?.id ?? null}
+        />
+
+        <OrganizationInvitationsSection
+          organizationId={selectedOrganization?.id ?? null}
+          userRole={selectedOrganization?.role}
         />
 
         {selectedOrganization?.id && (

@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/app/components/blocks/theme-provider";
 import Header from "@/app/components/blocks/navigation/header";
 import Footer from "@/app/components/blocks/navigation/footer";
 import { usePageView } from "@/app/hooks/use-page-view";
+import { Toaster } from "@/app/components/ui/sonner";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -69,6 +70,7 @@ function AppContent() {
         </main>
       </div>
       <Footer />
+      <Toaster />
       <TanStackRouterDevtools />
       <Scripts />
     </div>
