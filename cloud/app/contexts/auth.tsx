@@ -42,7 +42,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       window.history.replaceState({}, document.title, window.location.pathname);
 
-      void navigate({ to: "/", replace: true });
+      // Check if there's a redirect URL stored (e.g., from invitation acceptance)
+      const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectAfterLogin");
+        window.location.href = redirectUrl;
+      } else {
+        void navigate({ to: "/", replace: true });
+      }
     }
   }, [navigate, queryClient, analytics]);
 

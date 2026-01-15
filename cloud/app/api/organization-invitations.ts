@@ -96,3 +96,26 @@ export const useRevokeInvitation = () => {
     },
   });
 };
+
+export const useAcceptInvitation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["organization-invitations", "accept"],
+      mutationFn: (token: string) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client["organization-invitations"].accept({
+            payload: { token },
+          });
+        }),
+    }),
+    onSuccess: () => {
+      // Invalidate organizations list so the new membership appears
+      void queryClient.invalidateQueries({
+        queryKey: ["organizations"],
+      });
+    },
+  });
+};
