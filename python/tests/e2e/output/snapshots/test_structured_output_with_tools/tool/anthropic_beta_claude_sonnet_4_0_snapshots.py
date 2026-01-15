@@ -434,7 +434,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_012x2VSJWaDWAf1NgQFzJ38i",
+                            id="toolu_01KnpHp1mZTYQTyMbHX1TxSR",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         )
@@ -447,7 +447,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_012x2VSJWaDWAf1NgQFzJ38i",
+                                "id": "toolu_01KnpHp1mZTYQTyMbHX1TxSR",
                                 "name": "get_book_info",
                                 "input": {"isbn": "0-7653-1178-X"},
                             }
@@ -457,7 +457,7 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_012x2VSJWaDWAf1NgQFzJ38i",
+                            id="toolu_01KnpHp1mZTYQTyMbHX1TxSR",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -477,7 +477,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01X8JRbMUHADWWJfpGW7kj8Y",
+                                "id": "toolu_01FGKBBHzTkBsrtHZmityqxV",
                                 "name": "__mirascope_formatted_output_tool__",
                                 "input": {
                                     "title": "Mistborn: The Final Empire",
@@ -541,7 +541,7 @@ async_stream_snapshot = snapshot(
                 "raw": "None",
                 "total_tokens": 804,
             },
-            "n_chunks": 19,
+            "n_chunks": 23,
         }
     }
 )

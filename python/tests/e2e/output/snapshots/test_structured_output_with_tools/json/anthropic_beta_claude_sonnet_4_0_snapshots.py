@@ -689,7 +689,7 @@ Respond only with valid JSON that matches this exact schema:
                             text="I'll look up the book information for ISBN 0-7653-1178-X."
                         ),
                         ToolCall(
-                            id="toolu_01M967FW1bRxXjpDHxophJZg",
+                            id="toolu_01My26oDaaNkgBerQJcroNv4",
                             name="get_book_info",
                             args='{"isbn": "0-7653-1178-X"}',
                         ),
@@ -706,7 +706,7 @@ Respond only with valid JSON that matches this exact schema:
                             },
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01M967FW1bRxXjpDHxophJZg",
+                                "id": "toolu_01My26oDaaNkgBerQJcroNv4",
                                 "name": "get_book_info",
                                 "input": {"isbn": "0-7653-1178-X"},
                             },
@@ -716,7 +716,7 @@ Respond only with valid JSON that matches this exact schema:
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01M967FW1bRxXjpDHxophJZg",
+                            id="toolu_01My26oDaaNkgBerQJcroNv4",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )

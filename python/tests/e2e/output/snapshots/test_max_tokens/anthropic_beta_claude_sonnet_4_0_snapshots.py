@@ -224,7 +224,7 @@ async_stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are all 50 U.S. states:
+Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
 2. Alaska
@@ -234,8 +234,7 @@ Here are all 50 U.S. states:
 6. Colorado
 7. Connecticut
 8. Delaware
-9. Florida
-10\
+9\
 """
                         )
                     ],
@@ -248,7 +247,7 @@ Here are all 50 U.S. states:
                             {
                                 "type": "text",
                                 "text": """\
-Here are all 50 U.S. states:
+Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
 2. Alaska
@@ -258,8 +257,7 @@ Here are all 50 U.S. states:
 6. Colorado
 7. Connecticut
 8. Delaware
-9. Florida
-10\
+9\
 """,
                             }
                         ],
@@ -277,7 +275,7 @@ Here are all 50 U.S. states:
                 "raw": "None",
                 "total_tokens": 65,
             },
-            "n_chunks": 10,
+            "n_chunks": 13,
         }
     }
 )

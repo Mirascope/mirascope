@@ -24,7 +24,9 @@ interactions:
       host:
       - api.anthropic.com
       user-agent:
-      - AsyncAnthropic/Python 0.75.0
+      - AsyncAnthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -36,11 +38,11 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.75.0
+      - 0.76.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -50,28 +52,17 @@ interactions:
       x-stainless-timeout:
       - NOT_GIVEN
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01GmnWEFpTMDbAtuUmiWtMVu","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":414,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}   }
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01XuBx7UXPFJXBQnjpuTgdPf","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":414,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}               }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}
-        }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{\""}          }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"title\":\""}         }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}             }
 
 
         event: ping
@@ -81,58 +72,66 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"THE"}             }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{\""}      }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"title\":\""}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"THE"}      }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        NAME"}       }
+        NAME"}          }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        OF THE WIND\",\"author\":{\""}     }
+        OF THE WIND\",\"author\":{\""}              }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"first_name\":\"Patrick\",\"last_"}
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"first_name\":\"Patrick\",\"last_"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"name\":\"Rothfuss\"},\""}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"rating\":7}"}
         }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"name\":\"Rothfuss\"}"}               }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":",\"rating\":7}"}  }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0      }
+        data: {"type":"content_block_stop","index":0  }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":414,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":36}              }
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":414,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":36}               }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"              }
+        data: {"type":"message_stop" }
 
 
         '
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b027957eba6a330-SEA
+      - 9beae8a3db07a372-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -140,15 +139,11 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Thu, 18 Dec 2025 23:35:00 GMT
+      - Fri, 16 Jan 2026 04:35:55 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -158,29 +153,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:34:58Z'
+      - '2026-01-16T04:35:53Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:34:58Z'
+      - '2026-01-16T04:35:53Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:34:58Z'
+      - '2026-01-16T04:35:53Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:34:58Z'
+      - '2026-01-16T04:35:53Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF2dZrW5SYFkMa6pfkCz
+      - req_011CXASE7tQeZwHwGZjUwPRZ
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1711'
+      - '1673'
     status:
       code: 200
       message: OK

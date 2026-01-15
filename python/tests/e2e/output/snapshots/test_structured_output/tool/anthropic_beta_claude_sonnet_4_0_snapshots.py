@@ -329,7 +329,7 @@ async_stream_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01T2B5FmsMG1xY31XmoCCRTb",
+                                "id": "toolu_01891B3yZSWpreEjFVKyBF9N",
                                 "name": "__mirascope_formatted_output_tool__",
                                 "input": {
                                     "title": "THE NAME OF THE WIND",
@@ -387,7 +387,7 @@ async_stream_snapshot = snapshot(
                 "raw": "None",
                 "total_tokens": 644,
             },
-            "n_chunks": 16,
+            "n_chunks": 20,
         }
     }
 )
