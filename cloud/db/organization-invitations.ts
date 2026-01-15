@@ -758,7 +758,8 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
 
   /**
    * Retrieves invitation with metadata for resending email.
-   * Only works for pending, non-expired invitations.
+   * Returns the invitation regardless of status or expiration,
+   * allowing the caller to perform appropriate validation.
    *
    * This method is used by the API layer to get all necessary information
    * to resend the invitation email (including the token).
@@ -786,7 +787,7 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
         invitationId,
       });
 
-      // Fetch invitation with token
+      // Fetch invitation with token (no status/expiration filtering)
       const [invitation] = yield* client
         .select(allFields)
         .from(organizationInvitations)
@@ -794,8 +795,6 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
           and(
             eq(organizationInvitations.id, invitationId),
             eq(organizationInvitations.organizationId, organizationId),
-            eq(organizationInvitations.status, "pending"),
-            gt(organizationInvitations.expiresAt, new Date()),
           ),
         )
         .limit(1)
@@ -812,7 +811,7 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
       if (!invitation) {
         return yield* Effect.fail(
           new NotFoundError({
-            message: "Invitation not found or expired",
+            message: "Invitation not found",
             resource: this.getResourceName(),
           }),
         );
@@ -830,7 +829,7 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
 
       const metadata = yield* this.getInvitationMetadata(
         organizationId,
-        userId,
+        invitation.senderId,
       );
 
       return {
