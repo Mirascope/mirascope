@@ -14,6 +14,7 @@ import {
   Text,
   Heading,
   Hr,
+  Tailwind,
 } from "@react-email/components";
 import { Logo } from "@/emails/templates/components/logo";
 import { Button } from "@/emails/templates/components/button";
@@ -43,176 +44,112 @@ export function WelcomeEmail({ name }: WelcomeEmailProps) {
       <Preview>
         Welcome to Mirascope Cloud - Get Started with $30 in Credits
       </Preview>
-      <Body style={main}>
-        <Container style={container}>
-          {/* Logo Section */}
-          <Section style={logoSection}>
-            <Logo />
-          </Section>
-
-          {/* Main Content */}
-          <Section style={contentSection}>
-            <Heading style={h1}>Welcome to Mirascope Cloud!</Heading>
-
-            <Text style={text}>{greeting},</Text>
-
-            <Text style={text}>
-              I'm William, founder of Mirascope. Thank you for signing up! We're
-              excited to have you building with us.
-            </Text>
-
-            <Text style={text}>
-              To get you started, here are some helpful resources:
-            </Text>
-
-            {/* Resources Section */}
-            <Section style={resourcesSection}>
-              <Button href="https://mirascope.com/docs">
-                View Documentation
-              </Button>
+      <Tailwind>
+        <Body className="bg-gray-50 font-sans">
+          <Container className="bg-white mx-auto py-5 mb-16">
+            {/* Logo Section */}
+            <Section className="py-8 text-center">
+              <Logo />
             </Section>
 
-            {/* Credit Incentive Program */}
-            <Hr style={hr} />
+            {/* Main Content */}
+            <Section className="px-12">
+              <Heading className="text-gray-900 text-2xl font-bold leading-8 mt-0 mb-4">
+                Welcome to Mirascope Cloud!
+              </Heading>
 
-            <Heading as="h2" style={h2}>
-              Earn Up to $30 in Credits
-            </Heading>
+              <Text className="text-gray-700 text-base leading-6 my-4">
+                {greeting},
+              </Text>
 
-            <Text style={text}>
-              We'd love to learn more about how you're using Mirascope. Here's
-              how you can earn additional credits:
-            </Text>
+              <Text className="text-gray-700 text-base leading-6 my-4">
+                I'm William, founder of Mirascope. Thank you for signing up!
+                We're excited to have you building with us.
+              </Text>
 
-            <ul style={list}>
-              <li style={listItem}>
-                <Text style={incentiveText}>
-                  <strong>$5</strong> - Join our Discord and introduce yourself
-                </Text>
-              </li>
-              <li style={listItem}>
-                <Text style={incentiveText}>
-                  <strong>$5</strong> - Share your project in our show-and-tell
-                  channel
-                </Text>
-              </li>
-              <li style={listItem}>
-                <Text style={incentiveText}>
-                  <strong>$20</strong> - Schedule a user interview after using
-                  your credits
-                </Text>
-              </li>
-            </ul>
+              <Text className="text-gray-700 text-base leading-6 my-4">
+                To get you started, here are some helpful resources:
+              </Text>
 
-            <Section style={resourcesSection}>
-              <Button href="https://mirascope.com/discord-invite">
-                Join Our Discord
-              </Button>
+              {/* Resources Section */}
+              <Section className="text-center my-6">
+                <Button href="https://mirascope.com/docs">
+                  View Documentation
+                </Button>
+              </Section>
+
+              {/* Credit Incentive Program */}
+              <Hr className="border-gray-200 my-8" />
+
+              <Heading
+                as="h2"
+                className="text-gray-900 text-xl font-semibold leading-7 my-6"
+              >
+                Earn Up to $30 in Credits
+              </Heading>
+
+              <Text className="text-gray-700 text-base leading-6 my-4">
+                We'd love to learn more about how you're using Mirascope. Here's
+                how you can earn additional credits:
+              </Text>
+
+              <ul className="pl-5 my-4">
+                <li className="mb-3">
+                  <Text className="text-gray-700 text-base leading-6 my-2">
+                    <strong>$5</strong> - Join our Discord and introduce
+                    yourself
+                  </Text>
+                </li>
+                <li className="mb-3">
+                  <Text className="text-gray-700 text-base leading-6 my-2">
+                    <strong>$5</strong> - Share your project in our
+                    show-and-tell channel
+                  </Text>
+                </li>
+                <li className="mb-3">
+                  <Text className="text-gray-700 text-base leading-6 my-2">
+                    <strong>$20</strong> - Schedule a user interview after using
+                    your credits
+                  </Text>
+                </li>
+              </ul>
+
+              <Section className="text-center my-6">
+                <Button href="https://mirascope.com/discord-invite">
+                  Join Our Discord
+                </Button>
+              </Section>
+
+              <Hr className="border-gray-200 my-8" />
+
+              {/* Personal Touch */}
+              <Text className="text-gray-700 text-base leading-6 my-4">
+                Have questions or feedback? Just reply to this email - I read
+                and respond to every message personally.
+              </Text>
+
+              <Text className="text-gray-700 text-base leading-6 my-8">
+                Best,
+                <br />
+                William Bakst
+                <br />
+                Founder & CEO
+                <br />
+                Mirascope, Inc.
+              </Text>
             </Section>
 
-            <Hr style={hr} />
-
-            {/* Personal Touch */}
-            <Text style={text}>
-              Have questions or feedback? Just reply to this email - I read and
-              respond to every message personally.
-            </Text>
-
-            <Text style={signature}>
-              Best,
-              <br />
-              William Bakst
-              <br />
-              Founder & CEO
-              <br />
-              Mirascope, Inc.
-            </Text>
-          </Section>
-
-          <Footer />
-        </Container>
-      </Body>
+            <Footer />
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 }
 
-// Styles following email best practices
-const main = {
-  backgroundColor: "#f6f9fc",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-  backgroundColor: "#ffffff",
-  margin: "0 auto",
-  padding: "20px 0 48px",
-  marginBottom: "64px",
-};
-
-const logoSection = {
-  padding: "32px",
-  textAlign: "center" as const,
-};
-
-const contentSection = {
-  padding: "0 48px",
-};
-
-const h1 = {
-  color: "#1f2937",
-  fontSize: "24px",
-  fontWeight: "700",
-  lineHeight: "32px",
-  margin: "0 0 16px",
-};
-
-const h2 = {
-  color: "#1f2937",
-  fontSize: "20px",
-  fontWeight: "600",
-  lineHeight: "28px",
-  margin: "24px 0 16px",
-};
-
-const text = {
-  color: "#374151",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "16px 0",
-};
-
-const incentiveText = {
-  color: "#374151",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "8px 0",
-};
-
-const resourcesSection = {
-  textAlign: "center" as const,
-  margin: "24px 0",
-};
-
-const hr = {
-  borderColor: "#e5e7eb",
-  margin: "32px 0",
-};
-
-const list = {
-  paddingLeft: "20px",
-  margin: "16px 0",
-};
-
-const listItem = {
-  marginBottom: "12px",
-};
-
-const signature = {
-  color: "#374151",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "32px 0 0",
-};
+// Preview props for React Email dev server
+WelcomeEmail.PreviewProps = {
+  name: "John Doe",
+} satisfies WelcomeEmailProps;
 
 export default WelcomeEmail;
