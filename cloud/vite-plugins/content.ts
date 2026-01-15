@@ -61,7 +61,7 @@ export function viteContent(options: ViteContentOptions): Plugin {
   // Debounced processing for HMR - prevents rapid-fire reprocessing
   // when multiple files change in quick succession (e.g., git operations, autosave)
   const debouncedProcessAndInvalidate = debounce(async () => {
-    await processor.processAllContent();
+    await processor.processAllContent({ failOnError: false });
 
     // Invalidate the virtual meta module after processing
     if (serverInstance) {
@@ -72,7 +72,7 @@ export function viteContent(options: ViteContentOptions): Plugin {
         serverInstance.moduleGraph.invalidateModule(metaModule);
       }
     }
-  }, 100);
+  }, 200);
 
   return {
     name: "vite-plugin-content",
@@ -85,7 +85,7 @@ export function viteContent(options: ViteContentOptions): Plugin {
     async configureServer(server) {
       serverInstance = server;
       // Scan content directory on startup
-      await processor.processAllContent();
+      await debouncedProcessAndInvalidate();
     },
 
     async buildStart() {
@@ -172,6 +172,8 @@ export default class ContentProcessor {
 
   // Validation pattern for filenames/slugs
   private static readonly VALID_SLUG_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
+
+  // Whether to log verbose output
   private verbose: boolean;
 
   /**
@@ -191,8 +193,15 @@ export default class ContentProcessor {
 
   /**
    * Process all content types
+   * @param failOnError Whether to throw an error and hard fail if there are errors
    */
-  async processAllContent(): Promise<void> {
+  async processAllContent(
+    {
+      failOnError,
+    }: {
+      failOnError: boolean;
+    } = { failOnError: true },
+  ): Promise<void> {
     if (this.verbose) console.log("[content] Processing all content...");
 
     // Clear existing metadata to prevent accumulation on HMR updates
@@ -210,8 +219,8 @@ export default class ContentProcessor {
     }
 
     // Report any errors
-    if (this.errors.length > 0) {
-      console.error("\n[content] Content preprocessing failed with errors:");
+    if (this.errors.length > 0 && failOnError) {
+      console.error("[content] Content preprocessing failed with errors:");
       this.errors.forEach((error) => console.error(`- ${error}`));
       throw new Error("Content preprocessing failed. See errors above.");
     }
