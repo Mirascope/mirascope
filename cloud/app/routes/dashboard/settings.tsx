@@ -37,7 +37,8 @@ import { BillingErrorBoundary } from "@/app/components/billing-error-boundary";
 import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
 import { DowngradePlanDialog } from "@/app/components/downgrade-plan-dialog";
 import { useSubscription } from "@/app/api/organizations";
-import type { PlanTier } from "@/payments/subscriptions";
+// Import from /types directly to avoid pulling in server-only database dependencies
+import type { PlanTier } from "@/payments/subscriptions/types";
 import { OrganizationInvitationsSection } from "@/app/components/organization-invitations-section";
 
 export const Route = createFileRoute("/dashboard/settings")({

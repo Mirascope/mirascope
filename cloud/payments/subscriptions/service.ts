@@ -7,14 +7,18 @@
 
 import { Effect } from "effect";
 import type StripeAPI from "stripe";
+import { DrizzleORM } from "@/db/client";
+import { organizations } from "@/db/schema/organizations";
+import { eq } from "drizzle-orm";
 import { Stripe as StripeService, type StripeConfig } from "@/payments/client";
-import { NotFoundError, StripeError, SubscriptionPastDueError } from "@/errors";
-
-/** Subscription plan tier values (source of truth) */
-export const PLAN_TIERS = ["free", "pro", "team"] as const;
-
-/** Subscription plan tier types */
-export type PlanTier = (typeof PLAN_TIERS)[number];
+import {
+  DatabaseError,
+  NotFoundError,
+  StripeError,
+  SubscriptionPastDueError,
+} from "@/errors";
+import { type PlanTier, PLAN_TIER_ORDER } from "@/payments/subscriptions/types";
+import { PLAN_LIMITS, type PlanLimits } from "./plan-limits";
 
 /**
  * Subscription details for an organization.
@@ -117,8 +121,73 @@ export interface UpdateSubscriptionResult {
  * ```
  */
 export class Subscriptions {
-  /** Plan tier ordering for upgrade/downgrade determination */
-  private static readonly PLAN_TIERS = { free: 0, pro: 1, team: 2 } as const;
+  // Note: Plan tier ordering is now imported from @/payments/subscriptions
+
+  /**
+   * Gets the current plan tier for an organization.
+   *
+   * Fetches the organization's Stripe customer ID from the database,
+   * then queries Stripe subscriptions to determine the active plan tier.
+   *
+   * @param organizationId - The organization UUID
+   * @returns The current plan tier ("free" | "pro" | "team")
+   * @throws NotFoundError - If organization or subscription not found
+   * @throws StripeError - If Stripe API call fails
+   * @throws SqlError.SqlError - If database query fails
+   */
+  getPlan(
+    organizationId: string,
+  ): Effect.Effect<
+    PlanTier,
+    NotFoundError | StripeError | DatabaseError,
+    StripeService | DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const db = yield* DrizzleORM;
+
+      // Get organization's Stripe customer ID
+      const [org] = yield* db
+        .select({ stripeCustomerId: organizations.stripeCustomerId })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to fetch organization for plan",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!org) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Organization not found: ${organizationId}`,
+            resource: "organizations",
+          }),
+        );
+      }
+
+      // Get subscription details from Stripe
+      const subscriptionDetails = yield* this.get(org.stripeCustomerId);
+
+      return subscriptionDetails.currentPlan;
+    });
+  }
+
+  /**
+   * Gets the plan limits for a specific plan tier.
+   *
+   * This is a pure function that returns the limits constant for the given tier.
+   * No side effects or database/API calls.
+   *
+   * @param planTier - The plan tier to get limits for
+   * @returns The limits for the specified plan tier
+   */
+  getPlanLimits(planTier: PlanTier): Effect.Effect<PlanLimits> {
+    return Effect.succeed(PLAN_LIMITS[planTier]);
+  }
 
   /**
    * Determines plan tier from Stripe price ID.
@@ -159,10 +228,7 @@ export class Subscriptions {
    * Determines if a plan change is an upgrade.
    */
   private isUpgrade(currentPlan: PlanTier, targetPlan: PlanTier): boolean {
-    return (
-      Subscriptions.PLAN_TIERS[targetPlan] >
-      Subscriptions.PLAN_TIERS[currentPlan]
-    );
+    return PLAN_TIER_ORDER[targetPlan] > PLAN_TIER_ORDER[currentPlan];
   }
 
   /**

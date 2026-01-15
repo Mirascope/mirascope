@@ -1,12 +1,21 @@
-import { Effect } from "effect";
-import { NotFoundError, StripeError, SubscriptionPastDueError } from "@/errors";
+import { Effect, Layer, Context } from "effect";
+import {
+  NotFoundError,
+  StripeError,
+  SubscriptionPastDueError,
+  DatabaseError,
+} from "@/errors";
 import { Payments } from "@/payments/service";
+import { Subscriptions } from "@/payments/subscriptions/service";
+import { DrizzleORM } from "@/db/client";
+import { organizations } from "@/db/schema/organizations";
 import {
   describe,
   it,
   expect,
   assert,
   TestSubscriptionFixture,
+  TestSubscriptionWithRealDatabaseFixture,
   TestErrorScenarioFixture,
   TestSubscriptionWithScheduleFixture,
   TestMultipleSubscriptionItemsFixture,
@@ -16,6 +25,7 @@ import {
   TestCancelScheduleFixture,
   TestCancelSubscriptionsFixture,
 } from "@/tests/payments";
+import { TestDrizzleORM } from "@/tests/db";
 
 describe("subscriptions", () => {
   describe("getSubscription", () => {
@@ -953,6 +963,125 @@ describe("subscriptions", () => {
           }),
         ),
       ),
+    );
+  });
+
+  describe("getPlan", () => {
+    it.effect("gets plan for organization", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+        const db = yield* DrizzleORM;
+
+        // Create organization directly with DrizzleORM
+        const [org] = yield* db
+          .insert(organizations)
+          .values({
+            name: "Test Org",
+            slug: "test-org",
+            stripeCustomerId: "cus_123",
+          })
+          .returning();
+
+        const plan = yield* payments.customers.subscriptions.getPlan(org.id);
+
+        expect(plan).toBe("pro");
+      }).pipe(
+        Effect.provide(
+          TestSubscriptionWithRealDatabaseFixture(
+            {
+              plan: "pro",
+              stripeCustomerId: "cus_123",
+            },
+            TestDrizzleORM,
+          ),
+        ),
+      ),
+    );
+
+    it.effect("returns NotFoundError when organization not found", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const result = yield* payments.customers.subscriptions
+          .getPlan("00000000-0000-0000-0000-000000000000")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toContain("Organization not found");
+      }).pipe(
+        Effect.provide(
+          TestSubscriptionWithRealDatabaseFixture(
+            {
+              plan: "pro",
+              stripeCustomerId: "cus_123",
+            },
+            TestDrizzleORM,
+          ),
+        ),
+      ),
+    );
+
+    it.effect("returns DatabaseError when database query fails", () =>
+      Effect.gen(function* () {
+        const payments = yield* Payments;
+
+        const result = yield* payments.customers.subscriptions
+          .getPlan("00000000-0000-0000-0000-000000000000")
+          .pipe(Effect.flip);
+
+        assert(result instanceof DatabaseError);
+        expect(result.message).toBe("Failed to fetch organization for plan");
+      }).pipe(
+        Effect.provide(Payments.Default),
+        Effect.provide(
+          Layer.succeed(DrizzleORM, {
+            select: () => ({
+              from: () => ({
+                where: () =>
+                  Effect.fail(new Error("Database connection failed")),
+              }),
+            }),
+          } as unknown as Context.Tag.Service<typeof DrizzleORM>),
+        ),
+      ),
+    );
+  });
+
+  describe("getPlanLimits", () => {
+    it.effect("returns limits for free plan", () =>
+      Effect.gen(function* () {
+        const subscriptions = new Subscriptions();
+        const limits = yield* subscriptions.getPlanLimits("free");
+
+        expect(limits.seats).toBe(1);
+        expect(limits.projects).toBe(1);
+        expect(limits.spansPerMonth).toBe(1_000_000);
+        expect(limits.apiRequestsPerMinute).toBe(100);
+      }),
+    );
+
+    it.effect("returns limits for pro plan", () =>
+      Effect.gen(function* () {
+        const subscriptions = new Subscriptions();
+        const limits = yield* subscriptions.getPlanLimits("pro");
+
+        expect(limits.seats).toBe(5);
+        expect(limits.projects).toBe(5);
+        expect(limits.spansPerMonth).toBe(1_000_000);
+        expect(limits.apiRequestsPerMinute).toBe(1000);
+      }),
+    );
+
+    it.effect("returns limits for team plan", () =>
+      Effect.gen(function* () {
+        const subscriptions = new Subscriptions();
+        const limits = yield* subscriptions.getPlanLimits("team");
+
+        expect(limits.seats).toBe(Infinity);
+        expect(limits.projects).toBe(Infinity);
+        expect(limits.spansPerMonth).toBe(1_000_000);
+        expect(limits.apiRequestsPerMinute).toBe(10000);
+      }),
     );
   });
 });

@@ -1,6 +1,7 @@
 import type { SubscriptionDetails } from "@/api/organizations.schemas";
 import { cloudHostedFeatures } from "@/app/components/pricing-page";
-import type { PlanTier } from "@/payments/subscriptions";
+// Import from /types directly to avoid pulling in server-only database dependencies
+import type { PlanTier } from "@/payments/subscriptions/types";
 
 /**
  * Formats a payment method for display.

@@ -1,9 +1,11 @@
 import { Context, Effect, Layer } from "effect";
 import { describe, expect } from "@effect/vitest";
 import { assert } from "vitest";
+import { SqlClient } from "@effect/sql";
 import { createCustomIt, ensureEffect } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
+import { DrizzleORM } from "@/db/client";
 import type { PlanTier } from "@/payments/subscriptions";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 import StripeSDK from "stripe";
@@ -1609,6 +1611,162 @@ export function TestSubscriptionFixture(
   }
 
   return mockBuilder.build();
+}
+
+/**
+ * Creates a test fixture with real database access for testing methods that
+ * require both database operations and Stripe mocking.
+ *
+ * Unlike TestSubscriptionFixture which provides MockDrizzleORMLayer, this
+ * fixture provides TestDrizzleORM (real database), allowing tests to perform
+ * actual database operations (like inserting organizations).
+ *
+ * Use this when testing code paths that need to:
+ * - Insert/query real test data in the database
+ * - Mock Stripe API calls
+ *
+ * @param params - Subscription fixture parameters
+ * @param dbLayer - Database layer to use (typically TestDrizzleORM from @/tests/db)
+ * @returns Layer providing Payments and DrizzleORM
+ *
+ * @example
+ * ```ts
+ * import { TestDrizzleORM } from "@/tests/db";
+ *
+ * it.effect("gets plan for organization", () =>
+ *   Effect.gen(function* () {
+ *     const payments = yield* Payments;
+ *     const db = yield* DrizzleORM;
+ *
+ *     const [org] = yield* db.insert(organizations).values({...}).returning();
+ *     const plan = yield* payments.customers.subscriptions.getPlan(org.id);
+ *
+ *     expect(plan).toBe("pro");
+ *   }).pipe(
+ *     Effect.provide(
+ *       TestSubscriptionWithRealDatabaseFixture({ plan: "pro" }, TestDrizzleORM)
+ *     )
+ *   )
+ * );
+ * ```
+ */
+export function TestSubscriptionWithRealDatabaseFixture(
+  params: TestSubscriptionFixtureParams = {},
+  dbLayer: Layer.Layer<DrizzleORM | SqlClient.SqlClient>,
+): Layer.Layer<Payments | DrizzleORM | SqlClient.SqlClient> {
+  const {
+    plan = "free",
+    status = "active",
+    hasPaymentMethod = false,
+    stripeCustomerId = TEST_IDS.customer,
+    subscriptionId = TEST_IDS.subscription,
+    paymentMethodId = TEST_IDS.paymentMethod,
+    paymentMethodLocation = "subscription",
+    customPaymentMethod,
+    expandedPaymentMethod = false,
+  } = params;
+
+  const { now, periodEnd } = getTestPeriodTimes();
+
+  // Determine price ID from plan
+  const priceId = getPriceIdForPlan(plan);
+
+  // Determine payment method attachment based on location
+  const pmId = customPaymentMethod?.id ?? paymentMethodId;
+  const attachToSubscription =
+    hasPaymentMethod && paymentMethodLocation === "subscription";
+  const attachToCustomer =
+    hasPaymentMethod && paymentMethodLocation === "customer";
+  const attachToList = hasPaymentMethod && paymentMethodLocation === "list";
+
+  // Build customer mock
+  const customerData = createTestCustomer({
+    id: stripeCustomerId,
+    paymentMethodId: pmId,
+    includePaymentMethod: attachToCustomer,
+  });
+
+  // Build subscription mock
+  const subscriptionData = {
+    id: subscriptionId,
+    object: "subscription" as const,
+    status,
+    current_period_end: periodEnd,
+    current_period_start: now,
+    ...(attachToSubscription && {
+      default_payment_method: expandedPaymentMethod
+        ? { id: pmId, object: "payment_method" as const }
+        : pmId,
+    }),
+    ...(attachToList && {
+      default_payment_method: null,
+    }),
+    items: {
+      data: [
+        {
+          id: TEST_IDS.subscriptionItem,
+          price: { id: priceId },
+        },
+      ],
+    },
+  };
+
+  // Build payment method mock (if needed)
+  const paymentMethodData = hasPaymentMethod
+    ? createTestPaymentMethod(pmId, {
+        brand: customPaymentMethod?.brand,
+        last4: customPaymentMethod?.last4,
+        exp_month: customPaymentMethod?.expMonth,
+        exp_year: customPaymentMethod?.expYear,
+      })
+    : undefined;
+
+  // Create MockPayments layer with Stripe mocks
+  let mockBuilder = new MockPayments().customers
+    .retrieve(() => Effect.succeed(customerData))
+    .subscriptions.list(() =>
+      Effect.succeed(createListResponse([subscriptionData])),
+    );
+
+  // Add payment method mocks based on location
+  if (hasPaymentMethod && paymentMethodData) {
+    if (attachToList) {
+      // For "list" location, mock both list and retrieve
+      mockBuilder = mockBuilder.paymentMethods
+        .list(() =>
+          Effect.succeed({
+            object: "list" as const,
+            data: [
+              {
+                id: pmId,
+                object: "payment_method" as const,
+                type: "card" as const,
+              },
+            ],
+            has_more: false,
+          }),
+        )
+        .paymentMethods.retrieve(() => Effect.succeed(paymentMethodData));
+    } else {
+      // For "subscription" and "customer" locations, only mock retrieve
+      mockBuilder = mockBuilder.paymentMethods.retrieve(() =>
+        Effect.succeed(paymentMethodData),
+      );
+    }
+  } else {
+    // No payment method - mock empty list
+    mockBuilder = mockBuilder.paymentMethods.list(() =>
+      Effect.succeed(createListResponse([])),
+    );
+  }
+
+  return Layer.merge(
+    Payments.Default.pipe(
+      Layer.provide(mockBuilder.buildStripe()),
+      Layer.provide(dbLayer),
+    ),
+    dbLayer,
+  );
 }
 
 /**

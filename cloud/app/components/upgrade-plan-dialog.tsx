@@ -12,7 +12,8 @@ import { useUpdateSubscription } from "@/app/api/organizations";
 import { RouterCreditsPaymentForm } from "@/app/components/router-credits-payment-form";
 import { toast } from "sonner";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import type { PlanTier } from "@/payments/subscriptions";
+// Import from /types directly to avoid pulling in server-only database dependencies
+import type { PlanTier } from "@/payments/subscriptions/types";
 import { Loader2 } from "lucide-react";
 import { planLabels } from "@/app/components/ui/plan-badge";
 import { Effect } from "effect";
