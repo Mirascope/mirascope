@@ -45,6 +45,7 @@ export default [
       "*.js",
       "**/coverage/",
       "**/.wrangler/",
+      "**/docker/",
     ],
   },
   prettier,
