@@ -237,6 +237,99 @@ describe("Email", () => {
     });
   });
 
+  describe("DefaultRetries", () => {
+    it("retries on failure and eventually succeeds", () => {
+      let attemptCount = 0;
+      const sendParams = TestEmailSendParamsFixture();
+      const response = TestEmailSendResponseFixture();
+
+      return Effect.gen(function* () {
+        const email = yield* Emails;
+
+        yield* email
+          .send(sendParams)
+          .pipe(Emails.DefaultRetries("Failed to send test email"));
+
+        // Should have retried multiple times before succeeding
+        expect(attemptCount).toBeGreaterThan(1);
+      }).pipe(
+        Effect.provide(
+          Emails.Default.pipe(
+            Layer.provide(
+              MockResend.layer(() => {
+                attemptCount++;
+                // Fail first 2 attempts, succeed on 3rd
+                if (attemptCount < 3) {
+                  return Effect.fail(
+                    new ResendError({ message: "Transient error" }),
+                  );
+                }
+                return Effect.succeed(response);
+              }),
+            ),
+          ),
+        ),
+        Effect.runPromise,
+      );
+    });
+
+    it("catches all errors after retries exhausted and returns void", () => {
+      let attemptCount = 0;
+      const sendParams = TestEmailSendParamsFixture();
+
+      return Effect.gen(function* () {
+        const email = yield* Emails;
+
+        // Should not throw even after all retries fail
+        yield* email
+          .send(sendParams)
+          .pipe(Emails.DefaultRetries("Failed to send test email"));
+
+        // Should have tried 5 times (1 initial + 4 retries)
+        expect(attemptCount).toBe(5);
+      }).pipe(
+        Effect.provide(
+          Emails.Default.pipe(
+            Layer.provide(
+              MockResend.layer(() => {
+                attemptCount++;
+                return Effect.fail(
+                  new ResendError({ message: "Persistent error" }),
+                );
+              }),
+            ),
+          ),
+        ),
+        Effect.runPromise,
+      );
+    });
+
+    it("logs warning with error message when retries exhausted", () => {
+      const sendParams = TestEmailSendParamsFixture();
+      const customErrorMessage = "Custom error message for logging";
+
+      return Effect.gen(function* () {
+        const email = yield* Emails;
+
+        // Should complete without throwing
+        yield* email
+          .send(sendParams)
+          .pipe(Emails.DefaultRetries(customErrorMessage));
+      }).pipe(
+        Effect.provide(
+          Emails.Default.pipe(
+            Layer.provide(
+              MockResend.layer(() =>
+                Effect.fail(new ResendError({ message: "Always fails" })),
+              ),
+            ),
+          ),
+        ),
+        Effect.runPromise,
+      );
+    });
+  });
+
   describe("Email.Live", () => {
     it("creates a layer with provided configuration", () => {
       const layer = Emails.Live({

@@ -7,6 +7,7 @@ import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { Analytics } from "@/analytics";
+import { Emails } from "@/emails";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import { AuthenticatedUser, Authentication } from "@/auth";
@@ -24,6 +25,7 @@ type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
   analytics: Context.Tag.Service<Analytics>;
+  emails: Context.Tag.Service<Emails>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
   drizzleOrm: Context.Tag.Service<DrizzleORM>;
   spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
@@ -46,6 +48,7 @@ function createWebHandler(options: WebHandlerOptions) {
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
     Layer.succeed(Analytics, options.analytics),
+    Layer.succeed(Emails, options.emails),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
     Layer.succeed(DrizzleORM, options.drizzleOrm),
     Layer.succeed(SpansMeteringQueueService, options.spansMeteringQueue),
@@ -75,12 +78,18 @@ export const handleRequest = (
 ): Effect.Effect<
   { matched: boolean; response: Response },
   HandlerError,
-  Database | Payments | Analytics | DrizzleORM | SpansMeteringQueueService
+  | Database
+  | Payments
+  | Analytics
+  | Emails
+  | DrizzleORM
+  | SpansMeteringQueueService
 > =>
   Effect.gen(function* () {
     const db = yield* Database;
     const payments = yield* Payments;
     const analytics = yield* Analytics;
+    const emails = yield* Emails;
     const drizzleOrm = yield* DrizzleORM;
     const spansMeteringQueue = yield* SpansMeteringQueueService;
 
@@ -88,6 +97,7 @@ export const handleRequest = (
       db,
       payments,
       analytics,
+      emails,
       drizzleOrm,
       spansMeteringQueue,
       user: options.user,

@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import * as React from "react";
 import { Html, Body } from "@react-email/components";
 import { Button } from "@/emails/templates/components/button";
-import { renderEmailTemplate } from "@/emails/render";
+import { renderReactElement } from "@/emails/render";
 
 describe("Button", () => {
   it("renders button with href and text", () => {
@@ -16,7 +16,7 @@ describe("Button", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(EmailWithButton),
       );
 
@@ -41,7 +41,7 @@ describe("Button", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(EmailWithCustomButton),
       );
 

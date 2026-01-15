@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import * as React from "react";
 import { Html, Body } from "@react-email/components";
 import { Footer } from "@/emails/templates/components/footer";
-import { renderEmailTemplate } from "@/emails/render";
+import { renderReactElement } from "@/emails/render";
 
 describe("Footer", () => {
   it("renders footer with copyright and links", () => {
@@ -16,7 +16,7 @@ describe("Footer", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(EmailWithFooter),
       );
 

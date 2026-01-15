@@ -122,6 +122,7 @@ export async function setup() {
   process.env.CLICKHOUSE_PASSWORD = clickhousePassword;
   process.env.CLICKHOUSE_DATABASE = clickhouseDatabase;
   process.env.CLICKHOUSE_MIGRATE_NATIVE_PORT = String(clickhouseNativePort);
+  process.env.SITE_URL = "https://test.mirascope.com";
 
   Effect.runSync(runClickhouseMigrations(clickhouseUrl, clickhouseNativePort));
 

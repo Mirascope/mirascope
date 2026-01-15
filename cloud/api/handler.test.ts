@@ -3,6 +3,7 @@ import { describe, it, expect } from "@/tests/api";
 import { handleRequest } from "@/api/handler";
 import type { PublicUser } from "@/db/schema";
 import { HandlerError } from "@/errors";
+import { Emails } from "@/emails";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
@@ -35,6 +36,13 @@ function getTestClickHouseConfig(): ClickHouseConnectionFile {
   }
 }
 
+const MockEmails = Layer.succeed(Emails, {
+  send: () => Effect.succeed({ id: "mock-email-id" }),
+  audience: {
+    add: () => Effect.succeed({ id: "mock-contact-id" }),
+  },
+});
+
 const clickhouseConfig = getTestClickHouseConfig();
 const settings = getSettings();
 const settingsLayer = Layer.succeed(SettingsService, {
@@ -45,10 +53,12 @@ const settingsLayer = Layer.succeed(SettingsService, {
   CLICKHOUSE_PASSWORD: clickhouseConfig.password,
   CLICKHOUSE_DATABASE: clickhouseConfig.database,
 });
-const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
+const MockClickHouseSearch = ClickHouseSearch.Default.pipe(
   Layer.provide(ClickHouse.Default),
   Layer.provide(settingsLayer),
 );
+
+const MockServices = Layer.mergeAll(MockClickHouseSearch, MockEmails);
 
 describe("handleRequest", () => {
   it.effect("should return 404 for non-existing routes", () =>
@@ -68,7 +78,7 @@ describe("handleRequest", () => {
 
       expect(response.status).toBe(404);
       expect(matched).toBe(false);
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(Effect.provide(MockServices)),
   );
 
   it.effect(
@@ -88,7 +98,7 @@ describe("handleRequest", () => {
         // The path becomes "/" after stripping prefix, which doesn't match any route
         expect(response.status).toBe(404);
         expect(matched).toBe(false);
-      }).pipe(Effect.provide(clickHouseSearchLayer)),
+      }).pipe(Effect.provide(MockServices)),
   );
 
   it.effect(
@@ -115,7 +125,7 @@ describe("handleRequest", () => {
         expect(error.message).toContain(
           "[Effect API] Error handling request: boom",
         );
-      }).pipe(Effect.provide(clickHouseSearchLayer)),
+      }).pipe(Effect.provide(MockServices)),
   );
 
   it.effect("should handle POST requests with body", () =>
@@ -140,7 +150,7 @@ describe("handleRequest", () => {
 
       expect(matched).toBe(true);
       expect(response.status).toBeGreaterThanOrEqual(400);
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(Effect.provide(MockServices)),
   );
 
   it.effect("should transform _tag in JSON error responses", () =>
@@ -168,6 +178,6 @@ describe("handleRequest", () => {
       // Ensure _tag is transformed to tag in error responses
       expect(body).toContain('"tag"');
       expect(body).not.toContain('"_tag"');
-    }).pipe(Effect.provide(clickHouseSearchLayer)),
+    }).pipe(Effect.provide(MockServices)),
   );
 });

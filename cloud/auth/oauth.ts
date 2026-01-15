@@ -11,8 +11,7 @@
  * These functions involve network requests to external OAuth providers and are
  * tested via integration tests rather than unit tests.
  */
-import { Effect, Schema, Schedule, Layer } from "effect";
-import * as React from "react";
+import { Effect, Schema, Layer } from "effect";
 import { Database, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { SettingsService } from "@/settings";
@@ -625,18 +624,9 @@ function sendWelcomeEmail(
     const emails = yield* Emails;
 
     const htmlContent = yield* renderEmailTemplate(
-      React.createElement(WelcomeEmail, { name }),
-    ).pipe(
-      // If rendering fails, log error and skip sending email
-      Effect.catchAll((error) =>
-        Effect.gen(function* () {
-          yield* Effect.logError(
-            "Failed to render welcome email template",
-          ).pipe(Effect.annotateLogs({ error: String(error), email }));
-          // Return null to signal no email should be sent
-          return null;
-        }),
-      ),
+      WelcomeEmail,
+      { name },
+      { email },
     );
 
     // Only send email if rendering succeeded
@@ -650,40 +640,16 @@ function sendWelcomeEmail(
           html: htmlContent,
         })
         .pipe(
-          // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
-          Effect.retry(
-            Schedule.exponential("100 millis").pipe(
-              Schedule.compose(Schedule.recurs(4)),
-            ),
-          ),
-          // Catch all errors and log them, but don't fail the Effect
-          // This ensures email failures don't break signup
-          Effect.catchAllCause((cause) =>
-            Effect.logWarning(`Failed to send welcome email to ${email}`).pipe(
-              Effect.annotateLogs({ cause: String(cause) }),
-              Effect.as(undefined),
-            ),
-          ),
+          Emails.DefaultRetries(`Failed to send welcome email to ${email}`),
         );
     }
 
     // Add user to marketing audience with retry logic
-    yield* emails.audience.add(email).pipe(
-      // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
-      Effect.retry(
-        Schedule.exponential("100 millis").pipe(
-          Schedule.compose(Schedule.recurs(4)),
-        ),
-      ),
-      // Catch all errors and log them, but don't fail the Effect
-      // This ensures audience addition failures don't break signup
-      Effect.catchAllCause((cause) =>
-        Effect.logWarning(`Failed to add ${email} to marketing audience`).pipe(
-          Effect.annotateLogs({ cause: String(cause) }),
-          Effect.as(undefined),
-        ),
-      ),
-    );
+    yield* emails.audience
+      .add(email)
+      .pipe(
+        Emails.DefaultRetries(`Failed to add ${email} to marketing audience`),
+      );
   });
 }
 
