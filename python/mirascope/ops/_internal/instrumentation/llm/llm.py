@@ -235,14 +235,14 @@ def _serialize_tool_definitions(
         return None
     definitions: list[dict[str, str | int | bool | dict[str, str | int | bool]]] = []
     for tool in tool_schemas:
-        definitions.append(
-            {
-                "name": tool.name,
-                "description": tool.description,
-                "strict": tool.strict,
-                "parameters": tool.parameters.model_dump(by_alias=True, mode="json"),
-            }
-        )
+        tool_def: dict[str, str | int | bool | dict[str, str | int | bool]] = {
+            "name": tool.name,
+            "description": tool.description,
+            "parameters": tool.parameters.model_dump(by_alias=True, mode="json"),
+        }
+        if tool.strict is not None:
+            tool_def["strict"] = tool.strict
+        definitions.append(tool_def)
     return json_dumps(definitions)
 
 

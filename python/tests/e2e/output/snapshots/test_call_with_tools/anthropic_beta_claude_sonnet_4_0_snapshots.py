@@ -140,7 +140,7 @@ Here are the secrets retrieved for each password:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -277,7 +277,7 @@ Here are the secrets retrieved for each password:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -404,7 +404,7 @@ Here are the secrets retrieved for each password:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
@@ -541,7 +541,7 @@ Here are the secrets retrieved for each password:
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {

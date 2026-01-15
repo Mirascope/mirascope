@@ -89,10 +89,12 @@ def test_strict_mode() -> None:
         """A simple tool."""
         raise NotImplementedError
 
-    normal_schema = llm.tools.ToolSchema.from_function(simple_tool)
+    default_schema = llm.tools.ToolSchema.from_function(simple_tool)
+    non_strict_schema = llm.tools.ToolSchema.from_function(simple_tool, strict=False)
     strict_schema = llm.tools.ToolSchema.from_function(simple_tool, strict=True)
 
-    assert normal_schema.strict is False
+    assert default_schema.strict is None
+    assert non_strict_schema.strict is False
     assert strict_schema.strict is True
 
 

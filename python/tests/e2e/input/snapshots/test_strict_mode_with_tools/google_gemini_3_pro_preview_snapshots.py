@@ -165,7 +165,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }

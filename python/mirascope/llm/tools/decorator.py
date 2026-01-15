@@ -14,8 +14,12 @@ from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 class ToolDecorator:
     """Protocol for the tool decorator."""
 
-    strict: bool
-    """Whether to use strict tool calling, if supported by the provider."""
+    strict: bool | None = None
+    """Whether to use strict tool calling, if supported by the provider.
+    
+    If set to None, then it will use the provider's default setting (usually the 
+    strictest possible).
+    """
 
     @overload
     def __call__(  # pyright:ignore[reportOverlappingOverload]
@@ -106,7 +110,7 @@ def tool(__fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]:
 
 
 @overload
-def tool(*, strict: bool = False) -> ToolDecorator:
+def tool(*, strict: bool | None = None) -> ToolDecorator:
     """Overload for setting non-default arguments."""
     ...
 
@@ -118,7 +122,7 @@ def tool(
     | AsyncToolFn[P, JsonableCovariantT]
     | None = None,
     *,
-    strict: bool = False,
+    strict: bool | None = None,
 ) -> (
     ContextTool[DepsT, JsonableCovariantT, P]
     | AsyncContextTool[DepsT, JsonableCovariantT, P]
@@ -137,6 +141,7 @@ def tool(
 
     Args:
         strict: Whether the tool should use strict mode when supported by the model.
+            If None, uses provider's default (usually as strict as possible).
 
     Returns:
         A decorator function that converts the function into a Tool or ContextTool.

@@ -18,12 +18,12 @@ test_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 84,
-                "output_tokens": 24,
+                "output_tokens": 18,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "ResponseUsage(input_tokens=84, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=24, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=108)",
-                "total_tokens": 108,
+                "raw": "ResponseUsage(input_tokens=84, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=18, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=102)",
+                "total_tokens": 102,
             },
             "messages": [
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
@@ -75,7 +75,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The 100th Fibonacci number is 218,922,995,834,555,169,026."
+                            text="The 100th Fibonacci number is 218922995834555169026."
                         )
                     ],
                     provider_id="openai",
@@ -83,11 +83,11 @@ test_snapshot = snapshot(
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_0d910b91893210890069605786859c8190b7badae44dca89e3",
+                            "id": "msg_06239e8744215ddf0069689ad7c6f88193853e05a8db2a352c",
                             "content": [
                                 {
                                     "annotations": [],
-                                    "text": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                                    "text": "The 100th Fibonacci number is 218922995834555169026.",
                                     "type": "output_text",
                                     "logprobs": [],
                                 }
@@ -119,7 +119,7 @@ test_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }

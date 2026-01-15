@@ -36,7 +36,7 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_SmNW61tutwvPA0YUTTaUAhwW",
+                            id="call_5OpMsbQzFPlL8srTYAni0oR1",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -47,10 +47,10 @@ sync_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_SmNW61tutwvPA0YUTTaUAhwW",
+                            "call_id": "call_5OpMsbQzFPlL8srTYAni0oR1",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_0871003aa9e429a90068f966fed81c8195901e8a42ac152214",
+                            "id": "fc_03233ad82cd41d9b0069689bc0ac408197b23a8bfc266ded9d",
                             "status": "completed",
                         }
                     ],
@@ -58,7 +58,7 @@ sync_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_SmNW61tutwvPA0YUTTaUAhwW",
+                            id="call_5OpMsbQzFPlL8srTYAni0oR1",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -75,7 +75,7 @@ sync_snapshot = snapshot(
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_0871003aa9e429a90068f9670271708195888ba08cec82b733",
+                            "id": "msg_03233ad82cd41d9b0069689bc187648197a68fd2e1808c855f",
                             "content": [
                                 {
                                     "annotations": [],
@@ -130,7 +130,7 @@ sync_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -145,13 +145,13 @@ async_snapshot = snapshot(
             "params": {},
             "finish_reason": None,
             "usage": {
-                "input_tokens": 195,
+                "input_tokens": 192,
                 "output_tokens": 33,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "ResponseUsage(input_tokens=195, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=33, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=228)",
-                "total_tokens": 228,
+                "raw": "ResponseUsage(input_tokens=192, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=33, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=225)",
+                "total_tokens": 225,
             },
             "messages": [
                 UserMessage(
@@ -164,7 +164,7 @@ async_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_l1pEC3Hp56CVet5CPK5tNewC",
+                            id="call_uoMkMgGVqA4AZu35Xvt7YNVP",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -175,10 +175,10 @@ async_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_l1pEC3Hp56CVet5CPK5tNewC",
+                            "call_id": "call_uoMkMgGVqA4AZu35Xvt7YNVP",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_02e355744182d07f0068f967132284819095b0b6d616453530",
+                            "id": "fc_0bce855d0a2f7d300069689c7e912c8196925ded2a6ad191e8",
                             "status": "completed",
                         }
                     ],
@@ -186,7 +186,7 @@ async_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_l1pEC3Hp56CVet5CPK5tNewC",
+                            id="call_uoMkMgGVqA4AZu35Xvt7YNVP",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -203,7 +203,7 @@ async_snapshot = snapshot(
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_02e355744182d07f0068f96715cfb48190b191f6a524b089ae",
+                            "id": "msg_0bce855d0a2f7d300069689c7f8b508196a5380679bc097be7",
                             "content": [
                                 {
                                     "annotations": [],
@@ -258,7 +258,7 @@ async_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
         }
@@ -282,7 +282,7 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_Wg2va0blJgvoHylhrTA6FZN9",
+                            id="call_lT9cXsTrxF6fAXunQ4s6OV5H",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -293,10 +293,10 @@ stream_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_Wg2va0blJgvoHylhrTA6FZN9",
+                            "call_id": "call_lT9cXsTrxF6fAXunQ4s6OV5H",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_0d7f412d0c19301b0068f96723543881969470ecd4e85502b3",
+                            "id": "fc_08e3ccdae755aa9b0069689d3620908195949413a6e4ea8070",
                             "status": "completed",
                         }
                     ],
@@ -304,7 +304,7 @@ stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_Wg2va0blJgvoHylhrTA6FZN9",
+                            id="call_lT9cXsTrxF6fAXunQ4s6OV5H",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -321,7 +321,7 @@ stream_snapshot = snapshot(
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_0d7f412d0c19301b0068f96724a3dc8196b4a7c40ebdc64b71",
+                            "id": "msg_08e3ccdae755aa9b0069689d36f3ec8195b8d4873b4f673689",
                             "content": [
                                 {
                                     "annotations": [],
@@ -376,7 +376,7 @@ stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
@@ -410,7 +410,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_GS0nL2200gVPzwISOcNTBALX",
+                            id="call_uuIPNaNdpW2oAKaO3x67iDNj",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -421,10 +421,10 @@ async_stream_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_GS0nL2200gVPzwISOcNTBALX",
+                            "call_id": "call_uuIPNaNdpW2oAKaO3x67iDNj",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_08be1f3e41d5b6620068f9673498888193a5642869a59089ea",
+                            "id": "fc_04541b2f7e2fe47a0069689dd04ee88197a29df7ed6f16c74f",
                             "status": "completed",
                         }
                     ],
@@ -432,7 +432,7 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_GS0nL2200gVPzwISOcNTBALX",
+                            id="call_uuIPNaNdpW2oAKaO3x67iDNj",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -442,14 +442,19 @@ async_stream_snapshot = snapshot(
                     content=[
                         Text(
                             text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
-                        )
+                        ),
+                        ToolCall(
+                            id="call_gLsRpyrJp2V40WOFb5Cbbey0",
+                            name="get_book_info",
+                            args='{"isbn":"0-7653-1178-X"}',
+                        ),
                     ],
                     provider_id="openai",
                     model_id="openai/gpt-4o:responses",
                     provider_model_name="gpt-4o:responses",
                     raw_message=[
                         {
-                            "id": "msg_08be1f3e41d5b6620068f96736143c819396d70e1812a03c96",
+                            "id": "msg_04541b2f7e2fe47a0069689dd11b9c81978315ade5df8d941f",
                             "content": [
                                 {
                                     "annotations": [],
@@ -461,7 +466,15 @@ async_stream_snapshot = snapshot(
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
-                        }
+                        },
+                        {
+                            "arguments": '{"isbn":"0-7653-1178-X"}',
+                            "call_id": "call_gLsRpyrJp2V40WOFb5Cbbey0",
+                            "name": "get_book_info",
+                            "type": "function_call",
+                            "id": "fc_04541b2f7e2fe47a0069689dd19d9881978e67830fb7c36324",
+                            "status": "completed",
+                        },
                     ],
                 ),
             ],
@@ -504,19 +517,19 @@ async_stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                    "strict": False,
+                    "strict": None,
                 }
             ],
             "usage": {
-                "input_tokens": 195,
-                "output_tokens": 33,
+                "input_tokens": 197,
+                "output_tokens": 56,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": "None",
-                "total_tokens": 228,
+                "total_tokens": 253,
             },
-            "n_chunks": 29,
+            "n_chunks": 43,
         }
     }
 )

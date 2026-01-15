@@ -215,4 +215,464 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '493'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//vFVLb9s4EL77VxA8J4X8kh+37l77SNEsULQphBE1shlTJJcceWME/u8L
+        UtbLSYrtZW/SPD7OfPyG8zxhjMuCbxl36G2WzNbzZYLzKUCZwGqaJOkmXW+gzGfr6Xo93aT5alkW
+        SVriPF9v8nzGbwKEyR9RUAtjtMfGLhwCYZFB8E1X6XqRzpPNJvo8AdU+5AhTWYWERZOUgzjsnKl1
+        qKsE5bExS6Wk3vEte54wxhi3cEIX8gs8ojIWHZ8wdm4ObiFHR0+TJHrRORMyda1UNJQO/65Ri1Nm
+        UYOiE9+y5F0TLHULlhVIIJUfZkrtydWCpNEjewVPmanJ1pSROeBLJxmjMgFqDFeZAlXoaWfpdmFu
+        Z8lscZusb5P0QnSE5Fv2I3LQMNHdYSl+cYNlmSfhBmGWiFSIdDnPF/NkuYzAEYROFiNMrWNDsbze
+        /daFRSe4XV2hpuh/fuAWvP/HuOKBbx94hUoZ/cDPfXyAzpqq4+eXr59W9PV9+ceHnbu/m4vjY16u
+        Dvff+wwNVazOo3BImUNyEo+gIpM8Rp1vfpcVMc2ni8jKciY2y1WOy1W6SGfl/8CKg0KCFvhLXvT3
+        +9NncVgtvuDjtz8rFN+e9h//Uqff42XC2M+oHwsOlEI1lh+5upkx69CjFvjKGFiHR2lqn7UT3lTZ
+        Kdc6U1nKBIg9Zgc8velzSKgDkcMIh+CNHo03lqVxNAgKZNdVBa7F7qbdQ4l0ymQRgEuJo9n26I5S
+        YEayfS1KqBXxyyNkHA4ZIKwsOqA6mqeX5gmfqK+sNK6C/n+gkRg3lCI/osuNl5FKXmEh66p/pZpL
+        2BspYjbUZHjn8C+n/FqKvQgK9MJJe6GVv2cBgdEeiIWnTTr0DFgrP0aGXXSCDFijnHf/VVJdWBBT
+        hYTOD7hortuiI4lje8xoCriyh9YkqXjmXRtycxVw6d2TCzIZOM/d97nP4Ze2i47F6xI6489BFhSF
+        DCSCuhs20W2hq2Iue29ydXwsMu7DoKurESRjM2V21pk8QCed0Q4F52otoL3OQnrIVbsfaw877NUo
+        9WjJzNObl/bB5nruXxqxx6JPTEa6vd5dy8Vrjtdwu1F+C5oMRSldnJukm4faj0e3QoICCAL8eXL+
+        FwAA//8DABc3P/quCAAA
+    headers:
+      CF-RAY:
+      - 9be3c0415d29eba7-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 07:45:00 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=yQdycbPnRa3pfkgyKKicCkAWZOvibp714Vbp2C_d3tw-1768463100-1.0.1.1-l6mr1Dkp2Hd0ds5LGk5s1Vy4xEdti1QjuGs3PrJo84OuckVENoNO2zt9sVQYsY9O0Iyq1mnhXMaXmElzd_OubjJAx1bT892HiYhTT4hAxWY;
+        path=/; expires=Thu, 15-Jan-26 08:15:00 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=6dSvFZ29fTfy7KK2.GMOBzg5XmD48oM_wLJxaCetB.8-1768463100296-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1128'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1130'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799710'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 21ms
+      x-request-id:
+      - req_ab0cf5e46ebe447593cdf01ffdc53bee
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"},{"arguments":"{\"password\":\"mellon\"}","call_id":"call_QSN7tSAfBLgrTP3cvjbf7kTZ","name":"secret_retrieval_tool","type":"function_call","id":"fc_028350e31aaf0a710069689afbffb08196a20c6cc653b43055","status":"completed"},{"arguments":"{\"password\":\"radiance\"}","call_id":"call_nZTyOck74QejXCmecXxhMUly","name":"secret_retrieval_tool","type":"function_call","id":"fc_028350e31aaf0a710069689afc1b148196a52c957be576462f","status":"completed"},{"call_id":"call_QSN7tSAfBLgrTP3cvjbf7kTZ","output":"Welcome
+      to Moria!","type":"function_call_output"},{"call_id":"call_nZTyOck74QejXCmecXxhMUly","output":"Life
+      before Death","type":"function_call_output"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1141'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xVTY8bNwy9+1eoc1ysg/HXrO1bgBx6aIHcekiKAS1xbHU1kkpxnBiB/3shzbd3
+        tzebj3xDke9JvxZCZFplR5ERBl/m6/1ml+NmBVDl8LLK8+JQ7A9QyZeXPN+vDsWp2O0UrNa4W6t9
+        vq6y50jhTv+g5J7G2YBtXBICoyohYquXYr8tNqs8T1hg4CbEGulqb5BRtUUnkK9nco2NfVVgArZh
+        bYy25+wofi2EECLzcEOK9QqvaJxHyhZC3NsP95QPn14lFIlcrLSNMSlQEf7boJW30qMFw7fsKPJP
+        bZ/a9mSlQgZtwrRS28DUSNbOzuI1/Cxdw77hkt0rvgXZOVNKMHO62ik08Uxnz8utW67z9XaZ75d5
+        0Q06UWZH8S3NoJ3EsMM6nP9nhZjLbVzhYbtb51s4HbawU9Vul5gTC988Jh4MAc44Ah/tKoHSWUY7
+        NjVtbEbbzwN/8lCdEsBax9DP8NvfM9C4syd3egdJREeR/Y6EAggFX1AElIQcBITgpI7qEz80XxLm
+        IYQfjlQ4frff7VI8PdVojLPHpyfxFxrpahTsxJ+ONPzWJhAoDVZiTPlDVyhOWDlC8QWBL9nQzb37
+        NTSYkTPp0BCCDgyW2+SYmJIyDwTGoJkrgalp5e4JA1qJ7yjSE161a0LZm61M6x9E5MnVnksJ8oLl
+        K94+xAjj4rSz0wxCCM7OnIZV5YgnSVESTV0D9dyD8QJUyLdSq0hcaZzZLCBdtcSSdW/cChrTiiEL
+        7AinE2CsPRJwk8Kr7vDd0rvOKkc1jP8nYkt57ci7jq9IJxd0GmVWo9JNPV4Y7RIuTst2aw27bADC
+        W8P1n6kam8w/2kFhkKR9N9bss4gMgi/AIt4ymjAIGKQY9UbIpPGKAjr1fhrZLNTpOy1QdqnQqmZM
+        i2KqkZHCZBbtuj0Sa5zHU0XbwEM8Hk1zK92vfcrzQ0J39sAUZTIB76MhxpqsO7aa3RDTFobgxN8Z
+        KKXjEMF8nR5ieBAeL5f2CVo8fD41mZ6mqKsHC7Lz5eR6yYegnwqOGiuhX6fSAU6mf6qadE0OatR2
+        dt+vNsXzW2DyigxqSnZUY2U+E+7jO7LJ3wPe4x28/BE1O05a6jsuisERTZibt0YGBQyR/764/wcA
+        AP//AwBU3oOwOwgAAA==
+    headers:
+      CF-RAY:
+      - 9be3c0498910eba7-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 07:45:01 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '817'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '820'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799647'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 26ms
+      x-request-id:
+      - req_37666a7467c84acc8e25aed8df9296b3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '493'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA7xVTW/bOBC9+1cQPCeFFNuy5NsC7aJAF5tmd9EtsimEMTlymFAilxy5NQL/9wUp
+        68NOUrSXvUnz8Tjz+IbzNGOMK8nXjDv0tkwW2QokiiK9Suf5Kk+SrMjyYpNUIJZ5nhbzPEtFAcsk
+        z9IF4FzwiwBhNg8oqIcxjcfOLhwCoSwh+NJVli+yeZoW0ecJqPUhR5jaaiSUXdIGxOPWmbYJdVWg
+        PXZmpbVqtnzNnmaMMcYt7NGFfIk71Mai4zPGDt3BPeTp0VdJ9KJzJmQ2rdbRUDn8t8VG7EuLDWja
+        8zVL3nTBqunBSokESvtppmo8uVaQMs2JvYZvpWnJtlSSecTnTjJGlwL0KVxtJOrQ09bS5cJcXiVX
+        i8skv0yyI9ERkq/ZP5GDjonhDivx6g2myQLSJNwg5Ks0SzHDVZanRdGRHkFobzHCtE1sKJY3ul+7
+        sOgEt21rbCj6n+64Be+/Gifv+PqO16i1ae74YYwP0GVXdfy8bdU7V3+9nj/Ih/fy7Ye/Pl/99r7I
+        /hgzGqhjdR6FQyodklO4Ax2Z5DHqcPHTrBTVXARWinS+3GSLJSyXyXy1Ev8DKw6kgkbgd3n5ANc3
+        N7vfP8vdp9s/m/wWrv/Of715++7neJkx9iXqx4IDrVGfyo9c282YdeixEfjCGFiHO2VaX/YT3lU5
+        KNc6U1sqBYh7LB9x/6rPIWETiJxGOARvmpPxxqoyjiZBgey2rsH12MO0e6iQ9qWSAbhSeDLbHt1O
+        CSxJ9a9FBa0mfnyEjMMpA4S1RQfURnN6bJ7wG42VVcbVMP5PNBLjplLkO3Qb41WkktcoVVuPr1R3
+        CfdGiZgNLRk+OPzzKT+X4igCiV44ZY+08l9YQGB0D8TC06Ycegaslx8jw446QQasU86bH5XUEBbE
+        VCOh8xMuuuu26EjhqT1mdAWc2UNrinQ882MfcnEWcOzdkwsymTgPw/dhzOHHtuXA4nkJg/HLJAuk
+        VIFE0B+nTQxb6KyY496bnR0fi4z7MOjqbATJ2FKbrXVmE6CTwWingnNtI6C/Tqk8bHS/H1sPWxzV
+        qJqTJTPPLp7bJ5vraXxpxD3KMTE50e357louXnK8hDuM8mvQZChK6egskmEeWn86ujUSSCAI8IfZ
+        4T8AAAD//wMAsF5pe64IAAA=
+    headers:
+      CF-RAY:
+      - 9be3c0c19910a36b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 07:45:20 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=TzA_AUx1AU.y7u1ndWPZInsZorf1KwQDA4d2SlRu0KA-1768463120-1.0.1.1-VBXfyA1ouOadjGlsLvN8vPAeq0DuDlr.An.VMnR3PDrGKsB6e0bCl7YXXayVCy8E.NjTxz7.LSkZS.L6jBWUTM0Z66tmhC0zaa3FRv7AV.I;
+        path=/; expires=Thu, 15-Jan-26 08:15:20 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=IgLVAkZeHY_Y75SLlk6pyZmTF68cftbxcm5qyOQ66_8-1768463120834-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1144'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1147'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799710'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 21ms
+      x-request-id:
+      - req_828bd56da7074bf0adceac63a7b30ed5
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"},{"arguments":"{\"password\":\"mellon\"}","call_id":"call_ZuiErmwO3jdjHdDKTX2LH96R","name":"secret_retrieval_tool","type":"function_call","id":"fc_0467adec912138780069689b104a108193a87161e6e768199d","status":"completed"},{"arguments":"{\"password\":\"radiance\"}","call_id":"call_KaOQQvNXdvVZSn8ZaOW8FQDE","name":"secret_retrieval_tool","type":"function_call","id":"fc_0467adec912138780069689b109f3c81939135b645a550377c","status":"completed"},{"call_id":"call_ZuiErmwO3jdjHdDKTX2LH96R","output":"Welcome
+      to Moria!","type":"function_call_output"},{"call_id":"call_KaOQQvNXdvVZSn8ZaOW8FQDE","output":"Life
+      before Death","type":"function_call_output"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1141'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFXJjuM2EL33VzA8NsYNyXZst28BcsghAeaWwzgQSmTJ5jRFMsWSM8bA
+        /x6I2t3dN6mWx1reI38+CSGNlkchCWMosu1uDxrVa77ON4f9Ict2r7vDa5ln1RayQ/66KbXaI/4K
+        h31WKZ1r+aWF8OV3VDzAeBexsytCYNQFtL58vztsd5t8nSVfZOAmtjnK18EiYw9Wgno7k29cW1cF
+        NmJnNtYad5ZH8fNJCCFkgBtSm6/xitYHJPkkxL07eIB8ODpPXiTybaZrrE2GivDfBp26FQEdWL7J
+        o8heujqNG8AKjQzGxnmmcZGpUWy8W9hr+FH4hkPDBfs3fO9k722hwC7haq/Rtj2dA6+2frXO1ttV
+        dlhlu37QCVIexbc0g24S4w7reP58hfn2UG3TCndrwDLblPqQZ7tsm5ATCt8CJhyMEc44OT7bVXIq
+        7xjdVNS8sAXsMA/8wWN2CgDnPMMww2//LJzWnwP58gNPAjoK+QcSCiAUfEERURFyPJ7cyeUv4vn5
+        K8T4nyd9FDVa693zs1iJk/wbrfI1CvbiL08GfjnJk1svEwi0AaewT/nTVChKrDyh+B2BLycpx3ru
+        /ddYoiRvU9sQo4kMjrvgNjAFyQAE1qJdcoGp6QgfCCM6hR9wMhBejW9iMcitSAQYaRTI14ELBeqC
+        xRvePvURtqsz3s0jCCF6t9AaVpUnngW1pGjqGmjAHqUXoUK+FUa3wJXBhdAi0tUoLNgM0q2gsR0d
+        ZGRPOJ8AYx2QgJtkzvvm+7X3lVWeapj+Z3RLcd3I+4qvSKWPJo1S1qhNU09XRreEizeq21rDXo6O
+        +F5ywzFV45L8J0FojIpM6McqfxMtguALsGjvGUMYBYjQ06xlICGTwSsK6Pn7MqE5qNM5naPoQ6Fj
+        zRTWkqlGRoqzWXTrDkhscGlPGV0BD/a2NcMddQcpLOQ66z0ytTSZOe+TIKYc2betF3fEvITROFO4
+        BK1NO0SwX+dNjE/C4/XSPUJPD8enItPj1PLqQYLsQzG7YLLRGOaEo8YpGNapTYTSDo9Vky7KkY3G
+        LW78fLP78t4xe0dGNiU56ikzWxD38SUZYReOj3BHLX8GzZ4Tl4aK9+tREU1cirdGBg0MLf796f4/
+        AAAA//8DALIDSN49CAAA
+    headers:
+      CF-RAY:
+      - 9be3c0c98eaba36b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 07:45:21 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '922'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '928'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799647'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 26ms
+      x-request-id:
+      - req_ab9723c19ef44d25995cffeeedbcd2b8
+    status:
+      code: 200
+      message: OK
 version: 1
