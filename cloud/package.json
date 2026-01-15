@@ -61,6 +61,7 @@
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-email/components": "^1.0.4",
+    "@react-email/tailwind": "^2.0.3",
     "@shikijs/transformers": "^3.20.0",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.6.0",
