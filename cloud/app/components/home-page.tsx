@@ -149,13 +149,13 @@ function HeroBlock({ onScrollDown, showScrollButton }: HeroBlockProps) {
         </div>
         <div className="mt-8 flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
           <ButtonLink
-            href="/docs/v1"
+            href="/docs"
             variant="outline"
             size="lg"
             className="box-shade w-full min-w-[200px] border-0 bg-white text-center font-handwriting font-bold text-black hover:bg-white/90 hover:text-black sm:w-auto"
           >
             <BookOpen className="size-5" aria-hidden="true" />
-            Mirascope v1
+            Mirascope Docs
           </ButtonLink>
           <ButtonLink
             href="/discord-invite"
@@ -244,7 +244,7 @@ export const MirascopeBlock = ({ onScrollToTop }: MirascopeBlockProps) => {
 
       <div className="mt-2 flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
         <ButtonLink
-          href="/docs/v1"
+          href="/docs"
           variant="default"
           size="default"
           className="box-shade w-full min-w-[200px] bg-mirple px-6 py-4 text-center font-handwriting font-medium text-white hover:bg-mirple-dark/90 sm:w-auto"

@@ -1,7 +1,7 @@
 import type { SectionSpec } from "@/app/lib/content/spec";
 
 const docsSection: SectionSpec = {
-  label: "Docs",
+  label: "Docs v1 (legacy)",
   slug: "index",
   version: "v1",
   weight: 2,
