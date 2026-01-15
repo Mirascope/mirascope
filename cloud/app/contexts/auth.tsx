@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import type { PublicUser } from "@/db/schema";
 import { useAuthStatus, useLogout } from "@/app/api/auth";
+import { useAnalytics } from "@/app/contexts/analytics";
 
 type AuthContextType = {
   user: PublicUser | null;
@@ -17,10 +18,12 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const analytics = useAnalytics();
 
   const { data: user, isLoading } = useAuthStatus();
   const logoutMutation = useLogout();
 
+  // Track successful login/signup and identify user
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get("success");
@@ -28,11 +31,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (success === "true") {
       void queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
 
+      const provider = urlParams.get("provider") || "unknown";
+      const isNewUser = urlParams.get("new_user") === "true";
+
+      if (isNewUser) {
+        analytics.trackEvent("sign_up", { provider });
+      } else {
+        analytics.trackEvent("user_login", { provider });
+      }
+
       window.history.replaceState({}, document.title, window.location.pathname);
 
       void navigate({ to: "/", replace: true });
     }
-  }, [navigate, queryClient]);
+  }, [navigate, queryClient, analytics]);
+
+  // Identify user when user data becomes available
+  useEffect(() => {
+    if (user && !isLoading) {
+      analytics.identify(user.id, {
+        email: user.email,
+        name: user.name,
+      });
+    }
+  }, [user, isLoading, analytics]);
 
   const loginWithGitHub = () => {
     window.location.href = "/auth/github";
@@ -44,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleLogout = async () => {
     try {
+      analytics.trackEvent("user_logout");
       await logoutMutation.mutateAsync();
     } catch (error) {
       if (process.env.NODE_ENV === "development") {

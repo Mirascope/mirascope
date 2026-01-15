@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
+import { Analytics } from "@/analytics";
 import type { CreateApiKeyRequest } from "@/api/api-keys.schemas";
 import type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema";
 
@@ -46,6 +47,8 @@ export const createApiKeyHandler = (
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const analytics = yield* Analytics;
+
     const apiKey = yield* db.organizations.projects.environments.apiKeys.create(
       {
         userId: user.id,
@@ -55,6 +58,19 @@ export const createApiKeyHandler = (
         data: { name: payload.name },
       },
     );
+
+    yield* analytics.trackEvent({
+      name: "api_key_created",
+      properties: {
+        apiKeyId: apiKey.id,
+        organizationId,
+        projectId,
+        environmentId,
+        userId: user.id,
+      },
+      distinctId: user.id,
+    });
+
     return toApiKeyCreateResponse(apiKey);
   });
 
@@ -87,11 +103,25 @@ export const deleteApiKeyHandler = (
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const analytics = yield* Analytics;
+
     yield* db.organizations.projects.environments.apiKeys.delete({
       userId: user.id,
       organizationId,
       projectId,
       environmentId,
       apiKeyId,
+    });
+
+    yield* analytics.trackEvent({
+      name: "api_key_deleted",
+      properties: {
+        apiKeyId,
+        organizationId,
+        projectId,
+        environmentId,
+        userId: user.id,
+      },
+      distinctId: user.id,
     });
   });

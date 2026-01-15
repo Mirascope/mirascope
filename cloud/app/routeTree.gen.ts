@@ -25,6 +25,7 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
+import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
 import { Route as DocsV1PlaceholderRouteImport } from './routes/docs.v1.placeholder'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
@@ -117,6 +118,11 @@ const AuthGithubRoute = AuthGithubRouteImport.update({
   path: '/auth/github',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
+  id: '/api/analytics',
+  path: '/api/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsV1PlaceholderRoute = DocsV1PlaceholderRouteImport.update({
   id: '/v1/placeholder',
   path: '/v1/placeholder',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/api/analytics': typeof ApiAnalyticsRoute
   '/auth/github': typeof AuthGithubRouteWithChildren
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/organizations'
     | '/pricing'
     | '/privacy'
+    | '/api/analytics'
     | '/auth/github'
     | '/auth/google'
     | '/auth/me'
@@ -358,6 +370,7 @@ export interface RootRouteChildren {
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  ApiAnalyticsRoute: typeof ApiAnalyticsRoute
   AuthGithubRoute: typeof AuthGithubRouteWithChildren
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
   AuthMeRoute: typeof AuthMeRoute
@@ -483,6 +496,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/github'
       fullPath: '/auth/github'
       preLoaderRoute: typeof AuthGithubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/analytics': {
+      id: '/api/analytics'
+      path: '/api/analytics'
+      fullPath: '/api/analytics'
+      preLoaderRoute: typeof ApiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/v1/placeholder': {
@@ -626,6 +646,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  ApiAnalyticsRoute: ApiAnalyticsRoute,
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,

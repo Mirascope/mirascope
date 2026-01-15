@@ -5,6 +5,7 @@ import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
+import { Analytics } from "@/analytics";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
@@ -94,6 +95,16 @@ export const Route = createFileRoute("/api/v0/$")({
                   cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
                   cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
                   cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
+                },
+              }),
+              Analytics.Live({
+                googleAnalytics: {
+                  measurementId: process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
+                  apiSecret: process.env.GOOGLE_ANALYTICS_API_SECRET,
+                },
+                postHog: {
+                  apiKey: process.env.POSTHOG_API_KEY,
+                  host: process.env.POSTHOG_HOST,
                 },
               }),
               ClickHouseSearch.Default.pipe(

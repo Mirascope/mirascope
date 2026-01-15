@@ -7,12 +7,14 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { AuthProvider } from "@/app/contexts/auth";
+import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/app/api/client";
 import globalsCss from "@/app/styles/globals.css?url";
 import { ThemeProvider } from "@/app/components/blocks/theme-provider";
 import Header from "@/app/components/blocks/navigation/header";
 import Footer from "@/app/components/blocks/navigation/footer";
+import { usePageView } from "@/app/hooks/use-page-view";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -54,6 +56,25 @@ export const Route = createRootRoute({
   component: RootComponent,
 });
 
+function AppContent() {
+  usePageView();
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <div className="mx-auto w-full max-w-7xl grow pt-(--header-height)">
+        <main className="grow">
+          {/* Content container with padding to account for fixed header */}
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+      <TanStackRouterDevtools />
+      <Scripts />
+    </div>
+  );
+}
+
 function RootComponent() {
   return (
     <html>
@@ -63,20 +84,11 @@ function RootComponent() {
       <body>
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <div className="mx-auto w-full max-w-7xl grow pt-(--header-height)">
-                  <main className="grow">
-                    {/* Content container with padding to account for fixed header */}
-                    <Outlet />
-                  </main>
-                </div>
-                <Footer />
-                <TanStackRouterDevtools />
-                <Scripts />
-              </div>
-            </AuthProvider>
+            <AnalyticsProvider>
+              <AuthProvider>
+                <AppContent />
+              </AuthProvider>
+            </AnalyticsProvider>
           </QueryClientProvider>
         </ThemeProvider>
       </body>

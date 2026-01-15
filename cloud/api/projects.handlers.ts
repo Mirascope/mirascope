@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
+import { Analytics } from "@/analytics";
 import type {
   CreateProjectRequest,
   UpdateProjectRequest,
@@ -25,11 +26,26 @@ export const createProjectHandler = (
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
-    return yield* db.organizations.projects.create({
+    const analytics = yield* Analytics;
+
+    const project = yield* db.organizations.projects.create({
       organizationId,
       data: { name: payload.name, slug: payload.slug },
       userId: user.id,
     });
+
+    yield* analytics.trackEvent({
+      name: "project_created",
+      properties: {
+        projectId: project.id,
+        projectName: project.name,
+        organizationId,
+        userId: user.id,
+      },
+      distinctId: user.id,
+    });
+
+    return project;
   });
 
 export const getProjectHandler = (organizationId: string, projectId: string) =>
@@ -66,9 +82,21 @@ export const deleteProjectHandler = (
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const analytics = yield* Analytics;
+
     yield* db.organizations.projects.delete({
       organizationId,
       projectId,
       userId: user.id,
+    });
+
+    yield* analytics.trackEvent({
+      name: "project_deleted",
+      properties: {
+        projectId,
+        organizationId,
+        userId: user.id,
+      },
+      distinctId: user.id,
     });
   });

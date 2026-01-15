@@ -2,6 +2,7 @@ import { Effect } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import { Payments } from "@/payments";
+import { Analytics } from "@/analytics";
 import type {
   CreateOrganizationRequest,
   UpdateOrganizationRequest,
@@ -22,10 +23,24 @@ export const createOrganizationHandler = (payload: CreateOrganizationRequest) =>
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
-    return yield* db.organizations.create({
+    const analytics = yield* Analytics;
+
+    const organization = yield* db.organizations.create({
       data: { name: payload.name, slug: payload.slug },
       userId: user.id,
     });
+
+    yield* analytics.trackEvent({
+      name: "organization_created",
+      properties: {
+        organizationId: organization.id,
+        organizationName: organization.name,
+        userId: user.id,
+      },
+      distinctId: user.id,
+    });
+
+    return organization;
   });
 
 export const getOrganizationHandler = (organizationId: string) =>
@@ -56,7 +71,18 @@ export const deleteOrganizationHandler = (organizationId: string) =>
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const analytics = yield* Analytics;
+
     yield* db.organizations.delete({ organizationId, userId: user.id });
+
+    yield* analytics.trackEvent({
+      name: "organization_deleted",
+      properties: {
+        organizationId,
+        userId: user.id,
+      },
+      distinctId: user.id,
+    });
   });
 
 export const getOrganizationRouterBalanceHandler = (organizationId: string) =>
@@ -159,6 +185,7 @@ export const updateSubscriptionHandler = (
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const payments = yield* Payments;
+    const analytics = yield* Analytics;
 
     // Verify user has access to this organization
     const organization = yield* db.organizations.findById({
@@ -167,10 +194,22 @@ export const updateSubscriptionHandler = (
     });
 
     // Update the subscription
-    return yield* payments.customers.subscriptions.update({
+    const result = yield* payments.customers.subscriptions.update({
       stripeCustomerId: organization.stripeCustomerId,
       targetPlan: payload.targetPlan,
     });
+
+    yield* analytics.trackEvent({
+      name: "subscription_updated",
+      properties: {
+        organizationId,
+        userId: user.id,
+        targetPlan: payload.targetPlan,
+      },
+      distinctId: user.id,
+    });
+
+    return result;
   });
 
 export const cancelScheduledDowngradeHandler = (organizationId: string) =>

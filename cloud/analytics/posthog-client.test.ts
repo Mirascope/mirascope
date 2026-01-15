@@ -76,9 +76,7 @@ describe("PostHog", () => {
         yield* ph.initialize();
 
         // Verify script was created and appended
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).toHaveBeenCalledWith("script");
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.head.appendChild).toHaveBeenCalled();
 
         // Verify script properties
@@ -144,7 +142,6 @@ describe("PostHog", () => {
         yield* ph.initialize();
 
         // Script should only be created once
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).toHaveBeenCalledTimes(1);
       });
 
@@ -163,7 +160,6 @@ describe("PostHog", () => {
 
         // Should initialize existing PostHog, not create new script
         expect(mockPostHog.init).toHaveBeenCalled();
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).not.toHaveBeenCalled();
       });
 
@@ -269,7 +265,6 @@ describe("PostHog", () => {
         });
 
         // Script should only be created once even with concurrent calls
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).toHaveBeenCalledTimes(1);
       });
 
@@ -412,7 +407,6 @@ describe("PostHog", () => {
         yield* ph.trackEvent({ event: "test_event" });
 
         // Script should have been created automatically
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(document.createElement).toHaveBeenCalledWith("script");
         // PostHog should be initialized
         expect(mockPostHog.init).toHaveBeenCalled();

@@ -8,6 +8,7 @@ import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
 import { Payments } from "@/payments";
 import { DefaultMockPayments } from "@/tests/payments";
+import { Analytics } from "@/analytics";
 import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import fs from "fs";
 import assert from "node:assert";
@@ -46,6 +47,18 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
 /**
+ * Mock layer for Analytics that provides a no-op implementation for tests.
+ */
+export const MockAnalytics = Layer.succeed(Analytics, {
+  googleAnalytics: null as never,
+  postHog: null as never,
+  trackEvent: () => Effect.void,
+  trackPageView: () => Effect.void,
+  identify: () => Effect.void,
+  initialize: () => Effect.void,
+});
+
+/**
  * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
  */
 export const MockSpansMeteringQueue = Layer.succeed(
@@ -65,7 +78,11 @@ export const MockSpansMeteringQueue = Layer.succeed(
  * tests that don't use `it.effect`).
  */
 export const TestDatabase: Layer.Layer<
-  Database | DrizzleORM | SqlClient.SqlClient | SpansMeteringQueueService
+  | Database
+  | DrizzleORM
+  | SqlClient.SqlClient
+  | Analytics
+  | SpansMeteringQueueService
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { DefaultMockPayments } = yield* Effect.promise(
@@ -76,6 +93,7 @@ export const TestDatabase: Layer.Layer<
       Layer.provideMerge(TestDrizzleORM),
       Layer.provide(DefaultMockPayments),
     ),
+    MockAnalytics,
     MockSpansMeteringQueue,
   );
 }).pipe(Layer.unwrapEffect);
@@ -142,6 +160,7 @@ export type TestServices =
   | Database
   | DrizzleORM
   | SqlClient.SqlClient
+  | Analytics
   | SpansMeteringQueueService;
 
 /**
