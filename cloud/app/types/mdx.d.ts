@@ -1,5 +1,6 @@
 declare module "*.mdx" {
-  import type { ProcessedMDX } from "@/app/lib/mdx/types";
+  import type { PreprocessedMDX } from "@/app/lib/mdx/types";
 
-  export const mdx: ProcessedMDX;
+  const mdx: PreprocessedMDX;
+  export default mdx;
 }

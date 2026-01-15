@@ -20,6 +20,7 @@ import {
   type HeadResult,
 } from "@/app/lib/seo/head";
 import { BASE_URL } from "@/app/lib/site";
+import { compileMDXContent } from "./mdx-compile";
 
 // Re-export types for consumers
 export type { HeadMetaEntry, HeadLinkEntry, HeadScriptEntry, HeadResult };
@@ -34,7 +35,6 @@ export { createPageHead };
  * Defines the shape expected by TanStack Router's createFileRoute.
  */
 export interface ContentRouteConfig<TMeta extends ContentMeta> {
-  ssr: false;
   head: (ctx: {
     match: { pathname: string };
     loaderData?: Content<TMeta> | undefined;
@@ -113,8 +113,6 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
   const contentComponent = createContentComponent(options.component, path);
 
   return {
-    ssr: false as const,
-
     head: createContentHead<TMeta>({
       allMetas,
       ogType: options.ogType,
@@ -160,11 +158,18 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
         return undefined;
       }
 
-      const module = await moduleLoader();
+      const preprocessedMdx = (await moduleLoader()).default;
+      const code = await compileMDXContent(preprocessedMdx.content);
+
       return {
         meta,
-        content: module.mdx.content,
-        mdx: module.mdx,
+        content: preprocessedMdx.content,
+        mdx: {
+          frontmatter: preprocessedMdx.frontmatter,
+          tableOfContents: preprocessedMdx.tableOfContents,
+          content: preprocessedMdx.content, // Raw MDX for search/display
+          code, // Compiled JSX for runtime evaluation
+        },
       } as Content<TMeta>;
     },
 
@@ -345,8 +350,8 @@ function createContentComponent<TMeta extends ContentMeta>(
   path: string,
 ) {
   return function ContentRouteComponent() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const content: Content<TMeta> = useLoaderData({ from: path as any });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+    const content = useLoaderData({ from: path } as any);
     if (!content) {
       return <NotFound />;
     }

@@ -6,15 +6,16 @@ import {
   getAllBlogMeta,
   getAllDocsMeta,
   getAllPolicyMeta,
+  type VirtualModuleExport,
 } from "@/app/lib/content/virtual-module";
 import { createContentRouteConfig } from "@/app/lib/content/route-config";
-import { createProcessedMDX } from "@/app/lib/content/mdx-compile";
-import type { ProcessedMDX } from "@/app/lib/mdx/types";
+import type { PreprocessedMDX, Frontmatter } from "@/app/lib/mdx/types";
 import type {
   BlogContent,
   Content,
   ContentMeta,
   DocContent,
+  TOCItem,
 } from "@/app/lib/content/types";
 
 // Mock TanStack Router
@@ -123,13 +124,28 @@ vi.mock("virtual:content-meta", () => ({
 const testMDXContent = "# Test Content\n\nThis is test content.";
 
 /**
+ * Helper function to create a PreprocessedMDX object for testing.
+ */
+function createPreprocessedMDX(
+  content: string,
+  frontmatter: Frontmatter,
+  tableOfContents: TOCItem[] = [],
+): PreprocessedMDX {
+  return {
+    content,
+    frontmatter,
+    tableOfContents,
+  };
+}
+
+/**
  * Helper function to create a test module map.
  */
 function createTestModuleMap(): Map<
   string,
-  () => Promise<{ mdx: ProcessedMDX }>
+  () => Promise<VirtualModuleExport>
 > {
-  return new Map<string, () => Promise<{ mdx: ProcessedMDX }>>();
+  return new Map<string, () => Promise<VirtualModuleExport>>();
 }
 
 /**
@@ -189,7 +205,7 @@ describe("createContentRouteConfig - blog", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("test-post", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
+        default: createPreprocessedMDX(testMDXContent, {
           title: "Test Post",
           description: "A test blog post",
           date: "2025-01-01",
@@ -215,6 +231,8 @@ describe("createContentRouteConfig - blog", () => {
     expect(result?.content).toBe(testMDXContent);
     expect(result?.mdx).toBeDefined();
     expect(result?.mdx.content).toBe(testMDXContent);
+    expect(result?.mdx.code).toBeDefined();
+    expect(typeof result?.mdx.code).toBe("string");
   });
 
   describe("appsec path traversal attacks", () => {
@@ -488,7 +506,7 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v1/learn/test-doc", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
+        default: createPreprocessedMDX(testMDXContent, {
           title: "Test Doc",
           description: "A test doc",
         }),
@@ -516,7 +534,7 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v1/index", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
+        default: createPreprocessedMDX(testMDXContent, {
           title: "Index Page",
           description: "Index page",
         }),
@@ -544,7 +562,7 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v2/learn/test-doc", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
+        default: createPreprocessedMDX(testMDXContent, {
           title: "V2 Doc",
           description: "V2 doc",
         }),
@@ -572,7 +590,7 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("learn/non-versioned-doc", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
+        default: createPreprocessedMDX(testMDXContent, {
           title: "Non-Versioned Doc",
           description: "A non-versioned doc",
         }),
@@ -600,7 +618,7 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("index", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
+        default: createPreprocessedMDX(testMDXContent, {
           title: "Non-Versioned Index",
           description: "Non-versioned index page",
         }),

@@ -1,5 +1,8 @@
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
+import { parseFrontmatter } from "./frontmatter";
+import { extractHeadings } from "../mdx/heading-utils";
+import type { PreprocessedMDX } from "../mdx/types";
 
 /**
  * Options for MDX preprocessing
@@ -137,8 +140,18 @@ function inferLanguageFromPath(filePath: string): string {
 /**
  * Preprocesses MDX content by resolving CodeExample directives and parsing frontmatter
  */
-export async function preprocessMdx(filePath: string): Promise<string> {
+export async function preprocessMdx(
+  filePath: string,
+): Promise<PreprocessedMDX> {
   const contentWithCodeExamples = await processCodeExamples(filePath);
+  // Parse frontmatter and get content with frontmatter stripped
+  const { frontmatter, content } = parseFrontmatter(contentWithCodeExamples);
+  // Extract table of contents from content without frontmatter
+  const tableOfContents = extractHeadings(content);
 
-  return contentWithCodeExamples;
+  return {
+    frontmatter,
+    tableOfContents,
+    content,
+  };
 }

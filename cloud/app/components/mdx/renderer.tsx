@@ -1,17 +1,20 @@
 /**
  * MDX Renderer
  *
- * Component that renders compiled MDX content
+ * Component that renders compiled MDX content using runtime evaluation.
+ * Uses runSync from @mdx-js/mdx to evaluate the compiled JSX code string.
  */
 
-import React from "react";
-import type { ProcessedMDX } from "@/app/lib/mdx/types";
+import React, { useMemo } from "react";
+import { runSync } from "@mdx-js/mdx";
+import * as jsxRuntime from "react/jsx-runtime";
+import type { CompiledMDX } from "@/app/lib/mdx/types";
 import type { MDXComponents } from "mdx/types";
 import componentRegistry from "@/app/components/mdx/component-registry";
 
 interface MDXRendererProps {
-  /** Processed MDX content */
-  mdx: ProcessedMDX;
+  /** Compiled MDX content with code string */
+  mdx: CompiledMDX;
   /** Optional custom components to override defaults */
   components?: MDXComponents;
   /** Optional className for the wrapper div */
@@ -121,23 +124,32 @@ const defaultComponents = {
 };
 
 /**
- * Renders compiled MDX content
+ * Renders compiled MDX content by evaluating the JSX code string at runtime
  */
-export function MDXRenderer({
-  mdx: MDXComponent,
-  components,
-  className,
-}: MDXRendererProps) {
-  // The mdx import is the React component itself (with metadata attached)
-  const mergedComponents = {
-    ...defaultComponents,
-    ...componentRegistry,
-    ...components,
-  };
+export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
+  // Evaluate compiled code to get React component
+  // useMemo ensures we only re-evaluate when the code changes
+  const MDXContent = useMemo(() => {
+    const { default: Component } = runSync(mdx.code, {
+      ...jsxRuntime,
+      baseUrl: import.meta.url,
+    });
+    return Component as React.ComponentType<{ components?: MDXComponents }>;
+  }, [mdx.code]);
+
+  // Merge component registries: defaults < registry < props
+  const mergedComponents = useMemo(
+    () => ({
+      ...defaultComponents,
+      ...componentRegistry,
+      ...components,
+    }),
+    [components],
+  );
 
   return (
     <div className={className || "prose max-w-none"} id="mdx-container">
-      <MDXComponent components={mergedComponents} />
+      <MDXContent components={mergedComponents} />
     </div>
   );
 }
