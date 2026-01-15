@@ -82,6 +82,7 @@
     "lucide-react": "^0.561.0",
     "mermaid": "^11.12.1",
     "next-themes": "^0.4.6",
+    "pagefind": "^1.4.0",
     "react": "^19.2.3",
     "react-day-picker": "^9.13.0",
     "react-dom": "^19.2.3",
