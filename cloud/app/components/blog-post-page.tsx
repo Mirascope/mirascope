@@ -78,8 +78,9 @@ export function BlogPostPage({ content }: BlogPostPageProps) {
         <div id="blog-content" className="bg-background blog-content">
           {content.mdx ? (
             <MDXRenderer
-              className="mdx-content overflow-y-auto"
               mdx={content.mdx}
+              className="mdx-content overflow-y-auto"
+              indexForSearch={true}
             />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />

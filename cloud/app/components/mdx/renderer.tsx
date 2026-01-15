@@ -19,6 +19,8 @@ interface MDXRendererProps {
   components?: MDXComponents;
   /** Optional className for the wrapper div */
   className?: string;
+  /** Whether to add pagefind attribute for full-text search indexing */
+  indexForSearch: boolean;
 }
 
 /**
@@ -125,8 +127,18 @@ const defaultComponents = {
 
 /**
  * Renders compiled MDX content by evaluating the JSX code string at runtime
+ *
+ * @param className - Optional className for the wrapper div
+ * @param mdx - The MDX component to render
+ * @param components - Optional custom components to override defaults
+ * @param indexForSearch - Whether to add pagefind attribute for full-text search indexing
  */
-export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
+export function MDXRenderer({
+  mdx,
+  components,
+  className,
+  indexForSearch,
+}: MDXRendererProps) {
   // Evaluate compiled code to get React component
   // useMemo ensures we only re-evaluate when the code changes
   const MDXContent = useMemo(() => {
@@ -148,7 +160,11 @@ export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
   );
 
   return (
-    <div className={className || "prose max-w-none"} id="mdx-container">
+    <div
+      className={className || "prose max-w-none"}
+      id="mdx-container"
+      data-pagefind-body={indexForSearch}
+    >
       <MDXContent components={mergedComponents} />
     </div>
   );

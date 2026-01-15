@@ -25,24 +25,14 @@ const MainContent: React.FC<MainContentProps> = ({ document }) => {
           className="prose prose-sm lg:prose-base prose-slate mdx-container max-w-none overflow-x-auto"
         >
           {document.mdx ? (
-            <MDXRenderer className="mdx-content" mdx={document.mdx} />
+            <MDXRenderer
+              mdx={document.mdx}
+              className="mdx-content"
+              indexForSearch={true}
+            />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
           )}
-          {/* {document.mdx ? (
-            <PagefindMeta
-              title={document.meta.title}
-              description={document.meta.description}
-              section={section}
-            >
-              <MDXRenderer
-                code={document.mdx.code}
-                frontmatter={document.mdx.frontmatter}
-              />
-            </PagefindMeta>
-          ) : (
-            <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
-          )} */}
         </div>
       </div>
     </div>
