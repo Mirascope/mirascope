@@ -11,7 +11,15 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["api", "auth", "db", "emails", "payments", "workers"],
+      include: [
+        "analytics",
+        "api",
+        "auth",
+        "db",
+        "emails",
+        "payments",
+        "workers",
+      ],
       exclude: [
         "**/index.ts",
         "db/migrations/**",
