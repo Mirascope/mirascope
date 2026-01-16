@@ -485,7 +485,7 @@ def aliased_module_import_fn(query: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.14.0", "extras": None}}
+        {"openai": {"version": "2.15.0", "extras": None}}
     )
 
 
@@ -506,7 +506,7 @@ def aliased_import_fn(query: str) -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.14.0", "extras": None}}
+        {"openai": {"version": "2.15.0", "extras": None}}
     )
 
 
@@ -640,7 +640,7 @@ def annotated_assignment_fn() -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.14.0", "extras": None}}
+        {"openai": {"version": "2.15.0", "extras": None}}
     )
 
 
@@ -664,7 +664,7 @@ def internal_imports_fn() -> str:
 """
     )
     assert closure.dependencies == snapshot(
-        {"openai": {"version": "2.14.0", "extras": None}}
+        {"openai": {"version": "2.15.0", "extras": None}}
     )
 
 
@@ -759,7 +759,7 @@ def closure_inside_decorator_fn() -> str:
     assert closure.dependencies == snapshot(
         {
             "mirascope": {
-                "version": "2.0.0a6",
+                "version": "2.0.0b0",
                 "extras": ["all"],
             }
         }
@@ -793,7 +793,7 @@ def closure_inside_imported_decorator_fn() -> str:
     assert closure.dependencies == snapshot(
         {
             "mirascope": {
-                "version": "2.0.0a6",
+                "version": "2.0.0b0",
                 "extras": ["all"],
             }
         }

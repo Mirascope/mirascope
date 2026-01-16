@@ -22,7 +22,9 @@ interactions:
       host:
       - api.anthropic.com
       user-agent:
-      - AsyncAnthropic/Python 0.75.0
+      - AsyncAnthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -34,11 +36,11 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.75.0
+      - 0.76.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -48,28 +50,17 @@ interactions:
       x-stainless-timeout:
       - NOT_GIVEN
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01GF48vwA1p6wSgZrBTrqKWW","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}               }
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01WdUbkAitn8UKENddqLxhYJ","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":6,"service_tier":"standard"}}      }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}             }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"I"}           }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"''ll
-        retrieve the secrets for both passwords you"}        }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}
 
 
         event: ping
@@ -79,8 +70,37 @@ interactions:
 
         event: content_block_delta
 
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"I''ll
+        retrieve the secrets for"}       }
+
+
+        event: content_block_delta
+
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        provided."}       }
+        both passwords using"}      }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        parallel"}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        function"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        calls"}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"."}    }
 
 
         event: content_block_stop
@@ -90,92 +110,75 @@ interactions:
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"toolu_0199cTXNM9CoZP2ivCetrRm3","name":"secret_retrieval_tool","input":{}}       }
+        data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"toolu_012Hbq7BCqrkTwtEMQEzmrDs","name":"secret_retrieval_tool","input":{}}       }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":""}    }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":""}       }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"passwor"}       }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"passwor"}             }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"d\":
-        \"mellon\"}"}           }
+        \"mellon\"}"}          }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":1            }
+        data: {"type":"content_block_stop","index":1         }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":2,"content_block":{"type":"tool_use","id":"toolu_011WQyAr9qBAfeS7Ce3mHF8A","name":"secret_retrieval_tool","input":{}}               }
+        data: {"type":"content_block_start","index":2,"content_block":{"type":"tool_use","id":"toolu_01Gq18vb6oWSFwfmhzGi5f8H","name":"secret_retrieval_tool","input":{}}      }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":""}          }
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":""}        }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"{\""}        }
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"{\"password\":"}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"pas"}               }
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"
+        \"radianc"}   }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"sw"}     }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"ord\":
-        \""}  }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"radiance"}           }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"\"}"}         }
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"e\"}"}          }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":2             }
+        data: {"type":"content_block_stop","index":2     }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":109}}
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":111}  }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"     }
+        data: {"type":"message_stop"   }
 
 
         '
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b027670aed0eb83-SEA
+      - 9beae7b7dda475b8-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -183,15 +186,11 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Thu, 18 Dec 2025 23:33:00 GMT
+      - Fri, 16 Jan 2026 04:35:17 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -201,37 +200,41 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:32:59Z'
+      - '2026-01-16T04:35:15Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:32:59Z'
+      - '2026-01-16T04:35:15Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:32:59Z'
+      - '2026-01-16T04:35:15Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:32:59Z'
+      - '2026-01-16T04:35:15Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF2UoRpiTiSH1iCKt2Kw
+      - req_011CXASBLSd5UTj9aRFBRC3m
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '709'
+      - '1469'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
       the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"type":"text","text":"I''ll
-      retrieve the secrets for both passwords you provided."},{"type":"tool_use","id":"toolu_0199cTXNM9CoZP2ivCetrRm3","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_011WQyAr9qBAfeS7Ce3mHF8A","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_0199cTXNM9CoZP2ivCetrRm3","content":"Welcome
-      to Moria!","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_011WQyAr9qBAfeS7Ce3mHF8A","content":"Life
+      retrieve the secrets for both passwords using parallel function calls."},{"type":"tool_use","id":"toolu_012Hbq7BCqrkTwtEMQEzmrDs","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_01Gq18vb6oWSFwfmhzGi5f8H","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_012Hbq7BCqrkTwtEMQEzmrDs","content":"Welcome
+      to Moria!","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01Gq18vb6oWSFwfmhzGi5f8H","content":"Life
       before Death","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Use
       parallel tool calling.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"stream":true}'
@@ -247,13 +250,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1230'
+      - '1247'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - AsyncAnthropic/Python 0.75.0
+      - AsyncAnthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -265,7 +270,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.75.0
+      - 0.76.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -279,28 +284,17 @@ interactions:
       x-stainless-timeout:
       - NOT_GIVEN
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
   response:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01D2UYKSvWwhvdbKx2ssfang","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":602,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}          }
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01XuyKKHm7neeGP7UnoEuQG6","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":604,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}    }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}    }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Here"}           }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        are the secrets retrieve"}               }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}       }
 
 
         event: ping
@@ -310,84 +304,82 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"d
-        for"}             }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Here"}         }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        each"}}
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        password:\n\n-"}           }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        Passwor"}}
+        are the secrets retrieve"}              }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"d
-        \""}          }
+        for each"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        password:\n\n-"}   }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        Passwor"}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"d
+        \""}    }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"mellon\":
-        **"}        }
+        **"}            }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Welcome"}             }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Welcome
+        to Moria!**"} }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        to Moria!**\n-"}               }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        Password \"radiance\": **Life before"}               }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n-
+        Password \"radiance\": **Life"}      }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        Death**"}      }
+        before Death**"}         }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0 }
+        data: {"type":"content_block_stop","index":0              }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":602,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":39}    }
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":604,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":39}             }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"        }
+        data: {"type":"message_stop"}
 
 
         '
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b02767cdbedeb83-SEA
+      - 9beae7c929c875b8-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -395,15 +387,11 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Thu, 18 Dec 2025 23:33:02 GMT
+      - Fri, 16 Jan 2026 04:35:19 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -413,29 +401,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:33:01Z'
+      - '2026-01-16T04:35:18Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:33:01Z'
+      - '2026-01-16T04:35:18Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:33:01Z'
+      - '2026-01-16T04:35:18Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:33:01Z'
+      - '2026-01-16T04:35:18Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF2Uwn7buvyh3sN7KxCo
+      - req_011CXASBYLjezfCc4gEMB39c
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '836'
+      - '1151'
     status:
       code: 200
       message: OK

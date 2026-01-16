@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "2.0.0-alpha.6"
+version = "2.0.0-beta.0"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -22,7 +22,7 @@ keywords = [
     "prompt engineering",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -55,10 +55,10 @@ Changelog = "https://github.com/Mirascope/mirascope/releases"
 # in mirascope/_stubs.py to ensure proper import stubbing for missing dependencies.
 # The mapping translates PyPI package names to their Python import names.
 [project.optional-dependencies]
-anthropic = ["anthropic>=0.75.0,<1.0"]
+anthropic = ["anthropic>=0.76.0,<1.0"]
 api = ["pydantic-settings>=2.12.0"]
-google = ["google-genai>=1.57.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
-openai = ["openai>=2.14.0,<3"]
+google = ["google-genai>=1.58.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
+openai = ["openai>=2.15.0,<3"]
 mcp = ["mcp>=1.25.0,<2"]
 ops = [
     "opentelemetry-sdk>=1.38.0,<2",

@@ -675,6 +675,7 @@ Respond only with valid JSON that matches this exact schema:
                     content=[
                         Text(
                             text="""\
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -682,7 +683,8 @@ Respond only with valid JSON that matches this exact schema:
     "last_name": "Rothfuss"
   },
   "rating": 7
-}\
+}
+```\
 """
                         )
                     ],
@@ -695,6 +697,7 @@ Respond only with valid JSON that matches this exact schema:
                             {
                                 "type": "text",
                                 "text": """\
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -702,7 +705,8 @@ Respond only with valid JSON that matches this exact schema:
     "last_name": "Rothfuss"
   },
   "rating": 7
-}\
+}
+```\
 """,
                             }
                         ],
@@ -792,14 +796,14 @@ Respond only with valid JSON that matches this exact schema:
             "tools": [],
             "usage": {
                 "input_tokens": 328,
-                "output_tokens": 58,
+                "output_tokens": 63,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
                 "raw": "None",
-                "total_tokens": 386,
+                "total_tokens": 391,
             },
-            "n_chunks": 11,
+            "n_chunks": 12,
         }
     }
 )
