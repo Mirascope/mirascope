@@ -57,7 +57,7 @@ const docsSection = {
     {
       slug: "context",
       label: "Context",
-    }, // TODO
+    },
     {
       slug: "chaining",
       label: "Chaining",
