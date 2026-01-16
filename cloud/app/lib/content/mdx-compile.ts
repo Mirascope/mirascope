@@ -11,76 +11,24 @@
 import { compile, type CompileOptions } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 import { rehypeCodeMeta } from "./rehype-code-meta";
-import type { ProcessedMDX, Frontmatter } from "@/app/lib/mdx/types";
-import type { TOCItem } from "@/app/lib/content/types";
-import { parseFrontmatter } from "./frontmatter";
-import { extractHeadings } from "../mdx/heading-utils";
-
-export interface CompiledMDXResult {
-  /** The compiled JSX code string */
-  jsxCode: string;
-  /** Extracted frontmatter */
-  frontmatter: Record<string, string>;
-  /** Table of contents */
-  tableOfContents: TOCItem[];
-  /** Raw content without frontmatter */
-  content: string;
-}
 
 /**
- * Compile MDX content to JSX
+ * Compile MDX content to JSX function body
  *
- * This is the core compilation logic shared between the vite plugin and tests.
+ * This is the core compilation logic. Uses outputFormat: "function-body"
+ * which produces code that can be evaluated with runSync() at runtime.
  */
-export async function compileMDXContent(
-  rawContent: string,
-): Promise<CompiledMDXResult> {
-  // Parse frontmatter
-  const { frontmatter, content } = parseFrontmatter(rawContent);
-
-  // Extract TOC
-  const tableOfContents = extractHeadings(content);
-
+export async function compileMDXContent(content: string): Promise<string> {
   // Build compile options
   const compileOptions: CompileOptions = {
+    outputFormat: "function-body",
     development: process.env.NODE_ENV === "development",
-    outputFormat: "program",
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeCodeMeta],
   };
 
-  // Compile MDX to JSX
+  // Compile MDX to JSX function body
   const result = await compile(content, compileOptions);
 
-  let jsxCode = String(result);
-
-  // Remove ALL default exports from MDX output to avoid conflicts
-  jsxCode = jsxCode.replace(/export\s+default\s+MDXContent;?\s*/g, "");
-
-  return {
-    jsxCode,
-    frontmatter,
-    tableOfContents,
-    content,
-  };
-}
-
-/**
- * Create a ProcessedMDX object from content and metadata
- *
- * This creates a mock MDX component with the metadata attached,
- * useful for testing without needing to actually render the component.
- */
-export function createProcessedMDX(
-  content: string,
-  frontmatter: Frontmatter,
-  tableOfContents: TOCItem[] = [],
-): ProcessedMDX {
-  // Create a simple component that renders null (for testing)
-  const MockComponent = () => null;
-  return Object.assign(MockComponent, {
-    content,
-    frontmatter,
-    tableOfContents,
-  }) as ProcessedMDX;
+  return String(result);
 }

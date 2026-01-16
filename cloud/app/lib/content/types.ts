@@ -1,12 +1,11 @@
-import type { ReactNode } from "react";
-import type { ProcessedMDX } from "@/app/lib/mdx/types";
+import type { CompiledMDX } from "@/app/lib/mdx/types";
 
 /**
  * Table of contents item extracted from MDX headings
  */
 export type TOCItem = {
   id: string;
-  content: string | ReactNode;
+  content: string;
   level: number;
   children?: TOCItem[];
 };
@@ -38,12 +37,12 @@ export interface ContentMeta {
 
 /**
  * Core content interface that combines metadata with content
- * The meta and content are loaded from JSON, with MDX processed on demand
+ * The meta and content are loaded from JSON, with MDX compiled on demand
  */
 export interface Content<T extends ContentMeta = ContentMeta> {
   meta: T; // Typed, validated metadata
   content: string; // MDX with frontmatter stripped out
-  mdx: ProcessedMDX; // Pre-compiled MDX component with metadata
+  mdx: CompiledMDX; // Compiled MDX ready for runtime evaluation
 }
 
 /* ========== BLOG CONTENT TYPES =========== */

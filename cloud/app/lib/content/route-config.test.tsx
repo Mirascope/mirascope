@@ -6,10 +6,14 @@ import {
   getAllBlogMeta,
   getAllDocsMeta,
   getAllPolicyMeta,
+  type VirtualModuleExport,
 } from "@/app/lib/content/virtual-module";
-import { createContentRouteConfig } from "@/app/lib/content/route-config";
-import { createProcessedMDX } from "@/app/lib/content/mdx-compile";
-import type { ProcessedMDX } from "@/app/lib/mdx/types";
+import {
+  createContentRouteConfig,
+  type ContentRouteConfig,
+} from "@/app/lib/content/route-config";
+import type { FileRouteTypes } from "@/app/routeTree.gen";
+import type { PreprocessedMDX } from "@/app/lib/mdx/types";
 import type {
   BlogContent,
   Content,
@@ -127,9 +131,9 @@ const testMDXContent = "# Test Content\n\nThis is test content.";
  */
 function createTestModuleMap(): Map<
   string,
-  () => Promise<{ mdx: ProcessedMDX }>
+  () => Promise<VirtualModuleExport>
 > {
-  return new Map<string, () => Promise<{ mdx: ProcessedMDX }>>();
+  return new Map<string, () => Promise<VirtualModuleExport>>();
 }
 
 /**
@@ -137,7 +141,7 @@ function createTestModuleMap(): Map<
  */
 
 function getLoader<TMeta extends ContentMeta>(
-  routeConfig: ReturnType<typeof createContentRouteConfig<TMeta>>,
+  routeConfig: ContentRouteConfig<TMeta>,
 ) {
   return routeConfig.loader;
 }
@@ -189,12 +193,16 @@ describe("createContentRouteConfig - blog", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("test-post", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
-          title: "Test Post",
-          description: "A test blog post",
-          date: "2025-01-01",
-          author: "Test Author",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Test Post",
+            description: "A test blog post",
+            date: "2025-01-01",
+            author: "Test Author",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -215,6 +223,8 @@ describe("createContentRouteConfig - blog", () => {
     expect(result?.content).toBe(testMDXContent);
     expect(result?.mdx).toBeDefined();
     expect(result?.mdx.content).toBe(testMDXContent);
+    expect(result?.mdx.code).toBeDefined();
+    expect(typeof result?.mdx.code).toBe("string");
   });
 
   describe("appsec path traversal attacks", () => {
@@ -488,10 +498,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v1/learn/test-doc", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
-          title: "Test Doc",
-          description: "A test doc",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Test Doc",
+            description: "A test doc",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -516,10 +530,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v1/index", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
-          title: "Index Page",
-          description: "Index page",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Index Page",
+            description: "Index page",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -542,24 +560,32 @@ describe("createContentRouteConfig - docs", () => {
 
   it("should handle different versions correctly", async () => {
     const customModuleMap = createTestModuleMap();
-    customModuleMap.set("v2/learn/test-doc", () =>
+    customModuleMap.set("v99/learn/test-doc", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
-          title: "V2 Doc",
-          description: "V2 doc",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "V99 Doc",
+            description: "V99 doc",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
-    // Create a loader with v2 version - our mock metadata only has v1 routes
-    const route = createContentRouteConfig("/docs/v2/$", {
-      getMeta: getAllDocsMeta,
-      moduleMap: DOCS_MODULE_MAP,
-      prefix: "docs",
-      version: "v2",
-      component: DummyComponent,
-      _testModuleMap: customModuleMap,
-    });
+    // Create a loader with v99 version - our mock metadata only has v1 routes
+    // Using type assertion because we're intentionally testing an invalid route path
+    const route = createContentRouteConfig(
+      "/docs/v99/$" as FileRouteTypes["id"],
+      {
+        getMeta: getAllDocsMeta,
+        moduleMap: DOCS_MODULE_MAP,
+        prefix: "docs",
+        version: "v99",
+        component: DummyComponent,
+        _testModuleMap: customModuleMap,
+      },
+    );
     const loader = getLoader(route);
     const context = createMockContext({ _splat: "learn/test-doc" });
     const result = await loader(context);
@@ -572,10 +598,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("learn/non-versioned-doc", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
-          title: "Non-Versioned Doc",
-          description: "A non-versioned doc",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Non-Versioned Doc",
+            description: "A non-versioned doc",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -600,10 +630,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("index", () =>
       Promise.resolve({
-        mdx: createProcessedMDX(testMDXContent, {
-          title: "Non-Versioned Index",
-          description: "Non-versioned index page",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Non-Versioned Index",
+            description: "Non-versioned index page",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -912,14 +946,18 @@ describe("createContentRouteConfig - docs", () => {
     });
 
     it("should handle version mismatch", async () => {
-      // Try to access v1 doc with v2 loader
-      const route = createContentRouteConfig("/docs/v2/$", {
-        getMeta: getAllDocsMeta,
-        moduleMap: DOCS_MODULE_MAP,
-        prefix: "docs",
-        version: "v2",
-        component: DummyComponent,
-      });
+      // Try to access v1 doc with v99 loader
+      // Using type assertion because we're intentionally testing an invalid route path
+      const route = createContentRouteConfig(
+        "/docs/v99/$" as FileRouteTypes["id"],
+        {
+          getMeta: getAllDocsMeta,
+          moduleMap: DOCS_MODULE_MAP,
+          prefix: "docs",
+          version: "v99",
+          component: DummyComponent,
+        },
+      );
       const loader = getLoader(route);
       const context = createMockContext({ _splat: "learn/test-doc" });
       const result = await loader(context);

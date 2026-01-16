@@ -6,9 +6,6 @@ import type { TOCItem } from "@/app/lib/content/types";
  * Core types for MDX processing pipeline
  */
 
-import type React from "react";
-import type { MDXComponents } from "mdx/types";
-
 /**
  * Frontmatter extracted from MDX files
  */
@@ -17,22 +14,28 @@ export interface Frontmatter {
   description?: string;
   date?: string;
   author?: string;
-  [key: string]: unknown;
 }
 
 /**
- * Compiled MDX module (imported from .mdx files)
- * This is a React component with metadata attached as properties
+ * Preprocessed MDX data (serializable, from Vite plugin)
+ * Contains raw MDX content with frontmatter and TOC extracted
  */
-export type ProcessedMDX = React.ComponentType<{
-  components?: MDXComponents;
-}> & {
+export type PreprocessedMDX = {
   /** Extracted frontmatter metadata */
   frontmatter: Frontmatter;
   /** Table of contents extracted from headings */
   tableOfContents: TOCItem[];
   /** Raw MDX content (without frontmatter) */
   content: string;
+};
+
+/**
+ * Compiled MDX ready for runtime evaluation
+ * Contains the compiled JSX code string that can be evaluated with runSync()
+ */
+export type CompiledMDX = PreprocessedMDX & {
+  /** Compiled JSX code string (for runtime evaluation) */
+  code: string;
 };
 
 /**
