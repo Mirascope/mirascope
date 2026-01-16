@@ -9,13 +9,12 @@ import {
   type VirtualModuleExport,
 } from "@/app/lib/content/virtual-module";
 import { createContentRouteConfig } from "@/app/lib/content/route-config";
-import type { PreprocessedMDX, Frontmatter } from "@/app/lib/mdx/types";
+import type { PreprocessedMDX } from "@/app/lib/mdx/types";
 import type {
   BlogContent,
   Content,
   ContentMeta,
   DocContent,
-  TOCItem,
 } from "@/app/lib/content/types";
 
 // Mock TanStack Router
@@ -124,21 +123,6 @@ vi.mock("virtual:content-meta", () => ({
 const testMDXContent = "# Test Content\n\nThis is test content.";
 
 /**
- * Helper function to create a PreprocessedMDX object for testing.
- */
-function createPreprocessedMDX(
-  content: string,
-  frontmatter: Frontmatter,
-  tableOfContents: TOCItem[] = [],
-): PreprocessedMDX {
-  return {
-    content,
-    frontmatter,
-    tableOfContents,
-  };
-}
-
-/**
  * Helper function to create a test module map.
  */
 function createTestModuleMap(): Map<
@@ -205,12 +189,16 @@ describe("createContentRouteConfig - blog", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("test-post", () =>
       Promise.resolve({
-        default: createPreprocessedMDX(testMDXContent, {
-          title: "Test Post",
-          description: "A test blog post",
-          date: "2025-01-01",
-          author: "Test Author",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Test Post",
+            description: "A test blog post",
+            date: "2025-01-01",
+            author: "Test Author",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -506,10 +494,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v1/learn/test-doc", () =>
       Promise.resolve({
-        default: createPreprocessedMDX(testMDXContent, {
-          title: "Test Doc",
-          description: "A test doc",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Test Doc",
+            description: "A test doc",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -534,10 +526,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v1/index", () =>
       Promise.resolve({
-        default: createPreprocessedMDX(testMDXContent, {
-          title: "Index Page",
-          description: "Index page",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Index Page",
+            description: "Index page",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -562,10 +558,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("v2/learn/test-doc", () =>
       Promise.resolve({
-        default: createPreprocessedMDX(testMDXContent, {
-          title: "V2 Doc",
-          description: "V2 doc",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "V2 Doc",
+            description: "V2 doc",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -590,10 +590,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("learn/non-versioned-doc", () =>
       Promise.resolve({
-        default: createPreprocessedMDX(testMDXContent, {
-          title: "Non-Versioned Doc",
-          description: "A non-versioned doc",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Non-Versioned Doc",
+            description: "A non-versioned doc",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
@@ -618,10 +622,14 @@ describe("createContentRouteConfig - docs", () => {
     const customModuleMap = createTestModuleMap();
     customModuleMap.set("index", () =>
       Promise.resolve({
-        default: createPreprocessedMDX(testMDXContent, {
-          title: "Non-Versioned Index",
-          description: "Non-versioned index page",
-        }),
+        default: {
+          content: testMDXContent,
+          frontmatter: {
+            title: "Non-Versioned Index",
+            description: "Non-versioned index page",
+          },
+          tableOfContents: [],
+        } satisfies PreprocessedMDX,
       }),
     );
 
