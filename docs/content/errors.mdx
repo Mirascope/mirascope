@@ -3,27 +3,35 @@ title: Errors
 description: Learn about Mirascope's unified error types for handling LLM API errors.
 ---
 
-<Info>
-Reference: This doc should draw from:
-- python/mirascope/llm/exceptions.py
-Note: Error types are new unified v2 abstractions
-</Info>
-
 # Errors
 
-This document covers Mirascope's unified error handling system.
+Mirascope provides a unified exception hierarchy that normalizes errors across all LLM providers. Instead of catching provider-specific exceptions, you can handle errors consistently regardless of which provider you're using.
 
-## Topics Covered
+<CodeExample file="examples/errors/basic.py" />
 
-- Overview of Mirascope's unified exception hierarchy
-- Base exception: `llm.MirascopeLLMError`
-- API errors: `llm.APIError` and its subclasses
-- Specific error types:
-  - `llm.AuthenticationError` - Invalid API keys
-  - `llm.RateLimitError` - Rate limits exceeded
-  - `llm.BadRequestError` - Malformed requests
-  - `llm.NotFoundError` - Resource not found
-  - `llm.ServerError` - Provider server errors
-  - `llm.ConnectionError` - Network issues
-  - `llm.TimeoutError` - Request timeouts
-- Feature support errors: `llm.FeatureNotSupportedError`, `llm.FormattingModeNotSupportedError`
+## Error Reference
+
+All exceptions inherit from `MirascopeLLMError`. Indentation shows the hierarchy:
+
+| Exception | Description |
+| --- | --- |
+| `MirascopeLLMError` | Base exception for all Mirascope LLM errors |
+| ↳ `APIError` | Base class for HTTP-level API errors (has `status_code` attribute) |
+| &emsp;↳ `AuthenticationError` | Invalid or missing API key (401) |
+| &emsp;↳ `PermissionError` | Valid key but insufficient permissions (403) |
+| &emsp;↳ `BadRequestError` | Malformed request or invalid parameters (400, 422) |
+| &emsp;↳ `NotFoundError` | Model or resource doesn't exist (404) |
+| &emsp;↳ `RateLimitError` | Too many requests (429) |
+| &emsp;↳ `ServerError` | Provider server issues (500+) |
+| ↳ `ConnectionError` | Network connectivity issues, DNS failures |
+| ↳ `TimeoutError` | Request exceeded the allowed time limit |
+| ↳ `ResponseValidationError` | API response failed validation |
+| ↳ `ToolNotFoundError` | LLM returned a tool call that doesn't match any tool in your toolkit |
+| ↳ `FeatureNotSupportedError` | Feature not supported by provider/model (has `provider_id`, `model_id`, `feature`) |
+| &emsp;↳ `FormattingModeNotSupportedError` | Structured output formatting mode not available for the chosen model |
+| ↳ `NoRegisteredProviderError` | Model ID has no registered provider |
+
+## Next Steps
+
+- [Reliability](/docs/mirascope/v2/reliability) — Retry strategies and fallback patterns
+- [Providers](/docs/mirascope/v2/providers) — Provider-specific capabilities and limitations
