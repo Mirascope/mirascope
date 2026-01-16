@@ -1,10 +1,6 @@
 from mirascope import llm
 
-model: llm.Model = llm.use_model("openai/gpt-4o")
+model = llm.model("openai/gpt-5-mini")
 response: llm.Response = model.call("What is the capital of France?")
 
-# Access response content
-print(response.pretty())  # Human-readable output
-print(response.texts)  # List of Text objects
-print(response.content)  # All content parts (Text, ToolCall, Thought)
-print(response.messages)  # All of the messages in the response.
+print(response.text())  # Prints the textual content of the response

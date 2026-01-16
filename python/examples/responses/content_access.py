@@ -1,6 +1,6 @@
 from mirascope import llm
 
-model = llm.use_model("openai/gpt-4o")
+model = llm.model("openai/gpt-5")
 response = model.call("Tell me a joke.")
 
 # response.content contains all content parts: Text, ToolCall, Thought

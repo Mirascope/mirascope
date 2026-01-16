@@ -1,6 +1,6 @@
 from mirascope import llm
 
-model = llm.use_model("anthropic/claude-sonnet-4-5", max_tokens=40)
+model = llm.model("anthropic/claude-sonnet-4-5", max_tokens=40)
 response = model.call("Write a long story about a bear.")
 
 # finish_reason is None when the response completes normally

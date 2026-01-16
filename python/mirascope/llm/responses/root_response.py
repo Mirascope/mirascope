@@ -171,6 +171,30 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
 
             return formattable.model_validate_json(json_text)
 
+    def text(self, sep: str = "\n") -> str:
+        """Return all text content from this response as a single string.
+
+        Joins the text from all `Text` parts in the response content using the
+        specified separator.
+
+        Args:
+            sep: The separator to use when joining multiple text parts.
+                Defaults to newline ("\\n").
+
+        Returns:
+            A string containing all text content joined by the separator.
+            Returns an empty string if the response contains no text parts.
+
+        Example:
+            >>> response.text()  # Join with newlines (default)
+            'Hello\\nWorld'
+            >>> response.text(sep=" ")  # Join with spaces
+            'Hello World'
+            >>> response.text(sep="")  # Concatenate directly
+            'HelloWorld'
+        """
+        return sep.join(text.text for text in self.texts)
+
     def pretty(self) -> str:
         """Return a string representation of all response content.
 
