@@ -75,7 +75,7 @@ def test_model_context_stream_without_tracer_returns_response(
 
     def _fake_context_stream(
         self: llm.Model,
-        content: Sequence[llm.Message],
+        content: llm.UserContent | Sequence[llm.Message],
         *,
         ctx: llm.Context[Any],
         tools: object | None = None,

@@ -21,14 +21,12 @@ from .protocols import (
 
 
 def is_messages(
-    messages_or_content: UserContent | Sequence[Message],
+    content: UserContent | Sequence[Message],
 ) -> TypeIs[Sequence[Message]]:
-    if isinstance(messages_or_content, list):
-        if not messages_or_content:
+    if isinstance(content, list):
+        if not content:
             raise ValueError("Empty array may not be used as message content")
-        return isinstance(
-            messages_or_content[0], SystemMessage | UserMessage | AssistantMessage
-        )
+        return isinstance(content[0], SystemMessage | UserMessage | AssistantMessage)
     return False
 
 

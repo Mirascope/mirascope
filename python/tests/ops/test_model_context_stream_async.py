@@ -79,7 +79,7 @@ async def test_model_context_stream_async_without_tracer_returns_response(
 
     async def _fake_context_stream_async(
         self: llm.Model,
-        content: Sequence[llm.Message],
+        content: llm.UserContent | Sequence[llm.Message],
         *,
         ctx: llm.Context[Any],
         tools: object | None = None,
