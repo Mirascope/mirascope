@@ -22,6 +22,10 @@ import {
 import { BASE_URL } from "@/app/lib/site";
 import { compileMDXContent } from "./mdx-compile";
 
+// Valid route IDs from the generated route tree.
+import type { FileRouteTypes } from "@/app/routeTree.gen";
+type ValidRouteId = FileRouteTypes["id"];
+
 // Re-export types for consumers
 export type { HeadMetaEntry, HeadLinkEntry, HeadScriptEntry, HeadResult };
 
@@ -102,15 +106,18 @@ export interface ContentRouteOptions<TMeta extends ContentMeta> {
  * );
  * ```
  */
-export function createContentRouteConfig<TMeta extends ContentMeta>(
-  path: string,
-  options: ContentRouteOptions<TMeta>,
-): ContentRouteConfig<TMeta> {
+export function createContentRouteConfig<
+  TPath extends ValidRouteId,
+  TMeta extends ContentMeta,
+>(path: TPath, options: ContentRouteOptions<TMeta>): ContentRouteConfig<TMeta> {
   const allMetas = options.getMeta();
   const moduleMap = options._testModuleMap ?? options.moduleMap;
 
   // Create the component that will render the content
-  const contentComponent = createContentComponent(options.component, path);
+  const contentComponent = createContentComponent<TMeta, TPath>(
+    options.component,
+    path,
+  );
 
   return {
     head: createContentHead<TMeta>({
@@ -345,13 +352,18 @@ function buildMetaPath<TMeta extends ContentMeta>(
 /**
  * Create a component that loads content and renders the page component.
  */
-function createContentComponent<TMeta extends ContentMeta>(
+function createContentComponent<
+  TMeta extends ContentMeta,
+  TPath extends ValidRouteId,
+>(
   PageComponent: React.ComponentType<{ content: Content<TMeta> }>,
-  path: string,
+  path: TPath,
 ) {
   return function ContentRouteComponent() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-    const content = useLoaderData({ from: path } as any);
+    // Cast to Content<TMeta> since route types are validated.
+    const content = useLoaderData({ from: path }) as unknown as
+      | Content<TMeta>
+      | undefined;
     if (!content) {
       return <NotFound />;
     }
