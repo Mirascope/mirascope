@@ -209,9 +209,6 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
 
         I am going to use the calculator and answer your question for you!
         """
-        if not self.content:
-            return "**[No Content]**"
-
         pretty_parts: list[str] = []
         for part in self.content:
             if isinstance(part, Text):

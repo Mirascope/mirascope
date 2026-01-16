@@ -226,7 +226,7 @@ def test_empty_response_pretty() -> None:
         finish_reason=None,
     )
 
-    assert response.pretty() == snapshot("**[No Content]**")
+    assert response.pretty() == ""
 
 
 def test_text_only_response_pretty() -> None:

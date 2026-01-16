@@ -535,9 +535,6 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                 printed = True
             yield pretty
 
-        if not printed:
-            yield "**[No Content]**"
-
     def structured_stream(
         self,
     ) -> Iterator[Partial[FormattableT]]:
@@ -738,9 +735,6 @@ class BaseAsyncStreamResponse(
             if pretty != "":
                 printed = True
             yield pretty
-
-        if not printed:
-            yield "**[No Content]**"
 
     async def structured_stream(
         self,
