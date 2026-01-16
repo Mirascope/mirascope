@@ -3,8 +3,7 @@ from mirascope import llm
 
 def ask_question(question: str) -> llm.Response:
     model = llm.use_model("openai/gpt-4o")
-    message = llm.messages.user(question)
-    return model.call(messages=[message])
+    return model.call(question)
 
 
 # Uses the default model (gpt-4o)

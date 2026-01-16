@@ -38,7 +38,7 @@ def test_model_context_stream_exports_genai_span(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    response = model.context_stream(ctx=ctx, messages=messages)
+    response = model.context_stream(messages, ctx=ctx)
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -75,9 +75,9 @@ def test_model_context_stream_without_tracer_returns_response(
 
     def _fake_context_stream(
         self: llm.Model,
+        content: Sequence[llm.Message],
         *,
         ctx: llm.Context[Any],
-        messages: Sequence[llm.Message],
         tools: object | None = None,
         format: object | None = None,
     ) -> object:
@@ -91,7 +91,7 @@ def test_model_context_stream_without_tracer_returns_response(
     ctx = llm.Context(deps={})
     messages = [llm.messages.user("hi")]
 
-    response = model.context_stream(ctx=ctx, messages=messages)
+    response = model.context_stream(messages, ctx=ctx)
 
     assert response is dummy_response
     assert span_exporter.get_finished_spans() == ()
@@ -104,9 +104,9 @@ def test_model_context_stream_records_error_on_exception(
 
     def _failing_context_stream(
         self: llm.Model,
+        content: Sequence[llm.Message],
         *,
         ctx: llm.Context[Any],
-        messages: Sequence[llm.Message],
         tools: object | None = None,
         format: object | None = None,
     ) -> object:
@@ -121,7 +121,7 @@ def test_model_context_stream_records_error_on_exception(
     messages = [llm.messages.user("hi")]
 
     with pytest.raises(ValueError, match="error"):
-        model.context_stream(ctx=ctx, messages=messages)
+        model.context_stream(messages, ctx=ctx)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1

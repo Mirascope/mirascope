@@ -11,6 +11,7 @@ from typing_extensions import Unpack
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT, OutputParser
 from ..messages import Message, UserContent
+from ..prompts._utils import promote_to_messages
 from ..providers import (
     ModelId,
     Params,
@@ -67,8 +68,7 @@ class Model:
         def recommend_book(genre: str) -> llm.Response:
             # Uses context model if available, otherwise creates default
             model = llm.use_model("openai/gpt-5-mini")
-            message = llm.messages.user(f"Please recommend a book in {genre}.")
-            return model.call(messages=[message])
+            return model.call(f"Please recommend a book in {genre}.")
 
         # Uses default model
         response = recommend_book("fantasy")
@@ -86,8 +86,7 @@ class Model:
         def recommend_book(genre: str) -> llm.Response:
             # Hardcoded model, cannot be overridden by context
             model = llm.Model("openai/gpt-5-mini")
-            message = llm.messages.user(f"Please recommend a book in {genre}.")
-            return model.call(messages=[message])
+            return model.call(f"Please recommend a book in {genre}.")
         ```
     """
 
@@ -156,8 +155,8 @@ class Model:
     @overload
     def call(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
     ) -> Response:
@@ -167,8 +166,8 @@ class Model:
     @overload
     def call(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> Response[FormattableT]:
@@ -178,8 +177,8 @@ class Model:
     @overload
     def call(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -191,8 +190,8 @@ class Model:
 
     def call(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -202,13 +201,16 @@ class Model:
         """Generate an `llm.Response` by synchronously calling this model's LLM provider.
 
         Args:
-            messages: Messages to send to the LLM.
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return self.provider.call(
             model_id=self.model_id,
             messages=messages,
@@ -220,8 +222,8 @@ class Model:
     @overload
     async def call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
     ) -> AsyncResponse:
@@ -231,8 +233,8 @@ class Model:
     @overload
     async def call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncResponse[FormattableT]:
@@ -242,8 +244,8 @@ class Model:
     @overload
     async def call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -255,8 +257,8 @@ class Model:
 
     async def call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -266,13 +268,16 @@ class Model:
         """Generate an `llm.AsyncResponse` by asynchronously calling this model's LLM provider.
 
         Args:
-            messages: Messages to send to the LLM.
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return await self.provider.call_async(
             model_id=self.model_id,
             messages=messages,
@@ -284,8 +289,8 @@ class Model:
     @overload
     def stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
     ) -> StreamResponse:
@@ -295,8 +300,8 @@ class Model:
     @overload
     def stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> StreamResponse[FormattableT]:
@@ -306,8 +311,8 @@ class Model:
     @overload
     def stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -319,8 +324,8 @@ class Model:
 
     def stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -330,13 +335,16 @@ class Model:
         """Generate an `llm.StreamResponse` by synchronously streaming from this model's LLM provider.
 
         Args:
-            messages: Messages to send to the LLM.
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return self.provider.stream(
             model_id=self.model_id,
             messages=messages,
@@ -348,8 +356,8 @@ class Model:
     @overload
     async def stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
     ) -> AsyncStreamResponse:
@@ -359,8 +367,8 @@ class Model:
     @overload
     async def stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncStreamResponse[FormattableT]:
@@ -370,8 +378,8 @@ class Model:
     @overload
     async def stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -383,8 +391,8 @@ class Model:
 
     async def stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT]
         | Format[FormattableT]
@@ -394,13 +402,16 @@ class Model:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from this model's LLM provider.
 
         Args:
-            messages: Messages to send to the LLM.
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return await self.provider.stream_async(
             model_id=self.model_id,
             messages=messages,
@@ -412,9 +423,9 @@ class Model:
     @overload
     def context_call(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -426,9 +437,9 @@ class Model:
     @overload
     def context_call(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -440,9 +451,9 @@ class Model:
     @overload
     def context_call(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -456,9 +467,9 @@ class Model:
 
     def context_call(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -470,14 +481,17 @@ class Model:
         """Generate an `llm.ContextResponse` by synchronously calling this model's LLM provider.
 
         Args:
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             ctx: Context object with dependencies for tools.
-            messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return self.provider.context_call(
             ctx=ctx,
             model_id=self.model_id,
@@ -490,9 +504,9 @@ class Model:
     @overload
     async def context_call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -504,9 +518,9 @@ class Model:
     @overload
     async def context_call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -518,9 +532,9 @@ class Model:
     @overload
     async def context_call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -534,9 +548,9 @@ class Model:
 
     async def context_call_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -548,14 +562,17 @@ class Model:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling this model's LLM provider.
 
         Args:
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             ctx: Context object with dependencies for tools.
-            messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return await self.provider.context_call_async(
             ctx=ctx,
             model_id=self.model_id,
@@ -568,9 +585,9 @@ class Model:
     @overload
     def context_stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -582,9 +599,9 @@ class Model:
     @overload
     def context_stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -596,9 +613,9 @@ class Model:
     @overload
     def context_stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -614,9 +631,9 @@ class Model:
 
     def context_stream(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
         | None = None,
@@ -630,14 +647,17 @@ class Model:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from this model's LLM provider.
 
         Args:
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             ctx: Context object with dependencies for tools.
-            messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return self.provider.context_stream(
             ctx=ctx,
             model_id=self.model_id,
@@ -650,9 +670,9 @@ class Model:
     @overload
     async def context_stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -664,9 +684,9 @@ class Model:
     @overload
     async def context_stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -678,9 +698,9 @@ class Model:
     @overload
     async def context_stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -697,9 +717,9 @@ class Model:
 
     async def context_stream_async(
         self,
+        content: UserContent | Sequence[Message],
         *,
         ctx: Context[DepsT],
-        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -714,14 +734,17 @@ class Model:
         """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from this model's LLM provider.
 
         Args:
+            content: Content to send to the LLM. Can be a string (converted to user
+                message), UserContent, a sequence of UserContent, or a sequence of
+                Messages for full control.
             ctx: Context object with dependencies for tools.
-            messages: Messages to send to the LLM.
             tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
 
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+        messages = promote_to_messages(content)
         return await self.provider.context_stream_async(
             ctx=ctx,
             model_id=self.model_id,
@@ -1254,7 +1277,7 @@ def model(
     ```python
     m = llm.model("openai/gpt-4o")
     # Use directly
-    response = m.call(messages=[...])
+    response = m.call("Hello!")
     # Or use as context manager
     with m:
         response = recommend_book("fantasy")
@@ -1282,8 +1305,7 @@ def model(
 
         def recommend_book(genre: str) -> llm.Response:
             model = llm.use_model("openai/gpt-5-mini")
-            message = llm.messages.user(f"Please recommend a book in {genre}.")
-            return model.call(messages=[message])
+            return model.call(f"Please recommend a book in {genre}.")
 
         # Override the default model at runtime
         with llm.model("anthropic/claude-sonnet-4-5"):
@@ -1315,7 +1337,7 @@ def model(
         m = llm.model("openai/gpt-4o")
 
         # Use it directly
-        response = m.call(messages=[llm.messages.user("Hello!")])
+        response = m.call("Hello!")
 
         # Or use it as a context manager
         with m:
@@ -1380,8 +1402,7 @@ def use_model(
 
         def recommend_book(genre: str) -> llm.Response:
             model = llm.use_model("openai/gpt-5-mini")
-            message = llm.messages.user(f"Please recommend a book in {genre}.")
-            return model.call(messages=[message])
+            return model.call(f"Please recommend a book in {genre}.")
 
         # Uses the default model (gpt-5-mini)
         response = recommend_book("fantasy")

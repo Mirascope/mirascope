@@ -36,7 +36,7 @@ async def test_model_context_call_async_exports_genai_span(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    response = await model.context_call_async(ctx=ctx, messages=messages)
+    response = await model.context_call_async(messages, ctx=ctx)
     assert "Kai" in response.pretty()
 
     spans = span_exporter.get_finished_spans()

@@ -5,9 +5,34 @@ description: Learn how to use the llm.Model class to send messages and get respo
 
 # Models
 
-The `llm.Model` class provides a unified interface for calling any supported LLM provider. Create a model with `llm.use_model()`, then call it with your messages:
+The `llm.Model` class provides a unified interface for calling any supported LLM provider. Create a model with `llm.use_model()`, then call it with content:
 
 <CodeExample file="examples/models/basic.py" />
+
+## Calling Models
+
+The `model.call()` method accepts flexible content types:
+
+```python
+# Pass a simple string (converted to a user message)
+response = model.call("What is the capital of France?")
+
+# Pass an array of content parts for multimodal input
+response = model.call([
+    "Describe this image:",
+    llm.Image.from_url("https://example.com/photo.jpg"),
+])
+
+# Pass a sequence of messages for full control
+response = model.call([
+    llm.system("You are a helpful assistant."),
+    llm.user("Hello!"),
+    llm.assistant("Hi there! How can I help?"),
+    llm.user("What's the weather like?"),
+])
+```
+
+When you pass a string or content parts, Mirascope automatically wraps them in a user message. For multi-turn conversations or system prompts, pass a sequence of messages.
 
 ## Model ID Format
 

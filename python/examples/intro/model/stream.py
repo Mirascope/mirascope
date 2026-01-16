@@ -3,8 +3,7 @@ from mirascope import llm
 
 def recommend_book(genre: str) -> llm.StreamResponse:
     model: llm.Model = llm.use_model("openai/gpt-5")
-    message = llm.messages.user(f"Please recommend a book in {genre}.")
-    return model.stream(messages=[message])
+    return model.stream(f"Please recommend a book in {genre}.")
 
 
 def main():

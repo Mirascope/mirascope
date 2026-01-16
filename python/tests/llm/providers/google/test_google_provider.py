@@ -54,7 +54,7 @@ def test_stream_rate_limit_error() -> None:
         return_value=mock_stream(),
     ):
         # Try to stream and expect RateLimitError
-        response = model.stream(messages=[llm.messages.user("test")])
+        response = model.stream("test")
 
         with pytest.raises(llm.RateLimitError) as exc_info:
             response.finish()
@@ -83,7 +83,7 @@ async def test_async_stream_rate_limit_error() -> None:
         return_value=mock_async_stream(),
     ):
         # Try to stream and expect RateLimitError
-        response = await model.stream_async(messages=[llm.messages.user("test")])
+        response = await model.stream_async("test")
 
         with pytest.raises(llm.RateLimitError) as exc_info:
             await response.finish()
@@ -109,7 +109,7 @@ def test_call_rate_limit_error() -> None:
     ):
         # Try to call and expect RateLimitError
         with pytest.raises(llm.RateLimitError) as exc_info:
-            model.call(messages=[llm.messages.user("test")])
+            model.call("test")
 
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)
@@ -133,7 +133,7 @@ async def test_async_call_rate_limit_error() -> None:
     ):
         # Try to call and expect RateLimitError
         with pytest.raises(llm.RateLimitError) as exc_info:
-            await model.call_async(messages=[llm.messages.user("test")])
+            await model.call_async("test")
 
         # Verify it's wrapped as mirascope RateLimitError and has proper chaining
         assert isinstance(exc_info.value, llm.RateLimitError)

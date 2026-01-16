@@ -21,7 +21,7 @@ from .protocols import (
 
 
 def is_messages(
-    messages_or_content: Sequence[Message] | UserContent,
+    messages_or_content: UserContent | Sequence[Message],
 ) -> TypeIs[Sequence[Message]]:
     if isinstance(messages_or_content, list):
         if not messages_or_content:
@@ -32,15 +32,15 @@ def is_messages(
     return False
 
 
-def promote_to_messages(result: Sequence[Message] | UserContent) -> Sequence[Message]:
+def promote_to_messages(content: UserContent | Sequence[Message]) -> Sequence[Message]:
     """Promote a prompt result to a list of messages.
 
     If the result is already a list of Messages, returns it as-is.
-    If the result is UserContent, wraps it in a single user message.
+    If the result is str/UserContentPart/Sequence of content parts, wraps it in a user message.
     """
-    if is_messages(result):
-        return result
-    return [user(result)]
+    if is_messages(content):
+        return content
+    return [user(content)]
 
 
 def is_context_promptable(

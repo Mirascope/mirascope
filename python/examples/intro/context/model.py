@@ -23,7 +23,7 @@ def librarian(ctx: llm.Context[Library], query: str):
         llm.messages.user(query),
     ]
     # [!code highlight:2]
-    return model.context_call(ctx=ctx, messages=messages, tools=[get_book_info])
+    return model.context_call(messages, ctx=ctx, tools=[get_book_info])
 
 
 def main():

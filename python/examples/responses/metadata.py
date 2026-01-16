@@ -1,7 +1,7 @@
 from mirascope import llm
 
 model = llm.use_model("openai/gpt-4o")
-response = model.call(messages=[llm.messages.user("Hello!")])
+response = model.call("Hello!")
 
 # Response metadata
 print(f"Provider: {response.provider_id}")

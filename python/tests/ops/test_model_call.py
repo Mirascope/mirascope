@@ -49,7 +49,7 @@ def test_model_call_exports_genai_span(span_exporter: InMemorySpanExporter) -> N
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    response = model.call(messages=messages)
+    response = model.call(messages)
     assert "Kai" in response.pretty()
 
     spans = span_exporter.get_finished_spans()
@@ -90,7 +90,7 @@ def test_model_call_with_tools(span_exporter: InMemorySpanExporter) -> None:
     model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("What's the weather like in San Francisco?")]
 
-    model.call(messages=messages, tools=[get_current_weather])
+    model.call(messages, tools=[get_current_weather])
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -134,7 +134,7 @@ def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None
     )
     messages = [llm.messages.user("Count from 1 to 5")]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -181,7 +181,7 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
         llm.messages.user("Return a person named Alice who is 30 years old as JSON")
     ]
 
-    model.call(messages=messages, format=Person)
+    model.call(messages, format=Person)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -222,7 +222,7 @@ def test_model_call_with_image(span_exporter: InMemorySpanExporter) -> None:
         )
     ]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -268,7 +268,7 @@ def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
     messages = [llm.messages.user("Hello")]
 
     with pytest.raises(openai.APIError):
-        model.call(messages=messages)
+        model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -323,7 +323,7 @@ def test_model_call_records_untracked_params_event(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -369,7 +369,7 @@ def test_model_call_with_none_parameters(
     )
     messages = [llm.messages.user("Say hello")]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -421,7 +421,7 @@ def test_model_call_with_base64_image(
         )
     ]
 
-    response = model.call(messages=messages)
+    response = model.call(messages)
     assert response.content
 
     spans = span_exporter.get_finished_spans()
@@ -474,10 +474,10 @@ def test_model_call_with_tool_outputs(
 
     model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("What's the weather in Tokyo?")]
-    response1 = model.call(messages=messages, tools=[get_weather])
+    response1 = model.call(messages, tools=[get_weather])
     tool_outputs = response1.execute_tools()
     messages_with_outputs = response1.messages + [llm.messages.user(tool_outputs)]
-    model.call(messages=messages_with_outputs, tools=[get_weather])
+    model.call(messages_with_outputs, tools=[get_weather])
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 2
@@ -518,7 +518,7 @@ def test_model_call_with_audio_content(
     audio = llm.Audio.from_file(audio_path)
     messages = [llm.messages.user(["What is in this audio?", audio])]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -566,7 +566,7 @@ def test_model_call_with_reasoning_model(
     )
     messages = [llm.messages.user("What is 2+2? Think step by step.")]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -604,7 +604,7 @@ def test_model_call_with_stop_string(
     )
     messages = [llm.messages.user("Say hello")]
 
-    model.call(messages=messages)
+    model.call(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -642,7 +642,7 @@ def test_model_call_without_instrumentation(
     model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Hello")]
 
-    response = model.call(messages=messages)
+    response = model.call(messages)
 
     assert response.content
     spans = span_exporter.get_finished_spans()
@@ -659,7 +659,7 @@ def test_model_call_with_tracer_set_to_none(
     model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Test with None tracer")]
 
-    response = model.call(messages=messages)
+    response = model.call(messages)
 
     assert response.content
     spans = span_exporter.get_finished_spans()
@@ -674,7 +674,7 @@ def test_model_call_records_response_id(
     model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Say hello")]
 
-    response = model.call(messages=messages)
+    response = model.call(messages)
 
     assert hasattr(response.raw, "id")
 
@@ -715,7 +715,7 @@ def test_model_call_with_message_name(
     )
     messages = [user_msg]
 
-    response = model.call(messages=messages)
+    response = model.call(messages)
 
     assert response.content
     spans = span_exporter.get_finished_spans()
@@ -791,7 +791,7 @@ def test_model_call_with_format_tool_finish_reason(
     )
     messages = [llm.messages.user("Return a book recommendation.")]
 
-    response = model.call(messages=messages, format=book_format)
+    response = model.call(messages, format=book_format)
     assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
     spans = span_exporter.get_finished_spans()
@@ -845,7 +845,7 @@ def test_tracer_context_with_model_call(
     messages = [llm.messages.user("Say hello")]
 
     with ops.tracer_context(None):
-        response = model.call(messages=messages)
+        response = model.call(messages)
         assert response.content
 
     spans = span_exporter.get_finished_spans()

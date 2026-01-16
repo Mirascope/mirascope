@@ -35,7 +35,7 @@ def test_model_context_call_exports_genai_span(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    response = model.context_call(ctx=ctx, messages=messages)
+    response = model.context_call(messages, ctx=ctx)
     assert "Kai" in response.pretty()
 
     spans = span_exporter.get_finished_spans()
