@@ -81,7 +81,7 @@ const docsSection = {
     {
       slug: "mcp",
       label: "MCP",
-    }, // TODO
+    },
   ],
 };
 
