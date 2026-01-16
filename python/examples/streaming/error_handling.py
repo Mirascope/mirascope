@@ -9,9 +9,8 @@ def recommend_book(genre: str):
 response = recommend_book.stream("fantasy")
 
 try:
-    for chunk in response.pretty_stream():
+    for chunk in response.text_stream():
         print(chunk, end="", flush=True)
-    print()
 except llm.RateLimitError as e:
     print(f"Rate limit exceeded: {e}")
 except llm.ConnectionError as e:

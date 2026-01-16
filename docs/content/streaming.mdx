@@ -9,7 +9,7 @@ Streaming lets you receive and process LLM responses as they're generated, rathe
 
 ## Basic Usage
 
-Call `.stream()` to get a `StreamResponse` instead of a `Response`. Then iterate with `pretty_stream()` to print content as it arrives:
+Call `.stream()` to get a `StreamResponse` instead of a `Response`. Then iterate with `text_stream()` to print content as it arrives:
 
 <TabbedSection>
 <Tab value="@llm.call">
@@ -23,7 +23,7 @@ Call `.stream()` to get a `StreamResponse` instead of a `Response`. Then iterate
 </Tab>
 </TabbedSection>
 
-The `pretty_stream()` method yields string chunks that you can print directly. Using `end=""` and `flush=True` ensures real-time display without line breaks.
+The `text_stream()` method yields string chunks that you can print directly. Using `end=""` and `flush=True` ensures real-time display without line breaks.
 
 ## Stream Iterators
 
@@ -31,14 +31,21 @@ The `pretty_stream()` method yields string chunks that you can print directly. U
 
 | Method | Yields | Use Case |
 | --- | --- | --- |
-| `pretty_stream()` | `str` | Simple text display, debugging |
+| `text_stream(sep="\n")` | `str` | Streaming text content to users |
+| `pretty_stream()` | `str` | Debugging with all content types |
 | `streams()` | `TextStream`, `ToolCallStream`, etc. | Processing distinct content parts separately |
 | `structured_stream()` | `Partial[T]` | Streaming structured output fields as they arrive |
 | `chunk_stream()` | `AssistantContentChunk` | Low-level access to raw chunks |
 
+### text_stream
+
+The `text_stream()` iterator yields only text content, ignoring thoughts, tool calls, and other content types. It's the streaming equivalent of `response.text()` and is ideal for displaying responses to users.
+
+By default, it inserts a newline between multiple text parts. Pass a custom separator if needed: `text_stream(sep=" ")`.
+
 ### pretty_stream
 
-The `pretty_stream()` iterator renders all content as human-readable chunks. It is a streaming version of `response.pretty()`. This is convenient for cases where you are only getting text content back, or for quick and easy debugging.
+The `pretty_stream()` iterator renders all content as human-readable chunks, including thoughts and tool calls. It is a streaming version of `response.pretty()` and is useful for debugging.
 
 ### streams
 
@@ -48,7 +55,7 @@ The substreams will be `llm.TextStream`, `llm.ToolCallStream`, or `llm.ThoughtSt
 
 If you want to skip processing a substream (for example, skipping tool call streams to let them accumulate naturally), you can do so and Mirascope will automatically handle it for you.
 
-For example, you might use this to print all text content live, while silently accumulating tool calls to invoke once the response is done:
+For example, you might use this to stream text and thoughts with different formatting, while silently accumulating tool calls to execute once the response is done:
 
 <CodeExample file="examples/streaming/streams.py" />
 
@@ -98,7 +105,7 @@ print(stream_response.pretty())  # Now fully populated
 
 ## Replaying Streams
 
-Streams are replayable. Chunks are cached on the response as they're consumed, so calling `pretty_stream()`, `chunk_stream()`, or `streams()` again returns a fresh iterator that replays from the beginning:
+Streams are replayable. Chunks are cached on the response as they're consumed, so calling `text_stream()`, `pretty_stream()`, `chunk_stream()`, or `streams()` again returns a fresh iterator that replays from the beginning:
 
 <CodeExample file="examples/streaming/replay.py" />
 

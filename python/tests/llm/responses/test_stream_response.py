@@ -1033,6 +1033,131 @@ Hello world
         assert streamed_output == stream_response.pretty()
 
 
+class TestTextStream:
+    """Tests for text_stream() method."""
+
+    def test_sync_text_stream_single_text(self) -> None:
+        """Test text_stream with a single text part."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextChunk(delta=" world"),
+            llm.TextEndChunk(),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        result = "".join(stream_response.text_stream())
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello world\n"
+
+    def test_sync_text_stream_multiple_texts_default_sep(self) -> None:
+        """Test text_stream with multiple text parts using default separator."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="World"),
+            llm.TextEndChunk(),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        result = "".join(stream_response.text_stream())
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello\nWorld\n"
+
+    def test_sync_text_stream_custom_sep(self) -> None:
+        """Test text_stream with custom separator."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="World"),
+            llm.TextEndChunk(),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        result = "".join(stream_response.text_stream(sep=" "))
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello World "
+
+    def test_sync_text_stream_ignores_non_text(self) -> None:
+        """Test text_stream ignores thoughts and tool calls."""
+        chunks = [
+            llm.ThoughtStartChunk(),
+            llm.ThoughtChunk(delta="thinking..."),
+            llm.ThoughtEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+            llm.ToolCallStartChunk(id="1", name="tool"),
+            llm.ToolCallChunk(id="1", delta="{}"),
+            llm.ToolCallEndChunk(id="1"),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        result = "".join(stream_response.text_stream())
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello\n"
+
+    @pytest.mark.asyncio
+    async def test_async_text_stream_single_text(self) -> None:
+        """Test async text_stream with a single text part."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextChunk(delta=" world"),
+            llm.TextEndChunk(),
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        result = "".join([part async for part in stream_response.text_stream()])
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello world\n"
+
+    @pytest.mark.asyncio
+    async def test_async_text_stream_multiple_texts_default_sep(self) -> None:
+        """Test async text_stream with multiple text parts using default separator."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="World"),
+            llm.TextEndChunk(),
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        result = "".join([part async for part in stream_response.text_stream()])
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello\nWorld\n"
+
+    @pytest.mark.asyncio
+    async def test_async_text_stream_custom_sep(self) -> None:
+        """Test async text_stream with custom separator."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="World"),
+            llm.TextEndChunk(),
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        result = "".join([part async for part in stream_response.text_stream(sep=" ")])
+
+        # text_stream adds trailing separator after each text part
+        assert result == "Hello World "
+
+
 class TestRawChunkTracking:
     """Test chunk deduplication behavior."""
 

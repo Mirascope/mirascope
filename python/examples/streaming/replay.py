@@ -10,14 +10,12 @@ response = recommend_book.stream("fantasy")
 
 # First iteration - consumes from LLM
 print("First pass:")
-for chunk in response.pretty_stream():
+for chunk in response.text_stream():
     print(chunk, end="", flush=True)
-print("\n")
 
 # Second iteration - replays from cache
 # This will print everything immediately, and is approximately equivalent to calling
 # print(stream_response.pretty())
 print("Second pass (replay):")
-for chunk in response.pretty_stream():
+for chunk in response.text_stream():
     print(chunk, end="", flush=True)
-print()
