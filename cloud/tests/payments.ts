@@ -492,6 +492,8 @@ export class MockPayments {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private billingCreditGrantsCreateResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private billingMetersListEventSummariesResult?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private paymentIntentsCreateResult?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private stripeConfig?: any;
@@ -649,6 +651,14 @@ export class MockPayments {
           return this;
         },
       },
+      meters: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        listEventSummaries: (result: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          this.billingMetersListEventSummariesResult = result;
+          return this;
+        },
+      },
     };
   }
 
@@ -711,6 +721,9 @@ export class MockPayments {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const billingCreditGrantsCreateResult =
       this.billingCreditGrantsCreateResult;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const billingMetersListEventSummariesResult =
+      this.billingMetersListEventSummariesResult;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const paymentIntentsCreateResult = this.paymentIntentsCreateResult;
 
@@ -1146,6 +1159,28 @@ export class MockPayments {
             });
           },
         },
+        meters: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          listEventSummaries: (params?: any) => {
+            if (billingMetersListEventSummariesResult !== undefined) {
+              if (typeof billingMetersListEventSummariesResult === "function") {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+                const result = billingMetersListEventSummariesResult(params);
+                return ensureEffect(result);
+              }
+
+              return Effect.isEffect(billingMetersListEventSummariesResult)
+                ? billingMetersListEventSummariesResult
+                : Effect.succeed(billingMetersListEventSummariesResult);
+            }
+            // Default: return zero usage
+            return Effect.succeed({
+              object: "list" as const,
+              data: [{ aggregated_value: 0 }],
+              has_more: false,
+            });
+          },
+        },
         meterEvents: {
           create: () =>
             Effect.succeed({
@@ -1393,6 +1428,15 @@ export const MockStripe = Layer.succeed(Stripe, {
           id: `credgr_test_${crypto.randomUUID()}`,
         }),
     },
+    meters: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      listEventSummaries: (_meterId: string, _params?: unknown) =>
+        Effect.succeed({
+          object: "list" as const,
+          data: [{ aggregated_value: 0 }],
+          has_more: false,
+        }),
+    },
     meterEvents: {
       create: () =>
         Effect.succeed({
@@ -1477,6 +1521,8 @@ export interface TestSubscriptionFixtureParams {
   };
   /** If true, payment method will be an expanded object instead of string ID (defaults to false) */
   expandedPaymentMethod?: boolean;
+  /** Current billing meter usage (defaults to "0" for zero usage) */
+  meterBalance?: string;
 }
 
 /**
@@ -1666,6 +1712,7 @@ export function TestSubscriptionWithRealDatabaseFixture(
     paymentMethodLocation = "subscription",
     customPaymentMethod,
     expandedPaymentMethod = false,
+    meterBalance = "0",
   } = params;
 
   const { now, periodEnd } = getTestPeriodTimes();
@@ -1761,6 +1808,15 @@ export function TestSubscriptionWithRealDatabaseFixture(
       Effect.succeed(createListResponse([])),
     );
   }
+
+  // Add billing meters mock for usage tracking
+  mockBuilder = mockBuilder.billing.meters.listEventSummaries(() =>
+    Effect.succeed({
+      object: "list" as const,
+      data: [{ aggregated_value: meterBalance }],
+      has_more: false,
+    }),
+  );
 
   return Layer.merge(
     Payments.Default.pipe(

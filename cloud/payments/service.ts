@@ -113,7 +113,7 @@ export class Payments extends Context.Tag("Payments")<
       return {
         customers: provideDependencies(new Customers(subscriptions)),
         products: {
-          router: provideDependencies(new Router()),
+          router: provideDependencies(new Router(subscriptions)),
           spans: provideDependencies(new Spans(subscriptions)),
         },
         paymentIntents: provideDependencies(new PaymentIntents()),

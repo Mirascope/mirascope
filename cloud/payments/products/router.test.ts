@@ -17,14 +17,17 @@ import type StripeSDK from "stripe";
 
 describe("Router Product", () => {
   describe("getUsageMeterBalance", () => {
-    it.effect("returns 0n when no router subscription exists", () =>
+    it.effect("throws NotFoundError when no active subscription exists", () =>
       Effect.gen(function* () {
         const payments = yield* Payments;
 
-        const balance =
-          yield* payments.products.router.getUsageMeterBalance("cus_123");
+        const result = yield* payments.products.router
+          .getUsageMeterBalance("cus_123")
+          .pipe(Effect.flip);
 
-        expect(balance).toBe(0n);
+        expect(result.message).toBe(
+          "No active subscription found for customer",
+        );
       }).pipe(
         Effect.provide(
           Payments.Default.pipe(
@@ -78,6 +81,7 @@ describe("Router Product", () => {
                           {
                             id: "sub_123",
                             customer: "cus_123",
+                            status: "active" as const,
                             current_period_start: 1000000,
                             current_period_end: 2000000,
                             items: {
@@ -181,6 +185,7 @@ describe("Router Product", () => {
                         {
                           id: "sub_123",
                           customer: "cus_123",
+                          status: "active" as const,
                           current_period_start: 1000000,
                           current_period_end: 2000000,
                           items: {
@@ -361,6 +366,7 @@ describe("Router Product", () => {
                       {
                         id: "sub_123",
                         customer: "cus_123",
+                        status: "active" as const,
                         current_period_start: 1000000,
                         current_period_end: 2000000,
                         items: {
@@ -451,6 +457,7 @@ describe("Router Product", () => {
                     {
                       id: "sub_123",
                       customer: "cus_123",
+                      status: "active" as const,
                       current_period_start: 1000000,
                       current_period_end: 2000000,
                       items: {
@@ -538,6 +545,7 @@ describe("Router Product", () => {
                     {
                       id: "sub_123",
                       customer: "cus_123",
+                      status: "active" as const,
                       current_period_start: 1000000,
                       current_period_end: 2000000,
                       items: {
@@ -615,6 +623,7 @@ describe("Router Product", () => {
                     {
                       id: "sub_123",
                       customer: "cus_123",
+                      status: "active" as const,
                       current_period_start: 1000000,
                       current_period_end: 2000000,
                       items: {
@@ -1065,6 +1074,7 @@ describe("Router Product", () => {
                           {
                             id: "sub_123",
                             customer: "cus_123",
+                            status: "active" as const,
                             current_period_start: 1000000,
                             current_period_end: 2000000,
                             items: {
