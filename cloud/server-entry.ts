@@ -11,7 +11,7 @@ import routerMeteringQueue, {
 import spansMeteringQueue, {
   SpansMeteringQueueService,
 } from "@/workers/spansMeteringQueue";
-import { type WorkerEnv } from "@/workers/cron-config";
+import { type WorkerEnv } from "@/workers/config";
 import { Effect, Layer, Context } from "effect";
 
 /**

@@ -6,7 +6,7 @@ import { describe, expect, vi, it } from "vitest";
 import { Effect, Layer } from "effect";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
-import type { WorkerEnv } from "./cron-config";
+import type { WorkerEnv } from "@/workers/config";
 
 const TEST_DATABASE_URL = "postgres://test:test@localhost:5432/test";
 

@@ -7,7 +7,7 @@ import { Effect, Layer } from "effect";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
-import type { WorkerEnv } from "./cron-config";
+import type { WorkerEnv } from "@/workers/config";
 import { vi } from "vitest";
 
 // Import the queue handler and types

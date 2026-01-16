@@ -1,5 +1,5 @@
 /**
- * @fileoverview Tests for cron-config types.
+ * @fileoverview Tests for config types.
  */
 
 import { describe, it, expect } from "vitest";
@@ -8,9 +8,9 @@ import type {
   CronTriggerEnv,
   BillingCronTriggerEnv,
   WorkerEnv,
-} from "./cron-config";
+} from "@/workers/config";
 
-describe("cron-config", () => {
+describe("config", () => {
   describe("ScheduledEvent", () => {
     it("has required fields", () => {
       const event: ScheduledEvent = {

@@ -3,8 +3,8 @@ import { Effect, Layer } from "effect";
 import { DrizzleORM } from "@/db/client";
 import reservationExpiryCron, {
   expireStaleReservations,
-} from "./reservationExpiryCron";
-import type { CronTriggerEnv } from "./reservationExpiryCron";
+} from "@/workers/reservationExpiryCron";
+import type { CronTriggerEnv } from "@/workers/reservationExpiryCron";
 
 describe("reservationExpiryCron", () => {
   const mockEnv: CronTriggerEnv = {
