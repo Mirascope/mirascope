@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
+    "postbuild": "pagefind --site dist/client --output-path dist/client/_pagefind --root-selector '[data-pagefind-body=\"true\"]' --",
     "preview": "vite preview",
     "deploy": "bun run build && wrangler deploy",
     "cron:dev": "bun run build && wrangler dev --test-scheduled --config dist/server/wrangler.json --port 8787",
@@ -82,6 +83,7 @@
     "lucide-react": "^0.561.0",
     "mermaid": "^11.12.1",
     "next-themes": "^0.4.6",
+    "pagefind": "^1.4.0",
     "react": "^19.2.3",
     "react-day-picker": "^9.13.0",
     "react-dom": "^19.2.3",

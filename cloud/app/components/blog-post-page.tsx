@@ -34,6 +34,7 @@ export function BlogPostPage({ content }: BlogPostPageProps) {
   useEffect(() => {
     const findOgImage = async () => {
       try {
+        // todo(sebastian): why assets? shouldn't this get the html?
         const response = await fetch(`/assets/blog/${slug}/`);
         if (response.ok) {
           const text = await response.text();
@@ -78,8 +79,8 @@ export function BlogPostPage({ content }: BlogPostPageProps) {
         <div id="blog-content" className="bg-background blog-content">
           {content.mdx ? (
             <MDXRenderer
-              className="mdx-content overflow-y-auto"
               mdx={content.mdx}
+              className="mdx-content overflow-y-auto"
             />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />

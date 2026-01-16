@@ -5,9 +5,12 @@
  * Uses runSync from @mdx-js/mdx to evaluate the compiled JSX code string.
  */
 
+import { ClientOnly } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 import { runSync } from "@mdx-js/mdx";
+import { isDevelopment } from "@/app/lib/site";
 import * as jsxRuntime from "react/jsx-runtime";
+import * as jsxDevRuntime from "react/jsx-dev-runtime";
 import type { CompiledMDX } from "@/app/lib/mdx/types";
 import type { MDXComponents } from "mdx/types";
 import componentRegistry from "@/app/components/mdx/component-registry";
@@ -123,18 +126,42 @@ const defaultComponents = {
   ),
 };
 
-/**
- * Renders compiled MDX content by evaluating the JSX code string at runtime
- */
-export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
-  // Evaluate compiled code to get React component
-  // useMemo ensures we only re-evaluate when the code changes
+// Note: We use ClientOnly to wrap ActualContent to work around Cloudflare Workers
+// appsec limitations which prevent `new Function` and `eval` from being used.
+// The runSync function from @mdx-js/mdx uses these internally, so we must render
+// the MDX content on the client side only.
+const DEFAULT_CLASS_NAME = "prose max-w-none";
+
+function IndexableContent({
+  mdx,
+}: Omit<MDXRendererProps, "className" | "components">) {
+  return (
+    <div className="hidden" data-pagefind-body="true" aria-hidden="true">
+      {mdx.content}
+    </div>
+  );
+}
+
+function ActualContent({ mdx, className, components }: MDXRendererProps) {
   const MDXContent = useMemo(() => {
-    const { default: Component } = runSync(mdx.code, {
-      ...jsxRuntime,
-      baseUrl: import.meta.url,
-    });
-    return Component as React.ComponentType<{ components?: MDXComponents }>;
+    try {
+      const { default: Component } = runSync(mdx.code, {
+        ...(isDevelopment() ? jsxDevRuntime : jsxRuntime),
+        baseUrl: import.meta.url,
+      });
+      return Component as React.ComponentType<{ components?: MDXComponents }>;
+    } catch (error) {
+      console.error("Failed to evaluate MDX code:", error);
+      // Return a fallback component that shows an error message
+      return () => (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+          <p className="font-semibold">Error rendering content</p>
+          <p className="mt-2 text-sm">
+            {error instanceof Error ? error.message : "Unknown error occurred"}
+          </p>
+        </div>
+      );
+    }
   }, [mdx.code]);
 
   // Merge component registries: defaults < registry < props
@@ -148,8 +175,23 @@ export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
   );
 
   return (
-    <div className={className || "prose max-w-none"} id="mdx-container">
+    <div className={className ?? DEFAULT_CLASS_NAME} id="mdx-container">
       <MDXContent components={mergedComponents} />
     </div>
+  );
+}
+
+/**
+ * Renders compiled MDX content by evaluating the JSX code string at runtime
+ *
+ * @param className - Optional className for the wrapper div
+ * @param mdx - The MDX component to render
+ * @param components - Optional custom components to override defaults
+ */
+export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
+  return (
+    <ClientOnly fallback={<IndexableContent mdx={mdx} />}>
+      <ActualContent className={className} components={components} mdx={mdx} />
+    </ClientOnly>
   );
 }

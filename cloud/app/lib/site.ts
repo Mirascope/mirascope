@@ -39,3 +39,5 @@ export const MIRASCOPE: ProductConfig = {
     version: githubStats.mirascope.version,
   },
 };
+
+export const isDevelopment = () => import.meta.env?.DEV ?? false;

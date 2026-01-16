@@ -7,6 +7,7 @@ import {
   useIsLandingPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
+import { SearchBar } from "./search-bar";
 
 /**
  * Props for search wrappers
@@ -40,12 +41,12 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
   };
 
   // Handle search state changes from SearchBar
-  // const handleSearchOpenChange = (open: boolean) => {
-  //   if (!open) {
-  //     // Only handle close events from SearchBar
-  //     handleCloseSearch();
-  //   }
-  // };
+  const handleSearchOpenChange = (open: boolean) => {
+    if (!open) {
+      // Only handle close events from SearchBar
+      handleCloseSearch();
+    }
+  };
 
   if (!isOpen) {
     return (
@@ -78,12 +79,11 @@ function MobileSearchWrapper({ onOpenChange }: SearchWrapperProps) {
         >
           {/* SearchBar in the overlay */}
           <div className="relative grow">
-            {/* todo(sebastian): port search service and bar */}
-            {/* <SearchBar
+            <SearchBar
               onOpenChange={handleSearchOpenChange}
               initialIsOpen={true} // Force it to start in open state
               onResultSelect={handleCloseSearch} // Close the overlay when a result is selected
-            /> */}
+            />
 
             {/* Close button positioned on the right side */}
             <button
@@ -118,7 +118,10 @@ export default function ResponsiveSearchWrapper({
   }
 
   // Desktop UI - render the SearchBar normally
-  // return <SearchBar onOpenChange={onOpenChange} onResultSelect={() => onOpenChange(false)} />;
-  // todo(sebastian): port search service and bar
-  return null;
+  return (
+    <SearchBar
+      onOpenChange={onOpenChange}
+      onResultSelect={() => onOpenChange(false)}
+    />
+  );
 }
