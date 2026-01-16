@@ -47,12 +47,12 @@ const docsSection = {
       label: "Streaming",
     },
     {
-      slug: "agents",
-      label: "Agents",
-    }, // TODO
-    {
       slug: "async",
       label: "Async",
+    },
+    {
+      slug: "agents",
+      label: "Agents",
     }, // TODO
     {
       slug: "context",
