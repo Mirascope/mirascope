@@ -8,7 +8,7 @@ import {
 import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
 import { SEARCH_BAR_STYLES, ANIMATION_TIMING } from "./styles";
 import { useIsMobile } from "@/app/hooks/is-mobile";
-import { isDev } from "@/app/lib/site";
+import { isDevelopment } from "@/app/lib/site";
 
 // Component for an individual search result
 interface SearchResultProps {
@@ -52,7 +52,7 @@ function SearchResult({
             </span>
 
             {/* Score indicator in development mode */}
-            {isDev() && result.score !== undefined && (
+            {isDevelopment() && result.score !== undefined && (
               <span className="text-muted-foreground text-[10px]">
                 {result.score.toFixed(2)}
               </span>
@@ -323,7 +323,7 @@ interface SearchBarProps {
   onResultSelect?: () => void;
 }
 
-export default function SearchBar({
+export function SearchBar({
   onOpenChange,
   initialIsOpen = false,
   onResultSelect,
@@ -521,7 +521,7 @@ export default function SearchBar({
     try {
       setIsLoading(true);
 
-      if (isDev()) {
+      if (isDevelopment()) {
         console.log("🔍 [SearchBar] Initializing search service...");
       }
 
@@ -531,7 +531,7 @@ export default function SearchBar({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An error occurred";
-      if (isDev()) {
+      if (isDevelopment()) {
         console.error("🔍 [SearchBar] Error initializing search:", error);
       }
       setError(errorMessage);

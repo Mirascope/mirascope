@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Vite plugin to serve Pagefind index from dist/_pagefind during development
+ * Vite plugin for Vite's dev server only: serves the Pagefind index from dist/_pagefind.
  */
 export function pagefindDev(): Plugin {
   return {
@@ -21,24 +21,17 @@ export function pagefindDev(): Plugin {
             // Determine MIME type
             let contentType = "text/plain";
             if (filePath.endsWith(".js")) {
-              contentType = "application/javascript";
-              res.setHeader("Content-Type", `${contentType}; charset=utf-8`);
+              contentType = "application/javascript; charset=utf-8";
             } else if (filePath.endsWith(".json")) {
               contentType = "application/json";
-              res.setHeader("Content-Type", contentType);
             } else if (filePath.endsWith(".css")) {
               contentType = "text/css";
-              res.setHeader("Content-Type", contentType);
             } else if (filePath.endsWith(".wasm")) {
               contentType = "application/wasm";
-              res.setHeader("Content-Type", contentType);
             } else if (filePath.endsWith(".pf_meta")) {
               contentType = "application/octet-stream";
-              res.setHeader("Content-Type", contentType);
-            } else {
-              contentType = "text/plain";
-              res.setHeader("Content-Type", contentType);
             }
+            res.setHeader("Content-Type", contentType);
 
             // Read and serve the file
             const content = fs.readFileSync(filePath);

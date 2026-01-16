@@ -21,11 +21,7 @@ const MainContent: React.FC<MainContentProps> = ({ document }) => {
           className="prose prose-sm lg:prose-base prose-slate mdx-container max-w-none overflow-x-auto"
         >
           {document.mdx ? (
-            <MDXRenderer
-              mdx={document.mdx}
-              className="mdx-content"
-              indexForSearch={true}
-            />
+            <MDXRenderer mdx={document.mdx} className="mdx-content" />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />
           )}

@@ -7,7 +7,7 @@ import {
   useIsLandingPage,
   useIsRouterWaitlistPage,
 } from "@/app/components/blocks/theme-provider";
-import SearchBar from "./search-bar";
+import { SearchBar } from "./search-bar";
 
 /**
  * Props for search wrappers

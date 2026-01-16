@@ -81,7 +81,6 @@ export function BlogPostPage({ content }: BlogPostPageProps) {
             <MDXRenderer
               mdx={content.mdx}
               className="mdx-content overflow-y-auto"
-              indexForSearch={true}
             />
           ) : (
             <LoadingContent spinnerClassName="h-8 w-8" fullHeight={false} />

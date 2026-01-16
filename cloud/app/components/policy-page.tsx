@@ -73,11 +73,7 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ content }) => {
         className="bg-background border-border rounded-xl border p-4 shadow-sm sm:p-6"
       >
         <article className="prose prose-lg max-w-none">
-          <MDXRenderer
-            className="mdx-content"
-            mdx={content.mdx}
-            indexForSearch={false}
-          />
+          <MDXRenderer className="mdx-content" mdx={content.mdx} />
         </article>
       </div>
     </div>

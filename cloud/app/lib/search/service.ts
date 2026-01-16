@@ -1,5 +1,5 @@
 import { type ContentMeta } from "@/app/lib/content/types";
-import { isDev } from "@/app/lib/site";
+import { isDevelopment } from "@/app/lib/site";
 import {
   SearchScorer,
   type RawSearchResult,
@@ -74,7 +74,7 @@ export class PagefindSearchService implements SearchService {
   async init(): Promise<void> {
     if (this.initialized) return;
 
-    if (isDev()) {
+    if (isDevelopment()) {
       console.log("🔍 [SearchService] Initializing Pagefind...");
     }
 
@@ -91,7 +91,7 @@ export class PagefindSearchService implements SearchService {
       this.initialized = true;
     } catch (error) {
       this.initialized = false;
-      if (isDev()) {
+      if (isDevelopment()) {
         console.error("🔍 [SearchService] Error during initialization:", error);
       }
       throw new Error(
@@ -132,11 +132,11 @@ export class PagefindSearchService implements SearchService {
         baseUrl: "/",
       });
 
-      if (isDev()) {
+      if (isDevelopment()) {
         console.log("🔍 [SearchService] Pagefind loaded successfully");
       }
     } catch (error) {
-      if (isDev()) {
+      if (isDevelopment()) {
         console.error("🔍 [SearchService] Error loading Pagefind:", error);
       }
       throw new Error(
@@ -150,7 +150,7 @@ export class PagefindSearchService implements SearchService {
    */
   private loadContentMeta(): void {
     try {
-      if (isDev()) {
+      if (isDevelopment()) {
         console.log("🔍 [SearchService] Loading content metadata...");
       }
 
@@ -162,13 +162,13 @@ export class PagefindSearchService implements SearchService {
         this.routeToMetaMap.set(meta.route, meta);
       }
 
-      if (isDev()) {
+      if (isDevelopment()) {
         console.log(
           `🔍 [SearchService] Loaded ${this.contentMeta.length} content metadata items`,
         );
       }
     } catch (error) {
-      if (isDev()) {
+      if (isDevelopment()) {
         console.error(
           "🔍 [SearchService] Error loading content metadata:",
           error,
@@ -203,7 +203,7 @@ export class PagefindSearchService implements SearchService {
       return null;
     }
 
-    if (isDev()) {
+    if (isDevelopment()) {
       console.log(`🔍 [SearchService] Found ${result.results.length} results`);
     }
 
@@ -250,7 +250,7 @@ export class PagefindSearchService implements SearchService {
     const scoredItems = this.scorer.scoreAndRankResults(rawResults, query);
 
     // Log a summary of the top 5 results if in dev mode
-    if (isDev() && scoredItems.length > 0) {
+    if (isDevelopment() && scoredItems.length > 0) {
       console.log(
         `🔍 [SearchService] Top ${Math.min(5, scoredItems.length)} results after scoring:`,
       );

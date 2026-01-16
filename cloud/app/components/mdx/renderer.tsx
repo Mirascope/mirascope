@@ -8,7 +8,7 @@
 import { ClientOnly } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 import { runSync } from "@mdx-js/mdx";
-import { isDev } from "@/app/lib/site";
+import { isDevelopment } from "@/app/lib/site";
 import * as jsxRuntime from "react/jsx-runtime";
 import * as jsxDevRuntime from "react/jsx-dev-runtime";
 import type { CompiledMDX } from "@/app/lib/mdx/types";
@@ -22,8 +22,6 @@ interface MDXRendererProps {
   components?: MDXComponents;
   /** Optional className for the wrapper div */
   className?: string;
-  /** Whether to add pagefind attribute for full-text search indexing */
-  indexForSearch: boolean;
 }
 
 /**
@@ -136,12 +134,7 @@ const DEFAULT_CLASS_NAME = "prose max-w-none";
 
 function IndexableContent({
   mdx,
-  indexForSearch,
 }: Omit<MDXRendererProps, "className" | "components">) {
-  if (!indexForSearch) {
-    return null;
-  }
-
   return (
     <div className="hidden" data-pagefind-body="true" aria-hidden="true">
       {mdx.content}
@@ -149,15 +142,11 @@ function IndexableContent({
   );
 }
 
-function ActualContent({
-  mdx,
-  className,
-  components,
-}: Omit<MDXRendererProps, "indexForSearch">) {
+function ActualContent({ mdx, className, components }: MDXRendererProps) {
   const MDXContent = useMemo(() => {
     try {
       const { default: Component } = runSync(mdx.code, {
-        ...(isDev() ? jsxDevRuntime : jsxRuntime),
+        ...(isDevelopment() ? jsxDevRuntime : jsxRuntime),
         baseUrl: import.meta.url,
       });
       return Component as React.ComponentType<{ components?: MDXComponents }>;
@@ -198,18 +187,10 @@ function ActualContent({
  * @param className - Optional className for the wrapper div
  * @param mdx - The MDX component to render
  * @param components - Optional custom components to override defaults
- * @param indexForSearch - Whether to add pagefind attribute for full-text search indexing
  */
-export function MDXRenderer({
-  mdx,
-  components,
-  className,
-  indexForSearch,
-}: MDXRendererProps) {
+export function MDXRenderer({ mdx, components, className }: MDXRendererProps) {
   return (
-    <ClientOnly
-      fallback={<IndexableContent mdx={mdx} indexForSearch={indexForSearch} />}
-    >
+    <ClientOnly fallback={<IndexableContent mdx={mdx} />}>
       <ActualContent className={className} components={components} mdx={mdx} />
     </ClientOnly>
   );

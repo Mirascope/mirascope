@@ -40,4 +40,4 @@ export const MIRASCOPE: ProductConfig = {
   },
 };
 
-export const isDev = () => import.meta.env?.DEV ?? false;
+export const isDevelopment = () => import.meta.env?.DEV ?? false;
