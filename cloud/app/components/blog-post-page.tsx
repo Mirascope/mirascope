@@ -34,6 +34,7 @@ export function BlogPostPage({ content }: BlogPostPageProps) {
   useEffect(() => {
     const findOgImage = async () => {
       try {
+        // todo(sebastian): why assets? shouldn't this get the html?
         const response = await fetch(`/assets/blog/${slug}/`);
         if (response.ok) {
           const text = await response.text();
