@@ -61,7 +61,7 @@ const docsSection = {
     {
       slug: "chaining",
       label: "Chaining",
-    }, // TODO
+    },
     {
       slug: "errors",
       label: "Errors",
