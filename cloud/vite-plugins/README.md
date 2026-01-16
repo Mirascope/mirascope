@@ -230,13 +230,93 @@ The plugin will **fail the build** if:
 
 This ensures the sitemap plugin runs before the robots plugin.
 
+## Social Cards Plugin (`social-cards.ts`)
+
+Generates Open Graph / Twitter card images for all indexed pages in the sitemap.
+
+### Features
+
+- **Sitemap-driven**: Reads the generated `sitemap.xml` after build to find indexed pages
+- **Content metadata lookup**: Extracts page titles from MDX frontmatter
+- **Satori rendering**: Uses Satori to convert JSX templates to SVG
+- **High-quality output**: Converts SVG → PNG (resvg-js) → WebP (Sharp)
+- **Branded design**: Uses Williams Handwriting font on the homepage light background
+- **Parallel processing**: Generates images concurrently with configurable limits
+
+### How It Works
+
+1. After the build completes, the plugin reads `dist/client/sitemap.xml`
+2. It extracts URLs with `<changefreq>` tags (indexed/public pages)
+3. For each URL, it looks up the page title from content metadata
+4. It renders a social card using the Satori JSX template
+5. The card is converted to WebP and written to `dist/client/social-cards/`
+
+### Output
+
+Social card images are generated at `dist/client/social-cards/{route}.webp`:
+
+- `/blog/my-post` → `social-cards/blog-my-post.webp`
+- `/docs/v1/learn/intro` → `social-cards/docs-v1-learn-intro.webp`
+- `/` → `social-cards/index.webp`
+
+### Configuration
+
+```typescript
+viteSocialImages({
+  concurrency: 10,  // Max parallel image generations (default: 10)
+  quality: 85,      // WebP quality 0-100 (default: 85)
+  verbose: false,   // Enable detailed logging (default: false)
+})
+```
+
+### Template
+
+The social card template is located at `app/lib/social-cards/template.tsx`. It renders:
+
+- **Background**: The homepage's `light.webp` watercolor background
+- **Title**: Page title in Williams Handwriting font (72px, dark color)
+- **Dimensions**: 1200×630 pixels (standard OG image size)
+
+### Dependencies
+
+The plugin uses:
+
+- `satori` - JSX to SVG rendering (Vercel)
+- `@resvg/resvg-js` - High-quality SVG to PNG conversion (Rust-based)
+- `sharp` - PNG to WebP conversion (already used by images plugin)
+
+Helper functions are in `app/lib/social-cards/`:
+
+- `template.tsx` - Satori JSX template component
+- `render.ts` - Render pipeline (Satori → resvg → Sharp)
+- `sitemap.ts` - Sitemap parsing utilities
+
+### SEO Integration
+
+Social card URLs are automatically included in page metadata via `app/lib/seo/head.ts`:
+
+- `og:image` - Open Graph image for Facebook, LinkedIn, etc.
+- `twitter:image` - Twitter card image
+- `twitter:card` - Set to `summary_large_image` for large preview
+
+### Build-time vs Runtime
+
+- **Development**: No social images are generated; missing images will 404
+- **Production**: All indexed pages get social card images generated at build time
+
+### Error Handling
+
+- Missing sitemap: Plugin logs a warning and skips (doesn't fail build)
+- Missing title: Falls back to generating title from URL path
+- Individual failures: Logged as errors, other images continue generating
+
 ## Pagefind Dev Plugin (`pagefind-dev.ts`)
 
 Serves Pagefind search index files during development mode.
 
 ### Features
 
-- **Dev server middleware**: Intercepts requests to `/_pagefind/` and serves files from the build output
+- __Dev server middleware__: Intercepts requests to `/_pagefind/` and serves files from the build output
 - **MIME type handling**: Correctly sets Content-Type headers for all Pagefind file types
 - **Query parameter support**: Handles timestamp-suffixed requests for `pagefind-entry.json`
 - **Graceful 404s**: Returns 404 for missing files without crashing the server
@@ -263,7 +343,7 @@ Pagefind generates its search index into `dist/client/_pagefind/` during the bui
 
 ### Build-time vs Runtime
 
-- **Development**: Middleware serves Pagefind files from `dist/client/_pagefind/`. Requires running a build first to generate the index.
+- __Development__: Middleware serves Pagefind files from `dist/client/_pagefind/`. Requires running a build first to generate the index.
 - **Production**: Pagefind files are served directly from the static build output. Middleware is not used.
 
 ### Prerequisites

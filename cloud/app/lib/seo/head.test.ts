@@ -72,7 +72,7 @@ describe("generateOpenGraphMeta", () => {
       image: "https://mirascope.com/social-cards/blog.webp",
     });
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(5);
     expect(result).toContainEqual({ property: "og:type", content: "website" });
     expect(result).toContainEqual({
       property: "og:url",
@@ -86,7 +86,7 @@ describe("generateOpenGraphMeta", () => {
       property: "og:description",
       content: "Latest updates",
     });
-    expect(result).not.toContainEqual({
+    expect(result).toContainEqual({
       property: "og:image",
       content: "https://mirascope.com/social-cards/blog.webp",
     });
@@ -114,8 +114,8 @@ describe("generateTwitterMeta", () => {
       image: "https://mirascope.com/social-cards/blog.webp",
     });
 
-    expect(result).toHaveLength(3);
-    expect(result).not.toContainEqual({
+    expect(result).toHaveLength(5);
+    expect(result).toContainEqual({
       name: "twitter:card",
       content: "summary_large_image",
     });
@@ -128,12 +128,12 @@ describe("generateTwitterMeta", () => {
       content: "Blog | Mirascope",
     });
     expect(result).toContainEqual({
-      name: "twitter:description",
-      content: "Latest updates",
-    });
-    expect(result).not.toContainEqual({
       name: "twitter:image",
       content: "https://mirascope.com/social-cards/blog.webp",
+    });
+    expect(result).toContainEqual({
+      name: "twitter:description",
+      content: "Latest updates",
     });
   });
 });
@@ -285,13 +285,13 @@ describe("createPageHead", () => {
         property: "og:title",
         content: "Blog | Mirascope",
       });
-      expect(findMeta(result.meta, "og:image", "property")).not.toEqual({
+      expect(findMeta(result.meta, "og:image", "property")).toEqual({
         property: "og:image",
         content: `${BASE_URL}/social-cards/blog.webp`,
       });
 
       // Twitter tags present
-      expect(findMeta(result.meta, "twitter:card")).not.toEqual({
+      expect(findMeta(result.meta, "twitter:card")).toEqual({
         name: "twitter:card",
         content: "summary_large_image",
       });
@@ -411,11 +411,11 @@ describe("createPageHead", () => {
         image: "/custom-images/docs-intro.webp",
       });
 
-      expect(findMeta(result.meta, "og:image", "property")).not.toEqual({
+      expect(findMeta(result.meta, "og:image", "property")).toEqual({
         property: "og:image",
         content: `${BASE_URL}/custom-images/docs-intro.webp`,
       });
-      expect(findMeta(result.meta, "twitter:image")).not.toEqual({
+      expect(findMeta(result.meta, "twitter:image")).toEqual({
         name: "twitter:image",
         content: `${BASE_URL}/custom-images/docs-intro.webp`,
       });
@@ -432,11 +432,11 @@ describe("createPageHead", () => {
         image: externalUrl,
       });
 
-      expect(findMeta(result.meta, "og:image", "property")).not.toEqual({
+      expect(findMeta(result.meta, "og:image", "property")).toEqual({
         property: "og:image",
         content: externalUrl,
       });
-      expect(findMeta(result.meta, "twitter:image")).not.toEqual({
+      expect(findMeta(result.meta, "twitter:image")).toEqual({
         name: "twitter:image",
         content: externalUrl,
       });

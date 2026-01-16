@@ -7,6 +7,7 @@ import { viteMDX } from "./vite-plugins/mdx";
 import { viteContent } from "./vite-plugins/content";
 import { viteImages } from "./vite-plugins/images";
 import { viteRobots } from "./vite-plugins/robots";
+import { viteSocialCards } from "./vite-plugins/social-cards";
 import { pagefindDev } from "./vite-plugins/pagefind-dev";
 import { defineConfig } from "vite";
 
@@ -62,6 +63,7 @@ export default defineConfig(() => {
         },
       }),
       viteRobots(), // Generate robots disallow paths from sitemap (must be after tanstackStart)
+      viteSocialCards(), // Generate social card images from sitemap (must be after tanstackStart)
       pagefindDev(),
       viteReact(),
       tailwindcss(),
