@@ -44,6 +44,7 @@ import { Users } from "@/db/users";
 import { Sessions } from "@/db/sessions";
 import { Organizations } from "@/db/organizations";
 import { OrganizationMemberships } from "@/db/organization-memberships";
+import { OrganizationInvitations } from "@/db/organization-invitations";
 import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
@@ -101,13 +102,15 @@ export interface ProjectsService extends Ready<Projects> {
 }
 
 /**
- * Type definition for the organizations service with nested memberships and projects.
+ * Type definition for the organizations service with nested memberships, invitations, and projects.
  *
  * Access pattern: `db.organizations.create(...)` or `db.organizations.memberships.create(...)`
+ * Invitations: `db.organizations.invitations.create(...)`
  * Projects: `db.organizations.projects.create(...)` or `db.organizations.projects.memberships.create(...)`
  */
 export interface OrganizationsService extends Ready<Organizations> {
   readonly memberships: Ready<OrganizationMemberships>;
+  readonly invitations: Ready<OrganizationInvitations>;
   readonly projects: ProjectsService;
 }
 
@@ -146,7 +149,7 @@ export class Database extends Context.Tag("Database")<
   /**
    * Default layer that creates the Database service.
    *
-   * Requires both DrizzleORM and Payments to be provided. The dependency provider
+   * Requires DrizzleORM and Payments to be provided. The dependency provider
    * automatically provides these dependencies to services, removing them from
    * method signatures.
    */
@@ -161,42 +164,48 @@ export class Database extends Context.Tag("Database")<
       ]);
 
       // Create services with shared dependencies
+      const users = new Users();
       const organizationMemberships = new OrganizationMemberships();
+      const organizationInvitations = new OrganizationInvitations(
+        organizationMemberships,
+        users,
+      );
       const organizations = new Organizations(organizationMemberships);
       const projectMemberships = new ProjectMemberships(
         organizationMemberships,
       );
-      const projectsService = new Projects(
+      const projects = new Projects(
         organizationMemberships,
         projectMemberships,
       );
-      const environmentsService = new Environments(projectMemberships);
-      const apiKeysService = new ApiKeys(projectMemberships);
-      const tracesService = new Traces(projectMemberships);
-      const functionsService = new Functions(projectMemberships);
-      const annotationsService = new Annotations(projectMemberships);
-      const routerRequestsService = new RouterRequests(projectMemberships);
+      const environments = new Environments(projectMemberships);
+      const apiKeys = new ApiKeys(projectMemberships);
+      const traces = new Traces(projectMemberships);
+      const functions = new Functions(projectMemberships);
+      const annotations = new Annotations(projectMemberships);
+      const routerRequests = new RouterRequests(projectMemberships);
 
       return {
-        users: provideDependencies(new Users()),
+        users: provideDependencies(users),
         sessions: provideDependencies(new Sessions()),
         organizations: {
           ...provideDependencies(organizations),
           memberships: provideDependencies(organizationMemberships),
+          invitations: provideDependencies(organizationInvitations),
           projects: {
-            ...provideDependencies(projectsService),
+            ...provideDependencies(projects),
             memberships: provideDependencies(projectMemberships),
             environments: {
-              ...provideDependencies(environmentsService),
+              ...provideDependencies(environments),
               apiKeys: {
-                ...provideDependencies(apiKeysService),
-                routerRequests: provideDependencies(routerRequestsService),
+                ...provideDependencies(apiKeys),
+                routerRequests: provideDependencies(routerRequests),
               },
               traces: {
-                ...provideDependencies(tracesService),
-                annotations: provideDependencies(annotationsService),
+                ...provideDependencies(traces),
+                annotations: provideDependencies(annotations),
               },
-              functions: provideDependencies(functionsService),
+              functions: provideDependencies(functions),
             },
           },
         },

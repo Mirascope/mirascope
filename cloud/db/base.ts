@@ -635,6 +635,7 @@ export abstract class BaseAuthenticatedEffectService<
    * @param args.[pathParams] - All path parameters including the resource ID
    * @throws NotFoundError - If resource doesn't exist or user has no access
    * @throws PermissionDeniedError - If user lacks delete permission
+   * @throws ImmutableResourceError - If the resource cannot be deleted (immutable)
    * @throws DatabaseError - If the database operation fails
    * @throws StripeError - If Stripe operations fail (for resources synced with Stripe)
    */
@@ -644,6 +645,7 @@ export abstract class BaseAuthenticatedEffectService<
     void,
     | NotFoundError
     | PermissionDeniedError
+    | ImmutableResourceError
     | DatabaseError
     | SubscriptionPastDueError
     | StripeError,
