@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
+import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -91,6 +92,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
 const TermsSplatRoute = TermsSplatRouteImport.update({
   id: '/terms/$',
   path: '/terms/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvitationsAcceptRoute = InvitationsAcceptRouteImport.update({
+  id: '/invitations/accept',
+  path: '/invitations/accept',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsSplatRoute = DocsSplatRouteImport.update({
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
+  '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
+  '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
+  '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/dashboard/settings'
     | '/docs/$'
+    | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
     | '/dashboard'
@@ -316,6 +326,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/dashboard/settings'
     | '/docs/$'
+    | '/invitations/accept'
     | '/terms/$'
     | '/blog'
     | '/dashboard'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/dashboard/settings'
     | '/docs/$'
+    | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
     | '/dashboard/'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
   AuthMeRoute: typeof AuthMeRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  InvitationsAcceptRoute: typeof InvitationsAcceptRoute
   TermsSplatRoute: typeof TermsSplatRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   ApiV0SplatRoute: typeof ApiV0SplatRoute
@@ -461,6 +474,13 @@ declare module '@tanstack/react-router' {
       path: '/terms/$'
       fullPath: '/terms/$'
       preLoaderRoute: typeof TermsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invitations/accept': {
+      id: '/invitations/accept'
+      path: '/invitations/accept'
+      fullPath: '/invitations/accept'
+      preLoaderRoute: typeof InvitationsAcceptRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/$': {
@@ -651,6 +671,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  InvitationsAcceptRoute: InvitationsAcceptRoute,
   TermsSplatRoute: TermsSplatRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
