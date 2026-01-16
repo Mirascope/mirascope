@@ -106,7 +106,7 @@ class Prompt(Generic[P, FormattableT]):
         if isinstance(model, str):
             model = Model(model)
         messages = self.messages(*args, **kwargs)
-        return model.call(messages=messages, tools=self.toolkit, format=self.format)
+        return model.call(messages, tools=self.toolkit, format=self.format)
 
     @overload
     def stream(
@@ -131,7 +131,7 @@ class Prompt(Generic[P, FormattableT]):
         if isinstance(model, str):
             model = Model(model)
         messages = self.messages(*args, **kwargs)
-        return model.stream(messages=messages, tools=self.toolkit, format=self.format)
+        return model.stream(messages, tools=self.toolkit, format=self.format)
 
 
 @dataclass
@@ -205,9 +205,7 @@ class AsyncPrompt(Generic[P, FormattableT]):
         if isinstance(model, str):
             model = Model(model)
         messages = await self.messages(*args, **kwargs)
-        return await model.call_async(
-            messages=messages, tools=self.toolkit, format=self.format
-        )
+        return await model.call_async(messages, tools=self.toolkit, format=self.format)
 
     @overload
     async def stream(
@@ -233,7 +231,7 @@ class AsyncPrompt(Generic[P, FormattableT]):
             model = Model(model)
         messages = await self.messages(*args, **kwargs)
         return await model.stream_async(
-            messages=messages, tools=self.toolkit, format=self.format
+            messages, tools=self.toolkit, format=self.format
         )
 
 
@@ -324,7 +322,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
             model = Model(model)
         messages = self.messages(ctx, *args, **kwargs)
         return model.context_call(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            messages, ctx=ctx, tools=self.toolkit, format=self.format
         )
 
     @overload
@@ -359,7 +357,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
             model = Model(model)
         messages = self.messages(ctx, *args, **kwargs)
         return model.context_stream(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            messages, ctx=ctx, tools=self.toolkit, format=self.format
         )
 
 
@@ -450,7 +448,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
             model = Model(model)
         messages = await self.messages(ctx, *args, **kwargs)
         return await model.context_call_async(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            messages, ctx=ctx, tools=self.toolkit, format=self.format
         )
 
     @overload
@@ -486,5 +484,5 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
             model = Model(model)
         messages = await self.messages(ctx, *args, **kwargs)
         return await model.context_stream_async(
-            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
+            messages, ctx=ctx, tools=self.toolkit, format=self.format
         )

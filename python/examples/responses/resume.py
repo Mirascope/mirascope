@@ -1,7 +1,7 @@
 from mirascope import llm
 
 model = llm.use_model("openai/gpt-4o")
-response = model.call(messages=[llm.messages.user("What's the capital of France?")])
+response = model.call("What's the capital of France?")
 print(response.pretty())
 
 # Continue the conversation with the same model and message history

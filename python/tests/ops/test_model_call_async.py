@@ -36,7 +36,7 @@ async def test_model_call_async_exports_genai_span(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    response = await model.call_async(messages=messages)
+    response = await model.call_async(messages)
     assert "Kai" in response.pretty()
 
     spans = span_exporter.get_finished_spans()
@@ -102,7 +102,7 @@ async def test_model_call_async_records_untracked_params_event(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    await model.call_async(messages=messages)
+    await model.call_async(messages)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1

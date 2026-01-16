@@ -4,8 +4,7 @@ from mirascope import llm
 def recommend_book(genre: str) -> llm.Response:
     # [!code highlight:2]
     model = llm.use_model("openai/gpt-5-mini")
-    message = llm.messages.user(f"Please recommend a book in {genre}.")
-    return model.call(messages=[message])
+    return model.call(f"Please recommend a book in {genre}.")
 
 
 def main():

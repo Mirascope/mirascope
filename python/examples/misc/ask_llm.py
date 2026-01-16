@@ -39,8 +39,7 @@ RESET = "\033[0m"
 def ask_question(prompt: str) -> llm.Response:
     """Ask a question to the LLM."""
     model: llm.Model = llm.use_model("openai/gpt-4o-mini")
-    message = llm.messages.user(prompt)
-    return model.call(messages=[message])
+    return model.call(prompt)
 
 
 def main() -> None:

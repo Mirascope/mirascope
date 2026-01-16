@@ -1,7 +1,7 @@
 from mirascope import llm
 
 model = llm.use_model("openai/gpt-4o")
-response = model.call(messages=[llm.messages.user("Write a haiku about programming.")])
+response = model.call("Write a haiku about programming.")
 
 if response.usage:
     print(f"Input tokens: {response.usage.input_tokens}")

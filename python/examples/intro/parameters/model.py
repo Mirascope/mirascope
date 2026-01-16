@@ -6,8 +6,7 @@ def recommend_book(genre: str) -> llm.Response:
         "openai/gpt-5",
         temperature=1,  # [!code highlight]
     )
-    message = llm.messages.user(f"Please recommend a book in {genre}.")
-    return model.call(messages=[message])
+    return model.call(f"Please recommend a book in {genre}.")
 
 
 def main():

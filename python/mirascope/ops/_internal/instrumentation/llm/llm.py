@@ -21,8 +21,9 @@ from opentelemetry.semconv.attributes import (
 
 from .....llm.context import Context, DepsT
 from .....llm.formatting import Format, FormattableT, OutputParser
-from .....llm.messages import Message
+from .....llm.messages import Message, UserContent
 from .....llm.models import Model
+from .....llm.prompts._utils import promote_to_messages
 from .....llm.providers import Params, ProviderId
 from .....llm.providers.model_id import ModelId
 from .....llm.responses import (
@@ -477,8 +478,8 @@ def _start_model_span(
 @overload
 def _instrumented_model_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: None = None,
 ) -> Response: ...
@@ -487,8 +488,8 @@ def _instrumented_model_call(
 @overload
 def _instrumented_model_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT] | Format[FormattableT],
 ) -> Response[FormattableT]: ...
@@ -497,8 +498,8 @@ def _instrumented_model_call(
 @overload
 def _instrumented_model_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
@@ -510,12 +511,13 @@ def _instrumented_model_call(
 @wraps(_ORIGINAL_MODEL_CALL)
 def _instrumented_model_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: FormatParam = None,
 ) -> Response | Response[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.call`."""
+    messages = promote_to_messages(content)
     with _start_model_span(
         self,
         messages=messages,
@@ -524,7 +526,7 @@ def _instrumented_model_call(
     ) as span_ctx:
         response = _ORIGINAL_MODEL_CALL(
             self,
-            messages=messages,
+            content,
             tools=tools,
             format=format,
         )
@@ -559,8 +561,8 @@ def _unwrap_model_call() -> None:
 @overload
 async def _instrumented_model_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: None = None,
 ) -> AsyncResponse: ...
@@ -569,8 +571,8 @@ async def _instrumented_model_call_async(
 @overload
 async def _instrumented_model_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT],
 ) -> AsyncResponse[FormattableT]: ...
@@ -579,8 +581,8 @@ async def _instrumented_model_call_async(
 @overload
 async def _instrumented_model_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
@@ -592,12 +594,13 @@ async def _instrumented_model_call_async(
 @wraps(_ORIGINAL_MODEL_CALL_ASYNC)
 async def _instrumented_model_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
     format: FormatParam = None,
 ) -> AsyncResponse | AsyncResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.call_async`."""
+    messages = promote_to_messages(content)
     with _start_model_span(
         self,
         messages=messages,
@@ -607,7 +610,7 @@ async def _instrumented_model_call_async(
     ) as span_ctx:
         response = await _ORIGINAL_MODEL_CALL_ASYNC(
             self,
-            messages=messages,
+            content,
             tools=tools,
             format=format,
         )
@@ -642,9 +645,9 @@ def _unwrap_model_call_async() -> None:
 @overload
 def _instrumented_model_context_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: None = None,
 ) -> ContextResponse[DepsT, None]: ...
@@ -653,9 +656,9 @@ def _instrumented_model_context_call(
 @overload
 def _instrumented_model_context_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT] | Format[FormattableT],
 ) -> ContextResponse[DepsT, FormattableT]: ...
@@ -664,9 +667,9 @@ def _instrumented_model_context_call(
 @overload
 def _instrumented_model_context_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
@@ -678,13 +681,14 @@ def _instrumented_model_context_call(
 @wraps(_ORIGINAL_MODEL_CONTEXT_CALL)
 def _instrumented_model_context_call(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: FormatParam = None,
 ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_call`."""
+    messages = promote_to_messages(content)
     with _start_model_span(
         self,
         messages=messages,
@@ -694,8 +698,8 @@ def _instrumented_model_context_call(
     ) as span_ctx:
         response = _ORIGINAL_MODEL_CONTEXT_CALL(
             self,
+            content,
             ctx=ctx,
-            messages=messages,
             tools=tools,
             format=format,
         )
@@ -730,9 +734,9 @@ def _unwrap_model_context_call() -> None:
 @overload
 async def _instrumented_model_context_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -743,9 +747,9 @@ async def _instrumented_model_context_call_async(
 @overload
 async def _instrumented_model_context_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -756,9 +760,9 @@ async def _instrumented_model_context_call_async(
 @overload
 async def _instrumented_model_context_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -772,15 +776,16 @@ async def _instrumented_model_context_call_async(
 @wraps(_ORIGINAL_MODEL_CONTEXT_CALL_ASYNC)
 async def _instrumented_model_context_call_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
     format: FormatParam = None,
 ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_call_async`."""
+    messages = promote_to_messages(content)
     with _start_model_span(
         self,
         messages=messages,
@@ -790,8 +795,8 @@ async def _instrumented_model_context_call_async(
     ) as span_ctx:
         response = await _ORIGINAL_MODEL_CONTEXT_CALL_ASYNC(
             self,
+            content,
             ctx=ctx,
-            messages=messages,
             tools=tools,
             format=format,
         )
@@ -826,8 +831,8 @@ def _unwrap_model_context_call_async() -> None:
 @overload
 def _instrumented_model_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: None = None,
 ) -> StreamResponse: ...
@@ -836,8 +841,8 @@ def _instrumented_model_stream(
 @overload
 def _instrumented_model_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT] | Format[FormattableT],
 ) -> StreamResponse[FormattableT]: ...
@@ -846,8 +851,8 @@ def _instrumented_model_stream(
 @overload
 def _instrumented_model_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
@@ -859,12 +864,13 @@ def _instrumented_model_stream(
 @wraps(_ORIGINAL_MODEL_STREAM)
 def _instrumented_model_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
-    messages: Sequence[Message],
     tools: Sequence[Tool] | Toolkit | None = None,
     format: FormatParam = None,
 ) -> StreamResponse | StreamResponse[FormattableT]:
     """Returns a GenAI-instrumented result of `Model.stream`."""
+    messages = promote_to_messages(content)
     span_cm = _start_model_span(
         self,
         messages=messages,
@@ -876,7 +882,7 @@ def _instrumented_model_stream(
     if span_ctx.span is None:
         response = _ORIGINAL_MODEL_STREAM(
             self,
-            messages=messages,
+            content,
             tools=tools,
             format=format,
         )
@@ -887,7 +893,7 @@ def _instrumented_model_stream(
         with otel_trace.use_span(span_ctx.span, end_on_exit=False):
             response = _ORIGINAL_MODEL_STREAM(
                 self,
-                messages=messages,
+                content,
                 tools=tools,
                 format=format,
             )
@@ -979,9 +985,9 @@ def _unwrap_model_stream() -> None:
 @overload
 def _instrumented_model_context_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: None = None,
 ) -> ContextStreamResponse[DepsT, None]: ...
@@ -990,9 +996,9 @@ def _instrumented_model_context_stream(
 @overload
 def _instrumented_model_context_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT] | Format[FormattableT],
 ) -> ContextStreamResponse[DepsT, FormattableT]: ...
@@ -1001,9 +1007,9 @@ def _instrumented_model_context_stream(
 @overload
 def _instrumented_model_context_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: type[FormattableT]
     | Format[FormattableT]
@@ -1017,13 +1023,14 @@ def _instrumented_model_context_stream(
 @wraps(_ORIGINAL_MODEL_CONTEXT_STREAM)
 def _instrumented_model_context_stream(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
     format: FormatParam = None,
 ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]:
     """Returns a GenAI-instrumented result of `Model.context_stream`."""
+    messages = promote_to_messages(content)
     span_cm = _start_model_span(
         self,
         messages=messages,
@@ -1035,8 +1042,8 @@ def _instrumented_model_context_stream(
     if span_ctx.span is None:
         response = _ORIGINAL_MODEL_CONTEXT_STREAM(
             self,
+            content,
             ctx=ctx,
-            messages=messages,
             tools=tools,
             format=format,
         )
@@ -1047,8 +1054,8 @@ def _instrumented_model_context_stream(
         with otel_trace.use_span(span_ctx.span, end_on_exit=False):
             response = _ORIGINAL_MODEL_CONTEXT_STREAM(
                 self,
+                content,
                 ctx=ctx,
-                messages=messages,
                 tools=tools,
                 format=format,
             )
@@ -1139,9 +1146,9 @@ def _attach_async_stream_span_handlers(
 @overload
 async def _instrumented_model_context_stream_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -1152,9 +1159,9 @@ async def _instrumented_model_context_stream_async(
 @overload
 async def _instrumented_model_context_stream_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -1165,9 +1172,9 @@ async def _instrumented_model_context_stream_async(
 @overload
 async def _instrumented_model_context_stream_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -1184,9 +1191,9 @@ async def _instrumented_model_context_stream_async(
 @wraps(_ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC)
 async def _instrumented_model_context_stream_async(
     self: Model,
+    content: UserContent | Sequence[Message],
     *,
     ctx: Context[DepsT],
-    messages: Sequence[Message],
     tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
     | AsyncContextToolkit[DepsT]
     | None = None,
@@ -1196,6 +1203,7 @@ async def _instrumented_model_context_stream_async(
     | AsyncContextStreamResponse[DepsT, FormattableT]
 ):
     """Returns a GenAI-instrumented result of `Model.context_stream_async`."""
+    messages = promote_to_messages(content)
     span_cm = _start_model_span(
         self,
         messages=messages,
@@ -1207,8 +1215,8 @@ async def _instrumented_model_context_stream_async(
     if span_ctx.span is None:
         response = await _ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC(
             self,
+            content,
             ctx=ctx,
-            messages=messages,
             tools=tools,
             format=format,
         )
@@ -1219,8 +1227,8 @@ async def _instrumented_model_context_stream_async(
         with otel_trace.use_span(span_ctx.span, end_on_exit=False):
             response = await _ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC(
                 self,
+                content,
                 ctx=ctx,
-                messages=messages,
                 tools=tools,
                 format=format,
             )

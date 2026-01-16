@@ -45,7 +45,7 @@ def test_model_stream_exports_genai_span(
     ops.instrument_llm()
     model = llm.Model(model_id="openai/gpt-4o")
 
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -71,7 +71,7 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
         ),
     ]
 
-    response = model.stream(messages=messages, tools=[secret_retrieval_tool])
+    response = model.stream(messages, tools=[secret_retrieval_tool])
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -129,7 +129,7 @@ def test_model_stream_with_json_format(
     ]
 
     response_format = llm.format(Book, mode="tool")
-    response = model.stream(messages=messages, format=response_format)
+    response = model.stream(messages, format=response_format)
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -207,7 +207,7 @@ def test_model_stream_records_untracked_params_event(
         **extra_params,
     )
 
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -252,7 +252,7 @@ def test_model_stream_with_none_parameters(
         top_p=None,  # type: ignore[arg-type]
     )
 
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -288,7 +288,7 @@ def test_model_stream_records_response_id(
     ops.instrument_llm()
     model = llm.Model(model_id="openai/gpt-4o")
 
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -325,7 +325,7 @@ def test_model_stream_without_instrumentation(
     ops.uninstrument_llm()
 
     model = llm.Model(model_id="openai/gpt-4o")
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -340,7 +340,7 @@ def test_model_stream_with_tracer_set_to_none(
     set_tracer(None)
 
     model = llm.Model(model_id="openai/gpt-4o")
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -366,7 +366,7 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
 
     model = llm.Model(model_id="openai/gpt-4o")
     with pytest.raises(openai.APIError):
-        model.stream(messages=_math_messages())
+        model.stream(_math_messages())
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -420,7 +420,7 @@ def test_model_stream_iterator_error_records_exception(
     llm.register_provider(mock_provider, scope="openai/")
 
     model = llm.Model(model_id="openai/gpt-4o")
-    response = model.stream(messages=_math_messages())
+    response = model.stream(_math_messages())
     with pytest.raises(RuntimeError):
         response.finish()
 

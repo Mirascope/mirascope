@@ -41,7 +41,7 @@ async def test_model_context_stream_async_exports_genai_span(
         llm.messages.user("Say hello to the user named Kai."),
     ]
 
-    response = await model.context_stream_async(ctx=ctx, messages=messages)
+    response = await model.context_stream_async(messages, ctx=ctx)
     await response.finish()
 
     spans = span_exporter.get_finished_spans()
@@ -79,9 +79,9 @@ async def test_model_context_stream_async_without_tracer_returns_response(
 
     async def _fake_context_stream_async(
         self: llm.Model,
+        content: llm.UserContent | Sequence[llm.Message],
         *,
         ctx: llm.Context[Any],
-        messages: Sequence[llm.Message],
         tools: object | None = None,
         format: object | None = None,
     ) -> object:
@@ -97,7 +97,7 @@ async def test_model_context_stream_async_without_tracer_returns_response(
     ctx = llm.Context(deps={})
     messages: list[Message] = [llm.messages.user("hi")]
 
-    response = await model.context_stream_async(ctx=ctx, messages=messages)
+    response = await model.context_stream_async(messages, ctx=ctx)
 
     assert response is dummy_response
     assert span_exporter.get_finished_spans() == ()
@@ -111,9 +111,9 @@ async def test_model_context_stream_async_records_error_on_exception(
 
     async def _failing_context_stream_async(
         self: llm.Model,
+        content: Sequence[llm.Message],
         *,
         ctx: llm.Context[Any],
-        messages: Sequence[llm.Message],
         tools: object | None = None,
         format: object | None = None,
     ) -> object:
@@ -130,7 +130,7 @@ async def test_model_context_stream_async_records_error_on_exception(
     messages: list[Message] = [llm.messages.user("hi")]
 
     with pytest.raises(ValueError, match="error"):
-        await model.context_stream_async(ctx=ctx, messages=messages)
+        await model.context_stream_async(messages, ctx=ctx)
 
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
@@ -165,9 +165,9 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
 
     async def _chunk_failure_context_stream_async(
         self: llm.Model,
+        content: list[Message],
         *,
         ctx: llm.Context[Any],
-        messages: list[Message],
         tools: object | None = None,
         format: object | None = None,
     ) -> AsyncContextStreamResponse[Any, None]:
@@ -178,7 +178,7 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
             params={},
             tools=None,
             format=None,
-            input_messages=messages,
+            input_messages=content,
             chunk_iterator=_chunk_error_iterator(),
         )
 
@@ -193,7 +193,7 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
     messages: list[Message] = [llm.messages.user("hi")]
 
     with pytest.raises(RuntimeError, match="chunk-error"):
-        response = await model.context_stream_async(ctx=ctx, messages=messages)
+        response = await model.context_stream_async(messages, ctx=ctx)
         await response.finish()
 
     spans = span_exporter.get_finished_spans()
