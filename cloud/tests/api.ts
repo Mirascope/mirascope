@@ -6,7 +6,7 @@ import {
   beforeAll,
   afterAll,
 } from "@effect/vitest";
-import { createCustomIt } from "@/tests/shared";
+import { createCustomIt, withRollback } from "@/tests/shared";
 import { Context, Effect, Layer, Option } from "effect";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import {
@@ -79,55 +79,8 @@ const MockSpansMeteringQueue = Layer.succeed(
 );
 
 // =============================================================================
-// Rollback transaction wrapper (from @/tests/db)
+// Database Layer Creation
 // =============================================================================
-
-// Sentinel error used to force transaction rollback
-class TestRollbackError {
-  readonly _tag = "TestRollbackError";
-}
-
-/**
- * Wraps a test effect in a transaction that always rolls back.
- *
- * If SqlClient is not available (e.g., mock tests), the effect runs
- * without transaction wrapping.
- */
-const withRollback = <A, E, R>(
-  effect: Effect.Effect<A, E, R>,
-): Effect.Effect<A, E, R> =>
-  Effect.gen(function* () {
-    // Check if SqlClient is available (won't be for mock tests)
-    const sqlOption = yield* Effect.serviceOption(SqlClient.SqlClient);
-
-    if (Option.isNone(sqlOption)) {
-      // No SqlClient available (mock test), run without transaction
-      return yield* effect;
-    }
-
-    const sql = sqlOption.value;
-    let result: A;
-
-    yield* sql
-      .withTransaction(
-        Effect.gen(function* () {
-          // Run the test effect and capture its result
-          result = yield* effect;
-          // Always fail to trigger rollback
-          return yield* Effect.fail(new TestRollbackError());
-        }),
-      )
-      .pipe(
-        // Catch the rollback error - this is expected
-        Effect.catchIf(
-          (e): e is TestRollbackError => e instanceof TestRollbackError,
-          () => Effect.void,
-        ),
-      );
-
-    // @ts-expect-error - result is assigned before we get here
-    return result;
-  }) as Effect.Effect<A, E, R>;
 
 /**
  * Creates a Database layer with MockPayments, MockAnalytics, and MockEmails for testing.
