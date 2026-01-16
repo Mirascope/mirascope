@@ -75,7 +75,8 @@ export function processDocSpec(
   const slug = docSpec.slug;
 
   // Calculate the current weight by multiplying parent weight with this item's weight
-  const currentWeight = parentWeight * (docSpec.weight || 1.0);
+  // Important to use nullish coalescing to handle zero vs undefined weights.
+  const currentWeight = parentWeight * (docSpec.weight ?? 1.0);
 
   // Path construction for content loading - always include the slug
   const relativePath = pathPrefix ? `${pathPrefix}/${slug}` : slug;
@@ -141,7 +142,8 @@ export function getDocsFromSpec(docsSpec: FullDocsSpec): DocInfo[] {
       sectionPathPrefix = sectionSlug;
     }
 
-    const sectionWeight = baseWeight * (section.weight || 1.0);
+    // Important to use nullish coalescing to handle zero vs undefined weights.
+    const sectionWeight = baseWeight * (section.weight ?? 1.0);
 
     // Process each document in this section
     section.children.forEach((docSpec) => {

@@ -144,265 +144,403 @@ describe("validateDocsSpec", () => {
 });
 
 describe("getDocsFromSpec", () => {
-  test("generates paths without version when version is not set", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "api",
-          label: "API",
-          children: [{ slug: "overview", label: "Overview" }],
-        },
-      ],
-    };
+  describe("version handling", () => {
+    test("generates paths without version when version is not set", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "api",
+            label: "API",
+            children: [{ slug: "overview", label: "Overview" }],
+          },
+        ],
+      };
 
-    const result = getDocsFromSpec(docsSpec);
+      const result = getDocsFromSpec(docsSpec);
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      label: "Overview",
-      slug: "overview",
-      path: "docs/api/overview",
-      routePath: "/docs/api/overview",
-      type: "docs",
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        label: "Overview",
+        slug: "overview",
+        path: "docs/api/overview",
+        routePath: "/docs/api/overview",
+        type: "docs",
+      });
+    });
+
+    test("generates paths with version when version is set on section", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "api",
+            label: "API",
+            version: "v1",
+            children: [{ slug: "overview", label: "Overview" }],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        label: "Overview",
+        slug: "overview",
+        path: "docs/v1/api/overview",
+        routePath: "/docs/v1/api/overview",
+        type: "docs",
+      });
+    });
+
+    test("generates paths with version only for default section (index)", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            version: "v1",
+            children: [{ slug: "getting-started", label: "Getting Started" }],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        label: "Getting Started",
+        slug: "getting-started",
+        path: "docs/v1/getting-started",
+        routePath: "/docs/v1/getting-started",
+        type: "docs",
+      });
+    });
+
+    test("generates paths without version for default section when version not set", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            children: [{ slug: "getting-started", label: "Getting Started" }],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        label: "Getting Started",
+        slug: "getting-started",
+        path: "docs/getting-started",
+        routePath: "/docs/getting-started",
+        type: "docs",
+      });
+    });
+
+    test("handles nested docs with version", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            version: "v1",
+            children: [
+              {
+                slug: "getting-started",
+                label: "Getting Started",
+                hasContent: true, // Parent has its own content page
+                children: [
+                  { slug: "why", label: "Why Mirascope?" },
+                  { slug: "help", label: "Help" },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(3);
+      expect(result[0]).toMatchObject({
+        label: "Getting Started",
+        slug: "getting-started",
+        path: "docs/v1/getting-started",
+        routePath: "/docs/v1/getting-started",
+      });
+      expect(result[1]).toMatchObject({
+        label: "Why Mirascope?",
+        slug: "why",
+        path: "docs/v1/getting-started/why",
+        routePath: "/docs/v1/getting-started/why",
+      });
+      expect(result[2]).toMatchObject({
+        label: "Help",
+        slug: "help",
+        path: "docs/v1/getting-started/help",
+        routePath: "/docs/v1/getting-started/help",
+      });
+    });
+
+    test("handles multiple sections with mixed versions", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            version: "v1",
+            children: [{ slug: "welcome", label: "Welcome" }],
+          },
+          {
+            slug: "api",
+            label: "API",
+            version: "v1",
+            children: [{ slug: "overview", label: "Overview" }],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        label: "Welcome",
+        slug: "welcome",
+        path: "docs/v1/welcome",
+        routePath: "/docs/v1/welcome",
+      });
+      expect(result[1]).toMatchObject({
+        label: "Overview",
+        slug: "overview",
+        path: "docs/v1/api/overview",
+        routePath: "/docs/v1/api/overview",
+      });
+    });
+
+    test("handles sections with and without version in same spec", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            // No version - unversioned section
+            children: [{ slug: "getting-started", label: "Getting Started" }],
+          },
+          {
+            slug: "api",
+            label: "API",
+            version: "v1",
+            children: [{ slug: "overview", label: "Overview" }],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        label: "Getting Started",
+        slug: "getting-started",
+        path: "docs/getting-started",
+        routePath: "/docs/getting-started",
+      });
+      expect(result[1]).toMatchObject({
+        label: "Overview",
+        slug: "overview",
+        path: "docs/v1/api/overview",
+        routePath: "/docs/v1/api/overview",
+      });
     });
   });
 
-  test("generates paths with version when version is set on section", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "api",
-          label: "API",
-          version: "v1",
-          children: [{ slug: "overview", label: "Overview" }],
-        },
-      ],
-    };
+  describe("path generation", () => {
+    test("handles index pages with trailing slashes", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            version: "v1",
+            children: [{ slug: "index", label: "Welcome" }],
+          },
+        ],
+      };
 
-    const result = getDocsFromSpec(docsSpec);
+      const result = getDocsFromSpec(docsSpec);
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      label: "Overview",
-      slug: "overview",
-      path: "docs/v1/api/overview",
-      routePath: "/docs/v1/api/overview",
-      type: "docs",
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        label: "Welcome",
+        slug: "index",
+        path: "docs/v1/index",
+        routePath: "/docs/v1", // Index pages use trailing slash (no /index in route)
+      });
+    });
+
+    test("handles docs without content (folder only)", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            version: "v1",
+            children: [
+              {
+                slug: "folder",
+                label: "Folder",
+                hasContent: false,
+                children: [{ slug: "child", label: "Child" }],
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(1); // Only the child, not the folder
+      expect(result[0]).toMatchObject({
+        label: "Child",
+        slug: "child",
+        path: "docs/v1/folder/child",
+        routePath: "/docs/v1/folder/child",
+      });
     });
   });
 
-  test("generates paths with version only for default section (index)", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          version: "v1",
-          children: [{ slug: "getting-started", label: "Getting Started" }],
-        },
-      ],
-    };
+  describe("weight handling", () => {
+    test("weight of zero is preserved (not treated as undefined)", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            children: [{ slug: "doc", label: "Doc", weight: 0 }],
+          },
+        ],
+      };
 
-    const result = getDocsFromSpec(docsSpec);
+      const result = getDocsFromSpec(docsSpec);
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      label: "Getting Started",
-      slug: "getting-started",
-      path: "docs/v1/getting-started",
-      routePath: "/docs/v1/getting-started",
-      type: "docs",
+      expect(result).toHaveLength(1);
+      expect(result[0].searchWeight).toBe(0);
     });
-  });
 
-  test("generates paths without version for default section when version not set", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          children: [{ slug: "getting-started", label: "Getting Started" }],
-        },
-      ],
-    };
+    test("undefined weight defaults to 1.0", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            children: [{ slug: "doc", label: "Doc" }], // weight is undefined
+          },
+        ],
+      };
 
-    const result = getDocsFromSpec(docsSpec);
+      const result = getDocsFromSpec(docsSpec);
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      label: "Getting Started",
-      slug: "getting-started",
-      path: "docs/getting-started",
-      routePath: "/docs/getting-started",
-      type: "docs",
+      expect(result).toHaveLength(1);
+      expect(result[0].searchWeight).toBe(1.0);
     });
-  });
 
-  test("handles nested docs with version", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          version: "v1",
-          children: [
-            {
-              slug: "getting-started",
-              label: "Getting Started",
-              hasContent: true, // Parent has its own content page
-              children: [
-                { slug: "why", label: "Why Mirascope?" },
-                { slug: "help", label: "Help" },
-              ],
-            },
-          ],
-        },
-      ],
-    };
+    test("section weight of zero is preserved", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            weight: 0, // Section weight is zero
+            children: [{ slug: "doc", label: "Doc" }],
+          },
+        ],
+      };
 
-    const result = getDocsFromSpec(docsSpec);
+      const result = getDocsFromSpec(docsSpec);
 
-    expect(result).toHaveLength(3);
-    expect(result[0]).toMatchObject({
-      label: "Getting Started",
-      slug: "getting-started",
-      path: "docs/v1/getting-started",
-      routePath: "/docs/v1/getting-started",
+      expect(result).toHaveLength(1);
+      expect(result[0].searchWeight).toBe(0);
     });
-    expect(result[1]).toMatchObject({
-      label: "Why Mirascope?",
-      slug: "why",
-      path: "docs/v1/getting-started/why",
-      routePath: "/docs/v1/getting-started/why",
+
+    test("base weight of zero is preserved", () => {
+      const docsSpec: FullDocsSpec = {
+        weight: 0, // Base weight is zero
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            children: [{ slug: "doc", label: "Doc" }],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].searchWeight).toBe(0);
     });
-    expect(result[2]).toMatchObject({
-      label: "Help",
-      slug: "help",
-      path: "docs/v1/getting-started/help",
-      routePath: "/docs/v1/getting-started/help",
+
+    test("weights multiply correctly through hierarchy", () => {
+      const docsSpec: FullDocsSpec = {
+        weight: 0.5, // Base weight
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            weight: 0.5, // Section weight
+            children: [
+              {
+                slug: "parent",
+                label: "Parent",
+                weight: 0.5, // Parent weight
+                hasContent: true,
+                children: [
+                  { slug: "child", label: "Child", weight: 0.5 }, // Child weight
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = getDocsFromSpec(docsSpec);
+
+      expect(result).toHaveLength(2);
+      // Parent: 0.5 * 0.5 * 0.5 = 0.125
+      expect(result[0].searchWeight).toBeCloseTo(0.125);
+      // Child: 0.5 * 0.5 * 0.5 * 0.5 = 0.0625
+      expect(result[1].searchWeight).toBeCloseTo(0.0625);
     });
-  });
 
-  test("handles multiple sections with mixed versions", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          version: "v1",
-          children: [{ slug: "welcome", label: "Welcome" }],
-        },
-        {
-          slug: "api",
-          label: "API",
-          version: "v1",
-          children: [{ slug: "overview", label: "Overview" }],
-        },
-      ],
-    };
+    test("zero weight in hierarchy makes all descendants zero", () => {
+      const docsSpec: FullDocsSpec = {
+        sections: [
+          {
+            slug: "index",
+            label: "Docs",
+            weight: 0, // Section weight is zero
+            children: [
+              {
+                slug: "parent",
+                label: "Parent",
+                weight: 2.0, // Non-zero weight
+                hasContent: true,
+                children: [
+                  { slug: "child", label: "Child", weight: 3.0 }, // Non-zero weight
+                ],
+              },
+            ],
+          },
+        ],
+      };
 
-    const result = getDocsFromSpec(docsSpec);
+      const result = getDocsFromSpec(docsSpec);
 
-    expect(result).toHaveLength(2);
-    expect(result[0]).toMatchObject({
-      label: "Welcome",
-      slug: "welcome",
-      path: "docs/v1/welcome",
-      routePath: "/docs/v1/welcome",
-    });
-    expect(result[1]).toMatchObject({
-      label: "Overview",
-      slug: "overview",
-      path: "docs/v1/api/overview",
-      routePath: "/docs/v1/api/overview",
-    });
-  });
-
-  test("handles sections with and without version in same spec", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          // No version - unversioned section
-          children: [{ slug: "getting-started", label: "Getting Started" }],
-        },
-        {
-          slug: "api",
-          label: "API",
-          version: "v1",
-          children: [{ slug: "overview", label: "Overview" }],
-        },
-      ],
-    };
-
-    const result = getDocsFromSpec(docsSpec);
-
-    expect(result).toHaveLength(2);
-    expect(result[0]).toMatchObject({
-      label: "Getting Started",
-      slug: "getting-started",
-      path: "docs/getting-started",
-      routePath: "/docs/getting-started",
-    });
-    expect(result[1]).toMatchObject({
-      label: "Overview",
-      slug: "overview",
-      path: "docs/v1/api/overview",
-      routePath: "/docs/v1/api/overview",
-    });
-  });
-
-  test("handles index pages with trailing slashes", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          version: "v1",
-          children: [{ slug: "index", label: "Welcome" }],
-        },
-      ],
-    };
-
-    const result = getDocsFromSpec(docsSpec);
-
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({
-      label: "Welcome",
-      slug: "index",
-      path: "docs/v1/index",
-      routePath: "/docs/v1", // Index pages use trailing slash (no /index in route)
-    });
-  });
-
-  test("handles docs without content (folder only)", () => {
-    const docsSpec: FullDocsSpec = {
-      sections: [
-        {
-          slug: "index",
-          label: "Docs",
-          version: "v1",
-          children: [
-            {
-              slug: "folder",
-              label: "Folder",
-              hasContent: false,
-              children: [{ slug: "child", label: "Child" }],
-            },
-          ],
-        },
-      ],
-    };
-
-    const result = getDocsFromSpec(docsSpec);
-
-    expect(result).toHaveLength(1); // Only the child, not the folder
-    expect(result[0]).toMatchObject({
-      label: "Child",
-      slug: "child",
-      path: "docs/v1/folder/child",
-      routePath: "/docs/v1/folder/child",
+      expect(result).toHaveLength(2);
+      // Zero * anything = zero
+      expect(result[0].searchWeight).toBe(0);
+      expect(result[1].searchWeight).toBe(0);
     });
   });
 });
