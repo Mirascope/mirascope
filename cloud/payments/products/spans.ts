@@ -132,7 +132,13 @@ export class Spans {
       const planTier = yield* this.subscriptions.getPlan(organizationId);
       const limits = yield* this.subscriptions.getPlanLimits(planTier);
 
-      // Check if at or over limit
+      // Skip limit check if plan has unlimited spans (Infinity)
+      // Pro and Team plans use graduated pricing via Stripe meter (no hard limit)
+      if (limits.spansPerMonth === Infinity) {
+        return;
+      }
+
+      // Check if at or over limit (only for plans with finite limits, e.g., Free)
       if (currentUsage >= BigInt(limits.spansPerMonth)) {
         return yield* Effect.fail(
           new PlanLimitExceededError({

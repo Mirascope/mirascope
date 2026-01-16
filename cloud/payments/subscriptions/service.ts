@@ -25,10 +25,11 @@ import {
 import {
   type PlanTier,
   PLAN_TIER_ORDER,
-  type ValidationError,
+  type DowngradeValidationError,
   type DowngradeValidationResult,
-} from "@/payments/subscriptions/types";
-import { PLAN_LIMITS, type PlanLimits } from "./plan-limits";
+  PLAN_LIMITS,
+  type PlanLimits,
+} from "@/payments/plans";
 
 /**
  * Subscription details for an organization.
@@ -86,7 +87,7 @@ export interface SubscriptionChangePreview {
   /** Whether the downgrade is allowed (only present for downgrades) */
   canDowngrade?: boolean;
   /** Validation errors if downgrade is not allowed (only present for downgrades) */
-  validationErrors?: ValidationError[];
+  validationErrors?: DowngradeValidationError[];
 }
 
 /**
@@ -918,7 +919,7 @@ export class Subscriptions {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
       const targetLimits = PLAN_LIMITS[targetPlan];
-      const validationErrors: ValidationError[] = [];
+      const validationErrors: DowngradeValidationError[] = [];
 
       // Count seats (memberships + pending invitations)
       const [membershipCount] = yield* mapSqlError(

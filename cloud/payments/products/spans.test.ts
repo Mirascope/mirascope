@@ -11,7 +11,7 @@ import {
 } from "@/tests/payments";
 import { NotFoundError, StripeError, PlanLimitExceededError } from "@/errors";
 import { organizations } from "@/db/schema/organizations";
-import type { PlanTier } from "@/payments/subscriptions/types";
+import type { PlanTier } from "@/payments/plans";
 
 // Test constants
 const TEST_CUSTOMER_IDS = {
@@ -642,48 +642,64 @@ describe("Spans Product", () => {
       );
     });
 
-    // Parameterized tests for different plan tiers
-    const planScenarios: Array<{
+    // Tests for paid plans with unlimited spans (Infinity)
+    const unlimitedPlanScenarios: Array<{
       plan: PlanTier;
       customerId: string;
       usage: string;
+      description: string;
     }> = [
-      { plan: "pro", customerId: TEST_CUSTOMER_IDS.proPlan, usage: "1000000" },
+      {
+        plan: "pro",
+        customerId: TEST_CUSTOMER_IDS.proPlan,
+        usage: "1000000",
+        description: "at 1M spans",
+      },
+      {
+        plan: "pro",
+        customerId: "cus_pro_over_limit",
+        usage: "5000000",
+        description: "at 5M spans (overage billed)",
+      },
       {
         plan: "team",
         customerId: TEST_CUSTOMER_IDS.teamPlan,
         usage: "1000000",
+        description: "at 1M spans",
+      },
+      {
+        plan: "team",
+        customerId: "cus_team_over_limit",
+        usage: "10000000",
+        description: "at 10M spans (overage billed)",
       },
     ];
 
-    planScenarios.forEach(({ plan, customerId, usage }) => {
-      it.effect(`respects limit for ${plan} plan`, () =>
-        Effect.gen(function* () {
-          const payments = yield* Payments;
-          const org = yield* createTestOrg(customerId);
+    unlimitedPlanScenarios.forEach(
+      ({ plan, customerId, usage, description }) => {
+        it.effect(
+          `allows unlimited spans for ${plan} plan ${description}`,
+          () =>
+            Effect.gen(function* () {
+              const payments = yield* Payments;
+              const org = yield* createTestOrg(customerId);
 
-          const result = yield* payments.products.spans
-            .checkSpanLimit({
-              organizationId: org.id,
-              stripeCustomerId: customerId,
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(PlanLimitExceededError);
-          if (result instanceof PlanLimitExceededError) {
-            expect(result.message).toContain(`${plan} plan`);
-            expect(result.planTier).toBe(plan);
-          }
-        }).pipe(
-          Effect.provide(
-            TestSubscriptionWithRealDatabaseFixture(
-              { plan, stripeCustomerId: customerId, meterBalance: usage },
-              TestDrizzleORM,
+              // Should succeed without throwing PlanLimitExceededError
+              yield* payments.products.spans.checkSpanLimit({
+                organizationId: org.id,
+                stripeCustomerId: customerId,
+              });
+            }).pipe(
+              Effect.provide(
+                TestSubscriptionWithRealDatabaseFixture(
+                  { plan, stripeCustomerId: customerId, meterBalance: usage },
+                  TestDrizzleORM,
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     it.effect("throws NotFoundError when no active subscription", () =>
       Effect.gen(function* () {

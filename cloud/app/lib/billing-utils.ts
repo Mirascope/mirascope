@@ -1,7 +1,6 @@
 import type { SubscriptionDetails } from "@/api/organizations.schemas";
 import { cloudHostedFeatures } from "@/app/components/pricing-page";
-// Import from /types directly to avoid pulling in server-only database dependencies
-import type { PlanTier } from "@/payments/subscriptions/types";
+import { PLAN_TIER_ORDER, type PlanTier } from "@/payments/plans";
 
 /**
  * Formats a payment method for display.
@@ -23,22 +22,13 @@ export function formatPaymentMethod(subscription: SubscriptionDetails): string {
 }
 
 /**
- * Plan tier ordering for determining upgrades vs downgrades.
- */
-export const PLAN_TIERS: Record<PlanTier, number> = {
-  free: 0,
-  pro: 1,
-  team: 2,
-} as const;
-
-/**
  * Determines if a plan change is an upgrade.
  */
 export function isUpgrade(
   currentPlan: PlanTier,
   targetPlan: PlanTier,
 ): boolean {
-  return PLAN_TIERS[targetPlan] > PLAN_TIERS[currentPlan];
+  return PLAN_TIER_ORDER[targetPlan] > PLAN_TIER_ORDER[currentPlan];
 }
 
 /**

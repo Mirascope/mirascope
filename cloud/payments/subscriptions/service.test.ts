@@ -1089,7 +1089,7 @@ describe("subscriptions", () => {
 
         expect(limits.seats).toBe(5);
         expect(limits.projects).toBe(5);
-        expect(limits.spansPerMonth).toBe(1_000_000);
+        expect(limits.spansPerMonth).toBe(Infinity);
         expect(limits.apiRequestsPerMinute).toBe(1000);
       }),
     );
@@ -1101,7 +1101,7 @@ describe("subscriptions", () => {
 
         expect(limits.seats).toBe(Infinity);
         expect(limits.projects).toBe(Infinity);
-        expect(limits.spansPerMonth).toBe(1_000_000);
+        expect(limits.spansPerMonth).toBe(Infinity);
         expect(limits.apiRequestsPerMinute).toBe(10000);
       }),
     );

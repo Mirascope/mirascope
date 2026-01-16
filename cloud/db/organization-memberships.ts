@@ -43,7 +43,7 @@ import {
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
-import { PLAN_LIMITS } from "@/payments/subscriptions/plan-limits";
+import { PLAN_LIMITS } from "@/payments/plans";
 import {
   AlreadyExistsError,
   DatabaseError,

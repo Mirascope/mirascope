@@ -10,9 +10,7 @@ import {
   SubscriptionPastDueError,
 } from "@/errors";
 import { createSlugSchema } from "@/db/slug";
-// Import from /types directly to avoid pulling in server-only database dependencies
-// (this schema file is imported by client-side code)
-import { PLAN_TIERS } from "@/payments/subscriptions/types";
+import { PLAN_TIERS, type DowngradeValidationError } from "@/payments/plans";
 
 export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
@@ -103,7 +101,10 @@ export const PreviewSubscriptionChangeRequestSchema = Schema.Struct({
   targetPlan: PlanTierSchema,
 });
 
-export const ValidationErrorSchema = Schema.Struct({
+export const DowngradeValidationErrorSchema: Schema.Schema<
+  DowngradeValidationError,
+  DowngradeValidationError
+> = Schema.Struct({
   resource: Schema.Literal("seats", "projects"),
   currentUsage: Schema.Number,
   limit: Schema.Number,
@@ -116,7 +117,9 @@ export const SubscriptionChangePreviewSchema = Schema.Struct({
   nextBillingDate: Schema.Date,
   recurringAmountInDollars: Schema.Number,
   canDowngrade: Schema.optional(Schema.Boolean),
-  validationErrors: Schema.optional(Schema.Array(ValidationErrorSchema)),
+  validationErrors: Schema.optional(
+    Schema.Array(DowngradeValidationErrorSchema),
+  ),
 });
 
 export const UpdateSubscriptionRequestSchema = Schema.Struct({
@@ -146,7 +149,7 @@ export type CreatePaymentIntentResponse =
 export type SubscriptionDetails = typeof SubscriptionDetailsSchema.Type;
 export type PreviewSubscriptionChangeRequest =
   typeof PreviewSubscriptionChangeRequestSchema.Type;
-export type ValidationError = typeof ValidationErrorSchema.Type;
+export type { DowngradeValidationError } from "@/payments/plans";
 export type SubscriptionChangePreview =
   typeof SubscriptionChangePreviewSchema.Type;
 export type UpdateSubscriptionRequest =

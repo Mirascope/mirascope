@@ -1,6 +1,5 @@
 import { Badge, type BadgeProps } from "@/app/components/ui/badge";
-// Import from /types directly to avoid pulling in server-only database dependencies
-import type { PlanTier } from "@/payments/subscriptions/types";
+import type { PlanTier } from "@/payments/plans";
 
 const planVariants: Record<PlanTier, string> = {
   free: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",

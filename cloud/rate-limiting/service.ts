@@ -36,7 +36,7 @@
 import { Context, Effect, Layer } from "effect";
 import { RateLimitError, ServiceUnavailableError } from "@/errors";
 import { Payments } from "@/payments";
-import type { PlanTier } from "@/payments/subscriptions/types";
+import type { PlanTier } from "@/payments/plans";
 import type { RateLimiterBinding } from "@/workers/config";
 
 /**
