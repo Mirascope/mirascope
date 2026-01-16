@@ -479,3 +479,37 @@ export class PricingUnavailableError extends Schema.TaggedError<PricingUnavailab
 ) {
   static readonly status = 503 as const;
 }
+
+/**
+ * Error that occurs when a plan limit has been exceeded.
+ *
+ * This error is raised when an organization attempts to exceed the limits
+ * of their current plan (e.g., seats, projects, spans). The error includes
+ * information about the limit type, current usage, and upgrade path.
+ *
+ * The HTTP status code is 402 (Payment Required) to indicate that the user
+ * needs to upgrade their plan to continue.
+ *
+ * @example
+ * ```ts
+ * yield* checkSeatLimit({ organizationId }).pipe(
+ *   Effect.catchTag("PlanLimitExceededError", (error) => {
+ *     console.error(`${error.limitType} limit exceeded:`, error.message);
+ *     return Effect.fail(new HandlerError({ message: "Upgrade required" }));
+ *   })
+ * );
+ * ```
+ */
+export class PlanLimitExceededError extends Schema.TaggedError<PlanLimitExceededError>()(
+  "PlanLimitExceededError",
+  {
+    message: Schema.String,
+    resource: Schema.String,
+    limitType: Schema.String, // "seats", "projects", "spans"
+    currentUsage: Schema.Number,
+    limit: Schema.Number,
+    planTier: Schema.String,
+  },
+) {
+  static readonly status = 402 as const;
+}

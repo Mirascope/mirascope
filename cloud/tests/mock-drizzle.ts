@@ -27,32 +27,25 @@ import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
 export const MockDrizzleORMLayer = Layer.succeed(DrizzleORM, {
   select: () => ({
     from: () => ({
-      where: () => ({
-        pipe: () => Effect.succeed([{ sum: "0" }]),
-      }),
+      where: () => Effect.succeed([{ count: 0, sum: "0" }]),
     }),
   }),
   insert: () => ({
     values: () => ({
-      returning: () => ({
-        pipe: () => Effect.succeed([{ id: `mock_${crypto.randomUUID()}` }]),
-      }),
+      returning: () => Effect.succeed([{ id: `mock_${crypto.randomUUID()}` }]),
     }),
   }),
   update: () => ({
     set: () => ({
       where: () => ({
-        returning: () => ({
-          pipe: () => Effect.succeed([{ id: `mock_${crypto.randomUUID()}` }]),
-        }),
+        returning: () =>
+          Effect.succeed([{ id: `mock_${crypto.randomUUID()}` }]),
       }),
     }),
   }),
   delete: () => ({
     where: () => ({
-      returning: () => ({
-        pipe: () => Effect.succeed([]),
-      }),
+      returning: () => Effect.succeed([]),
     }),
   }),
   withTransaction: <A, E, R>(effect: Effect.Effect<A, E, R>) => effect,

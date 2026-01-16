@@ -72,6 +72,7 @@ import {
   ImmutableResourceError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
   StripeError,
   SubscriptionPastDueError,
 } from "@/errors";
@@ -404,8 +405,13 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
     data: Pick<NewOrganizationInvitation, "recipientEmail" | "role">;
   }): Effect.Effect<
     OrganizationInvitationWithMetadata,
-    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    | AlreadyExistsError
+    | NotFoundError
+    | PermissionDeniedError
+    | DatabaseError
+    | PlanLimitExceededError
+    | StripeError,
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -433,6 +439,7 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
 
       yield* this.checkExistingMembership(organizationId, normalizedEmail);
       yield* this.checkExistingInvitation(organizationId, normalizedEmail);
+      yield* this.organizationMemberships.checkSeatLimit({ organizationId });
 
       const metadata = yield* this.getInvitationMetadata(
         organizationId,
@@ -856,8 +863,13 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
     acceptingUserId: string;
   }): Effect.Effect<
     PublicOrganizationMembership,
-    NotFoundError | PermissionDeniedError | DatabaseError | AlreadyExistsError,
-    DrizzleORM
+    | NotFoundError
+    | PermissionDeniedError
+    | DatabaseError
+    | AlreadyExistsError
+    | PlanLimitExceededError
+    | StripeError,
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -931,6 +943,10 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
           }),
         );
       }
+
+      yield* this.organizationMemberships.checkSeatLimit({
+        organizationId: invitation.organizationId,
+      });
 
       // Wrap membership creation + invitation update in a transaction
       const membership = yield* client.withTransaction(

@@ -1255,33 +1255,26 @@ export const MockStripe = Layer.succeed(Stripe, {
       metadata?: Record<string, string>;
     }) =>
       Effect.succeed({
-        id: `sub_mock_${crypto.randomUUID()}`,
-        object: "subscription" as const,
-        created: Date.now(),
-        current_period_start: getTestTimestamp(),
-        current_period_end:
-          getTestTimestamp() + TIME_CONSTANTS.BILLING_PERIOD_SECONDS,
+        ...createTestSubscription({
+          id: `sub_mock_${crypto.randomUUID()}`,
+          status: "active",
+          priceId: "price_cloud_team_mock", // Always use team plan for tests to avoid seat limits
+        }),
         customer: params.customer,
-        items: {
-          object: "list" as const,
-          data: params.items.map((item) => ({
-            id: `si_mock_${crypto.randomUUID()}`,
-            object: "subscription_item" as const,
-            price: { id: item.price },
-          })),
-        },
-        status: "active" as const,
         metadata: params.metadata || {},
       }),
-    list: () =>
+    list: (params?: { customer?: string }) =>
       Effect.succeed({
         object: "list" as const,
         data: [
-          createTestSubscription({
-            id: "sub_mock_default",
-            status: "active",
-            priceId: "price_cloud_free_mock",
-          }),
+          {
+            ...createTestSubscription({
+              id: "sub_mock_default",
+              status: "active",
+              priceId: "price_cloud_team_mock",
+            }),
+            customer: params?.customer || "cus_mock_default",
+          },
         ],
         has_more: false,
       }),
@@ -1290,7 +1283,7 @@ export const MockStripe = Layer.succeed(Stripe, {
         createTestSubscription({
           id,
           status: "active",
-          priceId: "price_cloud_free_mock",
+          priceId: "price_cloud_team_mock",
         }),
       ),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1376,6 +1369,15 @@ export const MockStripe = Layer.succeed(Stripe, {
         amount_due: 5000,
         total: 10000,
         period_end: getTestTimestamp() + TIME_CONSTANTS.BILLING_PERIOD_SECONDS,
+      }),
+  },
+  prices: {
+    retrieve: (priceId: string) =>
+      Effect.succeed({
+        id: priceId,
+        object: "price" as const,
+        unit_amount: 1000, // $10.00 in cents (default test price)
+        currency: "usd",
       }),
   },
   billing: {

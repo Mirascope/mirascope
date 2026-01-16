@@ -3,10 +3,15 @@ import {
   it,
   expect,
   TestOrganizationFixture,
+  TestFreePlanOrganizationFixture,
   MockDrizzleORM,
+  TestDrizzleORM,
+  MockAnalytics,
+  MockSpansMeteringQueue,
 } from "@/tests/db";
+import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
 import { Database } from "@/db/database";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   type PublicOrganizationMembership,
   type PublicOrganizationMembershipAudit,
@@ -16,6 +21,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
 } from "@/errors";
 
 describe("OrganizationMemberships", () => {
@@ -235,6 +241,12 @@ describe("OrganizationMemberships", () => {
           new MockDrizzleORM()
             // authorize: getRole -> getMembership returns OWNER
             .select([{ role: "OWNER" }])
+            // checkSeatLimit: getPlan -> fetch organization
+            .select([{ stripeCustomerId: "cus_test" }])
+            // checkSeatLimit: count memberships
+            .select([{ count: 1 }])
+            // checkSeatLimit: count invitations
+            .select([{ count: 0 }])
             // insert membership: fails
             .insert(new Error("Connection failed"))
             .build(),
@@ -261,6 +273,12 @@ describe("OrganizationMemberships", () => {
           new MockDrizzleORM()
             // authorize: getRole -> getMembership returns OWNER
             .select([{ role: "OWNER" }])
+            // checkSeatLimit: getPlan -> fetch organization
+            .select([{ stripeCustomerId: "cus_test" }])
+            // checkSeatLimit: count memberships
+            .select([{ count: 1 }])
+            // checkSeatLimit: count invitations
+            .select([{ count: 0 }])
             // insert membership: succeeds
             .insert([
               { memberId: "target-id", role: "MEMBER", createdAt: new Date() },
@@ -292,6 +310,132 @@ describe("OrganizationMemberships", () => {
           role: "MEMBER",
         } satisfies Partial<PublicOrganizationMembership>);
       }),
+    );
+
+    it.effect("returns non-SqlError from getPlan in checkSeatLimit", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.memberships
+          .create({
+            userId: "owner-id",
+            organizationId: "org-id",
+            data: { memberId: "target-id", role: "MEMBER" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found: org-id");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize: getRole -> getMembership returns OWNER
+            .select([{ role: "OWNER" }])
+            // checkSeatLimit: getPlan -> fetch organization returns empty (NotFoundError)
+            .select([])
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when counting memberships fails in checkSeatLimit",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.memberships
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { memberId: "target-id", role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to count memberships");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize: getRole -> getMembership returns OWNER
+              .select([{ role: "OWNER" }])
+              // checkSeatLimit: getPlan -> fetch organization
+              .select([{ stripeCustomerId: "cus_test" }])
+              // checkSeatLimit: count memberships fails
+              .select(new Error("Connection failed"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when counting invitations fails in checkSeatLimit",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.memberships
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { memberId: "target-id", role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to count invitations");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // authorize: getRole -> getMembership returns OWNER
+              .select([{ role: "OWNER" }])
+              // checkSeatLimit: getPlan -> fetch organization
+              .select([{ stripeCustomerId: "cus_test" }])
+              // checkSeatLimit: count memberships succeeds
+              .select([{ count: 1 }])
+              // checkSeatLimit: count invitations fails
+              .select(new Error("Connection failed"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `PlanLimitExceededError` when seat limit is exceeded",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, nonMember } =
+            yield* TestFreePlanOrganizationFixture;
+          const db = yield* Database;
+
+          // Org has 1 seat (owner) and FREE plan allows only 1 seat
+          // Trying to add another member should exceed the limit
+          const result = yield* db.organizations.memberships
+            .create({
+              userId: owner.id,
+              organizationId: org.id,
+              data: { memberId: nonMember.id, role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PlanLimitExceededError);
+          expect(result.message).toContain("free plan limit is 1 seat(s)");
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Database.Default.pipe(
+                Layer.provide(
+                  TestSubscriptionWithRealDatabaseFixture(
+                    { plan: "free" },
+                    TestDrizzleORM,
+                  ),
+                ),
+              ),
+              MockAnalytics,
+              MockSpansMeteringQueue,
+            ),
+          ),
+        ),
     );
   });
 

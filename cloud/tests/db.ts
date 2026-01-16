@@ -7,7 +7,7 @@ import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
 import { Payments } from "@/payments";
-import { DefaultMockPayments } from "@/tests/payments";
+import { MockStripe } from "@/tests/payments";
 import { Analytics } from "@/analytics";
 import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
 import fs from "fs";
@@ -85,13 +85,18 @@ export const TestDatabase: Layer.Layer<
   | SpansMeteringQueueService
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
-  const { DefaultMockPayments } = yield* Effect.promise(
+  const { MockStripe } = yield* Effect.promise(
     () => import("@/tests/payments"),
   );
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provideMerge(TestDrizzleORM),
-      Layer.provide(DefaultMockPayments),
+      Layer.provide(
+        Payments.Default.pipe(
+          Layer.provide(MockStripe),
+          Layer.provideMerge(TestDrizzleORM),
+        ),
+      ),
     ),
     MockAnalytics,
     MockSpansMeteringQueue,
@@ -308,6 +313,7 @@ export class MockDrizzleORM {
 
     // Create a chainable proxy that returns itself for method calls,
     // then returns the appropriate Effect at .pipe()
+    // The proxy wraps the Effect itself so it can be yielded directly
     const createChainableProxy = (
       results: MockEffectResult[],
       index: number,
@@ -315,9 +321,9 @@ export class MockDrizzleORM {
       const effect = makeEffect(results, index);
 
       return new Proxy(
-        {},
+        effect, // Proxy the Effect itself so it can be yielded
         {
-          get: (_, prop) => {
+          get: (target, prop) => {
             if (prop === "pipe") {
               // At .pipe(), apply the given transformations to the effect
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -326,8 +332,29 @@ export class MockDrizzleORM {
                 return fns.reduce((acc, fn) => fn(acc), effect);
               };
             }
-            // For any other method, return a function that returns the proxy (chainable)
-            return () => createChainableProxy(results, index);
+            // For chainable methods, return a function that returns the proxy
+            if (
+              typeof prop === "string" &&
+              [
+                "from",
+                "where",
+                "limit",
+                "offset",
+                "orderBy",
+                "innerJoin",
+                "leftJoin",
+                "values",
+                "set",
+                "returning",
+                "onConflictDoUpdate",
+                "onConflictDoNothing",
+              ].includes(prop)
+            ) {
+              return () => createChainableProxy(results, index);
+            }
+            // For all other properties, delegate to the Effect target
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return Reflect.get(target, prop);
           },
         },
       );
@@ -359,9 +386,19 @@ export class MockDrizzleORM {
     } as unknown as DrizzleORMClient;
 
     const mockDrizzleORMLayer = Layer.succeed(DrizzleORM, drizzleMock);
+
+    // If no custom payments layer provided, create one with MockStripe + our mockDrizzleORMLayer
+    // This ensures DefaultMockPayments's MockDrizzleORMLayer doesn't override our custom mock
+    const effectivePaymentsLayer =
+      paymentsLayer ??
+      Payments.Default.pipe(
+        Layer.provide(MockStripe),
+        Layer.provide(mockDrizzleORMLayer),
+      );
+
     return Database.Default.pipe(
       Layer.provide(mockDrizzleORMLayer),
-      Layer.provide(paymentsLayer ?? DefaultMockPayments),
+      Layer.provide(effectivePaymentsLayer),
     );
   }
 }
@@ -434,6 +471,61 @@ export const TestOrganizationFixture = Effect.gen(function* () {
   };
 });
 
+/**
+ * Effect-native test fixture for testing FREE plan seat limits.
+ *
+ * Creates a minimal organization with only the owner (1 seat used).
+ * Use with TestSubscriptionWithRealDatabaseFixture({ plan: "free" }, TestDatabase)
+ * to test seat limit enforcement.
+ *
+ * Returns { org, owner, nonMember } where:
+ * - org: organization with only owner as member
+ * - owner: the organization owner (OWNER role)
+ * - nonMember: a user not in the organization (for testing additions)
+ *
+ * Requires Database - call `yield* Database` in your test.
+ *
+ * Example usage:
+ * ```ts
+ * it.effect("test seat limit", () =>
+ *   Effect.gen(function* () {
+ *     const { org, owner, nonMember } = yield* TestFreePlanOrganizationFixture;
+ *     const db = yield* Database;
+ *     // Try to add nonMember - should fail with FREE plan
+ *     const result = yield* db.organizations.memberships.create({
+ *       userId: owner.id,
+ *       organizationId: org.id,
+ *       data: { memberId: nonMember.id, role: "MEMBER" },
+ *     }).pipe(Effect.flip);
+ *     expect(result).toBeInstanceOf(PlanLimitExceededError);
+ *   }).pipe(Effect.provide(TestSubscriptionWithRealDatabaseFixture({ plan: "free" }, TestDatabase))),
+ * );
+ * ```
+ */
+export const TestFreePlanOrganizationFixture = Effect.gen(function* () {
+  const db = yield* Database;
+
+  // Create users
+  const owner = yield* db.users.create({
+    data: { email: `owner-free@example.com`, name: "Owner" },
+  });
+
+  const nonMember = yield* db.users.create({
+    data: { email: `nonmember-free@example.com`, name: "Non Member" },
+  });
+
+  // Create organization (owner is automatically added with OWNER role)
+  const org = yield* db.organizations.create({
+    userId: owner.id,
+    data: { name: `Free Plan Organization`, slug: `free-plan-organization` },
+  });
+
+  return {
+    org,
+    owner,
+    nonMember,
+  };
+});
 /**
  * Effect-native test fixture for projects.
  *
