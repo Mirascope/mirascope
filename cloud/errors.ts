@@ -513,3 +513,60 @@ export class PlanLimitExceededError extends Schema.TaggedError<PlanLimitExceeded
 ) {
   static readonly status = 402 as const;
 }
+
+/**
+ * Error that occurs when an organization exceeds their rate limit.
+ *
+ * This error is raised when an organization makes too many API requests
+ * within the time window defined by their plan tier. Rate limits are
+ * enforced per-organization across all API keys and users.
+ *
+ * The HTTP status code is 429 (Too Many Requests) - the standard status
+ * for rate limiting. The response includes X-RateLimit-* headers to help
+ * clients implement exponential backoff.
+ *
+ * @example
+ * ```ts
+ * yield* rateLimiter.checkRateLimit({ organizationId, planTier }).pipe(
+ *   Effect.catchTag("RateLimitError", (error) => {
+ *     console.error(`Rate limit exceeded:`, error.message);
+ *     return Effect.fail(error); // Propagate with 429 status
+ *   })
+ * );
+ * ```
+ */
+export class RateLimitError extends Schema.TaggedError<RateLimitError>()(
+  "RateLimitError",
+  {
+    message: Schema.String,
+    organizationId: Schema.String,
+    limit: Schema.Number,
+    retryAfter: Schema.Number, // seconds until rate limit resets
+    planTier: Schema.String,
+  },
+) {
+  static readonly status = 429 as const;
+}
+
+/**
+ * ServiceUnavailableError indicates a downstream service is temporarily unavailable.
+ *
+ * Maps to HTTP 503 Service Unavailable.
+ *
+ * @example
+ * ```ts
+ * new ServiceUnavailableError({
+ *   message: "Rate limiter service unavailable",
+ *   service: "cloudflare-rate-limiter"
+ * })
+ * ```
+ */
+export class ServiceUnavailableError extends Schema.TaggedError<ServiceUnavailableError>()(
+  "ServiceUnavailableError",
+  {
+    message: Schema.String,
+    service: Schema.optional(Schema.String),
+  },
+) {
+  static readonly status = 503 as const;
+}
