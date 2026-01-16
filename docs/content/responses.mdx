@@ -13,20 +13,30 @@ When you call an LLM, you get back an `llm.Response`. This object contains every
 
 The LLM's output is available through several properties:
 
-<CodeExample file="examples/responses/content_access.py" lines="3-" />
 
 ### Content Properties
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `content` | `Sequence[AssistantContentPart]` | All content parts in generation order |
-| `texts` | `Sequence[Text]` | Only the text portions of the response |
-| `tool_calls` | `Sequence[ToolCall]` | Tool calls the LLM wants executed  |
-| `thoughts` | `Sequence[Thought]` | Reasoning from the model's thinking process |
+| `content` | `Sequence[llm.AssistantContentPart]` | All content parts in generation order |
+| `texts` | `Sequence[llm.Text]` | Only the text portions of the response |
+| `tool_calls` | `Sequence[llm.ToolCall]` | Tool calls the LLM wants executed  |
+| `thoughts` | `Sequence[llm.Thought]` | Reasoning from the model's thinking process |
+| `messages` | `Sequence[llm.Message]` | All of the messages in the response's history (including the final assistant message) |
+| `usage` | `llm.Usage` | Token usage for this response |
 
-In many cases, the response contains a single `Text` part, accessible via `response.texts[0].text`. For robustness with zero or multiple text parts, use `"".join(part.text for part in response.texts)`. 
+It's often useful to combine a response's content into a single string. `response.text()` returns all text content joined together, ideal for displaying to users. 
 
-You can use `response.pretty()` to get a human-readable string representation of all content in the response, including thoughts or tool calls. This is particularly useful for development and debugging.
+`response.pretty()` includes stringified representations of all content types (text, thoughts, tool calls), which is helpful for debugging.
+
+<CodeExample file="examples/responses/content_access.py" lines="3-" />
+
+### Content Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `text(sep="\n")` | `str` | All text content joined by separator |
+| `pretty()` | `str` | Human-readable representation of all content |
 
 <Note>
 `tool_calls` and `thoughts` are populated only when relevant. See [Tools](/docs/mirascope/v2/tools) and [Thinking](/docs/mirascope/v2/thinking) for details.
@@ -53,10 +63,12 @@ Every response includes metadata about how it was generated:
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `provider_id` | `ProviderId` | The provider (e.g., `"openai"`, `"anthropic"`) |
-| `model_id` | `ModelId` | The full model identifier |
-| `params` | `Params` | Parameters used for generation |
-| `model` | `Model` | A `Model` instance matching this response |
+| `provider_id` | `llm.ProviderId` | The provider (e.g., `"openai"`, `"anthropic"`) |
+| `model_id` | `llm.ModelId` | The full model identifier |
+| `params` | `llm.Params` | Parameters used for generation |
+| `model` | `llm.Model` | A `Model` instance that can be used for continuing from this response. (Respects the model context manager.) |
+| `usage` | `llm.Usage` | Token usage of this response. |
+| `finish_reason` | `llm.FinishReason | None` | Information on why the response finished. |
 | `raw` | `Any` | The unprocessed provider response |
 
 The `raw` property gives you access to the original response object from the provider's SDK, in case you want to peek below Mirascope's abstraction layer to the provider's raw output.

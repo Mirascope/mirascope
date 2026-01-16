@@ -142,6 +142,71 @@ def test_response_with_different_finish_reasons() -> None:
         assert response.finish_reason == finish_reason
 
 
+def test_text_empty() -> None:
+    """Test text() with no text parts."""
+    assistant_message = llm.messages.assistant(
+        content=[], model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+    response = llm.Response(
+        raw=None,
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+    assert response.text() == ""
+
+
+def test_text_default_sep() -> None:
+    """Test text() with default newline separator."""
+    assistant_message = llm.messages.assistant(
+        content=[llm.Text(text="Hello"), llm.Text(text="World")],
+        model_id="openai/gpt-5-mini",
+        provider_id="openai",
+    )
+    response = llm.Response(
+        raw=None,
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+    assert response.text() == "Hello\nWorld"
+
+
+def test_text_custom_sep() -> None:
+    """Test text() with custom separator."""
+    assistant_message = llm.messages.assistant(
+        content=[llm.Text(text="Hello"), llm.Text(text="World")],
+        model_id="openai/gpt-5-mini",
+        provider_id="openai",
+    )
+    response = llm.Response(
+        raw=None,
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+    assert response.text(sep=" ") == "Hello World"
+    assert response.text(sep="") == "HelloWorld"
+
+
 def test_empty_response_pretty() -> None:
     """Test pretty representation of an empty response."""
     assistant_message = llm.messages.assistant(

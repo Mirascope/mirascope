@@ -1,6 +1,6 @@
 from mirascope import llm
 
-model = llm.use_model("openai/gpt-4o")
+model = llm.model("openai/gpt-5-mini")
 response = model.call("Hello!")
 
 # Response metadata
