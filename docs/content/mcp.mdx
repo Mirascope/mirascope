@@ -3,23 +3,80 @@ title: MCP
 description: Learn how to use Model Context Protocol (MCP) servers to provide tools to your LLM applications.
 ---
 
-<Info>
-Reference: This doc should draw from:
-- legacy/legacy-content-v1/mcp/client.mdx (MCP client usage, stdio/sse connections, tools/prompts/resources)
-- python/mirascope/llm/mcp/mcp_client.py
-- python/tests/e2e/input/test_call_with_mcp_tools.py
-</Info>
-
 # MCP
 
-This document covers integrating MCP (Model Context Protocol) servers with Mirascope.
+The [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is an open standard for connecting AI applications to external resources. Mirascope's `llm.mcp` module allows you to connect to MCP servers and use their tools with any LLM provider.
 
-## Topics Covered
+<Info>
+MCP tools are always async. You'll want to read the [Tools](/docs/mirascope/v2/tools) and [Async](/docs/mirascope/v2/async) guides first.
+</Info>
 
-- Introduction to MCP and what it provides
-- The `llm.mcp` module
-- Connecting to MCP servers with `llm.mcp.MCPClient`
-- Getting async tools from MCP servers
-- Using MCP tools with Mirascope calls
-- MCP tool execution patterns
-- Combining MCP tools with native Mirascope tools
+In the example below, we connect to the MCP server of [FastMCP](https://gofastmcp.com/getting-started/welcome), a library for creating MCP servers. Their server exposes a `"SearchFastMcp"` tool, which our agent uses to research FastMCP on its own.
+
+<TabbedSection>
+<Tab value="@llm.call">
+<CodeExample file="examples/mcp/basic_call.py" />
+</Tab>
+<Tab value="@llm.prompt">
+<CodeExample file="examples/mcp/basic_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/mcp/basic_model.py" />
+</Tab>
+</TabbedSection>
+
+<Note>
+The call definition and invocation must happen inside the `async with` block. The MCP client maintains a live connection to the server, and tools retrieved from `client.list_tools()` use this connection when executed. When invoked, the MCP tools are executed on the MCP server itself, which then returns the tool outputs.
+</Note>
+
+## The MCP Client
+
+The `llm.mcp` module provides `MCPClient`, a wrapper around the MCP `ClientSession`. You create a client using one of three async context managers, depending on how your MCP server is hosted. Each returns an `MCPClient` with a `list_tools()` method that retrieves the server's tools as Mirascope `AsyncTool`s.
+
+### Streamable HTTP
+
+For MCP servers exposed via HTTP endpoints:
+
+```python
+async with llm.mcp.streamable_http_client("https://example.com/mcp") as client:
+    tools = await client.list_tools()
+```
+
+### stdio
+
+For local MCP servers that run as subprocesses. The client launches the process and communicates via stdin/stdout:
+
+```python
+from mcp.client.stdio import StdioServerParameters
+
+server_params = StdioServerParameters(
+    command="python",
+    args=["path/to/server.py"],
+)
+
+async with llm.mcp.stdio_client(server_params) as client:
+    tools = await client.list_tools()
+```
+
+### SSE (Server-Sent Events)
+
+For servers using server-sent events:
+
+```python
+async with llm.mcp.sse_client("http://localhost:8000/sse") as client:
+    tools = await client.list_tools()
+```
+
+## Combining with Mirascope Tools
+
+MCP tools can be combined with Mirascope tools. Since MCP tools are async, all tools must be async.
+
+In this example, we add a local `search_codebase` tool that searches our own code, then combine it with MCP tools. This lets the agent research external documentation while also exploring our local implementation:
+
+<CodeExample file="examples/mcp/combined_tools.py" />
+
+## Next Steps
+
+- [Tools](/docs/mirascope/v2/tools) — Tool calling fundamentals
+- [Async](/docs/mirascope/v2/async) — Async patterns
+- [Agents](/docs/mirascope/v2/agents) — Build agents with MCP tools
