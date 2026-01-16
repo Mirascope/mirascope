@@ -80,8 +80,8 @@ export class Customers {
   /** Subscriptions service for managing customer subscriptions */
   readonly subscriptions: Subscriptions;
 
-  constructor() {
-    this.subscriptions = new Subscriptions();
+  constructor(subscriptions: Subscriptions) {
+    this.subscriptions = subscriptions;
   }
   /**
    * Creates a Stripe customer and subscription for an organization.
