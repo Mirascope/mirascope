@@ -114,6 +114,16 @@
               }
             }
           },
+          "402": {
+            "description": "PlanLimitExceededError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitExceededError"
+                }
+              }
+            }
+          },
           "403": {
             "description": "PermissionDeniedError",
             "content": {
@@ -149,7 +159,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    }
+                  ]
                 }
               }
             }
@@ -7633,55 +7650,6 @@
         },
         "additionalProperties": false
       },
-      "AlreadyExistsError": {
-        "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "resource": {
-            "type": "string"
-          },
-          "tag": {
-            "type": "string",
-            "enum": [
-              "AlreadyExistsError"
-            ]
-          }
-        },
-        "additionalProperties": false
-      },
-      "ClickHouseError": {
-        "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "cause": {
-            "$id": "/schemas/unknown",
-            "title": "unknown"
-          },
-          "tag": {
-            "type": "string",
-            "enum": [
-              "ClickHouseError"
-            ]
-          }
-        },
-        "additionalProperties": false
-      },
-      "NumberFromString": {
-        "type": "string",
-        "description": "a string to be decoded into a number"
-      },
       "StripeError": {
         "type": "object",
         "required": [
@@ -7705,39 +7673,27 @@
         },
         "additionalProperties": false
       },
-      "SubscriptionPastDueError": {
+      "AlreadyExistsError": {
         "type": "object",
         "required": [
           "message",
-          "stripeCustomerId",
-          "pastDueSubscriptionIds",
           "tag"
         ],
         "properties": {
           "message": {
             "type": "string"
           },
-          "stripeCustomerId": {
+          "resource": {
             "type": "string"
-          },
-          "pastDueSubscriptionIds": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           },
           "tag": {
             "type": "string",
             "enum": [
-              "SubscriptionPastDueError"
+              "AlreadyExistsError"
             ]
           }
         },
         "additionalProperties": false
-      },
-      "Date": {
-        "type": "string",
-        "description": "a string to be decoded into a Date"
       },
       "PlanLimitExceededError": {
         "type": "object",
@@ -7777,6 +7733,67 @@
           }
         },
         "additionalProperties": false
+      },
+      "ClickHouseError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "cause": {
+            "$id": "/schemas/unknown",
+            "title": "unknown"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "ClickHouseError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "NumberFromString": {
+        "type": "string",
+        "description": "a string to be decoded into a number"
+      },
+      "SubscriptionPastDueError": {
+        "type": "object",
+        "required": [
+          "message",
+          "stripeCustomerId",
+          "pastDueSubscriptionIds",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "stripeCustomerId": {
+            "type": "string"
+          },
+          "pastDueSubscriptionIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "SubscriptionPastDueError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Date": {
+        "type": "string",
+        "description": "a string to be decoded into a Date"
       },
       "ImmutableResourceError": {
         "type": "object",

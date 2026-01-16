@@ -73,6 +73,8 @@ import {
   NotFoundError,
   PermissionDeniedError,
   ImmutableResourceError,
+  PlanLimitExceededError,
+  StripeError,
 } from "@/errors";
 import {
   traces,
@@ -82,6 +84,7 @@ import {
 } from "@/db/schema/traces";
 import { spans, type NewSpan } from "@/db/schema/spans";
 import { spansOutbox } from "@/db/schema/spansOutbox";
+import { organizations } from "@/db/schema/organizations";
 import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
 import { Payments } from "@/payments";
@@ -307,7 +310,12 @@ export class Traces extends BaseAuthenticatedEffectService<
     data: TraceCreateInput;
   }): Effect.Effect<
     CreateTraceResponse,
-    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
+    | AlreadyExistsError
+    | NotFoundError
+    | PermissionDeniedError
+    | DatabaseError
+    | PlanLimitExceededError
+    | StripeError,
     DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
@@ -320,6 +328,39 @@ export class Traces extends BaseAuthenticatedEffectService<
         projectId,
         environmentId,
         traceId: "", // Not used for create
+      });
+
+      // Check span limits before processing
+      const payments = yield* Payments;
+
+      // Get organization's Stripe customer ID
+      const [org] = yield* client
+        .select({ stripeCustomerId: organizations.stripeCustomerId })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to fetch organization for span limit check",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!org) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Organization not found: ${organizationId}`,
+            resource: "organizations",
+          }),
+        );
+      }
+
+      // Check span limit (with caching for performance)
+      yield* payments.products.spans.checkSpanLimit({
+        organizationId,
+        stripeCustomerId: org.stripeCustomerId,
       });
 
       // Process OTLP resource spans

@@ -108,6 +108,7 @@ describe("Spans Metering Queue", () => {
               return Effect.succeed(undefined);
             },
             getUsageMeterBalance: () => Effect.succeed(0n),
+            checkSpanLimit: () => Effect.succeed(undefined),
           },
         },
         paymentIntents: {} as never,
