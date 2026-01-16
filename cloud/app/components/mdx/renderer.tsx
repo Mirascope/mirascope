@@ -8,6 +8,7 @@
 import { ClientOnly } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 import { runSync } from "@mdx-js/mdx";
+import { isDev } from "@/app/lib/site";
 import * as jsxRuntime from "react/jsx-runtime";
 import * as jsxDevRuntime from "react/jsx-dev-runtime";
 import type { CompiledMDX } from "@/app/lib/mdx/types";
@@ -156,8 +157,7 @@ function ActualContent({
   const MDXContent = useMemo(() => {
     try {
       const { default: Component } = runSync(mdx.code, {
-        ...jsxRuntime,
-        ...jsxDevRuntime,
+        ...(isDev() ? jsxDevRuntime : jsxRuntime),
         baseUrl: import.meta.url,
       });
       return Component as React.ComponentType<{ components?: MDXComponents }>;
