@@ -33,13 +33,7 @@ export type PreprocessedMDX = {
  * Compiled MDX ready for runtime evaluation
  * Contains the compiled JSX code string that can be evaluated with runSync()
  */
-export type CompiledMDX = {
-  /** Extracted frontmatter metadata */
-  frontmatter: Frontmatter;
-  /** Table of contents extracted from headings */
-  tableOfContents: TOCItem[];
-  /** Raw MDX content (for search/display) */
-  content: string;
+export type CompiledMDX = PreprocessedMDX & {
   /** Compiled JSX code string (for runtime evaluation) */
   code: string;
 };

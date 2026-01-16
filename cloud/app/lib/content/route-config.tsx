@@ -170,7 +170,7 @@ export function createContentRouteConfig<TMeta extends ContentMeta>(
           content: preprocessedMdx.content, // Raw MDX for search/display
           code, // Compiled JSX for runtime evaluation
         },
-      } as Content<TMeta>;
+      } satisfies Content<TMeta>;
     },
 
     component: contentComponent,
