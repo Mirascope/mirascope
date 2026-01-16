@@ -6,6 +6,7 @@ import { NotFoundError, InternalError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
 import { Analytics } from "@/analytics";
+import { Emails } from "@/emails";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
@@ -106,6 +107,10 @@ export const Route = createFileRoute("/api/v0/$")({
                   apiKey: process.env.POSTHOG_API_KEY,
                   host: process.env.POSTHOG_HOST,
                 },
+              }),
+              Emails.Live({
+                apiKey: process.env.RESEND_API_KEY,
+                audienceSegmentId: process.env.RESEND_AUDIENCE_SEGMENT_ID,
               }),
               ClickHouseSearch.Default.pipe(
                 Layer.provide(ClickHouse.Default),

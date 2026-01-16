@@ -2,12 +2,12 @@ import { describe, it, expect } from "vitest";
 import { Effect } from "effect";
 import * as React from "react";
 import { WelcomeEmail } from "@/emails/templates/welcome";
-import { renderEmailTemplate } from "@/emails/render";
+import { renderReactElement } from "@/emails/render";
 
 describe("WelcomeEmail", () => {
   it("renders with user name", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Alice" }),
       );
 
@@ -19,7 +19,7 @@ describe("WelcomeEmail", () => {
 
   it("renders without user name", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: null }),
       );
 
@@ -31,7 +31,7 @@ describe("WelcomeEmail", () => {
 
   it("includes documentation link", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Bob" }),
       );
 
@@ -42,7 +42,7 @@ describe("WelcomeEmail", () => {
 
   it("includes Discord invite link", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Charlie" }),
       );
 
@@ -53,7 +53,7 @@ describe("WelcomeEmail", () => {
 
   it("includes credit incentive information", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Dana" }),
       );
 
@@ -68,7 +68,7 @@ describe("WelcomeEmail", () => {
 
   it("includes founder signature", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Eve" }),
       );
 
@@ -80,7 +80,7 @@ describe("WelcomeEmail", () => {
 
   it("includes preview text", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Frank" }),
       );
 
@@ -93,7 +93,7 @@ describe("WelcomeEmail", () => {
 
   it("produces valid HTML structure", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Grace" }),
       );
 
@@ -107,7 +107,7 @@ describe("WelcomeEmail", () => {
 
   it("includes personal touch message", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(WelcomeEmail, { name: "Hannah" }),
       );
 

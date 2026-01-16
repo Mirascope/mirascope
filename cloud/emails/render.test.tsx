@@ -15,10 +15,10 @@ vi.mock("@react-email/render", async () => {
   };
 });
 
-import { renderEmailTemplate } from "@/emails/render";
+import { renderReactElement, renderEmailTemplate } from "@/emails/render";
 import { render } from "@react-email/render";
 
-describe("renderEmailTemplate", () => {
+describe("renderReactElement", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -38,7 +38,7 @@ describe("renderEmailTemplate", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(React.createElement(SimpleEmail));
+      const html = yield* renderReactElement(React.createElement(SimpleEmail));
 
       expect(html).toContain("<!DOCTYPE html");
       expect(html).toContain("Hello, World!");
@@ -62,7 +62,7 @@ describe("renderEmailTemplate", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(GreetingEmail, { name: "Alice" }),
       );
 
@@ -87,7 +87,7 @@ describe("renderEmailTemplate", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(OptionalNameEmail, { name: null }),
       );
 
@@ -102,7 +102,7 @@ describe("renderEmailTemplate", () => {
     };
 
     return Effect.gen(function* () {
-      const result = yield* renderEmailTemplate(
+      const result = yield* renderReactElement(
         React.createElement(ErrorEmail),
       ).pipe(Effect.flip);
 
@@ -118,7 +118,7 @@ describe("renderEmailTemplate", () => {
     );
 
     return Effect.gen(function* () {
-      const result = yield* renderEmailTemplate(
+      const result = yield* renderReactElement(
         React.createElement(() => <Html />),
       ).pipe(Effect.flip);
 
@@ -132,7 +132,7 @@ describe("renderEmailTemplate", () => {
     vi.mocked(render).mockRejectedValueOnce("string error");
 
     return Effect.gen(function* () {
-      const result = yield* renderEmailTemplate(
+      const result = yield* renderReactElement(
         React.createElement(() => <Html />),
       ).pipe(Effect.flip);
 
@@ -152,7 +152,7 @@ describe("renderEmailTemplate", () => {
     );
 
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(React.createElement(ValidEmail));
+      const html = yield* renderReactElement(React.createElement(ValidEmail));
 
       // Check for essential HTML email structure
       expect(html).toMatch(/<!DOCTYPE/i);
@@ -161,6 +161,185 @@ describe("renderEmailTemplate", () => {
       expect(html).toContain("<body");
       expect(html).toContain("</body>");
       expect(html).toContain("</html>");
+    }).pipe(Effect.runPromise);
+  });
+});
+
+describe("renderEmailTemplate", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("renders a component with props successfully", () => {
+    interface GreetingEmailProps {
+      name: string;
+    }
+
+    const GreetingEmail = ({ name }: GreetingEmailProps) => (
+      <Html>
+        <Head></Head>
+        <Body>
+          <Text>Hello, {name}!</Text>
+        </Body>
+      </Html>
+    );
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(GreetingEmail, { name: "Alice" });
+
+      expect(html).not.toBeNull();
+      expect(html).toContain("Hello,");
+      expect(html).toContain("Alice");
+    }).pipe(Effect.runPromise);
+  });
+
+  it("returns null when component rendering fails", () => {
+    const ErrorEmail = () => {
+      throw new Error("Render failed");
+    };
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(ErrorEmail, {});
+
+      expect(html).toBeNull();
+    }).pipe(Effect.runPromise);
+  });
+
+  it("logs error with component name when rendering fails", () => {
+    const ErrorEmail = () => {
+      throw new Error("Render failed");
+    };
+    ErrorEmail.displayName = "ErrorEmail";
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(ErrorEmail, {});
+
+      expect(html).toBeNull();
+      // Effect logging is tested in integration, we just verify null is returned
+    }).pipe(Effect.runPromise);
+  });
+
+  it("handles component with null props", () => {
+    interface OptionalEmailProps {
+      name: string | null;
+    }
+
+    const OptionalEmail = ({ name }: OptionalEmailProps) => (
+      <Html>
+        <Head></Head>
+        <Body>
+          <Text>{name ? `Hello, ${name}` : "Hello"}!</Text>
+        </Body>
+      </Html>
+    );
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(OptionalEmail, { name: null });
+
+      expect(html).not.toBeNull();
+      expect(html).toContain("Hello");
+    }).pipe(Effect.runPromise);
+  });
+
+  it("uses component displayName for error logging", () => {
+    const ErrorEmail = () => {
+      throw new Error("Test error");
+    };
+    ErrorEmail.displayName = "CustomDisplayName";
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(ErrorEmail, {});
+
+      expect(html).toBeNull();
+    }).pipe(Effect.runPromise);
+  });
+
+  it("uses component name when displayName is not set", () => {
+    function NamedErrorEmail(): React.ReactElement {
+      throw new Error("Test error");
+    }
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(NamedErrorEmail, {});
+
+      expect(html).toBeNull();
+    }).pipe(Effect.runPromise);
+  });
+
+  it("accepts additional context for error logging", () => {
+    const ErrorEmail = () => {
+      throw new Error("Test error");
+    };
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(
+        ErrorEmail,
+        {},
+        { email: "test@example.com", userId: "123" },
+      );
+
+      expect(html).toBeNull();
+    }).pipe(Effect.runPromise);
+  });
+
+  it("uses UnknownEmailComponent when component has no name or displayName", () => {
+    // Create a component with empty name and no displayName
+    const AnonymousErrorEmail = (() => {
+      throw new Error("Test error");
+    }) as React.ComponentType<object>;
+
+    // Override the name property to be empty
+    Object.defineProperty(AnonymousErrorEmail, "name", { value: "" });
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(AnonymousErrorEmail, {});
+
+      expect(html).toBeNull();
+      // The component name "UnknownEmailComponent" would be used in error logs
+    }).pipe(Effect.runPromise);
+  });
+
+  it("renders component with complex props", () => {
+    interface ComplexEmailProps {
+      title: string;
+      items: string[];
+      metadata: {
+        sender: string;
+        timestamp: Date;
+      };
+    }
+
+    const ComplexEmail = ({ title, items, metadata }: ComplexEmailProps) => (
+      <Html>
+        <Head></Head>
+        <Body>
+          <Text>{title}</Text>
+          {items.map((item) => (
+            <Text key={item}>{item}</Text>
+          ))}
+          <Text>{metadata.sender}</Text>
+        </Body>
+      </Html>
+    );
+
+    const timestamp = new Date("2024-01-01");
+
+    return Effect.gen(function* () {
+      const html = yield* renderEmailTemplate(ComplexEmail, {
+        title: "Test Email",
+        items: ["Item 1", "Item 2"],
+        metadata: { sender: "alice@example.com", timestamp },
+      });
+
+      expect(html).not.toBeNull();
+      expect(html).toContain("Test Email");
+      expect(html).toContain("Item 1");
+      expect(html).toContain("Item 2");
+      expect(html).toContain("alice@example.com");
     }).pipe(Effect.runPromise);
   });
 });

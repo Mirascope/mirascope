@@ -4,29 +4,23 @@ import * as React from "react";
 import { EmailRenderError } from "@/errors";
 
 /**
- * Renders a React Email component to HTML string.
+ * Renders a React Email element to HTML string.
  *
+ * Low-level function that takes a React element and renders it to HTML.
  * This is an Effect-native wrapper around @react-email/render's render()
- * function, enabling seamless integration with the existing Effect-based
- * email service architecture.
+ * function.
  *
- * @param component - React Email component to render
+ * @internal - Use `renderEmailTemplate` instead for most cases. This is
+ * exported primarily for testing purposes.
+ * @param element - React Email element to render
  * @returns Effect that yields HTML string or EmailRenderError
- *
- * @example
- * ```ts
- * const htmlEffect = renderEmailTemplate(
- *   React.createElement(WelcomeEmail, { name: "Alice" })
- * );
- * const html = yield* htmlEffect;
- * ```
  */
-export function renderEmailTemplate(
-  component: React.ReactElement,
+export function renderReactElement(
+  element: React.ReactElement,
 ): Effect.Effect<string, EmailRenderError> {
   return Effect.tryPromise({
     try: async () => {
-      const html = await render(component);
+      const html = await render(element);
 
       // React Email embeds errors in HTML rather than throwing
       // Detect error markers and throw an error instead
@@ -54,4 +48,57 @@ export function renderEmailTemplate(
       return new EmailRenderError({ message, cause: error });
     },
   });
+}
+
+/**
+ * Renders an email template with automatic error handling.
+ *
+ * Takes a React Email component and its props, renders it to HTML with
+ * built-in error handling:
+ * - Creates the React element from the component and props
+ * - Handles rendering errors gracefully by logging and returning null
+ * - Extracts the component name for better error messages
+ *
+ * @param Component - React Email component type
+ * @param props - Props for the component
+ * @param additionalContext - Optional additional context for error logging
+ * @returns Effect that yields HTML string or null on error
+ *
+ * @example
+ * ```ts
+ * const html = yield* renderEmailTemplate(
+ *   InvitationEmail,
+ *   { senderName: "Alice", organizationName: "Acme", ... },
+ *   { recipientEmail: "bob@example.com" }
+ * );
+ *
+ * if (html !== null) {
+ *   // Send email
+ * }
+ * ```
+ */
+export function renderEmailTemplate<P extends object>(
+  Component: React.ComponentType<P>,
+  props: P,
+  additionalContext?: Record<string, unknown>,
+): Effect.Effect<string | null, never> {
+  const componentName =
+    Component.displayName || Component.name || "UnknownEmailComponent";
+
+  return renderReactElement(React.createElement(Component, props)).pipe(
+    Effect.catchAll((error) =>
+      Effect.gen(function* () {
+        yield* Effect.logError(
+          `Failed to render ${componentName} template`,
+        ).pipe(
+          Effect.annotateLogs({
+            error: String(error),
+            component: componentName,
+            ...additionalContext,
+          }),
+        );
+        return null;
+      }),
+    ),
+  );
 }

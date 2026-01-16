@@ -1,6 +1,7 @@
 import { Effect, Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
 import { describe, it, expect, assert, TestApiContext } from "@/tests/api";
+import { vi } from "vitest";
 import { TestOrganizationFixture } from "@/tests/db";
 import {
   CreateInvitationRequestSchema,
@@ -20,6 +21,7 @@ import { AuthenticatedUser } from "@/auth";
 import {
   resendInvitationHandler,
   acceptInvitationHandler,
+  createInvitationHandler,
 } from "@/api/organization-invitations.handlers";
 
 describe("CreateInvitationRequestSchema validation", () => {
@@ -450,6 +452,131 @@ describe("Organization Invitations API - Edge Cases", () => {
         expect(membership.memberId).toBe(nonMember.id);
         expect(membership.role).toBe("MEMBER");
         expect(membership.createdAt).toBeInstanceOf(Date);
+      }),
+  );
+
+  it.rollback(
+    "POST /organizations/:id/invitations - handles sender with no name (uses email as fallback)",
+    () =>
+      Effect.gen(function* () {
+        const drizzle = yield* DrizzleORM;
+        const { org, owner } = yield* TestOrganizationFixture;
+
+        // Update owner to have null name
+        const { users } = yield* Effect.promise(() => import("@/db/schema"));
+        yield* drizzle
+          .update(users)
+          .set({ name: null })
+          .where(eq(users.id, owner.id));
+
+        // Create invitation - should use email as fallback for sender name
+        const invitation = yield* createInvitationHandler(org.id, {
+          recipientEmail: "no-sender-name@example.com",
+          role: "MEMBER",
+        }).pipe(
+          Effect.provideService(AuthenticatedUser, { ...owner, name: null }),
+        );
+
+        expect(invitation.recipientEmail).toBe("no-sender-name@example.com");
+        expect(invitation.role).toBe("MEMBER");
+        expect(invitation.status).toBe("pending");
+      }),
+  );
+
+  it.rollback(
+    "POST /organizations/:id/invitations/:invitationId/resend - handles sender with no name (uses email as fallback)",
+    () =>
+      Effect.gen(function* () {
+        const drizzle = yield* DrizzleORM;
+        const { org, owner } = yield* TestOrganizationFixture;
+
+        // Update owner to have null name
+        const { users } = yield* Effect.promise(() => import("@/db/schema"));
+        yield* drizzle
+          .update(users)
+          .set({ name: null })
+          .where(eq(users.id, owner.id));
+
+        // Create an invitation first
+        const invitation = yield* createInvitationHandler(org.id, {
+          recipientEmail: "no-sender-name@example.com",
+          role: "MEMBER",
+        }).pipe(
+          Effect.provideService(AuthenticatedUser, { ...owner, name: null }),
+        );
+
+        // Resend invitation - should use email as fallback for sender name
+        yield* resendInvitationHandler(org.id, invitation.id).pipe(
+          Effect.provideService(AuthenticatedUser, { ...owner, name: null }),
+        );
+      }),
+  );
+
+  it.rollback(
+    "POST /organizations/:id/invitations - creates invitation when email rendering fails (returns null)",
+    () =>
+      Effect.gen(function* () {
+        const { org, owner } = yield* TestOrganizationFixture;
+
+        // Mock renderEmailTemplate to return null (rendering failure)
+        const renderModule = yield* Effect.promise(
+          () => import("@/emails/render"),
+        );
+        const renderSpy = vi
+          .spyOn(renderModule, "renderEmailTemplate")
+          .mockReturnValueOnce(Effect.succeed(null));
+
+        // Create invitation - should succeed despite rendering failure
+        const invitation = yield* createInvitationHandler(org.id, {
+          recipientEmail: "email-render-fail@example.com",
+          role: "MEMBER",
+        }).pipe(Effect.provideService(AuthenticatedUser, owner));
+
+        expect(invitation.recipientEmail).toBe("email-render-fail@example.com");
+        expect(invitation.role).toBe("MEMBER");
+        expect(invitation.status).toBe("pending");
+
+        // Verify renderEmailTemplate was called
+        expect(renderSpy).toHaveBeenCalled();
+
+        renderSpy.mockRestore();
+      }),
+  );
+
+  it.rollback(
+    "POST /organizations/:id/invitations/:invitationId/resend - resends invitation when email rendering fails (returns null)",
+    () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+        const { org, owner } = yield* TestOrganizationFixture;
+
+        // Create an invitation first
+        const invitation = yield* db.organizations.invitations.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: {
+            recipientEmail: "resend-render-fail@example.com",
+            role: "MEMBER",
+          },
+        });
+
+        // Mock renderEmailTemplate to return null (rendering failure)
+        const renderModule = yield* Effect.promise(
+          () => import("@/emails/render"),
+        );
+        const renderSpy = vi
+          .spyOn(renderModule, "renderEmailTemplate")
+          .mockReturnValueOnce(Effect.succeed(null));
+
+        // Resend invitation - should succeed despite rendering failure
+        yield* resendInvitationHandler(org.id, invitation.id).pipe(
+          Effect.provideService(AuthenticatedUser, owner),
+        );
+
+        // Verify renderEmailTemplate was called
+        expect(renderSpy).toHaveBeenCalled();
+
+        renderSpy.mockRestore();
       }),
   );
 });

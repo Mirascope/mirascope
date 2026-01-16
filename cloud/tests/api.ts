@@ -22,6 +22,7 @@ import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { Analytics } from "@/analytics";
+import { Emails } from "@/emails";
 import { AuthenticatedUser, Authentication } from "@/auth";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
@@ -55,6 +56,16 @@ const MockAnalytics = Layer.succeed(Analytics, {
   trackPageView: () => Effect.void,
   identify: () => Effect.void,
   initialize: () => Effect.void,
+});
+
+/**
+ * Mock layer for Emails that provides a no-op implementation for tests.
+ */
+const MockEmails = Layer.succeed(Emails, {
+  send: () => Effect.succeed({ id: "mock-email-id" }),
+  audience: {
+    add: () => Effect.succeed({ id: "mock-contact-id" }),
+  },
 });
 
 /**
@@ -119,8 +130,8 @@ const withRollback = <A, E, R>(
   }) as Effect.Effect<A, E, R>;
 
 /**
- * Creates a Database layer with MockPayments and MockAnalytics for testing.
- * Provides Database, Payments, Analytics, DrizzleORM, SqlClient, and SpansMeteringQueueService.
+ * Creates a Database layer with MockPayments, MockAnalytics, and MockEmails for testing.
+ * Provides Database, Payments, Analytics, Emails, DrizzleORM, SqlClient, and SpansMeteringQueueService.
  */
 function createTestDatabaseLayer(connectionString: string) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
@@ -132,6 +143,7 @@ function createTestDatabaseLayer(connectionString: string) {
     drizzleLayer,
     DefaultMockPayments,
     MockAnalytics,
+    MockEmails,
     MockSpansMeteringQueue,
   );
 }

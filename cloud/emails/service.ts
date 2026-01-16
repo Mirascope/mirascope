@@ -49,7 +49,7 @@
  * ```
  */
 
-import { Context, Layer, Effect } from "effect";
+import { Context, Layer, Effect, Schedule } from "effect";
 import { Resend, type ResendConfig } from "@/emails/resend-client";
 import { ResendError } from "@/errors";
 import { dependencyProvider, type Ready } from "@/utils";
@@ -143,6 +143,48 @@ export class Emails extends Context.Tag("Email")<
     readonly audience: Ready<Audience>;
   }
 >() {
+  /**
+   * Default retry logic for email operations with error handling.
+   *
+   * Uses exponential backoff with 5 attempts (100ms, 200ms, 400ms, 800ms, 1600ms).
+   * Catches all errors, logs them as warnings, and continues without failing.
+   *
+   * @param errorMessage - The message to log if the operation fails after all retries
+   * @returns A pipe operator that adds retry and error handling to an Effect
+   *
+   * @example
+   * ```ts
+   * const program = Effect.gen(function* () {
+   *   const emails = yield* Emails;
+   *   yield* emails.send({...}).pipe(
+   *     Emails.DefaultRetries("Failed to send invitation email")
+   *   );
+   *   yield* emails.audience.add(email).pipe(
+   *     Emails.DefaultRetries("Failed to add user to audience")
+   *   );
+   * });
+   * ```
+   */
+  static DefaultRetries = <A, E, R>(
+    errorMessage: string,
+  ): ((effect: Effect.Effect<A, E, R>) => Effect.Effect<void, never, R>) => {
+    return (effect) =>
+      effect.pipe(
+        // Retry with exponential backoff: 100ms, 200ms, 400ms, 800ms, 1600ms (max 5 attempts)
+        Effect.retry(
+          Schedule.exponential("100 millis").pipe(
+            Schedule.compose(Schedule.recurs(4)),
+          ),
+        ),
+        // Catch all errors and log them, but don't fail the Effect
+        Effect.catchAllCause((cause) =>
+          Effect.logWarning(errorMessage).pipe(
+            Effect.annotateLogs({ cause: String(cause) }),
+            Effect.as(undefined),
+          ),
+        ),
+      );
+  };
   /**
    * Default layer that creates the Emails service.
    *

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Effect } from "effect";
 import * as React from "react";
 import { InvitationEmail } from "@/emails/templates/invitation";
-import { renderEmailTemplate } from "@/emails/render";
+import { renderReactElement } from "@/emails/render";
 
 describe("InvitationEmail", () => {
   const baseProps = {
@@ -16,7 +16,7 @@ describe("InvitationEmail", () => {
 
   it("renders with all props", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -29,7 +29,7 @@ describe("InvitationEmail", () => {
 
   it("displays correct role description for ADMIN", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, {
           ...baseProps,
           role: "ADMIN",
@@ -45,7 +45,7 @@ describe("InvitationEmail", () => {
 
   it("displays correct role description for MEMBER", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -59,7 +59,7 @@ describe("InvitationEmail", () => {
   it("shows plural days for expiration when more than 1 day", () => {
     return Effect.gen(function* () {
       const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, {
           ...baseProps,
           expiresAt: sevenDaysFromNow,
@@ -82,7 +82,7 @@ describe("InvitationEmail", () => {
     return Effect.gen(function* () {
       // Set to slightly more than 23 hours to ensure it rounds to exactly 1 day
       const oneDayFromNow = new Date(Date.now() + 23.5 * 60 * 60 * 1000);
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, {
           ...baseProps,
           expiresAt: oneDayFromNow,
@@ -103,7 +103,7 @@ describe("InvitationEmail", () => {
 
   it("includes accept URL in button", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -114,7 +114,7 @@ describe("InvitationEmail", () => {
 
   it("includes security notice", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -126,7 +126,7 @@ describe("InvitationEmail", () => {
 
   it("mentions account creation for new users", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -137,7 +137,7 @@ describe("InvitationEmail", () => {
 
   it("includes preview text", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -149,7 +149,7 @@ describe("InvitationEmail", () => {
 
   it("produces valid HTML structure", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 
@@ -163,7 +163,7 @@ describe("InvitationEmail", () => {
 
   it("shows recipient email in invitation details", () => {
     return Effect.gen(function* () {
-      const html = yield* renderEmailTemplate(
+      const html = yield* renderReactElement(
         React.createElement(InvitationEmail, baseProps),
       );
 

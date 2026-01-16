@@ -2,12 +2,60 @@ import { Effect } from "effect";
 import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import { ImmutableResourceError } from "@/errors";
+import { Emails } from "@/emails";
+import { renderEmailTemplate } from "@/emails/render";
+import { InvitationEmail } from "@/emails/templates/invitation";
 import type {
   CreateInvitationRequest,
   AcceptInvitationRequest,
 } from "@/api/organization-invitations.schemas";
 
 export * from "@/api/organization-invitations.schemas";
+
+// =============================================================================
+// Private Utilities
+// =============================================================================
+
+/**
+ * Builds the invitation acceptance URL with the given token.
+ *
+ * @param token - The invitation token
+ * @returns The full URL for accepting the invitation
+ */
+function buildAcceptUrl(token: string): string {
+  const baseUrl = process.env.SITE_URL;
+  /* v8 ignore start */
+  if (!baseUrl) {
+    // TODO: Unify all environment variable access under a Settings service/requirement
+    throw new Error(
+      "SITE_URL environment variable is not configured. Cannot generate invitation acceptance URL.",
+    );
+  }
+  /* v8 ignore end */
+  return `${baseUrl}/invitations/accept?token=${token}`;
+}
+
+/**
+ * Builds the "from" address for invitation emails.
+ *
+ * Uses the sender's name if available, otherwise falls back to email.
+ * Format: "Sender Name <sender@example.com>"
+ *
+ * @param senderName - The sender's name (may be null)
+ * @param senderEmail - The sender's email address
+ * @returns Formatted email address for the "from" field
+ */
+function buildFromAddress(
+  senderName: string | null,
+  senderEmail: string,
+): string {
+  const fromName = senderName || senderEmail;
+  return `${fromName} <${senderEmail}>`;
+}
+
+// =============================================================================
+// Handlers
+// =============================================================================
 
 export const listInvitationsHandler = (organizationId: string) =>
   Effect.gen(function* () {
@@ -26,6 +74,7 @@ export const createInvitationHandler = (
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const emails = yield* Emails;
 
     const invitationWithMetadata = yield* db.organizations.invitations.create({
       userId: user.id,
@@ -36,8 +85,42 @@ export const createInvitationHandler = (
       },
     });
 
-    // TODO: Send email using invitationWithMetadata (includes token, organizationName, senderName, etc.)
-    // This will be implemented in a future PR with the email service integration
+    // Send invitation email
+    const acceptUrl = buildAcceptUrl(invitationWithMetadata.token);
+    const fromAddress = buildFromAddress(
+      invitationWithMetadata.senderName,
+      invitationWithMetadata.senderEmail,
+    );
+
+    const htmlContent = yield* renderEmailTemplate(
+      InvitationEmail,
+      {
+        senderName: invitationWithMetadata.senderName || "A team member",
+        organizationName: invitationWithMetadata.organizationName,
+        recipientEmail: invitationWithMetadata.recipientEmail,
+        role: invitationWithMetadata.role,
+        acceptUrl,
+        expiresAt: invitationWithMetadata.expiresAt,
+      },
+      { email: invitationWithMetadata.recipientEmail },
+    );
+
+    // Only send email if rendering succeeded
+    if (htmlContent !== null) {
+      yield* emails
+        .send({
+          from: fromAddress,
+          replyTo: invitationWithMetadata.senderEmail,
+          to: invitationWithMetadata.recipientEmail,
+          subject: `You're invited to join ${invitationWithMetadata.organizationName} on Mirascope`,
+          html: htmlContent,
+        })
+        .pipe(
+          Emails.DefaultRetries(
+            `Failed to send invitation email to ${invitationWithMetadata.recipientEmail}`,
+          ),
+        );
+    }
 
     // Return invitation without token and metadata (security)
     return {
@@ -76,6 +159,7 @@ export const resendInvitationHandler = (
   Effect.gen(function* () {
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
+    const emails = yield* Emails;
 
     // Get invitation with metadata (includes token)
     const invitationWithMetadata =
@@ -103,10 +187,43 @@ export const resendInvitationHandler = (
       );
     }
 
-    // TODO: Send email using invitationWithMetadata (includes token, organizationName, senderName, etc.)
-    // This will be implemented in a future PR with the email service integration
+    // Send invitation email
+    const acceptUrl = buildAcceptUrl(invitationWithMetadata.token);
+    const fromAddress = buildFromAddress(
+      invitationWithMetadata.senderName,
+      invitationWithMetadata.senderEmail,
+    );
 
-    // For now, just return void to indicate success
+    const htmlContent = yield* renderEmailTemplate(
+      InvitationEmail,
+      {
+        senderName: invitationWithMetadata.senderName || "A team member",
+        organizationName: invitationWithMetadata.organizationName,
+        recipientEmail: invitationWithMetadata.recipientEmail,
+        role: invitationWithMetadata.role,
+        acceptUrl,
+        expiresAt: invitationWithMetadata.expiresAt,
+      },
+      { email: invitationWithMetadata.recipientEmail },
+    );
+
+    // Only send email if rendering succeeded
+    if (htmlContent !== null) {
+      yield* emails
+        .send({
+          from: fromAddress,
+          replyTo: invitationWithMetadata.senderEmail,
+          to: invitationWithMetadata.recipientEmail,
+          subject: `You're invited to join ${invitationWithMetadata.organizationName} on Mirascope`,
+          html: htmlContent,
+        })
+        .pipe(
+          Emails.DefaultRetries(
+            `Failed to resend invitation email to ${invitationWithMetadata.recipientEmail}`,
+          ),
+        );
+    }
+
     return;
   });
 
