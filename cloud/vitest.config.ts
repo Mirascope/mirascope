@@ -21,6 +21,7 @@ export default defineConfig({
         "workers",
       ],
       exclude: [
+        "**.md",
         "**/index.ts",
         "db/migrations/**",
         "db/schema/**",

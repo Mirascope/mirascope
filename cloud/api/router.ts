@@ -20,6 +20,14 @@ import {
   cancelScheduledDowngradeHandler,
 } from "@/api/organizations.handlers";
 import {
+  listInvitationsHandler,
+  createInvitationHandler,
+  getInvitationHandler,
+  resendInvitationHandler,
+  revokeInvitationHandler,
+  acceptInvitationHandler,
+} from "@/api/organization-invitations.handlers";
+import {
   listProjectsHandler,
   createProjectHandler,
   getProjectHandler,
@@ -120,6 +128,27 @@ const OrganizationsHandlersLive = HttpApiBuilder.group(
       .handle("cancelScheduledDowngrade", ({ path }) =>
         cancelScheduledDowngradeHandler(path.id),
       ),
+);
+
+const OrganizationInvitationsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "organization-invitations",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) => listInvitationsHandler(path.organizationId))
+      .handle("create", ({ path, payload }) =>
+        createInvitationHandler(path.organizationId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getInvitationHandler(path.organizationId, path.invitationId),
+      )
+      .handle("resend", ({ path }) =>
+        resendInvitationHandler(path.organizationId, path.invitationId),
+      )
+      .handle("revoke", ({ path }) =>
+        revokeInvitationHandler(path.organizationId, path.invitationId),
+      )
+      .handle("accept", ({ payload }) => acceptInvitationHandler(payload)),
 );
 
 const ProjectsHandlersLive = HttpApiBuilder.group(
@@ -246,6 +275,7 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(TracesHandlersLive),
   Layer.provide(DocsHandlersLive),
   Layer.provide(OrganizationsHandlersLive),
+  Layer.provide(OrganizationInvitationsHandlersLive),
   Layer.provide(ProjectsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),

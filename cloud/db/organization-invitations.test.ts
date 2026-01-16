@@ -1106,7 +1106,7 @@ describe("OrganizationInvitations", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Invitation not found or expired");
+        expect(result.message).toBe("Invitation not found");
       }),
     );
 

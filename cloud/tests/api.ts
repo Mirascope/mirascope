@@ -2,6 +2,7 @@ import {
   describe as vitestDescribe,
   it as vitestIt,
   expect,
+  assert,
   beforeAll,
   afterAll,
 } from "@effect/vitest";
@@ -38,7 +39,7 @@ import { SqlClient } from "@effect/sql";
 import fs from "fs";
 
 // Re-export expect from vitest
-export { expect };
+export { expect, assert };
 
 // ============================================================================
 // it.effect with automatic Database layer provision
