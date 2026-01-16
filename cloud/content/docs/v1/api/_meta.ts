@@ -4,11 +4,11 @@
 
 import type { SectionSpec } from "@/app/lib/content/spec";
 
-export const apiMeta: SectionSpec = {
+export const v1ApiMeta: SectionSpec = {
   slug: "api",
   label: "API Reference",
   version: "v1",
-  weight: 0.5,
+  weight: 0,
   children: [
     {
       slug: "index",
@@ -535,4 +535,4 @@ export const apiMeta: SectionSpec = {
   ],
 };
 
-export default apiMeta;
+export default v1ApiMeta;
