@@ -7,6 +7,7 @@ import { viteMDX } from "./vite-plugins/mdx";
 import { viteContent } from "./vite-plugins/content";
 import { viteImages } from "./vite-plugins/images";
 import { viteRobots } from "./vite-plugins/robots";
+import { pagefindDev } from "./vite-plugins/pagefind-dev";
 import { defineConfig } from "vite";
 
 export default defineConfig(() => {
@@ -61,6 +62,7 @@ export default defineConfig(() => {
         },
       }),
       viteRobots(), // Generate robots disallow paths from sitemap (must be after tanstackStart)
+      pagefindDev(),
       viteReact(),
       tailwindcss(),
     ],

@@ -229,3 +229,49 @@ The plugin will **fail the build** if:
 - The sitemap file does not exist at `dist/client/sitemap.xml`
 
 This ensures the sitemap plugin runs before the robots plugin.
+
+## Pagefind Dev Plugin (`pagefind-dev.ts`)
+
+Serves Pagefind search index files during development mode.
+
+### Features
+
+- **Dev server middleware**: Intercepts requests to `/_pagefind/` and serves files from the build output
+- **MIME type handling**: Correctly sets Content-Type headers for all Pagefind file types
+- **Query parameter support**: Handles timestamp-suffixed requests for `pagefind-entry.json`
+- **Graceful 404s**: Returns 404 for missing files without crashing the server
+
+### How It Works
+
+Pagefind generates its search index into `dist/client/_pagefind/` during the build process. In development, the Vite dev server doesn't serve from `dist/`, so this plugin provides middleware to:
+
+1. Intercept any request starting with `/_pagefind/`
+2. Resolve the corresponding file in `dist/client/_pagefind/`
+3. Set the appropriate Content-Type header based on file extension
+4. Serve the file contents or return 404 if not found
+
+### Supported File Types
+
+| Extension | Content-Type |
+|-----------|--------------|
+| `.js` | `application/javascript; charset=utf-8` |
+| `.json` | `application/json` |
+| `.css` | `text/css` |
+| `.wasm` | `application/wasm` |
+| `.pf_meta` | `application/octet-stream` |
+| Other | `text/plain` |
+
+### Build-time vs Runtime
+
+- **Development**: Middleware serves Pagefind files from `dist/client/_pagefind/`. Requires running a build first to generate the index.
+- **Production**: Pagefind files are served directly from the static build output. Middleware is not used.
+
+### Prerequisites
+
+The Pagefind index must exist in `dist/client/_pagefind/` for search to work in development. Run a build first:
+
+```bash
+bun run build
+```
+
+Then start the dev server. The search functionality will use the pre-built index.

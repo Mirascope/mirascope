@@ -5,7 +5,12 @@ import {
   // @ts-expect-error - virtual module resolved by vite plugin
 } from "virtual:content-meta";
 import type { PreprocessedMDX } from "@/app/lib/mdx/types";
-import type { BlogMeta, DocMeta, PolicyMeta } from "@/app/lib/content/types";
+import type {
+  BlogMeta,
+  ContentMeta,
+  DocMeta,
+  PolicyMeta,
+} from "@/app/lib/content/types";
 
 export function getAllBlogMeta(): BlogMeta[] {
   return blogMetadata as BlogMeta[];
@@ -17,6 +22,14 @@ export function getAllDocsMeta(): DocMeta[] {
 
 export function getAllPolicyMeta(): PolicyMeta[] {
   return policyMetadata as PolicyMeta[];
+}
+
+export function getAllContentMeta(): ContentMeta[] {
+  return [
+    ...(blogMetadata as BlogMeta[]),
+    ...(docsMetadata as DocMeta[]),
+    ...(policyMetadata as PolicyMeta[]),
+  ];
 }
 
 export type VirtualModuleExport = { default: PreprocessedMDX };
