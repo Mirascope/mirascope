@@ -4,14 +4,20 @@ import {
   expect,
   MockDrizzleORM,
   TestOrganizationFixture,
+  TestFreePlanOrganizationFixture,
+  TestDrizzleORM,
+  MockAnalytics,
+  MockSpansMeteringQueue,
 } from "@/tests/db";
-import { Effect } from "effect";
+import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
+import { Effect, Layer } from "effect";
 import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
 } from "@/errors";
 import type { PublicProject } from "@/db/schema";
 
@@ -151,23 +157,16 @@ describe("Projects", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.findById (authorize + actual)
+            // authorize: getRole
+            .select([{ role: "OWNER" }])
+            // findById: get membership
             .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
+              { memberId: "owner-id", role: "OWNER", createdAt: new Date() },
             ])
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "owner-id",
-                createdAt: new Date(),
-              },
-            ])
+            // checkProjectLimit: getPlan -> fetch organization
+            .select([{ stripeCustomerId: "cus_test" }])
+            // checkProjectLimit: count projects (under limit)
+            .select([{ count: 0 }])
             // project insert fails
             .insert(new Error("Database connection failed"))
             .build(),
@@ -280,6 +279,111 @@ describe("Projects", () => {
           expect(project1.id).not.toBe(project2.id);
           expect(project1.organizationId).not.toBe(project2.organizationId);
         }),
+    );
+
+    it.effect("returns non-SqlError from getPlan in checkProjectLimit", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects
+          .create({
+            userId: "owner-id",
+            organizationId: "org-id",
+            data: { name: "Test Project", slug: "test-project" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found: org-id");
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            .select([{ role: "OWNER" }]) // authorize: getRole
+            .select([
+              { memberId: "owner-id", role: "OWNER", createdAt: new Date() },
+            ]) // findById
+            .select([]) // checkProjectLimit: getPlan -> org not found
+            .build(),
+        ),
+      ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when counting projects fails in checkProjectLimit",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { name: "Test Project", slug: "test-project" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to count projects");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([{ role: "OWNER" }]) // authorize: getRole
+              .select([
+                { memberId: "owner-id", role: "OWNER", createdAt: new Date() },
+              ]) // findById
+              .select([{ stripeCustomerId: "cus_test" }]) // checkProjectLimit: getPlan
+              .select(new Error("Connection failed")) // checkProjectLimit: count fails
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `PlanLimitExceededError` when project limit is exceeded",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner } = yield* TestFreePlanOrganizationFixture;
+          const db = yield* Database;
+
+          // Create first project (FREE plan allows 1)
+          yield* db.organizations.projects.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { name: "First Project", slug: "first-project" },
+          });
+
+          // Try to create second project - should fail
+          const result = yield* db.organizations.projects
+            .create({
+              userId: owner.id,
+              organizationId: org.id,
+              data: { name: "Second Project", slug: "second-project" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PlanLimitExceededError);
+          if (result instanceof PlanLimitExceededError) {
+            expect(result.message).toContain("free plan limit is 1 project(s)");
+            expect(result.limitType).toBe("projects");
+            expect(result.currentUsage).toBe(1);
+            expect(result.limit).toBe(1);
+          }
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Database.Default.pipe(
+                Layer.provide(
+                  TestSubscriptionWithRealDatabaseFixture(
+                    { plan: "free" },
+                    TestDrizzleORM,
+                  ),
+                ),
+              ),
+              MockAnalytics,
+              MockSpansMeteringQueue,
+            ),
+          ),
+        ),
     );
   });
 

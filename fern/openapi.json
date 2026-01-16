@@ -3820,6 +3820,16 @@
               }
             }
           },
+          "402": {
+            "description": "PlanLimitExceededError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitExceededError"
+                }
+              }
+            }
+          },
           "403": {
             "description": "PermissionDeniedError",
             "content": {
@@ -3851,11 +3861,18 @@
             }
           },
           "500": {
-            "description": "DatabaseError",
+            "description": "StripeError",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
                 }
               }
             }
