@@ -3,25 +3,172 @@ title: Streaming
 description: Learn how to stream LLM responses in real-time for more responsive applications.
 ---
 
-<Info>
-Reference: This doc should draw from:
-- legacy/legacy-content-v1/streams.mdx (streaming basics, async streaming)
-- legacy/legacy-content-v2/streams.mdx (updated streaming patterns)
-- index.mdx "About Stream Responses" section (stream iterators, finishing streams)
-- python/mirascope/llm/responses/base_stream_response.py
-</Info>
-
 # Streaming
 
-This document covers streaming responses from LLMs for real-time output.
+Streaming lets you receive and process LLM responses as they're generated, rather than waiting for the complete response. Instead of a multi-second wait followed by a wall of text, users see content appear progressively. This creates a more responsive, interactive experience.
 
-## Topics Covered
+## Basic Usage
 
-- General overview of streaming and why it's desirable
-- Getting a stream response via `call.stream()` or `model.stream()`
-- Stream iterators: `chunk_stream()`, `pretty_stream()`, `streams()`
-- How Mirascope models streaming chunk content (`llm.AssistantContentChunk`)
-- Substreams for individual content pieces (`TextStream`, `ToolCallStream`, etc.)
-- Finalizing a stream with `response.finish()`
-- Accessing accumulated content after streaming
-- How streaming intersects with tools
+Call `.stream()` to get a `StreamResponse` instead of a `Response`. Then iterate with `pretty_stream()` to print content as it arrives:
+
+<TabbedSection>
+<Tab value="@llm.call">
+<CodeExample file="examples/streaming/basic_call.py" />
+</Tab>
+<Tab value="@llm.prompt">
+<CodeExample file="examples/streaming/basic_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/streaming/basic_model.py" />
+</Tab>
+</TabbedSection>
+
+The `pretty_stream()` method yields string chunks that you can print directly. Using `end=""` and `flush=True` ensures real-time display without line breaks.
+
+## Stream Iterators
+
+`StreamResponse` provides several ways to iterate over content:
+
+| Method | Yields | Use Case |
+| --- | --- | --- |
+| `pretty_stream()` | `str` | Simple text display, debugging |
+| `streams()` | `TextStream`, `ToolCallStream`, etc. | Processing distinct content parts separately |
+| `structured_stream()` | `Partial[T]` | Streaming structured output fields as they arrive |
+| `chunk_stream()` | `AssistantContentChunk` | Low-level access to raw chunks |
+
+### pretty_stream
+
+The `pretty_stream()` iterator renders all content as human-readable chunks. It is a streaming version of `response.pretty()`. This is convenient for cases where you are only getting text content back, or for quick and easy debugging.
+
+### streams
+
+The `streams()` iterator groups chunks into substreams, which each contain one logical content piece. Each stream corresponds to one `Text`, `ToolCall`, or `Thought` in the final response.
+
+The substreams will be `llm.TextStream`, `llm.ToolCallStream`, or `llm.ThoughtStream` (or Async variants). Each substream is an iterator that yields string deltas, and accumulates the partial content as a property. You can call `.collect()` to finish iteration and get the final content part (`llm.Text`, `llm.ToolCall`, or `llm.Thought`). 
+
+If you want to skip processing a substream (for example, skipping tool call streams to let them accumulate naturally), you can do so and Mirascope will automatically handle it for you.
+
+For example, you might use this to print all text content live, while silently accumulating tool calls to invoke once the response is done:
+
+<CodeExample file="examples/streaming/streams.py" />
+
+### chunk_stream
+
+For low-level control, `chunk_stream()` yields typed chunk objects. Use pattern matching to handle different content types:
+
+<CodeExample file="examples/streaming/chunk_stream.py" />
+
+<Note>
+Some providers support interleaved tool calls, where chunks from multiple tool calls arrive mixed together. Each chunk includes an `id` field to track which tool call it belongs to. We recommend using `streams()` instead, which handles this complexity for you.
+</Note>
+
+<Note title="Chunk Types Reference" collapsible={true} defaultOpen={false}>
+
+When using `chunk_stream()`, you'll encounter these chunk types:
+
+| Chunk Type | `type` | Properties | Description |
+| --- | --- | --- | --- |
+| `TextStartChunk` | `"text_start_chunk"` | — | Marks start of text content |
+| `TextChunk` | `"text_chunk"` | `delta` | Incremental text |
+| `TextEndChunk` | `"text_end_chunk"` | — | Marks end of text content |
+| `ThoughtStartChunk` | `"thought_start_chunk"` | — | Marks start of thinking |
+| `ThoughtChunk` | `"thought_chunk"` | `delta` | Incremental reasoning text |
+| `ThoughtEndChunk` | `"thought_end_chunk"` | — | Marks end of thinking |
+| `ToolCallStartChunk` | `"tool_call_start_chunk"` | `id`, `name` | Marks start of tool call |
+| `ToolCallChunk` | `"tool_call_chunk"` | `id`, `delta` | Incremental JSON args |
+| `ToolCallEndChunk` | `"tool_call_end_chunk"` | `id` | Marks end of tool call |
+
+When using the `streams()` api, the start and end chunks correspond to the start and end of each substream, and the substream properties will contain info that would be present on the start chunk (like tool id and name).
+</Note>
+
+## Accumulated Content
+
+As you iterate through a stream, content accumulates on the response object. After streaming completes, you can access it just like a regular `Response`:
+
+<CodeExample file="examples/streaming/accumulated.py" />
+
+Text content appears in `response.texts` immediately and updates in place as chunks arrive. Tool calls and thoughts only appear in their respective sequences once fully streamed—this prevents partial tool calls or incomplete thinking blocks from being used.
+
+If you want to consume the entire stream without processing chunks individually, call `finish()`:
+
+```python
+stream_response.finish()  # Consume all remaining chunks
+print(stream_response.pretty())  # Now fully populated
+```
+
+## Replaying Streams
+
+Streams are replayable. Chunks are cached on the response as they're consumed, so calling `pretty_stream()`, `chunk_stream()`, or `streams()` again returns a fresh iterator that replays from the beginning:
+
+<CodeExample file="examples/streaming/replay.py" />
+
+If a stream was only partially consumed, a new iterator will first replay cached chunks, then continue consuming fresh chunks from the LLM.
+
+## Streaming with Tools
+
+Tool calls stream just like text—you see argument fragments arrive progressively. The standard tool loop pattern works with streaming:
+
+<CodeExample file="examples/streaming/with_tools.py" />
+
+Tool calls only appear in `response.tool_calls` once each tool call has fully streamed. This ensures that if you interrupt the stream and call `response.resume`, the history will not include incomplete tool calls.
+
+In most cases it's simplest to wait until a response is fully streamed before executing its tool calls, however if you wish, you can execute tool calls immediately, and then resume the response before awaiting additional content.
+
+## Streaming Structured Output
+
+When using structured output, `structured_stream()` yields partial objects as fields are populated:
+
+<CodeExample file="examples/streaming/structured_stream.py" />
+
+Each partial has all fields as optional—they're `None` until that portion of the response is received. After the stream completes, call `response.parse()` to get the final validated object.
+
+You can also call `response.parse(partial=True)` at any point during or after streaming to get the current partial state:
+
+```python
+for chunk in response.chunk_stream():
+    partial = response.parse(partial=True)
+    if partial and partial.title:
+        print(f"Title: {partial.title}")
+```
+
+<Note>
+When using `tool` formatting mode, Mirascope automatically converts format tool call chunks into text chunks before presenting them through the streaming interface. This means you can use `structured_stream()` consistently regardless of the underlying formatting mode.
+</Note>
+
+<Note>
+`structured_stream()` doesn't support `llm.output_parser` formats.
+</Note>
+
+## Async Streaming
+
+For async code, `.stream()` on an async call returns an `AsyncStreamResponse`. Use `async for` with all iterators:
+
+<CodeExample file="examples/streaming/async_basic.py" />
+
+See [Async](/docs/mirascope/v2/async) for more on async patterns.
+
+## Error Handling
+
+Errors may not surface until you iterate—the initial `.stream()` call returns immediately, and actual LLM communication happens during iteration:
+
+<CodeExample file="examples/streaming/error_handling.py" />
+
+For retry strategies and fallback patterns, see [Reliability](/docs/mirascope/v2/reliability).
+
+## Response Variants
+
+Mirascope provides streaming response types for different calling patterns:
+
+- `StreamResponse` — Synchronous streaming
+- `AsyncStreamResponse` — Asynchronous streaming
+- `ContextStreamResponse` — Synchronous with context injection
+- `AsyncContextStreamResponse` — Asynchronous with context injection
+
+All variants share the same core properties and iteration methods.
+
+## Next Steps
+
+- [Async](/docs/mirascope/v2/async) — Async patterns including async streaming
+- [Tools](/docs/mirascope/v2/tools) — Tool calling in depth
+- [Structured Output](/docs/mirascope/v2/structured-output) — Structured output parsing
+- [Agents](/docs/mirascope/v2/agents) — Build agents with streaming responses
