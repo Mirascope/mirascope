@@ -28,20 +28,22 @@
  */
 
 // Export types and constants
+// Note: All plan types, constants, and limits are now in @/payments/plans.
+// That module is CLIENT-SAFE (no database/server dependencies).
+// For convenience, we re-export them here, but client code can import directly from @/payments/plans.
 export {
   PLAN_TIERS,
   PLAN_TIER_ORDER,
-  type PlanTier,
-} from "@/payments/subscriptions/types";
-export {
   PLAN_LIMITS,
+  type PlanTier,
   type PlanLimits,
-} from "@/payments/subscriptions/plan-limits";
+  type DowngradeValidationError,
+  type DowngradeValidationResult,
+} from "@/payments/plans";
 
 // Export services
 // Note: Subscriptions service imports database code (DrizzleORM/pg).
-// Client-side code should import types directly from @/payments/subscriptions/types
-// to avoid pulling in Node.js-only dependencies.
+// Client-side code should import from @/payments/plans instead.
 export {
   Subscriptions,
   type SubscriptionDetails,

@@ -27,7 +27,7 @@ describe("RateLimiter", () => {
             Effect.succeed({
               seats: tier === "free" ? 1 : tier === "pro" ? 5 : Infinity,
               projects: tier === "free" ? 1 : tier === "pro" ? 5 : Infinity,
-              spansPerMonth: 1_000_000,
+              spansPerMonth: tier === "free" ? 1_000_000 : Infinity,
               apiRequestsPerMinute:
                 tier === "free" ? 100 : tier === "pro" ? 1000 : 10000,
             }),
@@ -499,7 +499,7 @@ describe("RateLimiter", () => {
               Effect.succeed({
                 seats: tier === "free" ? 1 : tier === "pro" ? 5 : Infinity,
                 projects: tier === "free" ? 1 : tier === "pro" ? 5 : Infinity,
-                spansPerMonth: 1_000_000,
+                spansPerMonth: tier === "free" ? 1_000_000 : Infinity,
                 apiRequestsPerMinute:
                   tier === "free" ? 100 : tier === "pro" ? 1000 : 10000,
               }),
@@ -550,7 +550,7 @@ describe("RateLimiter", () => {
               Effect.succeed({
                 seats: tier === "free" ? 1 : tier === "pro" ? 5 : Infinity,
                 projects: tier === "free" ? 1 : tier === "pro" ? 5 : Infinity,
-                spansPerMonth: 1_000_000,
+                spansPerMonth: tier === "free" ? 1_000_000 : Infinity,
                 apiRequestsPerMinute:
                   tier === "free" ? 100 : tier === "pro" ? 1000 : 10000,
               }),

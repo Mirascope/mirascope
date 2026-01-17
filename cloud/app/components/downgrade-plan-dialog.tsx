@@ -14,10 +14,9 @@ import {
 } from "@/app/api/organizations";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-// Import from /types directly to avoid pulling in server-only database dependencies
-import type { PlanTier } from "@/payments/subscriptions/types";
+import type { PlanTier } from "@/payments/plans";
 import type {
-  ValidationError,
+  DowngradeValidationError,
   SubscriptionChangePreview,
 } from "@/api/organizations.schemas";
 import { AlertTriangle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
@@ -76,7 +75,7 @@ function DowngradeBlockedContent({
   validationErrors,
   targetPlan,
 }: {
-  validationErrors: readonly ValidationError[];
+  validationErrors: readonly DowngradeValidationError[];
   targetPlan: PlanTier;
 }) {
   return (
@@ -150,7 +149,7 @@ function DowngradeAllowedContent({
   currentPlan: PlanTier;
   periodEnd: Date;
   featuresLost: string[];
-  validationErrors?: readonly ValidationError[];
+  validationErrors?: readonly DowngradeValidationError[];
 }) {
   return (
     <div className="space-y-4 py-4">

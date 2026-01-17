@@ -14,8 +14,7 @@ import {
   isUpgrade,
   getPlanFeatures,
 } from "@/app/lib/billing-utils";
-// Import from /types directly to avoid pulling in server-only database dependencies
-import { type PlanTier, PLAN_TIERS } from "@/payments/subscriptions/types";
+import { type PlanTier, PLAN_TIERS } from "@/payments/plans";
 
 interface BillingSettingsProps {
   organizationId: string;
