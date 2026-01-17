@@ -3,49 +3,26 @@ import { PricingPage } from "@/app/components/pricing-page";
 import { ButtonLink } from "@/app/components/ui/button-link";
 import { createPageHead } from "@/app/lib/seo/head";
 
-const marketingActions = {
+const pricingActions = {
   hosted: {
     free: {
       button: (
-        <ButtonLink href="/docs" variant="default">
+        <ButtonLink href="/login" variant="default">
           Get Started
         </ButtonLink>
       ),
     },
     pro: {
       button: (
-        <ButtonLink href="mailto:sales@mirascope.com" variant="outline">
-          Contact Us
-        </ButtonLink>
-      ),
-    },
-    team: {
-      button: (
-        <ButtonLink href="mailto:sales@mirascope.com" variant="outline">
-          Contact Us
-        </ButtonLink>
-      ),
-    },
-  },
-  selfHosted: {
-    free: {
-      button: (
-        <ButtonLink href="/docs/getting-started/self-hosting" variant="default">
+        <ButtonLink href="/login" variant="outline">
           Get Started
         </ButtonLink>
       ),
     },
-    pro: {
-      button: (
-        <ButtonLink href="mailto:sales@mirascope.com" variant="outline">
-          Request License
-        </ButtonLink>
-      ),
-    },
     team: {
       button: (
-        <ButtonLink href="mailto:sales@mirascope.com" variant="outline">
-          Request License
+        <ButtonLink href="/login" variant="outline">
+          Get Started
         </ButtonLink>
       ),
     },
@@ -59,5 +36,5 @@ export const Route = createFileRoute("/pricing")({
       title: "Pricing",
       description: "Mirascope cloud's pricing plans and features",
     }),
-  component: () => <PricingPage actions={marketingActions} />,
+  component: () => <PricingPage actions={pricingActions} />,
 });
