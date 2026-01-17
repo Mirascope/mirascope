@@ -1,13 +1,17 @@
 import { DashboardLayout } from "@/app/components/dashboard-layout";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Protected } from "@/app/components/protected";
+import { SettingsSidebar } from "@/app/components/settings-sidebar";
 
-function CloudSettingsPage() {
+function CloudSettingsLayout() {
   return (
     <Protected>
       <DashboardLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-2xl font-semibold">Settings Coming Soon...</div>
+        <div className="flex h-full">
+          <SettingsSidebar />
+          <main className="flex-1 overflow-y-auto p-6">
+            <Outlet />
+          </main>
         </div>
       </DashboardLayout>
     </Protected>
@@ -15,5 +19,5 @@ function CloudSettingsPage() {
 }
 
 export const Route = createFileRoute("/cloud/settings")({
-  component: CloudSettingsPage,
+  component: CloudSettingsLayout,
 });
