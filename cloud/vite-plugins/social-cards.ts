@@ -23,7 +23,7 @@ import ContentProcessor from "../app/lib/content/content-processor";
  * Default configuration
  */
 const DEFAULT_OPTIONS: Required<SocialImagesOptions> = {
-  concurrency: 10,
+  concurrency: 100,
   quality: 85,
   verbose: false,
 };
@@ -154,18 +154,27 @@ export class SocialCardGenerator {
     // Create output directory
     await fs.mkdir(outputDir, { recursive: true });
 
-    // Generate images with concurrency limit
-    const cards: CardResult[] = [];
+    // Generate images with throughput-optimized sliding window concurrency
+    const cards = new Array<CardResult>(allRoutes.length);
+    const executing = new Set<Promise<void>>();
 
-    for (let i = 0; i < allRoutes.length; i += this.config.concurrency) {
-      const batch = allRoutes.slice(i, i + this.config.concurrency);
+    for (let i = 0; i < allRoutes.length; i++) {
+      const route = allRoutes[i];
+      const index = i;
 
-      const batchResults = await Promise.all(
-        batch.map((route) => this.generateCard(route, outputDir)),
-      );
+      const task = this.generateCard(route, outputDir).then((result) => {
+        cards[index] = result;
+      });
 
-      cards.push(...batchResults);
+      const wrapped = task.finally(() => executing.delete(wrapped));
+      executing.add(wrapped);
+
+      if (executing.size >= this.config.concurrency) {
+        await Promise.race(executing);
+      }
     }
+
+    await Promise.all(executing);
 
     // Aggregate results
     const results: GenerationResults = {
