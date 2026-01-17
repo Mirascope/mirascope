@@ -15,6 +15,10 @@ const settingsNavItems: SettingsNavItem[] = [
     label: "Organization",
     path: "/cloud/settings/organization",
   },
+  {
+    label: "Projects",
+    path: "/cloud/settings/projects",
+  },
 ];
 
 export function SettingsSidebar() {
@@ -42,7 +46,7 @@ export function SettingsSidebar() {
       </div>
 
       {/* Navigation items */}
-      <nav className="flex-1 px-3 py-2">
+      <nav className="flex-1 px-3 py-2 space-y-1">
         {settingsNavItems.map((item) => (
           <Link
             key={item.path}
