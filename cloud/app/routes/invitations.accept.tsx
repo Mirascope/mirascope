@@ -83,7 +83,7 @@ function AcceptInvitationPage() {
     const handleSignIn = () => {
       const redirectUrl = `/invitations/accept?token=${token}`;
       sessionStorage.setItem("redirectAfterLogin", redirectUrl);
-      void navigate({ to: "/login" });
+      void navigate({ to: "/cloud/login" });
     };
 
     return (

@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/app/contexts/auth";
 import type { ReactNode } from "react";
 
@@ -149,7 +150,12 @@ function GoogleLoginButton({
 }
 
 export function LoginPage() {
-  const { loginWithGitHub, loginWithGoogle } = useAuth();
+  const { user, isLoading, loginWithGitHub, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
+
+  if (!isLoading && user) {
+    void navigate({ to: "/cloud", replace: true });
+  }
 
   return (
     <div>

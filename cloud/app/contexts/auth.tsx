@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         sessionStorage.removeItem("redirectAfterLogin");
         window.location.href = redirectUrl;
       } else {
-        void navigate({ to: "/", replace: true });
+        void navigate({ to: "/cloud", replace: true });
       }
     }
   }, [navigate, queryClient, analytics]);
