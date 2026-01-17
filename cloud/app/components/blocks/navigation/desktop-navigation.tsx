@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import React from "react";
 import { cn } from "@/app/lib/utils";
 import { NAV_LINK_STYLES, DESKTOP_NAV_STYLES } from "./styles";
@@ -12,10 +12,25 @@ interface NavLinkProps {
 }
 
 const NavLink = ({ href, children, className, onClick }: NavLinkProps) => {
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+
+  // Check if this link is active
+  // For /cloud, match /cloud and /cloud/*
+  // For others, match exact path or paths that start with the href
+  const isActive =
+    href === "/cloud"
+      ? currentPath === "/cloud" || currentPath.startsWith("/cloud/")
+      : currentPath === href || currentPath.startsWith(href + "/");
+
   return (
     <Link
       to={href}
-      className={cn(NAV_LINK_STYLES.base, className)}
+      className={cn(
+        NAV_LINK_STYLES.base,
+        isActive && NAV_LINK_STYLES.active,
+        className,
+      )}
       onClick={onClick}
     >
       {children}
