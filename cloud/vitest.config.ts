@@ -18,6 +18,7 @@ export default defineConfig({
         "db",
         "emails",
         "payments",
+        "rate-limiting",
         "workers",
       ],
       exclude: [

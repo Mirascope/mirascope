@@ -13,7 +13,8 @@ import {
 } from "@/api/router/utils";
 import { handleStreamingResponse } from "@/api/router/streaming";
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
-import { routerMeteringQueueLayer } from "@/server-entry";
+import { routerMeteringQueueLayer, rateLimiterLayer } from "@/server-entry";
+import { RateLimiter } from "@/rate-limiting";
 
 /**
  * Unified Provider Proxy Route
@@ -60,6 +61,30 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
           // Step 1: Validate request and authenticate user
           const validated = yield* validateRouterRequest(request, provider);
 
+          // Step 2: Check rate limit
+          const rateLimiter = yield* RateLimiter;
+          const rateLimitResult = yield* rateLimiter
+            .checkRateLimit({
+              organizationId: validated.apiKeyInfo.organizationId,
+            })
+            .pipe(
+              // Special handling for RateLimitError: we need to add custom headers
+              // (Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+              // that the default error handler doesn't support.
+              // ServiceUnavailableError and other errors propagate through the error
+              // channel and are handled by handleErrors with their static status codes.
+              Effect.catchTag("RateLimitError", (error) =>
+                Effect.succeed(
+                  rateLimiter.createRateLimitErrorResponse({ error }),
+                ),
+              ),
+            );
+
+          // If rate limit response was created, return it early
+          if (rateLimitResult instanceof Response) {
+            return rateLimitResult;
+          }
+
           // Get database service
           const db = yield* Database;
 
@@ -77,10 +102,10 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
             });
           }
 
-          // Step 2: Create pending router request
+          // Step 3: Create pending router request
           const routerRequestId = yield* createPendingRouterRequest(validated);
 
-          // Step 3: Reserve funds
+          // Step 4: Reserve funds
           const reservationId = yield* reserveRouterFunds(
             validated,
             routerRequestId,
@@ -101,7 +126,7 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
             },
           };
 
-          // Step 4: Proxy request to provider with error handling
+          // Step 5: Proxy request to provider with error handling
           const proxyResult = yield* proxyToProvider(
             request,
             {
@@ -124,9 +149,9 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
             }),
           );
 
-          // Step 5: Handle response (streaming or non-streaming)
+          // Step 6: Handle response (streaming or non-streaming)
           if (proxyResult.isStreaming) {
-            return yield* handleStreamingResponse(
+            const response = yield* handleStreamingResponse(
               proxyResult,
               requestContext,
               validated,
@@ -136,16 +161,24 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
                 headers: proxyResult.response.headers,
               },
             );
+            return rateLimiter.addRateLimitHeaders({
+              response,
+              result: rateLimitResult,
+            });
           }
 
-          return yield* handleNonStreamingResponse(
+          const response = yield* handleNonStreamingResponse(
             proxyResult,
             requestContext,
             validated,
           );
+          return rateLimiter.addRateLimitHeaders({
+            response,
+            result: rateLimitResult,
+          });
         }).pipe(
           Effect.provide(
-            Layer.merge(
+            Layer.mergeAll(
               Database.Live({
                 database: { connectionString: databaseUrl },
                 payments: {
@@ -160,6 +193,7 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
                 },
               }),
               routerMeteringQueueLayer,
+              rateLimiterLayer,
             ),
           ),
           handleErrors,

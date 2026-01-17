@@ -25,6 +25,13 @@ export interface CronTriggerEnv extends CloudflareEnvironment {
 }
 
 /**
+ * Cloudflare Rate Limiter binding interface.
+ */
+export interface RateLimiterBinding {
+  limit: (options: { key: string }) => Promise<{ success: boolean }>;
+}
+
+/**
  * Extended environment for billing-related cron triggers.
  */
 export interface BillingCronTriggerEnv extends CronTriggerEnv {
@@ -48,4 +55,7 @@ export interface WorkerEnv extends BillingCronTriggerEnv {
   readonly SPANS_METERING_QUEUE?: {
     send: (message: SpanMeteringMessage) => Promise<void>;
   };
+  readonly RATE_LIMITER_FREE?: RateLimiterBinding;
+  readonly RATE_LIMITER_PRO?: RateLimiterBinding;
+  readonly RATE_LIMITER_TEAM?: RateLimiterBinding;
 }

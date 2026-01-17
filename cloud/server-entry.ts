@@ -13,6 +13,7 @@ import spansMeteringQueue, {
 } from "@/workers/spansMeteringQueue";
 import { type WorkerEnv } from "@/workers/config";
 import { Effect, Layer, Context } from "effect";
+import { RateLimiter } from "@/rate-limiting";
 
 /**
  * ExecutionContext service tag for Effect dependency injection.
@@ -82,6 +83,31 @@ export let spansMeteringQueueLayer: Layer.Layer<SpansMeteringQueueService> =
   });
 
 /**
+ * Global rate limiter layer.
+ *
+ * Set by the fetch handler and exported for route handlers to include
+ * when providing Effect layers. Uses Cloudflare's native rate limiting API
+ * for atomic, distributed rate limit tracking.
+ */
+export let rateLimiterLayer: Layer.Layer<RateLimiter> = Layer.succeed(
+  RateLimiter,
+  {
+    checkRateLimit: () =>
+      Effect.succeed({
+        allowed: true,
+        limit: 0,
+        resetAt: new Date(),
+      }),
+    addRateLimitHeaders: ({ response }) => response,
+    createRateLimitErrorResponse: ({ error }) =>
+      new Response(JSON.stringify({ error: error.message }), {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      }),
+  },
+);
+
+/**
  * Scheduled event handler that routes to the appropriate cron job.
  *
  * - `* /1 * * * *`: ClickHouse synchronization (every minute)
@@ -121,6 +147,15 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (request, env, ctx) => {
     spansMeteringQueueLayer = SpansMeteringQueueService.Live(
       env.SPANS_METERING_QUEUE,
     );
+  }
+
+  // Set rate limiter layer for route handlers
+  if (env.RATE_LIMITER_FREE && env.RATE_LIMITER_PRO && env.RATE_LIMITER_TEAM) {
+    rateLimiterLayer = RateLimiter.Live({
+      free: env.RATE_LIMITER_FREE,
+      pro: env.RATE_LIMITER_PRO,
+      team: env.RATE_LIMITER_TEAM,
+    });
   }
 
   if (env.ENVIRONMENT === "local") {

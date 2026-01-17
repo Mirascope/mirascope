@@ -10,7 +10,8 @@ import { Emails } from "@/emails";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { SettingsService, getSettings } from "@/settings";
-import { spansMeteringQueueLayer } from "@/server-entry";
+import { spansMeteringQueueLayer, rateLimiterLayer } from "@/server-entry";
+import { RateLimiter } from "@/rate-limiting";
 
 /**
  * Extract path parameters from the splat path for API key validation.
@@ -67,6 +68,40 @@ export const Route = createFileRoute("/api/v0/$")({
           const pathParams = extractPathParameters(params["*"]);
           const authResult = yield* authenticate(request, pathParams);
 
+          // Check rate limit
+          const rateLimiter = yield* RateLimiter;
+
+          // Extract organization ID from API key info
+          // Note: Rate limiting currently only applies to API key authenticated requests
+          const rateLimitResult = authResult.apiKeyInfo
+            ? yield* rateLimiter
+                .checkRateLimit({
+                  organizationId: authResult.apiKeyInfo.organizationId,
+                })
+                .pipe(
+                  // Special handling for RateLimitError: we need to add custom headers
+                  // (Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+                  // that the default error handler doesn't support.
+                  // ServiceUnavailableError and other errors propagate through the error
+                  // channel and are handled by handleErrors with their static status codes.
+                  Effect.catchTag("RateLimitError", (error) =>
+                    Effect.succeed(
+                      rateLimiter.createRateLimitErrorResponse({ error }),
+                    ),
+                  ),
+                )
+            : {
+                // No rate limiting for session-based auth (web UI)
+                allowed: true,
+                limit: 0,
+                resetAt: new Date(),
+              };
+
+          // If rate limit response was created, return it early
+          if (rateLimitResult instanceof Response) {
+            return rateLimitResult;
+          }
+
           const clickHouseSearch = yield* ClickHouseSearch;
 
           const result = yield* handleRequest(request, {
@@ -81,7 +116,11 @@ export const Route = createFileRoute("/api/v0/$")({
             return yield* new NotFoundError({ message: "Route not found" });
           }
 
-          return result.response;
+          // Add rate limit headers to response
+          return rateLimiter.addRateLimitHeaders({
+            response: result.response,
+            result: rateLimitResult,
+          });
         }).pipe(
           Effect.provide(
             Layer.mergeAll(
@@ -122,6 +161,7 @@ export const Route = createFileRoute("/api/v0/$")({
                 ),
               ),
               spansMeteringQueueLayer,
+              rateLimiterLayer,
             ),
           ),
           handleErrors,
