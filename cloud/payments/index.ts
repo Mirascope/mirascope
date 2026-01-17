@@ -33,6 +33,5 @@
  * ```
  */
 
-// Export the main service and its configuration type
+// Export the main service
 export { Payments } from "@/payments/service";
-export type { StripeConfig } from "@/payments/client";

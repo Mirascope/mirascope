@@ -16,7 +16,12 @@ import { TEST_DATABASE_URL } from "@/tests/db";
 import { Authentication } from "@/auth";
 import { ClickHouseSearch } from "@/clickhouse/search";
 import { ClickHouse } from "@/clickhouse/client";
-import { SettingsService, getSettings } from "@/settings";
+import {
+  Settings,
+  type SettingsConfig,
+  type ClickHouseConfig,
+} from "@/settings";
+import { createMockSettings } from "@/tests/settings";
 import { searchHandler } from "@/api/search.handlers";
 import type {
   SearchRequest,
@@ -24,6 +29,40 @@ import type {
   TraceDetailResponse,
   AnalyticsSummaryResponse,
 } from "@/api/search.schemas";
+import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
+import fs from "fs";
+
+type ClickHouseConnectionFile = {
+  url: string;
+  user: string;
+  password: string;
+  database: string;
+  nativePort: number;
+};
+
+function getTestClickHouseConfig(): ClickHouseConfig {
+  try {
+    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
+    const conn = JSON.parse(raw) as ClickHouseConnectionFile;
+    return {
+      url: conn.url,
+      user: conn.user,
+      password: conn.password,
+      database: conn.database,
+      tls: {
+        enabled: false,
+        ca: "",
+        skipVerify: false,
+        hostnameVerify: true,
+        minVersion: "1.2",
+      },
+    };
+  } catch {
+    throw new Error(
+      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
+    );
+  }
+}
 
 describe.sequential("Search API", (it) => {
   let project: PublicProject;
@@ -179,11 +218,13 @@ describe.sequential("Search API", (it) => {
     "searchHandler supports optional filters and maps attributeFilters",
     () =>
       Effect.gen(function* () {
-        const settings = getSettings();
-        const settingsLayer = Layer.succeed(SettingsService, {
-          ...settings,
+        // Use real ClickHouse testcontainer credentials
+        const clickhouseConfig = getTestClickHouseConfig();
+        const mockSettings: SettingsConfig = createMockSettings({
           env: "test",
+          clickhouse: clickhouseConfig,
         });
+        const settingsLayer = Layer.succeed(Settings, mockSettings);
 
         if (!apiKeyInfo || !ownerFromContext) {
           throw new Error("Missing API key context for search handler test");

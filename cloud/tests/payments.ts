@@ -20,7 +20,8 @@ export { describe, expect, assert };
  */
 const getTestStripe = () =>
   Stripe.layer({
-    apiKey: "sk_test_mock",
+    secretKey: "sk_test_mock",
+    webhookSecret: "whsec_test_mock",
     routerPriceId: "price_test_mock",
     routerMeterId: "meter_test_mock",
     cloudFreePriceId: "price_cloud_free_mock",

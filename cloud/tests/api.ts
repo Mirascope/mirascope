@@ -17,7 +17,8 @@ import {
   HttpApiBuilder,
   HttpServer,
 } from "@effect/platform";
-import { SettingsService, getSettings } from "@/settings";
+import { Settings, type SettingsConfig } from "@/settings";
+import { createMockSettings, MockSettingsLayer } from "@/tests/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
@@ -83,8 +84,8 @@ const MockSpansMeteringQueue = Layer.succeed(
 // =============================================================================
 
 /**
- * Creates a Database layer with MockPayments, MockAnalytics, and MockEmails for testing.
- * Provides Database, Payments, Analytics, Emails, DrizzleORM, SqlClient, and SpansMeteringQueueService.
+ * Creates a Database layer with MockPayments, MockAnalytics, MockEmails, and MockSettings for testing.
+ * Provides Database, Payments, Analytics, Emails, Settings, DrizzleORM, SqlClient, and SpansMeteringQueueService.
  */
 function createTestDatabaseLayer(connectionString: string) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
@@ -105,6 +106,7 @@ function createTestDatabaseLayer(connectionString: string) {
     MockAnalytics,
     MockEmails,
     MockSpansMeteringQueue,
+    MockSettingsLayer(),
   );
 }
 
@@ -253,15 +255,23 @@ function createTestWebHandler(
 ) {
   // ClickHouse services layer for test environment
   const clickhouseConfig = getTestClickHouseConfig();
-  const settings = getSettings();
-  const settingsLayer = Layer.succeed(SettingsService, {
-    ...settings,
+  const settings: SettingsConfig = createMockSettings({
     env: "test",
-    CLICKHOUSE_URL: clickhouseConfig.url,
-    CLICKHOUSE_USER: clickhouseConfig.user,
-    CLICKHOUSE_PASSWORD: clickhouseConfig.password,
-    CLICKHOUSE_DATABASE: clickhouseConfig.database,
+    clickhouse: {
+      url: clickhouseConfig.url,
+      user: clickhouseConfig.user,
+      password: clickhouseConfig.password,
+      database: clickhouseConfig.database,
+      tls: {
+        enabled: false,
+        ca: "",
+        skipVerify: false,
+        hostnameVerify: true,
+        minVersion: "1.2",
+      },
+    },
   });
+  const settingsLayer = Layer.succeed(Settings, settings);
   const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
     Layer.provide(ClickHouse.Default),
     Layer.provide(settingsLayer),
@@ -541,11 +551,8 @@ function createSimpleTestWebHandler() {
   const authResult: AuthResult = { user: mockUser };
 
   // ClickHouse services layer for test environment
-  const settings = getSettings();
-  const settingsLayer = Layer.succeed(SettingsService, {
-    ...settings,
-    env: "test",
-  });
+  const settings: SettingsConfig = createMockSettings({ env: "test" });
+  const settingsLayer = Layer.succeed(Settings, settings);
   const clickHouseClientLayer = ClickHouse.Default.pipe(
     Layer.provide(settingsLayer),
   );

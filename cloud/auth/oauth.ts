@@ -14,7 +14,7 @@
 import { Effect, Schema, Layer } from "effect";
 import { Database, DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
-import { SettingsService } from "@/settings";
+import { Settings, type SettingsConfig } from "@/settings";
 import { Emails } from "@/emails";
 import { renderEmailTemplate } from "@/emails/render";
 import { WelcomeEmail } from "@/emails/templates";
@@ -22,7 +22,6 @@ import { ExecutionContext } from "@/server-entry";
 import {
   OAuthError,
   InvalidStateError,
-  MissingCredentialsError,
   AuthenticationFailedError,
 } from "@/auth/errors";
 import type {
@@ -88,30 +87,13 @@ function mapGoogleUserData(apiResponse: GoogleUser): AuthenticatedUserInfo {
 // =============================================================================
 
 /**
- * Creates a GitHub OAuth provider configuration from environment settings.
+ * Creates a GitHub OAuth provider configuration from Settings.
  *
- * Requires the following environment variables:
- * - `GITHUB_CLIENT_ID` - GitHub OAuth app client ID
- * - `GITHUB_CLIENT_SECRET` - GitHub OAuth app client secret
- * - `GITHUB_CALLBACK_URL` - Callback URL registered with GitHub
- *
- * @throws MissingCredentialsError - If any required environment variable is missing
+ * Uses the validated GitHub OAuth configuration from Settings. All required
+ * fields are guaranteed to be present by Settings validation at startup.
  */
 export const createGitHubProvider = Effect.gen(function* () {
-  const settings = yield* SettingsService;
-
-  if (
-    !settings.GITHUB_CLIENT_ID ||
-    !settings.GITHUB_CLIENT_SECRET ||
-    !settings.GITHUB_CALLBACK_URL
-  ) {
-    return yield* Effect.fail(
-      new MissingCredentialsError({
-        message: "Missing required GitHub OAuth environment variables",
-        provider: "github",
-      }),
-    );
-  }
+  const settings = yield* Settings;
 
   return {
     name: "github" as const,
@@ -119,37 +101,20 @@ export const createGitHubProvider = Effect.gen(function* () {
     tokenUrl: "https://github.com/login/oauth/access_token",
     userUrl: "https://api.github.com/user",
     scopes: ["user:email"],
-    clientId: settings.GITHUB_CLIENT_ID,
-    clientSecret: settings.GITHUB_CLIENT_SECRET,
-    callbackUrl: settings.GITHUB_CALLBACK_URL,
+    clientId: settings.github.clientId,
+    clientSecret: settings.github.clientSecret,
+    callbackUrl: settings.github.callbackUrl,
   };
 });
 
 /**
- * Creates a Google OAuth provider configuration from environment settings.
+ * Creates a Google OAuth provider configuration from Settings.
  *
- * Requires the following environment variables:
- * - `GOOGLE_CLIENT_ID` - Google OAuth client ID
- * - `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
- * - `GOOGLE_CALLBACK_URL` - Callback URL registered with Google
- *
- * @throws MissingCredentialsError - If any required environment variable is missing
+ * Uses the validated Google OAuth configuration from Settings. All required
+ * fields are guaranteed to be present by Settings validation at startup.
  */
 export const createGoogleProvider = Effect.gen(function* () {
-  const settings = yield* SettingsService;
-
-  if (
-    !settings.GOOGLE_CLIENT_ID ||
-    !settings.GOOGLE_CLIENT_SECRET ||
-    !settings.GOOGLE_CALLBACK_URL
-  ) {
-    return yield* Effect.fail(
-      new MissingCredentialsError({
-        message: "Missing required Google OAuth environment variables",
-        provider: "google",
-      }),
-    );
-  }
+  const settings = yield* Settings;
 
   return {
     name: "google" as const,
@@ -157,9 +122,9 @@ export const createGoogleProvider = Effect.gen(function* () {
     tokenUrl: "https://oauth2.googleapis.com/token",
     userUrl: "https://www.googleapis.com/oauth2/v1/userinfo",
     scopes: ["openid", "email", "profile"],
-    clientId: settings.GOOGLE_CLIENT_ID,
-    clientSecret: settings.GOOGLE_CLIENT_SECRET,
-    callbackUrl: settings.GOOGLE_CALLBACK_URL,
+    clientId: settings.google.clientId,
+    clientSecret: settings.google.clientSecret,
+    callbackUrl: settings.google.callbackUrl,
   };
 });
 
@@ -372,8 +337,9 @@ const exchangeCodeForToken = (
 export function initiateOAuth(
   provider: OAuthProviderConfig,
   currentUrl: string,
-): Effect.Effect<Response> {
-  return Effect.sync(() => {
+): Effect.Effect<Response, never, Settings> {
+  return Effect.gen(function* () {
+    const settings = yield* Settings;
     const randomState = crypto.randomUUID();
 
     const stateData = { randomState, returnUrl: currentUrl };
@@ -390,7 +356,7 @@ export function initiateOAuth(
       status: 302,
       headers: {
         Location: authUrl.toString(),
-        "Set-Cookie": setOAuthStateCookie(randomState),
+        "Set-Cookie": setOAuthStateCookie(randomState, settings),
       },
     });
   });
@@ -439,15 +405,15 @@ export function handleOAuthCallback(
     const userInfo = yield* fetchUserInfo(provider, accessToken);
 
     // 5. Create/update user and session
-    const settings = yield* SettingsService;
+    const settings = yield* Settings;
     const response = yield* processAuthenticatedUser(
       userInfo,
       stateData.returnUrl,
-      settings.SITE_URL || "http://localhost:3000",
+      settings,
     );
 
     // 6. Clear OAuth state cookie and return redirect
-    response.headers.append("Set-Cookie", clearOAuthStateCookie());
+    response.headers.append("Set-Cookie", clearOAuthStateCookie(settings));
     return response;
   });
 }
@@ -661,7 +627,7 @@ function sendWelcomeEmail(
  *
  * @param userInfo - The user info from the OAuth provider
  * @param returnUrl - Optional URL to redirect to after authentication
- * @param siteUrl - The default site URL if no return URL is provided
+ * @param settings - Application settings for cookie configuration
  * @returns A redirect response with session cookie
  * @throws AuthenticationFailedError - If no email is provided
  * @throws DatabaseError - If user/session creation fails
@@ -669,7 +635,7 @@ function sendWelcomeEmail(
 function processAuthenticatedUser(
   userInfo: AuthenticatedUserInfo,
   returnUrl: string | undefined,
-  siteUrl: string,
+  settings: SettingsConfig,
 ): Effect.Effect<
   Response,
   | AuthenticationFailedError
@@ -731,7 +697,7 @@ function processAuthenticatedUser(
     });
 
     // 4. Build redirect response with session cookie
-    const redirectUrl = new URL(returnUrl || siteUrl);
+    const redirectUrl = new URL(returnUrl || settings.siteUrl);
     redirectUrl.searchParams.set("success", "true");
     if (!existingUser) {
       redirectUrl.searchParams.set("new_user", "true");
@@ -741,7 +707,7 @@ function processAuthenticatedUser(
       status: 302,
       headers: {
         Location: redirectUrl.toString(),
-        "Set-Cookie": setSessionCookie(session.id),
+        "Set-Cookie": setSessionCookie(session.id, settings),
       },
     });
   });
@@ -879,6 +845,7 @@ const buildProxyRedirectResponse = (
   encodedState: string,
   randomState: string,
   providerName: string,
+  settings: SettingsConfig,
 ): Effect.Effect<Response> =>
   Effect.sync(() => {
     const callbackUrl = new URL(
@@ -892,7 +859,7 @@ const buildProxyRedirectResponse = (
       status: 302,
       headers: {
         Location: callbackUrl.toString(),
-        "Set-Cookie": setOAuthStateCookie(randomState),
+        "Set-Cookie": setOAuthStateCookie(randomState, settings),
       },
     });
   });
@@ -950,12 +917,14 @@ export function handleOAuthProxyCallback(
     yield* validateProxyStateMatch(storedState, stateData.randomState);
 
     // 6. Build redirect response to the actual callback URL
+    const settings = yield* Settings;
     return yield* buildProxyRedirectResponse(
       returnUrl,
       code,
       encodedState,
       stateData.randomState,
       providerName,
+      settings,
     );
   });
 }

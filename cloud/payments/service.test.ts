@@ -165,7 +165,8 @@ describe("Payments", () => {
   describe("Live layer", () => {
     it("creates a Payments layer from config", () => {
       const layer = Payments.Live({
-        apiKey: "sk_test_key",
+        secretKey: "sk_test_key",
+        webhookSecret: "whsec_test",
         routerPriceId: "price_test",
         routerMeterId: "meter_test",
         cloudFreePriceId: "price_cloud_free",

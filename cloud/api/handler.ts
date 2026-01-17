@@ -2,7 +2,7 @@ import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Context, Effect, Layer } from "effect";
 import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
-import { SettingsService, getSettings } from "@/settings";
+import { Settings, type SettingsConfig } from "@/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
@@ -17,7 +17,7 @@ export type HandleRequestOptions = {
   prefix?: string;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
-  environment: string;
+  settings: SettingsConfig;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
 };
 
@@ -31,15 +31,12 @@ type WebHandlerOptions = {
   spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
-  environment: string;
+  settings: SettingsConfig;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
   const services = Layer.mergeAll(
-    Layer.succeed(SettingsService, {
-      ...getSettings(),
-      env: options.environment,
-    }),
+    Layer.succeed(Settings, options.settings),
     Layer.succeed(AuthenticatedUser, options.user),
     Layer.succeed(Authentication, {
       user: options.user,
@@ -102,7 +99,7 @@ export const handleRequest = (
       spansMeteringQueue,
       user: options.user,
       apiKeyInfo: options.apiKeyInfo,
-      environment: options.environment,
+      settings: options.settings,
       clickHouseSearch: options.clickHouseSearch,
     });
 

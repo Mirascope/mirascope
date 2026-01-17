@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 import { Database } from "@/db";
 import { handleErrors, handleDefects } from "@/api/utils";
-import { InternalError } from "@/errors";
 import { PROVIDER_CONFIGS, getProviderApiKey } from "@/api/router/providers";
 import { proxyToProvider } from "@/api/router/proxy";
 import {
@@ -15,6 +14,7 @@ import { handleStreamingResponse } from "@/api/router/streaming";
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
 import { routerMeteringQueueLayer, rateLimiterLayer } from "@/server-entry";
 import { RateLimiter } from "@/rate-limiting";
+import { Settings, validateSettings } from "@/settings";
 
 /**
  * Unified Provider Proxy Route
@@ -47,17 +47,10 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
       }) => {
         const provider = params.provider.toLowerCase();
 
-        // Get database URL
-        const databaseUrl = process.env.DATABASE_URL;
-        if (!databaseUrl) {
-          return Effect.runPromise(
-            Effect.fail(
-              new InternalError({ message: "Database not configured" }),
-            ).pipe(handleErrors, handleDefects),
-          );
-        }
-
         const handler = Effect.gen(function* () {
+          // Get validated settings
+          const settings = yield* Settings;
+
           // Step 1: Validate request and authenticate user
           const validated = yield* validateRouterRequest(request, provider);
 
@@ -94,13 +87,11 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
             userId: validated.user.id,
           });
 
-          // Get provider-specific API key from environment
-          const providerApiKey = getProviderApiKey(validated.provider);
-          if (!providerApiKey) {
-            return yield* new InternalError({
-              message: `${validated.provider} API key not configured`,
-            });
-          }
+          // Get provider-specific API key from settings
+          const providerApiKey = getProviderApiKey(
+            validated.provider,
+            settings,
+          );
 
           // Step 3: Create pending router request
           const routerRequestId = yield* createPendingRouterRequest(validated);
@@ -178,22 +169,21 @@ export const Route = createFileRoute("/router/v0/$provider/$")({
           });
         }).pipe(
           Effect.provide(
-            Layer.mergeAll(
-              Database.Live({
-                database: { connectionString: databaseUrl },
-                payments: {
-                  apiKey: process.env.STRIPE_SECRET_KEY,
-                  routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
-                  routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
-                  cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
-                  cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
-                  cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
-                  cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
-                  cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
-                },
-              }),
-              routerMeteringQueueLayer,
-              rateLimiterLayer,
+            Layer.unwrapEffect(
+              validateSettings().pipe(
+                Effect.orDie, // Settings validation failure is fatal
+                Effect.map((settings) =>
+                  Layer.mergeAll(
+                    Layer.succeed(Settings, settings),
+                    Database.Live({
+                      database: { connectionString: settings.databaseUrl },
+                      payments: settings.stripe,
+                    }),
+                    routerMeteringQueueLayer,
+                    rateLimiterLayer,
+                  ),
+                ),
+              ),
             ),
           ),
           handleErrors,

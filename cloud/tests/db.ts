@@ -10,6 +10,8 @@ import { Payments } from "@/payments";
 import { MockStripe } from "@/tests/payments";
 import { Analytics } from "@/analytics";
 import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import { Settings } from "@/settings";
+import { MockSettingsLayer } from "@/tests/settings";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -69,8 +71,8 @@ export const MockSpansMeteringQueue = Layer.succeed(
 );
 
 /**
- * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
- * `SqlClient` services for tests.
+ * A Layer that provides the Effect-native `Database`, `DrizzleORM`,
+ * `SqlClient`, and `Settings` services for tests.
  *
  * Note: This layer is automatically provided by `it.effect` from this module,
  * and tests are automatically wrapped in a transaction that rolls back.
@@ -83,6 +85,7 @@ export const TestDatabase: Layer.Layer<
   | SqlClient.SqlClient
   | Analytics
   | SpansMeteringQueueService
+  | Settings
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { MockStripe } = yield* Effect.promise(
@@ -100,6 +103,7 @@ export const TestDatabase: Layer.Layer<
     ),
     MockAnalytics,
     MockSpansMeteringQueue,
+    MockSettingsLayer(),
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -115,7 +119,8 @@ export type TestServices =
   | DrizzleORM
   | SqlClient.SqlClient
   | Analytics
-  | SpansMeteringQueueService;
+  | SpansMeteringQueueService
+  | Settings;
 
 /**
  * Wraps a test function to automatically provide TestDatabase

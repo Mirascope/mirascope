@@ -35,17 +35,7 @@
  */
 
 import { Effect, Layer, Context } from "effect";
-import { ConfigError } from "@/errors";
-
-/**
- * Google Analytics service configuration options.
- */
-export interface GoogleAnalyticsConfig {
-  /** Google Analytics measurement ID (e.g., "G-XXXXXXXXXX") */
-  measurementId: string;
-  /** API secret for server-side Measurement Protocol (optional, server-only) */
-  apiSecret?: string;
-}
+import type { GoogleAnalyticsConfig } from "@/settings";
 
 /**
  * Parameters for tracking events.
@@ -83,26 +73,6 @@ export interface GoogleAnalyticsClient {
   trackPageView(params: TrackPageViewParams): Effect.Effect<void, never>;
   /** Set the user ID for tracking */
   setUserId(userId: string | null): Effect.Effect<void, never>;
-}
-
-/**
- * Validates Google Analytics configuration.
- */
-function validateGoogleAnalyticsConfig(
-  config: Partial<GoogleAnalyticsConfig>,
-): Effect.Effect<GoogleAnalyticsConfig, ConfigError> {
-  if (!config.measurementId?.trim()) {
-    return Effect.fail(
-      new ConfigError({
-        message: "Missing Google Analytics measurement ID (measurementId)",
-      }),
-    );
-  }
-
-  return Effect.succeed({
-    measurementId: config.measurementId,
-    apiSecret: config.apiSecret,
-  });
 }
 
 /**
@@ -262,13 +232,6 @@ function createServerImplementation(
     name: string;
     params?: Record<string, unknown>;
   }): Promise<void> => {
-    if (!config.apiSecret) {
-      console.warn(
-        "Google Analytics API secret not configured for server-side tracking",
-      );
-      return;
-    }
-
     const url = `https://www.google-analytics.com/mp/collect?measurement_id=${config.measurementId}&api_secret=${config.apiSecret}`;
 
     const payload = {
@@ -340,20 +303,6 @@ function createServerImplementation(
 }
 
 /**
- * Creates a no-op implementation when configuration is missing.
- * This ensures analytics failures don't break the application.
- */
-function createNoOpImplementation(): GoogleAnalyticsClient {
-  return {
-    type: "noop",
-    initialize: () => Effect.succeed(void 0),
-    trackEvent: () => Effect.succeed(void 0),
-    trackPageView: () => Effect.succeed(void 0),
-    setUserId: () => Effect.succeed(void 0),
-  };
-}
-
-/**
  * Extend Window interface for gtag support.
  */
 declare global {
@@ -396,41 +345,31 @@ export class GoogleAnalytics extends Context.Tag("GoogleAnalytics")<
    * Creates a Layer that provides the GoogleAnalytics service.
    *
    * Automatically detects the environment and provides client-side or server-side
-   * implementation. Falls back to no-op implementation if configuration is invalid.
+   * implementation.
    *
-   * @param config - Partial Google Analytics configuration
+   * Note: Config validation is handled by Settings at startup. The config
+   * passed here is guaranteed to be complete and valid.
+   *
+   * @param config - Validated Google Analytics configuration from Settings
    * @returns A Layer providing GoogleAnalytics
    *
    * @example
    * ```ts
-   * const GALive = GoogleAnalytics.layer({
-   *   measurementId: process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
-   *   apiSecret: process.env.GOOGLE_ANALYTICS_API_SECRET,
-   * });
+   * // Settings provides validated config
+   * const settings = yield* Settings;
+   * const GALive = GoogleAnalytics.layer(settings.googleAnalytics);
    *
    * program.pipe(Effect.provide(GALive));
    * ```
    */
-  static layer = (config: Partial<GoogleAnalyticsConfig>) => {
-    return Layer.effect(
-      GoogleAnalytics,
-      Effect.gen(function* () {
-        const validated = yield* validateGoogleAnalyticsConfig(config);
+  static layer = (config: GoogleAnalyticsConfig) => {
+    // Environment detection
+    const isBrowser = typeof window !== "undefined";
 
-        // Environment detection
-        const isBrowser = typeof window !== "undefined";
+    const implementation = isBrowser
+      ? createClientImplementation(config)
+      : createServerImplementation(config);
 
-        if (isBrowser) {
-          return createClientImplementation(validated);
-        } else {
-          return createServerImplementation(validated);
-        }
-      }),
-    ).pipe(
-      // Graceful fallback: provide no-op implementation if config invalid
-      Layer.catchAll(() =>
-        Layer.succeed(GoogleAnalytics, createNoOpImplementation()),
-      ),
-    );
+    return Layer.succeed(GoogleAnalytics, implementation);
   };
 }

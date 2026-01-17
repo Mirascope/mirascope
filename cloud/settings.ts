@@ -1,101 +1,198 @@
-import { Context } from "effect";
+/**
+ * @fileoverview Centralized application settings and environment variable validation.
+ *
+ * This module provides the `Settings` service which validates and provides access to
+ * all required environment variables. Settings is the ONLY place in the codebase that
+ * should access `process.env` directly.
+ *
+ * ## Architecture
+ *
+ * ```
+ * process.env (unknown strings)
+ *     ↓
+ * Settings.Live layer (validates ALL env vars)
+ *     ↓ fails with SettingsValidationError if any missing
+ * SettingsConfig (all fields guaranteed non-empty strings)
+ *     ↓
+ * Stripe.layer(settings.stripe)     ← Can't fail, types guarantee values
+ * Resend.layer(settings.resend)     ← Can't fail, types guarantee values
+ * Database.layer(settings.database) ← Can't fail, types guarantee values
+ * ```
+ *
+ * ## Usage
+ *
+ * ```ts
+ * import { Settings } from "@/settings";
+ *
+ * const program = Effect.gen(function* () {
+ *   const settings = yield* Settings;
+ *   const dbUrl = settings.databaseUrl; // Guaranteed non-empty string
+ * });
+ * ```
+ */
 
-export type Settings = {
-  readonly env: string;
-  readonly DATABASE_URL?: string;
-  readonly GOOGLE_CLIENT_ID?: string;
-  readonly GOOGLE_CLIENT_SECRET?: string;
-  readonly GOOGLE_CALLBACK_URL?: string;
-  readonly GITHUB_CLIENT_ID?: string;
-  readonly GITHUB_CLIENT_SECRET?: string;
-  readonly GITHUB_CALLBACK_URL?: string;
-  readonly SITE_URL?: string;
-  // ROUTER KEYS
-  readonly ANTHROPIC_API_KEY?: string;
-  readonly GEMINI_API_KEY?: string;
-  readonly OPENAI_API_KEY?: string;
-  // ClickHouse settings
-  readonly CLICKHOUSE_URL?: string;
-  readonly CLICKHOUSE_USER?: string;
-  readonly CLICKHOUSE_PASSWORD?: string;
-  readonly CLICKHOUSE_DATABASE?: string;
-  // TLS settings (Node.js environment only)
-  readonly CLICKHOUSE_TLS_ENABLED?: boolean;
-  readonly CLICKHOUSE_TLS_CA?: string;
-  readonly CLICKHOUSE_TLS_SKIP_VERIFY?: boolean;
-  readonly CLICKHOUSE_TLS_HOSTNAME_VERIFY?: boolean;
-  readonly CLICKHOUSE_TLS_MIN_VERSION?: string;
-  // Analytics settings
-  readonly GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
-  readonly GOOGLE_ANALYTICS_API_SECRET?: string;
-  readonly POSTHOG_API_KEY?: string;
-  readonly POSTHOG_HOST?: string;
+import { Context, Effect, Layer } from "effect";
+import { SettingsValidationError } from "@/errors";
+
+// =============================================================================
+// Config Types
+// =============================================================================
+
+/**
+ * GitHub OAuth configuration.
+ */
+export type GitHubConfig = {
+  readonly clientId: string;
+  readonly clientSecret: string;
+  readonly callbackUrl: string;
 };
 
-export class SettingsService extends Context.Tag("SettingsService")<
-  SettingsService,
-  Settings
->() {}
+/**
+ * Google OAuth configuration.
+ */
+export type GoogleConfig = {
+  readonly clientId: string;
+  readonly clientSecret: string;
+  readonly callbackUrl: string;
+};
 
-export function getSettings(): Settings {
-  const clickhouseTlsHostnameVerifyEnv =
-    process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY;
+/**
+ * Stripe payments configuration.
+ * Used by Settings and Stripe.layer().
+ */
+export type StripeConfig = {
+  readonly secretKey: string;
+  readonly webhookSecret: string;
+  readonly routerPriceId: string;
+  readonly routerMeterId: string;
+  readonly cloudFreePriceId: string;
+  readonly cloudProPriceId: string;
+  readonly cloudTeamPriceId: string;
+  readonly cloudSpansPriceId: string;
+  readonly cloudSpansMeterId: string;
+};
 
-  const settings: Settings = {
-    env: process.env.ENVIRONMENT || "local",
-    DATABASE_URL: process.env.DATABASE_URL,
-    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL,
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
-    SITE_URL: process.env.SITE_URL,
-    // ROUTER KEYS
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    // ClickHouse settings
-    CLICKHOUSE_URL: process.env.CLICKHOUSE_URL || "http://localhost:8123",
-    CLICKHOUSE_USER: process.env.CLICKHOUSE_USER || "default",
-    CLICKHOUSE_PASSWORD: process.env.CLICKHOUSE_PASSWORD,
-    CLICKHOUSE_DATABASE:
-      process.env.CLICKHOUSE_DATABASE || "mirascope_analytics",
-    // TLS settings
-    CLICKHOUSE_TLS_ENABLED: process.env.CLICKHOUSE_TLS_ENABLED === "true",
-    CLICKHOUSE_TLS_CA: process.env.CLICKHOUSE_TLS_CA,
-    CLICKHOUSE_TLS_SKIP_VERIFY:
-      process.env.CLICKHOUSE_TLS_SKIP_VERIFY === "true",
-    CLICKHOUSE_TLS_HOSTNAME_VERIFY: clickhouseTlsHostnameVerifyEnv !== "false",
-    CLICKHOUSE_TLS_MIN_VERSION:
-      process.env.CLICKHOUSE_TLS_MIN_VERSION || "TLSv1.2",
-    // Analytics settings
-    GOOGLE_ANALYTICS_MEASUREMENT_ID:
-      process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
-    GOOGLE_ANALYTICS_API_SECRET: process.env.GOOGLE_ANALYTICS_API_SECRET,
-    POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
-    POSTHOG_HOST: process.env.POSTHOG_HOST || "https://app.posthog.com",
-  };
+/**
+ * Resend email configuration.
+ * Used by Settings and Emails.layer().
+ */
+export type ResendConfig = {
+  readonly apiKey: string;
+  readonly audienceSegmentId: string;
+};
 
-  // Production environment validation (Node.js environment)
-  if (settings.env === "production") {
-    if (!settings.CLICKHOUSE_TLS_ENABLED) {
-      throw new Error("CLICKHOUSE_TLS_ENABLED=true is required in production");
-    }
-    if (settings.CLICKHOUSE_TLS_SKIP_VERIFY) {
-      throw new Error(
-        "CLICKHOUSE_TLS_SKIP_VERIFY=true is not allowed in production",
-      );
-    }
-    if (!settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY) {
-      throw new Error(
-        "CLICKHOUSE_TLS_HOSTNAME_VERIFY=true is required in production",
-      );
-    }
-  }
+/**
+ * Router provider API keys configuration.
+ */
+export type RouterConfig = {
+  readonly openaiApiKey: string;
+  readonly anthropicApiKey: string;
+  readonly geminiApiKey: string;
+};
 
-  return settings;
-}
+/**
+ * ClickHouse TLS configuration.
+ */
+export type ClickHouseTlsConfig = {
+  readonly enabled: boolean;
+  readonly ca: string;
+  readonly skipVerify: boolean;
+  readonly hostnameVerify: boolean;
+  readonly minVersion: string;
+};
+
+/**
+ * ClickHouse database configuration.
+ */
+export type ClickHouseConfig = {
+  readonly url: string;
+  readonly user: string;
+  readonly password: string;
+  readonly database: string;
+  readonly tls: ClickHouseTlsConfig;
+};
+
+/**
+ * PostHog analytics configuration.
+ * Used by Settings and PostHog.layer().
+ */
+export type PostHogConfig = {
+  readonly apiKey: string;
+  readonly host: string;
+};
+
+/**
+ * Google Analytics configuration.
+ */
+export type GoogleAnalyticsConfig = {
+  readonly measurementId: string;
+  readonly apiSecret: string;
+};
+
+/**
+ * Frontend (Vite) configuration.
+ * These are validated at startup to ensure deployment is complete,
+ * but accessed via import.meta.env on the client side.
+ */
+export type FrontendConfig = {
+  readonly stripePublishableKey: string;
+  readonly posthogApiKey: string;
+  readonly posthogHost: string;
+  readonly googleAnalyticsMeasurementId: string;
+};
+
+/**
+ * Complete application settings configuration.
+ * All fields are required and guaranteed to be non-empty strings.
+ */
+export type SettingsConfig = {
+  // Core
+  readonly env: string;
+  readonly databaseUrl: string;
+  readonly siteUrl: string;
+
+  // Auth
+  readonly github: GitHubConfig;
+  readonly google: GoogleConfig;
+
+  // Payments
+  readonly stripe: StripeConfig;
+
+  // Email
+  readonly resend: ResendConfig;
+
+  // Router
+  readonly router: RouterConfig;
+
+  // ClickHouse
+  readonly clickhouse: ClickHouseConfig;
+
+  // Analytics
+  readonly posthog: PostHogConfig;
+  readonly googleAnalytics: GoogleAnalyticsConfig;
+
+  // Frontend (validated but not accessed server-side)
+  readonly frontend: FrontendConfig;
+};
+
+// =============================================================================
+// Environment Source Abstraction
+// =============================================================================
+
+/**
+ * Abstraction over environment variable sources.
+ * Allows the same validation logic for process.env and Cloudflare Workers env.
+ */
+export type EnvSource = {
+  get: (name: string) => string | undefined;
+};
+
+/**
+ * EnvSource that reads from process.env.
+ */
+export const processEnvSource: EnvSource = {
+  get: (name) => process.env[name],
+};
 
 /**
  * Cloudflare Workers environment type for settings extraction.
@@ -104,6 +201,27 @@ export function getSettings(): Settings {
 export type CloudflareEnvironment = {
   ENVIRONMENT?: string;
   DATABASE_URL?: string;
+  SITE_URL?: string;
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
+  GITHUB_CALLBACK_URL?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  GOOGLE_CALLBACK_URL?: string;
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  STRIPE_ROUTER_PRICE_ID?: string;
+  STRIPE_ROUTER_METER_ID?: string;
+  STRIPE_CLOUD_FREE_PRICE_ID?: string;
+  STRIPE_CLOUD_PRO_PRICE_ID?: string;
+  STRIPE_CLOUD_TEAM_PRICE_ID?: string;
+  STRIPE_CLOUD_SPANS_PRICE_ID?: string;
+  STRIPE_CLOUD_SPANS_METER_ID?: string;
+  RESEND_API_KEY?: string;
+  RESEND_AUDIENCE_SEGMENT_ID?: string;
+  OPENAI_API_KEY?: string;
+  ANTHROPIC_API_KEY?: string;
+  GEMINI_API_KEY?: string;
   CLICKHOUSE_URL?: string;
   CLICKHOUSE_USER?: string;
   CLICKHOUSE_PASSWORD?: string;
@@ -112,31 +230,247 @@ export type CloudflareEnvironment = {
   CLICKHOUSE_TLS_CA?: string;
   CLICKHOUSE_TLS_SKIP_VERIFY?: string;
   CLICKHOUSE_TLS_HOSTNAME_VERIFY?: string;
-  // Add other bindings as needed
+  CLICKHOUSE_TLS_MIN_VERSION?: string;
+  POSTHOG_API_KEY?: string;
+  POSTHOG_HOST?: string;
+  GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
+  GOOGLE_ANALYTICS_API_SECRET?: string;
+  VITE_STRIPE_PUBLISHABLE_KEY?: string;
+  VITE_POSTHOG_API_KEY?: string;
+  VITE_POSTHOG_HOST?: string;
+  VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
 };
 
 /**
- * Get settings from Cloudflare Workers environment bindings.
- * Used by Queue Consumer, Cron Trigger, etc.
+ * Creates an EnvSource from Cloudflare Workers environment bindings.
  */
-export function getSettingsFromEnvironment(
-  env: CloudflareEnvironment,
-): Settings {
-  const settings: Settings = {
-    env: env.ENVIRONMENT || "local",
-    DATABASE_URL: env.DATABASE_URL,
-    // ClickHouse settings
-    CLICKHOUSE_URL: env.CLICKHOUSE_URL || "http://localhost:8123",
-    CLICKHOUSE_USER: env.CLICKHOUSE_USER || "default",
-    CLICKHOUSE_PASSWORD: env.CLICKHOUSE_PASSWORD,
-    CLICKHOUSE_DATABASE: env.CLICKHOUSE_DATABASE || "mirascope_analytics",
-    // TLS settings (Workers environment has limited TLS control)
-    CLICKHOUSE_TLS_ENABLED: env.CLICKHOUSE_TLS_ENABLED === "true",
-    CLICKHOUSE_TLS_CA: env.CLICKHOUSE_TLS_CA,
-    CLICKHOUSE_TLS_SKIP_VERIFY: env.CLICKHOUSE_TLS_SKIP_VERIFY === "true",
-    CLICKHOUSE_TLS_HOSTNAME_VERIFY:
-      env.CLICKHOUSE_TLS_HOSTNAME_VERIFY !== "false",
-  };
+export const cloudflareEnvSource = (env: CloudflareEnvironment): EnvSource => ({
+  get: (name) => env[name as keyof CloudflareEnvironment],
+});
 
-  return settings;
+// =============================================================================
+// Validation
+// =============================================================================
+
+/**
+ * Validates environment variables from any source and returns SettingsConfig.
+ */
+function validateSettingsFromSource(
+  source: EnvSource,
+): Effect.Effect<SettingsConfig, SettingsValidationError> {
+  return Effect.gen(function* () {
+    const missing: string[] = [];
+
+    // Helper: validate required env var, collect missing ones
+    const required = (name: string): string => {
+      const value = source.get(name)?.trim();
+      if (!value) {
+        missing.push(name);
+        return ""; // Placeholder - we'll fail before this is used
+      }
+      return value;
+    };
+
+    const optional = (name: string): string => {
+      return source.get(name)?.trim() ?? "";
+    };
+
+    // Helper: parse boolean env var (required)
+    const requiredBool = (name: string): boolean => {
+      const value = source.get(name)?.trim();
+      if (!value) {
+        missing.push(name);
+        return false;
+      }
+      return value === "true";
+    };
+
+    const settings: SettingsConfig = {
+      env: required("ENVIRONMENT"),
+      databaseUrl: required("DATABASE_URL"),
+      siteUrl: required("SITE_URL"),
+
+      github: {
+        clientId: required("GITHUB_CLIENT_ID"),
+        clientSecret: required("GITHUB_CLIENT_SECRET"),
+        callbackUrl: required("GITHUB_CALLBACK_URL"),
+      },
+
+      google: {
+        clientId: required("GOOGLE_CLIENT_ID"),
+        clientSecret: required("GOOGLE_CLIENT_SECRET"),
+        callbackUrl: required("GOOGLE_CALLBACK_URL"),
+      },
+
+      stripe: {
+        secretKey: required("STRIPE_SECRET_KEY"),
+        webhookSecret: required("STRIPE_WEBHOOK_SECRET"),
+        routerPriceId: required("STRIPE_ROUTER_PRICE_ID"),
+        routerMeterId: required("STRIPE_ROUTER_METER_ID"),
+        cloudFreePriceId: required("STRIPE_CLOUD_FREE_PRICE_ID"),
+        cloudProPriceId: required("STRIPE_CLOUD_PRO_PRICE_ID"),
+        cloudTeamPriceId: required("STRIPE_CLOUD_TEAM_PRICE_ID"),
+        cloudSpansPriceId: required("STRIPE_CLOUD_SPANS_PRICE_ID"),
+        cloudSpansMeterId: required("STRIPE_CLOUD_SPANS_METER_ID"),
+      },
+
+      resend: {
+        apiKey: required("RESEND_API_KEY"),
+        audienceSegmentId: required("RESEND_AUDIENCE_SEGMENT_ID"),
+      },
+
+      router: {
+        openaiApiKey: required("OPENAI_API_KEY"),
+        anthropicApiKey: required("ANTHROPIC_API_KEY"),
+        geminiApiKey: required("GEMINI_API_KEY"),
+      },
+
+      clickhouse: {
+        url: required("CLICKHOUSE_URL"),
+        user: required("CLICKHOUSE_USER"),
+        password: required("CLICKHOUSE_PASSWORD"),
+        database: required("CLICKHOUSE_DATABASE"),
+        tls: {
+          enabled: requiredBool("CLICKHOUSE_TLS_ENABLED"),
+          ca: optional("CLICKHOUSE_TLS_CA"), // Not supported by @clickhouse/client-web
+          skipVerify: requiredBool("CLICKHOUSE_TLS_SKIP_VERIFY"),
+          hostnameVerify: requiredBool("CLICKHOUSE_TLS_HOSTNAME_VERIFY"),
+          minVersion: required("CLICKHOUSE_TLS_MIN_VERSION"),
+        },
+      },
+
+      posthog: {
+        apiKey: required("POSTHOG_API_KEY"),
+        host: required("POSTHOG_HOST"),
+      },
+
+      googleAnalytics: {
+        measurementId: required("GOOGLE_ANALYTICS_MEASUREMENT_ID"),
+        apiSecret: required("GOOGLE_ANALYTICS_API_SECRET"),
+      },
+
+      frontend: {
+        stripePublishableKey: required("VITE_STRIPE_PUBLISHABLE_KEY"),
+        posthogApiKey: required("VITE_POSTHOG_API_KEY"),
+        posthogHost: required("VITE_POSTHOG_HOST"),
+        googleAnalyticsMeasurementId: required(
+          "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID",
+        ),
+      },
+    };
+
+    // Fail if any variables are missing
+    if (missing.length > 0) {
+      return yield* Effect.fail(
+        new SettingsValidationError({
+          message: `Missing required environment variables:\n  - ${missing.join("\n  - ")}`,
+          missingVariables: missing,
+        }),
+      );
+    }
+
+    // ClickHouse TLS validation for @clickhouse/client-web compatibility
+    // These limitations apply to ALL environments since we use the web client
+    const tlsErrors: string[] = [];
+    if (settings.clickhouse.tls.enabled) {
+      if (settings.clickhouse.tls.skipVerify) {
+        tlsErrors.push(
+          "CLICKHOUSE_TLS_SKIP_VERIFY=true is not supported by @clickhouse/client-web",
+        );
+      }
+      if (!settings.clickhouse.tls.hostnameVerify) {
+        tlsErrors.push(
+          "CLICKHOUSE_TLS_HOSTNAME_VERIFY=false is not supported by @clickhouse/client-web",
+        );
+      }
+      if (settings.clickhouse.tls.ca) {
+        tlsErrors.push(
+          "CLICKHOUSE_TLS_CA is not supported by @clickhouse/client-web (uses system CA)",
+        );
+      }
+      if (
+        settings.clickhouse.tls.minVersion &&
+        settings.clickhouse.tls.minVersion !== "1.2"
+      ) {
+        tlsErrors.push(
+          `CLICKHOUSE_TLS_MIN_VERSION=${settings.clickhouse.tls.minVersion} is not supported by @clickhouse/client-web`,
+        );
+      }
+    }
+
+    // Production-specific validation
+    if (settings.env === "production") {
+      if (!settings.clickhouse.tls.enabled) {
+        tlsErrors.push("CLICKHOUSE_TLS_ENABLED=true is required in production");
+      }
+      if (!settings.clickhouse.url.startsWith("https://")) {
+        tlsErrors.push("CLICKHOUSE_URL must use https:// in production");
+      }
+    }
+
+    if (tlsErrors.length > 0) {
+      return yield* Effect.fail(
+        new SettingsValidationError({
+          message: `ClickHouse TLS configuration errors:\n  - ${tlsErrors.join("\n  - ")}`,
+          missingVariables: [],
+        }),
+      );
+    }
+
+    return settings;
+  });
+}
+
+/**
+ * Validates settings from process.env.
+ */
+export function validateSettings(): Effect.Effect<
+  SettingsConfig,
+  SettingsValidationError
+> {
+  return validateSettingsFromSource(processEnvSource);
+}
+
+/**
+ * Validates settings from Cloudflare Workers environment bindings.
+ */
+export function validateSettingsFromEnvironment(
+  env: CloudflareEnvironment,
+): Effect.Effect<SettingsConfig, SettingsValidationError> {
+  return validateSettingsFromSource(cloudflareEnvSource(env));
+}
+
+// =============================================================================
+// Settings Service
+// =============================================================================
+
+/**
+ * Settings service providing validated application configuration.
+ *
+ * This is the ONLY place in the codebase that should access process.env.
+ * All other code should depend on the Settings service to get configuration.
+ *
+ * @example
+ * ```ts
+ * const program = Effect.gen(function* () {
+ *   const settings = yield* Settings;
+ *   const dbUrl = settings.databaseUrl; // Guaranteed non-empty string
+ * });
+ * ```
+ */
+export class Settings extends Context.Tag("Settings")<
+  Settings,
+  SettingsConfig
+>() {
+  /**
+   * Live layer that validates and provides Settings from process.env.
+   * Fails with SettingsValidationError if any required env vars are missing.
+   */
+  static Live = Layer.effect(Settings, validateSettings());
+
+  /**
+   * Creates a Live layer from Cloudflare Workers environment bindings.
+   */
+  static LiveFromEnvironment = (env: CloudflareEnvironment) =>
+    Layer.effect(Settings, validateSettingsFromEnvironment(env));
 }

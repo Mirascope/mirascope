@@ -15,6 +15,7 @@ import { Effect, Context, Layer } from "effect";
 import type { MessageBatch, Message } from "@cloudflare/workers-types";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
+import { Settings } from "@/settings";
 import { type WorkerEnv } from "@/workers/config";
 import type { TokenUsage } from "@/api/router/pricing";
 import type { RouterRequestIdentifiers } from "@/api/router/utils";
@@ -163,47 +164,32 @@ async function processMessage(
     return;
   }
 
-  // Stripe configuration validation
-  if (
-    !env.STRIPE_SECRET_KEY ||
-    !env.STRIPE_ROUTER_PRICE_ID ||
-    !env.STRIPE_ROUTER_METER_ID
-  ) {
-    console.error(
-      "[routerMeteringQueue] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
-    );
-    message.retry({ delaySeconds: 60 });
-    return;
-  }
-
   // Convert cost to bigint for database and payments
   const costAsBigInt =
     typeof data.costCenticents === "bigint"
       ? data.costCenticents
       : BigInt(data.costCenticents);
 
-  // Update router request and settle funds
-  const program = updateAndSettleRouterRequest(data, costAsBigInt);
+  // Build the program using Settings for validated configuration
+  const program = Effect.gen(function* () {
+    const settings = yield* Settings;
 
-  // Build Database.Live layer (provides both Database and Payments services)
-  const layer = Database.Live({
-    database: { connectionString: databaseUrl },
-    payments: {
-      apiKey: env.STRIPE_SECRET_KEY,
-      routerPriceId: env.STRIPE_ROUTER_PRICE_ID,
-      routerMeterId: env.STRIPE_ROUTER_METER_ID,
-      cloudFreePriceId: env.STRIPE_CLOUD_FREE_PRICE_ID || "",
-      cloudProPriceId: env.STRIPE_CLOUD_PRO_PRICE_ID || "",
-      cloudTeamPriceId: env.STRIPE_CLOUD_TEAM_PRICE_ID || "",
-      cloudSpansPriceId: env.STRIPE_CLOUD_SPANS_PRICE_ID || "",
-      cloudSpansMeterId: env.STRIPE_CLOUD_SPANS_METER_ID || "",
-    },
+    // Build Database.Live layer (provides both Database and Payments services)
+    const layer = Database.Live({
+      database: { connectionString: databaseUrl },
+      payments: settings.stripe,
+    });
+
+    // Update router request and settle funds
+    yield* updateAndSettleRouterRequest(data, costAsBigInt).pipe(
+      Effect.provide(layer),
+    );
   });
 
-  // Run the program
+  // Run with Settings layer from environment
   await Effect.runPromise(
     program.pipe(
-      Effect.provide(layer),
+      Effect.provide(Settings.LiveFromEnvironment(env)),
       Effect.catchAll((error) => {
         console.error(
           `[routerMeteringQueue] Error processing message for request ${data.routerRequestId}:`,

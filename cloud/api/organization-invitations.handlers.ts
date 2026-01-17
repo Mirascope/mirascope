@@ -3,6 +3,7 @@ import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import { ImmutableResourceError } from "@/errors";
 import { Emails } from "@/emails";
+import { Settings } from "@/settings";
 import { renderEmailTemplate } from "@/emails/render";
 import { InvitationEmail } from "@/emails/templates/invitation";
 import type {
@@ -19,20 +20,12 @@ export * from "@/api/organization-invitations.schemas";
 /**
  * Builds the invitation acceptance URL with the given token.
  *
+ * @param siteUrl - The base URL from Settings
  * @param token - The invitation token
  * @returns The full URL for accepting the invitation
  */
-function buildAcceptUrl(token: string): string {
-  const baseUrl = process.env.SITE_URL;
-  /* v8 ignore start */
-  if (!baseUrl) {
-    // TODO: Unify all environment variable access under a Settings service/requirement
-    throw new Error(
-      "SITE_URL environment variable is not configured. Cannot generate invitation acceptance URL.",
-    );
-  }
-  /* v8 ignore end */
-  return `${baseUrl}/invitations/accept?token=${token}`;
+function buildAcceptUrl(siteUrl: string, token: string): string {
+  return `${siteUrl}/invitations/accept?token=${token}`;
 }
 
 /**
@@ -75,6 +68,7 @@ export const createInvitationHandler = (
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const emails = yield* Emails;
+    const settings = yield* Settings;
 
     const invitationWithMetadata = yield* db.organizations.invitations.create({
       userId: user.id,
@@ -86,7 +80,10 @@ export const createInvitationHandler = (
     });
 
     // Send invitation email
-    const acceptUrl = buildAcceptUrl(invitationWithMetadata.token);
+    const acceptUrl = buildAcceptUrl(
+      settings.siteUrl,
+      invitationWithMetadata.token,
+    );
     const fromAddress = buildFromAddress(
       invitationWithMetadata.senderName,
       invitationWithMetadata.senderEmail,
@@ -160,6 +157,7 @@ export const resendInvitationHandler = (
     const db = yield* Database;
     const user = yield* AuthenticatedUser;
     const emails = yield* Emails;
+    const settings = yield* Settings;
 
     // Get invitation with metadata (includes token)
     const invitationWithMetadata =
@@ -188,7 +186,10 @@ export const resendInvitationHandler = (
     }
 
     // Send invitation email
-    const acceptUrl = buildAcceptUrl(invitationWithMetadata.token);
+    const acceptUrl = buildAcceptUrl(
+      settings.siteUrl,
+      invitationWithMetadata.token,
+    );
     const fromAddress = buildFromAddress(
       invitationWithMetadata.senderName,
       invitationWithMetadata.senderEmail,

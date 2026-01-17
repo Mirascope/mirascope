@@ -13,8 +13,11 @@ describe("Analytics", () => {
   describe("service composition", () => {
     it("creates service with both providers", async () => {
       const layer = Analytics.Live({
-        googleAnalytics: { measurementId: "G-TEST123" },
-        postHog: { apiKey: "phc_test123" },
+        googleAnalytics: {
+          measurementId: "G-TEST123",
+          apiSecret: "test_secret",
+        },
+        postHog: { apiKey: "phc_test123", host: "https://us.i.posthog.com" },
       });
 
       const program = Effect.gen(function* () {
@@ -32,8 +35,11 @@ describe("Analytics", () => {
 
     it("provides direct access to GoogleAnalytics client", async () => {
       const layer = Analytics.Live({
-        googleAnalytics: { measurementId: "G-TEST123" },
-        postHog: { apiKey: "phc_test123" },
+        googleAnalytics: {
+          measurementId: "G-TEST123",
+          apiSecret: "test_secret",
+        },
+        postHog: { apiKey: "phc_test123", host: "https://us.i.posthog.com" },
       });
 
       const program = Effect.gen(function* () {
@@ -49,8 +55,11 @@ describe("Analytics", () => {
 
     it("provides direct access to PostHog client", async () => {
       const layer = Analytics.Live({
-        googleAnalytics: { measurementId: "G-TEST123" },
-        postHog: { apiKey: "phc_test123" },
+        googleAnalytics: {
+          measurementId: "G-TEST123",
+          apiSecret: "test_secret",
+        },
+        postHog: { apiKey: "phc_test123", host: "https://us.i.posthog.com" },
       });
 
       const program = Effect.gen(function* () {
@@ -475,8 +484,11 @@ describe("Analytics", () => {
   describe("Analytics.Live", () => {
     it("creates complete layer with both providers", async () => {
       const layer = Analytics.Live({
-        googleAnalytics: { measurementId: "G-TEST123" },
-        postHog: { apiKey: "phc_test123" },
+        googleAnalytics: {
+          measurementId: "G-TEST123",
+          apiSecret: "test_secret",
+        },
+        postHog: { apiKey: "phc_test123", host: "https://us.i.posthog.com" },
       });
 
       const program = Effect.gen(function* () {
@@ -492,42 +504,6 @@ describe("Analytics", () => {
         expect(typeof analytics.trackEvent).toBe("function");
         expect(typeof analytics.trackPageView).toBe("function");
         expect(typeof analytics.identify).toBe("function");
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-
-    it("creates no-op GA when config is invalid", async () => {
-      const layer = Analytics.Live({
-        googleAnalytics: { measurementId: "" }, // Invalid config
-        postHog: { apiKey: "phc_test123" },
-      });
-
-      const program = Effect.gen(function* () {
-        const analytics = yield* Analytics;
-
-        // GA should fall back to no-op
-        expect(analytics.googleAnalytics.type).toBe("noop");
-        // PostHog should be valid (server in test environment)
-        expect(analytics.postHog.type).toBe("server");
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-
-    it("creates no-op PostHog when config is invalid", async () => {
-      const layer = Analytics.Live({
-        googleAnalytics: { measurementId: "G-TEST123" },
-        postHog: { apiKey: "" }, // Invalid config
-      });
-
-      const program = Effect.gen(function* () {
-        const analytics = yield* Analytics;
-
-        // GA has valid config, so it creates server implementation in test env
-        expect(analytics.googleAnalytics.type).toBe("server");
-        // PostHog should fall back to no-op due to invalid config
-        expect(analytics.postHog.type).toBe("noop");
       });
 
       await Effect.runPromise(program.pipe(Effect.provide(layer)));

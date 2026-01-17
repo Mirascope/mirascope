@@ -13,7 +13,8 @@ import { organizationMemberships } from "@/db/schema/organization-memberships";
 import { organizationInvitations } from "@/db/schema/organization-invitations";
 import { projects } from "@/db/schema/projects";
 import { sql, eq, and } from "drizzle-orm";
-import { Stripe as StripeService, type StripeConfig } from "@/payments/client";
+import { Stripe as StripeService } from "@/payments/client";
+import type { StripeConfig } from "@/settings";
 import { mapSqlError } from "@/db/client";
 import {
   DatabaseError,
