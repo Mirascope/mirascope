@@ -101,6 +101,12 @@ export const NAV_LINK_STYLES = {
     "nav-text",
   ),
 
+  // Active state for desktop navigation links
+  active: cn(
+    // Highlight the active link - use !important to override nav-text utility
+    "!text-primary font-semibold",
+  ),
+
   // Styles for mobile navigation links
   mobile: cn(
     // Base styles
@@ -109,6 +115,12 @@ export const NAV_LINK_STYLES = {
     "transition-colors duration-300 ease-in-out",
     // Interactive states
     "hover:text-primary",
+  ),
+
+  // Active state for mobile navigation links
+  mobileActive: cn(
+    // Highlight the active link - use !important to override any base styles
+    "!text-primary font-semibold",
   ),
 };
 
