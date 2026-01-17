@@ -31,12 +31,18 @@ class ThinkingConfig(TypedDict, total=False):
     while other models may not allow disabling it.
     """
 
-    include_summaries: bool
-    """Whether to generate reasoning summaries (human readable Thoughts) from model output.
+    include_thoughts: bool
+    """Whether to include Thought content in the model output.
 
-    Generally, providers do not return raw model thinking output, but may produce
-    thought summaries. When `include_summaries` is true, these will be requested from
-    the provider (if available). Otherwise, they will not be requested.
+    Depending on the model and provider, enabling include_thoughts to true may
+    request reasoning summaries (which are not the underlying reasoning tokens,
+    but a readable summary produced by another model), or it may be the original
+    reasoning tokens.
+
+    When include_thoughts is false, no summaries will be requested, and thoughts
+    will not be included in the output even if they were provided by the provider.
+
+    Defaults to false.
     """
 
     encode_thoughts_as_text: bool

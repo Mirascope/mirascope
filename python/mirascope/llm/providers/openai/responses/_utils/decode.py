@@ -78,6 +78,8 @@ def decode_response(
     response: openai_types.Response,
     model_id: OpenAIModelId,
     provider_id: str,
+    *,
+    include_thoughts: bool,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
     """Convert OpenAI Responses Response to mirascope AssistantMessage and usage."""
     parts: list[AssistantContentPart] = []
@@ -114,6 +116,9 @@ def decode_response(
         else:
             raise NotImplementedError(f"Unsupported output item: {output_item.type}")
 
+    if not include_thoughts:
+        parts = [part for part in parts if part.type != "thought"]
+
     if refused:
         finish_reason = FinishReason.REFUSAL
     elif details := response.incomplete_details:
@@ -136,9 +141,10 @@ def decode_response(
 class _OpenAIResponsesChunkProcessor:
     """Processes OpenAI Responses streaming events and maintains state across chunks."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, include_thoughts: bool) -> None:
         self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
         self.refusal_encountered = False
+        self.include_thoughts = include_thoughts
 
     def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
         """Process a single OpenAI Responses stream event and yield the appropriate content chunks."""
@@ -182,14 +188,17 @@ class _OpenAIResponsesChunkProcessor:
                 or event.type == "response.reasoning_summary_text.delta"
             ):
                 if not self.current_content_type:
-                    yield ThoughtStartChunk()
+                    if self.include_thoughts:
+                        yield ThoughtStartChunk()
                     self.current_content_type = "thought"
-                yield ThoughtChunk(delta=event.delta)
+                if self.include_thoughts:
+                    yield ThoughtChunk(delta=event.delta)
             elif (
                 event.type == "response.reasoning_summary_text.done"
                 or event.type == "response.reasoning_text.done"
             ):
-                yield ThoughtEndChunk()
+                if self.include_thoughts:
+                    yield ThoughtEndChunk()
                 self.current_content_type = None
             elif event.type == "response.incomplete":
                 details = event.response.incomplete_details
@@ -230,18 +239,22 @@ class _OpenAIResponsesChunkProcessor:
 
 def decode_stream(
     openai_stream: Stream[ResponseStreamEvent],
+    *,
+    include_thoughts: bool,
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an OpenAI Stream[ResponseStreamEvent]"""
-    processor = _OpenAIResponsesChunkProcessor()
+    processor = _OpenAIResponsesChunkProcessor(include_thoughts=include_thoughts)
     for event in openai_stream:
         yield from processor.process_chunk(event)
 
 
 async def decode_async_stream(
     openai_stream: AsyncStream[ResponseStreamEvent],
+    *,
+    include_thoughts: bool,
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from an OpenAI AsyncStream[ResponseStreamEvent]"""
-    processor = _OpenAIResponsesChunkProcessor()
+    processor = _OpenAIResponsesChunkProcessor(include_thoughts=include_thoughts)
     async for event in openai_stream:
         for item in processor.process_chunk(event):
             yield item

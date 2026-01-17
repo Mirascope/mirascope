@@ -100,8 +100,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         )
         openai_response = self.client.responses.create(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            openai_response, model_id, self.id
+            openai_response, model_id, self.id, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -152,8 +153,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         )
         openai_response = await self.async_client.responses.create(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            openai_response, model_id, self.id
+            openai_response, model_id, self.id, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -207,8 +209,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             stream=True,
         )
 
+        include_thoughts = _utils.get_include_thoughts(params)
         chunk_iterator = _utils.decode_stream(
-            openai_stream,
+            openai_stream, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -259,8 +262,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             stream=True,
         )
 
+        include_thoughts = _utils.get_include_thoughts(params)
         chunk_iterator = _utils.decode_async_stream(
-            openai_stream,
+            openai_stream, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -312,8 +316,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         )
         openai_response = self.client.responses.create(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            openai_response, model_id, self.id
+            openai_response, model_id, self.id, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -368,8 +373,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
         )
         openai_response = await self.async_client.responses.create(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            openai_response, model_id, self.id
+            openai_response, model_id, self.id, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -428,8 +434,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             stream=True,
         )
 
+        include_thoughts = _utils.get_include_thoughts(params)
         chunk_iterator = _utils.decode_stream(
-            openai_stream,
+            openai_stream, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 
@@ -488,8 +495,9 @@ class OpenAIResponsesProvider(BaseProvider[OpenAI]):
             stream=True,
         )
 
+        include_thoughts = _utils.get_include_thoughts(params)
         chunk_iterator = _utils.decode_async_stream(
-            openai_stream,
+            openai_stream, include_thoughts=include_thoughts
         )
         provider_model_name = model_name(model_id, "responses")
 

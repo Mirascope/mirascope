@@ -12,7 +12,7 @@ def sqrt_tool(number: float) -> float:
 @llm.call(
     "anthropic/claude-sonnet-4-5",
     tools=[sqrt_tool],
-    thinking={"level": "medium", "include_summaries": True},
+    thinking={"level": "medium", "include_thoughts": True},
 )
 def math_assistant(query: str):
     return query

@@ -185,19 +185,7 @@ Checking primality:
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-The user is asking me to recall what primes I found. I just calculated them in my previous response, so I do remember them. The primes below 400 that contain "79" as a substring were:
-- 79
-- 179
-- 379
-
-I found that 279 was not prime (divisible by 3), but the other three were prime.\
-"""
-                        ),
-                        Text(text="The primes were: 79, 179, and 379."),
-                    ],
+                    content=[Text(text="The primes were: 79, 179, and 379.")],
                     provider_id="anthropic",
                     model_id="anthropic-beta/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -376,49 +364,7 @@ The complete list of primes below 400 containing "79" as a substring is 79, 179,
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-I need to think about primes below 400 that contain "79" as a substring.
-
-Numbers that contain "79" as a substring below 400 would be:
-- 79 itself
-- 179
-- 279
-- 379
-- 790, 791, 792, etc. (but these are above 400)
-
-Let me check if these are prime:
-
-79: Let me check if 79 is prime. I need to check divisibility by primes up to √79 ≈ 8.9
-- Not divisible by 2 (it's odd)
-- Not divisible by 3 (7+9=16, not divisible by 3)
-- Not divisible by 5 (doesn't end in 0 or 5)
-- Not divisible by 7 (79 ÷ 7 = 11.28...)
-So 79 is prime.
-
-179: Let me check if 179 is prime. I need to check divisibility by primes up to √179 ≈ 13.4
-- Not divisible by 2 (it's odd)
-- Not divisible by 3 (1+7+9=17, not divisible by 3)
-- Not divisible by 5 (doesn't end in 0 or 5)
-- Not divisible by 7 (179 ÷ 7 = 25.57...)
-- Not divisible by 11 (179 ÷ 11 = 16.27...)
-- Not divisible by 13 (179 ÷ 13 = 13.77...)
-So 179 is prime.
-
-279: Let me check if 279 is prime.
-- Not divisible by 2 (it's odd)
-- Divisible by 3 (2+7+9=18, which is divisible by 3)
-279 ÷ 3 = 93, so 279 = 3 × 93, so 279 is not prime.
-
-
-379: Checking divisibility up to √379 ≈ 19.5, I find that 379 is not divisible by 2, 3, 5, 7, 11, 13, 17, or 19, making it prime.
-
-The primes below 400 containing "79" as a substring are 79, 179, and 379.\
-"""
-                        ),
-                        Text(text="I remember them: 79, 179, and 379."),
-                    ],
+                    content=[Text(text="I remember them: 79, 179, and 379.")],
                     provider_id="anthropic",
                     model_id="anthropic-beta/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -603,44 +549,7 @@ Since √797 < 29 and I've verified all primes up to 23, 797 must be prime. The 
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-I need to think about which primes below 400 contain 79 as a substring. Let me work through this systematically.
-
-Numbers containing 79 as a substring below 400:
-- 79 itself
-- 179
-- 279
-- 379
-- 790, 791, 792, etc. (but these are all ≥ 400, so not relevant)
-
-Now I need to check which of these are prime:
-- 79: Yes, this is prime
-- 179: Let me check... 179 is not divisible by small primes. √179 ≈ 13.4, so I need to check divisibility by primes up to 13. Not divisible by 2, 3, 5, 7, 11, 13. So 179 is prime.
-- 279: 279 = 3 × 93 = 3 × 3 × 31 = 9 × 31, so 279 is not prime
-- 379: Let me check... √379 ≈ 19.5, so I need to check divisibility by primes up to 19. Not divisible by 2, 3, 5, 7, 11, 13, 17, 19. So 379 is prime.
-
-So the primes are: 79, 179, 379. That's 3 primes, not 4 as I answered.
-
-Wait, let me double-check my original answer. I said 4, but I'm only finding 3. Let me think if I missed any...
-
-Actually, let me be more systematic about numbers containing "79":
-- 79
-- 179  \n\
-- 279
-- 379
-- 790+ (all ≥ 400)
-
-Are there any other patterns? What about numbers like 797, 798, 799? These are all ≥ 400.
-
-I think I made an error in my original count. \n\
-
-Looking back at my work, I can only identify three primes containing 79 as a substring below 400: 79, 179, and 379. My initial answer of 4 was incorrect.\
-"""
-                        ),
-                        Text(text="I don't remember."),
-                    ],
+                    content=[Text(text="I don't remember.")],
                     provider_id="anthropic",
                     model_id="anthropic-beta/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -700,7 +609,7 @@ Looking back at my work, I can only identify three primes containing 79 as a sub
                 "raw": "None",
                 "total_tokens": 578,
             },
-            "n_chunks": 134,
+            "n_chunks": 5,
         }
     }
 )
@@ -846,21 +755,7 @@ Checking which are prime:
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-The user is asking me to recall the primes I found in my previous answer. In my previous response, I identified:
-
-- 79: Prime
-- 179: Prime  \n\
-- 279: Not prime (divisible by 3)
-- 379: Prime
-
-So the primes were 79, 179, and 379.\
-"""
-                        ),
-                        Text(text="The primes were 79, 179, and 379."),
-                    ],
+                    content=[Text(text="The primes were 79, 179, and 379.")],
                     provider_id="anthropic",
                     model_id="anthropic-beta/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -900,7 +795,7 @@ So the primes were 79, 179, and 379.\
                 "raw": "None",
                 "total_tokens": 274,
             },
-            "n_chunks": 29,
+            "n_chunks": 6,
         }
     }
 )

@@ -150,32 +150,7 @@ After checking all primes up to 19 (7, 11, 13, 17, 19), none divide 379 evenly, 
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-I need to think about primes below 400 that contain "79" as a substring.
-
-Let me think of numbers containing "79":
-- 79 itself
-- 179
-- 279
-- 379
-- Numbers like 790, 791, 792, etc. (but these are above 400)
-- Numbers like 1790, etc. (way above 400)
-
-So the candidates are: 79, 179, 279, 379
-
-Let me check if these are prime:
-- 79: This is prime
-- 179: Let me check... 179 is not divisible by 2, 3, 5, 7, 11, 13... √179 ≈ 13.4, so I need to check up to 13. 179/7 ≈ 25.6, 179/11 ≈ 16.3, 179/13 ≈ 13.8. None of these divide evenly, so 179 is prime.
-- 279: 279 = 9 × 31, so this is not prime
-- 379: Let me check... 379 is not divisible by small primes. √379 ≈ 19.5, so I need to check up to 19. It's not divisible by 2, 3, 5, 7, 11, 13, 17, 19. So 379 is prime.
-
-So the primes are: 79, 179, 379. That's 3 primes, which matches my previous answer.\
-"""
-                        ),
-                        Text(text="The primes were: 79, 179, and 379."),
-                    ],
+                    content=[Text(text="The primes were: 79, 179, and 379.")],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -384,29 +359,7 @@ The numbers below 400 containing "79" that are prime: 79, 179, and 379. That giv
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-I need to think about primes below 400 that contain "79" as a substring.
-
-Let me think systematically:
-- Numbers that contain "79" as a substring could be:
-  - 79 itself
-  - Numbers starting with 79: 790, 791, 792, etc. (but these are above 400 or not prime)
-  - Numbers ending with 79: 179, 279, 379
-  - Numbers with 79 in the middle: like 1790, 2790, etc. (but these would be too large)
-
-So the candidates are:
-- 79: This is prime
-- 179: Let me check if this is prime. 179 is not divisible by 2, 3, 5, 7, 11, 13... √179 ≈ 13.4, so I need to check up to 13. 179/7 ≈ 25.6, 179/11 ≈ 16.3, 179/13 ≈ 13.8. None of these divide evenly, so 179 is prime.
-- 279: This is divisible by 3 (2+7+9=18, which is divisible by 3), so 279 = 3 × 93 = 3 × 3 × 31, so not prime.
-- 379: Let me check if this is prime. 379 is not divisible by 2, 3, 5, 7, 11, 13, 17, 19... √379 ≈ 19.5, so I need to check up to 19. Let me check: 379/7 ≈ 54.1, 379/11 ≈ 34.5, 379/13 ≈ 29.2, 379/17 ≈ 22.3, 379/19 ≈ 19.9. \n\
-
-None of these divide evenly, so 379 is prime. The complete list is 79, 179, and 379—three primes total.\
-"""
-                        ),
-                        Text(text="The primes were: 79, 179, and 379."),
-                    ],
+                    content=[Text(text="The primes were: 79, 179, and 379.")],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -607,20 +560,7 @@ Checking each for primality:
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Thought(
-                            thought="""\
-The user is asking me to recall the primes I found that contain "79" as a substring below 400. In my previous response, I identified:
-- 79: Prime
-- 179: Prime  \n\
-- 279: Not prime (divisible by 3)
-- 379: Prime
-
-So the primes were 79, 179, and 379.\
-"""
-                        ),
-                        Text(text="The primes were: 79, 179, and 379."),
-                    ],
+                    content=[Text(text="The primes were: 79, 179, and 379.")],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
                     provider_model_name="claude-sonnet-4-0",
@@ -659,7 +599,7 @@ So the primes were 79, 179, and 379.\
                 "raw": "None",
                 "total_tokens": 278,
             },
-            "n_chunks": 27,
+            "n_chunks": 7,
         }
     }
 )
@@ -810,10 +750,7 @@ Checking each for primality:
                 ),
                 AssistantMessage(
                     content=[
-                        Thought(
-                            thought="The user is asking me to recall the primes I found in my previous response. I did identify them in my working - they were 79, 179, and 379. I can share these since the user is now explicitly asking for them."
-                        ),
-                        Text(text="I remember. The primes were: 79, 179, and 379."),
+                        Text(text="I remember. The primes were: 79, 179, and 379.")
                     ],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-0",
@@ -845,7 +782,7 @@ Checking each for primality:
                 "raw": "None",
                 "total_tokens": 251,
             },
-            "n_chunks": 36,
+            "n_chunks": 8,
         }
     }
 )

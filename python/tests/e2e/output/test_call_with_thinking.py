@@ -32,7 +32,7 @@ def test_call_with_thinking_sync(
 ) -> None:
     """Test synchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": True})
     def call(query: str) -> str:
         return query
 
@@ -52,7 +52,7 @@ def test_call_with_thinking_stream(
 ) -> None:
     """Test streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": True})
     def call(query: str) -> str:
         return query
 
@@ -75,7 +75,7 @@ async def test_call_with_thinking_async(
 ) -> None:
     """Test asynchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": True})
     async def call(query: str) -> str:
         return query
 
@@ -96,7 +96,7 @@ async def test_call_with_thinking_async_stream(
 ) -> None:
     """Test async streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(model_id, thinking={"level": "medium", "include_summaries": True})
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": True})
     async def call(query: str) -> str:
         return query
 
@@ -105,5 +105,103 @@ async def test_call_with_thinking_async_stream(
         await response.finish()
         with llm.model(model_id, thinking=llm.ThinkingConfig(level="minimal")):
             response = await response.resume(RESUME_PROMPT)
+        await response.finish()
+        snap.set_response(response)
+
+
+# Tests for thinking enabled but include_thoughts=False
+# Note: The snapshot tests will verify that no thought content appears in the response.
+# If thoughts were included, the snapshots would show them and the tests would fail
+# on subsequent runs when comparing against the recorded cassettes.
+
+
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.vcr
+def test_call_with_thinking_no_include_thoughts_sync(
+    model_id: llm.ModelId,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test synchronous call with thinking enabled but include_thoughts=False.
+
+    This verifies that thoughts are filtered out from the response when
+    include_thoughts is False, even though thinking is enabled.
+    """
+
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": False})
+    def call(query: str) -> str:
+        return query
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = call(PROMPT)
+        snap.set_response(response)
+
+
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.vcr
+def test_call_with_thinking_no_include_thoughts_stream(
+    model_id: llm.ModelId,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test streaming call with thinking enabled but include_thoughts=False.
+
+    This verifies that thought chunks are not yielded during streaming when
+    include_thoughts is False.
+    """
+
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": False})
+    def call(query: str) -> str:
+        return query
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = call.stream(PROMPT)
+        response.finish()
+        snap.set_response(response)
+
+
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.vcr
+@pytest.mark.asyncio
+async def test_call_with_thinking_no_include_thoughts_async(
+    model_id: llm.ModelId,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test asynchronous call with thinking enabled but include_thoughts=False.
+
+    This verifies that thoughts are filtered out from the response when
+    include_thoughts is False.
+    """
+
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": False})
+    async def call(query: str) -> str:
+        return query
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = await call(PROMPT)
+        snap.set_response(response)
+
+
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.vcr
+@pytest.mark.asyncio
+async def test_call_with_thinking_no_include_thoughts_async_stream(
+    model_id: llm.ModelId,
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test async streaming call with thinking enabled but include_thoughts=False.
+
+    This verifies that thought chunks are not yielded during async streaming when
+    include_thoughts is False.
+    """
+
+    @llm.call(model_id, thinking={"level": "medium", "include_thoughts": False})
+    async def call(query: str) -> str:
+        return query
+
+    with snapshot_test(snapshot, caplog) as snap:
+        response = await call.stream(PROMPT)
         await response.finish()
         snap.set_response(response)

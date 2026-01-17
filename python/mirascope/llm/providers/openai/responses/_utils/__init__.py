@@ -1,3 +1,4 @@
+from ....base._utils import get_include_thoughts
 from .decode import (
     decode_async_stream,
     decode_response,
@@ -10,4 +11,5 @@ __all__ = [
     "decode_response",
     "decode_stream",
     "encode_request",
+    "get_include_thoughts",
 ]

@@ -3,7 +3,6 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     Text,
-    Thought,
     UserMessage,
 )
 
@@ -30,26 +29,7 @@ test_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[
-                        Thought(
-                            thought="""\
-The user is asking me to add 2 + 2, which equals 4.
-
-I need to respond with valid JSON that matches the schema provided. The schema requires:
-- integer_a: an integer
-- integer_b: an integer  \n\
-- answer: an integer
-
-All three fields are required.
-
-So for the question "What is 2 + 2?", I should set:
-- integer_a: 2
-- integer_b: 2
-- answer: 4
-
-The response must be a single line of JSON without any markdown or additional text.\
-"""
-                        ),
-                        Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}'),
+                        Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}')
                     ],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-5",

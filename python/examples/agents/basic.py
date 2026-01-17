@@ -64,7 +64,7 @@ def display_tool_call(tool_call: llm.ToolCall) -> str:
 
 
 def run_agent(model_id: llm.ModelId, query: str):
-    model = llm.model(model_id, thinking={"level": "medium", "include_summaries": True})
+    model = llm.model(model_id, thinking={"level": "medium", "include_thoughts": True})
     response = model.stream(query, tools=[list_files, read_file, write_file])
 
     while True:  # The Agent Loop

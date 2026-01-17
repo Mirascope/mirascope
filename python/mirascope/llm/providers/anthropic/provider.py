@@ -109,8 +109,9 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = self.client.messages.create(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
+            anthropic_response, model_id, include_thoughts=include_thoughts
         )
         return Response(
             raw=anthropic_response,
@@ -160,8 +161,9 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = self.client.messages.create(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
+            anthropic_response, model_id, include_thoughts=include_thoughts
         )
         return ContextResponse(
             raw=anthropic_response,
@@ -207,8 +209,9 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = await self.async_client.messages.create(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
+            anthropic_response, model_id, include_thoughts=include_thoughts
         )
         return AsyncResponse(
             raw=anthropic_response,
@@ -258,8 +261,9 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_response = await self.async_client.messages.create(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            anthropic_response, model_id
+            anthropic_response, model_id, include_thoughts=include_thoughts
         )
         return AsyncContextResponse(
             raw=anthropic_response,
@@ -305,7 +309,10 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_stream = self.client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_stream(anthropic_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_stream(
+            anthropic_stream, include_thoughts=include_thoughts
+        )
         return StreamResponse(
             provider_id="anthropic",
             model_id=model_id,
@@ -351,7 +358,10 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_stream = self.client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_stream(anthropic_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_stream(
+            anthropic_stream, include_thoughts=include_thoughts
+        )
         return ContextStreamResponse(
             provider_id="anthropic",
             model_id=model_id,
@@ -392,7 +402,10 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_stream = self.async_client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_async_stream(
+            anthropic_stream, include_thoughts=include_thoughts
+        )
         return AsyncStreamResponse(
             provider_id="anthropic",
             model_id=model_id,
@@ -441,7 +454,10 @@ class AnthropicProvider(BaseProvider[Anthropic]):
             params=params,
         )
         anthropic_stream = self.async_client.messages.stream(**kwargs)
-        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_async_stream(
+            anthropic_stream, include_thoughts=include_thoughts
+        )
         return AsyncContextStreamResponse(
             provider_id="anthropic",
             model_id=model_id,

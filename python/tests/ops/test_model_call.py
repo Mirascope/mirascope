@@ -562,7 +562,7 @@ def test_model_call_with_reasoning_model(
     """Test OpenTelemetry instrumentation with reasoning model (Thought content)."""
     model = llm.Model(
         model_id="anthropic/claude-sonnet-4-20250514",
-        thinking={"level": "medium"},
+        thinking={"level": "medium", "include_thoughts": True},
     )
     messages = [llm.messages.user("What is 2+2? Think step by step.")]
 

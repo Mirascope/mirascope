@@ -79,8 +79,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = self.client.beta.messages.parse(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id
+            beta_response, model_id, include_thoughts=include_thoughts
         )
         return Response(
             raw=beta_response,
@@ -120,8 +121,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = self.client.beta.messages.parse(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id
+            beta_response, model_id, include_thoughts=include_thoughts
         )
         return ContextResponse(
             raw=beta_response,
@@ -158,8 +160,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = await self.async_client.beta.messages.parse(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id
+            beta_response, model_id, include_thoughts=include_thoughts
         )
         return AsyncResponse(
             raw=beta_response,
@@ -199,8 +202,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_response = await self.async_client.beta.messages.parse(**kwargs)
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id
+            beta_response, model_id, include_thoughts=include_thoughts
         )
         return AsyncContextResponse(
             raw=beta_response,
@@ -237,7 +241,10 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_stream = self.client.beta.messages.stream(**kwargs)
-        chunk_iterator = beta_decode.beta_decode_stream(beta_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = beta_decode.beta_decode_stream(
+            beta_stream, include_thoughts=include_thoughts
+        )
         return StreamResponse(
             provider_id="anthropic",
             model_id=model_id,
@@ -273,7 +280,10 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_stream = self.client.beta.messages.stream(**kwargs)
-        chunk_iterator = beta_decode.beta_decode_stream(beta_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = beta_decode.beta_decode_stream(
+            beta_stream, include_thoughts=include_thoughts
+        )
         return ContextStreamResponse(
             provider_id="anthropic",
             model_id=model_id,
@@ -306,7 +316,10 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_stream = self.async_client.beta.messages.stream(**kwargs)
-        chunk_iterator = beta_decode.beta_decode_async_stream(beta_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = beta_decode.beta_decode_async_stream(
+            beta_stream, include_thoughts=include_thoughts
+        )
         return AsyncStreamResponse(
             provider_id="anthropic",
             model_id=model_id,
@@ -345,7 +358,10 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             params=params,
         )
         beta_stream = self.async_client.beta.messages.stream(**kwargs)
-        chunk_iterator = beta_decode.beta_decode_async_stream(beta_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = beta_decode.beta_decode_async_stream(
+            beta_stream, include_thoughts=include_thoughts
+        )
         return AsyncContextStreamResponse(
             provider_id="anthropic",
             model_id=model_id,

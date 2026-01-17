@@ -97,8 +97,9 @@ class GoogleProvider(BaseProvider[Client]):
         )
         google_response = self.client.models.generate_content(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            google_response, model_id
+            google_response, model_id, include_thoughts=include_thoughts
         )
 
         return Response(
@@ -152,8 +153,9 @@ class GoogleProvider(BaseProvider[Client]):
         )
         google_response = self.client.models.generate_content(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            google_response, model_id
+            google_response, model_id, include_thoughts=include_thoughts
         )
 
         return ContextResponse(
@@ -203,8 +205,9 @@ class GoogleProvider(BaseProvider[Client]):
         )
         google_response = await self.client.aio.models.generate_content(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            google_response, model_id
+            google_response, model_id, include_thoughts=include_thoughts
         )
 
         return AsyncResponse(
@@ -258,8 +261,9 @@ class GoogleProvider(BaseProvider[Client]):
         )
         google_response = await self.client.aio.models.generate_content(**kwargs)
 
+        include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = _utils.decode_response(
-            google_response, model_id
+            google_response, model_id, include_thoughts=include_thoughts
         )
 
         return AsyncContextResponse(
@@ -310,7 +314,10 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_stream = self.client.models.generate_content_stream(**kwargs)
 
-        chunk_iterator = _utils.decode_stream(google_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_stream(
+            google_stream, include_thoughts=include_thoughts
+        )
 
         return StreamResponse(
             provider_id="google",
@@ -361,7 +368,10 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_stream = self.client.models.generate_content_stream(**kwargs)
 
-        chunk_iterator = _utils.decode_stream(google_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_stream(
+            google_stream, include_thoughts=include_thoughts
+        )
 
         return ContextStreamResponse(
             provider_id="google",
@@ -408,7 +418,10 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_stream = await self.client.aio.models.generate_content_stream(**kwargs)
 
-        chunk_iterator = _utils.decode_async_stream(google_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_async_stream(
+            google_stream, include_thoughts=include_thoughts
+        )
 
         return AsyncStreamResponse(
             provider_id="google",
@@ -462,7 +475,10 @@ class GoogleProvider(BaseProvider[Client]):
 
         google_stream = await self.client.aio.models.generate_content_stream(**kwargs)
 
-        chunk_iterator = _utils.decode_async_stream(google_stream)
+        include_thoughts = _utils.get_include_thoughts(params)
+        chunk_iterator = _utils.decode_async_stream(
+            google_stream, include_thoughts=include_thoughts
+        )
 
         return AsyncContextStreamResponse(
             provider_id="google",

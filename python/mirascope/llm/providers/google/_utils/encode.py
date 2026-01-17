@@ -88,7 +88,7 @@ def google_thinking_config(
     See: https://ai.google.dev/gemini-api/docs/gemini-3#thinking_level
     """
     level: ThinkingLevel = thinking_config.get("level", "default")
-    include_summaries = thinking_config.get("include_summaries")
+    include_thoughts = thinking_config.get("include_thoughts")
 
     result = genai_types.ThinkingConfigDict()
 
@@ -114,8 +114,8 @@ def google_thinking_config(
             budget = int(multiplier * max_tokens)
 
         result["thinking_budget"] = budget
-    if include_summaries is not None:
-        result["include_thoughts"] = include_summaries
+    if include_thoughts is not None:
+        result["include_thoughts"] = include_thoughts
 
     return result
 

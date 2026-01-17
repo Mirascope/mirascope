@@ -23,7 +23,7 @@ test_snapshot = snapshot(
                     "thinking": {
                         "level": "none",
                         "encode_thoughts_as_text": False,
-                        "include_summaries": False,
+                        "include_thoughts": False,
                     },
                 },
                 "finish_reason": None,
@@ -69,7 +69,7 @@ test_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai)",
             "Skipping unsupported parameter: seed=42 (provider: openai)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai)",
-            "Skipping unsupported parameter: thinking={'level': 'none', 'encode_thoughts_as_text': False, 'include_summaries': False} (provider: openai with model_id: openai/gpt-4o:responses)",
+            "Skipping unsupported parameter: thinking={'level': 'none', 'encode_thoughts_as_text': False, 'include_thoughts': False} (provider: openai with model_id: openai/gpt-4o:responses)",
         ],
     }
 )

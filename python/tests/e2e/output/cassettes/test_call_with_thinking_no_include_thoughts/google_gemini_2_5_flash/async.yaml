@@ -1,0 +1,65 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '267'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUU+DMBSF3/sryH3ezJRoxEedMSYuohJdND404w4aS8voJW4h/HdbGKybPJDm
+        nNNze7+GBQGsuEpFygkN3ARfVgmCpvs7TytCRdYYJCuWvKJDtv8a72wjhFt3CULw9HY8f08ObZWW
+        6KKFTlEO8XYIwFooYfJX5EYrF3tLnmMYXaFS3Fp5xoYBXTXUhme4QOJ2Lz6+HspKFyUl+gfVna67
+        vcJZX+ZhOPLP9zZp4vLkZhRN/vWauZ0qpM/HQ2eX5FLQzm2S3C8T8EDQcflAgnnAgHJdZzmZk4dc
+        XbM9sx7jO1ZG9LwyLCzB6cXZ5XQtucm7iVChKbUy+Ji6zEd8u+GfKnyIdk8bMjGtlvPflwWwlv0B
+        s79iqCICAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 17 Jan 2026 02:13:44 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=13069
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

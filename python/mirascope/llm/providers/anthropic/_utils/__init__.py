@@ -1,5 +1,6 @@
 """Shared Anthropic utilities."""
 
+from ...base._utils import get_include_thoughts
 from .decode import decode_async_stream, decode_response, decode_stream
 from .encode import (
     DEFAULT_FORMAT_MODE,
@@ -21,5 +22,6 @@ __all__ = [
     "decode_stream",
     "encode_image_mime_type",
     "encode_request",
+    "get_include_thoughts",
     "process_params",
 ]
