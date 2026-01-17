@@ -55,6 +55,7 @@ export default function Header() {
       className={HEADER_STYLES.container(
         isLandingPage || isRouterWaitlistPage,
         scrolled,
+        isCloudRoute,
       )}
     >
       <nav className={HEADER_STYLES.nav(isCloudRoute)}>
