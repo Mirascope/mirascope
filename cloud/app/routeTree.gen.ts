@@ -23,6 +23,7 @@ import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
 import { Route as CloudLoginRouteImport } from './routes/cloud/login'
 import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -110,6 +111,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/dashboard/settings',
   path: '/dashboard/settings',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CloudSettingsRoute = CloudSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => CloudRoute,
 } as any)
 const CloudLoginRoute = CloudLoginRouteImport.update({
   id: '/login',
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
+  '/cloud/settings': typeof CloudSettingsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
+  '/cloud/settings': typeof CloudSettingsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -277,6 +285,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
+  '/cloud/settings': typeof CloudSettingsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -312,6 +321,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
+    | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
+    | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
+    | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
@@ -518,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloud/settings': {
+      id: '/cloud/settings'
+      path: '/settings'
+      fullPath: '/cloud/settings'
+      preLoaderRoute: typeof CloudSettingsRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/cloud/login': {
       id: '/cloud/login'
       path: '/login'
@@ -655,12 +674,14 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 interface CloudRouteChildren {
   CloudDashboardRoute: typeof CloudDashboardRoute
   CloudLoginRoute: typeof CloudLoginRoute
+  CloudSettingsRoute: typeof CloudSettingsRoute
   CloudIndexRoute: typeof CloudIndexRoute
 }
 
 const CloudRouteChildren: CloudRouteChildren = {
   CloudDashboardRoute: CloudDashboardRoute,
   CloudLoginRoute: CloudLoginRoute,
+  CloudSettingsRoute: CloudSettingsRoute,
   CloudIndexRoute: CloudIndexRoute,
 }
 

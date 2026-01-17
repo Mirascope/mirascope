@@ -5,6 +5,7 @@ import {
   createRootRoute,
   HeadContent,
   Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
 import { AuthProvider } from "@/app/contexts/auth";
 import { AnalyticsProvider } from "@/app/contexts/analytics";
@@ -60,16 +61,26 @@ export const Route = createRootRoute({
 function AppContent() {
   usePageView();
 
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+  const isCloudRoute =
+    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="mx-auto w-full max-w-7xl grow pt-(--header-height)">
+      <div
+        className={
+          isCloudRoute
+            ? "w-full pt-(--header-height)"
+            : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
+        }
+      >
         <main className="grow">
-          {/* Content container with padding to account for fixed header */}
           <Outlet />
         </main>
       </div>
-      <Footer />
+      {!isCloudRoute && <Footer />}
       <Toaster />
       <TanStackRouterDevtools />
       <Scripts />
