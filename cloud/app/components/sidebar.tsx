@@ -1,6 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Button } from "@/app/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -8,73 +7,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { useOrganization } from "@/app/contexts/organization";
 import { useAuth } from "@/app/contexts/auth";
-import { useCreateOrganization } from "@/app/api/organizations";
-import { generateSlug } from "@/db/slug";
-
-function CreateOrganizationDialog({ onClose }: { onClose: () => void }) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const createOrganization = useCreateOrganization();
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!name.trim()) {
-      setError("Organization name is required");
-      return;
-    }
-
-    try {
-      await createOrganization.mutateAsync({
-        name: name.trim(),
-        slug: generateSlug(name.trim()),
-      });
-      onClose();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create organization",
-      );
-    }
-  };
-
-  return (
-    <div className="p-3 border-t border-border">
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-2">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Organization name"
-          className="w-full px-2 py-1.5 text-sm border border-input rounded-md bg-background"
-          autoFocus
-        />
-        {error && <p className="text-xs text-destructive">{error}</p>}
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={createOrganization.isPending}
-            className="flex-1"
-          >
-            {createOrganization.isPending ? "..." : "Create"}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-}
 
 export function Sidebar() {
   const {
@@ -226,9 +161,10 @@ export function Sidebar() {
         )}
       </div>
 
-      {showCreateOrg && (
-        <CreateOrganizationDialog onClose={() => setShowCreateOrg(false)} />
-      )}
+      <CreateOrganizationModal
+        open={showCreateOrg}
+        onOpenChange={setShowCreateOrg}
+      />
     </aside>
   );
 }
