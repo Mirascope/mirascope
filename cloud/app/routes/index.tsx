@@ -1,18 +1,13 @@
-import { CenteredLayout } from "@/app/components/centered-layout";
-import { FrontPage } from "@/app/components/front-page";
-import { Protected } from "@/app/components/protected";
+import { HomePage } from "@/app/components/home-page";
 import { createFileRoute } from "@tanstack/react-router";
+import { createPageHead } from "@/app/lib/seo/head";
 
 export const Route = createFileRoute("/")({
-  component: App,
+  head: () =>
+    createPageHead({
+      route: "/",
+      title: "Home",
+      description: "The AI Engineer's Developer Stack",
+    }),
+  component: HomePage,
 });
-
-function App() {
-  return (
-    <CenteredLayout>
-      <Protected>
-        <FrontPage />
-      </Protected>
-    </CenteredLayout>
-  );
-}

@@ -61,7 +61,7 @@ export async function runEffectResponse<E extends { message: string }>(
     // Settings validation failed - return error response
     const error = settingsResult.left;
     return Response.redirect(
-      `http://localhost:3000/login?error=${encodeURIComponent(error.message)}`,
+      `http://localhost:3000/cloud/login?error=${encodeURIComponent(error.message)}`,
       302,
     );
   }
@@ -75,7 +75,7 @@ export async function runEffectResponse<E extends { message: string }>(
     // Return a proper error response instead of throwing
     const siteUrl = settings.siteUrl;
     return Response.redirect(
-      `${siteUrl}/login?error=${encodeURIComponent(result.left.message)}`,
+      `${siteUrl}/cloud/login?error=${encodeURIComponent(result.left.message)}`,
       302,
     );
   }

@@ -86,7 +86,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Get router to determine if we're on the landing page or router waitlist page
   const router = useRouterState();
-  const isLandingPage = router.location.pathname === "/home";
+  const isLandingPage = router.location.pathname === "/";
   const isRouterWaitlistPage = router.location.pathname === "/router-waitlist";
 
   // Initialize theme on mount
