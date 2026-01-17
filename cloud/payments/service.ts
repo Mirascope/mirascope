@@ -47,6 +47,7 @@
 import { Context, Layer, Effect } from "effect";
 import { Stripe, type StripeConfig } from "@/payments/client";
 import { Customers } from "@/payments/customers";
+import { Subscriptions } from "@/payments/subscriptions";
 import { Router } from "@/payments/products/router";
 import { Spans } from "@/payments/products/spans";
 import { PaymentIntents } from "@/payments/payment-intents";
@@ -107,11 +108,13 @@ export class Payments extends Context.Tag("Payments")<
         { tag: DrizzleORM, instance: db },
       ]);
 
+      const subscriptions = new Subscriptions();
+
       return {
-        customers: provideDependencies(new Customers()),
+        customers: provideDependencies(new Customers(subscriptions)),
         products: {
           router: provideDependencies(new Router()),
-          spans: provideDependencies(new Spans()),
+          spans: provideDependencies(new Spans(subscriptions)),
         },
         paymentIntents: provideDependencies(new PaymentIntents()),
       };

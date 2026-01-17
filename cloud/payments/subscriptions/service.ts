@@ -247,7 +247,7 @@ export class Subscriptions {
    * @throws NotFoundError - If no active subscription found
    * @throws StripeError - If Stripe API calls fail
    */
-  private getActiveSubscription(
+  getActiveSubscription(
     stripeCustomerId: string,
   ): Effect.Effect<
     StripeAPI.Subscription,
