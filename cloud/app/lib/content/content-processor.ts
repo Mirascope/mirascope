@@ -171,6 +171,13 @@ export default class ContentProcessor {
   }
 
   /**
+   * Check if content has been processed
+   */
+  isProcessed(): boolean {
+    return this.hasProcessed;
+  }
+
+  /**
    * Get a map of route -> title for all processed content.
    * Useful for generating social cards or other route-based lookups.
    *

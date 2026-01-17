@@ -47,6 +47,12 @@ class ContentExporter {
    * Generate the virtual module export string for content metadata
    */
   generateExport(): string {
+    if (!this.processor.isProcessed()) {
+      throw new Error(
+        "[vite-plugin-content] Content processor has not been run yet. " +
+          "Metadata cannot be generated until content has been processed.",
+      );
+    }
     const metadata = this.processor.getMetadata();
     return `
     /** @type {import('../app/lib/content/types').BlogMeta[]} */

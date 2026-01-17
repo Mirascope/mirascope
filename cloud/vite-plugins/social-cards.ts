@@ -33,6 +33,7 @@ const DEFAULT_OPTIONS: Required<SocialImagesOptions> = {
  * These pages don't have content metadata, so titles are hardcoded
  */
 const DEFAULT_STATIC_TITLES: Record<string, string> = {
+  // todo(sebastian): manage this upstream in a tanstack router type-safe way
   "/home": "Mirascope",
   "/pricing": "Pricing",
   "/docs": "Documentation",
