@@ -3118,6 +3118,16 @@
               }
             }
           },
+          "402": {
+            "description": "PlanLimitExceededError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitExceededError"
+                }
+              }
+            }
+          },
           "403": {
             "description": "PermissionDeniedError",
             "content": {
@@ -3149,11 +3159,18 @@
             }
           },
           "500": {
-            "description": "DatabaseError",
+            "description": "StripeError",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
                 }
               }
             }
@@ -3564,6 +3581,16 @@
               }
             }
           },
+          "402": {
+            "description": "PlanLimitExceededError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitExceededError"
+                }
+              }
+            }
+          },
           "403": {
             "description": "PermissionDeniedError",
             "content": {
@@ -3595,11 +3622,18 @@
             }
           },
           "500": {
-            "description": "DatabaseError",
+            "description": "StripeError",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StripeError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
                 }
               }
             }
@@ -7687,6 +7721,45 @@
       "Date": {
         "type": "string",
         "description": "a string to be decoded into a Date"
+      },
+      "PlanLimitExceededError": {
+        "type": "object",
+        "required": [
+          "message",
+          "resource",
+          "limitType",
+          "currentUsage",
+          "limit",
+          "planTier",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "limitType": {
+            "type": "string"
+          },
+          "currentUsage": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "planTier": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "PlanLimitExceededError"
+            ]
+          }
+        },
+        "additionalProperties": false
       },
       "ImmutableResourceError": {
         "type": "object",

@@ -30,7 +30,7 @@ import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
-import { DefaultMockPayments } from "@/tests/payments";
+import { MockStripe } from "@/tests/payments";
 import type { StreamMeteringContext } from "@/api/router/streaming";
 import type { ProviderName } from "@/api/router/providers";
 import { eq } from "drizzle-orm";
@@ -135,13 +135,20 @@ const withRollback = <A, E, R>(
  */
 function createTestDatabaseLayer(connectionString: string) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
+
+  // Provide Payments with MockStripe + drizzleLayer to avoid MockDrizzleORMLayer overriding real DB
+  const paymentsLayer = Payments.Default.pipe(
+    Layer.provide(MockStripe),
+    Layer.provide(drizzleLayer),
+  );
+
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provide(drizzleLayer),
-      Layer.provide(DefaultMockPayments),
+      Layer.provide(paymentsLayer),
     ).pipe(Layer.orDie),
     drizzleLayer,
-    DefaultMockPayments,
+    paymentsLayer,
     MockAnalytics,
     MockEmails,
     MockSpansMeteringQueue,

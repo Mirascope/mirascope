@@ -45,6 +45,7 @@ import {
   type ImmutableResourceError,
   type NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
   StripeError,
   SubscriptionPastDueError,
 } from "@/errors";
@@ -557,7 +558,8 @@ export abstract class BaseAuthenticatedEffectService<
     | PermissionDeniedError
     | DeletedUserError
     | DatabaseError
-    | StripeError,
+    | StripeError
+    | PlanLimitExceededError,
     DrizzleORM | Payments
   >;
 

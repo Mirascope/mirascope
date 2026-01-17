@@ -36,23 +36,28 @@
  */
 
 import { Effect } from "effect";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
+import { Payments } from "@/payments";
+import { PLAN_LIMITS } from "@/payments/subscriptions/plan-limits";
 import {
   AlreadyExistsError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
+  StripeError,
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 
 import {
   organizationMemberships,
   organizationMembershipAudit,
+  organizationInvitations,
   users,
   type PublicOrganizationMembership,
   type PublicOrganizationMembershipAudit,
@@ -217,6 +222,89 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
   }
 
   // ---------------------------------------------------------------------------
+  // Seat Limit Enforcement
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Checks if adding a new seat would exceed the organization's plan limits.
+   *
+   * Counts both active memberships and pending invitations toward the seat limit.
+   * This prevents circumventing seat limits by creating many pending invitations.
+   *
+   * @param organizationId - The organization to check limits for
+   * @returns Effect that succeeds if under limit, fails with PlanLimitExceededError if at/over limit
+   */
+  checkSeatLimit({
+    organizationId,
+  }: {
+    organizationId: string;
+  }): Effect.Effect<
+    void,
+    PlanLimitExceededError | DatabaseError | NotFoundError | StripeError,
+    DrizzleORM | Payments
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      // Get current plan and limits
+      const planTier =
+        yield* payments.customers.subscriptions.getPlan(organizationId);
+      const limits = PLAN_LIMITS[planTier];
+
+      // Count active memberships
+      const [membershipCount] = yield* client
+        .select({ count: sql<number>`count(*)::int` })
+        .from(organizationMemberships)
+        .where(eq(organizationMemberships.organizationId, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to count memberships",
+                cause: e,
+              }),
+          ),
+        );
+
+      // Count pending invitations
+      const [invitationCount] = yield* client
+        .select({ count: sql<number>`count(*)::int` })
+        .from(organizationInvitations)
+        .where(
+          and(
+            eq(organizationInvitations.organizationId, organizationId),
+            eq(organizationInvitations.status, "pending"),
+          ),
+        )
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to count invitations",
+                cause: e,
+              }),
+          ),
+        );
+
+      const totalSeats = membershipCount.count + invitationCount.count;
+
+      if (totalSeats >= limits.seats) {
+        return yield* Effect.fail(
+          new PlanLimitExceededError({
+            message: `Cannot add member: ${planTier} plan limit is ${limits.seats} seat(s) (current: ${membershipCount.count} members + ${invitationCount.count} pending invitations = ${totalSeats})`,
+            resource: "organization_memberships",
+            limitType: "seats",
+            currentUsage: totalSeats,
+            limit: limits.seats,
+            planTier,
+          }),
+        );
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------------
   // Base Implementation
   // ---------------------------------------------------------------------------
 
@@ -374,8 +462,13 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
     data: InsertMembership;
   }): Effect.Effect<
     PublicOrganizationMembership,
-    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    | AlreadyExistsError
+    | NotFoundError
+    | PermissionDeniedError
+    | DatabaseError
+    | PlanLimitExceededError
+    | StripeError,
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -404,6 +497,8 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
           }),
         );
       }
+
+      yield* this.checkSeatLimit({ organizationId });
 
       // Use transaction to ensure membership and audit log are created atomically
       return yield* client.withTransaction(

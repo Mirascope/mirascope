@@ -3,10 +3,15 @@ import {
   it,
   expect,
   TestOrganizationFixture,
+  TestFreePlanOrganizationFixture,
   MockDrizzleORM,
+  TestDrizzleORM,
+  MockAnalytics,
+  MockSpansMeteringQueue,
 } from "@/tests/db";
+import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
 import { Database } from "@/db/database";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   type PublicOrganizationInvitation,
   type PublicOrganizationMembership,
@@ -18,6 +23,7 @@ import {
   ImmutableResourceError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
 } from "@/errors";
 
 describe("OrganizationInvitations", () => {
@@ -357,6 +363,9 @@ describe("OrganizationInvitations", () => {
             .select([{ role: "OWNER" }])
             .select([])
             .select([])
+            .select([{ stripeCustomerId: "cus_test" }]) // getPlan: fetch org
+            .select([{ count: 1 }]) // checkSeatLimit: count memberships
+            .select([{ count: 0 }]) // checkSeatLimit: count invitations
             .select([{ id: "org-id", name: "Test Org" }])
             .select([{ name: "Owner", email: "owner@example.com" }])
             .insert(new Error("Connection failed"))
@@ -365,7 +374,7 @@ describe("OrganizationInvitations", () => {
       ),
     );
 
-    it.effect("returns `DatabaseError` when fetching organization fails", () =>
+    it.effect("returns `DatabaseError` when fetching sender user fails", () =>
       Effect.gen(function* () {
         const db = yield* Database;
 
@@ -378,14 +387,18 @@ describe("OrganizationInvitations", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to fetch organization");
+        expect(result.message).toBe("Failed to get user");
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
             .select([{ role: "OWNER" }])
             .select([])
             .select([])
-            .select(new Error("Connection failed"))
+            .select([{ stripeCustomerId: "cus_test" }]) // getPlan: fetch org
+            .select([{ count: 1 }]) // checkSeatLimit: count memberships
+            .select([{ count: 0 }]) // checkSeatLimit: count invitations
+            .select([{ id: "org-id", name: "Test Org" }]) // getInvitationMetadata: fetch organization
+            .select(new Error("Connection failed")) // getInvitationMetadata: fetch sender user fails
             .build(),
         ),
       ),
@@ -404,17 +417,176 @@ describe("OrganizationInvitations", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Organization not found");
+        expect(result.message).toBe("Organization not found: org-id");
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
             .select([{ role: "OWNER" }])
             .select([])
             .select([])
-            .select([])
+            .select([]) // getPlan: fetch org returns empty (triggers NotFoundError)
             .build(),
         ),
       ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when fetching organization fails in getInvitationMetadata",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.invitations
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { recipientEmail: "test@example.com", role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to fetch organization");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([{ role: "OWNER" }])
+              .select([])
+              .select([])
+              .select([{ stripeCustomerId: "cus_test" }]) // getPlan: fetch org
+              .select([{ count: 1 }]) // checkSeatLimit: count memberships
+              .select([{ count: 0 }]) // checkSeatLimit: count invitations
+              .select(new Error("Connection failed")) // getInvitationMetadata: fetch organization fails
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when organization not found in getInvitationMetadata",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.invitations
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { recipientEmail: "test@example.com", role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe("Organization not found");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([{ role: "OWNER" }])
+              .select([])
+              .select([])
+              .select([{ stripeCustomerId: "cus_test" }]) // getPlan: fetch org
+              .select([{ count: 1 }]) // checkSeatLimit: count memberships
+              .select([{ count: 0 }]) // checkSeatLimit: count invitations
+              .select([]) // getInvitationMetadata: organization not found
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when counting memberships fails in checkSeatLimit",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.invitations
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { recipientEmail: "test@example.com", role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to count memberships");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([{ role: "OWNER" }])
+              .select([])
+              .select([])
+              .select([{ stripeCustomerId: "cus_test" }]) // getPlan: fetch org
+              .select(new Error("Connection failed")) // checkSeatLimit: count memberships fails
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when counting invitations fails in checkSeatLimit",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.invitations
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              data: { recipientEmail: "test@example.com", role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to count invitations");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([{ role: "OWNER" }])
+              .select([])
+              .select([])
+              .select([{ stripeCustomerId: "cus_test" }]) // getPlan: fetch org
+              .select([{ count: 1 }]) // checkSeatLimit: count memberships succeeds
+              .select(new Error("Connection failed")) // checkSeatLimit: count invitations fails
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `PlanLimitExceededError` when seat limit is exceeded",
+      () =>
+        Effect.gen(function* () {
+          const { org, owner, nonMember } =
+            yield* TestFreePlanOrganizationFixture;
+          const db = yield* Database;
+
+          // Org has 1 seat (owner) and FREE plan allows only 1 seat
+          // Trying to add another user should exceed the limit
+          const result = yield* db.organizations.invitations
+            .create({
+              userId: owner.id,
+              organizationId: org.id,
+              data: { recipientEmail: nonMember.email, role: "MEMBER" },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(PlanLimitExceededError);
+          expect(result.message).toContain("free plan limit is 1 seat(s)");
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              Database.Default.pipe(
+                Layer.provide(
+                  TestSubscriptionWithRealDatabaseFixture(
+                    { plan: "free" },
+                    TestDrizzleORM,
+                  ),
+                ),
+              ),
+              MockAnalytics,
+              MockSpansMeteringQueue,
+            ),
+          ),
+        ),
     );
   });
 
@@ -1454,12 +1626,24 @@ describe("OrganizationInvitations", () => {
                   name: "Test User",
                 },
               ])
+              // checkSeatLimit (first call from accept): getPlan -> fetch organization
+              .select([{ stripeCustomerId: "cus_test" }])
+              // checkSeatLimit (first call): count memberships
+              .select([{ count: 1 }])
+              // checkSeatLimit (first call): count invitations
+              .select([{ count: 0 }])
               // Check for sender's role in org (for create membership)
               .select([{ role: "OWNER" }])
-              // Check for duplicate membership (for create membership)
-              .select([])
-              // Insert membership
-              .insert([{ memberId: "user-id", role: "MEMBER" }])
+              // checkSeatLimit (second call from create membership): getPlan -> fetch organization
+              .select([{ stripeCustomerId: "cus_test" }])
+              // checkSeatLimit (second call): count memberships
+              .select([{ count: 1 }])
+              // checkSeatLimit (second call): count invitations
+              .select([{ count: 0 }])
+              // Insert membership (returns via .returning(), no separate select needed)
+              .insert([
+                { memberId: "user-id", role: "MEMBER", createdAt: new Date() },
+              ])
               // Insert audit log
               .insert([
                 {
@@ -1467,15 +1651,6 @@ describe("OrganizationInvitations", () => {
                   userId: "sender-id",
                   organizationId: "org-id",
                   action: "MEMBER_ADDED",
-                },
-              ])
-              // Get membership (for create return)
-              .select([
-                {
-                  memberId: "user-id",
-                  organizationId: "org-id",
-                  role: "MEMBER",
-                  createdAt: new Date(),
                 },
               ])
               // Update invitation status - THIS FAILS

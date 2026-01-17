@@ -6,6 +6,8 @@ import {
   ImmutableResourceError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
+  StripeError,
 } from "@/errors";
 
 export const InvitationRoleSchema = Schema.Literal("ADMIN", "MEMBER");
@@ -98,6 +100,10 @@ export class OrganizationInvitationsApi extends HttpApiGroup.make(
       .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(StripeError, { status: StripeError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   )
   .add(
@@ -164,5 +170,9 @@ export class OrganizationInvitationsApi extends HttpApiGroup.make(
       })
       .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(StripeError, { status: StripeError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}
