@@ -50,7 +50,6 @@ export default function DesktopNavigation({
 }: DesktopNavigationProps) {
   return (
     <div className={DESKTOP_NAV_STYLES.container(isSearchOpen)}>
-      {/* Products Menu */}
       <NavLink href="/docs">Docs</NavLink>
       <NavLink href="/blog">Blog</NavLink>
       <NavLink href="/pricing">Pricing</NavLink>
