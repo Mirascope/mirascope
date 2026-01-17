@@ -1,0 +1,200 @@
+name: Deploy Cloud PR Preview
+
+on:
+  pull_request:
+    branches: [v2]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'cloud/**'
+      - '.github/workflows/cloud-preview-deploy.yml'
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloud
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PlanetScale CLI
+        uses: planetscale/setup-pscale-action@v1
+
+      - name: Create PlanetScale Database Branch
+        id: create-branch
+        env:
+          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+        run: |
+          BRANCH_NAME="preview-pr-${{ github.event.number }}"
+
+          # Check if branch exists
+          if pscale branch show ${{ vars.PLANETSCALE_DATABASE }} $BRANCH_NAME --org ${{ vars.PLANETSCALE_ORG }} 2>/dev/null; then
+            echo "Branch already exists"
+          else
+            echo "Creating new branch from staging..."
+            pscale branch create ${{ vars.PLANETSCALE_DATABASE }} $BRANCH_NAME --from staging --org ${{ vars.PLANETSCALE_ORG }} --wait
+          fi
+
+          # Create password for the branch
+          echo "Creating database password..."
+          PASSWORD_OUTPUT=$(pscale password create ${{ vars.PLANETSCALE_DATABASE }} $BRANCH_NAME gh-actions-${{ github.event.number }} --org ${{ vars.PLANETSCALE_ORG }} --format json)
+          CONNECTION_STRING=$(echo "$PASSWORD_OUTPUT" | jq -r '.plain_text')
+          echo "::add-mask::$CONNECTION_STRING"
+          echo "db_url=$CONNECTION_STRING" >> $GITHUB_OUTPUT
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run database migrations
+        run: bun run db:migrate
+        env:
+          DATABASE_URL: ${{ steps.create-branch.outputs.db_url }}
+
+      - name: Create ClickHouse Database for Preview
+        id: clickhouse
+        env:
+          CLICKHOUSE_HOST: ${{ secrets.STAGING_CLICKHOUSE_HOST }}
+          CLICKHOUSE_USER: ${{ secrets.STAGING_CLICKHOUSE_USER }}
+          CLICKHOUSE_PASSWORD: ${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}
+        run: |
+          DB_NAME="preview_pr_${{ github.event.number }}"
+
+          echo "Creating ClickHouse database: $DB_NAME"
+
+          # Create database using HTTP API
+          curl -X POST "https://${CLICKHOUSE_HOST}:8443/" \
+            --user "${CLICKHOUSE_USER}:${CLICKHOUSE_PASSWORD}" \
+            --data-binary "CREATE DATABASE IF NOT EXISTS ${DB_NAME}"
+
+          echo "clickhouse_database=${DB_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Run ClickHouse Migrations for Preview
+        env:
+          CLICKHOUSE_HOST: ${{ secrets.STAGING_CLICKHOUSE_HOST }}
+          CLICKHOUSE_USER: ${{ secrets.STAGING_CLICKHOUSE_USER }}
+          CLICKHOUSE_PASSWORD: ${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}
+          CLICKHOUSE_DATABASE: ${{ steps.clickhouse.outputs.clickhouse_database }}
+          CLICKHOUSE_URL: https://${{ secrets.STAGING_CLICKHOUSE_HOST }}:8443
+          CLICKHOUSE_TLS_ENABLED: true
+        run: |
+          bun run clickhouse:migrate
+
+      - name: Build for PR
+        run: bun run build
+
+      - name: Create Hyperdrive config for PR
+        id: hyperdrive
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          HYPERDRIVE_NAME="mirascope-cloud-pr-${{ github.event.number }}"
+
+          # Check if Hyperdrive config exists
+          HYPERDRIVE_ID=$(bunx wrangler hyperdrive list --json 2>/dev/null | jq -r ".[] | select(.name == \"$HYPERDRIVE_NAME\") | .id" || echo "")
+
+          if [ -z "$HYPERDRIVE_ID" ]; then
+            echo "Creating new Hyperdrive config..."
+            HYPERDRIVE_ID=$(bunx wrangler hyperdrive create $HYPERDRIVE_NAME --connection-string "${{ steps.create-branch.outputs.db_url }}" --json | jq -r '.id')
+          else
+            echo "Hyperdrive config already exists: $HYPERDRIVE_ID"
+          fi
+
+          echo "hyperdrive_id=$HYPERDRIVE_ID" >> $GITHUB_OUTPUT
+
+      - name: Create wrangler config for PR
+        run: |
+          cat > wrangler.pr.json << 'EOF'
+          {
+            "name": "mirascope-cloud-pr-${{ github.event.number }}",
+            "compatibility_date": "2025-06-17",
+            "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
+            "main": "server-entry.ts",
+            "observability": {
+              "enabled": true
+            },
+            "triggers": {
+              "crons": []
+            },
+            "queues": {
+              "producers": [
+                { "queue": "router-metering-staging", "binding": "ROUTER_METERING_QUEUE" },
+                { "queue": "spans-ingest-staging", "binding": "SPANS_INGEST_QUEUE" }
+              ],
+              "consumers": []
+            },
+            "hyperdrive": [
+              {
+                "binding": "HYPERDRIVE",
+                "id": "${{ steps.hyperdrive.outputs.hyperdrive_id }}"
+              }
+            ],
+            "vars": {
+              "ENVIRONMENT": "preview",
+              "SITE_URL": "https://mirascope-cloud-pr-${{ github.event.number }}.mirascope.workers.dev",
+              "GITHUB_CLIENT_ID": "Ov23lim6U7I6fihGO7Ys",
+              "GITHUB_CALLBACK_URL": "https://staging.mirascope.com/auth/github/proxy-callback",
+              "GOOGLE_CLIENT_ID": "852098976648-nvi9po6sgebbn50ekha2h25lnf56ko40.apps.googleusercontent.com",
+              "GOOGLE_CALLBACK_URL": "https://staging.mirascope.com/auth/google/proxy-callback",
+              "CLICKHOUSE_URL": "https://${{ secrets.STAGING_CLICKHOUSE_HOST }}:8443",
+              "CLICKHOUSE_USER": "${{ secrets.STAGING_CLICKHOUSE_USER }}",
+              "CLICKHOUSE_DATABASE": "${{ steps.clickhouse.outputs.clickhouse_database }}",
+              "CLICKHOUSE_TLS_ENABLED": "true",
+              "CLICKHOUSE_TLS_SKIP_VERIFY": "false",
+              "CLICKHOUSE_TLS_HOSTNAME_VERIFY": "true",
+              "CLICKHOUSE_TLS_MIN_VERSION": "1.2",
+              "VITE_STRIPE_PUBLISHABLE_KEY": "${{ vars.STAGING_VITE_STRIPE_PUBLISHABLE_KEY }}",
+              "VITE_POSTHOG_API_KEY": "${{ vars.STAGING_VITE_POSTHOG_API_KEY }}",
+              "VITE_POSTHOG_HOST": "${{ vars.STAGING_VITE_POSTHOG_HOST }}",
+              "VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID": "${{ vars.STAGING_VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID }}"
+            }
+          }
+          EOF
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloud
+          command: deploy --config wrangler.pr.json
+          postCommands: |
+            echo "Setting preview worker secrets..."
+            echo "${{ secrets.STAGING_GITHUB_CLIENT_SECRET }}" | bunx wrangler secret put GITHUB_CLIENT_SECRET --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_GOOGLE_CLIENT_SECRET }}" | bunx wrangler secret put GOOGLE_CLIENT_SECRET --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_RESEND_API_KEY }}" | bunx wrangler secret put RESEND_API_KEY --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_RESEND_AUDIENCE_SEGMENT_ID }}" | bunx wrangler secret put RESEND_AUDIENCE_SEGMENT_ID --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_STRIPE_SECRET_KEY }}" | bunx wrangler secret put STRIPE_SECRET_KEY --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}" | bunx wrangler secret put STRIPE_WEBHOOK_SECRET --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_ANTHROPIC_API_KEY }}" | bunx wrangler secret put ANTHROPIC_API_KEY --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_GEMINI_API_KEY }}" | bunx wrangler secret put GEMINI_API_KEY --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_OPENAI_API_KEY }}" | bunx wrangler secret put OPENAI_API_KEY --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}" | bunx wrangler secret put CLICKHOUSE_PASSWORD --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_POSTHOG_API_KEY }}" | bunx wrangler secret put POSTHOG_API_KEY --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_POSTHOG_HOST }}" | bunx wrangler secret put POSTHOG_HOST --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" | bunx wrangler secret put GOOGLE_ANALYTICS_MEASUREMENT_ID --name mirascope-cloud-pr-${{ github.event.number }}
+            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_API_SECRET }}" | bunx wrangler secret put GOOGLE_ANALYTICS_API_SECRET --name mirascope-cloud-pr-${{ github.event.number }}
+
+      - name: Comment PR with preview URL
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ## 🚀 Cloud Preview Deployment
+
+            Your changes have been deployed to a preview environment:
+
+            **Preview URL:** https://mirascope-cloud-pr-${{ github.event.number }}.mirascope.workers.dev
+            **Database Branch:** `preview-pr-${{ github.event.number }}`
+
+            ⚠️ **Note:** OAuth flows proxy through staging.mirascope.com (deploy staging first for auth to work)
+
+            ---
+            *Last updated: ${{ github.event.pull_request.updated_at }} (Commit: ${{ github.sha }})*
+          comment-tag: cloud-preview

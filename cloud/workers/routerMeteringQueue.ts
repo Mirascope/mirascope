@@ -180,11 +180,11 @@ async function processMessage(
 ): Promise<void> {
   const data = message.body;
 
-  // Database connection string from Hyperdrive or direct URL
-  const databaseUrl = env.HYPERDRIVE?.connectionString ?? env.DATABASE_URL;
+  // Database connection string from Hyperdrive
+  const databaseUrl = env.HYPERDRIVE?.connectionString;
   if (!databaseUrl) {
     console.error(
-      "[routerMeteringQueue] No database connection available (HYPERDRIVE or DATABASE_URL required)",
+      "[routerMeteringQueue] HYPERDRIVE binding not configured",
     );
     message.retry({ delaySeconds: 60 });
     return;

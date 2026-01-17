@@ -424,11 +424,11 @@ export default {
     _event: ScheduledEvent,
     env: BillingCronTriggerEnv,
   ): Promise<void> {
-    // Database connection string from Hyperdrive or direct URL
-    const databaseUrl = env.HYPERDRIVE?.connectionString ?? env.DATABASE_URL;
+    // Database connection string from Hyperdrive
+    const databaseUrl = env.HYPERDRIVE?.connectionString;
     if (!databaseUrl) {
       console.error(
-        "[billingReconciliationCron] No database connection available (HYPERDRIVE or DATABASE_URL required)",
+        "[billingReconciliationCron] HYPERDRIVE binding not configured",
       );
       return;
     }
