@@ -8,7 +8,9 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
+import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { useOrganization } from "@/app/contexts/organization";
+import { useProject } from "@/app/contexts/project";
 import { useAuth } from "@/app/contexts/auth";
 
 export function Sidebar() {
@@ -18,10 +20,17 @@ export function Sidebar() {
     setSelectedOrganization,
     isLoading: orgsLoading,
   } = useOrganization();
+  const {
+    projects,
+    selectedProject,
+    setSelectedProject,
+    isLoading: projectsLoading,
+  } = useProject();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const [showCreateOrg, setShowCreateOrg] = useState(false);
+  const [showCreateProject, setShowCreateProject] = useState(false);
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
@@ -31,7 +40,7 @@ export function Sidebar() {
     void navigate({ to: "/" });
   };
 
-  const handleSelectChange = (value: string) => {
+  const handleOrgSelectChange = (value: string) => {
     if (value === "__create_new__") {
       setShowCreateOrg(true);
     } else {
@@ -40,11 +49,51 @@ export function Sidebar() {
     }
   };
 
+  const handleProjectSelectChange = (value: string) => {
+    if (value === "__create_new__") {
+      setShowCreateProject(true);
+    } else {
+      const project = projects.find((p) => p.id === value);
+      setSelectedProject(project || null);
+    }
+  };
+
   const isActive = (path: string) => currentPath === path;
 
   return (
     <aside className="w-48 h-full flex flex-col bg-background border-r border-border">
-      {/* Dashboard link at top */}
+      {/* Project selector at top */}
+      {selectedOrganization && (
+        <div className="px-2 pt-4 pb-2 border-b border-border">
+          {projectsLoading ? (
+            <div className="text-sm text-muted-foreground px-2">Loading...</div>
+          ) : (
+            <Select
+              value={selectedProject?.id || ""}
+              onValueChange={handleProjectSelectChange}
+            >
+              <SelectTrigger className="bg-background text-base">
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+                <SelectItem
+                  value="__create_new__"
+                  className="text-primary font-medium"
+                >
+                  + Create New Project
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      )}
+
+      {/* Dashboard link */}
       <div className="px-2 pt-4">
         <Link
           to="/cloud/dashboard"
@@ -139,7 +188,7 @@ export function Sidebar() {
         ) : (
           <Select
             value={selectedOrganization?.id || ""}
-            onValueChange={handleSelectChange}
+            onValueChange={handleOrgSelectChange}
           >
             <SelectTrigger className="bg-background text-base">
               <SelectValue placeholder="Select organization" />
@@ -164,6 +213,10 @@ export function Sidebar() {
       <CreateOrganizationModal
         open={showCreateOrg}
         onOpenChange={setShowCreateOrg}
+      />
+      <CreateProjectModal
+        open={showCreateProject}
+        onOpenChange={setShowCreateProject}
       />
     </aside>
   );
