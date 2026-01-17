@@ -20,3 +20,23 @@ export const PLAN_TIER_ORDER: Record<PlanTier, number> = {
   pro: 1,
   team: 2,
 } as const;
+
+/**
+ * Validation error for plan downgrade.
+ * Represents a single resource that exceeds the target plan's limit.
+ */
+export interface ValidationError {
+  resource: "seats" | "projects";
+  currentUsage: number;
+  limit: number;
+  message: string;
+}
+
+/**
+ * Result of plan downgrade validation.
+ * Used to determine if a downgrade is allowed and provide detailed feedback.
+ */
+export interface DowngradeValidationResult {
+  canDowngrade: boolean;
+  validationErrors: ValidationError[];
+}

@@ -1,13 +1,14 @@
 import { Context, Effect, Layer } from "effect";
-import { describe, expect } from "@effect/vitest";
+import { describe, expect, it as vitestIt } from "@effect/vitest";
 import { assert } from "vitest";
 import { SqlClient } from "@effect/sql";
-import { createCustomIt, ensureEffect } from "@/tests/shared";
+import { createCustomIt, ensureEffect, withRollback } from "@/tests/shared";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
 import { DrizzleORM } from "@/db/client";
 import type { PlanTier } from "@/payments/subscriptions";
 import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
+import { TestDrizzleORM } from "@/tests/db";
 import StripeSDK from "stripe";
 
 // Re-export describe and expect for convenience
@@ -52,9 +53,40 @@ const wrapEffectTest =
     };
 
 /**
- * Type-safe `it` with `it.effect` that automatically provides Stripe layer.
+ * Wraps a test function to automatically provide TestStripe AND TestDrizzleORM layers,
+ * AND wrap in rollback transaction.
+ *
+ * IMPORTANT: TestDrizzleORM must be provided so that `withRollback` can see the SqlClient.
+ * Tests using this wrapper should NOT provide their own database layer via Effect.provide(),
+ * as that would create a separate database connection that bypasses the transaction rollback.
+ * Instead, use TestPaymentsMockFixture which only provides Payments mocks.
+ */
+const wrapEffectTestWithRollback =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (original: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (name: any, fn: any, timeout?: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      return original(
+        name,
+        () =>
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+          fn()
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            .pipe(withRollback)
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            .pipe(Effect.provide(Layer.merge(getTestStripe(), TestDrizzleORM))),
+        timeout,
+      );
+    };
+
+/**
+ * Type-safe `it` with `it.effect` and `it.rollback` that automatically provides Stripe layer.
  *
  * Use this instead of importing directly from @effect/vitest.
+ *
+ * - `it.effect`: Provides Stripe layer for tests
+ * - `it.rollback`: Provides Stripe layer AND wraps in transaction rollback for DB isolation
  *
  * @example
  * ```ts
@@ -62,6 +94,7 @@ const wrapEffectTest =
  * import { Effect } from "effect";
  * import { Stripe } from "@/payments";
  *
+ * // Mock test (no DB)
  * it.effect("creates a customer", () =>
  *   Effect.gen(function* () {
  *     const stripe = yield* Stripe;
@@ -69,9 +102,28 @@ const wrapEffectTest =
  *     expect(customer.email).toBe("test@example.com");
  *   })
  * );
+ *
+ * // Real DB test with rollback
+ * it.rollback("creates user without polluting DB", () =>
+ *   Effect.gen(function* () {
+ *     const db = yield* Database;
+ *     const user = yield* db.users.create({ ... });
+ *     // User will be rolled back after test
+ *   })
+ * );
  * ```
  */
-export const it = createCustomIt<TestServices>(wrapEffectTest);
+export const it = Object.assign(createCustomIt<TestServices>(wrapEffectTest), {
+  rollback: Object.assign(wrapEffectTestWithRollback(vitestIt.effect), {
+    skip: wrapEffectTestWithRollback(vitestIt.effect.skip),
+    only: wrapEffectTestWithRollback(vitestIt.effect.only),
+    fails: wrapEffectTestWithRollback(vitestIt.effect.fails),
+    skipIf: (condition: unknown) =>
+      wrapEffectTestWithRollback(vitestIt.effect.skipIf(condition)),
+    runIf: (condition: unknown) =>
+      wrapEffectTestWithRollback(vitestIt.effect.runIf(condition)),
+  }),
+});
 
 // =============================================================================
 // Shared Test Constants
@@ -1825,6 +1877,164 @@ export function TestSubscriptionWithRealDatabaseFixture(
     ),
     dbLayer,
   );
+}
+
+/**
+ * Creates a test fixture that provides only Payments mocks, WITHOUT its own database layer.
+ *
+ * Use this with `it.rollback` when you need:
+ * - Stripe API mocking
+ * - Real database operations with transaction rollback
+ *
+ * Unlike TestSubscriptionWithRealDatabaseFixture, this fixture does NOT provide
+ * its own database layer. It relies on the outer context (provided by `it.rollback`)
+ * to supply DrizzleORM and SqlClient. This ensures that the database connection used
+ * by your test is the SAME one wrapped by the rollback transaction.
+ *
+ * @param params - Subscription fixture parameters
+ * @returns Layer providing only Payments (requires DrizzleORM from outer context)
+ *
+ * @example
+ * ```ts
+ * // The correct way to use it.rollback with database + Stripe mocking:
+ * it.rollback("test with db rollback", () =>
+ *   Effect.gen(function* () {
+ *     const payments = yield* Payments;
+ *     const db = yield* DrizzleORM;
+ *
+ *     // Database operations will be rolled back after test
+ *     const [org] = yield* db.insert(organizations).values({...}).returning();
+ *     const plan = yield* payments.customers.subscriptions.getPlan(org.id);
+ *
+ *     expect(plan).toBe("pro");
+ *   }).pipe(
+ *     Effect.provide(TestPaymentsMockFixture({ plan: "pro" }))
+ *   )
+ * );
+ * ```
+ */
+export function TestPaymentsMockFixture(
+  params: TestSubscriptionFixtureParams = {},
+): Layer.Layer<Payments, never, DrizzleORM | SqlClient.SqlClient> {
+  const {
+    plan = "free",
+    status = "active",
+    hasPaymentMethod = false,
+    stripeCustomerId = TEST_IDS.customer,
+    subscriptionId = TEST_IDS.subscription,
+    paymentMethodId = TEST_IDS.paymentMethod,
+    paymentMethodLocation = "subscription",
+    customPaymentMethod,
+    expandedPaymentMethod = false,
+    meterBalance = "0",
+  } = params;
+
+  const { now, periodEnd } = getTestPeriodTimes();
+
+  // Determine price ID from plan
+  const priceId = getPriceIdForPlan(plan);
+
+  // Determine payment method attachment based on location
+  const pmId = customPaymentMethod?.id ?? paymentMethodId;
+  const attachToSubscription =
+    hasPaymentMethod && paymentMethodLocation === "subscription";
+  const attachToCustomer =
+    hasPaymentMethod && paymentMethodLocation === "customer";
+  const attachToList = hasPaymentMethod && paymentMethodLocation === "list";
+
+  // Build customer mock
+  const customerData = createTestCustomer({
+    id: stripeCustomerId,
+    paymentMethodId: pmId,
+    includePaymentMethod: attachToCustomer,
+  });
+
+  // Build subscription mock
+  const subscriptionData = {
+    id: subscriptionId,
+    object: "subscription" as const,
+    status,
+    current_period_end: periodEnd,
+    current_period_start: now,
+    ...(attachToSubscription && {
+      default_payment_method: expandedPaymentMethod
+        ? { id: pmId, object: "payment_method" as const }
+        : pmId,
+    }),
+    ...(attachToList && {
+      default_payment_method: null,
+    }),
+    items: {
+      data: [
+        {
+          id: TEST_IDS.subscriptionItem,
+          price: { id: priceId },
+        },
+      ],
+    },
+  };
+
+  // Build payment method mock (if needed)
+  const paymentMethodData = hasPaymentMethod
+    ? createTestPaymentMethod(pmId, {
+        brand: customPaymentMethod?.brand,
+        last4: customPaymentMethod?.last4,
+        exp_month: customPaymentMethod?.expMonth,
+        exp_year: customPaymentMethod?.expYear,
+      })
+    : undefined;
+
+  // Create MockPayments layer with Stripe mocks
+  let mockBuilder = new MockPayments().customers
+    .retrieve(() => Effect.succeed(customerData))
+    .subscriptions.list(() =>
+      Effect.succeed(createListResponse([subscriptionData])),
+    );
+
+  // Add payment method mocks based on location
+  if (hasPaymentMethod && paymentMethodData) {
+    if (attachToList) {
+      // For "list" location, mock both list and retrieve
+      mockBuilder = mockBuilder.paymentMethods
+        .list(() =>
+          Effect.succeed({
+            object: "list" as const,
+            data: [
+              {
+                id: pmId,
+                object: "payment_method" as const,
+                type: "card" as const,
+              },
+            ],
+            has_more: false,
+          }),
+        )
+        .paymentMethods.retrieve(() => Effect.succeed(paymentMethodData));
+    } else {
+      // For "subscription" and "customer" locations, only mock retrieve
+      mockBuilder = mockBuilder.paymentMethods.retrieve(() =>
+        Effect.succeed(paymentMethodData),
+      );
+    }
+  } else {
+    // No payment method - mock empty list
+    mockBuilder = mockBuilder.paymentMethods.list(() =>
+      Effect.succeed(createListResponse([])),
+    );
+  }
+
+  // Add billing meters mock for usage tracking
+  mockBuilder = mockBuilder.billing.meters.listEventSummaries(() =>
+    Effect.succeed({
+      object: "list" as const,
+      data: [{ aggregated_value: meterBalance }],
+      has_more: false,
+    }),
+  );
+
+  // Return Payments layer that requires DrizzleORM from outer context
+  // (does NOT provide its own database layer - relies on it.rollback wrapper)
+  return Payments.Default.pipe(Layer.provide(mockBuilder.buildStripe()));
 }
 
 /**

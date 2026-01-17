@@ -174,6 +174,7 @@ export const previewSubscriptionChangeHandler = (
     return yield* payments.customers.subscriptions.previewChange({
       stripeCustomerId: organization.stripeCustomerId,
       targetPlan: payload.targetPlan,
+      organizationId,
     });
   });
 
@@ -197,6 +198,7 @@ export const updateSubscriptionHandler = (
     const result = yield* payments.customers.subscriptions.update({
       stripeCustomerId: organization.stripeCustomerId,
       targetPlan: payload.targetPlan,
+      organizationId,
     });
 
     yield* analytics.trackEvent({

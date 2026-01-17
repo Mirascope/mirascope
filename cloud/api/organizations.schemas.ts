@@ -5,6 +5,7 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
   StripeError,
   SubscriptionPastDueError,
 } from "@/errors";
@@ -102,11 +103,20 @@ export const PreviewSubscriptionChangeRequestSchema = Schema.Struct({
   targetPlan: PlanTierSchema,
 });
 
+export const ValidationErrorSchema = Schema.Struct({
+  resource: Schema.Literal("seats", "projects"),
+  currentUsage: Schema.Number,
+  limit: Schema.Number,
+  message: Schema.String,
+});
+
 export const SubscriptionChangePreviewSchema = Schema.Struct({
   isUpgrade: Schema.Boolean,
   proratedAmountInDollars: Schema.Number,
   nextBillingDate: Schema.Date,
   recurringAmountInDollars: Schema.Number,
+  canDowngrade: Schema.optional(Schema.Boolean),
+  validationErrors: Schema.optional(Schema.Array(ValidationErrorSchema)),
 });
 
 export const UpdateSubscriptionRequestSchema = Schema.Struct({
@@ -136,6 +146,7 @@ export type CreatePaymentIntentResponse =
 export type SubscriptionDetails = typeof SubscriptionDetailsSchema.Type;
 export type PreviewSubscriptionChangeRequest =
   typeof PreviewSubscriptionChangeRequestSchema.Type;
+export type ValidationError = typeof ValidationErrorSchema.Type;
 export type SubscriptionChangePreview =
   typeof SubscriptionChangePreviewSchema.Type;
 export type UpdateSubscriptionRequest =
@@ -242,8 +253,11 @@ export class OrganizationsApi extends HttpApiGroup.make("organizations")
       .addSuccess(UpdateSubscriptionResponseSchema)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
-      .addError(StripeError, { status: StripeError.status })
-      .addError(DatabaseError, { status: DatabaseError.status }),
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(DatabaseError, { status: DatabaseError.status })
+      .addError(StripeError, { status: StripeError.status }),
   )
   .add(
     HttpApiEndpoint.post(

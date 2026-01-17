@@ -9,15 +9,25 @@ import { Effect } from "effect";
 import type StripeAPI from "stripe";
 import { DrizzleORM } from "@/db/client";
 import { organizations } from "@/db/schema/organizations";
-import { eq } from "drizzle-orm";
+import { organizationMemberships } from "@/db/schema/organization-memberships";
+import { organizationInvitations } from "@/db/schema/organization-invitations";
+import { projects } from "@/db/schema/projects";
+import { sql, eq, and } from "drizzle-orm";
 import { Stripe as StripeService, type StripeConfig } from "@/payments/client";
+import { mapSqlError } from "@/db/client";
 import {
   DatabaseError,
   NotFoundError,
   StripeError,
   SubscriptionPastDueError,
+  PlanLimitExceededError,
 } from "@/errors";
-import { type PlanTier, PLAN_TIER_ORDER } from "@/payments/subscriptions/types";
+import {
+  type PlanTier,
+  PLAN_TIER_ORDER,
+  type ValidationError,
+  type DowngradeValidationResult,
+} from "@/payments/subscriptions/types";
 import { PLAN_LIMITS, type PlanLimits } from "./plan-limits";
 
 /**
@@ -57,6 +67,8 @@ export interface PreviewSubscriptionChangeParams {
   stripeCustomerId: string;
   /** Target plan tier */
   targetPlan: PlanTier;
+  /** Organization ID (required for validation) */
+  organizationId: string;
 }
 
 /**
@@ -71,6 +83,10 @@ export interface SubscriptionChangePreview {
   nextBillingDate: Date;
   /** New recurring amount per billing period, in dollars */
   recurringAmountInDollars: number;
+  /** Whether the downgrade is allowed (only present for downgrades) */
+  canDowngrade?: boolean;
+  /** Validation errors if downgrade is not allowed (only present for downgrades) */
+  validationErrors?: ValidationError[];
 }
 
 /**
@@ -81,6 +97,8 @@ export interface UpdateSubscriptionParams {
   stripeCustomerId: string;
   /** Target plan tier */
   targetPlan: PlanTier;
+  /** Organization ID (required for validation) */
+  organizationId: string;
 }
 
 /**
@@ -529,20 +547,23 @@ export class Subscriptions {
    * Previews a subscription change to calculate prorated amount.
    *
    * Uses Stripe's upcoming invoice API to preview the charges that would
-   * be applied for a plan change.
+   * be applied for a plan change. For downgrades, also validates if the
+   * downgrade is allowed based on current usage.
    *
-   * @param params - Customer ID and target plan
-   * @returns Preview with proration details and billing info
+   * @param params - Customer ID, target plan, and organization ID
+   * @returns Preview with proration details, billing info, and validation results
    * @throws NotFoundError - If no active subscription found
    * @throws StripeError - If preview fails
+   * @throws DatabaseError - If validation queries fail
    */
   previewChange({
     stripeCustomerId,
     targetPlan,
+    organizationId,
   }: PreviewSubscriptionChangeParams): Effect.Effect<
     SubscriptionChangePreview,
-    StripeError | NotFoundError,
-    StripeService
+    StripeError | NotFoundError | DatabaseError,
+    StripeService | DrizzleORM
   > {
     return Effect.gen(this, function* () {
       const stripe = yield* StripeService;
@@ -555,6 +576,15 @@ export class Subscriptions {
         subscriptionDetails.currentPlan,
         targetPlan,
       );
+
+      // Validate downgrade if applicable
+      let validationResult: DowngradeValidationResult | undefined;
+      if (!isUpgrade) {
+        validationResult = yield* this.validateDowngrade({
+          organizationId,
+          targetPlan,
+        });
+      }
 
       // Get target price ID
       const targetPriceId = this.getPriceIdFromPlan(targetPlan, stripe.config);
@@ -600,6 +630,11 @@ export class Subscriptions {
         nextBillingDate: new Date(upcomingInvoice.period_end * 1000),
         /* v8 ignore next 1 -- Defensive: subscription prices should always have unit_amount */
         recurringAmountInDollars: (targetPrice.unit_amount || 0) / 100,
+        // Include validation results for downgrades
+        ...(validationResult && {
+          canDowngrade: validationResult.canDowngrade,
+          validationErrors: validationResult.validationErrors,
+        }),
       };
     });
   }
@@ -609,20 +644,23 @@ export class Subscriptions {
    *
    * Handles both upgrades and downgrades:
    * - Upgrades: Immediate change with proration, may require payment
-   * - Downgrades: Scheduled at period end, no refunds
+   * - Downgrades: Scheduled at period end, with validation, no refunds
    *
-   * @param params - Customer ID and target plan
+   * @param params - Customer ID, target plan, and organization ID
    * @returns Update result with payment requirements or scheduled change info
    * @throws NotFoundError - If no active subscription found
+   * @throws PlanLimitExceededError - If downgrade exceeds plan limits
+   * @throws DatabaseError - If validation queries fail
    * @throws StripeError - If update fails
    */
   update({
     stripeCustomerId,
     targetPlan,
+    organizationId,
   }: UpdateSubscriptionParams): Effect.Effect<
     UpdateSubscriptionResult,
-    StripeError | NotFoundError,
-    StripeService
+    StripeError | NotFoundError | PlanLimitExceededError | DatabaseError,
+    StripeService | DrizzleORM
   > {
     return Effect.gen(this, function* () {
       const stripe = yield* StripeService;
@@ -648,6 +686,8 @@ export class Subscriptions {
         return yield* this.downgrade(
           subscriptionDetails.subscriptionId,
           targetPriceId,
+          organizationId,
+          targetPlan,
         );
       }
     });
@@ -733,16 +773,53 @@ export class Subscriptions {
   /**
    * Processes subscription downgrade by scheduling change at period end.
    *
+   * Validates current usage against target plan limits before scheduling.
    * Releases any existing schedule before creating a new one to ensure
    * only one scheduled change exists at a time. This prevents conflicts
    * and makes the scheduled change behavior predictable.
+   *
+   * @param subscriptionId - The Stripe subscription ID
+   * @param targetPriceId - The target plan price ID
+   * @param organizationId - The organization ID (for validation)
+   * @param targetPlan - The target plan tier (for validation)
+   * @returns Update result with scheduled change info
+   * @throws PlanLimitExceededError - If current usage exceeds target plan limits
+   * @throws DatabaseError - If validation queries fail
+   * @throws StripeError - If downgrade scheduling fails
    */
   private downgrade(
     subscriptionId: string,
     targetPriceId: string,
-  ): Effect.Effect<UpdateSubscriptionResult, StripeError, StripeService> {
+    organizationId: string,
+    targetPlan: PlanTier,
+  ): Effect.Effect<
+    UpdateSubscriptionResult,
+    StripeError | PlanLimitExceededError | DatabaseError,
+    StripeService | DrizzleORM
+  > {
     return Effect.gen(this, function* () {
       const stripe = yield* StripeService;
+
+      // Defensive validation check
+      const validation = yield* this.validateDowngrade({
+        organizationId,
+        targetPlan,
+      });
+
+      if (!validation.canDowngrade) {
+        // Convert validation errors to PlanLimitExceededError
+        const firstError = validation.validationErrors[0];
+        return yield* Effect.fail(
+          new PlanLimitExceededError({
+            message: `Cannot downgrade: ${firstError.message}`,
+            resource: firstError.resource,
+            limitType: firstError.resource,
+            currentUsage: firstError.currentUsage,
+            limit: firstError.limit,
+            planTier: targetPlan,
+          }),
+        );
+      }
 
       // Retrieve subscription
       const subscription = yield* stripe.subscriptions.retrieve(
@@ -816,6 +893,89 @@ export class Subscriptions {
         requiresPayment: false,
         scheduledFor: new Date(subscription.current_period_end * 1000),
         scheduleId: updatedSchedule.id,
+      };
+    });
+  }
+
+  /**
+   * Validates if a plan downgrade is allowed based on current usage.
+   *
+   * Checks if the organization's current usage (seats, projects) exceeds
+   * the target plan's limits. Returns validation results with detailed
+   * information about any exceeded limits.
+   *
+   * @param params - Organization ID and target plan tier
+   * @returns Validation result with canDowngrade flag and error details
+   * @throws DatabaseError - If database query fails
+   */
+  private validateDowngrade({
+    organizationId,
+    targetPlan,
+  }: {
+    organizationId: string;
+    targetPlan: PlanTier;
+  }): Effect.Effect<DowngradeValidationResult, DatabaseError, DrizzleORM> {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const targetLimits = PLAN_LIMITS[targetPlan];
+      const validationErrors: ValidationError[] = [];
+
+      // Count seats (memberships + pending invitations)
+      const [membershipCount] = yield* mapSqlError(
+        client
+          .select({ count: sql<number>`count(*)::int` })
+          .from(organizationMemberships)
+          .where(eq(organizationMemberships.organizationId, organizationId)),
+      );
+
+      const [invitationCount] = yield* mapSqlError(
+        client
+          .select({ count: sql<number>`count(*)::int` })
+          .from(organizationInvitations)
+          .where(
+            and(
+              eq(organizationInvitations.organizationId, organizationId),
+              eq(organizationInvitations.status, "pending"),
+            ),
+          ),
+      );
+
+      const totalSeats = membershipCount.count + invitationCount.count;
+
+      // Count projects
+      const [projectCount] = yield* mapSqlError(
+        client
+          .select({ count: sql<number>`count(*)::int` })
+          .from(projects)
+          .where(eq(projects.organizationId, organizationId)),
+      );
+
+      // Validate seats (skip if Infinity)
+      if (targetLimits.seats !== Infinity && totalSeats > targetLimits.seats) {
+        validationErrors.push({
+          resource: "seats",
+          currentUsage: totalSeats,
+          limit: targetLimits.seats,
+          message: `Current usage (${totalSeats}) exceeds ${targetPlan} plan limit (${targetLimits.seats})`,
+        });
+      }
+
+      // Validate projects (skip if Infinity)
+      if (
+        targetLimits.projects !== Infinity &&
+        projectCount.count > targetLimits.projects
+      ) {
+        validationErrors.push({
+          resource: "projects",
+          currentUsage: projectCount.count,
+          limit: targetLimits.projects,
+          message: `Current usage (${projectCount.count}) exceeds ${targetPlan} plan limit (${targetLimits.projects})`,
+        });
+      }
+
+      return {
+        canDowngrade: validationErrors.length === 0,
+        validationErrors,
       };
     });
   }

@@ -2909,6 +2909,40 @@
                     },
                     "recurringAmountInDollars": {
                       "type": "number"
+                    },
+                    "canDowngrade": {
+                      "type": "boolean"
+                    },
+                    "validationErrors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "resource",
+                          "currentUsage",
+                          "limit",
+                          "message"
+                        ],
+                        "properties": {
+                          "resource": {
+                            "type": "string",
+                            "enum": [
+                              "seats",
+                              "projects"
+                            ]
+                          },
+                          "currentUsage": {
+                            "type": "number"
+                          },
+                          "limit": {
+                            "type": "number"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
                     }
                   },
                   "additionalProperties": false
@@ -3066,6 +3100,16 @@
               }
             }
           },
+          "402": {
+            "description": "PlanLimitExceededError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanLimitExceededError"
+                }
+              }
+            }
+          },
           "403": {
             "description": "PermissionDeniedError",
             "content": {
@@ -3097,16 +3141,16 @@
             }
           },
           "500": {
-            "description": "StripeError",
+            "description": "DatabaseError",
             "content": {
               "application/json": {
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "#/components/schemas/StripeError"
+                      "$ref": "#/components/schemas/DatabaseError"
                     },
                     {
-                      "$ref": "#/components/schemas/DatabaseError"
+                      "$ref": "#/components/schemas/StripeError"
                     }
                   ]
                 }

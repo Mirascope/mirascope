@@ -4,11 +4,15 @@ import {
   StripeError,
   SubscriptionPastDueError,
   DatabaseError,
+  PlanLimitExceededError,
 } from "@/errors";
 import { Payments } from "@/payments/service";
 import { Subscriptions } from "@/payments/subscriptions/service";
 import { DrizzleORM } from "@/db/client";
 import { organizations } from "@/db/schema/organizations";
+import { organizationMemberships } from "@/db/schema/organization-memberships";
+import { projects } from "@/db/schema/projects";
+import { users } from "@/db/schema/users";
 import {
   describe,
   it,
@@ -16,6 +20,7 @@ import {
   assert,
   TestSubscriptionFixture,
   TestSubscriptionWithRealDatabaseFixture,
+  TestPaymentsMockFixture,
   TestErrorScenarioFixture,
   TestSubscriptionWithScheduleFixture,
   TestMultipleSubscriptionItemsFixture,
@@ -266,6 +271,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.previewChange({
           stripeCustomerId: "cus_123",
           targetPlan: "free",
+          organizationId: "test-org-id",
         });
 
         expect(result.isUpgrade).toBe(false);
@@ -291,6 +297,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.previewChange({
           stripeCustomerId: "cus_123",
           targetPlan: "team",
+          organizationId: "test-org-id",
         });
 
         expect(result.isUpgrade).toBe(true);
@@ -320,6 +327,7 @@ describe("subscriptions", () => {
             .previewChange({
               stripeCustomerId: "cus_123",
               targetPlan: "team",
+              organizationId: "test-org-id",
             })
             .pipe(Effect.flip);
 
@@ -349,6 +357,7 @@ describe("subscriptions", () => {
           .previewChange({
             stripeCustomerId: "cus_123",
             targetPlan: "team",
+            organizationId: "test-org-id",
           })
           .pipe(Effect.flip);
 
@@ -377,6 +386,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "pro",
+          organizationId: "test-org-id",
         });
 
         expect(result.requiresPayment).toBe(true);
@@ -401,6 +411,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "pro",
+          organizationId: "test-org-id",
         });
 
         expect(result.requiresPayment).toBe(false);
@@ -427,6 +438,7 @@ describe("subscriptions", () => {
             .update({
               stripeCustomerId: "cus_123",
               targetPlan: "pro",
+              organizationId: "test-org-id",
             })
             .pipe(Effect.flip);
 
@@ -454,6 +466,7 @@ describe("subscriptions", () => {
           .update({
             stripeCustomerId: "cus_123",
             targetPlan: "pro",
+            organizationId: "test-org-id",
           })
           .pipe(Effect.flip);
 
@@ -480,6 +493,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "free",
+          organizationId: "test-org-id",
         });
 
         expect(result.requiresPayment).toBe(false);
@@ -508,6 +522,7 @@ describe("subscriptions", () => {
           const result = yield* payments.customers.subscriptions.update({
             stripeCustomerId: "cus_123",
             targetPlan: "free",
+            organizationId: "test-org-id",
           });
 
           expect(result.requiresPayment).toBe(false);
@@ -543,6 +558,7 @@ describe("subscriptions", () => {
           const result = yield* payments.customers.subscriptions.update({
             stripeCustomerId: "cus_123",
             targetPlan: "free",
+            organizationId: "test-org-id",
           });
 
           expect(result.requiresPayment).toBe(false);
@@ -683,6 +699,7 @@ describe("subscriptions", () => {
         const preview = yield* payments.customers.subscriptions.previewChange({
           stripeCustomerId: "cus_123",
           targetPlan: "pro",
+          organizationId: "test-org-id",
         });
 
         expect(preview.recurringAmountInDollars).toBe(50); // $50 from mocked price
@@ -736,6 +753,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "free",
+          organizationId: "test-org-id",
         });
 
         expect(result.scheduledFor).toBeDefined();
@@ -769,6 +787,7 @@ describe("subscriptions", () => {
           const result = yield* payments.customers.subscriptions.update({
             stripeCustomerId: "cus_123",
             targetPlan: "free",
+            organizationId: "test-org-id",
           });
 
           expect(result.scheduledFor).toBeDefined();
@@ -802,6 +821,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "pro",
+          organizationId: "test-org-id",
         });
 
         expect(result.scheduledFor).toBeUndefined();
@@ -827,6 +847,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "pro",
+          organizationId: "test-org-id",
         });
 
         expect(result.scheduledFor).toBeUndefined();
@@ -852,6 +873,7 @@ describe("subscriptions", () => {
         const result = yield* payments.customers.subscriptions.update({
           stripeCustomerId: "cus_123",
           targetPlan: "pro",
+          organizationId: "test-org-id",
         });
 
         expect(result.requiresPayment).toBe(true);
@@ -967,7 +989,7 @@ describe("subscriptions", () => {
   });
 
   describe("getPlan", () => {
-    it.effect("gets plan for organization", () =>
+    it.rollback("gets plan for organization", () =>
       Effect.gen(function* () {
         const payments = yield* Payments;
         const db = yield* DrizzleORM;
@@ -998,7 +1020,7 @@ describe("subscriptions", () => {
       ),
     );
 
-    it.effect("returns NotFoundError when organization not found", () =>
+    it.rollback("returns NotFoundError when organization not found", () =>
       Effect.gen(function* () {
         const payments = yield* Payments;
 
@@ -1082,6 +1104,229 @@ describe("subscriptions", () => {
         expect(limits.spansPerMonth).toBe(1_000_000);
         expect(limits.apiRequestsPerMinute).toBe(10000);
       }),
+    );
+  });
+
+  describe("updateSubscription - downgrade validation", () => {
+    it.rollback(
+      "fails downgrade when seats exceed target plan limit (lines 811-812, 955)",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+          const db = yield* DrizzleORM;
+
+          const customerId = "cus_downgrade_seats_test";
+
+          // Create users first
+          const [user1] = yield* db
+            .insert(users)
+            .values({ email: "user1-seats@example.com", name: "User 1" })
+            .returning();
+
+          const [user2] = yield* db
+            .insert(users)
+            .values({ email: "user2-seats@example.com", name: "User 2" })
+            .returning();
+
+          // Create organization with pro plan
+          const [org] = yield* db
+            .insert(organizations)
+            .values({
+              name: "Test Org Seats",
+              slug: "test-org-downgrade-seats",
+              stripeCustomerId: customerId,
+            })
+            .returning();
+
+          // Create 2 memberships (exceeds free plan limit of 1)
+          yield* db.insert(organizationMemberships).values([
+            {
+              organizationId: org.id,
+              memberId: user1.id,
+              role: "OWNER",
+            },
+            {
+              organizationId: org.id,
+              memberId: user2.id,
+              role: "MEMBER",
+            },
+          ]);
+
+          // Attempt to downgrade to free (should fail due to seat limit)
+          const result = yield* payments.customers.subscriptions
+            .update({
+              stripeCustomerId: customerId,
+              targetPlan: "free",
+              organizationId: org.id,
+            })
+            .pipe(Effect.flip);
+
+          assert(result instanceof PlanLimitExceededError);
+          expect(result.message).toContain("Cannot downgrade:");
+          expect(result.limitType).toBe("seats");
+          expect(result.currentUsage).toBe(2);
+          expect(result.limit).toBe(1);
+          expect(result.planTier).toBe("free");
+        }).pipe(
+          Effect.provide(
+            TestPaymentsMockFixture({
+              plan: "pro",
+              stripeCustomerId: "cus_downgrade_seats_test",
+            }),
+          ),
+        ),
+    );
+
+    it.rollback(
+      "fails downgrade when projects exceed target plan limit (lines 811-812, 968)",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+          const db = yield* DrizzleORM;
+
+          const customerId = "cus_downgrade_projects_test";
+
+          // Create user first (required for project creation)
+          const [user] = yield* db
+            .insert(users)
+            .values({
+              email: "user-projects@example.com",
+              name: "User Projects",
+            })
+            .returning();
+
+          // Create organization with pro plan
+          const [org] = yield* db
+            .insert(organizations)
+            .values({
+              name: "Test Org Projects",
+              slug: "test-org-downgrade-projects",
+              stripeCustomerId: customerId,
+            })
+            .returning();
+
+          // Create 2 projects (exceeds free plan limit of 1)
+          yield* db.insert(projects).values([
+            {
+              organizationId: org.id,
+              name: "Project 1",
+              slug: "project-1-downgrade",
+              createdByUserId: user.id,
+            },
+            {
+              organizationId: org.id,
+              name: "Project 2",
+              slug: "project-2-downgrade",
+              createdByUserId: user.id,
+            },
+          ]);
+
+          // Attempt to downgrade to free (should fail due to project limit)
+          const result = yield* payments.customers.subscriptions
+            .update({
+              stripeCustomerId: customerId,
+              targetPlan: "free",
+              organizationId: org.id,
+            })
+            .pipe(Effect.flip);
+
+          assert(result instanceof PlanLimitExceededError);
+          expect(result.message).toContain("Cannot downgrade:");
+          expect(result.limitType).toBe("projects");
+          expect(result.currentUsage).toBe(2);
+          expect(result.limit).toBe(1);
+          expect(result.planTier).toBe("free");
+        }).pipe(
+          Effect.provide(
+            TestPaymentsMockFixture({
+              plan: "pro",
+              stripeCustomerId: "cus_downgrade_projects_test",
+            }),
+          ),
+        ),
+    );
+
+    it.rollback(
+      "fails downgrade when both seats and projects exceed limits (lines 811-812, 955, 968)",
+      () =>
+        Effect.gen(function* () {
+          const payments = yield* Payments;
+          const db = yield* DrizzleORM;
+
+          const customerId = "cus_downgrade_both_test";
+
+          // Create users first
+          const [user1] = yield* db
+            .insert(users)
+            .values({ email: "user1-both@example.com", name: "User 1 Both" })
+            .returning();
+
+          const [user2] = yield* db
+            .insert(users)
+            .values({ email: "user2-both@example.com", name: "User 2 Both" })
+            .returning();
+
+          // Create organization with pro plan
+          const [org] = yield* db
+            .insert(organizations)
+            .values({
+              name: "Test Org Both",
+              slug: "test-org-downgrade-both",
+              stripeCustomerId: customerId,
+            })
+            .returning();
+
+          // Create 2 memberships (exceeds free plan limit of 1)
+          yield* db.insert(organizationMemberships).values([
+            {
+              organizationId: org.id,
+              memberId: user1.id,
+              role: "OWNER",
+            },
+            {
+              organizationId: org.id,
+              memberId: user2.id,
+              role: "MEMBER",
+            },
+          ]);
+
+          // Create 2 projects (exceeds free plan limit of 1)
+          yield* db.insert(projects).values([
+            {
+              organizationId: org.id,
+              name: "Project 1",
+              slug: "project-1-both",
+              createdByUserId: user1.id,
+            },
+            {
+              organizationId: org.id,
+              name: "Project 2",
+              slug: "project-2-both",
+              createdByUserId: user1.id,
+            },
+          ]);
+
+          // Attempt to downgrade to free (should fail due to both limits)
+          const result = yield* payments.customers.subscriptions
+            .update({
+              stripeCustomerId: customerId,
+              targetPlan: "free",
+              organizationId: org.id,
+            })
+            .pipe(Effect.flip);
+
+          assert(result instanceof PlanLimitExceededError);
+          expect(result.message).toContain("Cannot downgrade:");
+          // First error will be seats since it's checked first
+          expect(result.limitType).toBe("seats");
+        }).pipe(
+          Effect.provide(
+            TestPaymentsMockFixture({
+              plan: "pro",
+              stripeCustomerId: "cus_downgrade_both_test",
+            }),
+          ),
+        ),
     );
   });
 });
