@@ -7,6 +7,8 @@ import {
   AlreadyExistsError,
   UnauthorizedError,
   ClickHouseError,
+  PlanLimitExceededError,
+  StripeError,
 } from "@/errors";
 import {
   AnalyticsSummaryRequestSchema,
@@ -153,7 +155,11 @@ export class TracesApi extends HttpApiGroup.make("traces")
         status: PermissionDeniedError.status,
       })
       .addError(DatabaseError, { status: DatabaseError.status })
-      .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
+      .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(StripeError, { status: StripeError.status }),
   )
   .add(
     HttpApiEndpoint.post("search", "/traces/search")

@@ -7,8 +7,14 @@
 
 import { Effect } from "effect";
 import { Stripe } from "@/payments/client";
-import { NotFoundError, StripeError } from "@/errors";
+import {
+  NotFoundError,
+  StripeError,
+  PlanLimitExceededError,
+  DatabaseError,
+} from "@/errors";
 import { Subscriptions } from "@/payments/subscriptions";
+import { DrizzleORM } from "@/db/client";
 
 /**
  * Spans product billing service.
@@ -32,6 +38,12 @@ import { Subscriptions } from "@/payments/subscriptions";
  */
 export class Spans {
   private readonly subscriptions: Subscriptions;
+  /**
+   * Cache for span usage data to avoid excessive Stripe API calls.
+   * Key: stripeCustomerId, Value: { usage: bigint, timestamp: number }
+   */
+  private usageCache = new Map<string, { usage: bigint; timestamp: number }>();
+  private readonly USAGE_CACHE_TTL_MS = 60_000; // 60 seconds
 
   constructor(subscriptions: Subscriptions) {
     this.subscriptions = subscriptions;
@@ -68,6 +80,71 @@ export class Spans {
         identifier: spanId, // Idempotency: prevent double-metering same span
         timestamp: Math.floor(Date.now() / 1000),
       });
+    });
+  }
+
+  /**
+   * Checks if organization has exceeded monthly span limit.
+   *
+   * Uses cached usage data (60s TTL) to avoid hitting Stripe API on every request.
+   * Throws PlanLimitExceededError (402) if at or over limit.
+   *
+   * @param organizationId - The organization ID
+   * @param stripeCustomerId - The Stripe customer ID
+   * @returns Effect that succeeds if under limit
+   * @throws PlanLimitExceededError - If at/over monthly span limit
+   * @throws NotFoundError - If no active subscription found
+   * @throws StripeError - If Stripe API calls fail
+   * @throws DatabaseError - If database query fails
+   */
+  checkSpanLimit({
+    organizationId,
+    stripeCustomerId,
+  }: {
+    organizationId: string;
+    stripeCustomerId: string;
+  }): Effect.Effect<
+    void,
+    PlanLimitExceededError | NotFoundError | StripeError | DatabaseError,
+    Stripe | DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      // Check cache first (60s TTL)
+      const cached = this.usageCache.get(stripeCustomerId);
+      const now = Date.now();
+
+      let currentUsage: bigint;
+      if (cached && now - cached.timestamp < this.USAGE_CACHE_TTL_MS) {
+        // Cache hit - use cached value
+        currentUsage = cached.usage;
+      } else {
+        // Cache miss or expired - query Stripe
+        currentUsage = yield* this.getUsageMeterBalance(stripeCustomerId);
+
+        // Update cache
+        this.usageCache.set(stripeCustomerId, {
+          usage: currentUsage,
+          timestamp: now,
+        });
+      }
+
+      // Get plan tier and limits
+      const planTier = yield* this.subscriptions.getPlan(organizationId);
+      const limits = yield* this.subscriptions.getPlanLimits(planTier);
+
+      // Check if at or over limit
+      if (currentUsage >= BigInt(limits.spansPerMonth)) {
+        return yield* Effect.fail(
+          new PlanLimitExceededError({
+            message: `Cannot ingest spans: ${planTier} plan limit is ${limits.spansPerMonth.toLocaleString()} spans/month (current usage: ${currentUsage.toLocaleString()})`,
+            resource: "spans",
+            limitType: "spansPerMonth",
+            currentUsage: Number(currentUsage),
+            limit: limits.spansPerMonth,
+            planTier,
+          }),
+        );
+      }
     });
   }
 

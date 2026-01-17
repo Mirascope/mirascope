@@ -4,15 +4,66 @@ import {
   expect,
   TestEnvironmentFixture,
   MockDrizzleORM,
+  TestDrizzleORM,
 } from "@/tests/db";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
+import { eq } from "drizzle-orm";
 import { Database } from "@/db";
+import { DrizzleORM } from "@/db/client";
+import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
+import { organizations } from "@/db/schema/organizations";
 import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
   ImmutableResourceError,
+  PlanLimitExceededError,
 } from "@/errors";
+
+/**
+ * Helper to create a complete test environment with a specific stripe customer ID.
+ */
+function* createTestEnvironmentWithCustomer(customerId: string) {
+  const db = yield* Database;
+  const drizzle = yield* DrizzleORM;
+
+  // Create owner user
+  const owner = yield* db.users.create({
+    data: { email: `owner-${crypto.randomUUID()}@example.com`, name: "Owner" },
+  });
+
+  // Create organization through Database service
+  const org = yield* db.organizations.create({
+    userId: owner.id,
+    data: {
+      name: "Test Organization",
+      slug: `test-org-${crypto.randomUUID()}`,
+    },
+  });
+
+  // Update organization with specific stripe customer ID
+  yield* drizzle
+    .update(organizations)
+    .set({ stripeCustomerId: customerId })
+    .where(eq(organizations.id, org.id));
+
+  // Create project
+  const project = yield* db.organizations.projects.create({
+    userId: owner.id,
+    organizationId: org.id,
+    data: { name: "Test Project", slug: `project-${crypto.randomUUID()}` },
+  });
+
+  // Create environment
+  const environment = yield* db.organizations.projects.environments.create({
+    userId: owner.id,
+    organizationId: org.id,
+    projectId: project.id,
+    data: { name: "development", slug: "development" },
+  });
+
+  return { org, owner, project, environment };
+}
 
 describe("Traces", () => {
   describe("create", () => {
@@ -472,6 +523,8 @@ describe("Traces", () => {
               },
             ])
             .select([{ id: "project-id" }])
+            .select([{ stripeCustomerId: "cus_test123" }]) // Organization for span limit check
+            .select([{ stripeCustomerId: "cus_test123" }]) // Organization for getPlan()
             .insert(new Error("Trace upsert failed"))
             .build(),
         ),
@@ -534,6 +587,8 @@ describe("Traces", () => {
               },
             ])
             .select([{ id: "project-id" }])
+            .select([{ stripeCustomerId: "cus_test123" }]) // Organization for span limit check
+            .select([{ stripeCustomerId: "cus_test123" }]) // Organization for getPlan()
             .insert([{ id: "trace-id" }]) // Trace upsert succeeds
             .insert(new Error("Span insert failed")) // Span insert fails
             .build(),
@@ -596,6 +651,8 @@ describe("Traces", () => {
               },
             ])
             .select([{ id: "project-id" }])
+            .select([{ stripeCustomerId: "cus_test123" }]) // Organization for span limit check
+            .select([{ stripeCustomerId: "cus_test123" }]) // Organization for getPlan()
             .insert([{ id: "trace-id" }]) // Trace upsert succeeds
             .insert([{ id: "span-id" }]) // Span insert succeeds
             .insert(new Error("Outbox insert failed")) // Outbox insert fails
@@ -705,6 +762,324 @@ describe("Traces", () => {
         expect(result).toBeInstanceOf(PermissionDeniedError);
         expect(result.message).toContain("permission");
       }),
+    );
+
+    it.effect("creates trace successfully when under span limit", () => {
+      const customerId = `cus_under_limit_${Date.now()}_${Math.random()}`;
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } = yield* Effect.gen(
+          createTestEnvironmentWithCustomer.bind(null, customerId),
+        );
+        const db = yield* Database;
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: `trace-under-limit-${crypto.randomUUID()}`,
+                    spanId: `span-under-limit-${crypto.randomUUID()}`,
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const result =
+          yield* db.organizations.projects.environments.traces.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          });
+
+        expect(result.acceptedSpans).toBe(1);
+        expect(result.rejectedSpans).toBe(0);
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provideMerge(TestDrizzleORM),
+            Layer.provide(
+              TestSubscriptionWithRealDatabaseFixture(
+                {
+                  plan: "free",
+                  stripeCustomerId: customerId,
+                  meterBalance: "500000", // Under 1M limit
+                },
+                TestDrizzleORM,
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+
+    it.effect("returns PlanLimitExceededError when at span limit", () => {
+      const customerId = `cus_at_limit_${Date.now()}_${Math.random()}`;
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } = yield* Effect.gen(
+          createTestEnvironmentWithCustomer.bind(null, customerId),
+        );
+        const db = yield* Database;
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: `trace-at-limit-${crypto.randomUUID()}`,
+                    spanId: `span-at-limit-${crypto.randomUUID()}`,
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const result = yield* db.organizations.projects.environments.traces
+          .create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(PlanLimitExceededError);
+        if (result instanceof PlanLimitExceededError) {
+          expect(result.message).toContain("Cannot ingest spans");
+          expect(result.message).toContain("1,000,000 spans/month");
+          expect(result.currentUsage).toBe(1000000);
+          expect(result.limit).toBe(1000000);
+          expect(result.limitType).toBe("spansPerMonth");
+        }
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provideMerge(TestDrizzleORM),
+            Layer.provide(
+              TestSubscriptionWithRealDatabaseFixture(
+                {
+                  plan: "free",
+                  stripeCustomerId: customerId,
+                  meterBalance: "1000000", // At 1M limit
+                },
+                TestDrizzleORM,
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+
+    it.effect("returns PlanLimitExceededError when over span limit", () => {
+      const customerId = `cus_over_limit_${Date.now()}_${Math.random()}`;
+
+      return Effect.gen(function* () {
+        const { environment, project, org, owner } = yield* Effect.gen(
+          createTestEnvironmentWithCustomer.bind(null, customerId),
+        );
+        const db = yield* Database;
+
+        const resourceSpans = [
+          {
+            resource: { attributes: [] },
+            scopeSpans: [
+              {
+                scope: { name: "test" },
+                spans: [
+                  {
+                    traceId: `trace-over-limit-${crypto.randomUUID()}`,
+                    spanId: `span-over-limit-${crypto.randomUUID()}`,
+                    name: "test-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const result = yield* db.organizations.projects.environments.traces
+          .create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { resourceSpans },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(PlanLimitExceededError);
+        if (result instanceof PlanLimitExceededError) {
+          expect(result.currentUsage).toBe(1500000);
+          expect(result.limit).toBe(1000000);
+        }
+      }).pipe(
+        Effect.provide(
+          Database.Default.pipe(
+            Layer.provideMerge(TestDrizzleORM),
+            Layer.provide(
+              TestSubscriptionWithRealDatabaseFixture(
+                {
+                  plan: "free",
+                  stripeCustomerId: customerId,
+                  meterBalance: "1500000", // Over 1M limit
+                },
+                TestDrizzleORM,
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+
+    it.effect(
+      "returns DatabaseError when organization fetch fails during span limit check",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const resourceSpans = [
+            {
+              resource: { attributes: [] },
+              scopeSpans: [
+                {
+                  scope: { name: "test" },
+                  spans: [
+                    {
+                      traceId: "trace-org-fetch-error",
+                      spanId: "span-org-fetch-error",
+                      name: "test-span",
+                      startTimeUnixNano: "1000000000",
+                      endTimeUnixNano: "2000000000",
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+
+          const result = yield* db.organizations.projects.environments.traces
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              projectId: "project-id",
+              environmentId: "env-id",
+              data: { resourceSpans },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toContain(
+            "Failed to fetch organization for span limit check",
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([{ id: "project-id" }])
+              .select(new Error("Database error during organization fetch"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns NotFoundError when organization not found during span limit check",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const resourceSpans = [
+            {
+              resource: { attributes: [] },
+              scopeSpans: [
+                {
+                  scope: { name: "test" },
+                  spans: [
+                    {
+                      traceId: "trace-org-not-found",
+                      spanId: "span-org-not-found",
+                      name: "test-span",
+                      startTimeUnixNano: "1000000000",
+                      endTimeUnixNano: "2000000000",
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+
+          const result = yield* db.organizations.projects.environments.traces
+            .create({
+              userId: "owner-id",
+              organizationId: "org-id",
+              projectId: "project-id",
+              environmentId: "env-id",
+              data: { resourceSpans },
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toContain("Organization not found");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([
+                {
+                  role: "OWNER",
+                  organizationId: "org-id",
+                  memberId: "owner-id",
+                  createdAt: new Date(),
+                },
+              ])
+              .select([{ id: "project-id" }])
+              .select([]) // Empty result - organization not found
+              .build(),
+          ),
+        ),
     );
   });
 
