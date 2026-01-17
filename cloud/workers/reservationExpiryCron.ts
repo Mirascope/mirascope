@@ -15,11 +15,11 @@
  * Configure in wrangler.jsonc with a cron expression like `*\/5 * * * *` (every 5 min).
  */
 
-import { Effect, Layer } from "effect";
+import { Effect } from "effect";
 import { DrizzleORM } from "@/db/client";
 import { creditReservations } from "@/db/schema";
 import { and, eq, lt } from "drizzle-orm";
-import { SettingsService, getSettingsFromEnvironment } from "@/settings";
+import { Settings } from "@/settings";
 import { DatabaseError } from "@/errors";
 import { type ScheduledEvent, type CronTriggerEnv } from "@/workers/config";
 
@@ -93,10 +93,7 @@ export default {
     }
 
     // Build layers
-    const settingsLayer = Layer.succeed(
-      SettingsService,
-      getSettingsFromEnvironment(env),
-    );
+    const settingsLayer = Settings.LiveFromEnvironment(env);
     const drizzleLayer = DrizzleORM.layer({ connectionString: databaseUrl });
 
     // Run the program

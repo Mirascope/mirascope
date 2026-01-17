@@ -1,14 +1,14 @@
 import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
 import { Database } from "@/db";
-import { SettingsService, getSettings } from "@/settings";
+import { Settings, validateSettings, type SettingsConfig } from "@/settings";
 import { Emails } from "@/emails";
 import { ExecutionContext, executionContextLayer } from "@/server-entry";
 import type { Result } from "./types";
 export type { Result } from "./types";
 
 export type AppServices =
-  | SettingsService
+  | Settings
   | Database
   | AuthService
   | Emails
@@ -17,27 +17,15 @@ export type AppServices =
 /**
  * Creates the application services layer with Database, Settings, Auth, Emails, and ExecutionContext.
  */
-function createAppServicesLayer(databaseUrl: string) {
+function createAppServicesLayer(settings: SettingsConfig) {
   return Layer.mergeAll(
-    Layer.succeed(SettingsService, getSettings()),
+    Layer.succeed(Settings, settings),
     Database.Live({
-      database: { connectionString: databaseUrl },
-      payments: {
-        apiKey: process.env.STRIPE_SECRET_KEY,
-        routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
-        routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
-        cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
-        cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
-        cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
-        cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
-        cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
-      },
+      database: { connectionString: settings.databaseUrl },
+      payments: settings.stripe,
     }).pipe(Layer.orDie),
     Layer.succeed(AuthService, createAuthService()),
-    Emails.Live({
-      apiKey: process.env.RESEND_API_KEY,
-      audienceSegmentId: process.env.RESEND_AUDIENCE_SEGMENT_ID,
-    }),
+    Emails.Live(settings.resend),
     executionContextLayer,
   );
 }
@@ -47,9 +35,9 @@ function createAppServicesLayer(databaseUrl: string) {
  */
 async function runEffectWithServices<A, E>(
   effect: Effect.Effect<A, E, AppServices>,
-  databaseUrl: string,
+  settings: SettingsConfig,
 ): Promise<Either.Either<A, E>> {
-  const appServicesLayer = createAppServicesLayer(databaseUrl);
+  const appServicesLayer = createAppServicesLayer(settings);
   return effect.pipe(
     Effect.either,
     Effect.provide(appServicesLayer),
@@ -64,19 +52,28 @@ async function runEffectWithServices<A, E>(
 export async function runEffectResponse<E extends { message: string }>(
   effect: Effect.Effect<Response, E, AppServices>,
 ): Promise<Response> {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL environment variable is not set");
+  // Validate settings once at entry
+  const settingsResult = await Effect.runPromise(
+    validateSettings().pipe(Effect.either),
+  );
+
+  if (Either.isLeft(settingsResult)) {
+    // Settings validation failed - return error response
+    const error = settingsResult.left;
+    return Response.redirect(
+      `http://localhost:3000/login?error=${encodeURIComponent(error.message)}`,
+      302,
+    );
   }
 
-  const result = await runEffectWithServices(effect, databaseUrl);
+  const settings = settingsResult.right;
+  const result = await runEffectWithServices(effect, settings);
 
   if (Either.isRight(result)) {
     return result.right;
   } else {
     // Return a proper error response instead of throwing
-    const settings = getSettings();
-    const siteUrl = settings.SITE_URL || "http://localhost:3000";
+    const siteUrl = settings.siteUrl;
     return Response.redirect(
       `${siteUrl}/login?error=${encodeURIComponent(result.left.message)}`,
       302,
@@ -87,12 +84,17 @@ export async function runEffectResponse<E extends { message: string }>(
 export async function runEffect<A, E extends { message: string }>(
   effect: Effect.Effect<A, E, AppServices>,
 ): Promise<Result<A>> {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    return { success: false, error: "Database not configured" };
+  // Validate settings once at entry
+  const settingsResult = await Effect.runPromise(
+    validateSettings().pipe(Effect.either),
+  );
+
+  if (Either.isLeft(settingsResult)) {
+    return { success: false, error: settingsResult.left.message };
   }
 
-  const result = await runEffectWithServices(effect, databaseUrl);
+  const settings = settingsResult.right;
+  const result = await runEffectWithServices(effect, settings);
 
   if (Either.isRight(result)) {
     return { success: true, data: result.right };

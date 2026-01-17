@@ -14,6 +14,7 @@ import {
   GoogleCostCalculator,
   type BaseCostCalculator,
 } from "@/api/router/cost-calculator";
+import type { SettingsConfig } from "@/settings";
 
 /**
  * Configuration for AI provider proxying.
@@ -90,19 +91,23 @@ export function getProviderConfig(
 }
 
 /**
- * Gets the API key for a provider from environment variables.
+ * Gets the API key for a provider from Settings.
  *
  * @param provider - The provider name
- * @returns The API key or undefined if not configured
+ * @param settings - The validated settings configuration
+ * @returns The API key (guaranteed to exist by Settings validation)
  */
-export function getProviderApiKey(provider: ProviderName): string | undefined {
+export function getProviderApiKey(
+  provider: ProviderName,
+  settings: SettingsConfig,
+): string {
   switch (provider) {
     case "openai":
-      return process.env.OPENAI_API_KEY;
+      return settings.router.openaiApiKey;
     case "anthropic":
-      return process.env.ANTHROPIC_API_KEY;
+      return settings.router.anthropicApiKey;
     case "google":
-      return process.env.GEMINI_API_KEY;
+      return settings.router.geminiApiKey;
     /* v8 ignore next 4 */
     default: {
       const exhaustiveCheck: never = provider;

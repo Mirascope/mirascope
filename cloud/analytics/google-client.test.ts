@@ -56,7 +56,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("creates client implementation in browser environment", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -67,7 +70,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("injects gtag script on initialization", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -88,7 +94,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("initializes dataLayer and gtag", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -103,7 +112,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("only initializes once (caches initialization promise)", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -147,7 +159,10 @@ describe("GoogleAnalytics", () => {
         configurable: true,
       });
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -195,7 +210,10 @@ describe("GoogleAnalytics", () => {
       };
       vi.stubGlobal("document", mockDocument);
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -231,7 +249,10 @@ describe("GoogleAnalytics", () => {
       });
       vi.stubGlobal("document", mockDocument);
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -269,7 +290,10 @@ describe("GoogleAnalytics", () => {
       });
       vi.stubGlobal("document", mockDocument);
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -302,7 +326,10 @@ describe("GoogleAnalytics", () => {
       });
       vi.stubGlobal("document", mockDocument);
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -317,7 +344,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("tracks events via gtag", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -343,7 +373,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("tracks page views", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -371,7 +404,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("sets user ID and includes it in subsequent page views", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -405,7 +441,10 @@ describe("GoogleAnalytics", () => {
     });
 
     it("clears user ID when set to null", async () => {
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
 
       const program = Effect.gen(function* () {
         const ga = yield* GoogleAnalytics;
@@ -450,7 +489,10 @@ describe("GoogleAnalytics", () => {
       };
       vi.stubGlobal("document", mockDocument);
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -491,7 +533,10 @@ describe("GoogleAnalytics", () => {
       };
       vi.stubGlobal("document", mockDocument);
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -535,7 +580,10 @@ describe("GoogleAnalytics", () => {
         throw new Error("gtag error");
       });
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -565,7 +613,10 @@ describe("GoogleAnalytics", () => {
         throw new Error("gtag page view error");
       });
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -595,7 +646,10 @@ describe("GoogleAnalytics", () => {
         throw new Error("gtag setUserId error");
       });
 
-      const layer = GoogleAnalytics.layer({ measurementId: "G-TEST123" });
+      const layer = GoogleAnalytics.layer({
+        measurementId: "G-TEST123",
+        apiSecret: "test_secret",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -783,35 +837,6 @@ describe("GoogleAnalytics", () => {
       await Effect.runPromise(program.pipe(Effect.provide(layer)));
     });
 
-    it("warns when apiSecret is missing", async () => {
-      const layer = GoogleAnalytics.layer({
-        measurementId: "G-TEST123",
-        // apiSecret intentionally missing
-      });
-
-      const consoleWarnSpy = vi
-        .spyOn(console, "warn")
-        .mockImplementation(() => {});
-
-      const program = Effect.gen(function* () {
-        const ga = yield* GoogleAnalytics;
-
-        yield* ga.trackEvent({ eventName: "test" });
-
-        // Should warn about missing API secret
-        expect(consoleWarnSpy).toHaveBeenCalledWith(
-          expect.stringContaining("API secret not configured"),
-        );
-
-        // Should not make fetch call
-        expect(fetchMock).not.toHaveBeenCalled();
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-
-      consoleWarnSpy.mockRestore();
-    });
-
     it("handles HTTP errors gracefully", async () => {
       // Mock fetch to return error
       fetchMock.mockResolvedValueOnce({
@@ -897,104 +922,6 @@ describe("GoogleAnalytics", () => {
           expect.stringContaining("server trackPageView failed"),
           expect.anything(),
         );
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-
-      consoleErrorSpy.mockRestore();
-    });
-  });
-
-  describe("configuration validation", () => {
-    beforeEach(() => {
-      // Ensure we're in a defined environment (server)
-      vi.stubGlobal("window", undefined);
-    });
-
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
-
-    it("validates required measurementId", async () => {
-      const layer = GoogleAnalytics.layer({
-        // measurementId intentionally missing
-      });
-
-      const program = Effect.gen(function* () {
-        const ga = yield* GoogleAnalytics;
-
-        // Should provide no-op implementation
-        expect(ga.type).toBe("noop");
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-
-    it("validates non-empty measurementId", async () => {
-      const layer = GoogleAnalytics.layer({
-        measurementId: "   ", // Empty/whitespace
-      });
-
-      const program = Effect.gen(function* () {
-        const ga = yield* GoogleAnalytics;
-
-        // Should provide no-op implementation
-        expect(ga.type).toBe("noop");
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-  });
-
-  describe("no-op implementation", () => {
-    beforeEach(() => {
-      vi.stubGlobal("window", undefined);
-    });
-
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
-
-    it("provides no-op implementation for invalid config", async () => {
-      const layer = GoogleAnalytics.layer({});
-
-      const program = Effect.gen(function* () {
-        const ga = yield* GoogleAnalytics;
-
-        expect(ga.type).toBe("noop");
-
-        // All methods should succeed without side effects
-        yield* ga.initialize();
-        yield* ga.trackEvent({ eventName: "test" });
-        yield* ga.trackPageView({ pagePath: "/" });
-        yield* ga.setUserId("user123");
-
-        // No errors should be thrown
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-
-    it("no-op implementation has no side effects", async () => {
-      const layer = GoogleAnalytics.layer({});
-
-      const fetchMock = vi.fn();
-      vi.stubGlobal("fetch", fetchMock);
-
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
-      const program = Effect.gen(function* () {
-        const ga = yield* GoogleAnalytics;
-
-        yield* ga.trackEvent({ eventName: "test" });
-
-        // Should not make any network calls
-        expect(fetchMock).not.toHaveBeenCalled();
-
-        // Should not log errors
-        expect(consoleErrorSpy).not.toHaveBeenCalled();
       });
 
       await Effect.runPromise(program.pipe(Effect.provide(layer)));

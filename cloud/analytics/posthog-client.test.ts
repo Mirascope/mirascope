@@ -58,7 +58,10 @@ describe("PostHog", () => {
     });
 
     it("creates client implementation in browser environment", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -69,7 +72,10 @@ describe("PostHog", () => {
     });
 
     it("loads PostHog script on initialization", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -113,7 +119,10 @@ describe("PostHog", () => {
     });
 
     it("uses default host when not specified", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -131,7 +140,10 @@ describe("PostHog", () => {
     });
 
     it("only initializes once (caches initialization promise)", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -152,7 +164,10 @@ describe("PostHog", () => {
       // Pre-load PostHog
       vi.stubGlobal("window", { posthog: mockPostHog });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -185,7 +200,10 @@ describe("PostHog", () => {
 
       vi.stubGlobal("document", mockDocument);
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -220,7 +238,10 @@ describe("PostHog", () => {
       vi.stubGlobal("window", mockWindow);
       vi.stubGlobal("document", mockDocument);
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -254,7 +275,10 @@ describe("PostHog", () => {
     });
 
     it("handles concurrent initialization calls", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -301,7 +325,10 @@ describe("PostHog", () => {
         configurable: true,
       });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -359,7 +386,10 @@ describe("PostHog", () => {
       };
       vi.stubGlobal("document", mockDocument);
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -398,7 +428,10 @@ describe("PostHog", () => {
     });
 
     it("auto-initializes when calling trackEvent without explicit initialize", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -418,7 +451,10 @@ describe("PostHog", () => {
     });
 
     it("tracks events via posthog.capture", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -441,7 +477,10 @@ describe("PostHog", () => {
     });
 
     it("includes distinctId in event properties", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -465,7 +504,10 @@ describe("PostHog", () => {
     });
 
     it("tracks page views with $pageview event", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -482,7 +524,10 @@ describe("PostHog", () => {
     });
 
     it("includes properties in page view tracking", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -505,7 +550,10 @@ describe("PostHog", () => {
     });
 
     it("identifies users with properties", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -541,7 +589,10 @@ describe("PostHog", () => {
       };
       vi.stubGlobal("document", mockDocument);
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -576,7 +627,10 @@ describe("PostHog", () => {
       };
       vi.stubGlobal("document", mockDocument);
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -604,7 +658,10 @@ describe("PostHog", () => {
         throw new Error("capture error");
       });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -632,7 +689,10 @@ describe("PostHog", () => {
         throw new Error("identify error");
       });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -660,7 +720,10 @@ describe("PostHog", () => {
         throw new Error("capture pageview error");
       });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
       const consoleErrorSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
@@ -707,7 +770,10 @@ describe("PostHog", () => {
     });
 
     it("creates server implementation in server environment", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -718,7 +784,10 @@ describe("PostHog", () => {
     });
 
     it("does not require initialization in server environment", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -780,7 +849,10 @@ describe("PostHog", () => {
     });
 
     it("uses anonymous distinct_id when not provided", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -801,7 +873,10 @@ describe("PostHog", () => {
     });
 
     it("sends page view events", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -829,7 +904,10 @@ describe("PostHog", () => {
     });
 
     it("sends identify events with $set properties", async () => {
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const program = Effect.gen(function* () {
         const ph = yield* PostHog;
@@ -866,7 +944,10 @@ describe("PostHog", () => {
         statusText: "Bad Request",
       });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const consoleErrorSpy = vi
         .spyOn(console, "error")
@@ -894,7 +975,10 @@ describe("PostHog", () => {
       // Mock fetch to throw error
       fetchMock.mockRejectedValueOnce(new Error("Network error"));
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const consoleErrorSpy = vi
         .spyOn(console, "error")
@@ -917,7 +1001,10 @@ describe("PostHog", () => {
     it("handles errors during identify", async () => {
       fetchMock.mockRejectedValueOnce(new Error("Identify error"));
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const consoleErrorSpy = vi
         .spyOn(console, "error")
@@ -946,7 +1033,10 @@ describe("PostHog", () => {
         statusText: "Internal Server Error",
       });
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const consoleErrorSpy = vi
         .spyOn(console, "error")
@@ -971,7 +1061,10 @@ describe("PostHog", () => {
     it("handles errors during server trackPageView", async () => {
       fetchMock.mockRejectedValueOnce(new Error("PageView error"));
 
-      const layer = PostHog.layer({ apiKey: "phc_test123" });
+      const layer = PostHog.layer({
+        apiKey: "phc_test123",
+        host: "https://us.i.posthog.com",
+      });
 
       const consoleErrorSpy = vi
         .spyOn(console, "error")
@@ -986,104 +1079,6 @@ describe("PostHog", () => {
           expect.stringContaining("server trackPageView failed"),
           expect.anything(),
         );
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-
-      consoleErrorSpy.mockRestore();
-    });
-  });
-
-  describe("configuration validation", () => {
-    beforeEach(() => {
-      // Ensure we're in a defined environment (server)
-      vi.stubGlobal("window", undefined);
-    });
-
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
-
-    it("validates required apiKey", async () => {
-      const layer = PostHog.layer({
-        // apiKey intentionally missing
-      });
-
-      const program = Effect.gen(function* () {
-        const ph = yield* PostHog;
-
-        // Should provide no-op implementation
-        expect(ph.type).toBe("noop");
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-
-    it("validates non-empty apiKey", async () => {
-      const layer = PostHog.layer({
-        apiKey: "   ", // Empty/whitespace
-      });
-
-      const program = Effect.gen(function* () {
-        const ph = yield* PostHog;
-
-        // Should provide no-op implementation
-        expect(ph.type).toBe("noop");
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-  });
-
-  describe("no-op implementation", () => {
-    beforeEach(() => {
-      vi.stubGlobal("window", undefined);
-    });
-
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
-
-    it("provides no-op implementation for invalid config", async () => {
-      const layer = PostHog.layer({});
-
-      const program = Effect.gen(function* () {
-        const ph = yield* PostHog;
-
-        expect(ph.type).toBe("noop");
-
-        // All methods should succeed without side effects
-        yield* ph.initialize();
-        yield* ph.trackEvent({ event: "test" });
-        yield* ph.trackPageView();
-        yield* ph.identify({ distinctId: "user123" });
-
-        // No errors should be thrown
-      });
-
-      await Effect.runPromise(program.pipe(Effect.provide(layer)));
-    });
-
-    it("no-op implementation has no side effects", async () => {
-      const layer = PostHog.layer({});
-
-      const fetchMock = vi.fn();
-      vi.stubGlobal("fetch", fetchMock);
-
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
-      const program = Effect.gen(function* () {
-        const ph = yield* PostHog;
-
-        yield* ph.trackEvent({ event: "test" });
-
-        // Should not make any network calls
-        expect(fetchMock).not.toHaveBeenCalled();
-
-        // Should not log errors
-        expect(consoleErrorSpy).not.toHaveBeenCalled();
       });
 
       await Effect.runPromise(program.pipe(Effect.provide(layer)));

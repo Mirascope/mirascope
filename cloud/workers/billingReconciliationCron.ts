@@ -25,7 +25,7 @@ import { creditReservations, routerRequests } from "@/db/schema";
 import { and, eq, gt, inArray, lte } from "drizzle-orm";
 import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
-import { SettingsService, getSettingsFromEnvironment } from "@/settings";
+import { Settings } from "@/settings";
 import { DatabaseError } from "@/errors";
 import {
   type ScheduledEvent,
@@ -433,45 +433,27 @@ export default {
       return;
     }
 
-    // Stripe configuration validation
-    if (
-      !env.STRIPE_SECRET_KEY ||
-      !env.STRIPE_ROUTER_PRICE_ID ||
-      !env.STRIPE_ROUTER_METER_ID
-    ) {
-      console.error(
-        "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
+    // Build layers using Settings for validated configuration
+    const program = Effect.gen(function* () {
+      const settings = yield* Settings;
+
+      const drizzleLayer = DrizzleORM.layer({ connectionString: databaseUrl });
+      const stripeLayer = Stripe.layer(settings.stripe);
+      const paymentsLayer = Payments.Default.pipe(
+        Layer.provide(stripeLayer),
+        Layer.provide(drizzleLayer),
       );
-      return;
-    }
 
-    // Build layers
-    const settingsLayer = Layer.succeed(
-      SettingsService,
-      getSettingsFromEnvironment(env),
-    );
-    const drizzleLayer = DrizzleORM.layer({ connectionString: databaseUrl });
-    const stripeLayer = Stripe.layer({
-      apiKey: env.STRIPE_SECRET_KEY,
-      routerPriceId: env.STRIPE_ROUTER_PRICE_ID,
-      routerMeterId: env.STRIPE_ROUTER_METER_ID,
-      cloudFreePriceId: env.STRIPE_CLOUD_FREE_PRICE_ID,
-      cloudProPriceId: env.STRIPE_CLOUD_PRO_PRICE_ID,
-      cloudTeamPriceId: env.STRIPE_CLOUD_TEAM_PRICE_ID,
-      cloudSpansPriceId: env.STRIPE_CLOUD_SPANS_PRICE_ID,
-      cloudSpansMeterId: env.STRIPE_CLOUD_SPANS_METER_ID,
-    });
-    const paymentsLayer = Payments.Default.pipe(
-      Layer.provide(stripeLayer),
-      Layer.provide(drizzleLayer),
-    );
-
-    // Run the program
-    await Effect.runPromise(
-      reconcileBilling.pipe(
+      yield* reconcileBilling.pipe(
         Effect.provide(paymentsLayer),
         Effect.provide(drizzleLayer),
-        Effect.provide(settingsLayer),
+      );
+    });
+
+    // Run with Settings layer from environment
+    await Effect.runPromise(
+      program.pipe(
+        Effect.provide(Settings.LiveFromEnvironment(env)),
         Effect.catchAll((error) => {
           console.error(
             "[billingReconciliationCron] Cron trigger error:",

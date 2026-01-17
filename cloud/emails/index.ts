@@ -5,9 +5,8 @@
  * and React Email template rendering.
  */
 
-// Export the main service and its configuration type
+// Export the main service
 export { Emails } from "@/emails/service";
-export type { ResendConfig } from "@/emails/resend-client";
 
 // Export template rendering utilities
 export { renderEmailTemplate } from "@/emails/render";

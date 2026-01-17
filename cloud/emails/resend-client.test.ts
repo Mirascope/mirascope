@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, assert } from "vitest";
 import { Effect, Layer } from "effect";
 import { Resend, wrapResendClient } from "@/emails/resend-client";
-import { ResendError, ConfigError } from "@/errors";
+import { ResendError } from "@/errors";
 import { Resend as ResendAPI } from "resend";
 import {
   TestSendRequestFixture,
@@ -109,7 +109,7 @@ describe("Resend", () => {
       expect(Layer.isLayer(layer)).toBe(true);
     });
 
-    it("validates configuration and creates client", () => {
+    it("creates client and stores configuration", () => {
       const layer = Resend.layer({
         apiKey: "re_test_mock",
         audienceSegmentId: "seg_test_mock",
@@ -128,77 +128,6 @@ describe("Resend", () => {
         expect(resend.config.apiKey).toBe("re_test_mock");
         expect(resend.config.audienceSegmentId).toBe("seg_test_mock");
       }).pipe(Effect.provide(layer), Effect.runPromise);
-    });
-
-    it("validates configuration and fails with missing apiKey", () => {
-      const result = Effect.runSync(
-        Layer.launch(Resend.layer({})).pipe(Effect.flip),
-      );
-
-      assert(result instanceof ConfigError);
-      expect(result.message).toContain("Missing or empty fields");
-      expect(result.message).toContain("apiKey");
-      expect(result.message).toContain("audienceSegmentId");
-    });
-
-    it("validates configuration and fails with empty apiKey", () => {
-      const result = Effect.runSync(
-        Layer.launch(
-          Resend.layer({ apiKey: "", audienceSegmentId: "seg_test" }),
-        ).pipe(Effect.flip),
-      );
-
-      assert(result instanceof ConfigError);
-      expect(result.message).toContain("Missing or empty fields");
-      expect(result.message).toContain("apiKey");
-    });
-
-    it("validates configuration and fails with whitespace-only apiKey", () => {
-      const result = Effect.runSync(
-        Layer.launch(
-          Resend.layer({ apiKey: "   ", audienceSegmentId: "seg_test" }),
-        ).pipe(Effect.flip),
-      );
-
-      assert(result instanceof ConfigError);
-      expect(result.message).toContain("Missing or empty fields");
-      expect(result.message).toContain("apiKey");
-    });
-
-    it("validates configuration and fails with missing audienceSegmentId", () => {
-      const result = Effect.runSync(
-        Layer.launch(Resend.layer({ apiKey: "re_test_mock" })).pipe(
-          Effect.flip,
-        ),
-      );
-
-      assert(result instanceof ConfigError);
-      expect(result.message).toContain("Missing or empty fields");
-      expect(result.message).toContain("audienceSegmentId");
-    });
-
-    it("validates configuration and fails with empty audienceSegmentId", () => {
-      const result = Effect.runSync(
-        Layer.launch(
-          Resend.layer({ apiKey: "re_test_mock", audienceSegmentId: "" }),
-        ).pipe(Effect.flip),
-      );
-
-      assert(result instanceof ConfigError);
-      expect(result.message).toContain("Missing or empty fields");
-      expect(result.message).toContain("audienceSegmentId");
-    });
-
-    it("validates configuration and fails with whitespace-only audienceSegmentId", () => {
-      const result = Effect.runSync(
-        Layer.launch(
-          Resend.layer({ apiKey: "re_test_mock", audienceSegmentId: "   " }),
-        ).pipe(Effect.flip),
-      );
-
-      assert(result instanceof ConfigError);
-      expect(result.message).toContain("Missing or empty fields");
-      expect(result.message).toContain("audienceSegmentId");
     });
   });
 

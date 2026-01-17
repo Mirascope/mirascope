@@ -21,11 +21,7 @@ import { DrizzleORM } from "@/db/client";
 import { spansOutbox } from "@/db/schema";
 import { and, eq, lt, or, isNull, lte } from "drizzle-orm";
 import { ClickHouse } from "@/clickhouse/client";
-import {
-  SettingsService,
-  getSettingsFromEnvironment,
-  type CloudflareEnvironment,
-} from "@/settings";
+import { Settings, type CloudflareEnvironment } from "@/settings";
 import { DatabaseError } from "@/errors";
 import { processOutboxMessages } from "@/workers/outboxProcessor";
 
@@ -200,10 +196,7 @@ export default {
     const workerId = `workers-cron-${Date.now()}`;
 
     // Build layers
-    const settingsLayer = Layer.succeed(
-      SettingsService,
-      getSettingsFromEnvironment(env),
-    );
+    const settingsLayer = Settings.LiveFromEnvironment(env);
     const drizzleLayer = DrizzleORM.layer({ connectionString: databaseUrl });
     const clickhouseLayer = ClickHouse.Default.pipe(
       Layer.provide(settingsLayer),

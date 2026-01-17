@@ -8,7 +8,8 @@ describe("Database", () => {
       const layer = Database.Live({
         database: { connectionString: "postgresql://test" },
         payments: {
-          apiKey: "sk_test_key",
+          secretKey: "sk_test_key",
+          webhookSecret: "whsec_test",
           routerPriceId: "price_test",
           routerMeterId: "meter_test",
           cloudFreePriceId: "price_cloud_free_test",

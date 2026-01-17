@@ -68,22 +68,18 @@ import { Effect, Layer, Context } from "effect";
 import {
   GoogleAnalytics,
   type GoogleAnalyticsClient,
-  type GoogleAnalyticsConfig,
 } from "@/analytics/google-client";
-import {
-  PostHog,
-  type PostHogClient,
-  type PostHogConfig,
-} from "@/analytics/posthog-client";
+import { PostHog, type PostHogClient } from "@/analytics/posthog-client";
+import type { GoogleAnalyticsConfig, PostHogConfig } from "@/settings";
 
 /**
  * Analytics service configuration options.
  */
 export interface AnalyticsConfig {
   /** Google Analytics configuration */
-  googleAnalytics: Partial<GoogleAnalyticsConfig>;
+  googleAnalytics: GoogleAnalyticsConfig;
   /** PostHog configuration */
-  postHog: Partial<PostHogConfig>;
+  postHog: PostHogConfig;
 }
 
 /**

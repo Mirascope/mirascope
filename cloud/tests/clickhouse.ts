@@ -2,7 +2,12 @@ import { Effect, Layer } from "effect";
 import { describe, expect, it as vitestIt } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
 import { ClickHouse } from "@/clickhouse/client";
-import { SettingsService, type Settings } from "@/settings";
+import {
+  Settings,
+  type SettingsConfig,
+  type ClickHouseConfig,
+} from "@/settings";
+import { createMockSettings } from "@/tests/settings";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import fs from "fs";
 
@@ -45,25 +50,37 @@ export const checkClickHouseAvailable = async (): Promise<boolean> => {
 export const clickHouseAvailable = await checkClickHouseAvailable();
 
 /**
- * Test settings for ClickHouse.
+ * Test ClickHouse configuration from testcontainers.
  */
-const testSettings: Settings = {
-  env: "local",
-  CLICKHOUSE_URL: clickhouseConfig.url,
-  CLICKHOUSE_USER: clickhouseConfig.user,
-  CLICKHOUSE_PASSWORD: clickhouseConfig.password,
-  CLICKHOUSE_DATABASE: clickhouseConfig.database,
-  CLICKHOUSE_TLS_ENABLED: false,
+const testClickHouseSettings: ClickHouseConfig = {
+  url: clickhouseConfig.url,
+  user: clickhouseConfig.user,
+  password: clickhouseConfig.password,
+  database: clickhouseConfig.database,
+  tls: {
+    enabled: false,
+    ca: "",
+    skipVerify: true,
+    hostnameVerify: false,
+    minVersion: "1.2",
+  },
 };
+
+/**
+ * Complete test settings using mock settings with ClickHouse override.
+ */
+const testSettings: SettingsConfig = createMockSettings({
+  clickhouse: testClickHouseSettings,
+});
 
 /**
  * Settings layer for tests.
  */
-const TestSettingsLayer = Layer.succeed(SettingsService, testSettings);
+const TestSettingsLayer = Layer.succeed(Settings, testSettings);
 
 /**
  * ClickHouse layer for tests.
- * Note: Layer may fail with SqlError | ConfigError during initialization.
+ * Note: Layer may fail with SqlError during initialization.
  */
 export const TestClickHouse = ClickHouse.Default.pipe(
   Layer.provide(TestSettingsLayer),

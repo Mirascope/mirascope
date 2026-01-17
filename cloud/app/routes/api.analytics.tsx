@@ -16,8 +16,9 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { Analytics } from "@/analytics";
+import { Settings, validateSettings } from "@/settings";
 
 /**
  * Analytics event request payload from the frontend.
@@ -45,19 +46,6 @@ export const Route = createFileRoute("/api/analytics")({
       POST: async ({ request }) => {
         try {
           const body: AnalyticsEventRequest = await request.json();
-
-          const config = {
-            googleAnalytics: {
-              measurementId: process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
-              apiSecret: process.env.GOOGLE_ANALYTICS_API_SECRET,
-            },
-            postHog: {
-              apiKey: process.env.POSTHOG_API_KEY,
-              host: process.env.POSTHOG_HOST || "https://app.posthog.com",
-            },
-          };
-
-          const analyticsLayer = Analytics.Live(config);
 
           await Effect.runPromise(
             Effect.gen(function* () {
@@ -89,7 +77,24 @@ export const Route = createFileRoute("/api/analytics")({
                   }
                   break;
               }
-            }).pipe(Effect.provide(analyticsLayer)),
+            }).pipe(
+              Effect.provide(
+                Layer.unwrapEffect(
+                  validateSettings().pipe(
+                    Effect.orDie, // Settings validation failure is fatal
+                    Effect.map((settings) =>
+                      Layer.mergeAll(
+                        Layer.succeed(Settings, settings),
+                        Analytics.Live({
+                          googleAnalytics: settings.googleAnalytics,
+                          postHog: settings.posthog,
+                        }),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           );
 
           return Response.json({ success: true });

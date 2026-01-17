@@ -12,6 +12,7 @@ import {
   type PathParameters,
 } from "@/auth/utils";
 import { UnauthorizedError } from "@/errors";
+import { createMockSettings } from "@/tests/settings";
 
 describe("getSessionIdFromCookie", () => {
   it("should extract session ID from cookie", () => {
@@ -73,7 +74,8 @@ describe("getOAuthStateFromCookie", () => {
 
 describe("setSessionCookie", () => {
   it("should create a session cookie string", () => {
-    const cookie = setSessionCookie("test-session-id");
+    const settings = createMockSettings();
+    const cookie = setSessionCookie("test-session-id", settings);
 
     expect(cookie).toContain("session=test-session-id");
     expect(cookie).toContain("HttpOnly");
@@ -83,76 +85,40 @@ describe("setSessionCookie", () => {
   });
 
   it("should include Secure flag in production", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "production";
-    process.env.SITE_URL = "http://localhost:3000"; // Even with http, production should be secure
+    const settings = createMockSettings({
+      env: "production",
+      siteUrl: "http://localhost:3000", // Even with http, production should be secure
+    });
 
-    const cookie = setSessionCookie("test-session-id");
+    const cookie = setSessionCookie("test-session-id", settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
-  it("should include Secure flag when SITE_URL is https", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "https://example.com";
+  it("should include Secure flag when siteUrl is https", () => {
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "https://example.com",
+    });
 
-    const cookie = setSessionCookie("test-session-id");
+    const cookie = setSessionCookie("test-session-id", settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
   it("should not include Secure flag in development with http", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "http://localhost:3000";
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "http://localhost:3000",
+    });
 
-    const cookie = setSessionCookie("test-session-id");
+    const cookie = setSessionCookie("test-session-id", settings);
     expect(cookie).not.toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
-  });
-
-  it("should not include Secure flag when SITE_URL is truly undefined", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    delete process.env.SITE_URL; // Truly undefined, not string "undefined"
-
-    const cookie = setSessionCookie("test-session-id");
-    expect(cookie).not.toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    if (originalSiteUrl !== undefined) {
-      process.env.SITE_URL = originalSiteUrl;
-    }
-  });
-
-  it("should not include Secure flag when SITE_URL is empty string", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "";
-
-    const cookie = setSessionCookie("test-session-id");
-    expect(cookie).not.toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 });
 
 describe("clearSessionCookie", () => {
   it("should create an expired session cookie", () => {
-    const cookie = clearSessionCookie();
+    const settings = createMockSettings();
+    const cookie = clearSessionCookie(settings);
 
     expect(cookie).toContain("session=;");
     expect(cookie).toContain("Expires=Thu, 01 Jan 1970 00:00:00 GMT");
@@ -162,48 +128,40 @@ describe("clearSessionCookie", () => {
   });
 
   it("should include Secure flag in production", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "production";
-    process.env.SITE_URL = "http://localhost:3000"; // Even with http, production should be secure
+    const settings = createMockSettings({
+      env: "production",
+      siteUrl: "http://localhost:3000", // Even with http, production should be secure
+    });
 
-    const cookie = clearSessionCookie();
+    const cookie = clearSessionCookie(settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
-  it("should include Secure flag when SITE_URL is https", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "https://example.com";
+  it("should include Secure flag when siteUrl is https", () => {
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "https://example.com",
+    });
 
-    const cookie = clearSessionCookie();
+    const cookie = clearSessionCookie(settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
   it("should not include Secure flag in development with http", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "http://localhost:3000";
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "http://localhost:3000",
+    });
 
-    const cookie = clearSessionCookie();
+    const cookie = clearSessionCookie(settings);
     expect(cookie).not.toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 });
 
 describe("setOAuthStateCookie", () => {
   it("should create an OAuth state cookie string", () => {
-    const cookie = setOAuthStateCookie("random-state");
+    const settings = createMockSettings();
+    const cookie = setOAuthStateCookie("random-state", settings);
 
     expect(cookie).toContain("oauth_state=random-state");
     expect(cookie).toContain("HttpOnly");
@@ -213,48 +171,40 @@ describe("setOAuthStateCookie", () => {
   });
 
   it("should include Secure flag in production", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "production";
-    process.env.SITE_URL = "http://localhost:3000"; // Even with http, production should be secure
+    const settings = createMockSettings({
+      env: "production",
+      siteUrl: "http://localhost:3000", // Even with http, production should be secure
+    });
 
-    const cookie = setOAuthStateCookie("random-state");
+    const cookie = setOAuthStateCookie("random-state", settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
-  it("should include Secure flag when SITE_URL is https", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "https://example.com";
+  it("should include Secure flag when siteUrl is https", () => {
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "https://example.com",
+    });
 
-    const cookie = setOAuthStateCookie("random-state");
+    const cookie = setOAuthStateCookie("random-state", settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
   it("should not include Secure flag in development with http", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "http://localhost:3000";
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "http://localhost:3000",
+    });
 
-    const cookie = setOAuthStateCookie("random-state");
+    const cookie = setOAuthStateCookie("random-state", settings);
     expect(cookie).not.toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 });
 
 describe("clearOAuthStateCookie", () => {
   it("should create an expired OAuth state cookie", () => {
-    const cookie = clearOAuthStateCookie();
+    const settings = createMockSettings();
+    const cookie = clearOAuthStateCookie(settings);
 
     expect(cookie).toContain("oauth_state=;");
     expect(cookie).toContain("Expires=Thu, 01 Jan 1970 00:00:00 GMT");
@@ -264,42 +214,33 @@ describe("clearOAuthStateCookie", () => {
   });
 
   it("should include Secure flag in production", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "production";
-    process.env.SITE_URL = "http://localhost:3000"; // Even with http, production should be secure
+    const settings = createMockSettings({
+      env: "production",
+      siteUrl: "http://localhost:3000", // Even with http, production should be secure
+    });
 
-    const cookie = clearOAuthStateCookie();
+    const cookie = clearOAuthStateCookie(settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
-  it("should include Secure flag when SITE_URL is https", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "https://example.com";
+  it("should include Secure flag when siteUrl is https", () => {
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "https://example.com",
+    });
 
-    const cookie = clearOAuthStateCookie();
+    const cookie = clearOAuthStateCookie(settings);
     expect(cookie).toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 
   it("should not include Secure flag in development with http", () => {
-    const originalEnv = process.env.ENVIRONMENT;
-    const originalSiteUrl = process.env.SITE_URL;
-    process.env.ENVIRONMENT = "development";
-    process.env.SITE_URL = "http://localhost:3000";
+    const settings = createMockSettings({
+      env: "development",
+      siteUrl: "http://localhost:3000",
+    });
 
-    const cookie = clearOAuthStateCookie();
+    const cookie = clearOAuthStateCookie(settings);
     expect(cookie).not.toContain("Secure");
-
-    process.env.ENVIRONMENT = originalEnv;
-    process.env.SITE_URL = originalSiteUrl;
   });
 });
 

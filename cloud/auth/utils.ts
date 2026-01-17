@@ -4,11 +4,11 @@ import { UnauthorizedError } from "@/errors";
 import type { ApiKeyInfo } from "@/db/schema";
 import { getApiKeyFromRequest } from "@/auth/api-key";
 import type { AuthResult } from "@/auth/context";
+import type { SettingsConfig } from "@/settings";
 
-function isSecure(): boolean {
+export function isSecure(settings: SettingsConfig): boolean {
   return (
-    process.env.ENVIRONMENT === "production" ||
-    (process.env.SITE_URL?.startsWith("https://") ?? false)
+    settings.env === "production" || settings.siteUrl.startsWith("https://")
   );
 }
 
@@ -34,13 +34,16 @@ export function getOAuthStateFromCookie(request: Request): string | null {
   return getCookieValue(request, "oauth_state");
 }
 
-export function setSessionCookie(sessionId: string): string {
+export function setSessionCookie(
+  sessionId: string,
+  settings: SettingsConfig,
+): string {
   const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
 
   const cookieParts = [
     `session=${sessionId}`,
     "HttpOnly",
-    ...(isSecure() ? ["Secure"] : []),
+    ...(isSecure(settings) ? ["Secure"] : []),
     "SameSite=Lax",
     `Max-Age=${maxAge}`,
     "Path=/",
@@ -49,12 +52,12 @@ export function setSessionCookie(sessionId: string): string {
   return cookieParts.join("; ");
 }
 
-export function clearSessionCookie(): string {
+export function clearSessionCookie(settings: SettingsConfig): string {
   const cookieParts = [
     "session=;",
     "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
     "HttpOnly",
-    ...(isSecure() ? ["Secure"] : []),
+    ...(isSecure(settings) ? ["Secure"] : []),
     "SameSite=Lax",
     "Path=/",
   ];
@@ -62,11 +65,14 @@ export function clearSessionCookie(): string {
   return cookieParts.join("; ");
 }
 
-export function setOAuthStateCookie(state: string): string {
+export function setOAuthStateCookie(
+  state: string,
+  settings: SettingsConfig,
+): string {
   const cookieParts = [
     `oauth_state=${state}`,
     "HttpOnly",
-    ...(isSecure() ? ["Secure"] : []),
+    ...(isSecure(settings) ? ["Secure"] : []),
     "SameSite=Lax",
     "Max-Age=600", // 10 minutes
     "Path=/",
@@ -75,12 +81,12 @@ export function setOAuthStateCookie(state: string): string {
   return cookieParts.join("; ");
 }
 
-export function clearOAuthStateCookie(): string {
+export function clearOAuthStateCookie(settings: SettingsConfig): string {
   const cookieParts = [
     "oauth_state=;",
     "Expires=Thu, 01 Jan 1970 00:00:00 GMT",
     "HttpOnly",
-    ...(isSecure() ? ["Secure"] : []),
+    ...(isSecure(settings) ? ["Secure"] : []),
     "SameSite=Lax",
     "Path=/",
   ];

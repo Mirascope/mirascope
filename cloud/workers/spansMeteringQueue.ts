@@ -15,6 +15,7 @@ import { Effect, Context, Layer } from "effect";
 import type { MessageBatch, Message } from "@cloudflare/workers-types";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
+import { Settings } from "@/settings";
 import { type WorkerEnv } from "@/workers/config";
 
 // =============================================================================
@@ -126,41 +127,24 @@ async function processMessage(
     return;
   }
 
-  // Stripe configuration validation
-  if (
-    !env.STRIPE_SECRET_KEY ||
-    !env.STRIPE_CLOUD_SPANS_PRICE_ID ||
-    !env.STRIPE_CLOUD_SPANS_METER_ID
-  ) {
-    console.error(
-      "[spansMeteringQueue] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_CLOUD_SPANS_PRICE_ID, STRIPE_CLOUD_SPANS_METER_ID required)",
-    );
-    message.retry({ delaySeconds: 60 });
-    return;
-  }
+  // Build the program using Settings for validated configuration
+  const program = Effect.gen(function* () {
+    const settings = yield* Settings;
 
-  // Charge the spans meter
-  const program = chargeSpanMeter(data);
+    // Build Database.Live layer (provides both Database and Payments services)
+    const layer = Database.Live({
+      database: { connectionString: databaseUrl },
+      payments: settings.stripe,
+    });
 
-  // Build Database.Live layer (provides both Database and Payments services)
-  const layer = Database.Live({
-    database: { connectionString: databaseUrl },
-    payments: {
-      apiKey: env.STRIPE_SECRET_KEY, // Validated above
-      routerPriceId: env.STRIPE_ROUTER_PRICE_ID || "",
-      routerMeterId: env.STRIPE_ROUTER_METER_ID || "",
-      cloudFreePriceId: env.STRIPE_CLOUD_FREE_PRICE_ID || "",
-      cloudProPriceId: env.STRIPE_CLOUD_PRO_PRICE_ID || "",
-      cloudTeamPriceId: env.STRIPE_CLOUD_TEAM_PRICE_ID || "",
-      cloudSpansPriceId: env.STRIPE_CLOUD_SPANS_PRICE_ID, // Validated above
-      cloudSpansMeterId: env.STRIPE_CLOUD_SPANS_METER_ID, // Validated above
-    },
+    // Charge the spans meter
+    yield* chargeSpanMeter(data).pipe(Effect.provide(layer));
   });
 
-  // Run the program
+  // Run with Settings layer from environment
   await Effect.runPromise(
     program.pipe(
-      Effect.provide(layer),
+      Effect.provide(Settings.LiveFromEnvironment(env)),
       Effect.catchAll((error) => {
         console.error(
           `[spansMeteringQueue] Error processing message for span ${data.spanId}:`,

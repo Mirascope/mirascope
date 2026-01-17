@@ -35,17 +35,7 @@
  */
 
 import { Effect, Layer, Context } from "effect";
-import { ConfigError } from "@/errors";
-
-/**
- * PostHog service configuration options.
- */
-export interface PostHogConfig {
-  /** PostHog project API key (e.g., "phc_...") */
-  apiKey: string;
-  /** PostHog API host URL (default: "https://us.i.posthog.com") */
-  host?: string;
-}
+import type { PostHogConfig } from "@/settings";
 
 /**
  * Parameters for tracking events.
@@ -93,26 +83,6 @@ export interface PostHogClient {
   trackPageView(params?: TrackPageViewParams): Effect.Effect<void, never>;
   /** Identify a user */
   identify(params: IdentifyParams): Effect.Effect<void, never>;
-}
-
-/**
- * Validates PostHog configuration.
- */
-function validatePostHogConfig(
-  config: Partial<PostHogConfig>,
-): Effect.Effect<PostHogConfig, ConfigError> {
-  if (!config.apiKey?.trim()) {
-    return Effect.fail(
-      new ConfigError({
-        message: "Missing PostHog API key (apiKey)",
-      }),
-    );
-  }
-
-  return Effect.succeed({
-    apiKey: config.apiKey,
-    host: config.host || "https://us.i.posthog.com",
-  });
 }
 
 /**
@@ -381,21 +351,6 @@ function createServerImplementation(config: PostHogConfig): PostHogClient {
       }).pipe(Effect.catchAll(() => Effect.succeed(void 0))),
   };
 }
-
-/**
- * Creates a no-op implementation when configuration is missing.
- * This ensures analytics failures don't break the application.
- */
-function createNoOpImplementation(): PostHogClient {
-  return {
-    type: "noop",
-    initialize: () => Effect.succeed(void 0),
-    trackEvent: () => Effect.succeed(void 0),
-    trackPageView: () => Effect.succeed(void 0),
-    identify: () => Effect.succeed(void 0),
-  };
-}
-
 /**
  * Extend Window interface for PostHog support.
  */
@@ -438,39 +393,31 @@ export class PostHog extends Context.Tag("PostHog")<PostHog, PostHogClient>() {
    * Creates a Layer that provides the PostHog service.
    *
    * Automatically detects the environment and provides client-side or server-side
-   * implementation. Falls back to no-op implementation if configuration is invalid.
+   * implementation.
    *
-   * @param config - Partial PostHog configuration
+   * Note: Config validation is handled by Settings at startup. The config
+   * passed here is guaranteed to be complete and valid.
+   *
+   * @param config - Validated PostHog configuration from Settings
    * @returns A Layer providing PostHog
    *
    * @example
    * ```ts
-   * const PostHogLive = PostHog.layer({
-   *   apiKey: process.env.POSTHOG_API_KEY,
-   *   host: process.env.POSTHOG_HOST,
-   * });
+   * // Settings provides validated config
+   * const settings = yield* Settings;
+   * const PostHogLive = PostHog.layer(settings.posthog);
    *
    * program.pipe(Effect.provide(PostHogLive));
    * ```
    */
-  static layer = (config: Partial<PostHogConfig>) => {
-    return Layer.effect(
-      PostHog,
-      Effect.gen(function* () {
-        const validated = yield* validatePostHogConfig(config);
+  static layer = (config: PostHogConfig) => {
+    // Environment detection
+    const isBrowser = typeof window !== "undefined";
 
-        // Environment detection
-        const isBrowser = typeof window !== "undefined";
+    const implementation = isBrowser
+      ? createClientImplementation(config)
+      : createServerImplementation(config);
 
-        if (isBrowser) {
-          return createClientImplementation(validated);
-        } else {
-          return createServerImplementation(validated);
-        }
-      }),
-    ).pipe(
-      // Graceful fallback: provide no-op implementation if config invalid
-      Layer.catchAll(() => Layer.succeed(PostHog, createNoOpImplementation())),
-    );
+    return Layer.succeed(PostHog, implementation);
   };
 }

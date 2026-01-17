@@ -6,7 +6,8 @@ import { HandlerError } from "@/errors";
 import { Emails } from "@/emails";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
-import { SettingsService, getSettings } from "@/settings";
+import { Settings, type SettingsConfig } from "@/settings";
+import { createMockSettings } from "@/tests/settings";
 import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
 import fs from "fs";
 
@@ -44,15 +45,23 @@ const MockEmails = Layer.succeed(Emails, {
 });
 
 const clickhouseConfig = getTestClickHouseConfig();
-const settings = getSettings();
-const settingsLayer = Layer.succeed(SettingsService, {
-  ...settings,
+const settings: SettingsConfig = createMockSettings({
   env: "test",
-  CLICKHOUSE_URL: clickhouseConfig.url,
-  CLICKHOUSE_USER: clickhouseConfig.user,
-  CLICKHOUSE_PASSWORD: clickhouseConfig.password,
-  CLICKHOUSE_DATABASE: clickhouseConfig.database,
+  clickhouse: {
+    url: clickhouseConfig.url,
+    user: clickhouseConfig.user,
+    password: clickhouseConfig.password,
+    database: clickhouseConfig.database,
+    tls: {
+      enabled: false,
+      ca: "",
+      skipVerify: false,
+      hostnameVerify: true,
+      minVersion: "1.2",
+    },
+  },
 });
+const settingsLayer = Layer.succeed(Settings, settings);
 const MockClickHouseSearch = ClickHouseSearch.Default.pipe(
   Layer.provide(ClickHouse.Default),
   Layer.provide(settingsLayer),
@@ -71,7 +80,7 @@ describe("handleRequest", () => {
 
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
-        environment: "test",
+        settings,
         prefix: "/api/v0",
         clickHouseSearch,
       });
@@ -90,7 +99,7 @@ describe("handleRequest", () => {
 
         const { matched, response } = yield* handleRequest(req, {
           user: mockUser,
-          environment: "test",
+          settings,
           prefix: "/api/v0",
           clickHouseSearch,
         });
@@ -117,7 +126,7 @@ describe("handleRequest", () => {
 
         const error = yield* handleRequest(faultyRequest, {
           user: mockUser,
-          environment: "test",
+          settings,
           clickHouseSearch,
         }).pipe(Effect.flip);
 
@@ -143,7 +152,7 @@ describe("handleRequest", () => {
 
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
-        environment: "test",
+        settings,
         prefix: "/api/v0",
         clickHouseSearch,
       });
@@ -166,7 +175,7 @@ describe("handleRequest", () => {
 
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
-        environment: "test",
+        settings,
         prefix: "/api/v0",
         clickHouseSearch,
       });

@@ -50,7 +50,8 @@
  */
 
 import { Context, Layer, Effect, Schedule } from "effect";
-import { Resend, type ResendConfig } from "@/emails/resend-client";
+import { Resend } from "@/emails/resend-client";
+import type { ResendConfig } from "@/settings";
 import { ResendError } from "@/errors";
 import { dependencyProvider, type Ready } from "@/utils";
 import { Audience } from "@/emails/audience";
@@ -212,20 +213,22 @@ export class Emails extends Context.Tag("Email")<
   /**
    * Creates a fully configured layer with Resend.
    *
-   * @param config - Partial Resend configuration (validated by Resend layer)
+   * Note: Config validation is handled by Settings at startup. The config
+   * passed here is guaranteed to be complete and valid.
+   *
+   * @param config - Validated Resend configuration from Settings
    * @returns A Layer providing Emails
    *
    * @example
    * ```ts
-   * const EmailsLive = Emails.Live({
-   *   apiKey: process.env.RESEND_API_KEY,
-   *   audienceSegmentId: process.env.RESEND_AUDIENCE_SEGMENT_ID,
-   * });
+   * // Settings provides validated config
+   * const settings = yield* Settings;
+   * const EmailsLive = Emails.Live(settings.resend);
    *
    * program.pipe(Effect.provide(EmailsLive));
    * ```
    */
-  static Live = (config: Partial<ResendConfig>) => {
+  static Live = (config: ResendConfig) => {
     const resendLayer = Resend.layer(config);
 
     return Emails.Default.pipe(Layer.provide(resendLayer));

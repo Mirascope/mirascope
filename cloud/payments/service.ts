@@ -45,7 +45,8 @@
  */
 
 import { Context, Layer, Effect } from "effect";
-import { Stripe, type StripeConfig } from "@/payments/client";
+import { Stripe } from "@/payments/client";
+import type { StripeConfig } from "@/settings";
 import { Customers } from "@/payments/customers";
 import { Subscriptions } from "@/payments/subscriptions";
 import { Router } from "@/payments/products/router";
@@ -129,25 +130,25 @@ export class Payments extends Context.Tag("Payments")<
    * and payment operations (owned by Payments), while allowing Payments to use the database
    * for credit reservations.
    *
-   * @param config - Partial Stripe configuration (validated by Stripe layer)
+   * Note: Config validation is handled by Settings at startup. The config
+   * passed here is guaranteed to be complete and valid.
+   *
+   * @param config - Validated Stripe configuration from Settings
    * @returns A Layer providing Payments (requires DrizzleORM)
    *
    * @example
    * ```ts
    * // Typically used through Database.Live which provides both:
+   * const settings = yield* Settings;
    * const DatabaseLive = Database.Live({
-   *   database: { connectionString: process.env.DATABASE_URL },
-   *   payments: {
-   *     apiKey: process.env.STRIPE_SECRET_KEY,
-   *     routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
-   *     // ... other fields from process.env
-   *   },
+   *   database: { connectionString: settings.databaseUrl },
+   *   payments: settings.stripe,
    * });
    *
    * program.pipe(Effect.provide(DbLive));
    * ```
    */
-  static Live = (config: Partial<StripeConfig>) => {
+  static Live = (config: StripeConfig) => {
     const stripeLayer = Stripe.layer(config);
 
     return Payments.Default.pipe(Layer.provide(stripeLayer));

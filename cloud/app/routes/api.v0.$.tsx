@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
-import { NotFoundError, InternalError } from "@/errors";
+import { NotFoundError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
 import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
 import { ClickHouse } from "@/clickhouse/client";
 import { ClickHouseSearch } from "@/clickhouse/search";
-import { SettingsService, getSettings } from "@/settings";
+import { Settings, validateSettings } from "@/settings";
 import { spansMeteringQueueLayer, rateLimiterLayer } from "@/server-entry";
 import { RateLimiter } from "@/rate-limiting";
 
@@ -56,14 +56,8 @@ export const Route = createFileRoute("/api/v0/$")({
         request: Request;
         params: { "*"?: string };
       }) => {
-        const databaseUrl = process.env.DATABASE_URL;
-
         const handler = Effect.gen(function* () {
-          if (!databaseUrl) {
-            return yield* new InternalError({
-              message: "Database not configured",
-            });
-          }
+          const settings = yield* Settings;
 
           const pathParams = extractPathParameters(params["*"]);
           const authResult = yield* authenticate(request, pathParams);
@@ -108,7 +102,7 @@ export const Route = createFileRoute("/api/v0/$")({
             prefix: "/api/v0",
             user: authResult.user,
             apiKeyInfo: authResult.apiKeyInfo,
-            environment: process.env.ENVIRONMENT || "development",
+            settings,
             clickHouseSearch,
           });
 
@@ -123,45 +117,30 @@ export const Route = createFileRoute("/api/v0/$")({
           });
         }).pipe(
           Effect.provide(
-            Layer.mergeAll(
-              Database.Live({
-                database: { connectionString: databaseUrl },
-                payments: {
-                  apiKey: process.env.STRIPE_SECRET_KEY,
-                  routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
-                  routerMeterId: process.env.STRIPE_ROUTER_METER_ID,
-                  cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID,
-                  cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID,
-                  cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID,
-                  cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID,
-                  cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID,
-                },
-              }),
-              Analytics.Live({
-                googleAnalytics: {
-                  measurementId: process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
-                  apiSecret: process.env.GOOGLE_ANALYTICS_API_SECRET,
-                },
-                postHog: {
-                  apiKey: process.env.POSTHOG_API_KEY,
-                  host: process.env.POSTHOG_HOST,
-                },
-              }),
-              Emails.Live({
-                apiKey: process.env.RESEND_API_KEY,
-                audienceSegmentId: process.env.RESEND_AUDIENCE_SEGMENT_ID,
-              }),
-              ClickHouseSearch.Default.pipe(
-                Layer.provide(ClickHouse.Default),
-                Layer.provide(
-                  Layer.succeed(SettingsService, {
-                    ...getSettings(),
-                    env: process.env.ENVIRONMENT || "development",
-                  }),
+            Layer.unwrapEffect(
+              validateSettings().pipe(
+                Effect.orDie, // Settings validation failure is fatal
+                Effect.map((settings) =>
+                  Layer.mergeAll(
+                    Layer.succeed(Settings, settings),
+                    Database.Live({
+                      database: { connectionString: settings.databaseUrl },
+                      payments: settings.stripe,
+                    }),
+                    Analytics.Live({
+                      googleAnalytics: settings.googleAnalytics,
+                      postHog: settings.posthog,
+                    }),
+                    Emails.Live(settings.resend),
+                    ClickHouseSearch.Default.pipe(
+                      Layer.provide(ClickHouse.Default),
+                      Layer.provide(Layer.succeed(Settings, settings)),
+                    ),
+                    spansMeteringQueueLayer,
+                    rateLimiterLayer,
+                  ),
                 ),
               ),
-              spansMeteringQueueLayer,
-              rateLimiterLayer,
             ),
           ),
           handleErrors,

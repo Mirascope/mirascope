@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 import { Payments } from "@/payments";
 import { DrizzleORM } from "@/db/client";
-import { InternalError, StripeError } from "@/errors";
+import { StripeError } from "@/errors";
+import { Settings, validateSettings } from "@/settings";
 import Stripe from "stripe";
 
 /**
@@ -15,14 +16,9 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
-        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
         const handler = Effect.gen(function* () {
-          if (!webhookSecret) {
-            return yield* new InternalError({
-              message: "Stripe webhook secret not configured",
-            });
-          }
+          // Get validated settings
+          const settings = yield* Settings;
 
           const payments = yield* Payments;
 
@@ -38,7 +34,7 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
           const body = yield* Effect.tryPromise({
             try: () => request.text(),
             catch: (e) =>
-              new InternalError({
+              new StripeError({
                 message: "Failed to read request body",
                 cause: e,
               }),
@@ -48,11 +44,11 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
           const event: Stripe.Event = yield* Effect.tryPromise({
             try: async () => {
               // We need to use the raw Stripe SDK for webhook verification
-              const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+              const stripe = new Stripe(settings.stripe.secretKey);
               return await stripe.webhooks.constructEventAsync(
                 body,
                 signature,
-                webhookSecret,
+                settings.stripe.webhookSecret,
               );
             },
             catch: (e) =>
@@ -192,20 +188,21 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
           });
         }).pipe(
           Effect.provide(
-            Payments.Live({
-              apiKey: process.env.STRIPE_SECRET_KEY || "",
-              routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID || "",
-              routerMeterId: process.env.STRIPE_ROUTER_METER_ID || "",
-              cloudFreePriceId: process.env.STRIPE_CLOUD_FREE_PRICE_ID || "",
-              cloudProPriceId: process.env.STRIPE_CLOUD_PRO_PRICE_ID || "",
-              cloudTeamPriceId: process.env.STRIPE_CLOUD_TEAM_PRICE_ID || "",
-              cloudSpansPriceId: process.env.STRIPE_CLOUD_SPANS_PRICE_ID || "",
-              cloudSpansMeterId: process.env.STRIPE_CLOUD_SPANS_METER_ID || "",
-            }).pipe(
-              Layer.provide(
-                DrizzleORM.layer({
-                  connectionString: process.env.DATABASE_URL || "",
-                }),
+            Layer.unwrapEffect(
+              validateSettings().pipe(
+                Effect.orDie, // Settings validation failure is fatal
+                Effect.map((settings) =>
+                  Layer.mergeAll(
+                    Layer.succeed(Settings, settings),
+                    Payments.Live(settings.stripe).pipe(
+                      Layer.provide(
+                        DrizzleORM.layer({
+                          connectionString: settings.databaseUrl,
+                        }),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

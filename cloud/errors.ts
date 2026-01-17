@@ -129,27 +129,27 @@ export class ImmutableResourceError extends Schema.TaggedError<ImmutableResource
 // =============================================================================
 
 /**
- * Error that occurs when configuration validation fails.
+ * Error that occurs when required environment variables are missing or empty.
  *
- * This error is raised during layer creation when required configuration
- * values are missing or invalid. It provides clear feedback about which
- * fields need to be set.
+ * This error is raised during Settings layer creation when one or more
+ * required environment variables are not set. The application cannot
+ * start without all required configuration.
  *
  * @example
  * ```ts
- * const stripeLayer = Stripe.layer({ apiKey: "", ... }).pipe(
- *   Effect.catchTag("ConfigError", (error) => {
- *     console.error("Invalid config:", error.message);
- *     return Effect.die(error);
- *   })
+ * // At app startup, this becomes a fatal error with clear message
+ * const AppLayer = Settings.Live.pipe(
+ *   Layer.orDieWith((error) =>
+ *     new Error(`Settings validation failed:\n${error.message}`)
+ *   )
  * );
  * ```
  */
-export class ConfigError extends Schema.TaggedError<ConfigError>()(
-  "ConfigError",
+export class SettingsValidationError extends Schema.TaggedError<SettingsValidationError>()(
+  "SettingsValidationError",
   {
     message: Schema.String,
-    cause: Schema.optional(Schema.Unknown),
+    missingVariables: Schema.Array(Schema.String),
   },
 ) {
   static readonly status = 500 as const;

@@ -12,16 +12,11 @@ import billingReconciliationCron, {
   reconcileBilling,
 } from "@/workers/billingReconciliationCron";
 import type { CronTriggerEnv } from "@/workers/billingReconciliationCron";
+import { createMockEnv } from "@/tests/settings";
 
 describe("billingReconciliationCron", () => {
-  const mockEnv: CronTriggerEnv = {
-    DATABASE_URL: "postgres://test:test@localhost:5432/test",
-    ENVIRONMENT: "test",
-    CLICKHOUSE_URL: "http://localhost:8123",
-    STRIPE_SECRET_KEY: "sk_test_mock",
-    STRIPE_ROUTER_PRICE_ID: "price_test_mock",
-    STRIPE_ROUTER_METER_ID: "meter_test_mock",
-  };
+  // Create a complete mock environment with all required vars
+  const mockEnv = createMockEnv() as unknown as CronTriggerEnv;
 
   const mockEvent = {
     scheduledTime: Date.now(),
@@ -853,79 +848,26 @@ describe("billingReconciliationCron", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it("logs error when Stripe configuration is missing", async () => {
+  it("logs error when required environment variables are missing", async () => {
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    const envWithoutStripe: CronTriggerEnv = {
-      ...mockEnv,
-      STRIPE_SECRET_KEY: undefined,
-      STRIPE_ROUTER_PRICE_ID: undefined,
-      STRIPE_ROUTER_METER_ID: undefined,
-    };
+    // Environment with some required vars missing
+    const envWithMissingVars: CronTriggerEnv = {
+      DATABASE_URL: "postgres://test:test@localhost:5432/test",
+      ENVIRONMENT: "test",
+      // Missing all other required vars
+    } as CronTriggerEnv;
 
-    await billingReconciliationCron.scheduled(mockEvent, envWithoutStripe);
+    await billingReconciliationCron.scheduled(mockEvent, envWithMissingVars);
 
+    // Should log error with SettingsValidationError containing missing variables
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
-    );
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  it("logs error when only STRIPE_SECRET_KEY is missing", async () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    const envWithoutStripeKey: CronTriggerEnv = {
-      ...mockEnv,
-      STRIPE_SECRET_KEY: undefined,
-    };
-
-    await billingReconciliationCron.scheduled(mockEvent, envWithoutStripeKey);
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
-    );
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  it("logs error when only STRIPE_ROUTER_PRICE_ID is missing", async () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    const envWithoutPriceId: CronTriggerEnv = {
-      ...mockEnv,
-      STRIPE_ROUTER_PRICE_ID: undefined,
-    };
-
-    await billingReconciliationCron.scheduled(mockEvent, envWithoutPriceId);
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
-    );
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  it("logs error when only STRIPE_ROUTER_METER_ID is missing", async () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    const envWithoutMeterId: CronTriggerEnv = {
-      ...mockEnv,
-      STRIPE_ROUTER_METER_ID: undefined,
-    };
-
-    await billingReconciliationCron.scheduled(mockEvent, envWithoutMeterId);
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[billingReconciliationCron] Missing Stripe configuration (STRIPE_SECRET_KEY, STRIPE_ROUTER_PRICE_ID, STRIPE_ROUTER_METER_ID required)",
+      "[billingReconciliationCron] Cron trigger error:",
+      expect.objectContaining({
+        _tag: "SettingsValidationError",
+      }),
     );
 
     consoleErrorSpy.mockRestore();

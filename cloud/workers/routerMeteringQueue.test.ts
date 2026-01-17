@@ -9,6 +9,7 @@ import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
 import type { WorkerEnv } from "@/workers/config";
 import { vi } from "vitest";
+import { createMockEnv } from "@/tests/settings";
 
 // Import the queue handler and types
 import routerMeteringQueue, {
@@ -567,6 +568,31 @@ describe("routerMeteringQueue", () => {
   });
 
   describe("message processing with database", () => {
+    it("processes message with complete Settings environment", async () => {
+      // Test with complete Settings to cover the Settings success path (lines 175-184)
+      const meteringMessage = createTestMessage({
+        usage: {
+          inputTokens: 100,
+          outputTokens: 50,
+        },
+        costCenticents: 150,
+      });
+
+      const message = createMockMessage(meteringMessage);
+      const batch = createMockBatch([message]);
+
+      // Use createMockEnv to get a complete environment that passes Settings validation
+      const completeEnv = createMockEnv({
+        DATABASE_URL: TEST_DATABASE_URL,
+      });
+      const env = completeEnv as unknown as WorkerEnv;
+
+      await routerMeteringQueue.queue(batch, env);
+
+      // Will retry due to DB error (router request not found), but Settings validation passes
+      expect(message.retryCalled).toBe(true);
+    });
+
     it("processes message with all token fields", async () => {
       // Test with all token fields populated to cover more branches
       const meteringMessage = createTestMessage({

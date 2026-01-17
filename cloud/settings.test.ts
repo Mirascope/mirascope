@@ -1,12 +1,23 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
-  getSettings,
-  getSettingsFromEnvironment,
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  assert,
+} from "vitest";
+import { Effect, Either } from "effect";
+import {
+  validateSettings,
+  validateSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
+import { SettingsValidationError } from "@/errors";
+import { createMockEnv } from "@/tests/settings";
 
 describe("settings", () => {
-  describe("getSettings", () => {
+  describe("validateSettings", () => {
     const originalEnv = process.env;
 
     beforeEach(() => {
@@ -18,168 +29,192 @@ describe("settings", () => {
       process.env = originalEnv;
     });
 
-    it("returns default values when environment variables are not set", () => {
-      delete process.env.ENVIRONMENT;
-      delete process.env.CLICKHOUSE_URL;
-      delete process.env.CLICKHOUSE_USER;
-      delete process.env.CLICKHOUSE_DATABASE;
+    it("fails with SettingsValidationError when required variables are missing", async () => {
+      // Clear all env vars
+      process.env = {};
 
-      const settings = getSettings();
+      const result = await Effect.runPromise(
+        validateSettings().pipe(Effect.either),
+      );
 
-      expect(settings.env).toBe("local");
-      expect(settings.CLICKHOUSE_URL).toBe("http://localhost:8123");
-      expect(settings.CLICKHOUSE_USER).toBe("default");
-      expect(settings.CLICKHOUSE_DATABASE).toBe("mirascope_analytics");
+      assert(Either.isLeft(result));
+      expect(result.left).toBeInstanceOf(SettingsValidationError);
+      expect(result.left.missingVariables).toContain("ENVIRONMENT");
+      expect(result.left.missingVariables).toContain("DATABASE_URL");
     });
 
-    it("reads ClickHouse settings from environment variables", () => {
-      process.env.CLICKHOUSE_URL = "https://ch.example.com";
-      process.env.CLICKHOUSE_USER = "testuser";
-      process.env.CLICKHOUSE_PASSWORD = "testpass";
-      process.env.CLICKHOUSE_DATABASE = "testdb";
+    it("succeeds with all required variables set", async () => {
+      // Set all required env vars
+      const mockEnv = createMockEnv();
+      for (const [key, value] of Object.entries(mockEnv)) {
+        process.env[key] = value;
+      }
 
-      const settings = getSettings();
+      const result = await Effect.runPromise(
+        validateSettings().pipe(Effect.either),
+      );
 
-      expect(settings.CLICKHOUSE_URL).toBe("https://ch.example.com");
-      expect(settings.CLICKHOUSE_USER).toBe("testuser");
-      expect(settings.CLICKHOUSE_PASSWORD).toBe("testpass");
-      expect(settings.CLICKHOUSE_DATABASE).toBe("testdb");
-    });
-
-    it("reads TLS settings from environment variables", () => {
-      process.env.CLICKHOUSE_TLS_ENABLED = "true";
-      process.env.CLICKHOUSE_TLS_CA = "/path/to/ca.pem";
-      process.env.CLICKHOUSE_TLS_SKIP_VERIFY = "false";
-      process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY = "true";
-      process.env.CLICKHOUSE_TLS_MIN_VERSION = "TLSv1.3";
-
-      const settings = getSettings();
-
-      expect(settings.CLICKHOUSE_TLS_ENABLED).toBe(true);
-      expect(settings.CLICKHOUSE_TLS_CA).toBe("/path/to/ca.pem");
-      expect(settings.CLICKHOUSE_TLS_SKIP_VERIFY).toBe(false);
-      expect(settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY).toBe(true);
-      expect(settings.CLICKHOUSE_TLS_MIN_VERSION).toBe("TLSv1.3");
-    });
-
-    it("defaults TLS_HOSTNAME_VERIFY to true when not set", () => {
-      delete process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY;
-
-      const settings = getSettings();
-
-      expect(settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY).toBe(true);
-    });
-
-    it("sets TLS_HOSTNAME_VERIFY to false when explicitly set to 'false'", () => {
-      process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY = "false";
-
-      const settings = getSettings();
-
-      expect(settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY).toBe(false);
-    });
-
-    it("throws error in production when TLS is not enabled", () => {
-      process.env.ENVIRONMENT = "production";
-      process.env.CLICKHOUSE_TLS_ENABLED = "false";
-
-      expect(() => getSettings()).toThrow(
-        "CLICKHOUSE_TLS_ENABLED=true is required in production",
+      assert(Either.isRight(result));
+      expect(result.right.env).toBe("test");
+      expect(result.right.databaseUrl).toBe(
+        "postgres://test:test@localhost:5432/test",
       );
     });
 
-    it("throws error in production when TLS_SKIP_VERIFY is true", () => {
-      process.env.ENVIRONMENT = "production";
-      process.env.CLICKHOUSE_TLS_ENABLED = "true";
-      process.env.CLICKHOUSE_TLS_SKIP_VERIFY = "true";
+    it("parses boolean TLS settings correctly", async () => {
+      const mockEnv = createMockEnv({
+        CLICKHOUSE_TLS_ENABLED: "false",
+        CLICKHOUSE_TLS_SKIP_VERIFY: "false",
+        CLICKHOUSE_TLS_HOSTNAME_VERIFY: "true",
+      });
+      for (const [key, value] of Object.entries(mockEnv)) {
+        process.env[key] = value;
+      }
 
-      expect(() => getSettings()).toThrow(
-        "CLICKHOUSE_TLS_SKIP_VERIFY=true is not allowed in production",
+      const result = await Effect.runPromise(
+        validateSettings().pipe(Effect.either),
       );
+
+      assert(Either.isRight(result));
+      expect(result.right.clickhouse.tls.enabled).toBe(false);
+      expect(result.right.clickhouse.tls.skipVerify).toBe(false);
+      expect(result.right.clickhouse.tls.hostnameVerify).toBe(true);
     });
 
-    it("throws error in production when TLS_HOSTNAME_VERIFY is false", () => {
-      process.env.ENVIRONMENT = "production";
-      process.env.CLICKHOUSE_TLS_ENABLED = "true";
-      process.env.CLICKHOUSE_TLS_SKIP_VERIFY = "false";
-      process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY = "false";
+    it("fails in production when CLICKHOUSE_URL is not https", async () => {
+      const mockEnv = createMockEnv({
+        ENVIRONMENT: "production",
+        CLICKHOUSE_URL: "http://clickhouse.example.com",
+        CLICKHOUSE_TLS_ENABLED: "true",
+        CLICKHOUSE_TLS_SKIP_VERIFY: "false",
+        CLICKHOUSE_TLS_HOSTNAME_VERIFY: "true",
+        CLICKHOUSE_TLS_CA: "", // Must be empty - CA not supported by web client
+        CLICKHOUSE_TLS_MIN_VERSION: "1.2",
+      });
+      for (const [key, value] of Object.entries(mockEnv)) {
+        process.env[key] = value;
+      }
 
-      expect(() => getSettings()).toThrow(
-        "CLICKHOUSE_TLS_HOSTNAME_VERIFY=true is required in production",
+      const result = await Effect.runPromise(
+        validateSettings().pipe(Effect.either),
       );
+
+      assert(Either.isLeft(result));
+      expect(result.left).toBeInstanceOf(SettingsValidationError);
+      expect(result.left.message).toContain("must use https://");
     });
 
-    it("succeeds in production with valid TLS settings", () => {
-      process.env.ENVIRONMENT = "production";
-      process.env.CLICKHOUSE_TLS_ENABLED = "true";
-      process.env.CLICKHOUSE_TLS_SKIP_VERIFY = "false";
-      process.env.CLICKHOUSE_TLS_HOSTNAME_VERIFY = "true";
+    it("fails when TLS_SKIP_VERIFY is true (not supported by web client)", async () => {
+      const mockEnv = createMockEnv({
+        CLICKHOUSE_TLS_ENABLED: "true",
+        CLICKHOUSE_TLS_SKIP_VERIFY: "true",
+        CLICKHOUSE_TLS_HOSTNAME_VERIFY: "true",
+        CLICKHOUSE_TLS_CA: "", // Must be empty - CA not supported by web client
+        CLICKHOUSE_TLS_MIN_VERSION: "1.2",
+      });
+      for (const [key, value] of Object.entries(mockEnv)) {
+        process.env[key] = value;
+      }
 
-      const settings = getSettings();
+      const result = await Effect.runPromise(
+        validateSettings().pipe(Effect.either),
+      );
 
-      expect(settings.env).toBe("production");
-      expect(settings.CLICKHOUSE_TLS_ENABLED).toBe(true);
+      assert(Either.isLeft(result));
+      expect(result.left).toBeInstanceOf(SettingsValidationError);
+      expect(result.left.message).toContain("CLICKHOUSE_TLS_SKIP_VERIFY=true");
+    });
+
+    it("fails when TLS_HOSTNAME_VERIFY is false (not supported by web client)", async () => {
+      const mockEnv = createMockEnv({
+        CLICKHOUSE_TLS_ENABLED: "true",
+        CLICKHOUSE_TLS_SKIP_VERIFY: "false",
+        CLICKHOUSE_TLS_HOSTNAME_VERIFY: "false",
+        CLICKHOUSE_TLS_CA: "", // Must be empty - CA not supported by web client
+        CLICKHOUSE_TLS_MIN_VERSION: "1.2",
+      });
+      for (const [key, value] of Object.entries(mockEnv)) {
+        process.env[key] = value;
+      }
+
+      const result = await Effect.runPromise(
+        validateSettings().pipe(Effect.either),
+      );
+
+      assert(Either.isLeft(result));
+      expect(result.left).toBeInstanceOf(SettingsValidationError);
+      expect(result.left.message).toContain(
+        "CLICKHOUSE_TLS_HOSTNAME_VERIFY=false",
+      );
     });
   });
 
-  describe("getSettingsFromEnvironment", () => {
-    it("defaults env to 'local' when ENVIRONMENT is not set", () => {
+  describe("validateSettingsFromEnvironment", () => {
+    it("fails when required env vars are missing", async () => {
       const env: CloudflareEnvironment = {};
-      const settings = getSettingsFromEnvironment(env);
 
-      expect(settings.env).toBe("local");
+      const result = await Effect.runPromise(
+        validateSettingsFromEnvironment(env).pipe(Effect.either),
+      );
+
+      assert(Either.isLeft(result));
+      expect(result.left).toBeInstanceOf(SettingsValidationError);
+      expect(result.left.missingVariables).toContain("ENVIRONMENT");
     });
 
-    it("uses ENVIRONMENT from env bindings", () => {
-      const env: CloudflareEnvironment = { ENVIRONMENT: "production" };
-      const settings = getSettingsFromEnvironment(env);
+    it("succeeds with all required env bindings", async () => {
+      const env = createMockEnv() as CloudflareEnvironment;
 
-      expect(settings.env).toBe("production");
+      const result = await Effect.runPromise(
+        validateSettingsFromEnvironment(env).pipe(Effect.either),
+      );
+
+      assert(Either.isRight(result));
+      expect(result.right.env).toBe("test");
+      expect(result.right.clickhouse.url).toBe("http://localhost:8123");
+      expect(result.right.clickhouse.user).toBe("default");
+      expect(result.right.clickhouse.database).toBe("test_db");
     });
 
-    it("maps all ClickHouse settings from env", () => {
+    it("maps all ClickHouse settings from env", async () => {
       const env: CloudflareEnvironment = {
+        ...createMockEnv(),
         CLICKHOUSE_URL: "https://ch.example.com",
         CLICKHOUSE_USER: "user",
         CLICKHOUSE_PASSWORD: "pass",
         CLICKHOUSE_DATABASE: "analytics",
       };
-      const settings = getSettingsFromEnvironment(env);
 
-      expect(settings.CLICKHOUSE_URL).toBe("https://ch.example.com");
-      expect(settings.CLICKHOUSE_USER).toBe("user");
-      expect(settings.CLICKHOUSE_PASSWORD).toBe("pass");
-      expect(settings.CLICKHOUSE_DATABASE).toBe("analytics");
+      const result = await Effect.runPromise(
+        validateSettingsFromEnvironment(env).pipe(Effect.either),
+      );
+
+      assert(Either.isRight(result));
+      expect(result.right.clickhouse.url).toBe("https://ch.example.com");
+      expect(result.right.clickhouse.user).toBe("user");
+      expect(result.right.clickhouse.password).toBe("pass");
+      expect(result.right.clickhouse.database).toBe("analytics");
     });
 
-    it("returns default ClickHouse values when not set", () => {
-      const env: CloudflareEnvironment = {};
-      const settings = getSettingsFromEnvironment(env);
-
-      expect(settings.CLICKHOUSE_URL).toBe("http://localhost:8123");
-      expect(settings.CLICKHOUSE_USER).toBe("default");
-      expect(settings.CLICKHOUSE_DATABASE).toBe("mirascope_analytics");
-    });
-
-    it("maps TLS settings from env", () => {
+    it("maps TLS settings from env", async () => {
       const env: CloudflareEnvironment = {
-        CLICKHOUSE_TLS_ENABLED: "true",
-        CLICKHOUSE_TLS_CA: "/path/to/ca.pem",
-        CLICKHOUSE_TLS_SKIP_VERIFY: "true",
-        CLICKHOUSE_TLS_HOSTNAME_VERIFY: "false",
+        ...createMockEnv(),
+        CLICKHOUSE_TLS_ENABLED: "false",
+        CLICKHOUSE_TLS_CA: "test-ca",
+        CLICKHOUSE_TLS_SKIP_VERIFY: "false",
+        CLICKHOUSE_TLS_HOSTNAME_VERIFY: "true",
+        CLICKHOUSE_TLS_MIN_VERSION: "1.2",
       };
-      const settings = getSettingsFromEnvironment(env);
 
-      expect(settings.CLICKHOUSE_TLS_ENABLED).toBe(true);
-      expect(settings.CLICKHOUSE_TLS_CA).toBe("/path/to/ca.pem");
-      expect(settings.CLICKHOUSE_TLS_SKIP_VERIFY).toBe(true);
-      expect(settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY).toBe(false);
-    });
+      const result = await Effect.runPromise(
+        validateSettingsFromEnvironment(env).pipe(Effect.either),
+      );
 
-    it("defaults TLS_HOSTNAME_VERIFY to true when not set", () => {
-      const env: CloudflareEnvironment = {};
-      const settings = getSettingsFromEnvironment(env);
-
-      expect(settings.CLICKHOUSE_TLS_HOSTNAME_VERIFY).toBe(true);
+      assert(Either.isRight(result));
+      expect(result.right.clickhouse.tls.enabled).toBe(false);
+      expect(result.right.clickhouse.tls.ca).toBe("test-ca");
+      expect(result.right.clickhouse.tls.skipVerify).toBe(false);
+      expect(result.right.clickhouse.tls.hostnameVerify).toBe(true);
     });
   });
 });

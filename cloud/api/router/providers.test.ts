@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   getSupportedProviders,
   isValidProvider,
@@ -13,6 +13,7 @@ import {
   AnthropicCostCalculator,
   GoogleCostCalculator,
 } from "@/api/router/cost-calculator";
+import { createMockSettings } from "@/tests/settings";
 
 describe("Providers", () => {
   describe("getSupportedProviders", () => {
@@ -85,32 +86,39 @@ describe("Providers", () => {
   });
 
   describe("getProviderApiKey", () => {
-    beforeEach(() => {
-      // Clear environment variables
-      delete process.env.OPENAI_API_KEY;
-      delete process.env.ANTHROPIC_API_KEY;
-      delete process.env.GEMINI_API_KEY;
+    it("should return OpenAI API key from settings", () => {
+      const settings = createMockSettings({
+        router: {
+          openaiApiKey: "test-openai-key",
+          anthropicApiKey: "test-anthropic-key",
+          geminiApiKey: "test-gemini-key",
+        },
+      });
+      expect(getProviderApiKey("openai", settings)).toBe("test-openai-key");
     });
 
-    it("should return OpenAI API key from environment", () => {
-      process.env.OPENAI_API_KEY = "test-openai-key";
-      expect(getProviderApiKey("openai")).toBe("test-openai-key");
+    it("should return Anthropic API key from settings", () => {
+      const settings = createMockSettings({
+        router: {
+          openaiApiKey: "test-openai-key",
+          anthropicApiKey: "test-anthropic-key",
+          geminiApiKey: "test-gemini-key",
+        },
+      });
+      expect(getProviderApiKey("anthropic", settings)).toBe(
+        "test-anthropic-key",
+      );
     });
 
-    it("should return Anthropic API key from environment", () => {
-      process.env.ANTHROPIC_API_KEY = "test-anthropic-key";
-      expect(getProviderApiKey("anthropic")).toBe("test-anthropic-key");
-    });
-
-    it("should return Google API key from environment", () => {
-      process.env.GEMINI_API_KEY = "test-gemini-key";
-      expect(getProviderApiKey("google")).toBe("test-gemini-key");
-    });
-
-    it("should return undefined when API key not set", () => {
-      expect(getProviderApiKey("openai")).toBeUndefined();
-      expect(getProviderApiKey("anthropic")).toBeUndefined();
-      expect(getProviderApiKey("google")).toBeUndefined();
+    it("should return Google API key from settings", () => {
+      const settings = createMockSettings({
+        router: {
+          openaiApiKey: "test-openai-key",
+          anthropicApiKey: "test-anthropic-key",
+          geminiApiKey: "test-gemini-key",
+        },
+      });
+      expect(getProviderApiKey("google", settings)).toBe("test-gemini-key");
     });
   });
 

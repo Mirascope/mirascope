@@ -7,6 +7,7 @@ import { Effect, Layer } from "effect";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
 import type { WorkerEnv } from "@/workers/config";
+import { createMockEnv } from "@/tests/settings";
 
 const TEST_DATABASE_URL = "postgres://test:test@localhost:5432/test";
 
@@ -174,6 +175,23 @@ describe("Spans Metering Queue", () => {
   });
 
   describe("queue handler", () => {
+    it("processes message with complete Settings environment", async () => {
+      // Test with complete Settings to cover the Settings success path (lines 132-141)
+      const message = createMockMessage(createTestMessage());
+      const batch = createMockBatch([message]);
+
+      // Use createMockEnv to get a complete environment that passes Settings validation
+      const completeEnv = createMockEnv({
+        DATABASE_URL: TEST_DATABASE_URL,
+      });
+      const env = completeEnv as unknown as WorkerEnv;
+
+      await spansMeteringQueue.queue(batch, env);
+
+      // Will retry due to DB/Stripe error, but Settings validation passes
+      expect(message.retryCalled).toBe(true);
+    });
+
     it("retries when DATABASE_URL is missing", async () => {
       const message = createMockMessage(createTestMessage());
       const batch = createMockBatch([message]);

@@ -40,6 +40,7 @@
 import { Context, Layer, Effect } from "effect";
 import { type Ready, dependencyProvider } from "@/utils";
 import { DrizzleORM, type DrizzleORMConfig } from "@/db/client";
+import type { StripeConfig } from "@/settings";
 import { Users } from "@/db/users";
 import { Sessions } from "@/db/sessions";
 import { Organizations } from "@/db/organizations";
@@ -53,7 +54,7 @@ import { Traces } from "@/db/traces";
 import { Functions } from "@/db/functions";
 import { Annotations } from "@/db/annotations";
 import { RouterRequests } from "@/db/router-requests";
-import { Payments, type StripeConfig } from "@/payments";
+import { Payments } from "@/payments";
 
 /**
  * Type definition for the traces service with nested annotations.
@@ -220,18 +221,18 @@ export class Database extends Context.Tag("Database")<
    * configurations and get back a layer that provides both Database and Payments
    * services with no dependencies.
    *
-   * @param config - Database and Payments configuration
+   * Note: Config validation is handled by Settings at startup. The config
+   * passed here is guaranteed to be complete and valid.
+   *
+   * @param config - Database and Payments configuration from Settings
    * @returns A Layer providing both Database and Payments with no dependencies
    *
    * @example
    * ```ts
+   * const settings = yield* Settings;
    * const DatabaseLive = Database.Live({
-   *   database: { connectionString: process.env.DATABASE_URL },
-   *   payments: {
-   *     apiKey: process.env.STRIPE_SECRET_KEY,
-   *     routerPriceId: process.env.STRIPE_ROUTER_PRICE_ID,
-   *     // ... other fields from process.env
-   *   },
+   *   database: { connectionString: settings.databaseUrl },
+   *   payments: settings.stripe,
    * });
    *
    * program.pipe(Effect.provide(DatabaseLive));
@@ -239,7 +240,7 @@ export class Database extends Context.Tag("Database")<
    */
   static Live = (config: {
     database: DrizzleORMConfig;
-    payments: Partial<StripeConfig>;
+    payments: StripeConfig;
   }) => {
     const drizzleLayer = DrizzleORM.layer(config.database);
 

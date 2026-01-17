@@ -48,47 +48,8 @@
 
 import { Effect, Layer, Context } from "effect";
 import { Resend as ResendAPI } from "resend";
-import { ResendError, ConfigError } from "@/errors";
-
-/**
- * Resend service configuration options.
- */
-export interface ResendConfig {
-  /** Resend API key (re_...) */
-  apiKey: string;
-  /** Resend audience segment ID for marketing emails */
-  audienceSegmentId: string;
-}
-
-/**
- * Validates that all required Resend config fields are non-empty strings.
- *
- * Accepts a partial config (e.g., from process.env) and validates that all
- * required fields are present and non-empty. Returns a fully-typed ResendConfig
- * if validation passes.
- *
- * @param config - Partial Resend configuration to validate
- * @returns Effect that succeeds with validated ResendConfig or fails with ConfigError
- */
-function validateResendConfig(
-  config: Partial<ResendConfig>,
-): Effect.Effect<ResendConfig, ConfigError> {
-  const errors: string[] = [];
-
-  if (!config.apiKey?.trim()) errors.push("apiKey");
-  if (!config.audienceSegmentId?.trim()) errors.push("audienceSegmentId");
-
-  if (errors.length > 0) {
-    return Effect.fail(
-      new ConfigError({
-        message: `Invalid Resend configuration. Missing or empty fields: ${errors.join(", ")}`,
-      }),
-    );
-  }
-
-  // All required fields are present and non-empty, safe to cast to ResendConfig
-  return Effect.succeed(config as ResendConfig);
-}
+import { ResendError } from "@/errors";
+import type { ResendConfig } from "@/settings";
 
 /**
  * Type helper to unwrap Resend's Response<T> format to just T.
@@ -333,38 +294,31 @@ export class Resend extends Context.Tag("Resend")<Resend, ResendClient>() {
    * Creates a Layer that provides the Resend service.
    *
    * This layer initializes the Resend SDK with the provided configuration
-   * and wraps it to return Effects instead of Promises. The config is validated
-   * to ensure all required fields are present and non-empty.
+   * and wraps it to return Effects instead of Promises.
    *
-   * @param config - Partial Resend configuration (e.g., from process.env)
-   * @returns A Layer providing Resend, or fails with ConfigError if validation fails
+   * Note: Config validation is handled by Settings at startup. The config
+   * passed here is guaranteed to be complete and valid.
+   *
+   * @param config - Validated Resend configuration from Settings
+   * @returns A Layer providing Resend
    *
    * @example
    * ```ts
-   * const ResendLive = Resend.layer({
-   *   apiKey: process.env.RESEND_API_KEY,
-   * });
+   * // Settings provides validated config
+   * const settings = yield* Settings;
+   * const ResendLive = Resend.layer(settings.resend);
    *
    * program.pipe(Effect.provide(ResendLive));
    * ```
    */
-  static layer = (config: Partial<ResendConfig>) => {
-    return Layer.effect(
-      Resend,
-      Effect.gen(function* () {
-        // Validate config first
-        const validatedConfig = yield* validateResendConfig(config);
+  static layer = (config: ResendConfig) => {
+    // Create Resend client with validated config
+    const originalResend = new ResendAPI(config.apiKey);
+    const wrappedResend = wrapResendClient(originalResend);
 
-        // Create Resend client with validated config
-        const originalResend = new ResendAPI(validatedConfig.apiKey);
-
-        const wrappedResend = wrapResendClient(originalResend);
-
-        return {
-          ...wrappedResend,
-          config: validatedConfig,
-        };
-      }),
-    );
+    return Layer.succeed(Resend, {
+      ...wrappedResend,
+      config,
+    });
   };
 }

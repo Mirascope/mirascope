@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
 import { Database } from "@/db";
+import { Settings } from "@/settings";
 import { runEffectResponse } from "@/app/lib/effect";
 import { getSessionIdFromCookie, clearSessionCookie } from "@/auth/utils";
 
@@ -11,6 +12,7 @@ export const logout = createServerFn({ method: "POST" }).handler(async () => {
   return await runEffectResponse(
     Effect.gen(function* () {
       const request = getRequest();
+      const settings = yield* Settings;
 
       if (!request) {
         return new Response(
@@ -27,7 +29,7 @@ export const logout = createServerFn({ method: "POST" }).handler(async () => {
           status: 200,
           headers: {
             "Content-Type": "application/json",
-            "Set-Cookie": clearSessionCookie(),
+            "Set-Cookie": clearSessionCookie(settings),
           },
         });
       }
@@ -42,7 +44,7 @@ export const logout = createServerFn({ method: "POST" }).handler(async () => {
         status: 200,
         headers: {
           "Content-Type": "application/json",
-          "Set-Cookie": clearSessionCookie(),
+          "Set-Cookie": clearSessionCookie(settings),
         },
       });
     }),
