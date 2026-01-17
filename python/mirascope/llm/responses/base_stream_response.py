@@ -513,6 +513,26 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         for _ in self.chunk_stream():
             pass
 
+    def text_stream(self, sep: str = "\n") -> Iterator[str]:
+        """Stream only the text content from the response.
+
+        Args:
+            sep: Separator to yield between text parts. Defaults to newline.
+
+        Returns:
+            Iterator[str]: Iterator yielding text delta strings
+
+        Yields text deltas as they arrive, ignoring thoughts, tool calls, and other
+        content types. Ideal for displaying text to users in real-time.
+
+        If you concatenate the strings from `.text_stream()`, it will be equivalent to
+        calling `.text(sep=sep)` on the fully consumed response.
+        """
+        for stream in self.streams():
+            if stream.content_type == "text":
+                yield from stream
+                yield sep
+
     def pretty_stream(self) -> Iterator[str]:
         """Stream a readable representation of the stream_response as text.
 
@@ -713,6 +733,27 @@ class BaseAsyncStreamResponse(
         """Finish streaming all of this response's content."""
         async for _ in self.chunk_stream():
             pass
+
+    async def text_stream(self, sep: str = "\n") -> AsyncIterator[str]:
+        """Stream only the text content from the response.
+
+        Args:
+            sep: Separator to yield between text parts. Defaults to newline.
+
+        Returns:
+            AsyncIterator[str]: Async iterator yielding text delta strings
+
+        Yields text deltas as they arrive, ignoring thoughts, tool calls, and other
+        content types. Ideal for displaying text to users in real-time.
+
+        If you concatenate the strings from `.text_stream()`, it will be equivalent to
+        calling `.text(sep=sep)` on the fully consumed response.
+        """
+        async for stream in self.streams():
+            if stream.content_type == "text":
+                async for delta in stream:
+                    yield delta
+                yield sep
 
     async def pretty_stream(self) -> AsyncIterator[str]:
         """Stream a readable representation of the stream_response as text.

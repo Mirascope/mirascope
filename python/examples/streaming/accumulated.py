@@ -9,9 +9,8 @@ def recommend_book(genre: str):
 response = recommend_book.stream("fantasy")
 
 # Stream and display content
-for chunk in response.pretty_stream():
+for chunk in response.text_stream():
     print(chunk, end="", flush=True)
-print()
 
 # After streaming, access accumulated content like a regular Response
 print(f"\nTexts: {len(response.texts)}")

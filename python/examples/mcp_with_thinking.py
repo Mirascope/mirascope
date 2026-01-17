@@ -19,6 +19,7 @@ async def main():
 
         response = await learn_mcp.stream()
         while True:  # Loop for tool calls
+            # Use pretty_stream to see the tool calls for debug purposes
             async for chunk in response.pretty_stream():
                 print(chunk, flush=True, end="")
             print()

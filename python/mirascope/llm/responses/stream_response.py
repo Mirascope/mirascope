@@ -85,9 +85,8 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
 
         stream_response = answer_question.stream("What is the capital of France?")
 
-        for chunk in stream_response.pretty_stream():
+        for chunk in stream_response.text_stream():
             print(chunk, end="", flush=True)
-        print()
         ```
     """
 
@@ -212,9 +211,8 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
 
         stream_response = await answer_question.stream("What is the capital of France?")
 
-        async for chunk in stream_response.pretty_stream():
+        async for chunk in stream_response.text_stream():
             print(chunk, end="", flush=True)
-        print()
         ```
     """
 
@@ -348,9 +346,8 @@ class ContextStreamResponse(
         ctx = llm.Context()
         stream_response = answer_question.stream(ctx, "What is the capital of France?")
 
-        for chunk in stream_response.pretty_stream():
+        for chunk in stream_response.text_stream():
             print(chunk, end="", flush=True)
-        print()
         ```
     """
 
@@ -492,9 +489,8 @@ class AsyncContextStreamResponse(
         ctx = llm.Context()
         stream_response = await answer_question.stream(ctx, "What is the capital of France?")
 
-        async for chunk in stream_response.pretty_stream():
+        async for chunk in stream_response.text_stream():
             print(chunk, end="", flush=True)
-        print()
         ```
     """
 

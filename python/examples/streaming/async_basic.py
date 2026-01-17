@@ -10,9 +10,8 @@ async def recommend_book(genre: str):
 
 async def main():
     response: llm.AsyncStreamResponse = await recommend_book.stream("fantasy")
-    async for chunk in response.pretty_stream():
+    async for chunk in response.text_stream():
         print(chunk, end="", flush=True)
-    print()
 
 
 asyncio.run(main())
