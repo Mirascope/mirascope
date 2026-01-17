@@ -1,8 +1,7 @@
 from unittest.mock import MagicMock
 
-from mirascope.llm.providers.base import Params
+from mirascope import llm
 from mirascope.llm.providers.mlx._utils import encode_params, extract_finish_reason
-from mirascope.llm.responses import FinishReason
 
 
 def test_extract_finish_reason_none() -> None:
@@ -14,7 +13,7 @@ def test_extract_finish_reason_length() -> None:
     """Extract finish reason from length response."""
     finish_reason = MagicMock()
     finish_reason.finish_reason = "length"
-    assert extract_finish_reason(finish_reason) == FinishReason.MAX_TOKENS
+    assert extract_finish_reason(finish_reason) == llm.FinishReason.MAX_TOKENS
 
 
 def test_extract_finish_reason_stop() -> None:
@@ -26,7 +25,7 @@ def test_extract_finish_reason_stop() -> None:
 
 def test_encode_params_empty() -> None:
     """Test extracting params from empty params dict."""
-    seed, kwargs = encode_params(Params())
+    seed, kwargs = encode_params(llm.Params())
     assert seed is None
     assert kwargs.get("max_tokens") == -1
     assert "sampler" in kwargs
@@ -34,7 +33,7 @@ def test_encode_params_empty() -> None:
 
 def test_encode_params_with_max_tokens() -> None:
     """Test extracting params with max_tokens."""
-    seed, kwargs = encode_params(Params(max_tokens=100))
+    seed, kwargs = encode_params(llm.Params(max_tokens=100))
     assert seed is None
     assert kwargs.get("max_tokens") == 100
     assert "sampler" in kwargs
@@ -42,14 +41,14 @@ def test_encode_params_with_max_tokens() -> None:
 
 def test_encode_params_with_sampler() -> None:
     """Test extracting params with temperature."""
-    seed, kwargs = encode_params(Params(temperature=0.7, top_k=50, top_p=0.9))
+    seed, kwargs = encode_params(llm.Params(temperature=0.7, top_k=50, top_p=0.9))
     assert seed is None
     assert "sampler" in kwargs
 
 
 def test_encode_params_with_seed() -> None:
     """Test extracting params with seed."""
-    seed, kwargs = encode_params(Params(seed=42))
+    seed, kwargs = encode_params(llm.Params(seed=42))
     assert seed == 42
     assert "sampler" in kwargs
 
@@ -57,7 +56,7 @@ def test_encode_params_with_seed() -> None:
 def test_encode_params_with_all_params() -> None:
     """Test extracting params with all supported parameters."""
     seed, kwargs = encode_params(
-        Params(
+        llm.Params(
             max_tokens=200,
             temperature=0.5,
             top_k=40,

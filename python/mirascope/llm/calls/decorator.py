@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic, cast, overload
+from typing import TYPE_CHECKING, Generic, cast, overload
 from typing_extensions import Unpack
 
 from ..context import DepsT
@@ -21,7 +21,7 @@ from ..prompts import (
     Prompt,
     _utils,
 )
-from ..providers import ModelId, Params
+from ..providers import ModelId
 from ..tools import (
     AsyncContextTool,
     AsyncContextToolkit,
@@ -35,6 +35,9 @@ from ..tools import (
 )
 from ..types import P
 from .calls import AsyncCall, AsyncContextCall, Call, ContextCall
+
+if TYPE_CHECKING:
+    from ..models import Params
 
 
 @dataclass(kw_only=True)

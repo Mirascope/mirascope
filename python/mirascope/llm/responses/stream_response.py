@@ -27,7 +27,8 @@ from .base_stream_response import (
 )
 
 if TYPE_CHECKING:
-    from ..providers import ModelId, Params, ProviderId
+    from ..models import Params
+    from ..providers import ModelId, ProviderId
 
 
 class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):

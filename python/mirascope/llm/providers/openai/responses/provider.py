@@ -1,6 +1,9 @@
 """OpenAI Responses API client implementation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, BadRequestError as OpenAIBadRequestError, OpenAI
@@ -29,10 +32,13 @@ from ....tools import (
     Tool,
     Toolkit,
 )
-from ...base import BaseProvider, Params
+from ...base import BaseProvider
 from .. import _utils as _shared_utils
 from ..model_id import OpenAIModelId, model_name
 from . import _utils
+
+if TYPE_CHECKING:
+    from ....models import Params
 
 
 class OpenAIResponsesProvider(BaseProvider[OpenAI]):

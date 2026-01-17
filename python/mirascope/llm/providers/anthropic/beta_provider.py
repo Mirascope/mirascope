@@ -1,6 +1,9 @@
 """Beta Anthropic provider implementation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from anthropic import Anthropic, AsyncAnthropic
@@ -28,10 +31,13 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider, Params
+from ..base import BaseProvider
 from . import _utils
 from ._utils import beta_decode, beta_encode
 from .model_id import model_name
+
+if TYPE_CHECKING:
+    from ...models import Params
 
 
 class AnthropicBetaProvider(BaseProvider[Anthropic]):

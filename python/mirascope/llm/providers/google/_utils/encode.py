@@ -1,10 +1,12 @@
 """Google message encoding and request preparation."""
 
+from __future__ import annotations
+
 import base64
 import json
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 from typing_extensions import Required
 
 from google.genai import types as genai_types
@@ -19,9 +21,12 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ...base import Params, ThinkingConfig, ThinkingLevel, _utils as _base_utils
+from ...base import _utils as _base_utils
 from ..model_id import GoogleModelId, model_name
 from ..model_info import MODELS_WITHOUT_STRUCTURED_OUTPUT_AND_TOOLS_SUPPORT
+
+if TYPE_CHECKING:
+    from ....models import Params, ThinkingConfig, ThinkingLevel
 
 UNKNOWN_TOOL_ID = "google_unknown_tool_id"
 

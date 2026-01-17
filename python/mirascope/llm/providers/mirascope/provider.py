@@ -1,7 +1,10 @@
 """Mirascope Router provider that routes requests through the Mirascope Router API."""
 
+from __future__ import annotations
+
 import os
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from ...context import Context, DepsT
@@ -27,8 +30,11 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider, Params, Provider
+from ..base import BaseProvider, Provider
 from . import _utils
+
+if TYPE_CHECKING:
+    from ...models import Params
 
 
 class MirascopeProvider(BaseProvider[None]):

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections.abc import Sequence
 from functools import cache, lru_cache
-from typing import cast
+from typing import TYPE_CHECKING, cast
 from typing_extensions import Unpack
 
 import mlx.nn as nn
@@ -30,20 +32,23 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider, Params
+from ..base import BaseProvider
 from . import _utils
 from .encoding import TransformersEncoder
 from .mlx import MLX
 from .model_id import MLXModelId
 
+if TYPE_CHECKING:
+    from ...models import Params
+
 
 @cache
-def _mlx_client_singleton() -> "MLXProvider":
+def _mlx_client_singleton() -> MLXProvider:
     """Get or create the singleton MLX client instance."""
     return MLXProvider()
 
 
-def client() -> "MLXProvider":
+def client() -> MLXProvider:
     """Get the MLX client singleton instance."""
     return _mlx_client_singleton()
 

@@ -1,7 +1,9 @@
 """OpenAI Responses message encoding and request preparation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import TypedDict, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from openai import Omit
 from openai.types.responses import (
@@ -38,13 +40,16 @@ from .....formatting import (
 )
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ....base import Params, ThinkingLevel, _utils as _base_utils
+from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
     MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
     MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
     NON_REASONING_MODELS,
 )
+
+if TYPE_CHECKING:
+    from .....models import Params, ThinkingLevel
 
 # Thinking level to a float multiplier % of max tokens
 THINKING_LEVEL_TO_EFFORT: dict[ThinkingLevel, ReasoningEffort] = {

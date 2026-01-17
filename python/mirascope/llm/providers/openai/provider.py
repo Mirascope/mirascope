@@ -1,6 +1,9 @@
 """Unified OpenAI client implementation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from openai import BadRequestError as OpenAIBadRequestError, OpenAI
@@ -29,11 +32,14 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider, Params
+from ..base import BaseProvider
 from . import _utils
 from .completions import OpenAICompletionsProvider
 from .model_id import OPENAI_KNOWN_MODELS, OpenAIModelId
 from .responses import OpenAIResponsesProvider
+
+if TYPE_CHECKING:
+    from ...models import Params
 
 
 def _has_audio_content(messages: Sequence[Message]) -> bool:

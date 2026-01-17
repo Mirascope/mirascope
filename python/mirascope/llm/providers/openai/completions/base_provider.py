@@ -1,8 +1,10 @@
 """Base class for OpenAI Completions-compatible providers."""
 
+from __future__ import annotations
+
 import os
 from collections.abc import Sequence
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, OpenAI
@@ -30,10 +32,13 @@ from ....tools import (
     Tool,
     Toolkit,
 )
-from ...base import BaseProvider, Params
+from ...base import BaseProvider
 from .. import _utils as _shared_utils
 from ..model_id import model_name as openai_model_name
 from . import _utils
+
+if TYPE_CHECKING:
+    from ....models import Params
 
 
 class BaseOpenAICompletionsProvider(BaseProvider[OpenAI]):

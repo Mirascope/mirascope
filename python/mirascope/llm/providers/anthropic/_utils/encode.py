@@ -1,9 +1,11 @@
 """Shared Anthropic encoding utilities."""
 
+from __future__ import annotations
+
 import json
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import Any, Literal, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 from typing_extensions import Required
 
 from anthropic import Omit, types as anthropic_types
@@ -18,8 +20,11 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ...base import Params, ThinkingLevel, _utils as _base_utils
+from ...base import _utils as _base_utils
 from ..model_id import AnthropicModelId, model_name
+
+if TYPE_CHECKING:
+    from ....models import Params, ThinkingLevel
 
 DEFAULT_MAX_TOKENS = 16000
 # TODO: Change DEFAULT_FORMAT_MODE to strict when strict is no longer a beta feature.

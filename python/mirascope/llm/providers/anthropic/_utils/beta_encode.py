@@ -1,7 +1,7 @@
 """Beta Anthropic message encoding and request preparation."""
 
 from collections.abc import Sequence
-from typing import Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 from typing_extensions import Required
 
 from anthropic import Omit
@@ -26,7 +26,7 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import AnyToolSchema, BaseToolkit
-from ...base import Params, _utils as _base_utils
+from ...base import _utils as _base_utils
 from ..model_id import model_name
 from ..model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 from .encode import (
@@ -36,6 +36,9 @@ from .encode import (
     encode_content,
     process_params,
 )
+
+if TYPE_CHECKING:
+    from ....models import Params
 
 DEFAULT_FORMAT_MODE = "strict"
 
@@ -146,7 +149,7 @@ def beta_encode_request(
     | Format[FormattableT]
     | OutputParser[FormattableT]
     | None,
-    params: Params,
+    params: "Params",
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, BetaParseKwargs]:
     """Prepares a request for the Anthropic beta.messages.parse method."""
 
