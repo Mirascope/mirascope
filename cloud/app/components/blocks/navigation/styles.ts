@@ -48,8 +48,13 @@ export const HEADER_STYLES = {
       scrolled && !isLandingPage ? "border-border border-b shadow-sm" : "",
     ),
 
-  // Navigation container
-  nav: "mx-auto flex w-full max-w-7xl flex-row items-center space-x-2",
+  // Navigation container - expands to full width when in cloud routes
+  nav: (isCloudRoute: boolean = false) =>
+    cn(
+      "mx-auto flex w-full flex-row items-center space-x-2",
+      // Only constrain width when not in cloud routes
+      !isCloudRoute && "max-w-7xl",
+    ),
 
   // Logo link container
   logo: (isLandingPage: boolean) =>
@@ -76,14 +81,14 @@ export const HEADER_STYLES = {
     "justify-end",
   ),
 
-  // GitHub button container
-  githubContainer: "hidden items-center gap-3 md:flex",
+  // GitHub button container - show at lg breakpoint to match nav tabs
+  githubContainer: "hidden items-center gap-3 lg:flex",
 
-  // Discord link button container
-  discordContainer: "hidden items-center gap-3 md:flex",
+  // Discord link button container - show at lg breakpoint to match nav tabs
+  discordContainer: "hidden items-center gap-3 lg:flex",
 
-  // Mobile nav toggle button
-  mobileNavButton: () => cn("p-2 md:hidden", "nav-icon"),
+  // Mobile nav toggle button - hide at lg breakpoint to match nav tabs
+  mobileNavButton: () => cn("p-2 lg:hidden", "nav-icon"),
 
   // Product selector container
   productSelector: "mx-auto flex w-full max-w-7xl pt-3 pb-1",
@@ -161,12 +166,13 @@ export const PRODUCT_LINK_STYLES = {
 
 /**
  * Mobile nav styles for dropdown navigation
+ * Note: Using lg:hidden to match desktop nav lg:flex breakpoint
  */
 export const MOBILE_NAV_STYLES = {
   // Container for the entire mobile navigation
   container: cn(
-    // Positioning and layout
-    "absolute top-full right-4 z-[90] mt-2 max-w-xs md:hidden",
+    // Positioning and layout - z-index higher than header (z-[100])
+    "absolute top-full right-4 z-[110] mt-2 max-w-xs lg:hidden",
     // Appearance
     "bg-background text-foreground rounded-lg p-6 shadow-lg",
     // Reset text shadow from parent header
@@ -201,10 +207,12 @@ export const THEME_SWITCHER_STYLES = {
     "hover:text-primary",
   ),
 
-  // Dropdown content
+  // Dropdown content - z-index higher than header (z-[100])
   content: (isLandingPage: boolean) =>
     cn(
       // Base styling comes from the UI component
+      // z-index to appear above header, mt-2 for spacing from trigger
+      "z-[110] mt-2",
       // Apply textured background on landing page
       isLandingPage && "textured-bg-absolute",
     ),
@@ -219,12 +227,13 @@ export const THEME_SWITCHER_STYLES = {
 
 /**
  * Search state styles for coordinated animations
+ * Note: Using xl breakpoint (1280px) instead of lg (1024px) to accommodate Cloud tab
  */
 export const SEARCH_STATE_STYLES = {
   closed: {
-    container: "w-9 lg:w-36 flex-shrink-0",
-    input: "w-0 opacity-0 lg:w-28 lg:pr-3 lg:pl-10 lg:opacity-80",
-    icon: "mx-auto lg:absolute lg:left-3",
+    container: "w-9 xl:w-36 flex-shrink-0",
+    input: "w-0 opacity-0 xl:w-28 xl:pr-3 xl:pl-10 xl:opacity-80",
+    icon: "mx-auto xl:absolute xl:left-3",
   },
   open: {
     container: "w-[40rem] flex-shrink min-w-[200px] max-w-full",
@@ -235,16 +244,17 @@ export const SEARCH_STATE_STYLES = {
 
 /**
  * Desktop navigation styles
+ * Note: Using lg breakpoint (1024px) instead of md (768px) to accommodate Cloud tab
  */
 export const DESKTOP_NAV_STYLES = {
   // Container styles
   container: (isSearchOpen: boolean) =>
     cn(
-      // Base styles
-      "absolute left-1/2 z-20 hidden -translate-x-1/2 transform items-center gap-6 md:flex",
+      // Base styles - always centered, show at lg breakpoint for Cloud tab space
+      "absolute left-1/2 z-20 hidden -translate-x-1/2 transform items-center gap-6 lg:flex",
       // Transitions
       "transition-opacity duration-300 ease-in-out",
-      // Visibility based on search state
+      // Only hide when search is open
       isSearchOpen ? "pointer-events-none opacity-0" : "opacity-100",
     ),
 

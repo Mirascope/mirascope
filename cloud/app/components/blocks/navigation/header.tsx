@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import GitHubMirascopeButton from "@/app/components/blocks/branding/github-mirascope-button";
@@ -18,6 +18,12 @@ import { cn } from "@/app/lib/utils";
 export default function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Determine if we're in cloud routes based on the current path
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+  const isCloudRoute =
+    currentPath === "/cloud" || currentPath.startsWith("/cloud/");
 
   // Use the isLandingPage hook instead of router
   const isLandingPage = useIsLandingPage();
@@ -51,7 +57,7 @@ export default function Header() {
         scrolled,
       )}
     >
-      <nav className={HEADER_STYLES.nav}>
+      <nav className={HEADER_STYLES.nav(isCloudRoute)}>
         <Link
           to="/"
           className={HEADER_STYLES.logo(isLandingPage || isRouterWaitlistPage)}
