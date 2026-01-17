@@ -11,7 +11,8 @@ import {
 import { useUpdateSubscription } from "@/app/api/organizations";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import type { PlanTier } from "@/payments/subscriptions";
+// Import from /types directly to avoid pulling in server-only database dependencies
+import type { PlanTier } from "@/payments/subscriptions/types";
 import { AlertTriangle } from "lucide-react";
 import { planLabels } from "@/app/components/ui/plan-badge";
 

@@ -9,7 +9,9 @@ import {
   SubscriptionPastDueError,
 } from "@/errors";
 import { createSlugSchema } from "@/db/slug";
-import { PLAN_TIERS } from "@/payments/subscriptions";
+// Import from /types directly to avoid pulling in server-only database dependencies
+// (this schema file is imported by client-side code)
+import { PLAN_TIERS } from "@/payments/subscriptions/types";
 
 export const OrganizationRoleSchema = Schema.Literal(
   "OWNER",
