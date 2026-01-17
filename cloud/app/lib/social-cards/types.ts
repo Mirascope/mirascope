@@ -3,26 +3,6 @@
  */
 
 /**
- * Props for the social card template component
- */
-export interface SocialCardProps {
-  /** The page title/headline to display */
-  title: string;
-  /** Base64 data URL of the background image */
-  backgroundImage: string;
-}
-
-/**
- * Metadata for a page that needs a social card
- */
-export interface PageMeta {
-  /** URL path (e.g., "/blog/my-post") */
-  route: string;
-  /** Page title */
-  title: string;
-}
-
-/**
  * Configuration options for the social images plugin
  */
 export interface SocialImagesOptions {

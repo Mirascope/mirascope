@@ -285,9 +285,9 @@ new SocialCardGenerator({
 
 ### Template
 
-The social card template is located at `app/lib/social-cards/template.tsx`. It renders:
+The social card rendering is located at `app/lib/social-cards/render.ts`. It renders:
 
-- **Background**: The homepage's `light.webp` watercolor background
+- **Background**: Light gradient background
 - **Title**: Page title in Williams Handwriting font (72px, dark color)
 - **Dimensions**: 1200×630 pixels (standard OG image size)
 

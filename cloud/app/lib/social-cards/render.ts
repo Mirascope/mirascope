@@ -13,7 +13,9 @@ import sharp from "sharp";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { CARD_WIDTH, CARD_HEIGHT } from "./template";
+/** Open Graph recommended dimensions (1200x630) */
+export const CARD_WIDTH = 1200;
+export const CARD_HEIGHT = 630;
 
 /**
  * Cached assets loaded once at module level
@@ -43,6 +45,7 @@ async function loadFont(): Promise<ArrayBuffer> {
 
 /**
  * Load the light background image and convert to base64 data URL
+ * todo(sebastian): Investigate using water color background-image CSS property.
  */
 async function loadBackgroundImage(): Promise<string> {
   if (!backgroundDataUrl) {
@@ -85,7 +88,7 @@ export async function loadAssets(): Promise<{
  *
  * Note: Uses a light gradient background instead of the watercolor image
  * because Satori has issues with children arrays containing images.
- * TODO: Investigate using background-image CSS property or alternative approach.
+ * todo(sebastian): Investigate using water color background-image CSS property.
  */
 function createSocialCardElement(title: string): Record<string, unknown> {
   return {
