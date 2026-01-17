@@ -3,11 +3,11 @@
  */
 import type { SectionSpec } from "@/app/lib/content/spec";
 
-const guidesMeta: SectionSpec = {
+const v1GuidesMeta: SectionSpec = {
   slug: "guides",
   label: "Guides",
   version: "v1",
-  weight: 0.8,
+  weight: 0,
   children: [
     {
       slug: "index",
@@ -312,4 +312,4 @@ const guidesMeta: SectionSpec = {
   ],
 };
 
-export default guidesMeta;
+export default v1GuidesMeta;
