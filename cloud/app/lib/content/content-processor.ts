@@ -46,6 +46,14 @@ const SOURCE_CONTENT_TYPES: SourceContentType[] = CONTENT_TYPES.filter(
 );
 
 /**
+ * Options for the ContentProcessor constructor
+ */
+export interface ContentProcessorOptions {
+  contentDir: string;
+  verbose: boolean;
+}
+
+/**
  * ContentProcessor - A class that handles preprocessing of MDX content files
  * into validated metadata.
  */
@@ -76,13 +84,7 @@ export default class ContentProcessor {
   /**
    * Constructor - initializes directory structure
    */
-  constructor({
-    contentDir,
-    verbose,
-  }: {
-    contentDir: string;
-    verbose: boolean;
-  }) {
+  constructor({ contentDir, verbose }: ContentProcessorOptions) {
     this.contentDir = contentDir;
     this.verbose = verbose;
   }

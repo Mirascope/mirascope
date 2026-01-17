@@ -2,15 +2,12 @@
  * DocRegistry - A singleton service for efficient document information management
  *
  * Canonical doc info, fast lookups, section/weight hierarchy.
+ * Note: Cannot use import aliases in this file.
  */
 
 import type { FullDocsSpec, DocInfo } from "./spec";
 import { getDocsFromSpec } from "./spec";
-// NOTE: Must use relative path instead of @/content alias because this file
-// is imported by files that are loaded during Vite's config processing phase,
-// before the alias resolution is set up. Using the alias would cause module
-// resolution errors when Vite tries to load the config.
-import { docsSpec } from "../../../content/docs/_meta";
+import { docsSpec } from "@/content/docs/_meta";
 
 /**
  * DocRegistry service - Singleton for efficient document information management

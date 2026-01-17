@@ -1,11 +1,10 @@
 /**
  * Vite plugin for generating social card images
  *
- * Generates Open Graph / Twitter card images for all indexed pages in the sitemap.
+ * Generates Open Graph / Twitter card images for all content pages.
  * Images are rendered using Satori (JSX to SVG) + resvg (SVG to PNG) + Sharp (PNG to WebP).
  *
- * This plugin runs as the final build step, after the sitemap is generated.
- * It reads URLs from sitemap.xml and titles from content metadata.
+ * Routes and titles are sourced from ContentProcessor, which processes all MDX content.
  *
  * Output: dist/client/social-cards/*.webp
  *
@@ -18,10 +17,6 @@ import path from "node:path";
 
 import type { SocialImagesOptions } from "../app/lib/social-cards/types";
 import { loadAssets, renderSocialCard } from "../app/lib/social-cards/render";
-import {
-  parseSitemapForIndexedUrls,
-  routeToFilename,
-} from "../app/lib/social-cards/sitemap";
 import ContentProcessor from "../app/lib/content/content-processor";
 
 /**
@@ -75,7 +70,7 @@ export interface SocialCardGeneratorOptions extends SocialImagesOptions {
 }
 
 /**
- * Generates social card images for indexed pages.
+ * Generates social card images for content pages.
  *
  * Can be used standalone or within the Vite plugin.
  *
@@ -83,9 +78,8 @@ export interface SocialCardGeneratorOptions extends SocialImagesOptions {
  * ```typescript
  * // Standalone usage
  * const processor = new ContentProcessor({ contentDir: "...", verbose: true });
- * const generator = new SocialCardGenerator({ processor, verbose: true });
- * await generator.initialize();
- * const results = await generator.generate("dist/client");
+ * const generator = new SocialCardGenerator({ processor, outputDir: "dist/client", verbose: true });
+ * const results = await generator.generate();
  * console.log(`Generated ${results.success} cards`);
  * ```
  */
@@ -132,39 +126,29 @@ export class SocialCardGenerator {
   }
 
   /**
-   * Generate social cards for all indexed pages in the sitemap.
+   * Generate social cards for all content pages.
    *
-   * @param clientOutDir - Output directory containing sitemap.xml (e.g., "dist/client")
    * @returns Generation results with counts and individual card outcomes
    */
   async generate(): Promise<GenerationResults> {
-    const sitemapPath = path.resolve(this.outputDir, "sitemap.xml");
     const outputDir = path.resolve(this.outputDir, "social-cards");
 
-    // Check if sitemap exists
-    const sitemapExists = await this.fileExists(sitemapPath);
-    if (!sitemapExists) {
-      console.warn(
-        `[social-cards] Sitemap not found at ${sitemapPath}, skipping social card generation`,
-      );
-      return { success: 0, skipped: 0, failed: 0, cards: [] };
-    }
+    // Ensure initialized (loads assets and builds title lookup from processor)
+    await this.initialize();
 
-    // Read and parse sitemap
-    const sitemapXml = await fs.readFile(sitemapPath, "utf-8");
-    const indexedUrls = parseSitemapForIndexedUrls(sitemapXml);
+    // Get all routes from processor content and static titles
+    const contentRoutes = Array.from(this.titleLookup!.keys());
+    const staticRoutes = Object.keys(this.staticTitles);
+    const allRoutes = [...new Set([...contentRoutes, ...staticRoutes])];
 
-    if (indexedUrls.length === 0) {
-      console.log("[social-cards] No indexed URLs found in sitemap");
+    if (allRoutes.length === 0) {
+      console.log("[social-cards] No routes found");
       return { success: 0, skipped: 0, failed: 0, cards: [] };
     }
 
     console.log(
-      `[social-cards] Generating social cards for ${indexedUrls.length} pages...`,
+      `[social-cards] Generating social cards for ${allRoutes.length} pages...`,
     );
-
-    // Ensure initialized
-    await this.initialize();
 
     // Create output directory
     await fs.mkdir(outputDir, { recursive: true });
@@ -172,8 +156,8 @@ export class SocialCardGenerator {
     // Generate images with concurrency limit
     const cards: CardResult[] = [];
 
-    for (let i = 0; i < indexedUrls.length; i += this.config.concurrency) {
-      const batch = indexedUrls.slice(i, i + this.config.concurrency);
+    for (let i = 0; i < allRoutes.length; i += this.config.concurrency) {
+      const batch = allRoutes.slice(i, i + this.config.concurrency);
 
       const batchResults = await Promise.all(
         batch.map((route) => this.generateCard(route, outputDir)),
@@ -246,13 +230,16 @@ export class SocialCardGenerator {
   private getTitle(route: string): string | null {
     // Check content metadata first
     const contentTitle = this.titleLookup?.get(route);
-    if (contentTitle) return contentTitle;
+    if (contentTitle) {
+      return contentTitle;
+    }
 
     // Check static titles
     if (this.staticTitles[route]) {
       return this.staticTitles[route];
     }
 
+    // todo(sebastian): perhaps a generic title as fallback is better?
     // Generate title from route path for unknown pages
     // e.g., "/docs/v1/learn" -> "Docs V1 Learn"
     const parts = route.split("/").filter(Boolean);
@@ -262,18 +249,15 @@ export class SocialCardGenerator {
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
   }
+}
 
-  /**
-   * Check if a file exists.
-   */
-  private async fileExists(filePath: string): Promise<boolean> {
-    try {
-      await fs.access(filePath);
-      return true;
-    } catch {
-      return false;
-    }
-  }
+// Route path -> social card filename (see app/lib/seo/head.ts)
+function routeToFilename(route: string): string {
+  // Canonicalize path (remove trailing slashes except for root)
+  const cleanRoute = route === "/" ? route : route.replace(/\/+$/, "");
+  // Remove leading slash and replace remaining slashes with dashes
+  const filename = cleanRoute.replace(/^\//, "").replace(/\//g, "-") || "index";
+  return `${filename}.webp`;
 }
 
 /**
@@ -309,8 +293,12 @@ export function viteSocialCards({
           builder.environments["client"]?.config.build.outDir ??
           builder.config.build.outDir;
 
-        const generator = new SocialCardGenerator({ processor, outputDir });
-        await generator.generate();
+        const options: SocialCardGeneratorOptions = {
+          processor,
+          outputDir,
+          verbose: true,
+        };
+        await new SocialCardGenerator(options).generate();
       },
     },
   };
