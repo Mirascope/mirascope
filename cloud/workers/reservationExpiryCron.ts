@@ -21,7 +21,7 @@ import { creditReservations } from "@/db/schema";
 import { and, eq, lt } from "drizzle-orm";
 import { SettingsService, getSettingsFromEnvironment } from "@/settings";
 import { DatabaseError } from "@/errors";
-import { type ScheduledEvent, type CronTriggerEnv } from "./cron-config";
+import { type ScheduledEvent, type CronTriggerEnv } from "@/workers/config";
 
 export type { CronTriggerEnv };
 

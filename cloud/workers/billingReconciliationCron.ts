@@ -27,7 +27,10 @@ import { Stripe } from "@/payments/client";
 import { Payments } from "@/payments/service";
 import { SettingsService, getSettingsFromEnvironment } from "@/settings";
 import { DatabaseError } from "@/errors";
-import { type ScheduledEvent, type BillingCronTriggerEnv } from "./cron-config";
+import {
+  type ScheduledEvent,
+  type BillingCronTriggerEnv,
+} from "@/workers/config";
 
 export type { BillingCronTriggerEnv as CronTriggerEnv };
 

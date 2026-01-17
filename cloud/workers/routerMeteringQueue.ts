@@ -15,7 +15,7 @@ import { Effect, Context, Layer } from "effect";
 import type { MessageBatch, Message } from "@cloudflare/workers-types";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
-import { type WorkerEnv } from "./cron-config";
+import { type WorkerEnv } from "@/workers/config";
 import type { TokenUsage } from "@/api/router/pricing";
 import type { RouterRequestIdentifiers } from "@/api/router/utils";
 

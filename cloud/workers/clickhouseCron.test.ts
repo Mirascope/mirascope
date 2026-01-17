@@ -2,8 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import { Effect, Layer } from "effect";
 import { DrizzleORM } from "@/db/client";
 import { ClickHouse } from "@/clickhouse/client";
-import clickhouseCron, { clickhouseCronProgram } from "./clickhouseCron";
-import type { CronTriggerEnv } from "./clickhouseCron";
+import clickhouseCron, {
+  clickhouseCronProgram,
+} from "@/workers/clickhouseCron";
+import type { CronTriggerEnv } from "@/workers/clickhouseCron";
 
 describe("clickhouseCron", () => {
   const mockEnv: CronTriggerEnv = {

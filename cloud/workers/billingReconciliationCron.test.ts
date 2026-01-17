@@ -10,8 +10,8 @@ import billingReconciliationCron, {
   detectStaleReconciliation,
   detectInvalidState,
   reconcileBilling,
-} from "./billingReconciliationCron";
-import type { CronTriggerEnv } from "./billingReconciliationCron";
+} from "@/workers/billingReconciliationCron";
+import type { CronTriggerEnv } from "@/workers/billingReconciliationCron";
 
 describe("billingReconciliationCron", () => {
   const mockEnv: CronTriggerEnv = {
