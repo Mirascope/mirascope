@@ -5,6 +5,7 @@ as a unified `Message` class with different roles (system, user, assistant) and 
 content arrays that can include text, images, audio, documents, and tool interactions.
 """
 
+from ._utils import is_messages, promote_to_messages
 from .message import (
     AssistantContent,
     AssistantMessage,
@@ -27,6 +28,8 @@ __all__ = [
     "UserContent",
     "UserMessage",
     "assistant",
+    "is_messages",
+    "promote_to_messages",
     "system",
     "user",
 ]

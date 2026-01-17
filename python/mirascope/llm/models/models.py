@@ -10,8 +10,7 @@ from typing_extensions import Unpack
 
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT, OutputParser
-from ..messages import Message, UserContent
-from ..prompts._utils import promote_to_messages
+from ..messages import Message, UserContent, promote_to_messages
 from ..providers import (
     ModelId,
     Provider,
