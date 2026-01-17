@@ -540,7 +540,7 @@ const NestedItems = ({
     <div className={`mt-1 space-y-0.5 ${indentLevel > 0 ? "ml-3" : ""}`}>
       {Object.entries(safeItems).map(([itemSlug, item]) => (
         <NestedItem
-          key={itemSlug}
+          key={`${basePath}/${itemSlug}`}
           itemSlug={itemSlug}
           item={item}
           basePath={basePath}
@@ -705,7 +705,7 @@ const Sidebar = ({ config, headerContent, footerContent }: SidebarProps) => {
           <div className="mb-4 flex flex-col space-y-0.5">
             {config.sections.map((section) => (
               <SectionTab
-                key={section.slug}
+                key={section.basePath}
                 to={section.basePath}
                 isActive={section.basePath === activeSection}
               >
