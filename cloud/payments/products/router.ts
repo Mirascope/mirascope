@@ -14,6 +14,7 @@ import {
   DatabaseError,
   InsufficientFundsError,
   ReservationStateError,
+  NotFoundError,
 } from "@/errors";
 import Decimal from "decimal.js";
 import { eq, and, sql } from "drizzle-orm";
@@ -28,6 +29,7 @@ import {
   type ProviderName,
 } from "@/api/router/providers";
 import type { TokenUsage } from "@/api/router/pricing";
+import { Subscriptions } from "@/payments/subscriptions";
 
 /**
  * Gas fee percentage applied to router usage charges.
@@ -126,6 +128,11 @@ export interface RouterBalanceInfo {
  * ```
  */
 export class Router {
+  private readonly subscriptions: Subscriptions;
+
+  constructor(subscriptions: Subscriptions) {
+    this.subscriptions = subscriptions;
+  }
   /**
    * Gets the accumulated meter usage balance for a Stripe customer.
    *
@@ -135,36 +142,27 @@ export class Router {
    *
    * Since 1 meter unit = 1 centi-cent, we directly sum the aggregated values.
    *
+   * Uses the shared Subscriptions.getActiveSubscription() method to avoid
+   * code duplication.
+   *
    * @param stripeCustomerId - The Stripe customer ID
    * @returns The accumulated meter usage in centi-cents (e.g., 50000n for $5 usage)
+   * @throws NotFoundError - If no active subscription found
    * @throws StripeError - If API call fails
    */
   getUsageMeterBalance(
     stripeCustomerId: string,
-  ): Effect.Effect<CostInCenticents, StripeError, Stripe> {
+  ): Effect.Effect<CostInCenticents, StripeError | NotFoundError, Stripe> {
     return Effect.gen(this, function* () {
       const stripe = yield* Stripe;
 
-      // Get active subscription with router price to find current billing period
-      const subscriptions = yield* stripe.subscriptions.list({
-        customer: stripeCustomerId,
-        status: "active",
-      });
+      // Get the active subscription using injected Subscriptions service
+      const subscription =
+        yield* this.subscriptions.getActiveSubscription(stripeCustomerId);
 
-      // Find subscription that includes the router price
-      const routerSubscription = subscriptions.data.find((sub) =>
-        sub.items.data.some(
-          (item) => item.price.id === stripe.config.routerPriceId,
-        ),
-      );
-
-      // If no router subscription, no meter usage
-      if (!routerSubscription) {
-        return 0n;
-      }
-
-      const currentPeriodStart = routerSubscription.current_period_start;
-      const currentPeriodEnd = routerSubscription.current_period_end;
+      // Get billing period from subscription
+      const currentPeriodStart = subscription.current_period_start;
+      const currentPeriodEnd = subscription.current_period_end;
 
       // Fetch meter event summaries for current billing period
       const summaries = yield* stripe.billing.meters.listEventSummaries(
@@ -285,6 +283,7 @@ export class Router {
    *
    * @param stripeCustomerId - The Stripe customer ID
    * @returns Complete balance information in centi-cents
+   * @throws NotFoundError - If no active subscription found
    * @throws StripeError - If Stripe API calls fail
    * @throws DatabaseError - If database query fails
    */
@@ -292,7 +291,7 @@ export class Router {
     stripeCustomerId: string,
   ): Effect.Effect<
     RouterBalanceInfo,
-    StripeError | DatabaseError,
+    StripeError | DatabaseError | NotFoundError,
     Stripe | DrizzleORM
   > {
     return Effect.gen(this, function* () {
@@ -361,6 +360,7 @@ export class Router {
    * @param estimatedCostCenticents - Estimated cost in centi-cents (e.g., 500n for $0.05)
    * @param routerRequestId - ID of the router request (must be created in "pending" state first)
    * @returns Reservation ID to use for release/settlement
+   * @throws NotFoundError - If no active subscription found
    * @throws DatabaseError - If reservation creation fails
    * @throws InsufficientFundsError - If customer has insufficient available funds
    * @throws StripeError - If Stripe API calls fail
@@ -375,7 +375,7 @@ export class Router {
     routerRequestId: string;
   }): Effect.Effect<
     string,
-    DatabaseError | InsufficientFundsError | StripeError,
+    DatabaseError | InsufficientFundsError | StripeError | NotFoundError,
     DrizzleORM | Stripe
   > {
     return Effect.gen(this, function* () {
