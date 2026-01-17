@@ -36,16 +36,28 @@ export const ANIMATION_TIMING = {
  */
 export const HEADER_STYLES = {
   // Container styles for the header with conditional appearance based on landing page and scroll
-  container: (isLandingPage: boolean, scrolled: boolean) =>
+  container: (
+    isLandingPage: boolean,
+    scrolled: boolean,
+    isCloudRoute: boolean = false,
+  ) =>
     cn(
       // Fixed positioning and layout
-      "fixed top-0 right-0 left-0 z-[100] mb-2 flex w-full flex-col items-center justify-center px-3 py-2 md:px-6",
+      "fixed top-0 right-0 left-0 z-[100] flex w-full flex-col items-center justify-center py-2",
+      // Horizontal padding
+      "px-3 md:px-6",
+      // Margin below header (not for cloud routes)
+      !isCloudRoute && "mb-2",
       // Text styling for landing page
       "font-handwriting",
       // Background color (only on non-landing pages)
       isLandingPage ? "" : "bg-background",
-      // Bottom border and shadow when scrolled (only on non-landing pages)
-      scrolled && !isLandingPage ? "border-border border-b shadow-sm" : "",
+      // Bottom border and shadow when scrolled (only on non-landing pages), or always for cloud routes
+      isCloudRoute
+        ? "border-border border-b"
+        : scrolled && !isLandingPage
+          ? "border-border border-b shadow-sm"
+          : "",
     ),
 
   // Navigation container - expands to full width when in cloud routes
