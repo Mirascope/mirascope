@@ -904,7 +904,7 @@ def test_versioned_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> N
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
                 "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
-                "mirascope.trace.output": "**[No Content]**",
+                "mirascope.trace.output": "",
             },
             "status": {"status_code": "UNSET", "description": None},
             "events": [],

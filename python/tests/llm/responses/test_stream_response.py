@@ -1018,7 +1018,7 @@ Hello world
 
         streamed_output = "".join(stream_response.pretty_stream())
 
-        assert streamed_output == snapshot("**[No Content]**")
+        assert streamed_output == ""
         assert streamed_output == stream_response.pretty()
 
     @pytest.mark.asyncio
@@ -1029,7 +1029,7 @@ Hello world
             [part async for part in stream_response.pretty_stream()]
         )
 
-        assert streamed_output == snapshot("**[No Content]**")
+        assert streamed_output == ""
         assert streamed_output == stream_response.pretty()
 
 
