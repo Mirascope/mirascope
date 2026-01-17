@@ -81,12 +81,14 @@ Access content metadata via the virtual module:
 
 ```typescript
 // @ts-expect-error - virtual module resolved by vite plugin
-import { blogPosts, allContent } from "virtual:content-meta";
+import { blogMetadata, docsMetadata, policyMetadata, devMetadata } from "virtual:content-meta";
 
-// blogPosts: BlogMeta[] - blog posts sorted by date (newest first)
-// allContent: ContentMeta[] - all MDX content entries
+// blogMetadata: BlogMeta[] - blog posts sorted by date (newest first)
+// docsMetadata: DocMeta[] - documentation pages
+// policyMetadata: PolicyMeta[] - policy pages
+// devMetadata: DevMeta[] - dev pages
 
-blogPosts.forEach(post => {
+blogMetadata.forEach(post => {
   console.log(post.title, post.date, post.route);
 });
 ```
@@ -114,7 +116,7 @@ Blog posts include additional fields:
 1. Create a new `.mdx` file in the appropriate `content/` subdirectory
 2. Add frontmatter with required fields
 3. The meta is automatically updated during development (HMR)
-4. Use `blogPosts` or `allContent` to list and query content
+4. Use `blogMetadata`, `docsMetadata`, etc. to list and query content
 
 ### Type Safety
 
@@ -261,8 +263,20 @@ Social card images are generated at `dist/client/social-cards/{route}.webp`:
 
 ### Configuration
 
+The Vite plugin accepts a shared `ContentProcessor` instance:
+
 ```typescript
-viteSocialImages({
+viteSocialCards({
+  processor,  // ContentProcessor instance (required)
+})
+```
+
+The `SocialCardGenerator` class (used internally or standalone) accepts additional options:
+
+```typescript
+new SocialCardGenerator({
+  processor,        // ContentProcessor instance (required)
+  outputDir,        // Output directory (required)
   concurrency: 10,  // Max parallel image generations (default: 10)
   quality: 85,      // WebP quality 0-100 (default: 85)
   verbose: false,   // Enable detailed logging (default: false)

@@ -22,8 +22,7 @@ import {
   parseSitemapForIndexedUrls,
   routeToFilename,
 } from "../app/lib/social-cards/sitemap";
-import { parseFrontmatter } from "../app/lib/content/frontmatter";
-import { glob } from "glob";
+import ContentProcessor from "../app/lib/content/content-processor";
 
 /**
  * Default configuration
@@ -67,12 +66,12 @@ export interface GenerationResults {
  * Configuration options for the SocialCardGenerator
  */
 export interface SocialCardGeneratorOptions extends SocialImagesOptions {
-  /** Directory containing MDX content files (default: "content" relative to cwd) */
-  contentDir?: string;
+  /** ContentProcessor instance to use for route -> title mapping */
+  processor: ContentProcessor;
   /** Static page titles for non-content routes */
   staticTitles?: Record<string, string>;
-  /** Base directory for resolving paths (default: process.cwd()) */
-  baseDir?: string;
+  /** Output directory for social cards */
+  outputDir: string;
 }
 
 /**
@@ -83,7 +82,8 @@ export interface SocialCardGeneratorOptions extends SocialImagesOptions {
  * @example
  * ```typescript
  * // Standalone usage
- * const generator = new SocialCardGenerator({ verbose: true });
+ * const processor = new ContentProcessor({ contentDir: "...", verbose: true });
+ * const generator = new SocialCardGenerator({ processor, verbose: true });
  * await generator.initialize();
  * const results = await generator.generate("dist/client");
  * console.log(`Generated ${results.success} cards`);
@@ -91,24 +91,29 @@ export interface SocialCardGeneratorOptions extends SocialImagesOptions {
  */
 export class SocialCardGenerator {
   private readonly config: Required<SocialImagesOptions>;
-  private readonly contentDir: string;
+  private readonly processor: ContentProcessor;
   private readonly staticTitles: Record<string, string>;
-  private readonly baseDir: string;
+  private readonly outputDir: string;
 
   private assets: { font: ArrayBuffer; background: string } | null = null;
   private titleLookup: Map<string, string> | null = null;
   private initialized = false;
 
-  constructor(options?: SocialCardGeneratorOptions) {
+  constructor(options: SocialCardGeneratorOptions) {
+    if (!options.processor) {
+      throw new Error(
+        "[social-cards] processor option is required and must be a ContentProcessor instance",
+      );
+    }
+
     this.config = {
-      concurrency: options?.concurrency ?? DEFAULT_OPTIONS.concurrency,
-      quality: options?.quality ?? DEFAULT_OPTIONS.quality,
-      verbose: options?.verbose ?? DEFAULT_OPTIONS.verbose,
+      concurrency: options.concurrency ?? DEFAULT_OPTIONS.concurrency,
+      quality: options.quality ?? DEFAULT_OPTIONS.quality,
+      verbose: options.verbose ?? DEFAULT_OPTIONS.verbose,
     };
-    this.baseDir = options?.baseDir ?? process.cwd();
-    this.contentDir =
-      options?.contentDir ?? path.resolve(this.baseDir, "content");
-    this.staticTitles = options?.staticTitles ?? DEFAULT_STATIC_TITLES;
+    this.processor = options.processor;
+    this.outputDir = options.outputDir;
+    this.staticTitles = options.staticTitles ?? DEFAULT_STATIC_TITLES;
   }
 
   /**
@@ -118,13 +123,11 @@ export class SocialCardGenerator {
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
-    const [assets, titleLookup] = await Promise.all([
-      loadAssets(),
-      this.buildTitleLookup(),
-    ]);
+    // Process content if not already processed/validated (no-op if already done)
+    await this.processor.processAllContent();
 
-    this.assets = assets;
-    this.titleLookup = titleLookup;
+    this.assets = await loadAssets();
+    this.titleLookup = this.processor.getRouteToTitleMap();
     this.initialized = true;
   }
 
@@ -134,9 +137,9 @@ export class SocialCardGenerator {
    * @param clientOutDir - Output directory containing sitemap.xml (e.g., "dist/client")
    * @returns Generation results with counts and individual card outcomes
    */
-  async generate(clientOutDir: string): Promise<GenerationResults> {
-    const sitemapPath = path.resolve(this.baseDir, clientOutDir, "sitemap.xml");
-    const outputDir = path.resolve(this.baseDir, clientOutDir, "social-cards");
+  async generate(): Promise<GenerationResults> {
+    const sitemapPath = path.resolve(this.outputDir, "sitemap.xml");
+    const outputDir = path.resolve(this.outputDir, "social-cards");
 
     // Check if sitemap exists
     const sitemapExists = await this.fileExists(sitemapPath);
@@ -261,71 +264,6 @@ export class SocialCardGenerator {
   }
 
   /**
-   * Build a lookup map of route -> title from content metadata.
-   */
-  private async buildTitleLookup(): Promise<Map<string, string>> {
-    const lookup = new Map<string, string>();
-
-    // Scan all MDX files in content directory
-    const mdxFiles = await glob(path.join(this.contentDir, "**/*.mdx"));
-
-    for (const filePath of mdxFiles) {
-      try {
-        const content = await fs.readFile(filePath, "utf-8");
-        const { frontmatter } = parseFrontmatter(content);
-
-        if (!frontmatter.title) continue;
-
-        // Derive route from file path
-        const route = this.filePathToRoute(filePath);
-        if (route) {
-          lookup.set(route, frontmatter.title);
-        }
-      } catch {
-        // Skip files that can't be parsed
-      }
-    }
-
-    return lookup;
-  }
-
-  /**
-   * Convert a file path to a route.
-   * This is a simplified version - the actual routing is more complex.
-   */
-  private filePathToRoute(filePath: string): string | null {
-    const relativePath = path.relative(this.contentDir, filePath);
-    const parts = relativePath.replace(/\.mdx$/, "").split(path.sep);
-
-    if (parts.length === 0) return null;
-
-    const contentType = parts[0];
-    const rest = parts.slice(1);
-
-    switch (contentType) {
-      case "blog":
-        // blog/my-post.mdx -> /blog/my-post
-        return `/blog/${rest.join("/")}`;
-
-      case "docs":
-        // docs/v1/learn/intro.mdx -> /docs/v1/learn/intro
-        // Handle index files
-        if (rest[rest.length - 1] === "index") {
-          rest.pop();
-        }
-        return `/docs/${rest.join("/")}`;
-
-      case "policy":
-        // policy/terms/service.mdx -> /terms/service
-        // policy/privacy.mdx -> /privacy
-        return `/${rest.join("/")}`;
-
-      default:
-        return null;
-    }
-  }
-
-  /**
    * Check if a file exists.
    */
   private async fileExists(filePath: string): Promise<boolean> {
@@ -345,17 +283,21 @@ export class SocialCardGenerator {
  * ```typescript
  * // In vite.config.ts
  * import { viteSocialCards } from "./vite-plugins/social-cards";
+ * import ContentProcessor from "./app/lib/content/content-processor";
  *
+ * const processor = new ContentProcessor({ contentDir: "...", verbose: true });
  * export default defineConfig({
  *   plugins: [
- *     viteSocialCards({ verbose: true }),
+ *     viteSocialCards({ processor, verbose: true }),
  *   ],
  * });
  * ```
  */
-export function viteSocialCards(options?: SocialImagesOptions): Plugin {
-  const generator = new SocialCardGenerator(options);
-
+export function viteSocialCards({
+  processor,
+}: {
+  processor: ContentProcessor;
+}): Plugin {
   return {
     name: "vite-plugin-social-cards",
     enforce: "post",
@@ -363,11 +305,12 @@ export function viteSocialCards(options?: SocialImagesOptions): Plugin {
     buildApp: {
       order: "post",
       handler: async (builder) => {
-        const clientOutDir =
+        const outputDir =
           builder.environments["client"]?.config.build.outDir ??
           builder.config.build.outDir;
 
-        await generator.generate(clientOutDir);
+        const generator = new SocialCardGenerator({ processor, outputDir });
+        await generator.generate();
       },
     },
   };
