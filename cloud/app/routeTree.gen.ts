@@ -31,7 +31,9 @@ import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
+import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
+import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -152,11 +154,22 @@ const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
   path: '/api/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CloudSettingsIndexRoute = CloudSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
   getParentRoute: () => DocsRoute,
 } as any)
+const CloudSettingsOrganizationRoute =
+  CloudSettingsOrganizationRouteImport.update({
+    id: '/organization',
+    path: '/organization',
+    getParentRoute: () => CloudSettingsRoute,
+  } as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
   path: '/proxy-callback',
@@ -218,7 +231,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
-  '/cloud/settings': typeof CloudSettingsRoute
+  '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -234,7 +247,9 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesByTo {
@@ -250,7 +265,6 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
-  '/cloud/settings': typeof CloudSettingsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -266,7 +280,9 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/settings': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesById {
@@ -285,7 +301,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
-  '/cloud/settings': typeof CloudSettingsRoute
+  '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -301,7 +317,9 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRouteTypes {
@@ -337,7 +355,9 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/organization'
     | '/docs/v1/$'
+    | '/cloud/settings/'
     | '/router/v0/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -353,7 +373,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
-    | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
@@ -369,7 +388,9 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/organization'
     | '/docs/v1/$'
+    | '/cloud/settings'
     | '/router/v0/$provider/$'
   id:
     | '__root__'
@@ -403,7 +424,9 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/organization'
     | '/docs/v1/$'
+    | '/cloud/settings/'
     | '/router/v0/$provider/$'
   fileRoutesById: FileRoutesById
 }
@@ -586,12 +609,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloud/settings/': {
+      id: '/cloud/settings/'
+      path: '/'
+      fullPath: '/cloud/settings/'
+      preLoaderRoute: typeof CloudSettingsIndexRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
     '/docs/v1/$': {
       id: '/docs/v1/$'
       path: '/v1/$'
       fullPath: '/docs/v1/$'
       preLoaderRoute: typeof DocsV1SplatRouteImport
       parentRoute: typeof DocsRoute
+    }
+    '/cloud/settings/organization': {
+      id: '/cloud/settings/organization'
+      path: '/organization'
+      fullPath: '/cloud/settings/organization'
+      preLoaderRoute: typeof CloudSettingsOrganizationRouteImport
+      parentRoute: typeof CloudSettingsRoute
     }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
@@ -671,17 +708,31 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface CloudSettingsRouteChildren {
+  CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
+  CloudSettingsIndexRoute: typeof CloudSettingsIndexRoute
+}
+
+const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
+  CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
+  CloudSettingsIndexRoute: CloudSettingsIndexRoute,
+}
+
+const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
+  CloudSettingsRouteChildren,
+)
+
 interface CloudRouteChildren {
   CloudDashboardRoute: typeof CloudDashboardRoute
   CloudLoginRoute: typeof CloudLoginRoute
-  CloudSettingsRoute: typeof CloudSettingsRoute
+  CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
   CloudIndexRoute: typeof CloudIndexRoute
 }
 
 const CloudRouteChildren: CloudRouteChildren = {
   CloudDashboardRoute: CloudDashboardRoute,
   CloudLoginRoute: CloudLoginRoute,
-  CloudSettingsRoute: CloudSettingsRoute,
+  CloudSettingsRoute: CloudSettingsRouteWithChildren,
   CloudIndexRoute: CloudIndexRoute,
 }
 
