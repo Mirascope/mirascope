@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: clickhouse/migrate.sh <plan|migrate>
+Usage: db/clickhouse/migrate.sh <plan|migrate>
 
 Commands:
   plan     Show the current migration version

@@ -3,13 +3,17 @@ import { describe, it, expect } from "@/tests/api";
 import { handleRequest } from "@/api/handler";
 import type { PublicUser } from "@/db/schema";
 import { HandlerError } from "@/errors";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { DrizzleORM } from "@/db/client";
+import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 import { Settings, type SettingsConfig } from "@/settings";
 import { createMockSettings } from "@/tests/settings";
-import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
-import fs from "fs";
+import { getTestClickHouseConfig } from "@/tests/global-setup";
+import { MockDrizzleORMLayer } from "@/tests/mock-drizzle";
 
 const mockUser: PublicUser = {
   id: "test-user-id",
@@ -17,32 +21,6 @@ const mockUser: PublicUser = {
   name: "Test User",
   deletedAt: null,
 };
-
-type ClickHouseConnectionFile = {
-  url: string;
-  user: string;
-  password: string;
-  database: string;
-  nativePort: number;
-};
-
-function getTestClickHouseConfig(): ClickHouseConnectionFile {
-  try {
-    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
-    return JSON.parse(raw) as ClickHouseConnectionFile;
-  } catch {
-    throw new Error(
-      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
-    );
-  }
-}
-
-const MockEmails = Layer.succeed(Emails, {
-  send: () => Effect.succeed({ id: "mock-email-id" }),
-  audience: {
-    add: () => Effect.succeed({ id: "mock-contact-id" }),
-  },
-});
 
 const clickhouseConfig = getTestClickHouseConfig();
 const settings: SettingsConfig = createMockSettings({
@@ -61,15 +39,77 @@ const settings: SettingsConfig = createMockSettings({
     },
   },
 });
-const settingsLayer = Layer.succeed(Settings, settings);
-const MockClickHouseSearch = ClickHouseSearch.Default.pipe(
+const SettingsLayer = Layer.succeed(Settings, settings);
+const ClickHouseSearchLayer = ClickHouseSearch.Default.pipe(
   Layer.provide(ClickHouse.Default),
-  Layer.provide(settingsLayer),
+  Layer.provide(SettingsLayer),
+);
+const MockSpansIngestQueue = Layer.succeed(SpansIngestQueue, {
+  send: () => Effect.void,
+});
+const MockRealtimeSpans = Layer.succeed(RealtimeSpans, {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  exists: () => Effect.succeed(false),
+});
+const MockAnalytics = Layer.succeed(Analytics, {
+  googleAnalytics: null as never,
+  postHog: null as never,
+  trackEvent: () => Effect.void,
+  trackPageView: () => Effect.void,
+  identify: () => Effect.void,
+  initialize: () => Effect.void,
+});
+const MockEmails = Layer.succeed(Emails, {
+  send: () => Effect.succeed({ id: "mock-email-id" }),
+  audience: { add: () => Effect.succeed({ id: "mock-contact-id" }) },
+});
+
+/**
+ * Combined mock layer for all app services used in handler tests.
+ */
+const MockAppServicesLayer = Layer.mergeAll(
+  MockDrizzleORMLayer,
+  ClickHouseSearchLayer,
+  MockSpansIngestQueue,
+  MockRealtimeSpans,
+  MockAnalytics,
+  MockEmails,
 );
 
-const MockServices = Layer.mergeAll(MockClickHouseSearch, MockEmails);
-
 describe("handleRequest", () => {
+  it.effect("should return 404 for unknown route", () =>
+    Effect.gen(function* () {
+      const clickHouseSearch = yield* ClickHouseSearch;
+      const req = new Request(
+        "http://localhost/api/v0/this-route-does-not-exist",
+        { method: "GET" },
+      );
+
+      const { matched, response } = yield* handleRequest(req, {
+        user: mockUser,
+        settings,
+        prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
+        analytics: yield* Analytics,
+        emails: yield* Emails,
+        clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueue,
+      });
+
+      expect(response.status).toBe(404);
+      expect(matched).toBe(false);
+    }).pipe(Effect.provide(MockAppServicesLayer)),
+  );
+
   it.effect("should return 404 for non-existing routes", () =>
     Effect.gen(function* () {
       const clickHouseSearch = yield* ClickHouseSearch;
@@ -82,12 +122,17 @@ describe("handleRequest", () => {
         user: mockUser,
         settings,
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
+        analytics: yield* Analytics,
+        emails: yield* Emails,
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueue,
       });
 
       expect(response.status).toBe(404);
       expect(matched).toBe(false);
-    }).pipe(Effect.provide(MockServices)),
+    }).pipe(Effect.provide(MockAppServicesLayer)),
   );
 
   it.effect(
@@ -101,13 +146,18 @@ describe("handleRequest", () => {
           user: mockUser,
           settings,
           prefix: "/api/v0",
+          drizzle: yield* DrizzleORM,
+          analytics: yield* Analytics,
+          emails: yield* Emails,
           clickHouseSearch,
+          realtimeSpans: yield* RealtimeSpans,
+          spansIngestQueue: yield* SpansIngestQueue,
         });
 
         // The path becomes "/" after stripping prefix, which doesn't match any route
         expect(response.status).toBe(404);
         expect(matched).toBe(false);
-      }).pipe(Effect.provide(MockServices)),
+      }).pipe(Effect.provide(MockAppServicesLayer)),
   );
 
   it.effect(
@@ -127,14 +177,19 @@ describe("handleRequest", () => {
         const error = yield* handleRequest(faultyRequest, {
           user: mockUser,
           settings,
+          drizzle: yield* DrizzleORM,
+          analytics: yield* Analytics,
+          emails: yield* Emails,
           clickHouseSearch,
+          realtimeSpans: yield* RealtimeSpans,
+          spansIngestQueue: yield* SpansIngestQueue,
         }).pipe(Effect.flip);
 
         expect(error).toBeInstanceOf(HandlerError);
         expect(error.message).toContain(
           "[Effect API] Error handling request: boom",
         );
-      }).pipe(Effect.provide(MockServices)),
+      }).pipe(Effect.provide(MockAppServicesLayer)),
   );
 
   it.effect("should handle POST requests with body", () =>
@@ -154,12 +209,17 @@ describe("handleRequest", () => {
         user: mockUser,
         settings,
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
+        analytics: yield* Analytics,
+        emails: yield* Emails,
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueue,
       });
 
       expect(matched).toBe(true);
       expect(response.status).toBeGreaterThanOrEqual(400);
-    }).pipe(Effect.provide(MockServices)),
+    }).pipe(Effect.provide(MockAppServicesLayer)),
   );
 
   it.effect("should transform _tag in JSON error responses", () =>
@@ -177,7 +237,12 @@ describe("handleRequest", () => {
         user: mockUser,
         settings,
         prefix: "/api/v0",
+        drizzle: yield* DrizzleORM,
+        analytics: yield* Analytics,
+        emails: yield* Emails,
         clickHouseSearch,
+        realtimeSpans: yield* RealtimeSpans,
+        spansIngestQueue: yield* SpansIngestQueue,
       });
 
       const body = yield* Effect.promise(() => response.text());
@@ -187,6 +252,6 @@ describe("handleRequest", () => {
       // Ensure _tag is transformed to tag in error responses
       expect(body).toContain('"tag"');
       expect(body).not.toContain('"_tag"');
-    }).pipe(Effect.provide(MockServices)),
+    }).pipe(Effect.provide(MockAppServicesLayer)),
   );
 });

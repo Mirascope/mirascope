@@ -1,37 +1,13 @@
 import { Effect, Layer } from "effect";
 import { describe, expect, it as vitestIt } from "@effect/vitest";
 import { createCustomIt } from "@/tests/shared";
-import { ClickHouse } from "@/clickhouse/client";
-import {
-  Settings,
-  type SettingsConfig,
-  type ClickHouseConfig,
-} from "@/settings";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { Settings, type SettingsConfig } from "@/settings";
 import { createMockSettings } from "@/tests/settings";
-import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
-import fs from "fs";
+import { getTestClickHouseConfig } from "@/tests/global-setup";
 
 // Re-export describe and expect for convenience
 export { describe, expect };
-
-type ClickHouseConnectionFile = {
-  url: string;
-  user: string;
-  password: string;
-  database: string;
-  nativePort: number;
-};
-
-function getTestClickHouseConfig(): ClickHouseConnectionFile {
-  try {
-    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
-    return JSON.parse(raw) as ClickHouseConnectionFile;
-  } catch {
-    throw new Error(
-      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
-    );
-  }
-}
 
 const clickhouseConfig = getTestClickHouseConfig();
 
@@ -50,28 +26,32 @@ export const checkClickHouseAvailable = async (): Promise<boolean> => {
 export const clickHouseAvailable = await checkClickHouseAvailable();
 
 /**
- * Test ClickHouse configuration from testcontainers.
+ * Creates test ClickHouse settings from the testcontainers config.
+ * Centralizes the TLS configuration used across test layers.
  */
-const testClickHouseSettings: ClickHouseConfig = {
-  url: clickhouseConfig.url,
-  user: clickhouseConfig.user,
-  password: clickhouseConfig.password,
-  database: clickhouseConfig.database,
-  tls: {
-    enabled: false,
-    ca: "",
-    skipVerify: true,
-    hostnameVerify: false,
-    minVersion: "1.2",
-  },
-};
+export function createTestClickHouseSettings(): SettingsConfig {
+  return createMockSettings({
+    clickhouse: {
+      url: clickhouseConfig.url,
+      user: clickhouseConfig.user,
+      password: clickhouseConfig.password,
+      database: clickhouseConfig.database,
+      tls: {
+        enabled: false,
+        ca: "",
+        skipVerify: true,
+        hostnameVerify: false,
+        minVersion: "1.2",
+      },
+    },
+  });
+}
 
 /**
  * Complete test settings using mock settings with ClickHouse override.
+ * Uses connection config from global-setup testcontainers.
  */
-const testSettings: SettingsConfig = createMockSettings({
-  clickhouse: testClickHouseSettings,
-});
+const testSettings: SettingsConfig = createTestClickHouseSettings();
 
 /**
  * Settings layer for tests.

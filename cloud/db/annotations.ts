@@ -61,6 +61,8 @@ import {
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import {
   AlreadyExistsError,
   DatabaseError,
@@ -72,7 +74,6 @@ import {
   type NewAnnotation,
   type PublicAnnotation,
 } from "@/db/schema/annotations";
-import { spans } from "@/db/schema/spans";
 import type { ProjectRole } from "@/db/schema";
 import { isUniqueConstraintError } from "@/db/utils";
 
@@ -91,12 +92,48 @@ export type AnnotationFilters = {
   offset?: number;
 };
 
-type SpanInfo = {
-  id: string;
+// =============================================================================
+// Helpers
+// =============================================================================
+
+/**
+ * Checks whether a span exists using realtime cache first, then ClickHouse.
+ *
+ * Checks RealtimeSpans cache first for fast lookups of recent spans,
+ * then falls back to ClickHouse (source of truth) if not found.
+ */
+const checkSpanExists = ({
+  environmentId,
+  traceId,
+  spanId,
+}: {
+  environmentId: string;
   traceId: string;
-  otelSpanId: string;
-  otelTraceId: string;
-};
+  spanId: string;
+}): Effect.Effect<boolean, DatabaseError, ClickHouseSearch | RealtimeSpans> =>
+  Effect.gen(function* () {
+    const realtimeSpans = yield* RealtimeSpans;
+    const clickHouseSearch = yield* ClickHouseSearch;
+
+    // Check realtime cache first (fast path for recent spans)
+    const realtimeExists = yield* realtimeSpans
+      .exists({ environmentId, traceId, spanId })
+      .pipe(Effect.catchAll(() => Effect.succeed(false)));
+
+    if (realtimeExists) {
+      return true;
+    }
+
+    // Fall back to ClickHouse (source of truth)
+    return yield* clickHouseSearch
+      .getTraceDetail({ environmentId, traceId })
+      .pipe(
+        Effect.map((detail) =>
+          detail.spans.some((span) => span.spanId === spanId),
+        ),
+        Effect.catchAll(() => Effect.succeed(false)),
+      );
+  });
 
 // =============================================================================
 // Annotations Service
@@ -133,7 +170,8 @@ export class Annotations extends BaseAuthenticatedEffectService<
   "organizations/:organizationId/projects/:projectId/environments/:environmentId/annotations/:annotationId",
   AnnotationCreateData,
   Partial<Pick<NewAnnotation, "label" | "reasoning" | "metadata">>,
-  ProjectRole
+  ProjectRole,
+  ClickHouseSearch | RealtimeSpans
 > {
   private readonly projectMemberships: ProjectMemberships;
 
@@ -229,7 +267,7 @@ export class Annotations extends BaseAuthenticatedEffectService<
   }): Effect.Effect<
     PublicAnnotation,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    DrizzleORM | ClickHouseSearch | RealtimeSpans
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -243,35 +281,13 @@ export class Annotations extends BaseAuthenticatedEffectService<
         annotationId: "",
       });
 
-      // Find the span by OTLP identifiers
-      const spanResults: SpanInfo[] = yield* client
-        .select({
-          id: spans.id,
-          traceId: spans.traceId,
-          otelSpanId: spans.otelSpanId,
-          otelTraceId: spans.otelTraceId,
-        })
-        .from(spans)
-        .where(
-          and(
-            eq(spans.otelSpanId, data.otelSpanId),
-            eq(spans.otelTraceId, data.otelTraceId),
-            eq(spans.environmentId, environmentId),
-          ),
-        )
-        .limit(1)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to find span",
-                cause: e,
-              }),
-          ),
-        );
+      const spanExists = yield* checkSpanExists({
+        environmentId,
+        traceId: data.otelTraceId,
+        spanId: data.otelSpanId,
+      });
 
-      const [spanInfo] = spanResults;
-      if (!spanInfo) {
+      if (!spanExists) {
         return yield* Effect.fail(
           new NotFoundError({
             message: `Span with otelSpanId=${data.otelSpanId}, otelTraceId=${data.otelTraceId} not found`,
@@ -281,10 +297,8 @@ export class Annotations extends BaseAuthenticatedEffectService<
       }
 
       const newAnnotation: NewAnnotation = {
-        spanId: spanInfo.id,
-        traceId: spanInfo.traceId,
-        otelSpanId: spanInfo.otelSpanId,
-        otelTraceId: spanInfo.otelTraceId,
+        otelSpanId: data.otelSpanId,
+        otelTraceId: data.otelTraceId,
         label: data.label ?? null,
         reasoning: data.reasoning ?? null,
         metadata: data.metadata ?? null,

@@ -9,11 +9,15 @@ import type {
 
 export * from "@/api/annotations.schemas";
 
-export const toAnnotation = (ann: PublicAnnotation) => ({
-  ...ann,
-  createdAt: ann.createdAt?.toISOString() ?? null,
-  updatedAt: ann.updatedAt?.toISOString() ?? null,
-});
+export const toAnnotation = (annotation: PublicAnnotation) => {
+  return {
+    ...annotation,
+    spanId: annotation.otelSpanId,
+    traceId: annotation.otelTraceId,
+    createdAt: annotation.createdAt?.toISOString() ?? null,
+    updatedAt: annotation.updatedAt?.toISOString() ?? null,
+  };
+};
 
 /**
  * Handler for listing annotations with optional filters.

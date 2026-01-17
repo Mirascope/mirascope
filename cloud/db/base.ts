@@ -331,6 +331,7 @@ export type AuthorizationParams<T extends string> = PathParams<T>;
  * @template TInsert - The type for create operations
  * @template TUpdate - The type for update operations (defaults to Partial<TInsert>)
  * @template TRole - The role type for permission checking (e.g., "OWNER" | "ADMIN" | "MEMBER")
+ * @template TExtraR - Additional service requirements beyond DrizzleORM (defaults to never)
  *
  * @example
  * ```ts
@@ -372,6 +373,7 @@ export abstract class BaseAuthenticatedEffectService<
   TInsert,
   TUpdate = Partial<TInsert>,
   TRole extends string = string,
+  TExtraR = never,
 > {
   // ---------------------------------------------------------------------------
   // Abstract Methods (must be implemented by subclasses)
@@ -560,7 +562,7 @@ export abstract class BaseAuthenticatedEffectService<
     | DatabaseError
     | StripeError
     | PlanLimitExceededError,
-    DrizzleORM | Payments
+    DrizzleORM | Payments | TExtraR
   >;
 
   /**
@@ -582,7 +584,7 @@ export abstract class BaseAuthenticatedEffectService<
   ): Effect.Effect<
     TPublic[],
     NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    DrizzleORM | TExtraR
   >;
 
   /**
@@ -600,7 +602,7 @@ export abstract class BaseAuthenticatedEffectService<
   ): Effect.Effect<
     TPublic,
     NotFoundError | PermissionDeniedError | DatabaseError,
-    DrizzleORM
+    DrizzleORM | TExtraR
   >;
 
   /**
@@ -627,7 +629,7 @@ export abstract class BaseAuthenticatedEffectService<
     | DeletedUserError
     | DatabaseError
     | StripeError,
-    DrizzleORM | Payments
+    DrizzleORM | Payments | TExtraR
   >;
 
   /**
@@ -651,6 +653,6 @@ export abstract class BaseAuthenticatedEffectService<
     | DatabaseError
     | SubscriptionPastDueError
     | StripeError,
-    DrizzleORM | Payments
+    DrizzleORM | Payments | TExtraR
   >;
 }

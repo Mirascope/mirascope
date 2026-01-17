@@ -282,20 +282,17 @@ describe("billingReconciliationCron", () => {
         paymentIntents: {} as never,
       });
 
-      const result = await Effect.runPromise(
+      const error = await Effect.runPromise(
         reconcileSuccessfulRequests.pipe(
           Effect.provide(mockDbLayer),
           Effect.provide(mockPaymentsLayer),
-          Effect.either,
+          Effect.flip,
         ),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to query successful requests for reconciliation",
-        );
-      }
+      expect(error.message).toContain(
+        "Failed to query successful requests for reconciliation",
+      );
     });
   });
 
@@ -384,19 +381,13 @@ describe("billingReconciliationCron", () => {
         }),
       } as never);
 
-      const result = await Effect.runPromise(
-        reconcileFailedRequests.pipe(
-          Effect.provide(mockDbLayer),
-          Effect.either,
-        ),
+      const error = await Effect.runPromise(
+        reconcileFailedRequests.pipe(Effect.provide(mockDbLayer), Effect.flip),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to release reservations for failed requests",
-        );
-      }
+      expect(error.message).toContain(
+        "Failed to release reservations for failed requests",
+      );
     });
   });
 
@@ -492,19 +483,16 @@ describe("billingReconciliationCron", () => {
         update: vi.fn(),
       } as never);
 
-      const result = await Effect.runPromise(
+      const error = await Effect.runPromise(
         reconcilePendingExpiredRequests.pipe(
           Effect.provide(mockDbLayer),
-          Effect.either,
+          Effect.flip,
         ),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to query pending + expired records",
-        );
-      }
+      expect(error.message).toContain(
+        "Failed to query pending + expired records",
+      );
     });
 
     it("handles database errors during router request update", async () => {
@@ -534,19 +522,16 @@ describe("billingReconciliationCron", () => {
         }),
       } as never);
 
-      const result = await Effect.runPromise(
+      const error = await Effect.runPromise(
         reconcilePendingExpiredRequests.pipe(
           Effect.provide(mockDbLayer),
-          Effect.either,
+          Effect.flip,
         ),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to update router requests to failure",
-        );
-      }
+      expect(error.message).toContain(
+        "Failed to update router requests to failure",
+      );
     });
 
     it("handles database errors during reservation release", async () => {
@@ -584,19 +569,14 @@ describe("billingReconciliationCron", () => {
         }),
       } as never);
 
-      const result = await Effect.runPromise(
+      const error = await Effect.runPromise(
         reconcilePendingExpiredRequests.pipe(
           Effect.provide(mockDbLayer),
-          Effect.either,
+          Effect.flip,
         ),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to release expired reservations",
-        );
-      }
+      expect(error.message).toContain("Failed to release expired reservations");
     });
   });
 
@@ -681,17 +661,14 @@ describe("billingReconciliationCron", () => {
         }),
       } as never);
 
-      const result = await Effect.runPromise(
+      const error = await Effect.runPromise(
         detectStaleReconciliation.pipe(
           Effect.provide(mockDbLayer),
-          Effect.either,
+          Effect.flip,
         ),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain("Failed to query stale records");
-      }
+      expect(error.message).toContain("Failed to query stale records");
     });
   });
 
@@ -775,16 +752,11 @@ describe("billingReconciliationCron", () => {
         }),
       } as never);
 
-      const result = await Effect.runPromise(
-        detectInvalidState.pipe(Effect.provide(mockDbLayer), Effect.either),
+      const error = await Effect.runPromise(
+        detectInvalidState.pipe(Effect.provide(mockDbLayer), Effect.flip),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to query invalid state records",
-        );
-      }
+      expect(error.message).toContain("Failed to query invalid state records");
     });
   });
 
@@ -833,11 +805,11 @@ describe("billingReconciliationCron", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    const envWithoutDb: CronTriggerEnv = {
+    const envWithoutDb = {
       ...mockEnv,
       DATABASE_URL: undefined,
       HYPERDRIVE: undefined,
-    };
+    } as unknown as CronTriggerEnv;
 
     await billingReconciliationCron.scheduled(mockEvent, envWithoutDb);
 
@@ -878,13 +850,13 @@ describe("billingReconciliationCron", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    const envWithHyperdrive: CronTriggerEnv = {
+    const envWithHyperdrive = {
       ...mockEnv,
       DATABASE_URL: undefined,
       HYPERDRIVE: {
         connectionString: "postgres://hyperdrive:test@localhost:5432/test",
       },
-    };
+    } as unknown as CronTriggerEnv;
 
     await billingReconciliationCron.scheduled(mockEvent, envWithHyperdrive);
 
@@ -945,16 +917,7 @@ describe("billingReconciliationCron", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    const fullEnv: CronTriggerEnv = {
-      ...mockEnv,
-      STRIPE_CLOUD_FREE_PRICE_ID: "price_free",
-      STRIPE_CLOUD_PRO_PRICE_ID: "price_pro",
-      STRIPE_CLOUD_TEAM_PRICE_ID: "price_team",
-      STRIPE_CLOUD_SPANS_PRICE_ID: "price_spans",
-      STRIPE_CLOUD_SPANS_METER_ID: "meter_spans",
-    };
-
-    await billingReconciliationCron.scheduled(mockEvent, fullEnv);
+    await billingReconciliationCron.scheduled(mockEvent, mockEnv);
 
     // Should attempt processing with all config
     expect(consoleErrorSpy).toHaveBeenCalled();

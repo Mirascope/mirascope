@@ -25,8 +25,13 @@ import { Payments } from "@/payments";
 import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
 import { AuthenticatedUser, Authentication } from "@/auth";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import {
+  SpansIngestQueue,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import type { AuthResult } from "@/auth/context";
 import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { users } from "@/db/schema";
@@ -35,17 +40,10 @@ import { MockStripe } from "@/tests/payments";
 import type { StreamMeteringContext } from "@/api/router/streaming";
 import type { ProviderName } from "@/api/router/providers";
 import { eq } from "drizzle-orm";
-import { CLICKHOUSE_CONNECTION_FILE } from "@/tests/global-setup";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
-import { SqlClient } from "@effect/sql";
-import fs from "fs";
+import { getTestClickHouseConfig } from "@/tests/global-setup";
 
 // Re-export expect from vitest
 export { expect, assert };
-
-// ============================================================================
-// it.effect with automatic Database layer provision
-// ============================================================================
 
 /**
  * Mock layer for Analytics that provides a no-op implementation for tests.
@@ -69,25 +67,35 @@ const MockEmails = Layer.succeed(Emails, {
   },
 });
 
-/**
- * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
- */
-const MockSpansMeteringQueue = Layer.succeed(
-  SpansMeteringQueueService,
-  SpansMeteringQueueService.of({
-    send: () => Effect.succeed(undefined), // No-op in tests
-  }),
-);
-
-// =============================================================================
-// Database Layer Creation
-// =============================================================================
+// ============================================================================
+// it.effect with automatic Database layer provision
+// ============================================================================
 
 /**
- * Creates a Database layer with MockPayments, MockAnalytics, MockEmails, and MockSettings for testing.
- * Provides Database, Payments, Analytics, Emails, Settings, DrizzleORM, SqlClient, and SpansMeteringQueueService.
+ * Creates a Database layer with MockPayments for testing.
+ * Provides Database, DrizzleORM, and Payments services.
  */
-function createTestDatabaseLayer(connectionString: string) {
+const DefaultQueueLayer = Layer.succeed(SpansIngestQueue, {
+  send: () => Effect.void,
+});
+export const DefaultRealtimeLayer = Layer.succeed(RealtimeSpans, {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  exists: () => Effect.succeed(false),
+});
+
+function createTestDatabaseLayer(
+  connectionString: string,
+  queueLayer: Layer.Layer<SpansIngestQueue> = DefaultQueueLayer,
+  realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
+) {
   const drizzleLayer = DrizzleORM.layer({ connectionString }).pipe(Layer.orDie);
 
   // Provide Payments with MockStripe + drizzleLayer to avoid MockDrizzleORMLayer overriding real DB
@@ -103,10 +111,11 @@ function createTestDatabaseLayer(connectionString: string) {
     ).pipe(Layer.orDie),
     drizzleLayer,
     paymentsLayer,
+    queueLayer,
+    realtimeLayer,
+    MockSettingsLayer(),
     MockAnalytics,
     MockEmails,
-    MockSpansMeteringQueue,
-    MockSettingsLayer(),
   );
 }
 
@@ -114,25 +123,6 @@ function createTestDatabaseLayer(connectionString: string) {
  * Layer that provides Database for API handler tests.
  */
 const TestDatabaseLayer = createTestDatabaseLayer(TEST_DATABASE_URL);
-
-type ClickHouseConnectionFile = {
-  url: string;
-  user: string;
-  password: string;
-  database: string;
-  nativePort: number;
-};
-
-function getTestClickHouseConfig(): ClickHouseConnectionFile {
-  try {
-    const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
-    return JSON.parse(raw) as ClickHouseConnectionFile;
-  } catch {
-    throw new Error(
-      "TEST_CLICKHOUSE_URL not set. Ensure global-setup.ts ran successfully.",
-    );
-  }
-}
 
 /**
  * Wraps a test function to automatically provide Database and Payments layers.
@@ -156,36 +146,10 @@ const wrapEffectTest =
     };
 
 /**
- * Wraps a test function to automatically provide Database layers AND wrap in rollback transaction.
+ * Type-safe `it` with `it.effect` that automatically provides Database.
  *
- * Like wrapEffectTest but also wraps the test in a transaction that rolls back,
- * ensuring test isolation and cleanup.
- */
-const wrapEffectTestWithRollback =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (original: any) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (name: any, fn: any, timeout?: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-      return original(
-        name,
-        () =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-          fn()
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            .pipe(withRollback)
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            .pipe(Effect.provide(TestDatabaseLayer)),
-        timeout,
-      );
-    };
-
-/**
- * Type-safe `it` with `it.effect` and `it.rollback` for API tests.
- *
- * Works as a regular `it` for synchronous tests, and provides:
- * - `it.effect` for Effect-based tests with automatic Database layer provision
- * - `it.rollback` for Effect-based tests that also wrap in a transaction rollback
+ * Works as a regular `it` for synchronous tests, and provides `it.effect`
+ * for Effect-based tests with automatic Database layer provision.
  *
  * @example
  * ```ts
@@ -205,39 +169,29 @@ const wrapEffectTestWithRollback =
  *       // ... test code
  *     })
  *   );
- *
- *   // Effect-based test with rollback (for test isolation)
- *   it.rollback("creates user without polluting DB", () =>
- *     Effect.gen(function* () {
- *       const db = yield* Database;
- *       const user = yield* db.users.create({ ... });
- *       // User will be rolled back after test
- *     })
- *   );
  * });
  * ```
  */
-export const it = Object.assign(
-  createCustomIt<
-    | Database
-    | Payments
-    | Analytics
-    | SpansMeteringQueueService
-    | DrizzleORM
-    | SqlClient.SqlClient
-  >(wrapEffectTest),
-  {
-    rollback: Object.assign(wrapEffectTestWithRollback(vitestIt.effect), {
-      skip: wrapEffectTestWithRollback(vitestIt.effect.skip),
-      only: wrapEffectTestWithRollback(vitestIt.effect.only),
-      fails: wrapEffectTestWithRollback(vitestIt.effect.fails),
-      skipIf: (condition: unknown) =>
-        wrapEffectTestWithRollback(vitestIt.effect.skipIf(condition)),
-      runIf: (condition: unknown) =>
-        wrapEffectTestWithRollback(vitestIt.effect.runIf(condition)),
-    }),
-  },
-);
+const customIt = createCustomIt<
+  Database | Payments | DrizzleORM | Settings | Emails
+>(wrapEffectTest);
+
+/**
+ * Type-safe `it` with `it.effect` and `it.rollback` for API tests.
+ * - `it.effect` - Effect-based tests with automatic layer provision
+ * - `it.rollback` - Effect-based tests that roll back database changes
+ */
+export const it = Object.assign(customIt, {
+  rollback: <
+    A,
+    E,
+    R extends Database | Payments | DrizzleORM | Settings | Emails,
+  >(
+    name: string,
+    fn: () => Effect.Effect<A, E, R>,
+    timeout?: number,
+  ) => customIt.effect(name, () => fn().pipe(withRollback), timeout),
+});
 
 // ============================================================================
 // API Client Creation
@@ -251,7 +205,9 @@ type ApiClient = Effect.Effect.Success<typeof makeClient>;
 function createTestWebHandler(
   databaseUrl: string,
   user: PublicUser,
-  apiKeyInfo?: ApiKeyInfo,
+  apiKeyInfo: ApiKeyInfo,
+  queueSend: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
+  realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
 ) {
   // ClickHouse services layer for test environment
   const clickhouseConfig = getTestClickHouseConfig();
@@ -277,13 +233,18 @@ function createTestWebHandler(
     Layer.provide(settingsLayer),
   );
 
+  const queueLayer = Layer.succeed(SpansIngestQueue, {
+    send: queueSend ?? (() => Effect.void),
+  });
+
   const services = Layer.mergeAll(
     settingsLayer,
     Layer.succeed(AuthenticatedUser, user),
     Layer.succeed(Authentication, { user, apiKeyInfo }),
-    createTestDatabaseLayer(databaseUrl),
-    DrizzleORM.layer({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    createTestDatabaseLayer(databaseUrl, queueLayer, realtimeLayer),
     clickHouseSearchLayer,
+    MockAnalytics,
+    MockEmails,
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -325,9 +286,17 @@ function createHandlerHttpClient(
 export async function createApiClient(
   databaseUrl: string,
   user: PublicUser,
-  apiKeyInfo?: ApiKeyInfo,
+  apiKeyInfo: ApiKeyInfo,
+  queueSend: (message: SpansIngestMessage) => Effect.Effect<void, Error>,
+  realtimeLayer: Layer.Layer<RealtimeSpans> = DefaultRealtimeLayer,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
-  const webHandler = createTestWebHandler(databaseUrl, user, apiKeyInfo);
+  const webHandler = createTestWebHandler(
+    databaseUrl,
+    user,
+    apiKeyInfo,
+    queueSend,
+    realtimeLayer,
+  );
   const HandlerHttpClient = createHandlerHttpClient(webHandler);
   const HandlerHttpClientLayer = Layer.succeed(
     HttpClient.HttpClient,
@@ -421,8 +390,8 @@ function createSequentialDescribe(
       // Create database layer for setup operations
       const dbLayer = createTestDatabaseLayer(databaseUrl);
 
-      // Create user and organization
-      const { owner, org } = await Effect.runPromise(
+      // Create user, organization, and default API key context
+      const { owner, org, apiKeyInfo } = await Effect.runPromise(
         Effect.gen(function* () {
           const db = yield* Database;
 
@@ -443,7 +412,18 @@ function createSequentialDescribe(
             },
           });
 
-          return { owner, org };
+          const apiKeyInfo: ApiKeyInfo = {
+            apiKeyId: "00000000-0000-0000-0000-000000000001",
+            organizationId: org.id,
+            projectId: "00000000-0000-0000-0000-000000000002",
+            environmentId: "00000000-0000-0000-0000-000000000003",
+            ownerId: owner.id,
+            ownerEmail: owner.email,
+            ownerName: owner.name,
+            ownerDeletedAt: owner.deletedAt,
+          };
+
+          return { owner, org, apiKeyInfo };
         }).pipe(Effect.provide(dbLayer)),
       );
 
@@ -451,7 +431,12 @@ function createSequentialDescribe(
       orgRef = org;
 
       // Create API client authenticated as this user
-      const result = await createApiClient(databaseUrl, owner);
+      const result = await createApiClient(
+        databaseUrl,
+        owner,
+        apiKeyInfo,
+        () => Effect.void,
+      );
       dispose = result.dispose;
 
       // Create the layer that tests will use
@@ -565,8 +550,24 @@ function createSimpleTestWebHandler() {
     Layer.succeed(AuthenticatedUser, mockUser),
     Layer.succeed(Authentication, authResult),
     createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie),
-    DrizzleORM.layer({ connectionString: databaseUrl }).pipe(Layer.orDie),
+    Layer.succeed(SpansIngestQueue, {
+      send: () => Effect.void,
+    }),
+    Layer.succeed(RealtimeSpans, {
+      upsert: () => Effect.void,
+      search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+      getTraceDetail: () =>
+        Effect.succeed({
+          traceId: "",
+          spans: [],
+          rootSpanId: null,
+          totalDurationMs: null,
+        }),
+      exists: () => Effect.succeed(false),
+    }),
     clickHouseSearchLayer,
+    MockAnalytics,
+    MockEmails,
   );
 
   const ApiWithDependencies = Layer.mergeAll(

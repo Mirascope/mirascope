@@ -634,7 +634,6 @@
                       "items": {
                         "type": "object",
                         "required": [
-                          "id",
                           "traceId",
                           "spanId",
                           "name",
@@ -647,9 +646,6 @@
                           "functionName"
                         ],
                         "properties": {
-                          "id": {
-                            "type": "string"
-                          },
                           "traceId": {
                             "type": "string"
                           },
@@ -970,8 +966,6 @@
                       "items": {
                         "type": "object",
                         "required": [
-                          "id",
-                          "traceDbId",
                           "traceId",
                           "spanId",
                           "parentSpanId",
@@ -1004,12 +998,6 @@
                           "resourceAttributes"
                         ],
                         "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "traceDbId": {
-                            "type": "string"
-                          },
                           "traceId": {
                             "type": "string"
                           },
@@ -1755,11 +1743,18 @@
             }
           },
           "500": {
-            "description": "DatabaseError",
+            "description": "ClickHouseError",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DatabaseError"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ClickHouseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
                 }
               }
             }

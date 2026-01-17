@@ -6,8 +6,6 @@ import {
   TestFreePlanOrganizationFixture,
   MockDrizzleORM,
   TestDrizzleORM,
-  MockAnalytics,
-  MockSpansMeteringQueue,
 } from "@/tests/db";
 import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
 import { Database } from "@/db/database";
@@ -422,17 +420,13 @@ describe("OrganizationMemberships", () => {
           expect(result.message).toContain("free plan limit is 1 seat(s)");
         }).pipe(
           Effect.provide(
-            Layer.mergeAll(
-              Database.Default.pipe(
-                Layer.provide(
-                  TestSubscriptionWithRealDatabaseFixture(
-                    { plan: "free" },
-                    TestDrizzleORM,
-                  ),
+            Database.Default.pipe(
+              Layer.provide(
+                TestSubscriptionWithRealDatabaseFixture(
+                  { plan: "free" },
+                  TestDrizzleORM,
                 ),
               ),
-              MockAnalytics,
-              MockSpansMeteringQueue,
             ),
           ),
         ),

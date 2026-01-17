@@ -1,4 +1,4 @@
-import { Effect, Layer, Config } from "effect";
+import { Config, Context, Effect, Layer } from "effect";
 import { describe, expect } from "@effect/vitest";
 import { createCustomIt, withRollback } from "@/tests/shared";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
@@ -6,12 +6,22 @@ import { Database } from "@/db";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
+import { createTestClickHouseSettings } from "@/tests/clickhouse";
 import { Payments } from "@/payments";
 import { MockStripe } from "@/tests/payments";
-import { Analytics } from "@/analytics";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import {
+  SpansIngestQueue,
+  ingestSpansMessage,
+  type SpansIngestMessage,
+} from "@/workers/spanIngestQueue";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
+import {
+  MockRealtimeSpansLayer,
+  createRealtimeSpansLayer,
+} from "@/tests/workers/realtimeSpans";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { Settings } from "@/settings";
-import { MockSettingsLayer } from "@/tests/settings";
 import fs from "fs";
 import assert from "node:assert";
 
@@ -49,48 +59,115 @@ export const TestDrizzleORM: Layer.Layer<DrizzleORM | SqlClient.SqlClient> =
   DrizzleORM.Default.pipe(Layer.provideMerge(TestPgClient), Layer.orDie);
 
 /**
- * Mock layer for Analytics that provides a no-op implementation for tests.
- */
-export const MockAnalytics = Layer.succeed(Analytics, {
-  googleAnalytics: null as never,
-  postHog: null as never,
-  trackEvent: () => Effect.void,
-  trackPageView: () => Effect.void,
-  identify: () => Effect.void,
-  initialize: () => Effect.void,
-});
-
-/**
- * Mock layer for SpansMeteringQueueService that suppresses queue operations in tests.
- */
-export const MockSpansMeteringQueue = Layer.succeed(
-  SpansMeteringQueueService,
-  SpansMeteringQueueService.of({
-    send: () => Effect.succeed(undefined), // No-op in tests
-  }),
-);
-
-/**
- * A Layer that provides the Effect-native `Database`, `DrizzleORM`,
- * `SqlClient`, and `Settings` services for tests.
+ * A Layer that provides the Effect-native `Database`, `DrizzleORM`, and
+ * `SqlClient` services for tests.
  *
  * Note: This layer is automatically provided by `it.effect` from this module,
  * and tests are automatically wrapped in a transaction that rolls back.
  * You only need to import this if you need to provide it manually (e.g., in
  * tests that don't use `it.effect`).
  */
+
+export { createRealtimeSpansLayer, MockRealtimeSpansLayer };
+
+type ClickHouseSearchService = Context.Tag.Service<ClickHouseSearch>;
+
+const defaultClickHouseSearchService: ClickHouseSearchService = {
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  getAnalyticsSummary: () =>
+    Effect.succeed({
+      totalSpans: 0,
+      avgDurationMs: null,
+      p50DurationMs: null,
+      p95DurationMs: null,
+      p99DurationMs: null,
+      errorRate: 0,
+      totalTokens: 0,
+      totalCostUsd: 0,
+      topModels: [],
+      topFunctions: [],
+    }),
+};
+
+/**
+ * Creates a mock ClickHouseSearch layer with optional overrides.
+ */
+export const createClickHouseSearchLayer = (
+  overrides: Partial<ClickHouseSearchService> = {},
+): Layer.Layer<ClickHouseSearch> =>
+  Layer.succeed(ClickHouseSearch, {
+    ...defaultClickHouseSearchService,
+    ...overrides,
+  });
+
+/**
+ * Default mock ClickHouseSearch layer for tests.
+ */
+export const MockClickHouseSearchLayer = createClickHouseSearchLayer();
+
+/**
+ * SpansIngestQueue layer that synchronously executes ingestSpansMessage.
+ * Uses real TestClickHouse and mock services for RealtimeSpans, DrizzleORM, Payments.
+ */
+const TestSpansIngestQueue = Effect.gen(function* () {
+  const { MockStripe } = yield* Effect.promise(
+    () => import("@/tests/payments"),
+  );
+
+  const settings = createTestClickHouseSettings();
+  const settingsLayer = Layer.succeed(Settings, settings);
+  const clickHouseLayer = ClickHouse.Default.pipe(Layer.provide(settingsLayer));
+
+  // Mock Payments layer for metering
+  const mockPaymentsLayer = Payments.Default.pipe(
+    Layer.provide(MockStripe),
+    Layer.provideMerge(TestDrizzleORM),
+  );
+
+  const allServicesLayer = Layer.mergeAll(
+    clickHouseLayer,
+    MockRealtimeSpansLayer,
+    TestDrizzleORM,
+    mockPaymentsLayer,
+  );
+
+  return Layer.succeed(SpansIngestQueue, {
+    send: (message: SpansIngestMessage) =>
+      ingestSpansMessage(message).pipe(
+        Effect.provide(allServicesLayer),
+        Effect.catchAll(() => Effect.void),
+      ),
+  });
+}).pipe(Layer.unwrapEffect);
+
 export const TestDatabase: Layer.Layer<
   | Database
   | DrizzleORM
   | SqlClient.SqlClient
-  | Analytics
-  | SpansMeteringQueueService
-  | Settings
+  | ClickHouseSearch
+  | SpansIngestQueue
+  | RealtimeSpans
 > = Effect.gen(function* () {
   // Lazy import to avoid circular dependency
   const { MockStripe } = yield* Effect.promise(
     () => import("@/tests/payments"),
   );
+
+  // ClickHouse layer from Docker container config
+  const settings = createTestClickHouseSettings();
+  const settingsLayer = Layer.succeed(Settings, settings);
+  const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
+    Layer.provide(ClickHouse.Default),
+    Layer.provide(settingsLayer),
+  );
+
   return Layer.mergeAll(
     Database.Default.pipe(
       Layer.provideMerge(TestDrizzleORM),
@@ -101,9 +178,9 @@ export const TestDatabase: Layer.Layer<
         ),
       ),
     ),
-    MockAnalytics,
-    MockSpansMeteringQueue,
-    MockSettingsLayer(),
+    TestSpansIngestQueue,
+    MockRealtimeSpansLayer,
+    clickHouseSearchLayer,
   );
 }).pipe(Layer.unwrapEffect);
 
@@ -118,9 +195,9 @@ export type TestServices =
   | Database
   | DrizzleORM
   | SqlClient.SqlClient
-  | Analytics
-  | SpansMeteringQueueService
-  | Settings;
+  | ClickHouseSearch
+  | SpansIngestQueue
+  | RealtimeSpans;
 
 /**
  * Wraps a test function to automatically provide TestDatabase
@@ -163,7 +240,14 @@ const wrapEffectTest =
  * );
  * ```
  */
-export const it = createCustomIt<TestServices>(wrapEffectTest);
+const baseIt = createCustomIt<TestServices>(wrapEffectTest);
+
+/**
+ * Type-safe `it` with `it.effect` that automatically:
+ * 1. Wraps tests in a transaction that rolls back
+ * 2. Provides TestDatabase layer
+ */
+export const it = baseIt;
 
 // ============================================================================
 // Mock database builder
@@ -233,6 +317,67 @@ export class MockDrizzleORM {
 
   delete(result: MockEffectResult): this {
     this.deleteResults.push(result);
+    return this;
+  }
+
+  /**
+   * Pre-configures the standard authorization queries used by most database operations.
+   *
+   * This adds the 3 standard auth queries:
+   * 1. organizationMemberships.getRole (inside authorize)
+   * 2. organizationMemberships.findById
+   * 3. projectMemberships.getMembership
+   *
+   * @param options - Auth configuration options
+   * @param options.organizationId - Organization ID for the membership
+   * @param options.projectId - Project ID for the project membership
+   * @param options.memberId - User ID (member ID)
+   * @param options.orgRole - Organization role (default: "MEMBER")
+   * @param options.projectRole - Project role (default: "ADMIN")
+   *
+   * @example
+   * ```ts
+   * new MockDrizzleORM()
+   *   .withAuth({
+   *     organizationId: "org-id",
+   *     projectId: "project-id",
+   *     memberId: "user-id",
+   *   })
+   *   .insert([{ id: "annotation-id", ... }])
+   *   .build()
+   * ```
+   */
+  withAuth(options: {
+    organizationId: string;
+    projectId: string;
+    memberId: string;
+    orgRole?: string;
+    projectRole?: string;
+  }): this {
+    const {
+      organizationId,
+      projectId,
+      memberId,
+      orgRole = "MEMBER",
+      projectRole = "ADMIN",
+    } = options;
+    const now = new Date();
+
+    // organizationMemberships.getRole (inside authorize)
+    this.selectResults.push([
+      { role: orgRole, organizationId, memberId, createdAt: now },
+    ]);
+
+    // organizationMemberships.findById
+    this.selectResults.push([
+      { role: orgRole, organizationId, memberId, createdAt: now },
+    ]);
+
+    // projectMemberships.getMembership
+    this.selectResults.push([
+      { role: projectRole, projectId, memberId, createdAt: now },
+    ]);
+
     return this;
   }
 
@@ -651,8 +796,8 @@ export const TestApiKeyFixture = Effect.gen(function* () {
 /**
  * Effect-native test fixture for spans.
  *
- * Creates a test span within an environment using the Effect-native
- * `Database` service.
+ * Returns a test span identifier within an environment for ClickHouse/DurableObject
+ * integration paths.
  *
  * Reuses `TestEnvironmentFixture` to set up the organization, project, and environment.
  *
@@ -665,49 +810,9 @@ export const TestApiKeyFixture = Effect.gen(function* () {
  */
 export const TestSpanFixture = Effect.gen(function* () {
   const envFixture = yield* TestEnvironmentFixture;
-  const db = yield* Database;
 
   const traceId = "0123456789abcdef0123456789abcdef";
   const spanId = "0123456789abcdef";
-
-  const result = yield* db.organizations.projects.environments.traces.create({
-    userId: envFixture.owner.id,
-    organizationId: envFixture.org.id,
-    projectId: envFixture.project.id,
-    environmentId: envFixture.environment.id,
-    data: {
-      resourceSpans: [
-        {
-          resource: {
-            attributes: [
-              { key: "service.name", value: { stringValue: "test-service" } },
-            ],
-          },
-          scopeSpans: [
-            {
-              scope: { name: "test-scope" },
-              spans: [
-                {
-                  traceId,
-                  spanId,
-                  name: "test-span",
-                  kind: 1,
-                  startTimeUnixNano: "1700000000000000000",
-                  endTimeUnixNano: "1700000001000000000",
-                  attributes: [],
-                  status: {},
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  });
-
-  if (result.acceptedSpans !== 1) {
-    throw new Error("Failed to create test span");
-  }
 
   return {
     ...envFixture,

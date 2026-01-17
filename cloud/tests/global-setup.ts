@@ -30,6 +30,29 @@ export const CLICKHOUSE_CONNECTION_FILE = path.join(
   "mirascope-test-clickhouse-connection.json",
 );
 
+/**
+ * Type for the ClickHouse connection file written during global setup.
+ * Contains all connection details needed to connect to the test ClickHouse instance.
+ */
+export type ClickHouseConnectionFile = {
+  url: string;
+  user: string;
+  password: string;
+  database: string;
+  nativePort: number;
+};
+
+/**
+ * Reads the ClickHouse connection configuration from the global setup file.
+ * This file is created during global-setup and contains test ClickHouse credentials.
+ *
+ * @throws Error if the connection file doesn't exist (global-setup didn't run)
+ */
+export function getTestClickHouseConfig(): ClickHouseConnectionFile {
+  const raw = fs.readFileSync(CLICKHOUSE_CONNECTION_FILE, "utf-8");
+  return JSON.parse(raw) as ClickHouseConnectionFile;
+}
+
 // Custom error type for container failures
 class ContainerError extends Data.TaggedError("ContainerError")<{
   cause: unknown;
@@ -86,7 +109,7 @@ const acquireClickhouseContainer = Effect.tryPromise({
 const runClickhouseMigrations = (clickhouseUrl: string, nativePort: number) =>
   Effect.try({
     try: () => {
-      execFileSync("bash", ["clickhouse/migrate.sh", "migrate"], {
+      execFileSync("bash", ["db/clickhouse/migrate.sh", "migrate"], {
         cwd: path.resolve(__dirname, ".."),
         env: {
           ...process.env,

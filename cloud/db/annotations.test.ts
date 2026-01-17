@@ -2,7 +2,7 @@
  * Tests for the Effect-native Annotations service.
  */
 
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   describe,
   it,
@@ -10,13 +10,20 @@ import {
   TestEnvironmentFixture,
   TestSpanFixture,
   MockDrizzleORM,
+  createClickHouseSearchLayer,
+  createRealtimeSpansLayer,
 } from "@/tests/db";
+import {
+  createTraceDetailResponse,
+  createTraceDetailSpan,
+} from "@/tests/db/clickhouse/fixtures";
 import { Database } from "@/db/database";
 import {
   NotFoundError,
   DatabaseError,
   PermissionDeniedError,
   AlreadyExistsError,
+  ClickHouseError,
 } from "@/errors";
 
 // =============================================================================
@@ -108,7 +115,268 @@ describe("Annotations", () => {
 
         expect(result).toBeInstanceOf(NotFoundError);
         expect((result as NotFoundError).resource).toBe("span");
-      }),
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            createRealtimeSpansLayer({
+              getTraceDetail: () =>
+                Effect.succeed(
+                  createTraceDetailResponse({
+                    traceId: "nonexistenttraceid0123456789ab",
+                  }),
+                ),
+              exists: () => Effect.succeed(false),
+            }),
+            createClickHouseSearchLayer({
+              getTraceDetail: () =>
+                Effect.succeed(
+                  createTraceDetailResponse({
+                    traceId: "nonexistenttraceid0123456789ab",
+                  }),
+                ),
+            }),
+          ),
+        ),
+      ),
+    );
+
+    it.effect(
+      "returns NotFoundError when realtime and ClickHouse miss span",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result =
+            yield* db.organizations.projects.environments.traces.annotations
+              .create({
+                userId: "00000000-0000-0000-0000-000000000000",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                environmentId: "00000000-0000-0000-0000-000000000001",
+                data: {
+                  otelSpanId: "missing-span",
+                  otelTraceId: "missing-trace",
+                  label: "pass",
+                },
+              })
+              .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                .withAuth({
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                })
+                .select([]) // span lookup
+                .build(),
+              createRealtimeSpansLayer({
+                getTraceDetail: () =>
+                  Effect.succeed(
+                    createTraceDetailResponse({ traceId: "missing-trace" }),
+                  ),
+                exists: () => Effect.succeed(false),
+              }),
+              createClickHouseSearchLayer({
+                getTraceDetail: () =>
+                  Effect.succeed(
+                    createTraceDetailResponse({ traceId: "missing-trace" }),
+                  ),
+              }),
+            ),
+          ),
+        ),
+    );
+
+    it.effect("creates annotation when realtime span exists", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const annotation =
+          yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "exists-span",
+                otelTraceId: "exists-trace",
+                label: "pass",
+              },
+            },
+          );
+
+        expect(annotation.otelSpanId).toBe("exists-span");
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            new MockDrizzleORM()
+              .withAuth({
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+              })
+              .select([]) // span lookup
+              .insert([
+                {
+                  id: "annotation-id",
+                  otelSpanId: "exists-span",
+                  otelTraceId: "exists-trace",
+                  label: "pass",
+                  reasoning: null,
+                  metadata: null,
+                  environmentId: "00000000-0000-0000-0000-000000000001",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  createdBy: "00000000-0000-0000-0000-000000000000",
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              ])
+              .build(),
+            createRealtimeSpansLayer({
+              getTraceDetail: () =>
+                Effect.succeed(
+                  createTraceDetailResponse({ traceId: "exists-trace" }),
+                ),
+              exists: () => Effect.succeed(true),
+            }),
+            createClickHouseSearchLayer(),
+          ),
+        ),
+      ),
+    );
+
+    it.effect("returns NotFoundError when realtime and ClickHouse fail", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result =
+          yield* db.organizations.projects.environments.traces.annotations
+            .create({
+              userId: "00000000-0000-0000-0000-000000000000",
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              environmentId: "00000000-0000-0000-0000-000000000001",
+              data: {
+                otelSpanId: "error-span",
+                otelTraceId: "error-trace",
+                label: "pass",
+              },
+            })
+            .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(
+        Effect.provide(
+          Layer.mergeAll(
+            new MockDrizzleORM()
+              .withAuth({
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                memberId: "00000000-0000-0000-0000-000000000000",
+              })
+              .select([]) // span lookup
+              .build(),
+            createRealtimeSpansLayer({
+              getTraceDetail: () =>
+                Effect.succeed(
+                  createTraceDetailResponse({ traceId: "error-trace" }),
+                ),
+              exists: () => Effect.fail(new Error("realtime failed")),
+            }),
+            createClickHouseSearchLayer({
+              getTraceDetail: () =>
+                Effect.fail(
+                  new ClickHouseError({
+                    message: "clickhouse failed",
+                    cause: new Error("clickhouse failed"),
+                  }),
+                ),
+            }),
+          ),
+        ),
+      ),
+    );
+
+    it.effect(
+      "creates annotation when realtime misses and ClickHouse has span",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result =
+            yield* db.organizations.projects.environments.traces.annotations.create(
+              {
+                userId: "00000000-0000-0000-0000-000000000000",
+                organizationId: "00000000-0000-0000-0000-000000000003",
+                projectId: "00000000-0000-0000-0000-000000000002",
+                environmentId: "00000000-0000-0000-0000-000000000001",
+                data: {
+                  otelSpanId: "clickhouse-span",
+                  otelTraceId: "clickhouse-trace",
+                  label: "pass",
+                },
+              },
+            );
+
+          expect(result.otelSpanId).toBe("clickhouse-span");
+        }).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              new MockDrizzleORM()
+                .withAuth({
+                  organizationId: "00000000-0000-0000-0000-000000000003",
+                  projectId: "00000000-0000-0000-0000-000000000002",
+                  memberId: "00000000-0000-0000-0000-000000000000",
+                })
+                .select([]) // span lookup
+                .insert([
+                  {
+                    id: "annotation-id",
+                    otelSpanId: "clickhouse-span",
+                    otelTraceId: "clickhouse-trace",
+                    label: "pass",
+                    reasoning: null,
+                    metadata: null,
+                    environmentId: "00000000-0000-0000-0000-000000000001",
+                    projectId: "00000000-0000-0000-0000-000000000002",
+                    organizationId: "00000000-0000-0000-0000-000000000003",
+                    createdBy: "00000000-0000-0000-0000-000000000000",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  },
+                ])
+                .build(),
+              createRealtimeSpansLayer({
+                exists: () => Effect.succeed(false),
+              }),
+              createClickHouseSearchLayer({
+                getTraceDetail: () =>
+                  Effect.succeed(
+                    createTraceDetailResponse({
+                      traceId: "clickhouse-trace",
+                      spans: [
+                        createTraceDetailSpan({
+                          traceId: "clickhouse-trace",
+                          spanId: "clickhouse-span",
+                          environmentId: "00000000-0000-0000-0000-000000000001",
+                          projectId: "00000000-0000-0000-0000-000000000002",
+                          organizationId:
+                            "00000000-0000-0000-0000-000000000003",
+                          name: "trace-span",
+                        }),
+                      ],
+                    }),
+                  ),
+              }),
+            ),
+          ),
+        ),
     );
 
     it.effect("returns PermissionDeniedError when user lacks permission", () =>
@@ -188,104 +456,14 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // span query (succeed)
-            .select([
-              {
-                id: "span-id",
-                traceId: "trace-id",
-                otelSpanId: "testspan",
-                otelTraceId: "testtrace",
-              },
-            ])
-            // annotation insert (unique constraint violation)
+            .withAuth({
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              memberId: "00000000-0000-0000-0000-000000000000",
+            })
             .insert(
               Object.assign(new Error("duplicate key"), { code: "23505" }),
             )
-            .build(),
-        ),
-      ),
-    );
-
-    it.effect("returns DatabaseError when span query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* Database;
-
-        const result =
-          yield* db.organizations.projects.environments.traces.annotations
-            .create({
-              userId: "00000000-0000-0000-0000-000000000000",
-              organizationId: "00000000-0000-0000-0000-000000000003",
-              projectId: "00000000-0000-0000-0000-000000000002",
-              environmentId: "00000000-0000-0000-0000-000000000001",
-              data: {
-                otelSpanId: "testspan",
-                otelTraceId: "testtrace",
-                label: "pass",
-              },
-            })
-            .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to find span");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // span query (fail)
-            .select(new Error("Span query failed"))
             .build(),
         ),
       ),
@@ -315,43 +493,11 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // span query (succeed)
-            .select([
-              {
-                id: "span-id",
-                traceId: "trace-id",
-                otelSpanId: "testspan",
-                otelTraceId: "testtrace",
-              },
-            ])
-            // annotation insert (fail)
+            .withAuth({
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              memberId: "00000000-0000-0000-0000-000000000000",
+            })
             .insert(new Error("Insert failed"))
             .build(),
         ),
@@ -456,34 +602,11 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // annotation query (fail)
+            .withAuth({
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              memberId: "00000000-0000-0000-0000-000000000000",
+            })
             .select(new Error("Query failed"))
             .build(),
         ),
@@ -707,34 +830,11 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // update query (fail)
+            .withAuth({
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              memberId: "00000000-0000-0000-0000-000000000000",
+            })
             .update(new Error("Update failed"))
             .build(),
         ),
@@ -872,34 +972,11 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // delete query (fail)
+            .withAuth({
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              memberId: "00000000-0000-0000-0000-000000000000",
+            })
             .delete(new Error("Delete failed"))
             .build(),
         ),
@@ -924,40 +1001,6 @@ describe("Annotations", () => {
             data: { otelSpanId: spanId, otelTraceId: traceId, label: "pass" },
           },
         );
-
-        // Create another span for second annotation
-        const result2 =
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test-scope" },
-                      spans: [
-                        {
-                          traceId,
-                          spanId: "abcdef0123456789",
-                          name: "test-span-2",
-                          kind: 1,
-                          startTimeUnixNano: "1700000002000000000",
-                          endTimeUnixNano: "1700000003000000000",
-                          attributes: [],
-                          status: {},
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          });
-        expect(result2.acceptedSpans).toBe(1);
 
         yield* db.organizations.projects.environments.traces.annotations.create(
           {
@@ -1129,37 +1172,6 @@ describe("Annotations", () => {
         ];
 
         for (const spanId of spanIds) {
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test-scope" },
-                      spans: [
-                        {
-                          traceId,
-                          spanId,
-                          name: `span-${spanId}`,
-                          kind: 1,
-                          startTimeUnixNano: "1700000000000000000",
-                          endTimeUnixNano: "1700000001000000000",
-                          attributes: [],
-                          status: {},
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          });
-
           yield* db.organizations.projects.environments.traces.annotations.create(
             {
               userId: owner.id,
@@ -1201,37 +1213,6 @@ describe("Annotations", () => {
         ];
 
         for (const spanId of spanIds) {
-          yield* db.organizations.projects.environments.traces.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: {
-              resourceSpans: [
-                {
-                  resource: { attributes: [] },
-                  scopeSpans: [
-                    {
-                      scope: { name: "test-scope" },
-                      spans: [
-                        {
-                          traceId,
-                          spanId,
-                          name: `span-${spanId}`,
-                          kind: 1,
-                          startTimeUnixNano: "1700000000000000000",
-                          endTimeUnixNano: "1700000001000000000",
-                          attributes: [],
-                          status: {},
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          });
-
           yield* db.organizations.projects.environments.traces.annotations.create(
             {
               userId: owner.id,
@@ -1297,34 +1278,11 @@ describe("Annotations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // organizationMemberships.getRole (inside authorize)
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // organizationMemberships.findById result
-            .select([
-              {
-                role: "MEMBER",
-                organizationId: "00000000-0000-0000-0000-000000000003",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // projectMemberships.getMembership (authorization)
-            .select([
-              {
-                role: "ADMIN",
-                projectId: "00000000-0000-0000-0000-000000000002",
-                memberId: "00000000-0000-0000-0000-000000000000",
-                createdAt: new Date(),
-              },
-            ])
-            // annotations query (fail)
+            .withAuth({
+              organizationId: "00000000-0000-0000-0000-000000000003",
+              projectId: "00000000-0000-0000-0000-000000000002",
+              memberId: "00000000-0000-0000-0000-000000000000",
+            })
             .select(new Error("Query failed"))
             .build(),
         ),

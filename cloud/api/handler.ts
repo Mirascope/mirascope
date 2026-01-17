@@ -8,9 +8,10 @@ import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
-import { ClickHouseSearch } from "@/clickhouse/search";
-import { SpansMeteringQueueService } from "@/workers/spansMeteringQueue";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { AuthenticatedUser, Authentication } from "@/auth";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
@@ -18,17 +19,23 @@ export type HandleRequestOptions = {
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   settings: SettingsConfig;
+  drizzle: Context.Tag.Service<DrizzleORM>;
+  analytics: Context.Tag.Service<Analytics>;
+  emails: Context.Tag.Service<Emails>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
+  realtimeSpans: Context.Tag.Service<RealtimeSpans>;
+  spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
+  drizzle: Context.Tag.Service<DrizzleORM>;
   analytics: Context.Tag.Service<Analytics>;
   emails: Context.Tag.Service<Emails>;
   clickHouseSearch: Context.Tag.Service<ClickHouseSearch>;
-  drizzleOrm: Context.Tag.Service<DrizzleORM>;
-  spansMeteringQueue: Context.Tag.Service<SpansMeteringQueueService>;
+  realtimeSpans: Context.Tag.Service<RealtimeSpans>;
+  spansIngestQueue: Context.Tag.Service<SpansIngestQueue>;
   user: PublicUser;
   apiKeyInfo?: ApiKeyInfo;
   settings: SettingsConfig;
@@ -42,13 +49,14 @@ function createWebHandler(options: WebHandlerOptions) {
       user: options.user,
       apiKeyInfo: options.apiKeyInfo,
     }),
+    Layer.succeed(DrizzleORM, options.drizzle),
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
     Layer.succeed(Analytics, options.analytics),
     Layer.succeed(Emails, options.emails),
     Layer.succeed(ClickHouseSearch, options.clickHouseSearch),
-    Layer.succeed(DrizzleORM, options.drizzleOrm),
-    Layer.succeed(SpansMeteringQueueService, options.spansMeteringQueue),
+    Layer.succeed(SpansIngestQueue, options.spansIngestQueue),
+    Layer.succeed(RealtimeSpans, options.realtimeSpans),
   );
 
   const ApiWithDependencies = Layer.merge(
@@ -75,32 +83,25 @@ export const handleRequest = (
 ): Effect.Effect<
   { matched: boolean; response: Response },
   HandlerError,
-  | Database
-  | Payments
-  | Analytics
-  | Emails
-  | DrizzleORM
-  | SpansMeteringQueueService
+  Database | Payments | DrizzleORM
 > =>
   Effect.gen(function* () {
     const db = yield* Database;
     const payments = yield* Payments;
-    const analytics = yield* Analytics;
-    const emails = yield* Emails;
-    const drizzleOrm = yield* DrizzleORM;
-    const spansMeteringQueue = yield* SpansMeteringQueueService;
+    const drizzle = yield* DrizzleORM;
 
     const webHandler = createWebHandler({
       db,
       payments,
-      analytics,
-      emails,
-      drizzleOrm,
-      spansMeteringQueue,
+      drizzle,
+      analytics: options.analytics,
+      emails: options.emails,
       user: options.user,
       apiKeyInfo: options.apiKeyInfo,
       settings: options.settings,
       clickHouseSearch: options.clickHouseSearch,
+      realtimeSpans: options.realtimeSpans,
+      spansIngestQueue: options.spansIngestQueue,
     });
 
     const result = yield* Effect.tryPromise({
