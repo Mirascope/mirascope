@@ -12,17 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as DocsRouteImport } from './routes/docs'
+import { Route as CloudRouteImport } from './routes/cloud'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as CloudIndexRouteImport } from './routes/cloud/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as CloudLoginRouteImport } from './routes/cloud/login'
+import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
@@ -54,19 +56,14 @@ const OrganizationsRoute = OrganizationsRouteImport.update({
   path: '/organizations',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CloudRoute = CloudRouteImport.update({
+  id: '/cloud',
+  path: '/cloud',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -83,6 +80,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CloudIndexRoute = CloudIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CloudRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
@@ -108,6 +110,16 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/dashboard/settings',
   path: '/dashboard/settings',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CloudLoginRoute = CloudLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudDashboardRoute = CloudDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CloudRoute,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
@@ -188,9 +200,8 @@ const RouterV0ProviderSplatRoute = RouterV0ProviderSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cloud': typeof CloudRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -199,11 +210,14 @@ export interface FileRoutesByFullPath {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/login': typeof CloudLoginRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
+  '/cloud/': typeof CloudIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -219,8 +233,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRouteWithChildren
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -229,11 +241,14 @@ export interface FileRoutesByTo {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/login': typeof CloudLoginRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
+  '/cloud': typeof CloudIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -250,9 +265,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cloud': typeof CloudRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -261,11 +275,14 @@ export interface FileRoutesById {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/login': typeof CloudLoginRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
+  '/cloud/': typeof CloudIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -283,9 +300,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/blog'
+    | '/cloud'
     | '/docs'
-    | '/home'
-    | '/login'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -294,11 +310,14 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/dashboard'
+    | '/cloud/login'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
+    | '/cloud/'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -314,8 +333,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/docs'
-    | '/home'
-    | '/login'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -324,11 +341,14 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/dashboard'
+    | '/cloud/login'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog'
+    | '/cloud'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -344,9 +364,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/blog'
+    | '/cloud'
     | '/docs'
-    | '/home'
-    | '/login'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -355,11 +374,14 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/dashboard'
+    | '/cloud/login'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
+    | '/cloud/'
     | '/dashboard/'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -376,9 +398,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CloudRoute: typeof CloudRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
-  HomeRoute: typeof HomeRoute
-  LoginRoute: typeof LoginRoute
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -420,25 +441,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/docs': {
       id: '/docs'
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cloud': {
+      id: '/cloud'
+      path: '/cloud'
+      fullPath: '/cloud'
+      preLoaderRoute: typeof CloudRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -461,6 +475,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/cloud/': {
+      id: '/cloud/'
+      path: '/'
+      fullPath: '/cloud/'
+      preLoaderRoute: typeof CloudIndexRouteImport
+      parentRoute: typeof CloudRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -496,6 +517,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/settings'
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/cloud/login': {
+      id: '/cloud/login'
+      path: '/login'
+      fullPath: '/cloud/login'
+      preLoaderRoute: typeof CloudLoginRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/dashboard': {
+      id: '/cloud/dashboard'
+      path: '/dashboard'
+      fullPath: '/cloud/dashboard'
+      preLoaderRoute: typeof CloudDashboardRouteImport
+      parentRoute: typeof CloudRoute
     }
     '/blog/$slug': {
       id: '/blog/$slug'
@@ -617,6 +652,20 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface CloudRouteChildren {
+  CloudDashboardRoute: typeof CloudDashboardRoute
+  CloudLoginRoute: typeof CloudLoginRoute
+  CloudIndexRoute: typeof CloudIndexRoute
+}
+
+const CloudRouteChildren: CloudRouteChildren = {
+  CloudDashboardRoute: CloudDashboardRoute,
+  CloudLoginRoute: CloudLoginRoute,
+  CloudIndexRoute: CloudIndexRoute,
+}
+
+const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)
+
 interface DocsRouteChildren {
   DocsSplatRoute: typeof DocsSplatRoute
   DocsV1SplatRoute: typeof DocsV1SplatRoute
@@ -660,9 +709,8 @@ const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogRoute: BlogRouteWithChildren,
+  CloudRoute: CloudRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
-  HomeRoute: HomeRoute,
-  LoginRoute: LoginRoute,
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
