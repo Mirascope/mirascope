@@ -13,17 +13,30 @@
 
 import type { Plugin } from "vite";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import Piscina from "piscina";
 
 import type { SocialImagesOptions } from "../app/lib/social-cards/types";
-import { loadAssets, renderSocialCard } from "../app/lib/social-cards/render";
 import ContentProcessor from "../app/lib/content/content-processor";
+import type { WorkerTask, WorkerResult } from "./social-cards-worker";
+
+/**
+ * Default concurrency based on available CPU cores.
+ * Leaves 1 core for the main thread.
+ */
+const DEFAULT_CONCURRENCY = Math.max(
+  (os.availableParallelism?.() ?? os.cpus().length) - 1,
+  1,
+);
 
 /**
  * Default configuration
  */
 const DEFAULT_OPTIONS: Required<SocialImagesOptions> = {
-  concurrency: 100,
+  concurrency: DEFAULT_CONCURRENCY,
   quality: 85,
   verbose: false,
 };
@@ -90,7 +103,6 @@ export class SocialCardGenerator {
   private readonly staticTitles: Record<string, string>;
   private readonly outputDir: string;
 
-  private assets: { font: ArrayBuffer; background: string } | null = null;
   private titleLookup: Map<string, string> | null = null;
   private initialized = false;
 
@@ -102,7 +114,10 @@ export class SocialCardGenerator {
     }
 
     this.config = {
-      concurrency: options.concurrency ?? DEFAULT_OPTIONS.concurrency,
+      concurrency: Math.max(
+        options.concurrency ?? DEFAULT_OPTIONS.concurrency,
+        1,
+      ),
       quality: options.quality ?? DEFAULT_OPTIONS.quality,
       verbose: options.verbose ?? DEFAULT_OPTIONS.verbose,
     };
@@ -112,7 +127,7 @@ export class SocialCardGenerator {
   }
 
   /**
-   * Initialize the generator by loading assets and building the title lookup.
+   * Initialize the generator by building the title lookup.
    * This is called automatically by generate() if not already initialized.
    */
   async initialize(): Promise<void> {
@@ -121,7 +136,6 @@ export class SocialCardGenerator {
     // Process content if not already processed/validated (no-op if already done)
     await this.processor.processAllContent();
 
-    this.assets = await loadAssets();
     this.titleLookup = this.processor.getRouteToTitleMap();
     this.initialized = true;
   }
@@ -129,12 +143,14 @@ export class SocialCardGenerator {
   /**
    * Generate social cards for all content pages.
    *
+   * Uses a worker thread pool for true CPU parallelism.
+   *
    * @returns Generation results with counts and individual card outcomes
    */
   async generate(): Promise<GenerationResults> {
     const outputDir = path.resolve(this.outputDir, "social-cards");
 
-    // Ensure initialized (loads assets and builds title lookup from processor)
+    // Ensure initialized (builds title lookup from processor)
     await this.initialize();
 
     // Get all routes from processor content and static titles
@@ -148,33 +164,76 @@ export class SocialCardGenerator {
     }
 
     console.log(
-      `[social-cards] Generating social cards for ${allRoutes.length} pages...`,
+      `[social-cards] Generating social cards for ${allRoutes.length} pages (${this.config.concurrency} workers)...`,
     );
 
     // Create output directory
     await fs.mkdir(outputDir, { recursive: true });
 
-    // Generate images with throughput-optimized sliding window concurrency
-    const cards = new Array<CardResult>(allRoutes.length);
-    const executing = new Set<Promise<void>>();
+    // Create worker pool for parallel rendering
+    // Uses tsx loader so workers can run TypeScript directly
+    const workerPath = fileURLToPath(
+      new URL("./social-cards-worker.ts", import.meta.url),
+    );
+    const pool = new Piscina({
+      filename: workerPath,
+      maxThreads: this.config.concurrency,
+      execArgv: ["--import", "tsx"],
+    });
 
-    for (let i = 0; i < allRoutes.length; i++) {
-      const route = allRoutes[i];
-      const index = i;
+    // Track progress for real-time logging
+    let completed = 0;
+    const total = allRoutes.length;
 
-      const task = this.generateCard(route, outputDir).then((result) => {
-        cards[index] = result;
-      });
+    // Build tasks, handling skipped routes in main thread
+    // Each task logs on completion for real-time progress
+    const taskPromises = allRoutes.map((route): Promise<CardResult> => {
+      const title = this.getTitle(route);
 
-      const wrapped = task.finally(() => executing.delete(wrapped));
-      executing.add(wrapped);
-
-      if (executing.size >= this.config.concurrency) {
-        await Promise.race(executing);
+      if (!title) {
+        completed++;
+        if (this.config.verbose) {
+          console.log(
+            `[social-cards] [${completed}/${total}] Skipped ${route} (no title)`,
+          );
+        }
+        return Promise.resolve({
+          status: "skipped",
+          route,
+          reason: "no title found",
+        });
       }
-    }
 
-    await Promise.all(executing);
+      const task: WorkerTask = {
+        route,
+        title,
+        outputDir,
+        quality: this.config.quality,
+      };
+
+      // Run task and log on completion
+      return (pool.run(task) as Promise<WorkerResult>).then((result) => {
+        completed++;
+        if (this.config.verbose) {
+          if (result.status === "success") {
+            console.log(
+              `[social-cards] [${completed}/${total}] Generated ${result.filename}`,
+            );
+          } else {
+            console.log(
+              `[social-cards] [${completed}/${total}] Failed ${route}: ${result.error}`,
+            );
+          }
+        }
+        return result;
+      });
+    });
+
+    // Wait for all tasks to complete
+    const cards = await Promise.all(taskPromises);
+
+    // Cleanup worker pool
+    await pool.destroy();
 
     // Aggregate results
     const results: GenerationResults = {
@@ -189,49 +248,6 @@ export class SocialCardGenerator {
     );
 
     return results;
-  }
-
-  /**
-   * Generate a single social card for a route.
-   */
-  private async generateCard(
-    route: string,
-    outputDir: string,
-  ): Promise<CardResult> {
-    try {
-      const title = this.getTitle(route);
-
-      if (!title) {
-        if (this.config.verbose) {
-          console.log(`[social-cards] Skipping ${route} (no title found)`);
-        }
-        return { status: "skipped", route, reason: "no title found" };
-      }
-
-      const filename = routeToFilename(route);
-      const outputPath = path.join(outputDir, filename);
-
-      const webpBuffer = await renderSocialCard(
-        title,
-        this.assets!,
-        this.config.quality,
-      );
-      await fs.writeFile(outputPath, webpBuffer);
-
-      if (this.config.verbose) {
-        console.log(`[social-cards] Generated ${filename}`);
-      }
-
-      return { status: "success", route, filename };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error(
-        `[social-cards] Failed to generate card for ${route}:`,
-        errorMessage,
-      );
-      return { status: "failed", route, error: errorMessage };
-    }
   }
 
   /**
@@ -259,15 +275,6 @@ export class SocialCardGenerator {
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
   }
-}
-
-// Route path -> social card filename (see app/lib/seo/head.ts)
-function routeToFilename(route: string): string {
-  // Canonicalize path (remove trailing slashes except for root)
-  const cleanRoute = route === "/" ? route : route.replace(/\/+$/, "");
-  // Remove leading slash and replace remaining slashes with dashes
-  const filename = cleanRoute.replace(/^\//, "").replace(/\//g, "-") || "index";
-  return `${filename}.webp`;
 }
 
 /**
@@ -306,7 +313,6 @@ export function viteSocialCards({
         const options: SocialCardGeneratorOptions = {
           processor,
           outputDir,
-          verbose: true,
         };
         await new SocialCardGenerator(options).generate();
       },
