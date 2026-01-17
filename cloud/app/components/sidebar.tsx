@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/app/components/ui/button";
 import {
   Select,
@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { useOrganization } from "@/app/contexts/organization";
+import { useAuth } from "@/app/contexts/auth";
 import { useCreateOrganization } from "@/app/api/organizations";
 import { generateSlug } from "@/db/slug";
 
@@ -82,11 +83,18 @@ export function Sidebar() {
     setSelectedOrganization,
     isLoading: orgsLoading,
   } = useOrganization();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const [showCreateOrg, setShowCreateOrg] = useState(false);
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
+
+  const handleSignOut = async () => {
+    await logout();
+    void navigate({ to: "/" });
+  };
 
   const handleSelectChange = (value: string) => {
     if (value === "__create_new__") {
@@ -105,7 +113,7 @@ export function Sidebar() {
       <div className="px-2 pt-4">
         <Link
           to="/cloud/dashboard"
-          className={`relative flex items-center justify-center px-3 py-2 text-lg rounded-md text-foreground font-handwriting-descent ${
+          className={`relative flex items-center justify-center px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
             isActive("/cloud/dashboard")
               ? "bg-muted font-medium"
               : "hover:bg-muted"
@@ -137,7 +145,7 @@ export function Sidebar() {
       <div className="px-2 pb-2">
         <Link
           to="/cloud/settings"
-          className={`relative flex items-center justify-center px-3 py-2 text-lg rounded-md text-foreground font-handwriting-descent ${
+          className={`relative flex items-center justify-center px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
             isActive("/cloud/settings")
               ? "bg-muted font-medium"
               : "hover:bg-muted"
@@ -166,6 +174,29 @@ export function Sidebar() {
         </Link>
       </div>
 
+      {/* Sign Out button */}
+      <div className="px-2 pb-2">
+        <button
+          onClick={() => void handleSignOut()}
+          className="relative flex items-center justify-center w-full px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent hover:bg-muted"
+        >
+          <svg
+            className="w-5 h-5 absolute left-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+          Sign Out
+        </button>
+      </div>
+
       {/* Organization selector at bottom */}
       <div className="px-2 pb-3 border-t border-border pt-3">
         {orgsLoading ? (
@@ -175,7 +206,7 @@ export function Sidebar() {
             value={selectedOrganization?.id || ""}
             onValueChange={handleSelectChange}
           >
-            <SelectTrigger className="bg-background">
+            <SelectTrigger className="bg-background text-base">
               <SelectValue placeholder="Select organization" />
             </SelectTrigger>
             <SelectContent>
