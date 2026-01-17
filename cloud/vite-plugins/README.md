@@ -234,24 +234,24 @@ This ensures the sitemap plugin runs before the robots plugin.
 
 ## Social Cards Plugin (`social-cards.ts`)
 
-Generates Open Graph / Twitter card images for all indexed pages in the sitemap.
+Generates Open Graph / Twitter card images for all content pages.
 
 ### Features
 
-- **Sitemap-driven**: Reads the generated `sitemap.xml` after build to find indexed pages
-- **Content metadata lookup**: Extracts page titles from MDX frontmatter
+- **ContentProcessor-driven**: Gets routes and titles from the shared ContentProcessor instance
+- **Worker thread pool**: Uses Piscina for true CPU parallelism across worker threads
 - **Satori rendering**: Uses Satori to convert JSX templates to SVG
 - **High-quality output**: Converts SVG → PNG (resvg-js) → WebP (Sharp)
 - **Branded design**: Uses Williams Handwriting font on the homepage light background
-- **Parallel processing**: Generates images concurrently with configurable limits
+- **Static page support**: Configurable titles for non-content routes (home, pricing, etc.)
 
 ### How It Works
 
-1. After the build completes, the plugin reads `dist/client/sitemap.xml`
-2. It extracts URLs with `<changefreq>` tags (indexed/public pages)
-3. For each URL, it looks up the page title from content metadata
-4. It renders a social card using the Satori JSX template
-5. The card is converted to WebP and written to `dist/client/social-cards/`
+1. After the build completes, the plugin initializes the ContentProcessor
+2. It collects all routes from content metadata plus static page titles
+3. A worker thread pool is created with one thread per CPU core (minus one for main thread)
+4. Each worker loads font/background assets once, then renders assigned cards
+5. Cards are converted to WebP and written to `dist/client/social-cards/`
 
 ### Output
 
@@ -277,10 +277,22 @@ The `SocialCardGenerator` class (used internally or standalone) accepts addition
 new SocialCardGenerator({
   processor,        // ContentProcessor instance (required)
   outputDir,        // Output directory (required)
-  concurrency: 10,  // Max parallel image generations (default: 10)
+  staticTitles,     // Static page titles for non-content routes (optional)
+  concurrency,      // Max worker threads (default: CPU cores - 1)
   quality: 85,      // WebP quality 0-100 (default: 85)
   verbose: false,   // Enable detailed logging (default: false)
 })
+```
+
+Default static titles are provided for common routes:
+
+```typescript
+{
+  "/home": "Mirascope",
+  "/pricing": "Pricing",
+  "/docs": "Documentation",
+  "/blog": "Blog",
+}
 ```
 
 ### Template
@@ -295,15 +307,17 @@ The social card rendering is located at `app/lib/social-cards/render.ts`. It ren
 
 The plugin uses:
 
+- `piscina` - Worker thread pool for true CPU parallelism
 - `satori` - JSX to SVG rendering (Vercel)
 - `@resvg/resvg-js` - High-quality SVG to PNG conversion (Rust-based)
 - `sharp` - PNG to WebP conversion (already used by images plugin)
 
-Helper functions are in `app/lib/social-cards/`:
+Helper modules are in `app/lib/social-cards/`:
 
-- `template.tsx` - Satori JSX template component
-- `render.ts` - Render pipeline (Satori → resvg → Sharp)
-- `sitemap.ts` - Sitemap parsing utilities
+- `render.ts` - Render pipeline (Satori → resvg → Sharp) and asset loading
+- `types.ts` - Type definitions for social card options
+
+The worker implementation is in `vite-plugins/social-cards-worker.ts`.
 
 ### SEO Integration
 
@@ -316,13 +330,13 @@ Social card URLs are automatically included in page metadata via `app/lib/seo/he
 ### Build-time vs Runtime
 
 - **Development**: No social images are generated; missing images will 404
-- **Production**: All indexed pages get social card images generated at build time
+- **Production**: All content pages get social card images generated at build time
 
 ### Error Handling
 
-- Missing sitemap: Plugin logs a warning and skips (doesn't fail build)
-- Missing title: Falls back to generating title from URL path
+- Missing title: Falls back to generating title from URL path (e.g., `/docs/v1/learn` → "Docs V1 Learn")
 - Individual failures: Logged as errors, other images continue generating
+- Empty routes: Plugin logs and returns early with zero results
 
 ## Pagefind Dev Plugin (`pagefind-dev.ts`)
 
