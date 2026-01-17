@@ -5,6 +5,8 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
+  StripeError,
 } from "@/errors";
 import { createSlugSchema } from "@/db/slug";
 
@@ -54,6 +56,10 @@ export class ProjectsApi extends HttpApiGroup.make("projects")
       .setPath(Schema.Struct({ organizationId: Schema.String }))
       .setPayload(CreateProjectRequestSchema)
       .addSuccess(ProjectSchema)
+      .addError(PlanLimitExceededError, {
+        status: PlanLimitExceededError.status,
+      })
+      .addError(StripeError, { status: StripeError.status })
       .addError(AlreadyExistsError, { status: AlreadyExistsError.status })
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })

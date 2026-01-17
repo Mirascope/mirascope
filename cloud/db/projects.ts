@@ -46,7 +46,7 @@
  */
 
 import { Effect } from "effect";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -59,8 +59,11 @@ import {
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
+  PlanLimitExceededError,
+  StripeError,
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
+import { Payments } from "@/payments";
 import {
   projects,
   projectMemberships,
@@ -124,6 +127,65 @@ export class Projects extends BaseAuthenticatedEffectService<
     super();
     this.organizationMemberships = organizationMemberships;
     this.memberships = projectMemberships;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Project Limit Enforcement
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Checks if creating a new project would exceed the organization's plan limits.
+   *
+   * @param organizationId - The organization to check limits for
+   * @returns Effect that succeeds if under limit, fails with PlanLimitExceededError if at/over limit
+   */
+  private checkProjectLimit({
+    organizationId,
+  }: {
+    organizationId: string;
+  }): Effect.Effect<
+    void,
+    PlanLimitExceededError | DatabaseError | NotFoundError | StripeError,
+    DrizzleORM | Payments
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+      const payments = yield* Payments;
+
+      // Get current plan and limits
+      const planTier =
+        yield* payments.customers.subscriptions.getPlan(organizationId);
+      const limits =
+        yield* payments.customers.subscriptions.getPlanLimits(planTier);
+
+      // Count active projects
+      const [projectCount] = yield* client
+        .select({ count: sql<number>`count(*)::int` })
+        .from(projects)
+        .where(eq(projects.organizationId, organizationId))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to count projects",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (projectCount.count >= limits.projects) {
+        return yield* Effect.fail(
+          new PlanLimitExceededError({
+            message: `Cannot create project: ${planTier} plan limit is ${limits.projects} project(s)`,
+            resource: "projects",
+            limitType: "projects",
+            currentUsage: projectCount.count,
+            limit: limits.projects,
+            planTier,
+          }),
+        );
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -212,8 +274,13 @@ export class Projects extends BaseAuthenticatedEffectService<
     data: Pick<NewProject, "name" | "slug">;
   }): Effect.Effect<
     PublicProject,
-    NotFoundError | PermissionDeniedError | AlreadyExistsError | DatabaseError,
-    DrizzleORM
+    | NotFoundError
+    | PermissionDeniedError
+    | AlreadyExistsError
+    | DatabaseError
+    | PlanLimitExceededError
+    | StripeError,
+    DrizzleORM | Payments
   > {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
@@ -235,6 +302,9 @@ export class Projects extends BaseAuthenticatedEffectService<
           }),
         );
       }
+
+      // Check project limit before creating
+      yield* this.checkProjectLimit({ organizationId });
 
       // Use transaction to ensure project, membership, and audit are created atomically
       return yield* client.withTransaction(
