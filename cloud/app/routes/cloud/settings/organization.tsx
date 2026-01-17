@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useOrganization } from "@/app/contexts/organization";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -11,12 +11,14 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
+import { DeleteOrganizationModal } from "@/app/components/delete-organization-modal";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 
 function OrganizationSettingsPage() {
   const { selectedOrganization, organizations, isLoading } = useOrganization();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   if (isLoading) {
     return (
@@ -91,9 +93,40 @@ function OrganizationSettingsPage() {
         </CardContent>
       </Card>
 
+      <Card className="mt-6 border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardDescription>
+            Irreversible and destructive actions
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Delete this organization</p>
+              <p className="text-sm text-muted-foreground">
+                Once you delete an organization, there is no going back. Please
+                be certain.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={() => setShowDeleteModal(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <CreateOrganizationModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
+      />
+      <DeleteOrganizationModal
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
       />
     </div>
   );
