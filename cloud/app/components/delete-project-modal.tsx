@@ -15,6 +15,7 @@ import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useDeleteProject } from "@/app/api/projects";
+import { getErrorMessage } from "@/app/lib/errors";
 import type { PublicProject } from "@/db/schema";
 
 export function DeleteProjectModal({
@@ -75,8 +76,8 @@ export function DeleteProjectModal({
 
       setConfirmName("");
       onOpenChange(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete project");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to delete project"));
     }
   };
 
