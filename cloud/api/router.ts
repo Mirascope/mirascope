@@ -28,6 +28,11 @@ import {
   acceptInvitationHandler,
 } from "@/api/organization-invitations.handlers";
 import {
+  listMembersHandler,
+  updateMemberRoleHandler,
+  removeMemberHandler,
+} from "@/api/organization-memberships.handlers";
+import {
   listProjectsHandler,
   createProjectHandler,
   getProjectHandler,
@@ -149,6 +154,20 @@ const OrganizationInvitationsHandlersLive = HttpApiBuilder.group(
         revokeInvitationHandler(path.organizationId, path.invitationId),
       )
       .handle("accept", ({ payload }) => acceptInvitationHandler(payload)),
+);
+
+const OrganizationMembershipsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "organization-memberships",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) => listMembersHandler(path.organizationId))
+      .handle("update", ({ path, payload }) =>
+        updateMemberRoleHandler(path.organizationId, path.memberId, payload),
+      )
+      .handle("delete", ({ path }) =>
+        removeMemberHandler(path.organizationId, path.memberId),
+      ),
 );
 
 const ProjectsHandlersLive = HttpApiBuilder.group(
@@ -276,6 +295,7 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(DocsHandlersLive),
   Layer.provide(OrganizationsHandlersLive),
   Layer.provide(OrganizationInvitationsHandlersLive),
+  Layer.provide(OrganizationMembershipsHandlersLive),
   Layer.provide(ProjectsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),

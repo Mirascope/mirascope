@@ -16,6 +16,10 @@ const settingsNavItems: SettingsNavItem[] = [
     path: "/cloud/settings/organization",
   },
   {
+    label: "Team",
+    path: "/cloud/settings/team",
+  },
+  {
     label: "Project",
     path: "/cloud/settings/project",
   },

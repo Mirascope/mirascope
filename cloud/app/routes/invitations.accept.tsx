@@ -40,12 +40,18 @@ function AcceptInvitationPage() {
     setErrorMessage(null);
 
     try {
-      await acceptInvitation.mutateAsync(token);
+      const result = await acceptInvitation.mutateAsync(token);
       setState("success");
 
-      // Redirect to organizations page after short delay
+      // Store the organization ID so it gets selected on dashboard
+      localStorage.setItem(
+        "mirascope:selectedOrganizationId",
+        result.organizationId,
+      );
+
+      // Redirect to cloud dashboard after short delay
       setTimeout(() => {
-        void navigate({ to: "/organizations" });
+        void navigate({ to: "/cloud/dashboard" });
       }, 2000);
     } catch (error) {
       setState("error");
@@ -163,7 +169,7 @@ function AcceptInvitationPage() {
             <CardContent>
               <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
                 <AlertDescription className="text-green-800 dark:text-green-200">
-                  Redirecting you to your organizations...
+                  Redirecting you to your dashboard...
                 </AlertDescription>
               </Alert>
             </CardContent>

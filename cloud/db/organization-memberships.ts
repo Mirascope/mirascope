@@ -228,16 +228,24 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
   /**
    * Checks if adding a new seat would exceed the organization's plan limits.
    *
-   * Counts both active memberships and pending invitations toward the seat limit.
-   * This prevents circumventing seat limits by creating many pending invitations.
-   *
    * @param organizationId - The organization to check limits for
+   * @param check - Type of check to perform:
+   *   - "invitation": Counts members + pending invitations (use when creating invitations)
+   *   - "membership": Counts only members (use when accepting invitations/creating memberships)
+   *
+   * The distinction exists because:
+   * - Creating an invitation should check pending invitations to prevent over-inviting
+   * - Accepting an invitation converts a pending invitation to a member atomically,
+   *   so we only need to check actual member count
+   *
    * @returns Effect that succeeds if under limit, fails with PlanLimitExceededError if at/over limit
    */
   checkSeatLimit({
     organizationId,
+    check,
   }: {
     organizationId: string;
+    check: "invitation" | "membership";
   }): Effect.Effect<
     void,
     PlanLimitExceededError | DatabaseError | NotFoundError | StripeError,
@@ -267,32 +275,41 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
           ),
         );
 
-      // Count pending invitations
-      const [invitationCount] = yield* client
-        .select({ count: sql<number>`count(*)::int` })
-        .from(organizationInvitations)
-        .where(
-          and(
-            eq(organizationInvitations.organizationId, organizationId),
-            eq(organizationInvitations.status, "pending"),
-          ),
-        )
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to count invitations",
-                cause: e,
-              }),
-          ),
-        );
+      let totalSeats = membershipCount.count;
+      let invitationCountValue = 0;
 
-      const totalSeats = membershipCount.count + invitationCount.count;
+      // For invitation checks, also count pending invitations
+      if (check === "invitation") {
+        const [invitationCount] = yield* client
+          .select({ count: sql<number>`count(*)::int` })
+          .from(organizationInvitations)
+          .where(
+            and(
+              eq(organizationInvitations.organizationId, organizationId),
+              eq(organizationInvitations.status, "pending"),
+            ),
+          )
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to count invitations",
+                  cause: e,
+                }),
+            ),
+          );
+        invitationCountValue = invitationCount.count;
+        totalSeats += invitationCountValue;
+      }
 
       if (totalSeats >= limits.seats) {
+        const usageDetail =
+          check === "invitation"
+            ? `${membershipCount.count} members + ${invitationCountValue} pending invitations = ${totalSeats}`
+            : `${membershipCount.count} members`;
         return yield* Effect.fail(
           new PlanLimitExceededError({
-            message: `Cannot add member: ${planTier} plan limit is ${limits.seats} seat(s) (current: ${membershipCount.count} members + ${invitationCount.count} pending invitations = ${totalSeats})`,
+            message: `Cannot add member: ${planTier} plan limit is ${limits.seats} seat(s) (current: ${usageDetail})`,
             resource: "organization_memberships",
             limitType: "seats",
             currentUsage: totalSeats,
@@ -498,7 +515,7 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
         );
       }
 
-      yield* this.checkSeatLimit({ organizationId });
+      yield* this.checkSeatLimit({ organizationId, check: "membership" });
 
       // Use transaction to ensure membership and audit log are created atomically
       return yield* client.withTransaction(
@@ -867,6 +884,73 @@ export class OrganizationMemberships extends BaseAuthenticatedEffectService<
             );
         }),
       );
+    });
+  }
+
+  // ===========================================================================
+  // Custom Methods
+  // ===========================================================================
+
+  /**
+   * Retrieves all memberships for an organization with user information.
+   *
+   * Joins the users table to include email and name for display purposes.
+   * Excludes soft-deleted users.
+   *
+   * Requires membership in the organization (any role).
+   */
+  findAllWithUserInfo({
+    userId,
+    organizationId,
+  }: {
+    userId: string;
+    organizationId: string;
+  }): Effect.Effect<
+    Array<{
+      memberId: string;
+      email: string;
+      name: string | null;
+      role: OrganizationRole;
+      createdAt: Date | null;
+    }>,
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        memberId: userId,
+      });
+
+      return yield* client
+        .select({
+          memberId: organizationMemberships.memberId,
+          email: users.email,
+          name: users.name,
+          role: organizationMemberships.role,
+          createdAt: organizationMemberships.createdAt,
+        })
+        .from(organizationMemberships)
+        .innerJoin(users, eq(organizationMemberships.memberId, users.id))
+        .where(
+          and(
+            eq(organizationMemberships.organizationId, organizationId),
+            isNull(users.deletedAt),
+          ),
+        )
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to find all memberships with user info",
+                cause: e,
+              }),
+          ),
+        );
     });
   }
 }

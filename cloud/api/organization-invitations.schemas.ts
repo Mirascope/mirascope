@@ -68,6 +68,7 @@ export const AcceptInvitationRequestSchema = Schema.Struct({
 
 export const OrganizationMembershipSchema = Schema.Struct({
   memberId: Schema.String,
+  organizationId: Schema.String,
   role: Schema.Literal("OWNER", "ADMIN", "MEMBER"),
   createdAt: Schema.NullOr(Schema.Date),
 });
