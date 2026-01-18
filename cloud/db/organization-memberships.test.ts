@@ -241,12 +241,10 @@ describe("OrganizationMemberships", () => {
           new MockDrizzleORM()
             // authorize: getRole -> getMembership returns OWNER
             .select([{ role: "OWNER" }])
-            // checkSeatLimit: getPlan -> fetch organization
+            // checkSeatLimit (check: "membership"): getPlan -> fetch organization
             .select([{ stripeCustomerId: "cus_test" }])
-            // checkSeatLimit: count memberships
+            // checkSeatLimit (check: "membership"): count memberships only
             .select([{ count: 1 }])
-            // checkSeatLimit: count invitations
-            .select([{ count: 0 }])
             // insert membership: fails
             .insert(new Error("Connection failed"))
             .build(),
@@ -273,12 +271,10 @@ describe("OrganizationMemberships", () => {
           new MockDrizzleORM()
             // authorize: getRole -> getMembership returns OWNER
             .select([{ role: "OWNER" }])
-            // checkSeatLimit: getPlan -> fetch organization
+            // checkSeatLimit (check: "membership"): getPlan -> fetch organization
             .select([{ stripeCustomerId: "cus_test" }])
-            // checkSeatLimit: count memberships
+            // checkSeatLimit (check: "membership"): count memberships only
             .select([{ count: 1 }])
-            // checkSeatLimit: count invitations
-            .select([{ count: 0 }])
             // insert membership: succeeds
             .insert([
               { memberId: "target-id", role: "MEMBER", createdAt: new Date() },
@@ -362,38 +358,6 @@ describe("OrganizationMemberships", () => {
               // checkSeatLimit: getPlan -> fetch organization
               .select([{ stripeCustomerId: "cus_test" }])
               // checkSeatLimit: count memberships fails
-              .select(new Error("Connection failed"))
-              .build(),
-          ),
-        ),
-    );
-
-    it.effect(
-      "returns `DatabaseError` when counting invitations fails in checkSeatLimit",
-      () =>
-        Effect.gen(function* () {
-          const db = yield* Database;
-
-          const result = yield* db.organizations.memberships
-            .create({
-              userId: "owner-id",
-              organizationId: "org-id",
-              data: { memberId: "target-id", role: "MEMBER" },
-            })
-            .pipe(Effect.flip);
-
-          expect(result).toBeInstanceOf(DatabaseError);
-          expect(result.message).toBe("Failed to count invitations");
-        }).pipe(
-          Effect.provide(
-            new MockDrizzleORM()
-              // authorize: getRole -> getMembership returns OWNER
-              .select([{ role: "OWNER" }])
-              // checkSeatLimit: getPlan -> fetch organization
-              .select([{ stripeCustomerId: "cus_test" }])
-              // checkSeatLimit: count memberships succeeds
-              .select([{ count: 1 }])
-              // checkSeatLimit: count invitations fails
               .select(new Error("Connection failed"))
               .build(),
           ),
@@ -549,6 +513,116 @@ describe("OrganizationMemberships", () => {
   });
 
   // ===========================================================================
+  // Find All With User Info
+  // ===========================================================================
+
+  describe("findAllWithUserInfo", () => {
+    it.effect("retrieves all memberships with user info", () =>
+      Effect.gen(function* () {
+        const { org, owner, admin, member } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const memberships =
+          yield* db.organizations.memberships.findAllWithUserInfo({
+            userId: owner.id,
+            organizationId: org.id,
+          });
+
+        // Fixture creates owner + admin + member = 3 members
+        expect(memberships).toHaveLength(3);
+
+        // Verify structure includes user info
+        const ownerMembership = memberships.find(
+          (m) => m.memberId === owner.id,
+        );
+        expect(ownerMembership).toBeDefined();
+        expect(ownerMembership).toHaveProperty("email");
+        expect(ownerMembership).toHaveProperty("name");
+        expect(ownerMembership).toHaveProperty("role", "OWNER");
+        expect(ownerMembership).toHaveProperty("createdAt");
+
+        // Verify other members are present
+        expect(memberships.some((m) => m.memberId === admin.id)).toBe(true);
+        expect(memberships.some((m) => m.memberId === member.id)).toBe(true);
+      }),
+    );
+
+    it.effect("excludes soft-deleted users", () =>
+      Effect.gen(function* () {
+        const { org, owner, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        // Add the user to the organization
+        yield* db.organizations.memberships.create({
+          userId: owner.id,
+          organizationId: org.id,
+          data: { memberId: nonMember.id, role: "MEMBER" },
+        });
+
+        // Delete the user (soft delete)
+        yield* db.users.delete({ userId: nonMember.id });
+
+        // Find all memberships with user info - deleted user should NOT appear
+        const memberships =
+          yield* db.organizations.memberships.findAllWithUserInfo({
+            userId: owner.id,
+            organizationId: org.id,
+          });
+
+        // Fixture creates owner + admin + member = 3, deleted user not included
+        expect(memberships).toHaveLength(3);
+        expect(memberships.some((m) => m.memberId === nonMember.id)).toBe(
+          false,
+        );
+      }),
+    );
+
+    it.effect("returns `NotFoundError` when user is not a member", () =>
+      Effect.gen(function* () {
+        const { org, nonMember } = yield* TestOrganizationFixture;
+        const db = yield* Database;
+
+        const result = yield* db.organizations.memberships
+          .findAllWithUserInfo({
+            userId: nonMember.id,
+            organizationId: org.id,
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Organization not found");
+      }),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.memberships
+          .findAllWithUserInfo({
+            userId: "user-id",
+            organizationId: "org-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe(
+          "Failed to find all memberships with user info",
+        );
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize: getRole -> getMembership returns OWNER
+            .select([{ role: "OWNER" }])
+            // findAllWithUserInfo: query fails
+            .select(new Error("Connection failed"))
+            .build(),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
   // Find By ID
   // ===========================================================================
 
@@ -597,6 +671,9 @@ describe("OrganizationMemberships", () => {
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(
+          `Membership for member ${nonMember.id} not found`,
+        );
       }),
     );
 

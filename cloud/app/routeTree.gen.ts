@@ -33,6 +33,7 @@ import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
 import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
+import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/team'
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
 import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
@@ -165,6 +166,11 @@ const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   path: '/v1/$',
   getParentRoute: () => DocsRoute,
 } as any)
+const CloudSettingsTeamRoute = CloudSettingsTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
 const CloudSettingsProjectRoute = CloudSettingsProjectRouteImport.update({
   id: '/project',
   path: '/project',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
+  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
+  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/settings': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
+  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/auth/google/proxy-callback'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
+    | '/cloud/settings/team'
     | '/docs/v1/$'
     | '/cloud/settings/'
     | '/router/v0/$provider/$'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/auth/google/proxy-callback'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
+    | '/cloud/settings/team'
     | '/docs/v1/$'
     | '/cloud/settings'
     | '/router/v0/$provider/$'
@@ -437,6 +448,7 @@ export interface FileRouteTypes {
     | '/auth/google/proxy-callback'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
+    | '/cloud/settings/team'
     | '/docs/v1/$'
     | '/cloud/settings/'
     | '/router/v0/$provider/$'
@@ -635,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsV1SplatRouteImport
       parentRoute: typeof DocsRoute
     }
+    '/cloud/settings/team': {
+      id: '/cloud/settings/team'
+      path: '/team'
+      fullPath: '/cloud/settings/team'
+      preLoaderRoute: typeof CloudSettingsTeamRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
     '/cloud/settings/project': {
       id: '/cloud/settings/project'
       path: '/project'
@@ -730,12 +749,14 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 interface CloudSettingsRouteChildren {
   CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
   CloudSettingsProjectRoute: typeof CloudSettingsProjectRoute
+  CloudSettingsTeamRoute: typeof CloudSettingsTeamRoute
   CloudSettingsIndexRoute: typeof CloudSettingsIndexRoute
 }
 
 const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
   CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
   CloudSettingsProjectRoute: CloudSettingsProjectRoute,
+  CloudSettingsTeamRoute: CloudSettingsTeamRoute,
   CloudSettingsIndexRoute: CloudSettingsIndexRoute,
 }
 

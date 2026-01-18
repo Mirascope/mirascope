@@ -1626,20 +1626,12 @@ describe("OrganizationInvitations", () => {
                   name: "Test User",
                 },
               ])
-              // checkSeatLimit (first call from accept): getPlan -> fetch organization
-              .select([{ stripeCustomerId: "cus_test" }])
-              // checkSeatLimit (first call): count memberships
-              .select([{ count: 1 }])
-              // checkSeatLimit (first call): count invitations
-              .select([{ count: 0 }])
-              // Check for sender's role in org (for create membership)
+              // Check for sender's role in org (for create membership authorization)
               .select([{ role: "OWNER" }])
-              // checkSeatLimit (second call from create membership): getPlan -> fetch organization
+              // checkSeatLimit (check: "membership"): getPlan -> fetch organization
               .select([{ stripeCustomerId: "cus_test" }])
-              // checkSeatLimit (second call): count memberships
+              // checkSeatLimit (check: "membership"): count memberships only
               .select([{ count: 1 }])
-              // checkSeatLimit (second call): count invitations
-              .select([{ count: 0 }])
               // Insert membership (returns via .returning(), no separate select needed)
               .insert([
                 { memberId: "user-id", role: "MEMBER", createdAt: new Date() },

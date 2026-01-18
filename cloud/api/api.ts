@@ -4,6 +4,7 @@ import { TracesApi } from "@/api/traces.schemas";
 import { DocsApi } from "@/api/docs.schemas";
 import { OrganizationsApi } from "@/api/organizations.schemas";
 import { OrganizationInvitationsApi } from "@/api/organization-invitations.schemas";
+import { OrganizationMembershipsApi } from "@/api/organization-memberships.schemas";
 import { ProjectsApi } from "@/api/projects.schemas";
 import { EnvironmentsApi } from "@/api/environments.schemas";
 import { ApiKeysApi } from "@/api/api-keys.schemas";
@@ -17,6 +18,7 @@ export * from "@/api/traces.schemas";
 export * from "@/api/docs.schemas";
 export * from "@/api/organizations.schemas";
 export * from "@/api/organization-invitations.schemas";
+export * from "@/api/organization-memberships.schemas";
 export * from "@/api/projects.schemas";
 export * from "@/api/environments.schemas";
 export * from "@/api/api-keys.schemas";
@@ -30,6 +32,7 @@ export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(DocsApi)
   .add(OrganizationsApi)
   .add(OrganizationInvitationsApi)
+  .add(OrganizationMembershipsApi)
   .add(ProjectsApi)
   .add(EnvironmentsApi)
   .add(ApiKeysApi)
