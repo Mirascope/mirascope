@@ -53,7 +53,7 @@ const docsSection = {
     {
       slug: "agents",
       label: "Agents",
-    }, // TODO
+    },
     {
       slug: "context",
       label: "Context",
