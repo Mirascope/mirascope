@@ -16,31 +16,49 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 
 function OrganizationSettingsPage() {
-  const { selectedOrganization, organizations, isLoading } = useOrganization();
+  const { selectedOrganization, isLoading } = useOrganization();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const header = (
+    <div className="mb-6 flex items-start justify-between">
+      <div>
+        <h1 className="text-2xl font-semibold">Organization</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your organization settings
+        </p>
+      </div>
+      <Button onClick={() => setShowCreateModal(true)}>
+        <Plus className="h-4 w-4 mr-2" />
+        New Organization
+      </Button>
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-muted-foreground">Loading...</div>
+      <div className="max-w-2xl">
+        {header}
+        <div className="flex justify-center pt-12">
+          <div className="text-muted-foreground">Loading...</div>
+        </div>
+        <CreateOrganizationModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+        />
       </div>
     );
   }
 
   if (!selectedOrganization) {
-    const hasOrganizations = organizations.length > 0;
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        {hasOrganizations && (
+      <div className="max-w-2xl">
+        {header}
+        <div className="flex justify-center pt-12">
           <div className="text-muted-foreground">
             Please select an organization
           </div>
-        )}
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create New Organization
-        </Button>
+        </div>
         <CreateOrganizationModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
@@ -51,18 +69,7 @@ function OrganizationSettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Organization</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your organization settings
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Organization
-        </Button>
-      </div>
+      {header}
 
       <Card>
         <CardHeader>

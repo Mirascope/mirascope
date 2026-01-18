@@ -72,7 +72,7 @@ function AppContent() {
       <div
         className={
           isCloudRoute
-            ? "w-full pt-(--header-height)"
+            ? "w-full grow pt-[60px]"
             : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >

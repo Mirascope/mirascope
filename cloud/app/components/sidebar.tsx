@@ -61,10 +61,10 @@ export function Sidebar() {
   const isActive = (path: string) => currentPath === path;
 
   return (
-    <aside className="w-48 h-full flex flex-col bg-background border-r border-border">
+    <aside className="w-48 h-full flex flex-col bg-background">
       {/* Project selector at top */}
       {selectedOrganization && (
-        <div className="px-2 pt-4 pb-2 border-b border-border">
+        <div className="px-2 pt-4 pb-2">
           {projectsLoading ? (
             <div className="text-sm text-muted-foreground px-2">Loading...</div>
           ) : (
@@ -182,7 +182,7 @@ export function Sidebar() {
       </div>
 
       {/* Organization selector at bottom */}
-      <div className="px-2 pb-3 border-t border-border pt-3">
+      <div className="px-2 pb-3 pt-3">
         {orgsLoading ? (
           <div className="text-sm text-muted-foreground">Loading...</div>
         ) : (

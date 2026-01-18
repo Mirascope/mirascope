@@ -16,8 +16,8 @@ const settingsNavItems: SettingsNavItem[] = [
     path: "/cloud/settings/organization",
   },
   {
-    label: "Projects",
-    path: "/cloud/settings/projects",
+    label: "Project",
+    path: "/cloud/settings/project",
   },
 ];
 
@@ -29,11 +29,11 @@ export function SettingsSidebar() {
   const isActive = (path: string) => currentPath === path;
 
   return (
-    <aside className="w-56 h-full flex flex-col border-r border-border bg-muted/30">
+    <aside className="w-48 h-full flex flex-col pt-6 pl-4">
       {/* Organization header */}
-      <div className="px-3 pt-4 pb-3">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg border border-border bg-background">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
+      <div className="pb-4">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-background">
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="flex flex-col min-w-0">
@@ -46,13 +46,13 @@ export function SettingsSidebar() {
       </div>
 
       {/* Navigation items */}
-      <nav className="flex-1 px-3 py-2 space-y-1">
+      <nav className="flex-1 space-y-1">
         {settingsNavItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={cn(
-              "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors",
+              "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors cursor-pointer",
               isActive(item.path)
                 ? "bg-muted font-medium text-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
