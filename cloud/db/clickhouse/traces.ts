@@ -90,6 +90,9 @@ import { eq } from "drizzle-orm";
 import type { ProjectRole } from "@/db/schema";
 import type { ResourceSpans, KeyValue } from "@/api/traces.schemas";
 
+/** Default time range in milliseconds for trace queries (30 days). */
+const DEFAULT_TIME_RANGE_MS = 30 * 24 * 60 * 60 * 1000;
+
 /** Response type for trace creation. */
 export type CreateTraceResponse = {
   acceptedSpans: number;
@@ -538,7 +541,7 @@ export class Traces extends BaseAuthenticatedEffectService<
       });
 
       const endTime = new Date();
-      const startTime = new Date(endTime.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const startTime = new Date(endTime.getTime() - DEFAULT_TIME_RANGE_MS);
 
       const searchResult = yield* clickHouseSearch
         .search({

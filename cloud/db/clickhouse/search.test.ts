@@ -589,5 +589,52 @@ describe("ClickHouseSearch", () => {
         }
       }).pipe(provideSearchLayer),
     );
+
+    it.effect("normalizes search result startTime to ISO-8601 UTC", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.search({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+        });
+
+        // Ensure test data exists (guards against silent test pass on empty data)
+        expect(result.spans.length).toBeGreaterThan(0);
+
+        const span = result.spans[0];
+        // startTime should be ISO-8601 UTC (ends with Z)
+        expect(span.startTime).toMatch(/Z$/);
+        // Should be parseable as a valid date
+        expect(new Date(span.startTime).getTime()).not.toBeNaN();
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect(
+      "normalizes trace detail startTime and endTime to ISO-8601 UTC",
+      () =>
+        Effect.gen(function* () {
+          const searchService = yield* ClickHouseSearch;
+
+          const result = yield* searchService.getTraceDetail({
+            environmentId: TEST_ENVIRONMENT_ID,
+            traceId: TEST_TRACE_ID,
+          });
+
+          // Ensure test data exists (guards against silent test pass on empty data)
+          expect(result.spans.length).toBeGreaterThan(0);
+
+          const span = result.spans[0];
+          // startTime should be ISO-8601 UTC (ends with Z)
+          expect(span.startTime).toMatch(/Z$/);
+          expect(new Date(span.startTime).getTime()).not.toBeNaN();
+          // endTime should be ISO-8601 UTC (ends with Z) or null
+          if (span.endTime !== null) {
+            expect(span.endTime).toMatch(/Z$/);
+            expect(new Date(span.endTime).getTime()).not.toBeNaN();
+          }
+        }).pipe(provideSearchLayer),
+    );
   });
 });
