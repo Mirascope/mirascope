@@ -129,6 +129,7 @@ export const handleRequest = (
           .toLowerCase()
           .includes("application/json");
 
+        // Transform _tag to tag for Fern SDK compatibility
         if (isJsonResponse && response.status >= 400) {
           const body = await response.clone().text();
           /* v8 ignore start */

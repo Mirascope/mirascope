@@ -39,9 +39,28 @@ const BrowserHttpClient = HttpClient.make(
         options.body = (request.body.toJSON() as { body: BodyInit }).body;
       }
 
-      const webResponse = yield* Effect.promise(() =>
+      let webResponse = yield* Effect.promise(() =>
         fetch(request.url, options),
       );
+
+      // Transform "tag" back to "_tag" for Effect schema parsing
+      // (Server transforms _tag to tag for Fern SDK compatibility)
+      const contentType = webResponse.headers.get("content-type") || "";
+      const isJsonResponse = contentType
+        .toLowerCase()
+        .includes("application/json");
+      if (isJsonResponse && webResponse.status >= 400) {
+        const body = yield* Effect.promise(() => webResponse.text());
+        // Always create a new response since we consumed the body
+        const transformedBody = body.includes('"tag"')
+          ? body.replace(/"tag":/g, '"_tag":')
+          : body;
+        webResponse = new Response(transformedBody, {
+          status: webResponse.status,
+          statusText: webResponse.statusText,
+          headers: webResponse.headers,
+        });
+      }
 
       return HttpClientResponse.fromWeb(request, webResponse);
     }),

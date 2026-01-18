@@ -11,6 +11,7 @@ import {
   useCreateOrganization,
   useDeleteOrganization,
 } from "@/app/api/organizations";
+import { getErrorMessage } from "@/app/lib/errors";
 import type { PublicOrganizationWithMembership } from "@/db/schema/organization-memberships";
 import { Link } from "@tanstack/react-router";
 import { generateSlug } from "@/db/slug";
@@ -35,10 +36,8 @@ function CreateOrganizationForm({ onClose }: { onClose: () => void }) {
         slug: generateSlug(name.trim()),
       });
       onClose();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create organization",
-      );
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to create organization"));
     }
   };
 

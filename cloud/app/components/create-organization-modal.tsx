@@ -12,6 +12,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
 import { useCreateOrganization } from "@/app/api/organizations";
+import { getErrorMessage } from "@/app/lib/errors";
 import { generateSlug } from "@/db/slug";
 
 export function CreateOrganizationModal({
@@ -43,10 +44,8 @@ export function CreateOrganizationModal({
       setSelectedOrganization(newOrg);
       setName("");
       onOpenChange(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create organization",
-      );
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to create organization"));
     }
   };
 
