@@ -13,6 +13,7 @@ import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useCreateProject } from "@/app/api/projects";
+import { getErrorMessage } from "@/app/lib/errors";
 
 export function CreateProjectModal({
   open,
@@ -49,8 +50,8 @@ export function CreateProjectModal({
       setSelectedProject(newProject);
       setName("");
       onOpenChange(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create project");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to create project"));
     }
   };
 

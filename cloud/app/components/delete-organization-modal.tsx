@@ -14,6 +14,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useOrganization } from "@/app/contexts/organization";
 import { useDeleteOrganization } from "@/app/api/organizations";
+import { getErrorMessage } from "@/app/lib/errors";
 import type { PublicOrganizationWithMembership } from "@/db/schema";
 
 export function DeleteOrganizationModal({
@@ -62,10 +63,8 @@ export function DeleteOrganizationModal({
 
       setConfirmName("");
       onOpenChange(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to delete organization",
-      );
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to delete organization"));
     }
   };
 
