@@ -17,12 +17,12 @@ sync_snapshot = snapshot(
             "finish_reason": None,
             "usage": {
                 "input_tokens": 62,
-                "output_tokens": 10,
+                "output_tokens": 11,
                 "cache_read_tokens": 0,
                 "cache_write_tokens": 0,
                 "reasoning_tokens": 0,
-                "raw": "ResponseUsage(input_tokens=62, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=10, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=72)",
-                "total_tokens": 72,
+                "raw": "ResponseUsage(input_tokens=62, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=11, output_tokens_details=OutputTokensDetails(reasoning_tokens=0), total_tokens=73)",
+                "total_tokens": 73,
             },
             "messages": [
                 UserMessage(
@@ -36,42 +36,45 @@ sync_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Finding primes containing "79"**
+**Counting prime numbers with "79"**
 
-I'm looking for primes under 400 that contain "79" as a substring. For two-digit primes, 79 fits the bill — it’s prime and under 400, so that's one.
+I need to find all prime numbers below 400 that have "79" in their decimal representation. This includes two-digit and three-digit primes, starting with 79 itself. \n\
 
-For three-digit primes, I consider those that begin with "79," which would be from 790 to 799. However, those aren't prime since they're even or end in 0 or 5. But I also find three-digit numbers ending in "79," which are 179, 279, and 379. Among these, I'll need to check which of the three-digit numbers are actually prime.\
+I'll check three-digit numbers that can potentially contain "79," which can only appear at the end when x79 (where x is 1, 2, or 3). I’ll also consider other configurations like 7x9. The primes I’m focusing on include 79, with 179 and 379 as possibilities, but 197 doesn't work because "79" isn’t contiguous there.\
 """
                         ),
                         Thought(
                             thought="""\
-**Clarifying prime candidates**
+**Checking candidates for primality**
 
-I need to double-check my range for primes under 400. I miscalculated those from 790-799, which are definitely over 400, so they don't count. We’re only considering three-digit numbers up to 399.
+I need to focus on numbers that contain "79." The only valid formats are x79 where x is 1, 2, or 3, leading to candidates: 79, 179, 279, and 379. 97 doesn’t count, and I won't consider combinations like 7x9 because they're not contiguous.
 
-The three-digit candidates are x79, where x is 1 to 3. That gives me 179, 279, and 379. While 79 is included as a two-digit prime. I should now check if 179 is prime by testing divisibility with primes up to around 13.38, like 2, 3, 5, 7, 11, and 13.\
+Now, I’ll check for primality. 79 and 179 are both prime; I confirmed 179 by testing divisibility against primes up to its square root. 279 isn’t prime since it’s divisible by 3. Lastly, for 379, it seems likely prime after testing smaller primes with no remainders.\
 """
                         ),
                         Thought(
                             thought="""\
-**Checking the primality of candidates**
+**Finalizing prime checks for "79"**
 
-I’ve tested 179 and confirmed it’s prime since it isn’t divisible by 2, 3, 5, 7, 11, or 13.
+After checking for divisibility of 379 by small primes, I confirmed it's a prime number. So the primes below 400 containing the substring "79" are 79, 179, and 379—making a total of three.
 
-Next, 279 is clearly ruled out as not prime because its digits sum to 18, which is divisible by 3.
-
-Now, for 379, I estimate the square root is around 19.4. I check it against primes up to 19 and find it likely prime since none are divisors.
-
-As for any other numbers under 400 that contain "79," I see two-digit 79 and check if 197 includes "79" but it doesn't.\
+I also wanted to ensure there were no other configurations for three-digit numbers with "79" that I overlooked. The contiguous substring must appear as "79." I've confirmed that 79 itself counts and does not exceed 400, so the final answer remains three primes. I double-checked—97 doesn’t qualify either.\
 """
                         ),
                         Thought(
                             thought="""\
-**Finalizing primes with "79"**
+**Confirming the count of primes with "79"**
 
-I'm examining the digits of 197; it contains "97" but not "79." Similarly, numbers like 297 also contain "97," and 790 is above 400, so it doesn't count.
+I realized that I should check for any numbers like 079, but they don't exist—so I'm still at three. I made sure 379 is prime by testing its divisibility against primes up to 19, confirming it’s not divisible by any of them.
 
-The primes I've found with "79" under 400 are 79, 179, and 379—three in total. I've confirmed 97, 197, 279, and others don't contain "79," while 397 and 739 also lack the necessary pairing. Since no three-digit configurations determine "79," I'm sticking with those three primes.\
+We already verified 179 as well. Thus, the count of primes below 400 containing "79" remains three. I double-checked to ensure I didn't miss anything, confirming there's no "79" in negative numbers either. Final answer: 3.\
+"""
+                        ),
+                        Thought(
+                            thought="""\
+**Delivering the final answer**
+
+The instruction is clear: I need to answer only with the number itself, without any additional context. So, I'll provide "3" as my response. I just want to make sure I'm following the guidelines perfectly by delivering just the integer—no spaces or extra details. Alright, here it goes: 3.\
 """
                         ),
                         Text(text="3"),
@@ -81,49 +84,53 @@ The primes I've found with "79" under 400 are 79, 179, and 379—three in total.
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_04b3ed1b4d394a320069605174aa6c81969e01eab60273a785",
+                            "id": "rs_0c6fe76bfb6817d700696afa0fdfb48197aa1316339d7ef345",
                             "summary": [
                                 {
                                     "text": """\
-**Finding primes containing "79"**
+**Counting prime numbers with "79"**
 
-I'm looking for primes under 400 that contain "79" as a substring. For two-digit primes, 79 fits the bill — it’s prime and under 400, so that's one.
+I need to find all prime numbers below 400 that have "79" in their decimal representation. This includes two-digit and three-digit primes, starting with 79 itself. \n\
 
-For three-digit primes, I consider those that begin with "79," which would be from 790 to 799. However, those aren't prime since they're even or end in 0 or 5. But I also find three-digit numbers ending in "79," which are 179, 279, and 379. Among these, I'll need to check which of the three-digit numbers are actually prime.\
+I'll check three-digit numbers that can potentially contain "79," which can only appear at the end when x79 (where x is 1, 2, or 3). I’ll also consider other configurations like 7x9. The primes I’m focusing on include 79, with 179 and 379 as possibilities, but 197 doesn't work because "79" isn’t contiguous there.\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Clarifying prime candidates**
+**Checking candidates for primality**
 
-I need to double-check my range for primes under 400. I miscalculated those from 790-799, which are definitely over 400, so they don't count. We’re only considering three-digit numbers up to 399.
+I need to focus on numbers that contain "79." The only valid formats are x79 where x is 1, 2, or 3, leading to candidates: 79, 179, 279, and 379. 97 doesn’t count, and I won't consider combinations like 7x9 because they're not contiguous.
 
-The three-digit candidates are x79, where x is 1 to 3. That gives me 179, 279, and 379. While 79 is included as a two-digit prime. I should now check if 179 is prime by testing divisibility with primes up to around 13.38, like 2, 3, 5, 7, 11, and 13.\
+Now, I’ll check for primality. 79 and 179 are both prime; I confirmed 179 by testing divisibility against primes up to its square root. 279 isn’t prime since it’s divisible by 3. Lastly, for 379, it seems likely prime after testing smaller primes with no remainders.\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Checking the primality of candidates**
+**Finalizing prime checks for "79"**
 
-I’ve tested 179 and confirmed it’s prime since it isn’t divisible by 2, 3, 5, 7, 11, or 13.
+After checking for divisibility of 379 by small primes, I confirmed it's a prime number. So the primes below 400 containing the substring "79" are 79, 179, and 379—making a total of three.
 
-Next, 279 is clearly ruled out as not prime because its digits sum to 18, which is divisible by 3.
-
-Now, for 379, I estimate the square root is around 19.4. I check it against primes up to 19 and find it likely prime since none are divisors.
-
-As for any other numbers under 400 that contain "79," I see two-digit 79 and check if 197 includes "79" but it doesn't.\
+I also wanted to ensure there were no other configurations for three-digit numbers with "79" that I overlooked. The contiguous substring must appear as "79." I've confirmed that 79 itself counts and does not exceed 400, so the final answer remains three primes. I double-checked—97 doesn’t qualify either.\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Finalizing primes with "79"**
+**Confirming the count of primes with "79"**
 
-I'm examining the digits of 197; it contains "97" but not "79." Similarly, numbers like 297 also contain "97," and 790 is above 400, so it doesn't count.
+I realized that I should check for any numbers like 079, but they don't exist—so I'm still at three. I made sure 379 is prime by testing its divisibility against primes up to 19, confirming it’s not divisible by any of them.
 
-The primes I've found with "79" under 400 are 79, 179, and 379—three in total. I've confirmed 97, 197, 279, and others don't contain "79," while 397 and 739 also lack the necessary pairing. Since no three-digit configurations determine "79," I'm sticking with those three primes.\
+We already verified 179 as well. Thus, the count of primes below 400 containing "79" remains three. I double-checked to ensure I didn't miss anything, confirming there's no "79" in negative numbers either. Final answer: 3.\
+""",
+                                    "type": "summary_text",
+                                },
+                                {
+                                    "text": """\
+**Delivering the final answer**
+
+The instruction is clear: I need to answer only with the number itself, without any additional context. So, I'll provide "3" as my response. I just want to make sure I'm following the guidelines perfectly by delivering just the integer—no spaces or extra details. Alright, here it goes: 3.\
 """,
                                     "type": "summary_text",
                                 },
@@ -131,7 +138,7 @@ The primes I've found with "79" under 400 are 79, 179, and 379—three in total.
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_04b3ed1b4d394a32006960518ed5cc8196b3081ebf3f40019f",
+                            "id": "msg_0c6fe76bfb6817d700696afa218dd88197962b4ac041b6ef86",
                             "content": [
                                 {
                                     "annotations": [],
@@ -154,22 +161,22 @@ The primes I've found with "79" under 400 are 79, 179, and 379—three in total.
                     ]
                 ),
                 AssistantMessage(
-                    content=[Text(text="I don't remember.")],
+                    content=[Text(text="I don’t remember.")],
                     provider_id="openai",
                     model_id="openai/gpt-5:responses",
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_04b3ed1b4d394a3200696051905fd481969675b1760b8f9d9e",
+                            "id": "rs_0c6fe76bfb6817d700696afa2274948197b94d9f86f30a6422",
                             "summary": [],
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_04b3ed1b4d394a32006960519097188196817e0ea9dd78d929",
+                            "id": "msg_0c6fe76bfb6817d700696afa22a50c8197ad47821730afcc6f",
                             "content": [
                                 {
                                     "annotations": [],
-                                    "text": "I don't remember.",
+                                    "text": "I don’t remember.",
                                     "type": "output_text",
                                     "logprobs": [],
                                 }
@@ -215,37 +222,45 @@ async_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Counting primes with 79 substring**
+**Counting prime numbers with "79"**
 
-I need to find prime numbers less than 400 that contain "79" as a substring, which refers to contiguous digits. The candidates are 79, 179, 279, and 379. Oh, but 790-799 are above 400, so they don’t count. 79 and 179 are confirmed primes. However, 279 isn’t prime because it's divisible by 3. Now for 379, I need to check if it's prime by testing divisibility against primes up to about 19. I'll keep investigating!\
+I need to find prime numbers less than 400 that contain the substring "79." So, I’m looking for consecutive digits "79" in prime numbers. First, I'll enumerate primes under 400 and check each one. \n\
+
+The relevant primes I identified are 79, 179, 279, and 379. Numbers like 790-799 exceed 400 and don’t count. Only 79 and 179 qualify. It's also crucial that "79" must appear consecutively. So the count is just 4 numbers: 79, 179, 279, and 379.\
 """
                         ),
                         Thought(
                             thought="""\
-**Confirming prime status of 379**
+**Determining primes with "79"**
 
-I’m checking if 379 is prime, so I calculated some multiplication and found out that it is indeed prime. I also confirmed 79, 179, and 279 in relation to the "79" substring. The only numbers that fit are 79, 179, 279, and 379. The range of 790-799 exceeds 400, so I can't include them. I realize "79" must be contiguous, whether in the tens and ones or hundreds and tens places. This makes it clear!\
+I need to determine valid numbers containing "79" as a substring and check if they're prime. Numbers starting with "79X" like 790-799 exceed 400, so they don’t count. \n\
+
+I should check three-digit configurations ending with "79," such as 179, 279, and 379, and also include 79 itself. My check reveals that 79 is prime, and when I check 179, it's also prime since it isn’t divisible by 3, 5, or 7. I’m examining their primality closely!\
 """
                         ),
                         Thought(
                             thought="""\
-**Verifying prime numbers containing "79"**
+**Verifying prime numbers with "79"**
 
-I'm analyzing three-digit numbers and confirming that combinations containing "79" at the start or end, like 790-799, are not allowed. The only eligible numbers are 79, 179, 279, and 379. Among these, I confirm that 79, 179, and 379 are prime, while 279 isn’t. So, that gives me a count of 3. I checked primality for each. 79 and 379 are confirmed, and 179 checks out too. Now, I’ll ensure there aren’t any other primes containing "79."\
+I’m checking the primes containing "79." First, I confirm that 179 is prime since it has no divisors up to its square root. However, 279 isn’t prime because it’s divisible by 3. \n\
+
+For 379, after checking up to its square root, I find it's also prime. Other potential candidates like 197 and 297 contain "97," not "79." So my list of primes with "79" is {79, 179, 379}, totaling 3. I’ll double-check to ensure there are no other possibilities under 400.\
 """
                         ),
                         Thought(
                             thought="""\
-**Confirming the count of primes**
+**Confirming primes with "79"**
 
-I previously included 279, which isn’t prime, but 379 is. I'm checking other numbers to see if they contain "79." Numbers like 197 and 297 don't qualify. For 397, it has "97," so still not it. However, 179 does contain "79." I realize there aren't any instances of "79" repeating or leading zeros to consider. Ultimately, I’m supposed to return just the number of confirmed primes, which is 3. I double-check everything to be safe. So, I’ll return 3.\
+I’m confirming the prime numbers that contain "79." So far, I’ve established that 79, 179, and 379 are prime while 279 is not. \n\
+
+I checked if there are any three-digit numbers with "79," but options like 297 and 397 don’t work since they contain "97" instead. I double-checked the primality of 179 and 379, finding no divisors up to their respective limits. I’ve confirmed 79 is prime as well. Therefore, my final count of primes with "79" is 3!\
 """
                         ),
                         Thought(
                             thought="""\
-**Verifying the primality of 379**
+**Finalizing the count of primes with "79"**
 
-I'm checking whether 379 is a prime number by dividing it with smaller primes. I find that it doesn't divide evenly by 2, 3, 5, 7, 11, 13, 17, or 19. All checks show it's not divisible by any of these primes, confirming that 379 is indeed prime. I previously verified 179 is prime as well. So, my final count of primes containing "79" is 3. I'll just return "3" as the answer.\
+I need to confirm that 397 doesn’t contain "79" since it has digits "3, 9, 7." I realize 97 is just a reversed sequence, so it doesn't count either. The only valid candidates are still 79, 179, and 379. I double-checked that "79" only appears in numbers ending with 79, meaning the only primes are 179, 279, and 379. I’ve confirmed they’re all primes. So, the final count remains at 3!\
 """
                         ),
                         Text(text="3"),
@@ -255,45 +270,53 @@ I'm checking whether 379 is a prime number by dividing it with smaller primes. I
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_02b016ad78836c87006960522974a48194a7e8e5b2a764cf1a",
+                            "id": "rs_01e0511ce015177b00696afa357de48194bb09bd5224ea7904",
                             "summary": [
                                 {
                                     "text": """\
-**Counting primes with 79 substring**
+**Counting prime numbers with "79"**
 
-I need to find prime numbers less than 400 that contain "79" as a substring, which refers to contiguous digits. The candidates are 79, 179, 279, and 379. Oh, but 790-799 are above 400, so they don’t count. 79 and 179 are confirmed primes. However, 279 isn’t prime because it's divisible by 3. Now for 379, I need to check if it's prime by testing divisibility against primes up to about 19. I'll keep investigating!\
+I need to find prime numbers less than 400 that contain the substring "79." So, I’m looking for consecutive digits "79" in prime numbers. First, I'll enumerate primes under 400 and check each one. \n\
+
+The relevant primes I identified are 79, 179, 279, and 379. Numbers like 790-799 exceed 400 and don’t count. Only 79 and 179 qualify. It's also crucial that "79" must appear consecutively. So the count is just 4 numbers: 79, 179, 279, and 379.\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Confirming prime status of 379**
+**Determining primes with "79"**
 
-I’m checking if 379 is prime, so I calculated some multiplication and found out that it is indeed prime. I also confirmed 79, 179, and 279 in relation to the "79" substring. The only numbers that fit are 79, 179, 279, and 379. The range of 790-799 exceeds 400, so I can't include them. I realize "79" must be contiguous, whether in the tens and ones or hundreds and tens places. This makes it clear!\
+I need to determine valid numbers containing "79" as a substring and check if they're prime. Numbers starting with "79X" like 790-799 exceed 400, so they don’t count. \n\
+
+I should check three-digit configurations ending with "79," such as 179, 279, and 379, and also include 79 itself. My check reveals that 79 is prime, and when I check 179, it's also prime since it isn’t divisible by 3, 5, or 7. I’m examining their primality closely!\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Verifying prime numbers containing "79"**
+**Verifying prime numbers with "79"**
 
-I'm analyzing three-digit numbers and confirming that combinations containing "79" at the start or end, like 790-799, are not allowed. The only eligible numbers are 79, 179, 279, and 379. Among these, I confirm that 79, 179, and 379 are prime, while 279 isn’t. So, that gives me a count of 3. I checked primality for each. 79 and 379 are confirmed, and 179 checks out too. Now, I’ll ensure there aren’t any other primes containing "79."\
+I’m checking the primes containing "79." First, I confirm that 179 is prime since it has no divisors up to its square root. However, 279 isn’t prime because it’s divisible by 3. \n\
+
+For 379, after checking up to its square root, I find it's also prime. Other potential candidates like 197 and 297 contain "97," not "79." So my list of primes with "79" is {79, 179, 379}, totaling 3. I’ll double-check to ensure there are no other possibilities under 400.\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Confirming the count of primes**
+**Confirming primes with "79"**
 
-I previously included 279, which isn’t prime, but 379 is. I'm checking other numbers to see if they contain "79." Numbers like 197 and 297 don't qualify. For 397, it has "97," so still not it. However, 179 does contain "79." I realize there aren't any instances of "79" repeating or leading zeros to consider. Ultimately, I’m supposed to return just the number of confirmed primes, which is 3. I double-check everything to be safe. So, I’ll return 3.\
+I’m confirming the prime numbers that contain "79." So far, I’ve established that 79, 179, and 379 are prime while 279 is not. \n\
+
+I checked if there are any three-digit numbers with "79," but options like 297 and 397 don’t work since they contain "97" instead. I double-checked the primality of 179 and 379, finding no divisors up to their respective limits. I’ve confirmed 79 is prime as well. Therefore, my final count of primes with "79" is 3!\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Verifying the primality of 379**
+**Finalizing the count of primes with "79"**
 
-I'm checking whether 379 is a prime number by dividing it with smaller primes. I find that it doesn't divide evenly by 2, 3, 5, 7, 11, 13, 17, or 19. All checks show it's not divisible by any of these primes, confirming that 379 is indeed prime. I previously verified 179 is prime as well. So, my final count of primes containing "79" is 3. I'll just return "3" as the answer.\
+I need to confirm that 397 doesn’t contain "79" since it has digits "3, 9, 7." I realize 97 is just a reversed sequence, so it doesn't count either. The only valid candidates are still 79, 179, and 379. I double-checked that "79" only appears in numbers ending with 79, meaning the only primes are 179, 279, and 379. I’ve confirmed they’re all primes. So, the final count remains at 3!\
 """,
                                     "type": "summary_text",
                                 },
@@ -301,7 +324,7 @@ I'm checking whether 379 is a prime number by dividing it with smaller primes. I
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_02b016ad78836c87006960523daedc81949c7c4fe2559245a2",
+                            "id": "msg_01e0511ce015177b00696afa49d26c8194ae3a8d87d6ba7433",
                             "content": [
                                 {
                                     "annotations": [],
@@ -330,12 +353,12 @@ I'm checking whether 379 is a prime number by dividing it with smaller primes. I
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_02b016ad78836c87006960523e6248819485b4d4ed155c0195",
+                            "id": "rs_01e0511ce015177b00696afa4ad1848194aef23e20a1b46ef2",
                             "summary": [],
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_02b016ad78836c87006960523e8ff88194a5d679229d27a960",
+                            "id": "msg_01e0511ce015177b00696afa4af39c819483814dcdac363aad",
                             "content": [
                                 {
                                     "annotations": [],
@@ -375,37 +398,23 @@ stream_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Finding primes with substring**
+**Exploring prime numbers**
 
-I’m looking for prime numbers below 400 that contain the substring “79.” First, I can confirm that 79 itself is a prime. Then there are 179, 279, and 379, which are also candidates. I considered three-digit numbers like 790-799, but those exceed 400, so they’re not included. I need to remember that the substring must be in order, which rules out any numbers like 97. Overall, my primary candidates are 79, 179, 279, and 379.\
+I need to find prime numbers less than 400 that contain the substring "79" in their decimal representation. First, 79 itself is a candidate. Then there's 179, 279, and 379 — all of which are under 400. However, no three-digit numbers with "79" fit since they exceed 400. Now, I need to test the primality of these candidates — starting with 79, which is prime, then checking 179 by testing it against small primes.\
 """
                         ),
                         Thought(
                             thought="""\
-**Refining cases for substring**
+**Testing prime candidates**
 
-I’m exploring how the substring “79” fits into three-digit numbers. I figured out that we can represent them as x79 and 79x. The forms like 790-799 were excluded since they exceed 400, but I want to make sure I’m not missing anything. So far, the candidates I’ve identified are 79, 179, 279, and 379. Numbers like 297 and 197 don’t count because they contain “97” rather than “79.” Overall, I think I have the valid primes sorted. Four-digit numbers aren’t relevant here.\
+I’m checking the primality of my candidates. For 179, I see it’s odd, not divisible by 3, 5, 7, 11, and 13, so it's prime! Next, 279 is definitely not prime since it's divisible by 3. Now, for 379, after testing against several primes, I conclude that it’s also prime. I’m also confirming there aren’t any other numbers with "79" under 400 — only 79 itself works, and 97 has the digits reversed, which doesn't count. So, 179 and 379 are my primes!\
 """
                         ),
                         Thought(
                             thought="""\
-**Checking primality of candidates**
+**Final count of primes**
 
-I’ve narrowed it down to four numbers: 79, 179, 279, and 379. I need to check which of these are prime. Starting with 79, it's prime! For 179, I check divisibility against primes up to about 13 and confirm it’s prime too. Then I check 279, and since it’s divisible by 3, it’s not prime. Lastly, I check 379 and find it’s also prime after checking against primes up to 19. So, my final primes are 79, 179, and 379.\
-"""
-                        ),
-                        Thought(
-                            thought="""\
-**Finalizing prime candidates**
-
-I’ve confirmed my primes: 79, 179, and 379, making three in total. I briefly thought about 97, but since it doesn't contain "79," it’s out. Numbers like 297 and 197 also don’t fit because they have the digits reversed. I confirmed that there are no other two-digit numbers, and larger groups like 790-799 exceed 400. I double-checked 379’s primality, and since I verified it against all primes up to 19, I’m confident it's prime. So the final count remains three.\
-"""
-                        ),
-                        Thought(
-                            thought="""\
-**Confirming the final count**
-
-I’ve confirmed my interpretation is correct, so the answer here is definitely 3. I've reviewed the edge cases: 179, 379, and 79 are all fine as primes, while 97 doesn’t count, and 279 is composite. Therefore, the final count of prime numbers that contain the substring "79" is indeed 3. I’ll keep it straightforward and just return the number without any extra text. So, the answer is 3.\
+I’ve confirmed the primes with the substring "79." The candidates are 79, 179, 279, and 379. I’ve established that 79, 179, and 379 are prime, which gives us a total of three primes. I rechecked 379 against small primes and verified its primality, so that’s settled. I also ruled out numbers like 3979 since they’re over 400. Lastly, I considered whether leading zeros affect the substring, but I believe they don’t, so I’m finalizing my answer as "3."\
 """
                         ),
                         Text(text="3"),
@@ -415,45 +424,29 @@ I’ve confirmed my interpretation is correct, so the answer here is definitely 
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_0d25b3badaaf1bb800696051d47ba48196a6a41574a39ab48f",
+                            "id": "rs_0a1097cbfef27a8c00696afa2459008196a08a4261aba00f56",
                             "summary": [
                                 {
                                     "text": """\
-**Finding primes with substring**
+**Exploring prime numbers**
 
-I’m looking for prime numbers below 400 that contain the substring “79.” First, I can confirm that 79 itself is a prime. Then there are 179, 279, and 379, which are also candidates. I considered three-digit numbers like 790-799, but those exceed 400, so they’re not included. I need to remember that the substring must be in order, which rules out any numbers like 97. Overall, my primary candidates are 79, 179, 279, and 379.\
+I need to find prime numbers less than 400 that contain the substring "79" in their decimal representation. First, 79 itself is a candidate. Then there's 179, 279, and 379 — all of which are under 400. However, no three-digit numbers with "79" fit since they exceed 400. Now, I need to test the primality of these candidates — starting with 79, which is prime, then checking 179 by testing it against small primes.\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Refining cases for substring**
+**Testing prime candidates**
 
-I’m exploring how the substring “79” fits into three-digit numbers. I figured out that we can represent them as x79 and 79x. The forms like 790-799 were excluded since they exceed 400, but I want to make sure I’m not missing anything. So far, the candidates I’ve identified are 79, 179, 279, and 379. Numbers like 297 and 197 don’t count because they contain “97” rather than “79.” Overall, I think I have the valid primes sorted. Four-digit numbers aren’t relevant here.\
+I’m checking the primality of my candidates. For 179, I see it’s odd, not divisible by 3, 5, 7, 11, and 13, so it's prime! Next, 279 is definitely not prime since it's divisible by 3. Now, for 379, after testing against several primes, I conclude that it’s also prime. I’m also confirming there aren’t any other numbers with "79" under 400 — only 79 itself works, and 97 has the digits reversed, which doesn't count. So, 179 and 379 are my primes!\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Checking primality of candidates**
+**Final count of primes**
 
-I’ve narrowed it down to four numbers: 79, 179, 279, and 379. I need to check which of these are prime. Starting with 79, it's prime! For 179, I check divisibility against primes up to about 13 and confirm it’s prime too. Then I check 279, and since it’s divisible by 3, it’s not prime. Lastly, I check 379 and find it’s also prime after checking against primes up to 19. So, my final primes are 79, 179, and 379.\
-""",
-                                    "type": "summary_text",
-                                },
-                                {
-                                    "text": """\
-**Finalizing prime candidates**
-
-I’ve confirmed my primes: 79, 179, and 379, making three in total. I briefly thought about 97, but since it doesn't contain "79," it’s out. Numbers like 297 and 197 also don’t fit because they have the digits reversed. I confirmed that there are no other two-digit numbers, and larger groups like 790-799 exceed 400. I double-checked 379’s primality, and since I verified it against all primes up to 19, I’m confident it's prime. So the final count remains three.\
-""",
-                                    "type": "summary_text",
-                                },
-                                {
-                                    "text": """\
-**Confirming the final count**
-
-I’ve confirmed my interpretation is correct, so the answer here is definitely 3. I've reviewed the edge cases: 179, 379, and 79 are all fine as primes, while 97 doesn’t count, and 279 is composite. Therefore, the final count of prime numbers that contain the substring "79" is indeed 3. I’ll keep it straightforward and just return the number without any extra text. So, the answer is 3.\
+I’ve confirmed the primes with the substring "79." The candidates are 79, 179, 279, and 379. I’ve established that 79, 179, and 379 are prime, which gives us a total of three primes. I rechecked 379 against small primes and verified its primality, so that’s settled. I also ruled out numbers like 3979 since they’re over 400. Lastly, I considered whether leading zeros affect the substring, but I believe they don’t, so I’m finalizing my answer as "3."\
 """,
                                     "type": "summary_text",
                                 },
@@ -461,7 +454,7 @@ I’ve confirmed my interpretation is correct, so the answer here is definitely 
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_0d25b3badaaf1bb800696051eb13d48196bb82d4a6e07260eb",
+                            "id": "msg_0a1097cbfef27a8c00696afa33407081969902b1b1da52f678",
                             "content": [
                                 {
                                     "annotations": [],
@@ -490,12 +483,12 @@ I’ve confirmed my interpretation is correct, so the answer here is definitely 
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_0d25b3badaaf1bb800696051ec3a288196a29800d2929bd079",
+                            "id": "rs_0a1097cbfef27a8c00696afa340cac81969cbdf59ae7fcc4d7",
                             "summary": [],
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_0d25b3badaaf1bb800696051ec694481969563030f07779377",
+                            "id": "msg_0a1097cbfef27a8c00696afa34411c8196842111c511fa629f",
                             "content": [
                                 {
                                     "annotations": [],
@@ -545,38 +538,57 @@ async_stream_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Counting primes with 79**
+**Counting primes with substring "79"**
 
-I need to count primes less than 400 that contain "79" as a substring. The possibilities include 79 itself, 179, 279, and 379. I know that numbers like 790-799 exceed 400, so those are out. Among the candidates, 179 and 379 are confirmed primes, while 279 is composite. 79 itself is prime as well. So, the only primes containing "79" under 400 are 79, 179, and 379.\
+I need to find the count of prime numbers below 400 that have the substring "79". The prime number 79 counts, as do 179, and any three-digit combinations that include "79", such as "79x" or "x79". \n\
+
+I'm thinking I should systematically look at all primes less than 400. For three-digit numbers, I'll check to see if either digit arrangement holds '79' together. I just need to keep the count accurate!\
 """
                         ),
                         Thought(
                             thought="""\
-**Identifying primes with 79**
+**Identifying valid primes with "79"**
 
-I'm checking for any numbers of the form x79, where x is 1, 2, or 3, to stay under 400. That means I need to evaluate 179, 279, and 379. I know 279 is composite, but both 179 and 379 are prime. So, I can confirm there are three primes: 79, 179, and 379. I also consider if there are any non-contiguous numbers containing "79"—but they don't qualify based on my substring definition. My likely answer is three primes, which I will double-check for primality.\
+If AB = ‘79’, then A=7 and B=9, which positions the hundreds digit at 7 and the tens at 9, making numbers like 790-799 outside the limit of 400. So, this scenario isn't valid. \n\
+
+Now, if I flip it to BA='79', this gives B=7 and C=9, so we’re looking at A79 where A can be 1, 2, or 3, leading to 179, 279, and 379. \n\
+
+I realize that 79 itself is included, but 297 doesn't work as it has "97" instead. So the valid numbers below 400 that contain '79’ are just 79, 179, 279, and 379!\
 """
                         ),
                         Thought(
                             thought="""\
-**Verifying primes and composites**
+**Verifying the primes with "79"**
 
-I'm checking for primes up to 13. After going through numbers like 2, 3, 5, 7, 11, and 13, I've confirmed that 13 is prime. \n\
+Looking at the numbers 79, 179, 279, and 379, I notice that for 379 and 279, they both have "79" as digits two and three. \n\
 
-Next, for 279, it's not even, but its digits add up to 18, which means it's divisible by 3 and thus composite. \n\
+Now, checking for primality:
+- 79 is known as a prime number.
+- For 179, I confirm it's prime after checking divisibility against primes up to around 13.
+- Then for 279, the digit sum shows it's divisible by 3, so not prime.
+- Finally, 379 is confirmed to be prime after checking against primes up to about 19. \n\
 
-Now, looking at 379, it checks out as prime after verifying with smaller primes. \n\
-
-I’ve found that there aren’t any other qualifying numbers with "79." So, the total count remains three primes, including 79.\
+So, the primes in the set are 79, 179, and 379!\
 """
                         ),
                         Thought(
                             thought="""\
-**Finalizing count of primes with 79**
+**Confirming primes and checking for additional candidates**
 
-I briefly considered the number 297, but it doesn't meet the criteria. I need to ensure that 379 is confirmed as prime—yes, it is. I've looked through other potential numbers that might form with "79" and determined that 79 works with 379 and 179, but 279 is composite. \n\
+After checking divisibility, I confirm that 379 is prime, alongside 79 and 179, giving me three valid primes. Now, I want to ensure I haven't missed any other numbers below 400 that contain the substring '79'. \n\
 
-I checked 97 and found it doesn’t qualify either. Numbers like 397 and 795 don’t meet our conditions either. After everything, I'm confident the answer is just "3".\
+It's clear that I should only consider consecutive digits in the decimal representation. In the two-digit realm, that leaves me only with 79. For three digits, I’m looking at numbers formatted like x79, which lead me back to 179, 279, and 379. \n\
+
+So, those four numbers are all the valid findings, and I feel confident about it!\
+"""
+                        ),
+                        Thought(
+                            thought="""\
+**Finalizing the answer**
+
+I've concluded that the count of primes under 400 with the substring "79" is 3. I shouldn’t forget that single-digit numbers wouldn't work for this substring anyway, so it’s safe to focus on multi-digit primes. \n\
+
+Now, I can confidently say that the final answer is just "3." I'll deliver that succinctly without any extra commentary!\
 """
                         ),
                         Text(text="3"),
@@ -586,45 +598,65 @@ I checked 97 and found it doesn’t qualify either. Numbers like 397 and 795 don
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_070229d1723681c2006960527930d88195bc7f33214161e67d",
+                            "id": "rs_038738faec0c718d00696afa4c22588193ad89b9ef04ebec45",
                             "summary": [
                                 {
                                     "text": """\
-**Counting primes with 79**
+**Counting primes with substring "79"**
 
-I need to count primes less than 400 that contain "79" as a substring. The possibilities include 79 itself, 179, 279, and 379. I know that numbers like 790-799 exceed 400, so those are out. Among the candidates, 179 and 379 are confirmed primes, while 279 is composite. 79 itself is prime as well. So, the only primes containing "79" under 400 are 79, 179, and 379.\
+I need to find the count of prime numbers below 400 that have the substring "79". The prime number 79 counts, as do 179, and any three-digit combinations that include "79", such as "79x" or "x79". \n\
+
+I'm thinking I should systematically look at all primes less than 400. For three-digit numbers, I'll check to see if either digit arrangement holds '79' together. I just need to keep the count accurate!\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Identifying primes with 79**
+**Identifying valid primes with "79"**
 
-I'm checking for any numbers of the form x79, where x is 1, 2, or 3, to stay under 400. That means I need to evaluate 179, 279, and 379. I know 279 is composite, but both 179 and 379 are prime. So, I can confirm there are three primes: 79, 179, and 379. I also consider if there are any non-contiguous numbers containing "79"—but they don't qualify based on my substring definition. My likely answer is three primes, which I will double-check for primality.\
+If AB = ‘79’, then A=7 and B=9, which positions the hundreds digit at 7 and the tens at 9, making numbers like 790-799 outside the limit of 400. So, this scenario isn't valid. \n\
+
+Now, if I flip it to BA='79', this gives B=7 and C=9, so we’re looking at A79 where A can be 1, 2, or 3, leading to 179, 279, and 379. \n\
+
+I realize that 79 itself is included, but 297 doesn't work as it has "97" instead. So the valid numbers below 400 that contain '79’ are just 79, 179, 279, and 379!\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Verifying primes and composites**
+**Verifying the primes with "79"**
 
-I'm checking for primes up to 13. After going through numbers like 2, 3, 5, 7, 11, and 13, I've confirmed that 13 is prime. \n\
+Looking at the numbers 79, 179, 279, and 379, I notice that for 379 and 279, they both have "79" as digits two and three. \n\
 
-Next, for 279, it's not even, but its digits add up to 18, which means it's divisible by 3 and thus composite. \n\
+Now, checking for primality:
+- 79 is known as a prime number.
+- For 179, I confirm it's prime after checking divisibility against primes up to around 13.
+- Then for 279, the digit sum shows it's divisible by 3, so not prime.
+- Finally, 379 is confirmed to be prime after checking against primes up to about 19. \n\
 
-Now, looking at 379, it checks out as prime after verifying with smaller primes. \n\
-
-I’ve found that there aren’t any other qualifying numbers with "79." So, the total count remains three primes, including 79.\
+So, the primes in the set are 79, 179, and 379!\
 """,
                                     "type": "summary_text",
                                 },
                                 {
                                     "text": """\
-**Finalizing count of primes with 79**
+**Confirming primes and checking for additional candidates**
 
-I briefly considered the number 297, but it doesn't meet the criteria. I need to ensure that 379 is confirmed as prime—yes, it is. I've looked through other potential numbers that might form with "79" and determined that 79 works with 379 and 179, but 279 is composite. \n\
+After checking divisibility, I confirm that 379 is prime, alongside 79 and 179, giving me three valid primes. Now, I want to ensure I haven't missed any other numbers below 400 that contain the substring '79'. \n\
 
-I checked 97 and found it doesn’t qualify either. Numbers like 397 and 795 don’t meet our conditions either. After everything, I'm confident the answer is just "3".\
+It's clear that I should only consider consecutive digits in the decimal representation. In the two-digit realm, that leaves me only with 79. For three digits, I’m looking at numbers formatted like x79, which lead me back to 179, 279, and 379. \n\
+
+So, those four numbers are all the valid findings, and I feel confident about it!\
+""",
+                                    "type": "summary_text",
+                                },
+                                {
+                                    "text": """\
+**Finalizing the answer**
+
+I've concluded that the count of primes under 400 with the substring "79" is 3. I shouldn’t forget that single-digit numbers wouldn't work for this substring anyway, so it’s safe to focus on multi-digit primes. \n\
+
+Now, I can confidently say that the final answer is just "3." I'll deliver that succinctly without any extra commentary!\
 """,
                                     "type": "summary_text",
                                 },
@@ -632,7 +664,7 @@ I checked 97 and found it doesn’t qualify either. Numbers like 397 and 795 don
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_070229d1723681c2006960528bccb88195ac718c52f86035e0",
+                            "id": "msg_038738faec0c718d00696afa6331648193bab40bd65ed1751c",
                             "content": [
                                 {
                                     "annotations": [],
@@ -661,12 +693,12 @@ I checked 97 and found it doesn’t qualify either. Numbers like 397 and 795 don
                     provider_model_name="gpt-5:responses",
                     raw_message=[
                         {
-                            "id": "rs_070229d1723681c2006960528c99a0819599276d1365d33bde",
+                            "id": "rs_038738faec0c718d00696afa63e1608193b0e59a92440a6570",
                             "summary": [],
                             "type": "reasoning",
                         },
                         {
-                            "id": "msg_070229d1723681c2006960528d580c8195941c8f829a61d944",
+                            "id": "msg_038738faec0c718d00696afa644a4881938e6f9cee36c24270",
                             "content": [
                                 {
                                     "annotations": [],

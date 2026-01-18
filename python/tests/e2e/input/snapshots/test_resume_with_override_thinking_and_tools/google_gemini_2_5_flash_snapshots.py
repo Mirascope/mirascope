@@ -3,7 +3,6 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     Text,
-    Thought,
     ToolCall,
     ToolOutput,
     UserMessage,
@@ -35,9 +34,6 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                 UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
                 AssistantMessage(
                     content=[
-                        Thought(
-                            thought="The user is asking for the 100th Fibonacci number. I have access to a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the value n=100, so I have all the required parameters to make the function call."
-                        ),
                         Text(text="I'll compute the 100th Fibonacci number for you."),
                         ToolCall(
                             id="toolu_016feRCAQERKZe9apWg1fnsJ",

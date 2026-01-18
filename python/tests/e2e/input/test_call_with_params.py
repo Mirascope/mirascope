@@ -23,7 +23,7 @@ ALL_PARAMS: llm.Params = {
     "thinking": {
         "level": "none",
         "encode_thoughts_as_text": False,
-        "include_summaries": False,
+        "include_thoughts": False,
     },
 }
 

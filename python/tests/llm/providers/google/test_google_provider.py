@@ -253,17 +253,17 @@ def test_google_thinking_config_levels_3_pro() -> None:
     )
 
 
-def test_google_thinking_config_include_summaries() -> None:
-    """Test include_summaries flag is respected."""
+def test_google_thinking_config_include_thoughts() -> None:
+    """Test include_thoughts flag is respected."""
     result = google_thinking_config(
-        {"level": "low", "include_summaries": False},
+        {"level": "low", "include_thoughts": False},
         max_tokens=1000,
         model_id="google/gemini-3.0-flash",
     )
     assert result.get("include_thoughts") is False
 
     result = google_thinking_config(
-        {"level": "low", "include_summaries": True},
+        {"level": "low", "include_thoughts": True},
         max_tokens=1000,
         model_id="google/gemini-2.5-flash",
     )

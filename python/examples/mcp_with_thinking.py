@@ -11,7 +11,7 @@ async def main():
 
         @llm.call(
             "google/gemini-3-flash-preview",
-            thinking={"level": "medium", "include_summaries": True},
+            thinking={"level": "medium", "include_thoughts": True},
             tools=tools,
         )
         async def learn_mcp():

@@ -3,7 +3,6 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     Text,
-    Thought,
     UserMessage,
 )
 
@@ -20,24 +19,7 @@ test_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[
-                        Thought(
-                            thought="""\
-The user is asking me to answer "What is 2 + 2?" and I need to respond with JSON that matches the given schema.
-
-The schema requires:
-- integer_a: an integer
-- integer_b: an integer  \n\
-- answer: an integer
-
-For the question "What is 2 + 2?":
-- integer_a = 2
-- integer_b = 2
-- answer = 4
-
-I need to return valid JSON on a single line without markdown or backticks.\
-"""
-                        ),
-                        Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}'),
+                        Text(text='{"integer_a": 2, "integer_b": 2, "answer": 4}')
                     ],
                     provider_id="anthropic",
                     model_id="anthropic/claude-sonnet-4-5",
@@ -99,7 +81,7 @@ I need to return valid JSON on a single line without markdown or backticks.\
                 "raw": "None",
                 "total_tokens": 439,
             },
-            "n_chunks": 37,
+            "n_chunks": 6,
         }
     }
 )

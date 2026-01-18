@@ -126,6 +126,8 @@ def _decode_candidate_content(
 def decode_response(
     response: genai_types.GenerateContentResponse,
     model_id: GoogleModelId,
+    *,
+    include_thoughts: bool,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage | None]:
     """Returns an `AssistantMessage`, `FinishReason`, and `Usage` extracted from a `GenerateContentResponse`"""
     content: Sequence[AssistantContentPart] = []
@@ -134,6 +136,8 @@ def decode_response(
 
     if response.candidates and (candidate := response.candidates[0]):
         content = _decode_candidate_content(candidate)
+        if not include_thoughts:
+            content = [part for part in content if part.type != "thought"]
         candidate_content = candidate.content
         if candidate.finish_reason:
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
@@ -155,12 +159,13 @@ def decode_response(
 class _GoogleChunkProcessor:
     """Processes Google stream chunks and maintains state across chunks."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, include_thoughts: bool) -> None:
         self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
         self.accumulated_parts: list[genai_types.Part] = []
         self.reconstructed_content = genai_types.Content(parts=[])
         # Track previous cumulative usage to compute deltas
         self.prev_usage = Usage()
+        self.include_thoughts = include_thoughts
 
     def process_chunk(
         self, chunk: genai_types.GenerateContentResponse
@@ -175,7 +180,8 @@ class _GoogleChunkProcessor:
         for part in candidate.content.parts:
             self.accumulated_parts.append(part)
             if self.current_content_type == "thought" and not part.thought:
-                yield ThoughtEndChunk()
+                if self.include_thoughts:
+                    yield ThoughtEndChunk()
                 self.current_content_type = None
             elif (
                 self.current_content_type == "text" and not part.text
@@ -193,13 +199,15 @@ class _GoogleChunkProcessor:
 
             if part.thought:
                 if self.current_content_type is None:
-                    yield ThoughtStartChunk()
+                    if self.include_thoughts:
+                        yield ThoughtStartChunk()
                     self.current_content_type = "thought"
                 if not part.text:
                     raise ValueError(
                         "Inside thought part with no text content"
                     )  # pragma: no cover
-                yield ThoughtChunk(delta=part.text)
+                if self.include_thoughts:
+                    yield ThoughtChunk(delta=part.text)
 
             elif part.text:
                 if self.current_content_type is None:
@@ -235,7 +243,8 @@ class _GoogleChunkProcessor:
             if self.current_content_type == "text":
                 yield TextEndChunk()
             elif self.current_content_type == "thought":
-                yield ThoughtEndChunk()  # pragma: no cover
+                if self.include_thoughts:  # pragma: no cover
+                    yield ThoughtEndChunk()
             elif self.current_content_type is not None:
                 raise NotImplementedError
 
@@ -275,9 +284,11 @@ class _GoogleChunkProcessor:
 
 def decode_stream(
     google_stream: Iterator[genai_types.GenerateContentResponse],
+    *,
+    include_thoughts: bool,
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from a Google stream."""
-    processor = _GoogleChunkProcessor()
+    processor = _GoogleChunkProcessor(include_thoughts=include_thoughts)
     for chunk in google_stream:
         yield from processor.process_chunk(chunk)
     yield processor.raw_message_chunk()
@@ -285,9 +296,11 @@ def decode_stream(
 
 async def decode_async_stream(
     google_stream: AsyncIterator[genai_types.GenerateContentResponse],
+    *,
+    include_thoughts: bool,
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from a Google async stream."""
-    processor = _GoogleChunkProcessor()
+    processor = _GoogleChunkProcessor(include_thoughts=include_thoughts)
     async for chunk in google_stream:
         for item in processor.process_chunk(chunk):
             yield item

@@ -24,7 +24,7 @@ test_snapshot = snapshot(
                     "thinking": {
                         "level": "none",
                         "encode_thoughts_as_text": False,
-                        "include_summaries": False,
+                        "include_thoughts": False,
                     },
                 },
                 "finish_reason": FinishReason.MAX_TOKENS,
@@ -75,7 +75,7 @@ So the result is 4242. That matches my previous calculation. So maybe I confused
         ),
         "logs": [
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: mlx)",
-            "Skipping unsupported parameter: thinking={'level': 'none', 'encode_thoughts_as_text': False, 'include_summaries': False} (provider: mlx)",
+            "Skipping unsupported parameter: thinking={'level': 'none', 'encode_thoughts_as_text': False, 'include_thoughts': False} (provider: mlx)",
         ],
     }
 )

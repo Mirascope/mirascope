@@ -258,20 +258,20 @@ def _create_strict_response_format(
 
 def _compute_reasoning(
     level: ThinkingLevel,
-    include_summaries: bool,
+    include_thoughts: bool,
 ) -> Reasoning:
     """Compute the OpenAI `Reasoning` config based on ThinkingConfig.
 
     Args:
         level: The thinking level
-        include_summaries: Whether to include summary (True/False for auto)
+        include_thoughts: Whether to include summary (True/False for auto)
 
     Returns:
         OpenAI Reasoning configuration
     """
     reasoning: Reasoning = {"effort": THINKING_LEVEL_TO_EFFORT.get(level) or "medium"}
 
-    if include_summaries:
+    if include_thoughts:
         reasoning["summary"] = "auto"
 
     return reasoning
@@ -327,8 +327,8 @@ def encode_request(
                 # Assume model supports reasoning unless explicitly listed as non-reasoning
                 # This ensures new reasoning models work immediately without code updates
                 level = thinking_config.get("level")
-                include_summaries = thinking_config.get("include_summaries", True)
-                kwargs["reasoning"] = _compute_reasoning(level, include_summaries)
+                include_thoughts = thinking_config.get("include_thoughts", False)
+                kwargs["reasoning"] = _compute_reasoning(level, include_thoughts)
 
             # Handle encode_thoughts_as_text from ThinkingConfig
             if thinking_config.get("encode_thoughts_as_text"):

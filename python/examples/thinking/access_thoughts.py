@@ -3,7 +3,7 @@ from mirascope import llm
 
 @llm.call(
     "anthropic/claude-sonnet-4-5",
-    thinking={"level": "medium", "include_summaries": True},
+    thinking={"level": "medium", "include_thoughts": True},
 )
 def solve(problem: str) -> str:
     return problem

@@ -21,6 +21,12 @@ logger = logging.getLogger(__name__)
 SystemMessageContent: TypeAlias = str | None
 
 
+def get_include_thoughts(params: Params) -> bool:
+    """Extract include_thoughts from params thinking config."""
+    thinking_config = params.get("thinking")
+    return (thinking_config or {}).get("include_thoughts", False)
+
+
 def ensure_additional_properties_false(obj: object) -> None:
     """Recursively adds additionalProperties = False to a schema, required for strict mode."""
     if isinstance(obj, dict):

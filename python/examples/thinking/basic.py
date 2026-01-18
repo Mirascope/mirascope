@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.call("google/gemini-3-pro", thinking={"level": "high", "include_summaries": True})
+@llm.call("google/gemini-3-pro", thinking={"level": "high", "include_thoughts": True})
 def solve(problem: str) -> str:
     return problem
 

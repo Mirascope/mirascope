@@ -83,10 +83,15 @@ def decode_usage(
 def decode_response(
     response: anthropic_types.Message,
     model_id: AnthropicModelId,
+    *,
+    include_thoughts: bool,
 ) -> tuple[AssistantMessage, FinishReason | None, Usage]:
     """Convert Anthropic message to mirascope AssistantMessage and usage."""
+    content = [_decode_assistant_content(part) for part in response.content]
+    if not include_thoughts:
+        content = [part for part in content if part.type != "thought"]
     assistant_message = AssistantMessage(
-        content=[_decode_assistant_content(part) for part in response.content],
+        content=content,
         provider_id="anthropic",
         model_id=model_id,
         provider_model_name=model_name(model_id),
@@ -115,10 +120,11 @@ ContentBlock: TypeAlias = (
 class _AnthropicChunkProcessor:
     """Processes Anthropic stream events and maintains state across events."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, include_thoughts: bool) -> None:
         self.current_block_param: ContentBlock | None = None
         self.accumulated_tool_json: str = ""
         self.accumulated_blocks: list[ContentBlock] = []
+        self.include_thoughts = include_thoughts
 
     def process_event(
         self, event: anthropic_types.RawMessageStreamEvent
@@ -153,7 +159,8 @@ class _AnthropicChunkProcessor:
                     "thinking": "",
                     "signature": "",
                 }
-                yield ThoughtStartChunk()
+                if self.include_thoughts:
+                    yield ThoughtStartChunk()
             elif content_block.type == "redacted_thinking":  # pragma: no cover
                 self.current_block_param = {
                     "type": "redacted_thinking",
@@ -189,7 +196,8 @@ class _AnthropicChunkProcessor:
                         f"Received thinking_delta for {self.current_block_param['type']} block"
                     )
                 self.current_block_param["thinking"] += delta.thinking
-                yield ThoughtChunk(delta=delta.thinking)
+                if self.include_thoughts:
+                    yield ThoughtChunk(delta=delta.thinking)
             elif delta.type == "signature_delta":
                 if self.current_block_param["type"] != "thinking":  # pragma: no cover
                     raise RuntimeError(
@@ -221,7 +229,8 @@ class _AnthropicChunkProcessor:
                 )
                 yield ToolCallEndChunk(id=self.current_block_param["id"])
             elif block_type == "thinking":
-                yield ThoughtEndChunk()
+                if self.include_thoughts:
+                    yield ThoughtEndChunk()
             else:
                 raise NotImplementedError
 
@@ -257,10 +266,10 @@ class _AnthropicChunkProcessor:
 
 
 def decode_stream(
-    anthropic_stream_manager: MessageStreamManager,
+    anthropic_stream_manager: MessageStreamManager, *, include_thoughts: bool
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an Anthropic MessageStreamManager."""
-    processor = _AnthropicChunkProcessor()
+    processor = _AnthropicChunkProcessor(include_thoughts=include_thoughts)
     with anthropic_stream_manager as stream:
         for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
             yield from processor.process_event(event)
@@ -268,10 +277,10 @@ def decode_stream(
 
 
 async def decode_async_stream(
-    anthropic_stream_manager: AsyncMessageStreamManager,
+    anthropic_stream_manager: AsyncMessageStreamManager, *, include_thoughts: bool
 ) -> AsyncChunkIterator:
     """Returns an AsyncChunkIterator converted from an Anthropic MessageStreamManager."""
-    processor = _AnthropicChunkProcessor()
+    processor = _AnthropicChunkProcessor(include_thoughts=include_thoughts)
     async with anthropic_stream_manager as stream:
         async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
             for item in processor.process_event(event):
