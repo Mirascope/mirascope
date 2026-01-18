@@ -217,7 +217,7 @@ const SidebarLink = ({
       {...(params && { params: params as LinkProps["params"] })}
       style={style}
       className={cn(
-        "font-handwriting-descent block rounded-md py-1 text-base",
+        "font-handwriting-descent block cursor-pointer rounded-md py-1 text-base",
         className,
         isActive ? activeClass : inactiveClass,
       )}
@@ -251,7 +251,7 @@ const SectionTab = ({
       to={to as LinkProps["to"]}
       {...(params && { params: params as LinkProps["params"] })}
       className={cn(
-        "font-handwriting-descent w-full rounded-md px-3 py-1 text-base",
+        "font-handwriting-descent w-full cursor-pointer rounded-md px-3 py-1 text-base",
         className,
         isActive ? activeClass : inactiveClass,
       )}
@@ -289,7 +289,9 @@ const ChevronButton = ({
   return (
     <button
       onClick={onClick}
-      className={cn("mr-1 flex h-5 w-5 items-center justify-center")}
+      className={cn(
+        "mr-1 flex h-5 w-5 cursor-pointer items-center justify-center",
+      )}
       aria-label={isExpanded ? "Collapse" : "Expand"}
     >
       {isExpanded ? (
@@ -395,7 +397,7 @@ const SidebarItemLink = ({
               e.stopPropagation();
               toggleExpand();
             }}
-            className="flex shrink-0 items-center justify-center"
+            className="flex shrink-0 cursor-pointer items-center justify-center"
             aria-label={isExpanded ? "Collapse" : "Expand"}
           >
             {isExpanded ? (
@@ -462,7 +464,9 @@ const NestedFolder = ({
         {/* Folder label button */}
         <button
           onClick={toggleExpand}
-          className={cn("block w-full rounded-md py-1 text-left font-medium")}
+          className={cn(
+            "block w-full cursor-pointer rounded-md py-1 text-left font-medium",
+          )}
           style={{
             paddingRight: "0.75rem",
             flex: 1,

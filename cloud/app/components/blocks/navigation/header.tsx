@@ -58,15 +58,13 @@ export default function Header() {
         isCloudRoute,
       )}
     >
-      <nav className={HEADER_STYLES.nav(isCloudRoute)}>
-        <Link
-          to="/"
-          className={HEADER_STYLES.logo(isLandingPage || isRouterWaitlistPage)}
-        >
+      <nav className={HEADER_STYLES.nav()}>
+        <Link to="/" className={HEADER_STYLES.logo()}>
           <MirascopeLogo
             size="small"
             withText={true}
             textClassName={cn(HEADER_STYLES.logoText(isSearchOpen))}
+            lightText={isLandingPage}
           />
         </Link>
         <DesktopNavigation isSearchOpen={isSearchOpen} />

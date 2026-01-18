@@ -18,39 +18,64 @@ import { Label } from "@/app/components/ui/label";
 
 function ProjectsSettingsPage() {
   const { selectedOrganization } = useOrganization();
-  const { selectedProject, projects, isLoading } = useProject();
+  const { selectedProject, isLoading } = useProject();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const header = (
+    <div className="mb-6 flex items-start justify-between">
+      <div>
+        <h1 className="text-2xl font-semibold">Project</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your project settings
+        </p>
+      </div>
+      <Button onClick={() => setShowCreateModal(true)}>
+        <Plus className="h-4 w-4 mr-2" />
+        New Project
+      </Button>
+    </div>
+  );
+
   if (!selectedOrganization) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-muted-foreground">
-          Please select an organization first
+      <div className="max-w-2xl">
+        {header}
+        <div className="flex justify-center pt-12">
+          <div className="text-muted-foreground">
+            Please select an organization first
+          </div>
         </div>
+        <CreateProjectModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+        />
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-muted-foreground">Loading...</div>
+      <div className="max-w-2xl">
+        {header}
+        <div className="flex justify-center pt-12">
+          <div className="text-muted-foreground">Loading...</div>
+        </div>
+        <CreateProjectModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+        />
       </div>
     );
   }
 
   if (!selectedProject) {
-    const hasProjects = projects.length > 0;
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        {hasProjects && (
+      <div className="max-w-2xl">
+        {header}
+        <div className="flex justify-center pt-12">
           <div className="text-muted-foreground">Please select a project</div>
-        )}
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create New Project
-        </Button>
+        </div>
         <CreateProjectModal
           open={showCreateModal}
           onOpenChange={setShowCreateModal}
@@ -61,18 +86,7 @@ function ProjectsSettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Project</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your project settings
-          </p>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Project
-        </Button>
-      </div>
+      {header}
 
       <Card>
         <CardHeader>
@@ -142,6 +156,6 @@ function ProjectsSettingsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/settings/projects")({
+export const Route = createFileRoute("/cloud/settings/project")({
   component: ProjectsSettingsPage,
 });

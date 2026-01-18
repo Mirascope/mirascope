@@ -11,7 +11,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <OrganizationProvider>
       <ProjectProvider>
-        <div className="flex h-[calc(100vh - var(--header-height))]">
+        <div className="flex h-[calc(100vh-60px)]">
           <Sidebar />
           <main className="flex-1 overflow-y-auto bg-background">
             {children}

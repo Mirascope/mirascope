@@ -52,28 +52,18 @@ export const HEADER_STYLES = {
       "font-handwriting",
       // Background color (only on non-landing pages)
       isLandingPage ? "" : "bg-background",
-      // Bottom border and shadow when scrolled (only on non-landing pages), or always for cloud routes
-      isCloudRoute
-        ? "border-border border-b"
-        : scrolled && !isLandingPage
-          ? "border-border border-b shadow-sm"
-          : "",
+      // Bottom border and shadow when scrolled (only on non-landing pages, not for cloud routes)
+      !isCloudRoute && scrolled && !isLandingPage
+        ? "border-border border-b shadow-sm"
+        : "",
     ),
 
-  // Navigation container - expands to full width when in cloud routes
-  nav: (isCloudRoute: boolean = false) =>
-    cn(
-      "mx-auto flex w-full flex-row items-center space-x-2",
-      // Only constrain width when not in cloud routes
-      !isCloudRoute && "max-w-7xl",
-    ),
+  // Navigation container - always full width
+  nav: () => cn("mx-auto flex w-full flex-row items-center space-x-2"),
 
   // Logo link container
-  logo: (isLandingPage: boolean) =>
-    cn(
-      "relative z-10 flex items-center flex-shrink-0 px-1 mr-2",
-      isLandingPage ? "invisible" : "visible",
-    ),
+  logo: () =>
+    cn("relative z-10 flex items-center flex-shrink-0 px-1 mr-2 visible"),
 
   // Logo text container with fade transition
   logoText: (isSearchOpen: boolean) =>
@@ -262,8 +252,8 @@ export const DESKTOP_NAV_STYLES = {
   // Container styles
   container: (isSearchOpen: boolean) =>
     cn(
-      // Base styles - always centered, show at lg breakpoint for Cloud tab space
-      "absolute left-1/2 z-20 hidden -translate-x-1/2 transform items-center gap-6 lg:flex",
+      // Base styles - show at lg breakpoint, left-aligned
+      "z-20 hidden items-center gap-6 lg:flex relative ml-6",
       // Transitions
       "transition-opacity duration-300 ease-in-out",
       // Only hide when search is open
