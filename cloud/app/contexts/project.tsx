@@ -37,8 +37,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Load selected project from localStorage on mount or when org changes
+  // Load selected project from localStorage on mount or when projects change
   useEffect(() => {
+    // Don't do anything while loading
+    if (isLoading) return;
+
     const storedId = localStorage.getItem(STORAGE_KEY);
     if (storedId && projects.length > 0) {
       const project = projects.find((p) => p.id === storedId);
@@ -52,10 +55,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       // Auto-select first project if none selected
       setSelectedProject(projects[0]);
     } else if (projects.length === 0) {
-      // Clear selection if no projects
+      // Clear selection if no projects (and not loading)
       setSelectedProject(null);
     }
-  }, [projects, selectedProject]);
+  }, [projects, selectedProject, isLoading]);
 
   // Reset project selection when organization changes
   useEffect(() => {
