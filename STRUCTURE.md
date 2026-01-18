@@ -296,7 +296,7 @@ cloud/
 OTLP ingest
   └── Cloudflare Queue (spans_ingest)
         ├── ClickHouse (analytics)
-        └── RecentSpansDO (realtime cache)
+        └── RealtimeSpansDurableObject (realtime cache)
 ```
 
 **ClickHouse Queue Processing (Detailed)**:
@@ -306,7 +306,7 @@ OTLP ingest
 2) spanIngestQueue consumes messages:
    - transform to ClickHouse row
    - bulk insert into ClickHouse
-   - upsert into RecentSpansDO
+   - upsert into RealtimeSpansDurableObject
 3) Failures trigger queue retry + DLQ
 ```
 
