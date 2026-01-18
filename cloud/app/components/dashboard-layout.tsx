@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "@/app/components/sidebar";
-import { OrganizationProvider } from "@/app/contexts/organization";
-import { ProjectProvider } from "@/app/contexts/project";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -9,15 +7,9 @@ type DashboardLayoutProps = {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <OrganizationProvider>
-      <ProjectProvider>
-        <div className="flex h-[calc(100vh-60px)]">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto bg-background">
-            {children}
-          </main>
-        </div>
-      </ProjectProvider>
-    </OrganizationProvider>
+    <div className="flex h-[calc(100vh-60px)]">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto bg-background">{children}</main>
+    </div>
   );
 }
