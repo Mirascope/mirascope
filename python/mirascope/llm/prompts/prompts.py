@@ -6,7 +6,7 @@ from typing import Generic, overload
 
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT, OutputParser
-from ..messages import Message
+from ..messages import Message, promote_to_messages
 from ..models import Model
 from ..providers import ModelId
 from ..responses import (
@@ -26,7 +26,6 @@ from ..tools import (
     Toolkit,
 )
 from ..types import P
-from . import _utils
 from .protocols import (
     AsyncContextMessageTemplate,
     AsyncMessageTemplate,
@@ -59,7 +58,7 @@ class Prompt(Generic[P, FormattableT]):
 
     def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
         """Return the `Messages` from invoking this prompt."""
-        return _utils.promote_to_messages(self.fn(*args, **kwargs))
+        return promote_to_messages(self.fn(*args, **kwargs))
 
     @overload
     def __call__(
@@ -158,7 +157,7 @@ class AsyncPrompt(Generic[P, FormattableT]):
 
     async def messages(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
         """Return the `Messages` from invoking this prompt."""
-        return _utils.promote_to_messages(await self.fn(*args, **kwargs))
+        return promote_to_messages(await self.fn(*args, **kwargs))
 
     @overload
     async def __call__(
@@ -262,7 +261,7 @@ class ContextPrompt(Generic[P, DepsT, FormattableT]):
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Sequence[Message]:
         """Return the `Messages` from invoking this prompt."""
-        return _utils.promote_to_messages(self.fn(ctx, *args, **kwargs))
+        return promote_to_messages(self.fn(ctx, *args, **kwargs))
 
     @overload
     def __call__(
@@ -388,7 +387,7 @@ class AsyncContextPrompt(Generic[P, DepsT, FormattableT]):
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Sequence[Message]:
         """Return the `Messages` from invoking this prompt."""
-        return _utils.promote_to_messages(await self.fn(ctx, *args, **kwargs))
+        return promote_to_messages(await self.fn(ctx, *args, **kwargs))
 
     @overload
     async def __call__(

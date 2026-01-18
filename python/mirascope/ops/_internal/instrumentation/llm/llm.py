@@ -55,7 +55,7 @@ from .....llm import (
     ToolSchema,
     UserContent,
 )
-from .....llm.prompts._utils import promote_to_messages
+from .....llm.messages import promote_to_messages
 from ...configuration import (
     get_tracer,
 )
