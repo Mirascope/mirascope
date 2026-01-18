@@ -7,11 +7,13 @@ function CloudSettingsLayout() {
   return (
     <Protected>
       <DashboardLayout>
-        <div className="flex h-full">
-          <SettingsSidebar />
-          <main className="flex-1 overflow-y-auto p-6">
-            <Outlet />
-          </main>
+        <div className="flex h-full justify-center">
+          <div className="flex h-full w-full max-w-5xl">
+            <SettingsSidebar />
+            <main className="flex-1 overflow-y-auto p-6">
+              <Outlet />
+            </main>
+          </div>
         </div>
       </DashboardLayout>
     </Protected>

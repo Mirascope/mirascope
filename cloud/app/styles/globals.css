@@ -80,7 +80,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Header and footer height variables */
-  --header-height-base: 60px; /* Standard header without selector (measured) */
+  --header-height-base: 86px; /* Standard header without selector (measured) */
   --header-height-with-selector: 100px; /* Header with product selector (measured) */
   --header-height: var(--header-height-base); /* Default value */
   --footer-height: 52px;
