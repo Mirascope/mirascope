@@ -24,7 +24,8 @@ from .finish_reason import FinishReason
 from .usage import Usage
 
 if TYPE_CHECKING:
-    from ..providers import ModelId, Params, ProviderId
+    from ..models import Params
+    from ..providers import ModelId, ProviderId
 
 
 class Response(BaseResponse[Toolkit, FormattableT]):

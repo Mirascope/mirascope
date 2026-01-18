@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
@@ -5,12 +7,14 @@ from typing import TYPE_CHECKING, TypeAlias, cast, get_type_hints
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
+from ...models.params import (
+    Params,  # Import directly from params.py to avoid circular dependency
+)
 from ..provider_id import ProviderId
-from .params import Params
 
 if TYPE_CHECKING:
+    from ...models import ThinkingConfig
     from ..model_id import ModelId
-    from .params import ThinkingConfig
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +164,7 @@ class SafeParamsAccessor:
         return self._params.get("stop_sequences")
 
     @property
-    def thinking(self) -> "ThinkingConfig | None":
+    def thinking(self) -> ThinkingConfig | None:
         """Access the thinking parameter."""
         self._unaccessed.discard("thinking")
         return self._params.get("thinking")
@@ -169,8 +173,8 @@ class SafeParamsAccessor:
         self,
         param_name: str,
         param_value: object,
-        provider_id: "ProviderId",
-        model_id: "ModelId | None" = None,
+        provider_id: ProviderId,
+        model_id: ModelId | None = None,
     ) -> None:
         unsupported_by = f"provider: {provider_id}"
         if model_id:
@@ -190,7 +194,7 @@ class SafeParamsAccessor:
 def ensure_all_params_accessed(
     *,
     params: Params,
-    provider_id: "ProviderId",
+    provider_id: ProviderId,
     unsupported_params: list[str] | None = None,
 ) -> Generator[SafeParamsAccessor, None, None]:
     """Context manager that ensures all parameters are accessed.

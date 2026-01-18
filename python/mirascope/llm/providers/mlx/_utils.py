@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Callable
-from typing import TypeAlias, TypedDict
+from typing import TYPE_CHECKING, TypeAlias, TypedDict
 
 import mlx.core as mx
 from huggingface_hub.errors import LocalEntryNotFoundError
@@ -8,7 +10,10 @@ from mlx_lm.sample_utils import make_sampler
 
 from ...exceptions import NotFoundError
 from ...responses import FinishReason, Usage
-from ..base import Params, ProviderErrorMap, _utils as _base_utils
+from ..base import ProviderErrorMap, _utils as _base_utils
+
+if TYPE_CHECKING:
+    from ...models import Params
 
 Sampler: TypeAlias = Callable[[mx.array], mx.array]
 

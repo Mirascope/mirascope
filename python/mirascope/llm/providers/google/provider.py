@@ -1,6 +1,9 @@
 """Google provider implementation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 from google.genai import Client
@@ -29,9 +32,12 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider, Params
+from ..base import BaseProvider
 from . import _utils
 from .model_id import GoogleModelId, model_name
+
+if TYPE_CHECKING:
+    from ...models import Params
 
 
 class GoogleProvider(BaseProvider[Client]):

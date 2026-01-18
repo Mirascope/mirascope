@@ -7,9 +7,14 @@ creates a default one.
 """
 
 from .models import Model, model, model_from_context, use_model
+from .params import Params
+from .thinking_config import ThinkingConfig, ThinkingLevel
 
 __all__ = [
     "Model",
+    "Params",
+    "ThinkingConfig",
+    "ThinkingLevel",
     "model",
     "model_from_context",
     "use_model",

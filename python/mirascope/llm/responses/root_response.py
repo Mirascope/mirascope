@@ -21,8 +21,8 @@ from .finish_reason import FinishReason
 from .usage import Usage
 
 if TYPE_CHECKING:
-    from ..models import Model
-    from ..providers import ModelId, Params, ProviderId
+    from ..models import Model, Params
+    from ..providers import ModelId, ProviderId
 
 AnyResponse: TypeAlias = "RootResponse[Any, Any]"
 

@@ -34,10 +34,10 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from .params import Params
 
 if TYPE_CHECKING:
     from ...exceptions import MirascopeLLMError
+    from ...models import Params
     from ..provider_id import ProviderId
 
 ProviderClientT = TypeVar("ProviderClientT")

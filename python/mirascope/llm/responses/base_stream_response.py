@@ -44,7 +44,8 @@ from .streams import (
 from .usage import Usage, UsageDeltaChunk
 
 if TYPE_CHECKING:
-    from ..providers import ModelId, Params, ProviderId
+    from ..models import Params
+    from ..providers import ModelId, ProviderId
 
 
 StreamResponseT = TypeVar("StreamResponseT", bound="BaseStreamResponse[Any, Any, Any]")

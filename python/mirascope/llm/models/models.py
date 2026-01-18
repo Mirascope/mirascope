@@ -14,7 +14,6 @@ from ..messages import Message, UserContent
 from ..prompts._utils import promote_to_messages
 from ..providers import (
     ModelId,
-    Params,
     Provider,
     ProviderId,
     get_provider_for_model,
@@ -39,6 +38,7 @@ from ..tools import (
     Tool,
     Toolkit,
 )
+from .params import Params
 
 MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
 

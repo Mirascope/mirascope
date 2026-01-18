@@ -51,7 +51,7 @@ from .content import (
     URLImageSource,
     UserContentPart,
 )
-from .context import Context
+from .context import Context, DepsT
 from .exceptions import (
     APIError,
     AuthenticationError,
@@ -70,6 +70,7 @@ from .exceptions import (
 )
 from .formatting import (
     Format,
+    FormattableT,
     FormattingMode,
     OutputParser,
     Partial,
@@ -85,7 +86,15 @@ from .messages import (
     UserContent,
     UserMessage,
 )
-from .models import Model, model, model_from_context, use_model
+from .models import (
+    Model,
+    Params,
+    ThinkingConfig,
+    ThinkingLevel,
+    model,
+    model_from_context,
+    use_model,
+)
 from .prompts import (
     AsyncContextPrompt,
     AsyncPrompt,
@@ -96,11 +105,8 @@ from .prompts import (
 )
 from .providers import (
     ModelId,
-    Params,
     Provider,
     ProviderId,
-    ThinkingConfig,
-    ThinkingLevel,
     register_provider,
     reset_provider_registry,
 )
@@ -121,6 +127,7 @@ from .responses import (
     FinishReason,
     RawMessageChunk,
     Response,
+    RootResponse,
     Stream,
     StreamResponse,
     StreamResponseChunk,
@@ -131,20 +138,28 @@ from .responses import (
     UsageDeltaChunk,
 )
 from .tools import (
+    AnyToolFn,
+    AnyToolSchema,
     AsyncContextTool,
     AsyncContextToolkit,
     AsyncTool,
     AsyncToolkit,
+    BaseToolkit,
     ContextTool,
     ContextToolkit,
     Tool,
     Toolkit,
+    ToolkitT,
+    ToolSchema,
     tool,
 )
+from .types import Jsonable
 
 __all__ = [
     "APIError",
     "AnyResponse",
+    "AnyToolFn",
+    "AnyToolSchema",
     "AssistantContent",
     "AssistantContentChunk",
     "AssistantContentPart",
@@ -171,6 +186,7 @@ __all__ = [
     "BadRequestError",
     "Base64AudioSource",
     "Base64ImageSource",
+    "BaseToolkit",
     "Call",
     "CallDecorator",
     "ChunkIterator",
@@ -182,13 +198,16 @@ __all__ = [
     "ContextStreamResponse",
     "ContextTool",
     "ContextToolkit",
+    "DepsT",
     "Document",
     "FeatureNotSupportedError",
     "FinishReason",
     "Format",
+    "FormattableT",
     "FormattingMode",
     "FormattingModeNotSupportedError",
     "Image",
+    "Jsonable",
     "Message",
     "MirascopeLLMError",
     "Model",
@@ -206,6 +225,7 @@ __all__ = [
     "RateLimitError",
     "RawMessageChunk",
     "Response",
+    "RootResponse",
     "ServerError",
     "Stream",
     "StreamResponse",
@@ -233,7 +253,9 @@ __all__ = [
     "ToolCallStream",
     "ToolNotFoundError",
     "ToolOutput",
+    "ToolSchema",
     "Toolkit",
+    "ToolkitT",
     "URLImageSource",
     "Usage",
     "UsageDeltaChunk",

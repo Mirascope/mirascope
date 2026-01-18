@@ -12,7 +12,8 @@ from .root_response import RootResponse
 from .usage import Usage
 
 if TYPE_CHECKING:
-    from ..providers import ModelId, Params, ProviderId
+    from ..models import Params
+    from ..providers import ModelId, ProviderId
 
 ResponseT = TypeVar("ResponseT", bound="BaseResponse[Any, Any]")
 

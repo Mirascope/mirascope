@@ -1,8 +1,10 @@
 """OpenAI completions message encoding and request preparation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from openai import Omit
 from openai.types import chat as openai_types, shared_params as shared_openai_types
@@ -15,13 +17,16 @@ from .....exceptions import (
 from .....formatting import Format, FormattableT, OutputParser, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ....base import Params, _utils as _base_utils
+from ....base import _utils as _base_utils
 from ...model_id import OpenAIModelId, model_name
 from ...model_info import (
     MODELS_WITHOUT_AUDIO_SUPPORT,
     MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
     MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
 )
+
+if TYPE_CHECKING:
+    from .....models import Params
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):

@@ -16,9 +16,6 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
 from pydantic import BaseModel, Field
 
 from mirascope import llm, ops
-from mirascope.llm.content.text import TextChunk, TextStartChunk
-from mirascope.llm.responses import StreamResponseChunk
-from mirascope.llm.responses.stream_response import StreamResponse
 from mirascope.ops._internal.configuration import set_tracer
 from tests.ops.utils import span_snapshot
 
@@ -395,17 +392,17 @@ def test_model_stream_iterator_error_records_exception(
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
 
-    def _chunk_iterator() -> Iterator[StreamResponseChunk]:
+    def _chunk_iterator() -> Iterator[llm.StreamResponseChunk]:
         """Return a chunk iterator that raises to simulate stream failure."""
-        yield TextStartChunk()
-        yield TextChunk(delta="partial")
+        yield llm.TextStartChunk()
+        yield llm.TextChunk(delta="partial")
         raise RuntimeError("chunk boom")
 
     # Create a mock provider that returns a failing stream
     mock_provider = Mock()
     mock_provider.id = "openai"
     mock_provider.error_map = {}  # Empty error map - errors pass through
-    mock_provider.stream.return_value = StreamResponse(
+    mock_provider.stream.return_value = llm.StreamResponse(
         provider_id="openai",
         model_id="openai/gpt-4o",
         provider_model_name="gpt-4o:responses",

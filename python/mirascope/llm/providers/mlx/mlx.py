@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import asyncio
 import threading
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 from typing_extensions import Unpack
 
 import mlx.core as mx
@@ -14,10 +17,12 @@ from ...formatting import Format, FormattableT, OutputParser
 from ...messages import AssistantMessage, Message, assistant
 from ...responses import AsyncChunkIterator, ChunkIterator, StreamResponseChunk
 from ...tools import AnyToolSchema, BaseToolkit
-from ..base import Params
 from . import _utils
 from .encoding import BaseEncoder, TokenIds
 from .model_id import MLXModelId
+
+if TYPE_CHECKING:
+    from ...models import Params
 
 
 def _consume_sync_stream_into_queue(
