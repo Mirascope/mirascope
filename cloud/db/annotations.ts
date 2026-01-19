@@ -61,7 +61,7 @@ import {
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
-import { ProjectTags } from "@/db/project-tags";
+import { Tags } from "@/db/tags";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import {
@@ -175,15 +175,12 @@ export class Annotations extends BaseAuthenticatedEffectService<
   ClickHouseSearch | RealtimeSpans
 > {
   private readonly projectMemberships: ProjectMemberships;
-  private readonly projectTags: ProjectTags;
+  private readonly tags: Tags;
 
-  constructor(
-    projectMemberships: ProjectMemberships,
-    projectTags: ProjectTags,
-  ) {
+  constructor(projectMemberships: ProjectMemberships, tags: Tags) {
     super();
     this.projectMemberships = projectMemberships;
-    this.projectTags = projectTags;
+    this.tags = tags;
   }
 
   // ---------------------------------------------------------------------------
@@ -303,7 +300,7 @@ export class Annotations extends BaseAuthenticatedEffectService<
       }
 
       if (data.tags) {
-        yield* this.projectTags.findByNames({
+        yield* this.tags.findByNames({
           userId,
           organizationId,
           projectId,
@@ -577,7 +574,7 @@ export class Annotations extends BaseAuthenticatedEffectService<
         updateData.metadata = data.metadata;
       }
       if (data.tags) {
-        yield* this.projectTags.findByNames({
+        yield* this.tags.findByNames({
           userId,
           organizationId,
           projectId,

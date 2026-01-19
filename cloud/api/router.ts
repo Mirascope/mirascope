@@ -75,6 +75,13 @@ import {
   deleteAnnotationHandler,
 } from "@/api/annotations.handlers";
 import {
+  listTagsHandler,
+  createTagHandler,
+  getTagHandler,
+  updateTagHandler,
+  deleteTagHandler,
+} from "@/api/tags.handlers";
+import {
   searchHandler,
   getTraceDetailHandler,
   getAnalyticsSummaryHandler,
@@ -336,6 +343,33 @@ const AnnotationsHandlersLive = HttpApiBuilder.group(
       .handle("delete", ({ path }) => deleteAnnotationHandler(path.id)),
 );
 
+const TagsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "tags",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) =>
+        listTagsHandler(path.organizationId, path.projectId),
+      )
+      .handle("create", ({ path, payload }) =>
+        createTagHandler(path.organizationId, path.projectId, payload),
+      )
+      .handle("get", ({ path }) =>
+        getTagHandler(path.organizationId, path.projectId, path.tagId),
+      )
+      .handle("update", ({ path, payload }) =>
+        updateTagHandler(
+          path.organizationId,
+          path.projectId,
+          path.tagId,
+          payload,
+        ),
+      )
+      .handle("delete", ({ path }) =>
+        deleteTagHandler(path.organizationId, path.projectId, path.tagId),
+      ),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -349,4 +383,5 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(ApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
+  Layer.provide(TagsHandlersLive),
 );

@@ -7,6 +7,7 @@ import {
   PermissionDeniedError,
   UnauthorizedError,
 } from "@/errors";
+import { TagNameSchema } from "@/api/tags.schemas";
 
 const LabelSchema = Schema.Literal("pass", "fail");
 
@@ -18,6 +19,7 @@ const CreateAnnotationRequestSchema = Schema.Struct({
   metadata: Schema.optional(
     Schema.NullOr(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
   ),
+  tags: Schema.optional(Schema.NullOr(Schema.Array(TagNameSchema))),
 });
 
 export type CreateAnnotationRequest = typeof CreateAnnotationRequestSchema.Type;
@@ -28,6 +30,7 @@ const UpdateAnnotationRequestSchema = Schema.Struct({
   metadata: Schema.optional(
     Schema.NullOr(Schema.Record({ key: Schema.String, value: Schema.Unknown })),
   ),
+  tags: Schema.optional(Schema.NullOr(Schema.Array(TagNameSchema))),
 });
 
 export type UpdateAnnotationRequest = typeof UpdateAnnotationRequestSchema.Type;
@@ -43,6 +46,7 @@ const AnnotationResponseSchema = Schema.Struct({
   metadata: Schema.NullOr(
     Schema.Record({ key: Schema.String, value: Schema.Unknown }),
   ),
+  tags: Schema.Array(TagNameSchema),
   environmentId: Schema.String,
   projectId: Schema.String,
   organizationId: Schema.String,

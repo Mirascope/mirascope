@@ -4,7 +4,7 @@ import { projects } from "./projects";
 import { organizations } from "./organizations";
 import { users } from "./users";
 
-export const projectTags = pgTable(
+export const tags = pgTable(
   "project_tags",
   {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -26,26 +26,26 @@ export const projectTags = pgTable(
   }),
 );
 
-export const projectTagsRelations = relations(projectTags, ({ one }) => ({
+export const tagsRelations = relations(tags, ({ one }) => ({
   project: one(projects, {
-    fields: [projectTags.projectId],
+    fields: [tags.projectId],
     references: [projects.id],
   }),
   organization: one(organizations, {
-    fields: [projectTags.organizationId],
+    fields: [tags.organizationId],
     references: [organizations.id],
   }),
   createdByUser: one(users, {
-    fields: [projectTags.createdBy],
+    fields: [tags.createdBy],
     references: [users.id],
   }),
 }));
 
-export type ProjectTag = typeof projectTags.$inferSelect;
-export type NewProjectTag = typeof projectTags.$inferInsert;
+export type Tag = typeof tags.$inferSelect;
+export type NewTag = typeof tags.$inferInsert;
 
-export type PublicProjectTag = Pick<
-  ProjectTag,
+export type PublicTag = Pick<
+  Tag,
   | "id"
   | "name"
   | "projectId"

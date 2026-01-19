@@ -53,7 +53,7 @@ import { ApiKeys } from "@/db/api-keys";
 import { Traces } from "@/db/clickhouse/traces";
 import { Functions } from "@/db/functions";
 import { Annotations } from "@/db/annotations";
-import { ProjectTags } from "@/db/project-tags";
+import { Tags } from "@/db/tags";
 import { RouterRequests } from "@/db/router-requests";
 import { Payments } from "@/payments";
 
@@ -101,7 +101,7 @@ export interface EnvironmentsService extends Ready<Environments> {
  */
 export interface ProjectsService extends Ready<Projects> {
   readonly memberships: Ready<ProjectMemberships>;
-  readonly tags: Ready<ProjectTags>;
+  readonly tags: Ready<Tags>;
   readonly environments: EnvironmentsService;
 }
 
@@ -182,12 +182,12 @@ export class Database extends Context.Tag("Database")<
         organizationMemberships,
         projectMemberships,
       );
-      const projectTags = new ProjectTags(projectMemberships);
+      const tags = new Tags(projectMemberships);
       const environments = new Environments(projectMemberships);
       const apiKeys = new ApiKeys(projectMemberships);
       const traces = new Traces(projectMemberships);
       const functions = new Functions(projectMemberships);
-      const annotations = new Annotations(projectMemberships, projectTags);
+      const annotations = new Annotations(projectMemberships, tags);
       const routerRequests = new RouterRequests(projectMemberships);
 
       return {
@@ -200,7 +200,7 @@ export class Database extends Context.Tag("Database")<
           projects: {
             ...provideDependencies(projects),
             memberships: provideDependencies(projectMemberships),
-            tags: provideDependencies(projectTags),
+            tags: provideDependencies(tags),
             environments: {
               ...provideDependencies(environments),
               apiKeys: {
