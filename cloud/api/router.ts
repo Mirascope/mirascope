@@ -40,6 +40,12 @@ import {
   deleteProjectHandler,
 } from "@/api/projects.handlers";
 import {
+  listProjectMembersHandler,
+  addProjectMemberHandler,
+  updateProjectMemberRoleHandler,
+  removeProjectMemberHandler,
+} from "@/api/project-memberships.handlers";
+import {
   listEnvironmentsHandler,
   createEnvironmentHandler,
   getEnvironmentHandler,
@@ -190,6 +196,34 @@ const ProjectsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const ProjectMembershipsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "project-memberships",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) =>
+        listProjectMembersHandler(path.organizationId, path.projectId),
+      )
+      .handle("create", ({ path, payload }) =>
+        addProjectMemberHandler(path.organizationId, path.projectId, payload),
+      )
+      .handle("update", ({ path, payload }) =>
+        updateProjectMemberRoleHandler(
+          path.organizationId,
+          path.projectId,
+          path.memberId,
+          payload,
+        ),
+      )
+      .handle("delete", ({ path }) =>
+        removeProjectMemberHandler(
+          path.organizationId,
+          path.projectId,
+          path.memberId,
+        ),
+      ),
+);
+
 const EnvironmentsHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
   "environments",
@@ -297,6 +331,7 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(OrganizationInvitationsHandlersLive),
   Layer.provide(OrganizationMembershipsHandlersLive),
   Layer.provide(ProjectsHandlersLive),
+  Layer.provide(ProjectMembershipsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
   Layer.provide(ApiKeysHandlersLive),
   Layer.provide(FunctionsHandlersLive),
