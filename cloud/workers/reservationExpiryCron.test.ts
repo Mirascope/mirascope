@@ -98,19 +98,11 @@ describe("reservationExpiryCron", () => {
         })),
       } as never);
 
-      const result = await Effect.runPromise(
-        expireStaleReservations.pipe(
-          Effect.provide(mockDbLayer),
-          Effect.either,
-        ),
+      const error = await Effect.runPromise(
+        expireStaleReservations.pipe(Effect.provide(mockDbLayer), Effect.flip),
       );
 
-      expect(result._tag).toBe("Left");
-      if (result._tag === "Left") {
-        expect(result.left.message).toContain(
-          "Failed to expire stale reservations",
-        );
-      }
+      expect(error.message).toContain("Failed to expire stale reservations");
     });
   });
 

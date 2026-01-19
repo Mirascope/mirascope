@@ -6,8 +6,6 @@ import {
   TestOrganizationFixture,
   TestFreePlanOrganizationFixture,
   TestDrizzleORM,
-  MockAnalytics,
-  MockSpansMeteringQueue,
 } from "@/tests/db";
 import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
 import { Effect, Layer } from "effect";
@@ -370,17 +368,13 @@ describe("Projects", () => {
           }
         }).pipe(
           Effect.provide(
-            Layer.mergeAll(
-              Database.Default.pipe(
-                Layer.provide(
-                  TestSubscriptionWithRealDatabaseFixture(
-                    { plan: "free" },
-                    TestDrizzleORM,
-                  ),
+            Database.Default.pipe(
+              Layer.provide(
+                TestSubscriptionWithRealDatabaseFixture(
+                  { plan: "free" },
+                  TestDrizzleORM,
                 ),
               ),
-              MockAnalytics,
-              MockSpansMeteringQueue,
             ),
           ),
         ),

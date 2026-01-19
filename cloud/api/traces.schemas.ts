@@ -16,7 +16,7 @@ import {
   SearchRequestSchema,
   SearchResponseSchema,
   TraceDetailResponseSchema,
-} from "@/api/search.schemas";
+} from "@/api/traces-search.schemas";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
@@ -214,5 +214,6 @@ export class TracesApi extends HttpApiGroup.make("traces")
       .addError(PermissionDeniedError, {
         status: PermissionDeniedError.status,
       })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}

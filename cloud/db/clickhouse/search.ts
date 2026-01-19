@@ -48,23 +48,9 @@
  */
 
 import { Context, Effect, Layer } from "effect";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { formatDateTime64 } from "@/db/clickhouse/transform";
 import { ClickHouseError } from "@/errors";
-
-// =============================================================================
-// Date Formatting Utilities
-// =============================================================================
-
-/**
- * Formats a Date object for ClickHouse DateTime64(9) query parameters.
- * ClickHouse expects format: "2024-01-01 00:00:00.000000000" (space separator, 9 decimal places).
- * JavaScript toISOString() returns "2024-01-01T00:00:00.000Z" which is incompatible.
- */
-function formatDateTime64(date: Date): string {
-  const iso = date.toISOString();
-  // Replace 'T' with space, remove 'Z', and pad milliseconds to nanoseconds
-  return iso.replace("T", " ").replace("Z", "") + "000000";
-}
 
 // =============================================================================
 // Query Constraints
@@ -184,7 +170,6 @@ export interface AnalyticsSummaryInput {
  * excluded for query cost reduction. Use getTraceDetail() for full span data.
  */
 export interface SpanSearchResult {
-  id: string;
   traceId: string;
   spanId: string;
   name: string;
@@ -206,8 +191,6 @@ export interface SearchResponse {
 
 /** Full span data for trace detail view. */
 export interface SpanDetail {
-  id: string;
-  traceDbId: string;
   traceId: string;
   spanId: string;
   parentSpanId: string | null;
@@ -270,7 +253,6 @@ interface SpanSummaryRow {
   environment_id: string;
   trace_id: string;
   span_id: string;
-  id: string;
   name: string;
   start_time: string;
   duration_ms: number | null;
@@ -282,8 +264,6 @@ interface SpanSummaryRow {
 }
 
 interface SpanDetailRow {
-  id: string;
-  trace_db_id: string;
   trace_id: string;
   span_id: string;
   parent_span_id: string | null;
@@ -405,7 +385,6 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
                   s.environment_id,
                   s.trace_id,
                   s.span_id,
-                  argMax(s.id, s._version) as id,
                   argMax(s.name, s._version) as name,
                   argMax(s.start_time, s._version) as start_time,
                   argMax(s.duration_ms, s._version) as duration_ms,
@@ -451,8 +430,6 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
             const rows = yield* client.unsafeQuery<SpanDetailRow>(
               `
               SELECT
-                id,
-                trace_db_id,
                 trace_id,
                 span_id,
                 parent_span_id,
@@ -749,10 +726,13 @@ function buildSearchWhereClause(input: SpanSearchInput): {
   const environmentIdKey = addParam("environmentId", input.environmentId);
   conditions.push(`s.environment_id = toUUID({${environmentIdKey}:String})`);
 
-  const startTimeKey = addParam("startTime", formatDateTime64(input.startTime));
+  const startTimeKey = addParam(
+    "startTime",
+    formatDateTime64(input.startTime, 9),
+  );
   conditions.push(`s.start_time >= toDateTime64({${startTimeKey}:String}, 9)`);
 
-  const endTimeKey = addParam("endTime", formatDateTime64(input.endTime));
+  const endTimeKey = addParam("endTime", formatDateTime64(input.endTime, 9));
   conditions.push(`s.start_time <= toDateTime64({${endTimeKey}:String}, 9)`);
 
   // Optional text search using hasToken for tokenized matching
@@ -932,8 +912,11 @@ function buildAnalyticsBaseWhere(input: AnalyticsSummaryInput): {
   };
 
   const environmentIdKey = addParam("environmentId", input.environmentId);
-  const startTimeKey = addParam("startTime", formatDateTime64(input.startTime));
-  const endTimeKey = addParam("endTime", formatDateTime64(input.endTime));
+  const startTimeKey = addParam(
+    "startTime",
+    formatDateTime64(input.startTime, 9),
+  );
+  const endTimeKey = addParam("endTime", formatDateTime64(input.endTime, 9));
 
   const conditions = [
     `s.environment_id = toUUID({${environmentIdKey}:String})`,
@@ -970,7 +953,6 @@ function buildOrderByClause(
  */
 function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
   return {
-    id: row.id,
     traceId: row.trace_id,
     spanId: row.span_id,
     name: row.name,
@@ -989,8 +971,6 @@ function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
  */
 function transformToSpanDetail(row: SpanDetailRow): SpanDetail {
   return {
-    id: row.id,
-    traceDbId: row.trace_db_id,
     traceId: row.trace_id,
     spanId: row.span_id,
     parentSpanId: row.parent_span_id,

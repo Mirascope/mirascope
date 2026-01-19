@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1767668708898,
-      "tag": "0000_parched_pandemic",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1767856411068,
-      "tag": "0001_glossy_unus",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1767860710000,
-      "tag": "0002_pink_peter_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1768444077697,
-      "tag": "0003_empty_kulan_gath",
+      "when": 1768675709023,
+      "tag": "0000_initial_migration",
       "breakpoints": true
     }
   ]

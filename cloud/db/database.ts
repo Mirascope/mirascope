@@ -50,7 +50,7 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
-import { Traces } from "@/db/traces";
+import { Traces } from "@/db/clickhouse/traces";
 import { Functions } from "@/db/functions";
 import { Annotations } from "@/db/annotations";
 import { RouterRequests } from "@/db/router-requests";

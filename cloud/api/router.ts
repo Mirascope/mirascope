@@ -65,7 +65,7 @@ import {
   searchHandler,
   getTraceDetailHandler,
   getAnalyticsSummaryHandler,
-} from "@/api/search.handlers";
+} from "@/api/traces-search.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };

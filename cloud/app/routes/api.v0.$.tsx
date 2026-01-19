@@ -5,12 +5,19 @@ import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
+import { DrizzleORM } from "@/db/client";
+import { ClickHouse } from "@/db/clickhouse/client";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
-import { ClickHouse } from "@/clickhouse/client";
-import { ClickHouseSearch } from "@/clickhouse/search";
 import { Settings, validateSettings } from "@/settings";
-import { spansMeteringQueueLayer, rateLimiterLayer } from "@/server-entry";
+import {
+  spansIngestQueueLayer,
+  realtimeSpansLayer,
+  rateLimiterLayer,
+} from "@/server-entry";
+import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 import { RateLimiter } from "@/rate-limiting";
 
 /**
@@ -96,14 +103,24 @@ export const Route = createFileRoute("/api/v0/$")({
             return rateLimitResult;
           }
 
+          const drizzle = yield* DrizzleORM;
+          const analytics = yield* Analytics;
+          const emails = yield* Emails;
           const clickHouseSearch = yield* ClickHouseSearch;
+          const realtimeSpans = yield* RealtimeSpans;
+          const spansIngestQueue = yield* SpansIngestQueue;
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v0",
             user: authResult.user,
             apiKeyInfo: authResult.apiKeyInfo,
             settings,
+            drizzle,
+            analytics,
+            emails,
             clickHouseSearch,
+            realtimeSpans,
+            spansIngestQueue,
           });
 
           if (!result.matched) {
@@ -128,15 +145,16 @@ export const Route = createFileRoute("/api/v0/$")({
                       payments: settings.stripe,
                     }),
                     Analytics.Live({
-                      googleAnalytics: settings.googleAnalytics,
                       postHog: settings.posthog,
+                      googleAnalytics: settings.googleAnalytics,
                     }),
                     Emails.Live(settings.resend),
                     ClickHouseSearch.Default.pipe(
                       Layer.provide(ClickHouse.Default),
                       Layer.provide(Layer.succeed(Settings, settings)),
                     ),
-                    spansMeteringQueueLayer,
+                    spansIngestQueueLayer,
+                    realtimeSpansLayer,
                     rateLimiterLayer,
                   ),
                 ),

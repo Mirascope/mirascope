@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@/tests/clickhouse";
 import { Effect, Layer } from "effect";
-import { ClickHouse } from "@/clickhouse/client";
+import { ClickHouse } from "@/db/clickhouse/client";
 import { type ClickHouseConfig } from "@/settings";
 import { ClickHouseError } from "@/errors";
 

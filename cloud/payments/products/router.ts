@@ -632,7 +632,6 @@ export class Router {
       ).pipe(
         Effect.retry(METER_RETRY_POLICY),
         /* v8 ignore start */
-        // TODO: Remove v8 ignore once queue-based async metering test is added
         Effect.catchAll(() => Effect.succeed(undefined)),
         /* v8 ignore stop */
       );

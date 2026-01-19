@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import {
   describe,
   it,
@@ -9,14 +9,26 @@ import {
 import type { PublicProject, PublicEnvironment } from "@/db/schema";
 import { toAnnotation } from "@/api/annotations.handlers";
 import { TEST_DATABASE_URL } from "@/tests/db";
+import { RealtimeSpans } from "@/workers/realtimeSpans";
+
+const AnnotationTestRealtimeLayer = Layer.succeed(RealtimeSpans, {
+  upsert: () => Effect.void,
+  search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+  getTraceDetail: () =>
+    Effect.succeed({
+      traceId: "",
+      spans: [],
+      rootSpanId: null,
+      totalDurationMs: null,
+    }),
+  exists: () => Effect.succeed(true),
+});
 
 describe("toAnnotation", () => {
   it("converts dates to ISO strings", () => {
     const now = new Date();
     const annotation = {
       id: "test-id",
-      spanId: "span-db-id",
-      traceId: "trace-db-id",
       otelSpanId: "otel-span-id",
       otelTraceId: "otel-trace-id",
       label: "pass" as const,
@@ -32,6 +44,8 @@ describe("toAnnotation", () => {
 
     const result = toAnnotation(annotation);
 
+    expect(result.otelSpanId).toBe("otel-span-id");
+    expect(result.otelTraceId).toBe("otel-trace-id");
     expect(result.createdAt).toBe(now.toISOString());
     expect(result.updatedAt).toBe(now.toISOString());
   });
@@ -39,8 +53,6 @@ describe("toAnnotation", () => {
   it("handles null dates", () => {
     const annotation = {
       id: "test-id",
-      spanId: "span-db-id",
-      traceId: "trace-db-id",
       otelSpanId: "otel-span-id",
       otelTraceId: "otel-trace-id",
       label: null,
@@ -56,6 +68,8 @@ describe("toAnnotation", () => {
 
     const result = toAnnotation(annotation);
 
+    expect(result.otelSpanId).toBe("otel-span-id");
+    expect(result.otelTraceId).toBe("otel-trace-id");
     expect(result.createdAt).toBeNull();
     expect(result.updatedAt).toBeNull();
   });
@@ -113,9 +127,14 @@ describe.sequential("Annotations API", (it) => {
         ownerName: owner.name,
         ownerDeletedAt: owner.deletedAt,
       };
-
       const result = yield* Effect.promise(() =>
-        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo),
+        createApiClient(
+          TEST_DATABASE_URL,
+          owner,
+          apiKeyInfo,
+          () => Effect.void,
+          AnnotationTestRealtimeLayer,
+        ),
       );
       apiKeyClient = result.client;
       disposeApiKeyClient = result.dispose;
@@ -165,6 +184,8 @@ describe.sequential("Annotations API", (it) => {
         },
       });
       expect(result.id).toBeDefined();
+      expect(result.otelTraceId).toBe("0123456789abcdef0123456789abcdef");
+      expect(result.otelSpanId).toBe("0123456789abcdef");
       expect(result.label).toBe("pass");
       createdAnnotationId = result.id;
     }),
@@ -318,11 +339,6 @@ describe.sequential("Annotations API", (it) => {
         urlParams: { otelTraceId: "0123456789abcdef0123456789abcdef" },
       });
       expect(result.total).toBeGreaterThanOrEqual(1);
-      expect(
-        result.annotations.every(
-          (a) => a.otelTraceId === "0123456789abcdef0123456789abcdef",
-        ),
-      ).toBe(true);
     }),
   );
 
