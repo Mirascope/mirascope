@@ -7,17 +7,24 @@ import { viteMDX } from "./vite-plugins/mdx";
 import { viteContent } from "./vite-plugins/content";
 import { viteImages } from "./vite-plugins/images";
 import { viteRobots } from "./vite-plugins/robots";
+import { viteSocialCards } from "./vite-plugins/social-cards";
 import { pagefindDev } from "./vite-plugins/pagefind-dev";
 import { defineConfig } from "vite";
+import ContentProcessor from "./app/lib/content/content-processor";
 
 export default defineConfig(() => {
-  const contentDir = path.resolve(process.cwd(), "content");
+  const contentProcessorOptions = {
+    contentDir: path.resolve(process.cwd(), "content"),
+    verbose: true,
+  };
+  const processor = new ContentProcessor(contentProcessorOptions);
+
   return {
     server: {
       port: 3000,
     },
     plugins: [
-      viteContent({ contentDir }),
+      viteContent({ processor: processor }),
       viteMDX(),
       viteImages({ viteEnvironments: ["client"] }),
       cloudflare({ viteEnvironment: { name: "ssr" } }),
@@ -62,6 +69,7 @@ export default defineConfig(() => {
         },
       }),
       viteRobots(), // Generate robots disallow paths from sitemap (must be after tanstackStart)
+      viteSocialCards({ processor }), // Generate social card images from sitemap (must be after tanstackStart)
       pagefindDev(),
       viteReact(),
       tailwindcss(),

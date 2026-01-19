@@ -110,8 +110,7 @@ export function generateOpenGraphMeta(params: {
     { property: "og:url", content: params.url },
     { property: "og:title", content: params.title },
     { property: "og:description", content: params.description },
-    // todo(sebastian): bring back once og image gen is fixed
-    // { property: "og:image", content: params.image },
+    { property: "og:image", content: params.image },
   ];
 }
 
@@ -125,12 +124,11 @@ export function generateTwitterMeta(params: {
   image: string;
 }): HeadMetaEntry[] {
   return [
-    // { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:url", content: params.url },
     { name: "twitter:title", content: params.title },
     { name: "twitter:description", content: params.description },
-    // todo(sebastian): bring back once og image gen is fixed
-    // { name: "twitter:image", content: params.image },
+    { name: "twitter:image", content: params.image },
   ];
 }
 
