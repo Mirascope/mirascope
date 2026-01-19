@@ -304,6 +304,7 @@ export const createSearchRequest = (input: {
   startTime?: string;
   endTime?: string;
   query?: string;
+  rootOnly?: boolean;
   sortBy?: "start_time" | "duration_ms" | "total_tokens";
   sortOrder?: "asc" | "desc";
 }) => {

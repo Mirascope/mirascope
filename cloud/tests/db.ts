@@ -94,6 +94,16 @@ const defaultClickHouseSearchService: ClickHouseSearchService = {
       topModels: [],
       topFunctions: [],
     }),
+  getTimeSeriesMetrics: () =>
+    Effect.succeed({
+      points: [],
+      timeFrame: "day",
+    }),
+  getFunctionAggregates: () =>
+    Effect.succeed({
+      functions: [],
+      total: 0,
+    }),
 };
 
 /**

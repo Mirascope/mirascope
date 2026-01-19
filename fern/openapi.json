@@ -836,6 +836,9 @@
                   "spanId": {
                     "type": "string"
                   },
+                  "rootOnly": {
+                    "type": "boolean"
+                  },
                   "model": {
                     "type": "array",
                     "items": {
@@ -1368,6 +1371,14 @@
               "type": "string"
             },
             "required": false
+          },
+          {
+            "name": "rootOnly",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/BooleanFromString"
+            },
+            "required": false
           }
         ],
         "security": [],
@@ -1480,6 +1491,382 @@
                         },
                         "additionalProperties": false
                       }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "ClickHouseError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ClickHouseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ServiceUnavailableError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceUnavailableError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/traces/analytics/timeseries": {
+      "get": {
+        "tags": [
+          "traces"
+        ],
+        "operationId": "traces.getTimeSeriesMetrics",
+        "parameters": [
+          {
+            "name": "startTime",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "timeFrame",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month",
+                "lifetime"
+              ]
+            },
+            "required": true
+          },
+          {
+            "name": "functionId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "rootOnly",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/BooleanFromString"
+            },
+            "required": false
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "points",
+                    "timeFrame"
+                  ],
+                  "properties": {
+                    "points": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "startTime",
+                          "endTime",
+                          "totalCostUsd",
+                          "totalInputTokens",
+                          "totalOutputTokens",
+                          "totalTokens",
+                          "averageDurationMs",
+                          "spanCount"
+                        ],
+                        "properties": {
+                          "startTime": {
+                            "type": "string"
+                          },
+                          "endTime": {
+                            "type": "string"
+                          },
+                          "totalCostUsd": {
+                            "type": "number"
+                          },
+                          "totalInputTokens": {
+                            "type": "number"
+                          },
+                          "totalOutputTokens": {
+                            "type": "number"
+                          },
+                          "totalTokens": {
+                            "type": "number"
+                          },
+                          "averageDurationMs": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "spanCount": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "timeFrame": {
+                      "type": "string",
+                      "enum": [
+                        "day",
+                        "week",
+                        "month",
+                        "lifetime"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "ClickHouseError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ClickHouseError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ServiceUnavailableError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceUnavailableError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/traces/analytics/functions": {
+      "get": {
+        "tags": [
+          "traces"
+        ],
+        "operationId": "traces.getFunctionAggregates",
+        "parameters": [
+          {
+            "name": "startTime",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "rootOnly",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/BooleanFromString"
+            },
+            "required": false
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "functions",
+                    "total"
+                  ],
+                  "properties": {
+                    "functions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "functionId",
+                          "functionName",
+                          "totalCostUsd",
+                          "totalInputTokens",
+                          "totalOutputTokens",
+                          "totalTokens",
+                          "averageDurationMs",
+                          "spanCount"
+                        ],
+                        "properties": {
+                          "functionId": {
+                            "type": "string"
+                          },
+                          "functionName": {
+                            "type": "string"
+                          },
+                          "totalCostUsd": {
+                            "type": "number"
+                          },
+                          "totalInputTokens": {
+                            "type": "number"
+                          },
+                          "totalOutputTokens": {
+                            "type": "number"
+                          },
+                          "totalTokens": {
+                            "type": "number"
+                          },
+                          "averageDurationMs": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "spanCount": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "total": {
+                      "type": "number"
                     }
                   },
                   "additionalProperties": false
@@ -9423,6 +9810,14 @@
           }
         },
         "additionalProperties": false
+      },
+      "BooleanFromString": {
+        "type": "string",
+        "enum": [
+          "true",
+          "false"
+        ],
+        "description": "a string to be decoded into a boolean"
       },
       "NumberFromString": {
         "type": "string",

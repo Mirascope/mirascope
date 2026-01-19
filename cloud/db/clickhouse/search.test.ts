@@ -76,6 +76,7 @@ const searchAnalyticsRows = [
     output_tokens: 50,
     total_tokens: 150,
     cost_usd: 0.01,
+    function_id: "00000000-0000-0000-0000-000000000010",
     function_name: "my_function",
     function_version: "v1",
     attributes: JSON.stringify({
@@ -214,6 +215,22 @@ describe("ClickHouseSearch", () => {
         for (const span of result.spans) {
           expect(span.provider).toBe("openai");
         }
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("filters root spans when rootOnly is true", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.search({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          rootOnly: true,
+        });
+
+        expect(result.spans).toHaveLength(1);
+        expect(result.spans[0]?.spanId).toBe(TEST_SPAN_ID_1);
       }).pipe(provideSearchLayer),
     );
 
@@ -425,6 +442,22 @@ describe("ClickHouseSearch", () => {
       }).pipe(provideSearchLayer),
     );
 
+    it.effect("filters root spans when rootOnly is true", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.getAnalyticsSummary({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          rootOnly: true,
+        });
+
+        expect(result.totalSpans).toBe(1);
+        expect(result.totalTokens).toBe(150);
+      }).pipe(provideSearchLayer),
+    );
+
     it.effect("returns top models", () =>
       Effect.gen(function* () {
         const searchService = yield* ClickHouseSearch;
@@ -438,6 +471,113 @@ describe("ClickHouseSearch", () => {
         if (result.topModels.length > 0) {
           expect(result.topModels[0]?.model).toBeDefined();
           expect(result.topModels[0]?.count).toBeGreaterThan(0);
+        }
+      }).pipe(provideSearchLayer),
+    );
+  });
+
+  describe("getTimeSeriesMetrics", () => {
+    it.effect("returns time series buckets for day", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.getTimeSeriesMetrics({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          timeFrame: "day",
+        });
+
+        expect(Array.isArray(result.points)).toBe(true);
+        if (result.points.length > 0) {
+          expect(result.points[0]?.spanCount).toBeGreaterThan(0);
+        }
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("filters to root spans when rootOnly is true", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const allSpans = yield* searchService.getTimeSeriesMetrics({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          timeFrame: "day",
+        });
+
+        const rootOnlySpans = yield* searchService.getTimeSeriesMetrics({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          timeFrame: "day",
+          rootOnly: true,
+        });
+
+        const totalAll = allSpans.points.reduce(
+          (sum, point) => sum + point.spanCount,
+          0,
+        );
+        const totalRootOnly = rootOnlySpans.points.reduce(
+          (sum, point) => sum + point.spanCount,
+          0,
+        );
+
+        expect(totalRootOnly).toBeLessThan(totalAll);
+        expect(totalRootOnly).toBe(1);
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("returns lifetime bucket when timeFrame is lifetime", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.getTimeSeriesMetrics({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          timeFrame: "lifetime",
+        });
+
+        expect(Array.isArray(result.points)).toBe(true);
+        expect(result.timeFrame).toBe("lifetime");
+      }).pipe(provideSearchLayer),
+    );
+  });
+
+  describe("getFunctionAggregates", () => {
+    it.effect("returns aggregates grouped by function", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.getFunctionAggregates({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+        });
+
+        expect(Array.isArray(result.functions)).toBe(true);
+        if (result.functions.length > 0) {
+          expect(result.functions[0]?.functionId).toBeDefined();
+          expect(result.functions[0]?.functionName).toBeDefined();
+        }
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("accepts rootOnly filter", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.getFunctionAggregates({
+          environmentId: TEST_ENVIRONMENT_ID,
+          startTime: new Date("2024-01-01"),
+          endTime: new Date("2024-01-31"),
+          rootOnly: true,
+        });
+
+        expect(Array.isArray(result.functions)).toBe(true);
+        if (result.functions.length > 0) {
+          expect(result.functions[0]?.spanCount).toBeGreaterThan(0);
         }
       }).pipe(provideSearchLayer),
     );

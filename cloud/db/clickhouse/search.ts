@@ -109,6 +109,8 @@ export interface SpanSearchInput {
   traceId?: string;
   /** Filter by span ID. */
   spanId?: string;
+  /** Restrict to root spans only (parent_span_id IS NULL). */
+  rootOnly?: boolean;
   /** Filter by model names. */
   model?: string[];
   /** Filter by provider names. */
@@ -157,6 +159,39 @@ export interface AnalyticsSummaryInput {
   endTime: Date;
   /** Optional function ID filter. */
   functionId?: string;
+  /** Optional root-only filter. */
+  rootOnly?: boolean;
+}
+
+/** Time frame for analytics aggregation. */
+export type TimeFrame = "day" | "week" | "month" | "lifetime";
+
+/** Input type for time series metrics. */
+export interface TimeSeriesInput {
+  /** Environment ID to scope the query (required). */
+  environmentId: string;
+  /** Start of time range (required). */
+  startTime: Date;
+  /** End of time range (required). */
+  endTime: Date;
+  /** Time bucket size. */
+  timeFrame: TimeFrame;
+  /** Optional function ID filter. */
+  functionId?: string;
+  /** Optional root-only filter. */
+  rootOnly?: boolean;
+}
+
+/** Input type for per-function aggregates. */
+export interface FunctionAggregatesInput {
+  /** Environment ID to scope the query (required). */
+  environmentId: string;
+  /** Start of time range (required). */
+  startTime: Date;
+  /** End of time range (required). */
+  endTime: Date;
+  /** Optional root-only filter. */
+  rootOnly?: boolean;
 }
 
 // =============================================================================
@@ -245,6 +280,42 @@ export interface AnalyticsSummaryResponse {
   topFunctions: Array<{ functionName: string; count: number }>;
 }
 
+/** Time series metrics point. */
+export interface TimeSeriesPoint {
+  startTime: string;
+  endTime: string;
+  totalCostUsd: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalTokens: number;
+  averageDurationMs: number | null;
+  spanCount: number;
+}
+
+/** Time series metrics response. */
+export interface TimeSeriesResponse {
+  points: TimeSeriesPoint[];
+  timeFrame: TimeFrame;
+}
+
+/** Per-function aggregate metrics. */
+export interface FunctionAggregate {
+  functionId: string;
+  functionName: string;
+  totalCostUsd: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalTokens: number;
+  averageDurationMs: number | null;
+  spanCount: number;
+}
+
+/** Per-function aggregates response. */
+export interface FunctionAggregatesResponse {
+  functions: FunctionAggregate[];
+  total: number;
+}
+
 // =============================================================================
 // Internal Row Types (ClickHouse query results)
 // =============================================================================
@@ -321,6 +392,28 @@ interface TopFunctionRow {
   count: number;
 }
 
+interface TimeSeriesRow {
+  bucket_start: string;
+  bucket_end: string;
+  total_cost_usd: number | null;
+  total_input_tokens: number | null;
+  total_output_tokens: number | null;
+  total_tokens: number | null;
+  avg_duration_ms: number | null;
+  span_count: number;
+}
+
+interface FunctionAggregateRow {
+  function_id: string | null;
+  function_name: string | null;
+  total_cost_usd: number | null;
+  total_input_tokens: number | null;
+  total_output_tokens: number | null;
+  total_tokens: number | null;
+  avg_duration_ms: number | null;
+  span_count: number;
+}
+
 // =============================================================================
 // Service Interface
 // =============================================================================
@@ -340,6 +433,16 @@ export interface ClickHouseSearchClient {
   readonly getAnalyticsSummary: (
     input: AnalyticsSummaryInput,
   ) => Effect.Effect<AnalyticsSummaryResponse, ClickHouseError>;
+
+  /** Get time series metrics for a time range. */
+  readonly getTimeSeriesMetrics: (
+    input: TimeSeriesInput,
+  ) => Effect.Effect<TimeSeriesResponse, ClickHouseError>;
+
+  /** Get aggregates grouped by function. */
+  readonly getFunctionAggregates: (
+    input: FunctionAggregatesInput,
+  ) => Effect.Effect<FunctionAggregatesResponse, ClickHouseError>;
 }
 
 // =============================================================================
@@ -512,17 +615,7 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
 
         getAnalyticsSummary: (input: AnalyticsSummaryInput) =>
           Effect.gen(function* () {
-            // Validate time range (max 90 days for analytics)
-            const timeDiff =
-              input.endTime.getTime() - input.startTime.getTime();
-            const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
-            if (daysDiff > QUERY_CONSTRAINTS.MAX_TIME_RANGE_DAYS_ANALYTICS) {
-              return yield* Effect.fail(
-                new ClickHouseError({
-                  message: `Time range exceeds maximum of ${QUERY_CONSTRAINTS.MAX_TIME_RANGE_DAYS_ANALYTICS} days`,
-                }),
-              );
-            }
+            validateAnalyticsTimeRange(input.startTime, input.endTime);
 
             // Build base WHERE clause for analytics
             // Use toUUID() for explicit UUID type conversion
@@ -634,6 +727,174 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
               })),
             };
           }),
+
+        getTimeSeriesMetrics: (input: TimeSeriesInput) =>
+          Effect.gen(function* () {
+            validateAnalyticsTimeRange(input.startTime, input.endTime);
+
+            const { clause: baseWhere, params: baseParams } =
+              buildAnalyticsBaseWhere(input);
+
+            if (input.timeFrame === "lifetime") {
+              const rows = yield* client.unsafeQuery<TimeSeriesRow>(
+                `
+                SELECT
+                  toDateTime64({startTime:String}, 9) as bucket_start,
+                  toDateTime64({endTime:String}, 9) as bucket_end,
+                  sum(cost_usd) as total_cost_usd,
+                  sum(input_tokens) as total_input_tokens,
+                  sum(output_tokens) as total_output_tokens,
+                  sum(total_tokens) as total_tokens,
+                  avg(duration_ms) as avg_duration_ms,
+                  count() as span_count
+                FROM (
+                  SELECT
+                    argMax(s.start_time, s._version) as start_time,
+                    argMax(s.duration_ms, s._version) as duration_ms,
+                    argMax(s.cost_usd, s._version) as cost_usd,
+                    argMax(s.input_tokens, s._version) as input_tokens,
+                    argMax(s.output_tokens, s._version) as output_tokens,
+                    argMax(s.total_tokens, s._version) as total_tokens
+                  FROM spans_analytics AS s
+                  WHERE ${baseWhere}
+                  GROUP BY s.environment_id, s.trace_id, s.span_id
+                )
+              `,
+                {
+                  ...baseParams,
+                  startTime: formatDateTime64(input.startTime, 9),
+                  endTime: formatDateTime64(input.endTime, 9),
+                },
+              );
+
+              return {
+                points: rows.map((row) => ({
+                  startTime: toIsoUtc(row.bucket_start) ?? row.bucket_start,
+                  endTime: toIsoUtc(row.bucket_end) ?? row.bucket_end,
+                  totalCostUsd: Number(row.total_cost_usd ?? 0),
+                  totalInputTokens: Number(row.total_input_tokens ?? 0),
+                  totalOutputTokens: Number(row.total_output_tokens ?? 0),
+                  totalTokens: Number(row.total_tokens ?? 0),
+                  averageDurationMs:
+                    row.avg_duration_ms != null
+                      ? Number(row.avg_duration_ms)
+                      : null,
+                  spanCount: Number(row.span_count ?? 0),
+                })),
+                timeFrame: input.timeFrame,
+              };
+            }
+
+            const { bucketStart, bucketEnd } = buildTimeSeriesBuckets(
+              input.timeFrame,
+            );
+
+            const rows = yield* client.unsafeQuery<TimeSeriesRow>(
+              `
+              SELECT
+                ${bucketStart} as bucket_start,
+                ${bucketEnd} as bucket_end,
+                sum(cost_usd) as total_cost_usd,
+                sum(input_tokens) as total_input_tokens,
+                sum(output_tokens) as total_output_tokens,
+                sum(total_tokens) as total_tokens,
+                avg(duration_ms) as avg_duration_ms,
+                count() as span_count
+              FROM (
+                SELECT
+                  argMax(s.start_time, s._version) as start_time,
+                  argMax(s.duration_ms, s._version) as duration_ms,
+                  argMax(s.cost_usd, s._version) as cost_usd,
+                  argMax(s.input_tokens, s._version) as input_tokens,
+                  argMax(s.output_tokens, s._version) as output_tokens,
+                  argMax(s.total_tokens, s._version) as total_tokens
+                FROM spans_analytics AS s
+                WHERE ${baseWhere}
+                GROUP BY s.environment_id, s.trace_id, s.span_id
+              )
+              GROUP BY bucket_start, bucket_end
+              ORDER BY bucket_start ASC
+            `,
+              baseParams,
+            );
+
+            return {
+              points: rows.map((row) => ({
+                startTime: toIsoUtc(row.bucket_start) ?? row.bucket_start,
+                endTime: toIsoUtc(row.bucket_end) ?? row.bucket_end,
+                totalCostUsd: Number(row.total_cost_usd ?? 0),
+                totalInputTokens: Number(row.total_input_tokens ?? 0),
+                totalOutputTokens: Number(row.total_output_tokens ?? 0),
+                totalTokens: Number(row.total_tokens ?? 0),
+                averageDurationMs:
+                  row.avg_duration_ms != null
+                    ? Number(row.avg_duration_ms)
+                    : null,
+                spanCount: Number(row.span_count ?? 0),
+              })),
+              timeFrame: input.timeFrame,
+            };
+          }),
+
+        getFunctionAggregates: (input: FunctionAggregatesInput) =>
+          Effect.gen(function* () {
+            validateAnalyticsTimeRange(input.startTime, input.endTime);
+
+            const { clause: baseWhere, params: baseParams } =
+              buildAnalyticsBaseWhere(input);
+
+            const rows = yield* client.unsafeQuery<FunctionAggregateRow>(
+              `
+              SELECT
+                function_id,
+                function_name,
+                sum(cost_usd) as total_cost_usd,
+                sum(input_tokens) as total_input_tokens,
+                sum(output_tokens) as total_output_tokens,
+                sum(total_tokens) as total_tokens,
+                avg(duration_ms) as avg_duration_ms,
+                count() as span_count
+              FROM (
+                SELECT
+                  argMax(s.function_id, s._version) as function_id,
+                  argMax(s.function_name, s._version) as function_name,
+                  argMax(s.duration_ms, s._version) as duration_ms,
+                  argMax(s.cost_usd, s._version) as cost_usd,
+                  argMax(s.input_tokens, s._version) as input_tokens,
+                  argMax(s.output_tokens, s._version) as output_tokens,
+                  argMax(s.total_tokens, s._version) as total_tokens
+                FROM spans_analytics AS s
+                WHERE ${baseWhere}
+                GROUP BY s.environment_id, s.trace_id, s.span_id
+              )
+              WHERE function_id IS NOT NULL
+                AND function_name IS NOT NULL
+                AND function_name != ''
+              GROUP BY function_id, function_name
+              ORDER BY span_count DESC
+            `,
+              baseParams,
+            );
+
+            const functions = rows.map((row) => ({
+              functionId: row.function_id ?? "",
+              functionName: row.function_name ?? "",
+              totalCostUsd: Number(row.total_cost_usd ?? 0),
+              totalInputTokens: Number(row.total_input_tokens ?? 0),
+              totalOutputTokens: Number(row.total_output_tokens ?? 0),
+              totalTokens: Number(row.total_tokens ?? 0),
+              averageDurationMs:
+                row.avg_duration_ms != null
+                  ? Number(row.avg_duration_ms)
+                  : null,
+              spanCount: Number(row.span_count ?? 0),
+            }));
+
+            return {
+              functions,
+              total: functions.length,
+            };
+          }),
       };
     }),
   );
@@ -702,6 +963,19 @@ function validateSearchInput(input: SpanSearchInput): SpanSearchInput {
   }
 
   return { ...input, limit };
+}
+
+/**
+ * Validate analytics time range constraints.
+ */
+function validateAnalyticsTimeRange(startTime: Date, endTime: Date): void {
+  const timeDiff = endTime.getTime() - startTime.getTime();
+  const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+  if (daysDiff > QUERY_CONSTRAINTS.MAX_TIME_RANGE_DAYS_ANALYTICS) {
+    throw new ClickHouseError({
+      message: `Time range exceeds maximum of ${QUERY_CONSTRAINTS.MAX_TIME_RANGE_DAYS_ANALYTICS} days`,
+    });
+  }
 }
 
 /**
@@ -802,6 +1076,10 @@ function buildSearchWhereClause(input: SpanSearchInput): {
     conditions.push(`s.span_id = {${spanIdKey}:String}`);
   }
 
+  if (input.rootOnly) {
+    conditions.push("s.parent_span_id IS NULL");
+  }
+
   if (input.model && input.model.length > 0) {
     const modelKey = addParam("model", input.model);
     conditions.push(`s.model IN {${modelKey}:Array(String)}`);
@@ -898,7 +1176,13 @@ function buildSearchWhereClause(input: SpanSearchInput): {
 /**
  * Build WHERE clause for analytics queries.
  */
-function buildAnalyticsBaseWhere(input: AnalyticsSummaryInput): {
+function buildAnalyticsBaseWhere(input: {
+  environmentId: string;
+  startTime: Date;
+  endTime: Date;
+  functionId?: string;
+  rootOnly?: boolean;
+}): {
   clause: string;
   params: Record<string, unknown>;
 } {
@@ -929,10 +1213,44 @@ function buildAnalyticsBaseWhere(input: AnalyticsSummaryInput): {
     conditions.push(`s.function_id = toUUID({${functionIdKey}:String})`);
   }
 
+  if (input.rootOnly) {
+    conditions.push("s.parent_span_id IS NULL");
+  }
+
   return {
     clause: conditions.join(" AND "),
     params,
   };
+}
+
+/**
+ * Build bucket expressions for time series aggregation.
+ */
+function buildTimeSeriesBuckets(
+  timeFrame: Exclude<TimeFrame, "lifetime">,
+): {
+  bucketStart: string;
+  bucketEnd: string;
+} {
+  const bucketMap: Record<
+    Exclude<TimeFrame, "lifetime">,
+    { bucketStart: string; bucketEnd: string }
+  > = {
+    day: {
+      bucketStart: "toStartOfDay(start_time)",
+      bucketEnd: "addDays(toStartOfDay(start_time), 1)",
+    },
+    week: {
+      bucketStart: "toStartOfWeek(start_time)",
+      bucketEnd: "addWeeks(toStartOfWeek(start_time), 1)",
+    },
+    month: {
+      bucketStart: "toStartOfMonth(start_time)",
+      bucketEnd: "addMonths(toStartOfMonth(start_time), 1)",
+    },
+  };
+
+  return bucketMap[timeFrame];
 }
 
 /**
