@@ -49,7 +49,7 @@
  */
 
 import { Effect } from "effect";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -70,6 +70,7 @@ import {
   projects,
   projectMemberships,
   projectMembershipAudit,
+  users,
   type PublicProjectMembership,
   type PublicProjectMembershipAudit,
   type ProjectRole,
@@ -820,6 +821,81 @@ export class ProjectMemberships extends BaseAuthenticatedEffectService<
             );
         }),
       );
+    });
+  }
+
+  /**
+   * Retrieves all memberships for a project with user information.
+   *
+   * Joins the users table to include email and name for display purposes.
+   * Excludes soft-deleted users.
+   *
+   * Requires project membership (any role) or implicit access from org OWNER/ADMIN.
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization containing the project
+   * @param args.projectId - The project to list memberships for
+   * @returns Array of memberships with email and name
+   * @throws NotFoundError - If the project doesn't exist or user lacks access
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
+  findAllWithUserInfo({
+    userId,
+    organizationId,
+    projectId,
+  }: {
+    userId: string;
+    organizationId: string;
+    projectId: string;
+  }): Effect.Effect<
+    Array<{
+      memberId: string;
+      email: string;
+      name: string | null;
+      role: ProjectRole;
+      createdAt: Date | null;
+    }>,
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        projectId,
+        memberId: userId,
+      });
+
+      return yield* client
+        .select({
+          memberId: projectMemberships.memberId,
+          email: users.email,
+          name: users.name,
+          role: projectMemberships.role,
+          createdAt: projectMemberships.createdAt,
+        })
+        .from(projectMemberships)
+        .innerJoin(users, eq(projectMemberships.memberId, users.id))
+        .where(
+          and(
+            eq(projectMemberships.projectId, projectId),
+            isNull(users.deletedAt),
+          ),
+        )
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message:
+                  "Failed to find all project memberships with user info",
+                cause: e,
+              }),
+          ),
+        );
     });
   }
 }
