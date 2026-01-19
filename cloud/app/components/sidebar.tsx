@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -76,7 +77,14 @@ export function Sidebar() {
     }
   };
 
-  const isActive = (path: string) => currentPath === path;
+  const isActive = (path: string) => {
+    if (currentPath === path) return true;
+    // For Settings, also match child routes
+    if (path === "/cloud/settings") {
+      return currentPath.startsWith("/cloud/settings/");
+    }
+    return false;
+  };
 
   return (
     <aside className="w-48 h-full flex flex-col bg-background">
@@ -87,7 +95,9 @@ export function Sidebar() {
             Project
           </div>
           {projectsLoading ? (
-            <div className="text-sm text-muted-foreground px-2">Loading...</div>
+            <div className="flex justify-center py-2">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
           ) : (
             <Select
               value={selectedProject?.id || ""}
@@ -121,7 +131,9 @@ export function Sidebar() {
             Environment
           </div>
           {environmentsLoading ? (
-            <div className="text-sm text-muted-foreground px-2">Loading...</div>
+            <div className="flex justify-center py-2">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
           ) : (
             <Select
               value={selectedEnvironment?.id || ""}
@@ -239,7 +251,9 @@ export function Sidebar() {
       {/* Organization selector at bottom */}
       <div className="px-2 pb-3 pt-3">
         {orgsLoading ? (
-          <div className="text-sm text-muted-foreground">Loading...</div>
+          <div className="flex justify-center py-2">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
         ) : (
           <Select
             value={selectedOrganization?.id || ""}

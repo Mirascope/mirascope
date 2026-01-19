@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import { useOrganization } from "@/app/contexts/organization";
 import { useAuth } from "@/app/contexts/auth";
 import { BatchInviteSection } from "@/app/components/batch-invite-section";
@@ -22,7 +23,7 @@ function TeamSettingsPage() {
       <div className="max-w-3xl">
         {header}
         <div className="flex justify-center pt-12">
-          <div className="text-muted-foreground">Loading...</div>
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </div>
     );

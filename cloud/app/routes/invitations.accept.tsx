@@ -93,130 +93,139 @@ function AcceptInvitationPage() {
     };
 
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Sign in to accept invitation</CardTitle>
-            <CardDescription>
-              You need to be signed in to accept this invitation
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={handleSignIn} className="w-full">
-              Sign In
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <div className="fixed inset-0 bg-black/50" />
+        <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Sign in to accept invitation</CardTitle>
+              <CardDescription>
+                You need to be signed in to accept this invitation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={handleSignIn} className="w-full">
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-red-500" />
-              <CardTitle>Invalid Invitation</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              This invitation link is invalid or malformed.
-            </p>
-            <Button
-              onClick={() => void navigate({ to: "/organizations" })}
-              className="mt-4 w-full"
-              variant="outline"
-            >
-              Go to Organizations
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        {state === "accepting" && (
-          <>
-            <CardHeader>
-              <CardTitle>Accepting Invitation</CardTitle>
-              <CardDescription>
-                Please wait while we process your invitation
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center py-8">
-              <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
-            </CardContent>
-          </>
-        )}
-
-        {state === "success" && (
-          <>
+      <>
+        <div className="fixed inset-0 bg-black/50" />
+        <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
             <CardHeader>
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                <CardTitle>Invitation Accepted!</CardTitle>
+                <XCircle className="h-5 w-5 text-red-500" />
+                <CardTitle>Invalid Invitation</CardTitle>
               </div>
-              <CardDescription>
-                You've successfully joined the organization
-              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
-                <AlertDescription className="text-green-800 dark:text-green-200">
-                  Redirecting you to your dashboard...
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </>
-        )}
-
-        {state === "error" && (
-          <>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-red-500" />
-                <CardTitle>Unable to Accept Invitation</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert variant="destructive">
-                <AlertDescription>
-                  {errorMessage || "An unexpected error occurred"}
-                </AlertDescription>
-              </Alert>
+              <p className="text-muted-foreground">
+                This invitation link is invalid or malformed.
+              </p>
               <Button
                 onClick={() => void navigate({ to: "/organizations" })}
-                className="w-full"
+                className="mt-4 w-full"
                 variant="outline"
               >
                 Go to Organizations
               </Button>
             </CardContent>
-          </>
-        )}
+          </Card>
+        </div>
+      </>
+    );
+  }
 
-        {state === "idle" && (
-          <>
-            <CardHeader>
-              <CardTitle>Accept Invitation</CardTitle>
-              <CardDescription>
-                Click below to accept your organization invitation
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => void handleAccept()} className="w-full">
-                Accept Invitation
-              </Button>
-            </CardContent>
-          </>
-        )}
-      </Card>
-    </div>
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/50" />
+      <div className="fixed inset-0 top-[60px] flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          {state === "accepting" && (
+            <>
+              <CardHeader>
+                <CardTitle>Accepting Invitation</CardTitle>
+                <CardDescription>
+                  Please wait while we process your invitation
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-center py-8">
+                <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
+              </CardContent>
+            </>
+          )}
+
+          {state === "success" && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CardTitle>Invitation Accepted!</CardTitle>
+                </div>
+                <CardDescription>
+                  You've successfully joined the organization
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+                  <AlertDescription className="text-green-800 dark:text-green-200">
+                    Redirecting you to your dashboard...
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </>
+          )}
+
+          {state === "error" && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-red-500" />
+                  <CardTitle>Unable to Accept Invitation</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    {errorMessage || "An unexpected error occurred"}
+                  </AlertDescription>
+                </Alert>
+                <Button
+                  onClick={() => void navigate({ to: "/organizations" })}
+                  className="w-full"
+                  variant="outline"
+                >
+                  Go to Organizations
+                </Button>
+              </CardContent>
+            </>
+          )}
+
+          {state === "idle" && (
+            <>
+              <CardHeader>
+                <CardTitle>Accept Invitation</CardTitle>
+                <CardDescription>
+                  Click below to accept your organization invitation
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={() => void handleAccept()} className="w-full">
+                  Accept Invitation
+                </Button>
+              </CardContent>
+            </>
+          )}
+        </Card>
+      </div>
+    </>
   );
 }
