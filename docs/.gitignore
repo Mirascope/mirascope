@@ -1,7 +1,0 @@
-node_modules
-dist
-.docs-content
-.build-cache
-
-# Making an ignored directory where local old versions of docs can be referenced by Claude Code
-legacy/ 
