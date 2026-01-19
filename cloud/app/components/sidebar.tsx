@@ -9,8 +9,10 @@ import {
 } from "@/app/components/ui/select";
 import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
 import { CreateProjectModal } from "@/app/components/create-project-modal";
+import { CreateEnvironmentModal } from "@/app/components/create-environment-modal";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
+import { useEnvironment } from "@/app/contexts/environment";
 import { useAuth } from "@/app/contexts/auth";
 
 export function Sidebar() {
@@ -26,11 +28,18 @@ export function Sidebar() {
     setSelectedProject,
     isLoading: projectsLoading,
   } = useProject();
+  const {
+    environments,
+    selectedEnvironment,
+    setSelectedEnvironment,
+    isLoading: environmentsLoading,
+  } = useEnvironment();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const [showCreateOrg, setShowCreateOrg] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
+  const [showCreateEnvironment, setShowCreateEnvironment] = useState(false);
 
   const router = useRouterState();
   const currentPath = router.location.pathname;
@@ -55,6 +64,15 @@ export function Sidebar() {
     } else {
       const project = projects.find((p) => p.id === value);
       setSelectedProject(project || null);
+    }
+  };
+
+  const handleEnvironmentSelectChange = (value: string) => {
+    if (value === "__create_new__") {
+      setShowCreateEnvironment(true);
+    } else {
+      const environment = environments.find((e) => e.id === value);
+      setSelectedEnvironment(environment || null);
     }
   };
 
@@ -86,6 +104,37 @@ export function Sidebar() {
                   className="text-primary font-medium"
                 >
                   + Create New Project
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      )}
+
+      {/* Environment selector - shown when project is selected */}
+      {selectedProject && (
+        <div className="px-2 pb-2">
+          {environmentsLoading ? (
+            <div className="text-sm text-muted-foreground px-2">Loading...</div>
+          ) : (
+            <Select
+              value={selectedEnvironment?.id || ""}
+              onValueChange={handleEnvironmentSelectChange}
+            >
+              <SelectTrigger className="bg-background text-base">
+                <SelectValue placeholder="Select environment" />
+              </SelectTrigger>
+              <SelectContent>
+                {environments.map((environment) => (
+                  <SelectItem key={environment.id} value={environment.id}>
+                    {environment.name}
+                  </SelectItem>
+                ))}
+                <SelectItem
+                  value="__create_new__"
+                  className="text-primary font-medium"
+                >
+                  + Create New Environment
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -217,6 +266,10 @@ export function Sidebar() {
       <CreateProjectModal
         open={showCreateProject}
         onOpenChange={setShowCreateProject}
+      />
+      <CreateEnvironmentModal
+        open={showCreateEnvironment}
+        onOpenChange={setShowCreateEnvironment}
       />
     </aside>
   );
