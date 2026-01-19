@@ -1,12 +1,6 @@
 import React from "react";
 import { cn } from "@/app/lib/utils";
 import { ButtonLink } from "@/app/components/ui/button-link";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/app/components/ui/tabs";
 import { Check, X } from "lucide-react";
 
 interface FeatureRowProps {
@@ -101,7 +95,6 @@ interface PricingTierProps {
   price: string;
   description: string;
   button: React.ReactNode;
-  badge?: "Open Beta" | "Closed Beta";
 }
 // Pricing tier component
 const PricingTier = ({
@@ -109,27 +102,14 @@ const PricingTier = ({
   price,
   description,
   button,
-  badge,
 }: PricingTierProps) => (
   <div className="border-border bg-background overflow-hidden rounded-lg border shadow-sm">
-    <div className={cn("bg-background px-6 py-8")}>
-      <div className="mb-2 flex items-center gap-2">
+    <div className={cn("bg-background px-6 py-6")}>
+      <div className="mb-2">
         <h3 className={cn("text-foreground text-xl font-semibold")}>{name}</h3>
-        {badge && (
-          <span
-            className={cn(
-              "rounded-md px-2 py-1 text-xs font-medium",
-              badge === "Open Beta"
-                ? "bg-primary/20 text-primary"
-                : "bg-muted text-muted-foreground",
-            )}
-          >
-            {badge}
-          </span>
-        )}
       </div>
-      <p className="text-muted-foreground mb-5">{description}</p>
-      <div className="mb-6">
+      <p className="text-muted-foreground mb-4">{description}</p>
+      <div className="mb-5">
         <span className="text-foreground text-3xl font-bold">{price}</span>
         {price !== "TBD" && price !== "N/A" && (
           <span className="text-muted-foreground ml-1 text-sm">/ month</span>
@@ -168,9 +148,11 @@ export const FeatureComparisonTable = ({
       </div>
 
       {/* Table rows */}
-      {features.map((feat, i) => (
-        <FeatureRow key={i} {...feat} />
-      ))}
+      <div className="[&>*:last-child]:border-b-0">
+        {features.map((feat, i) => (
+          <FeatureRow key={i} {...feat} />
+        ))}
+      </div>
     </div>
   </div>
 );
@@ -185,27 +167,17 @@ interface PricingActions {
     pro: TierAction;
     team: TierAction;
   };
-  selfHosted: {
-    free: TierAction;
-    pro: TierAction;
-    team: TierAction;
-  };
 }
 
 // Cloud hosted features
 export const cloudHostedFeatures = [
-  {
-    feature: "Projects",
-    free: "Unlimited",
-    pro: "Unlimited",
-    team: "Unlimited",
-  },
-  { feature: "Users", free: "2", pro: "10", team: "Unlimited" },
+  { feature: "Seats", free: "1", pro: "5", team: "Unlimited" },
+  { feature: "Projects", free: "1", pro: "5", team: "Unlimited" },
   {
     feature: "Tracing",
-    free: "30k spans / month",
-    pro: "100k spans / month (thereafter $1 per 10k)",
-    team: "1M spans / month (thereafter $1 per 10k)",
+    free: "1M spans / month\nNo overages",
+    pro: "1M spans / month\n$5 / additional million",
+    team: "1M spans / month\n$5 / additional million",
   },
   {
     feature: "Data Retention",
@@ -213,61 +185,17 @@ export const cloudHostedFeatures = [
     pro: "90 days",
     team: "180 days",
   },
-  { feature: "Versioned Functions", free: true, pro: true, team: true },
-  { feature: "Playground", free: true, pro: true, team: true },
-  { feature: "Comparisons", free: true, pro: true, team: true },
-  { feature: "Annotations", free: true, pro: true, team: true },
   { feature: "Support (Community)", free: true, pro: true, team: true },
   { feature: "Support (Chat / Email)", free: false, pro: true, team: true },
   { feature: "Support (Private Slack)", free: false, pro: false, team: true },
   {
     feature: "API Rate Limits",
-    free: "10 / minute",
-    pro: "100 / minute",
-    team: "1000 / minute",
+    free: "100 / minute",
+    pro: "1000 / minute",
+    team: "10000 / minute",
   },
 ];
 
-// Self-hosted features
-export const selfHostedFeatures = [
-  {
-    feature: "Projects",
-    free: "Unlimited",
-    pro: "Unlimited",
-    team: "Unlimited",
-  },
-  {
-    feature: "Users",
-    free: "Unlimited",
-    pro: "As licensed",
-    team: "As licensed",
-  },
-  {
-    feature: "Tracing",
-    free: "No limits",
-    pro: "No limits",
-    team: "No limits",
-  },
-  {
-    feature: "Data Retention",
-    free: "No limits",
-    pro: "No limits",
-    team: "No limits",
-  },
-  { feature: "Versioned Functions", free: true, pro: true, team: true },
-  { feature: "Playground", free: false, pro: true, team: true },
-  { feature: "Comparisons", free: false, pro: true, team: true },
-  { feature: "Annotations", free: false, pro: true, team: true },
-  { feature: "Support (Community)", free: true, pro: true, team: true },
-  { feature: "Support (Chat / Email)", free: false, pro: true, team: true },
-  { feature: "Support (Private Slack)", free: false, pro: false, team: true },
-  {
-    feature: "API Rate Limits",
-    free: "No limits",
-    pro: "No limits",
-    team: "No limits",
-  },
-];
 interface PricingProps {
   actions: PricingActions;
 }
@@ -288,79 +216,10 @@ export function PricingPage({ actions }: PricingProps) {
           </p>
         </div>
 
-        <Tabs defaultValue="hosted" className="mb-10 w-full">
-          <div className="mb-8 flex justify-center">
-            <TabsList className="bg-muted px-1 py-5">
-              <TabsTrigger value="hosted">Hosted By Us</TabsTrigger>
-              <TabsTrigger value="selfhosted">Self Hosting</TabsTrigger>
-            </TabsList>
-          </div>
+        <CloudPricing hostedActions={actions.hosted} />
 
-          {/* Hosted By Us Tab Content */}
-          <TabsContent value="hosted">
-            <CloudPricing hostedActions={actions.hosted} />
-
-            {/* Feature comparison table */}
-            <FeatureComparisonTable features={cloudHostedFeatures} />
-          </TabsContent>
-
-          {/* Self Hosting Tab Content */}
-          <TabsContent value="selfhosted">
-            <div className="mb-10 grid gap-8 md:grid-cols-3">
-              <PricingTier
-                name="Free"
-                price="$0"
-                description="For individuals just getting started"
-                badge="Open Beta"
-                button={actions.selfHosted.free.button}
-              />
-              <PricingTier
-                name="Pro"
-                price="TBD"
-                description="For teams with more advanced needs"
-                badge="Closed Beta"
-                button={actions.selfHosted.pro.button}
-              />
-              <PricingTier
-                name="Team"
-                price="TBD"
-                description="For larger teams requiring dedicated support"
-                badge="Closed Beta"
-                button={actions.selfHosted.team.button}
-              />
-            </div>
-
-            {/* Feature comparison table */}
-            <FeatureComparisonTable features={selfHostedFeatures} />
-          </TabsContent>
-        </Tabs>
-
-        {/* FAQ Section */}
-        <div className="border-border bg-card mt-16 rounded-lg border p-8">
-          <h2 className="text-foreground mb-4 text-2xl font-semibold">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-foreground mb-2 text-lg font-medium">
-                How long will the open beta last?
-              </h3>
-              <p className="text-muted-foreground">
-                The open beta period is ongoing, and we&apos;ll provide advance
-                notice before moving to paid plans.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-foreground mb-2 text-lg font-medium">
-                What happens when the beta ends?
-              </h3>
-              <p className="text-muted-foreground">
-                All existing users will receive a grace period to evaluate which
-                plan is right for them before making any changes.
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* Feature comparison table */}
+        <FeatureComparisonTable features={cloudHostedFeatures} />
 
         <div className="mt-16 text-center">
           <h2 className="text-foreground mb-4 text-2xl font-semibold">
@@ -397,21 +256,18 @@ export const CloudPricing = ({
       name: "Free",
       price: "$0",
       description: "For individuals just getting started",
-      badge: "Open Beta",
       button: hostedActions.free.button,
     },
     {
       name: "Pro",
-      price: "TBD",
-      description: "For teams with more advanced needs",
-      badge: "Closed Beta",
+      price: "$49",
+      description: "For professionals with growing projects",
       button: hostedActions.pro.button,
     },
     {
       name: "Team",
-      price: "TBD",
-      description: "For larger teams requiring dedicated support",
-      badge: "Closed Beta",
+      price: "$199",
+      description: "For organizations requiring dedicated support",
       button: hostedActions.team.button,
     },
   ];
