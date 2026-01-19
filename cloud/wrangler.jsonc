@@ -8,7 +8,7 @@
     "enabled": true,
   },
   "triggers": {
-    "crons": ["*/5 * * * *"],
+    "crons": ["*/5 * * * *", "0 10 * * *"],
   },
   "queues": {
     "producers": [

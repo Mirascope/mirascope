@@ -9,9 +9,9 @@
  *
  * ## Pricing Tiers
  *
- * - **Free**: 1 seat, 1 project, 1M spans/month (hard limit enforced), 100 req/min
- * - **Pro**: 5 seats, 5 projects, unlimited spans (+$5/M over 1M included), 1000 req/min
- * - **Team**: Unlimited seats/projects, unlimited spans (+$5/M over 1M included), 10000 req/min
+ * - **Free**: 1 seat, 1 project, 1M spans/month (hard limit enforced), 100 req/min, 30 day retention
+ * - **Pro**: 5 seats, 5 projects, unlimited spans (+$5/M over 1M included), 1000 req/min, 90 day retention
+ * - **Team**: Unlimited seats/projects, unlimited spans (+$5/M over 1M included), 10000 req/min, 180 day retention
  *
  * ## Usage
  *
@@ -50,12 +50,14 @@ export const PLAN_TIER_ORDER: Record<PlanTier, number> = {
  * @property projects - Maximum number of projects (Infinity = unlimited)
  * @property spansPerMonth - Monthly span quota (Free: hard limit, Pro/Team: Infinity with graduated pricing)
  * @property apiRequestsPerMinute - API rate limit per organization
+ * @property dataRetentionDays - Number of days to retain trace data
  */
 export interface PlanLimits {
   seats: number;
   projects: number;
   spansPerMonth: number;
   apiRequestsPerMinute: number;
+  dataRetentionDays: number;
 }
 
 /**
@@ -70,6 +72,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     projects: 1,
     spansPerMonth: 1_000_000, // Hard limit enforced - no overage allowed
     apiRequestsPerMinute: 100,
+    dataRetentionDays: 30,
   },
   pro: {
     seats: 5,
@@ -80,6 +83,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     // Set to Infinity since we don't enforce a hard limit
     spansPerMonth: Infinity,
     apiRequestsPerMinute: 1000,
+    dataRetentionDays: 90,
   },
   team: {
     seats: Infinity, // Unlimited
@@ -90,6 +94,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
     // Set to Infinity since we don't enforce a hard limit
     spansPerMonth: Infinity,
     apiRequestsPerMinute: 10000,
+    dataRetentionDays: 180,
   },
 } as const;
 

@@ -30,6 +30,8 @@ describe("RateLimiter", () => {
               spansPerMonth: tier === "free" ? 1_000_000 : Infinity,
               apiRequestsPerMinute:
                 tier === "free" ? 100 : tier === "pro" ? 1000 : 10000,
+              dataRetentionDays:
+                tier === "free" ? 30 : tier === "pro" ? 90 : 180,
             }),
         },
       } as never,
@@ -444,6 +446,7 @@ describe("RateLimiter", () => {
                 projects: 1,
                 apiRequestsPerMinute: 0,
                 spansPerMonth: 0,
+                dataRetentionDays: 30,
               }),
           },
         } as never,
@@ -502,6 +505,8 @@ describe("RateLimiter", () => {
                 spansPerMonth: tier === "free" ? 1_000_000 : Infinity,
                 apiRequestsPerMinute:
                   tier === "free" ? 100 : tier === "pro" ? 1000 : 10000,
+                dataRetentionDays:
+                  tier === "free" ? 30 : tier === "pro" ? 90 : 180,
               }),
           },
         } as never,
@@ -553,6 +558,8 @@ describe("RateLimiter", () => {
                 spansPerMonth: tier === "free" ? 1_000_000 : Infinity,
                 apiRequestsPerMinute:
                   tier === "free" ? 100 : tier === "pro" ? 1000 : 10000,
+                dataRetentionDays:
+                  tier === "free" ? 30 : tier === "pro" ? 90 : 180,
               }),
           },
         } as never,
