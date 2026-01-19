@@ -51,6 +51,7 @@ import {
   getEnvironmentHandler,
   updateEnvironmentHandler,
   deleteEnvironmentHandler,
+  getEnvironmentAnalyticsHandler,
 } from "@/api/environments.handlers";
 import {
   listAllApiKeysHandler,
@@ -256,6 +257,14 @@ const EnvironmentsHandlersLive = HttpApiBuilder.group(
           path.organizationId,
           path.projectId,
           path.environmentId,
+        ),
+      )
+      .handle("getAnalytics", ({ path, urlParams }) =>
+        getEnvironmentAnalyticsHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
+          urlParams,
         ),
       ),
 );

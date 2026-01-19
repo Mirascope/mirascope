@@ -188,6 +188,35 @@ describe.sequential("Environments API", (it) => {
   );
 
   it.effect(
+    "GET /organizations/:organizationId/projects/:projectId/environments/:environmentId/analytics - get analytics",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const now = new Date();
+        const startTime = new Date(
+          now.getTime() - 7 * 24 * 60 * 60 * 1000,
+        ).toISOString();
+        const endTime = now.toISOString();
+
+        const analytics = yield* client.environments.getAnalytics({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          },
+          urlParams: { startTime, endTime },
+        });
+
+        expect(typeof analytics.totalSpans).toBe("number");
+        expect(typeof analytics.errorRate).toBe("number");
+        expect(typeof analytics.totalTokens).toBe("number");
+        expect(typeof analytics.totalCostUsd).toBe("number");
+        expect(Array.isArray(analytics.topModels)).toBe(true);
+        expect(Array.isArray(analytics.topFunctions)).toBe(true);
+      }),
+  );
+
+  it.effect(
     "DELETE /organizations/:organizationId/projects/:projectId/environments/:environmentId - delete environment",
     () =>
       Effect.gen(function* () {
