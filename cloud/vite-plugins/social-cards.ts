@@ -214,14 +214,16 @@ export class SocialCardGenerator {
       // Run task and log on completion
       return (pool.run(task) as Promise<WorkerResult>).then((result) => {
         completed++;
+        if (result.status === "failed") {
+          console.error(
+            `[social-cards] Failed to generate card for ${route}:`,
+            result.error,
+          );
+        }
         if (this.config.verbose) {
           if (result.status === "success") {
             console.log(
               `[social-cards] [${completed}/${total}] Generated ${result.filename}`,
-            );
-          } else {
-            console.log(
-              `[social-cards] [${completed}/${total}] Failed ${route}: ${result.error}`,
             );
           }
         }
