@@ -1,5 +1,5 @@
 import type { SubscriptionDetails } from "@/api/organizations.schemas";
-import { cloudHostedFeatures } from "@/app/components/pricing-page";
+import { cloudHostedDetails } from "@/app/components/pricing-page";
 import { PLAN_TIER_ORDER, type PlanTier } from "@/payments/plans";
 
 /**
@@ -44,10 +44,10 @@ export interface PlanFeatures {
  * Gets the features for a specific plan tier.
  */
 export function getPlanFeatures(plan: PlanTier): PlanFeatures {
-  const userLimit = cloudHostedFeatures.find((f) => f.feature === "Users");
-  const tracingLimit = cloudHostedFeatures.find((f) => f.feature === "Tracing");
-  const supportChat = cloudHostedFeatures.find(
-    (f) => f.feature === "Support (Chat / Email)",
+  const userLimit = cloudHostedDetails.find((d) => d.detail === "Users");
+  const tracingLimit = cloudHostedDetails.find((d) => d.detail === "Tracing");
+  const supportChat = cloudHostedDetails.find(
+    (d) => d.detail === "Support (Chat / Email)",
   );
 
   return {

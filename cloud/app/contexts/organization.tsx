@@ -77,3 +77,11 @@ export function useOrganization() {
   }
   return context;
 }
+
+/**
+ * Safe version of useOrganization that returns null when outside OrganizationProvider.
+ * Useful for components that may render both inside and outside the provider context.
+ */
+export function useMaybeOrganization(): OrganizationContextType | null {
+  return useContext(OrganizationContext);
+}
