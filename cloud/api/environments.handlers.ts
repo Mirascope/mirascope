@@ -1,8 +1,10 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
+import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { AuthenticatedUser } from "@/auth";
 import type {
   CreateEnvironmentRequest,
+  EnvironmentAnalyticsRequest,
   UpdateEnvironmentRequest,
 } from "@/api/environments.schemas";
 
@@ -85,5 +87,32 @@ export const deleteEnvironmentHandler = (
       organizationId,
       projectId,
       environmentId,
+    });
+  });
+
+export const getEnvironmentAnalyticsHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+  params: EnvironmentAnalyticsRequest,
+) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+
+    // Verify user has access to this environment
+    yield* db.organizations.projects.environments.findById({
+      userId: user.id,
+      organizationId,
+      projectId,
+      environmentId,
+    });
+
+    // Query ClickHouse for analytics
+    const searchService = yield* ClickHouseSearch;
+    return yield* searchService.getAnalyticsSummary({
+      environmentId,
+      startTime: new Date(params.startTime),
+      endTime: new Date(params.endTime),
     });
   });

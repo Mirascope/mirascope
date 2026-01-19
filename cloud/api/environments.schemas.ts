@@ -2,6 +2,7 @@ import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
 import {
   AlreadyExistsError,
+  ClickHouseError,
   DatabaseError,
   NotFoundError,
   PermissionDeniedError,
@@ -35,11 +36,44 @@ export const UpdateEnvironmentRequestSchema = Schema.Struct({
   slug: Schema.optional(EnvironmentSlugSchema),
 });
 
+// Analytics schemas
+const TopModelSchema = Schema.Struct({
+  model: Schema.String,
+  count: Schema.Number,
+});
+
+const TopFunctionSchema = Schema.Struct({
+  functionName: Schema.String,
+  count: Schema.Number,
+});
+
+export const EnvironmentAnalyticsRequestSchema = Schema.Struct({
+  startTime: Schema.String,
+  endTime: Schema.String,
+});
+
+export const EnvironmentAnalyticsResponseSchema = Schema.Struct({
+  totalSpans: Schema.Number,
+  avgDurationMs: Schema.NullOr(Schema.Number),
+  p50DurationMs: Schema.NullOr(Schema.Number),
+  p95DurationMs: Schema.NullOr(Schema.Number),
+  p99DurationMs: Schema.NullOr(Schema.Number),
+  errorRate: Schema.Number,
+  totalTokens: Schema.Number,
+  totalCostUsd: Schema.Number,
+  topModels: Schema.Array(TopModelSchema),
+  topFunctions: Schema.Array(TopFunctionSchema),
+});
+
 export type Environment = typeof EnvironmentSchema.Type;
 export type CreateEnvironmentRequest =
   typeof CreateEnvironmentRequestSchema.Type;
 export type UpdateEnvironmentRequest =
   typeof UpdateEnvironmentRequestSchema.Type;
+export type EnvironmentAnalyticsRequest =
+  typeof EnvironmentAnalyticsRequestSchema.Type;
+export type EnvironmentAnalyticsResponse =
+  typeof EnvironmentAnalyticsResponseSchema.Type;
 
 export class EnvironmentsApi extends HttpApiGroup.make("environments")
   .add(
@@ -127,5 +161,24 @@ export class EnvironmentsApi extends HttpApiGroup.make("environments")
       .addSuccess(Schema.Void)
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get(
+      "getAnalytics",
+      "/organizations/:organizationId/projects/:projectId/environments/:environmentId/analytics",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+        }),
+      )
+      .setUrlParams(EnvironmentAnalyticsRequestSchema)
+      .addSuccess(EnvironmentAnalyticsResponseSchema)
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}

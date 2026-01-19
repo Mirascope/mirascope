@@ -138,3 +138,38 @@ export const useUpdateEnvironment = () => {
     },
   });
 };
+
+export const useEnvironmentAnalytics = (
+  organizationId: string | null,
+  projectId: string | null,
+  environmentId: string | null,
+  startTime: string,
+  endTime: string,
+) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: [
+        "environment-analytics",
+        organizationId,
+        projectId,
+        environmentId,
+        startTime,
+        endTime,
+      ],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.environments.getAnalytics({
+            path: {
+              organizationId: organizationId!,
+              projectId: projectId!,
+              environmentId: environmentId!,
+            },
+            urlParams: { startTime, endTime },
+          });
+        }),
+    }),
+    enabled: !!organizationId && !!projectId && !!environmentId,
+    staleTime: 60 * 1000, // 1 minute cache
+  });
+};

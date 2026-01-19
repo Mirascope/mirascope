@@ -6,7 +6,7 @@ import {
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
-import { Effect, Layer } from "effect";
+import { Effect, Layer, Option } from "effect";
 import { MirascopeCloudApi } from "@/api/api";
 
 export const queryClient = new QueryClient({
@@ -28,6 +28,11 @@ export const queryClient = new QueryClient({
 const BrowserHttpClient = HttpClient.make(
   (request: HttpClientRequest.HttpClientRequest) =>
     Effect.gen(function* () {
+      // Use HttpClientRequest.toUrl() to properly construct URL with query params
+      const url = Option.getOrElse(
+        HttpClientRequest.toUrl(request),
+        () => new URL(request.url),
+      );
       const method = request.method.toUpperCase();
       const options: RequestInit = {
         method: request.method,
@@ -40,7 +45,7 @@ const BrowserHttpClient = HttpClient.make(
       }
 
       let webResponse = yield* Effect.promise(() =>
-        fetch(request.url, options),
+        fetch(url.toString(), options),
       );
 
       // Transform "tag" back to "_tag" for Effect schema parsing
