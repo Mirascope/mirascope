@@ -53,11 +53,6 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
     }
   }, [environments]);
 
-  // Reset environment selection when project changes
-  useEffect(() => {
-    setSelectedEnvironmentState(null);
-  }, [selectedProject?.id]);
-
   const setSelectedEnvironment = (environment: PublicEnvironment | null) => {
     setSelectedEnvironmentState(environment);
     if (environment) {

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth";
 import {
   Card,
@@ -25,7 +26,7 @@ function MyDetailsSettingsPage() {
       <div className="max-w-2xl">
         {header}
         <div className="flex justify-center pt-12">
-          <div className="text-muted-foreground">Loading...</div>
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </div>
     );

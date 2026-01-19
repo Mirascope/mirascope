@@ -60,11 +60,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   }, [projects, selectedProject, isLoading]);
 
-  // Reset project selection when organization changes
-  useEffect(() => {
-    setSelectedProject(null);
-  }, [selectedOrganization?.id]);
-
   const value = {
     projects,
     selectedProject,

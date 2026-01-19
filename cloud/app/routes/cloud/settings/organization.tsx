@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useOrganization } from "@/app/contexts/organization";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -40,7 +40,7 @@ function OrganizationSettingsPage() {
       <div className="max-w-2xl">
         {header}
         <div className="flex justify-center pt-12">
-          <div className="text-muted-foreground">Loading...</div>
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
         <CreateOrganizationModal
           open={showCreateModal}
