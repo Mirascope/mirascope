@@ -20,4 +20,4 @@ while response.tool_calls:
     tool_outputs = response.execute_tools()
     response = response.resume(tool_outputs)
 
-print(response.pretty())
+print(response.text())

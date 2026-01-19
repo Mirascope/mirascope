@@ -10,7 +10,7 @@ async def recommend_book(genre: str):
 
 async def main():
     response = await recommend_book("fantasy")
-    print(response.pretty())
+    print(response.text())
 
 
 asyncio.run(main())
