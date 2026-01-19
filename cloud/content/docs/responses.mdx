@@ -7,7 +7,7 @@ description: Learn how to work with LLM responses in Mirascope.
 
 When you call an LLM, you get back an `llm.Response`. This object contains everything about the interaction: the generated content, the full message history, token usage, and metadata about the model that produced it.
 
-<CodeExample file="examples/responses/basic.py" />
+<CodeExample file="python/examples/responses/basic.py" />
 
 ## Accessing Content
 
@@ -29,7 +29,7 @@ It's often useful to combine a response's content into a single string. `respons
 
 `response.pretty()` includes stringified representations of all content types (text, thoughts, tool calls), which is helpful for debugging.
 
-<CodeExample file="examples/responses/content_access.py" lines="3-" />
+<CodeExample file="python/examples/responses/content_access.py" lines="3-" />
 
 ### Content Methods
 
@@ -46,7 +46,7 @@ It's often useful to combine a response's content into a single string. `respons
 
 The `messages` property contains the complete conversation history, including all input messages and the assistant's response. Use `response.resume()` to continue the conversation—it appends your new content to this history and calls the LLM again:
 
-<CodeExample file="examples/responses/resume.py" lines="3-" />
+<CodeExample file="python/examples/responses/resume.py" lines="3-" />
 
 The `resume()` method preserves the response's model, parameters, tools, and format settings. You can override the model at call time using `with llm.model(...)`:
 
@@ -59,7 +59,7 @@ with llm.model("anthropic/claude-sonnet-4-5"):
 
 Every response includes metadata about how it was generated:
 
-<CodeExample file="examples/responses/metadata.py" lines="3-" />
+<CodeExample file="python/examples/responses/metadata.py" lines="3-" />
 
 | Property | Type | Description |
 | --- | --- | --- |
@@ -77,7 +77,7 @@ The `raw` property gives you access to the original response object from the pro
 
 Access token consumption through `response.usage`:
 
-<CodeExample file="examples/responses/usage.py" lines="3-" />
+<CodeExample file="python/examples/responses/usage.py" lines="3-" />
 
 <Note title="Usage Properties" collapsible={true} defaultOpen={false}>
 | Property | Type | Description |
@@ -96,7 +96,7 @@ Not all providers report all usage fields. Unsupported fields default to 0.
 
 The `finish_reason` property indicates why the LLM stopped generating. It's `None` when the response completes normally:
 
-<CodeExample file="examples/responses/finish_reason.py" lines="3-" />
+<CodeExample file="python/examples/responses/finish_reason.py" lines="3-" />
 
 | Finish Reason | Description |
 | --- | --- |

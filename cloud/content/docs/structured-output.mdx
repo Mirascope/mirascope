@@ -7,7 +7,7 @@ description: Learn how to get structured, validated responses from LLMs using Py
 
 By default, LLMs output free-form text. Mirascope lets you constrain responses to structured data that matches a predefined type. Pass the type as the `format` parameter, then call `response.parse()` to get the result:
 
-<CodeExample file="examples/structured_output/primitives.py" />
+<CodeExample file="python/examples/structured_output/primitives.py" />
 
 Supported types include `str`, `int`, `float`, `bool`, `list`, `dict`, `Enum`, `Literal`, and Pydantic `BaseModel` classes.
 
@@ -15,7 +15,7 @@ Supported types include `str`, `int`, `float`, `bool`, `list`, `dict`, `Enum`, `
 
 For complex structures, define a Pydantic `BaseModel`:
 
-<CodeExample file="examples/structured_output/basemodel.py" />
+<CodeExample file="python/examples/structured_output/basemodel.py" />
 
 See the [Pydantic documentation](https://docs.pydantic.dev/latest/) for details on defining models, field types, and validators.
 
@@ -23,7 +23,7 @@ See the [Pydantic documentation](https://docs.pydantic.dev/latest/) for details 
 
 Generic collections like `list[Book]` and `dict[str, Book]` work with BaseModel classes:
 
-<CodeExample file="examples/structured_output/generic_collection.py" />
+<CodeExample file="python/examples/structured_output/generic_collection.py" />
 
 ## Validation Errors
 
@@ -44,7 +44,7 @@ When validation fails, consider retrying with error feedback. See [Reliability](
 
 Mirascope supports multiple strategies for extracting structured output. By default, it chooses strict mode if supported by your provider, or tool mode otherwise. Use `llm.format()` to force a specific mode:
 
-<CodeExample file="examples/structured_output/explicit_mode.py" />
+<CodeExample file="python/examples/structured_output/explicit_mode.py" />
 
 ### Mode Reference
 
@@ -65,7 +65,7 @@ Mirascope supports multiple strategies for extracting structured output. By defa
 
 Structured output works alongside tool calling. The LLM can use tools, then return structured data as its final response:
 
-<CodeExample file="examples/structured_output/with_tools.py" />
+<CodeExample file="python/examples/structured_output/with_tools.py" />
 
 <Note>
 In `"tool"` mode, Mirascope distinguishes between your tools and the hidden format tool automatically.
@@ -75,7 +75,7 @@ In `"tool"` mode, Mirascope distinguishes between your tools and the hidden form
 
 The class name, docstring, and field descriptions all become part of the schema sent to the LLM. Use these to guide the model's output:
 
-<CodeExample file="examples/structured_output/advanced_model_features.py" />
+<CodeExample file="python/examples/structured_output/advanced_model_features.py" />
 
 Models can also be nested, as shown with the `Author` class above.
 
@@ -83,7 +83,7 @@ Models can also be nested, as shown with the `Author` class above.
 
 Add a `formatting_instructions` classmethod to your format class to control how Mirascope prompts the LLM:
 
-<CodeExample file="examples/structured_output/custom_instructions.py" />
+<CodeExample file="python/examples/structured_output/custom_instructions.py" />
 
 <Note title="When Instructions Are Used" collapsible={true} defaultOpen={false}>
 Mirascope auto-generates formatting instructions for `"tool"` and `"json"` modes. Custom instructions override this behavior. In `"strict"` mode, instructions are typically not needed since the provider enforces the schema.
@@ -93,7 +93,7 @@ Mirascope auto-generates formatting instructions for `"tool"` and `"json"` modes
 
 For non-JSON formats (XML, CSV, custom text), use `@llm.output_parser` to define custom parsing logic:
 
-<CodeExample file="examples/structured_output/output_parser.py" />
+<CodeExample file="python/examples/structured_output/output_parser.py" />
 
 The parser receives the full response and can extract data however you need. The `formatting_instructions` are added to the system prompt to guide the LLM.
 

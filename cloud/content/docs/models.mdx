@@ -7,13 +7,13 @@ description: Learn how to use the llm.Model class to send messages and get respo
 
 The `llm.Model` class provides a unified interface for calling any supported LLM provider. Create a model with `llm.use_model()`, then call it with content:
 
-<CodeExample file="examples/models/basic.py" />
+<CodeExample file="python/examples/models/basic.py" />
 
 ## Calling Models
 
 The `model.call()` method accepts flexible content types:
 
-<CodeExample file="examples/models/call_patterns.py" />
+<CodeExample file="python/examples/models/call_patterns.py" />
 
 When you pass a string or content parts, Mirascope automatically wraps them in a user message. For multi-turn conversations or system prompts, pass a sequence of messages.
 
@@ -29,7 +29,7 @@ Models are specified using the format `"model-scope/model-name"`. Generally the 
 
 You can create a model directly via `llm.Model`, or by using the `llm.use_model()` function. We recommend `llm.use_model()` because it allows you to override the model at runtime using `llm.model()` as a context manager:
 
-<CodeExample file="examples/models/override.py" />
+<CodeExample file="python/examples/models/override.py" />
 
 If you want to hardcode a model and prevent context overrides, instantiate `llm.Model` directly:
 
@@ -41,7 +41,7 @@ model = llm.Model("openai/gpt-4o")
 
 Configure model behavior by passing parameters to `llm.use_model()` or `llm.Model`:
 
-<CodeExample file="examples/models/with_params.py" />
+<CodeExample file="python/examples/models/with_params.py" />
 
 ### Parameters Reference
 

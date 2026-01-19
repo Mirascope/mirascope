@@ -15,7 +15,7 @@ The Mirascope team is working on a Mirascope-native retry interface, to release 
 
 Wrap your calls in a retry loop to handle transient failures:
 
-<CodeExample file="examples/reliability/basic_retry.py" />
+<CodeExample file="python/examples/reliability/basic_retry.py" />
 
 This retries up to 3 times before re-raising the error.
 
@@ -23,7 +23,7 @@ This retries up to 3 times before re-raising the error.
 
 Not all errors should be retried. Authentication errors won't succeed on retry, but rate limits and server errors often will:
 
-<CodeExample file="examples/reliability/retry_specific_errors.py" />
+<CodeExample file="python/examples/reliability/retry_specific_errors.py" />
 
 Mirascope provides [unified error types](/docs/mirascope/v2/errors) that work across all providers, so you can write provider-agnostic retry logic.
 
@@ -32,7 +32,7 @@ Mirascope provides [unified error types](/docs/mirascope/v2/errors) that work ac
 
 Streaming responses can fail mid-stream—the initial connection succeeds, but an error occurs while iterating. Wrap the streaming loop and use `response.resume()` to continue from where you left off:
 
-<CodeExample file="examples/reliability/stream_retry.py" />
+<CodeExample file="python/examples/reliability/stream_retry.py" />
 
 This works because `StreamResponse` accumulates content as you iterate. When an error occurs, `response.messages` contains everything received up to that point, so the model has context about what it already said.
 
@@ -40,7 +40,7 @@ This works because `StreamResponse` accumulates content as you iterate. When an 
 
 When using [structured output](/docs/mirascope/v2/structured-output), the LLM's response might fail Pydantic validation. Instead of retrying blindly, tell the model what went wrong so it can fix its mistake:
 
-<CodeExample file="examples/reliability/validation_retry.py" />
+<CodeExample file="python/examples/reliability/validation_retry.py" />
 
 This pattern—catching the error and resuming with feedback—gives the model a chance to self-correct. It's more effective than blind retries because the model learns from its mistake.
 
@@ -48,7 +48,7 @@ This pattern—catching the error and resuming with feedback—gives the model a
 
 Tools can fail during execution. Rather than crashing, return the error as a `ToolOutput` so the model can adapt:
 
-<CodeExample file="examples/reliability/tool_error_recovery.py" />
+<CodeExample file="python/examples/reliability/tool_error_recovery.py" />
 
 The model receives the error message and can explain what went wrong or try a different approach.
 
@@ -58,13 +58,13 @@ Combine retries with fallbacks: retry each provider multiple times before moving
 
 <TabbedSection>
 <Tab value="@llm.call">
-<CodeExample file="examples/reliability/fallback_call.py" />
+<CodeExample file="python/examples/reliability/fallback_call.py" />
 </Tab>
 <Tab value="@llm.prompt">
-<CodeExample file="examples/reliability/fallback_prompt.py" />
+<CodeExample file="python/examples/reliability/fallback_prompt.py" />
 </Tab>
 <Tab value="Model">
-<CodeExample file="examples/reliability/fallback_model.py" />
+<CodeExample file="python/examples/reliability/fallback_model.py" />
 </Tab>
 </TabbedSection>
 

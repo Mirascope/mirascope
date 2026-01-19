@@ -7,7 +7,7 @@ description: Learn how to extend LLM capabilities with tools that allow models t
 
 Tools let LLMs request that you execute functions and return the results. Instead of just generating text, the model can ask for specific operations (like fetching data, performing calculations, interacting with external systems) and then use those results to formulate its response.
 
-<CodeExample file="examples/tools/loop.py" />
+<CodeExample file="python/examples/tools/loop.py" />
 
 Use `@llm.tool` to create a tool from a function, pass it to your call via `tools=[...]`, then loop until the model stops requesting tool calls. The loop pattern handles any number of tool-use rounds automatically.
 
@@ -82,7 +82,7 @@ When strict mode is enabled, the provider guarantees the LLM's tool call argumen
 
 When an LLM wants to use a tool, it doesn't call the function directly—it returns a `ToolCall` asking you to execute it. You run the tool and pass the result back so the model can continue.
 
-<CodeExample file="examples/tools/basic.py" />
+<CodeExample file="python/examples/tools/basic.py" />
 
 Here's what happens step by step:
 
@@ -96,7 +96,7 @@ Here's what happens step by step:
 
 LLMs can request multiple tools in a single response. Use `response.execute_tools()` to run them all:
 
-<CodeExample file="examples/tools/parallel.py" />
+<CodeExample file="python/examples/tools/parallel.py" />
 
 This is more convenient than executing each tool manually, and it's what powers the loop pattern shown at the top of this page. For async tools, `execute_tools()` runs all tools concurrently using `asyncio.gather`.
 
@@ -123,7 +123,7 @@ The convenience method `response.execute_tools()` uses the toolkit internally to
 
 For async operations like network requests or database queries, define async tool functions:
 
-<CodeExample file="examples/tools/async_tools.py" />
+<CodeExample file="python/examples/tools/async_tools.py" />
 
 When any tool is async, the call must be async too, and you use `await` with `execute_tools()` and `resume()`. See the [Async](/docs/mirascope/v2/async) guide for more details.
 
@@ -137,13 +137,13 @@ The examples above use `@llm.call`. You can also pass tools to `@llm.prompt` or 
 
 <TabbedSection>
 <Tab value="@llm.call">
-<CodeExample file="examples/tools/with_call.py" />
+<CodeExample file="python/examples/tools/with_call.py" />
 </Tab>
 <Tab value="@llm.prompt">
-<CodeExample file="examples/tools/with_prompt.py" />
+<CodeExample file="python/examples/tools/with_prompt.py" />
 </Tab>
 <Tab value="Model">
-<CodeExample file="examples/tools/with_model.py" />
+<CodeExample file="python/examples/tools/with_model.py" />
 </Tab>
 </TabbedSection>
 

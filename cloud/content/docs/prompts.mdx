@@ -7,11 +7,11 @@ description: Learn how to use the @llm.prompt decorator for creating reusable pr
 
 When working programmatically with LLMs, we often want reusable functions that encapsulate constructing messages and getting an LLM response. Using just what we've already learned about [Messages](/docs/mirascope/v2/messages) and [Models](/docs/mirascope/v2/models), we might write code like this:
 
-<CodeExample file="examples/prompts/basic_without_prompt.py" />
+<CodeExample file="python/examples/prompts/basic_without_prompt.py" />
 
 Since this is such a common pattern in LLM-powered development, Mirascope provides the `@llm.prompt` decorator to streamline things:
 
-<CodeExample file="examples/prompts/basic.py" />
+<CodeExample file="python/examples/prompts/basic.py" />
 
 You write a *prompt function* that returns the content to send to the LLM. The decorator converts it into an `llm.Prompt` that you can call with any model.
 
@@ -23,17 +23,17 @@ A prompt function can return content in several forms:
 - **A list of content parts** — `llm.Text`, `llm.Image`, `llm.Audio`, combined into a user message
 - **A list of messages** — Passed directly to the model for full control
 
-<CodeExample file="examples/prompts/return_types.py" lines="3-" />
+<CodeExample file="python/examples/prompts/return_types.py" lines="3-" />
 
 ## Calling Prompts
 
 A decorated prompt takes a model as its first argument, followed by your function's original arguments. If you don't need custom params, you can just pass a model id string:
 
-<CodeExample file="examples/prompts/basic.py" />
+<CodeExample file="python/examples/prompts/basic.py" />
 
 When you need to configure parameters like `temperature`, pass an `llm.Model` instance:
 
-<CodeExample file="examples/prompts/with_params.py" lines="3-" />
+<CodeExample file="python/examples/prompts/with_params.py" lines="3-" />
 
 <Note>
 The `Prompt` doesn't reference the model context manager, so it will always use the model that you pass in as the first argument.
@@ -43,7 +43,7 @@ The `Prompt` doesn't reference the model context manager, so it will always use 
 
 Use `.messages()` to see what messages a prompt generates without calling an LLM:
 
-<CodeExample file="examples/prompts/messages_method.py" lines="3-" />
+<CodeExample file="python/examples/prompts/messages_method.py" lines="3-" />
 
 ## Decorator Arguments
 

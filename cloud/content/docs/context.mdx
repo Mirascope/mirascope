@@ -9,13 +9,13 @@ Mirascope's Context system lets you inject dependencies into prompts and tools a
 
 <TabbedSection>
 <Tab value="@llm.call">
-<CodeExample file="examples/context/basic_call.py" />
+<CodeExample file="python/examples/context/basic_call.py" />
 </Tab>
 <Tab value="@llm.prompt">
-<CodeExample file="examples/context/basic_prompt.py" />
+<CodeExample file="python/examples/context/basic_prompt.py" />
 </Tab>
 <Tab value="Model">
-<CodeExample file="examples/context/basic_model.py" />
+<CodeExample file="python/examples/context/basic_model.py" />
 </Tab>
 </TabbedSection>
 
@@ -76,7 +76,7 @@ These work like their non-context counterparts, but `resume()` and `execute_tool
 
 Context works with async prompts and tools. Use `await` with `execute_tools()` and `resume()`:
 
-<CodeExample file="examples/context/async_context.py" />
+<CodeExample file="python/examples/context/async_context.py" />
 
 If any context tool is async, all tools must be async and the prompt must be async.
 

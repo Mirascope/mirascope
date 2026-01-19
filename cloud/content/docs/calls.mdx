@@ -9,7 +9,7 @@ In the [Prompts](/docs/mirascope/v2/prompts) guide, we talked about how the `@ll
 
 The `@llm.call` decorator functions similarly to `@llm.prompt`, but bundles a specific model with your prompt function:
 
-<CodeExample file="examples/calls/basic.py" />
+<CodeExample file="python/examples/calls/basic.py" />
 
 With `@llm.prompt`, you pass the model when calling. With `@llm.call`, the model is fixed at decoration time—you just call the function directly.
 
@@ -19,13 +19,13 @@ This means that `@llm.prompt` is a great fit for reusable library code, or when 
 
 Like `@llm.prompt`, you can return a string, a list of content parts, or a list of messages:
 
-<CodeExample file="examples/calls/return_types.py" />
+<CodeExample file="python/examples/calls/return_types.py" />
 
 ## Runtime Model Overrides
 
 Even though `@llm.call` bundles a model, you can override it at runtime using `with llm.model(...)`:
 
-<CodeExample file="examples/calls/override.py" />
+<CodeExample file="python/examples/calls/override.py" />
 
 This is useful for A/B testing, switching providers in different environments, managing model fallbacks, or adjusting parameters dynamically.
 
@@ -46,7 +46,7 @@ The `@llm.call` decorator requires a model ID and accepts additional arguments:
 | `tools` | List of tools the LLM can call. See [Tools](/docs/mirascope/v2/tools). |
 | `format` | Response format for structured output. See [Structured Output](/docs/mirascope/v2/structured-output). |
 
-<CodeExample file="examples/calls/with_params.py" />
+<CodeExample file="python/examples/calls/with_params.py" />
 
 ## Accessing the Underlying Prompt
 
@@ -60,7 +60,7 @@ A `Call` is just a `Prompt` with a bundled model. You can access the underlying 
 
 Calling `my_call(...)` is equivalent to `my_call.prompt(my_call.model, ...)`.
 
-<CodeExample file="examples/calls/access_prompt.py" />
+<CodeExample file="python/examples/calls/access_prompt.py" />
 
 ## Next Steps
 
