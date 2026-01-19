@@ -12,6 +12,10 @@ interface SettingsNavItem {
 
 const settingsNavItems: SettingsNavItem[] = [
   {
+    label: "My Details",
+    path: "/cloud/settings/me",
+  },
+  {
     label: "Organization",
     path: "/cloud/settings/organization",
   },
