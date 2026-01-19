@@ -31,6 +31,10 @@ const settingsNavItems: SettingsNavItem[] = [
     label: "API Keys",
     path: "/cloud/settings/api-keys",
   },
+  {
+    label: "Billing",
+    path: "/cloud/settings/billing",
+  },
 ];
 
 export function SettingsSidebar() {

@@ -37,6 +37,7 @@ import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/t
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
 import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
 import { Route as CloudSettingsMeRouteImport } from './routes/cloud/settings/me'
+import { Route as CloudSettingsBillingRouteImport } from './routes/cloud/settings/billing'
 import { Route as CloudSettingsApiKeysRouteImport } from './routes/cloud/settings/api-keys'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
@@ -189,6 +190,11 @@ const CloudSettingsMeRoute = CloudSettingsMeRouteImport.update({
   path: '/me',
   getParentRoute: () => CloudSettingsRoute,
 } as any)
+const CloudSettingsBillingRoute = CloudSettingsBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
 const CloudSettingsApiKeysRoute = CloudSettingsApiKeysRouteImport.update({
   id: '/api-keys',
   path: '/api-keys',
@@ -272,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
+  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -309,6 +316,7 @@ export interface FileRoutesByTo {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
+  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -350,6 +358,7 @@ export interface FileRoutesById {
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
   '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
+  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/cloud/settings/api-keys'
+    | '/cloud/settings/billing'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/cloud/settings/api-keys'
+    | '/cloud/settings/billing'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
     | '/cloud/settings/api-keys'
+    | '/cloud/settings/billing'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -699,6 +711,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudSettingsMeRouteImport
       parentRoute: typeof CloudSettingsRoute
     }
+    '/cloud/settings/billing': {
+      id: '/cloud/settings/billing'
+      path: '/billing'
+      fullPath: '/cloud/settings/billing'
+      preLoaderRoute: typeof CloudSettingsBillingRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
     '/cloud/settings/api-keys': {
       id: '/cloud/settings/api-keys'
       path: '/api-keys'
@@ -786,6 +805,7 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface CloudSettingsRouteChildren {
   CloudSettingsApiKeysRoute: typeof CloudSettingsApiKeysRoute
+  CloudSettingsBillingRoute: typeof CloudSettingsBillingRoute
   CloudSettingsMeRoute: typeof CloudSettingsMeRoute
   CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
   CloudSettingsProjectRoute: typeof CloudSettingsProjectRoute
@@ -795,6 +815,7 @@ interface CloudSettingsRouteChildren {
 
 const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
   CloudSettingsApiKeysRoute: CloudSettingsApiKeysRoute,
+  CloudSettingsBillingRoute: CloudSettingsBillingRoute,
   CloudSettingsMeRoute: CloudSettingsMeRoute,
   CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
   CloudSettingsProjectRoute: CloudSettingsProjectRoute,
