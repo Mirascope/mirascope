@@ -13,8 +13,12 @@ import {
 import {
   AnalyticsSummaryRequestSchema,
   AnalyticsSummaryResponseSchema,
+  FunctionAggregatesRequestSchema,
+  FunctionAggregatesResponseSchema,
   SearchRequestSchema,
   SearchResponseSchema,
+  TimeSeriesRequestSchema,
+  TimeSeriesResponseSchema,
   TraceDetailResponseSchema,
 } from "@/api/traces-search.schemas";
 
@@ -192,6 +196,28 @@ export class TracesApi extends HttpApiGroup.make("traces")
     HttpApiEndpoint.get("getAnalyticsSummary", "/traces/analytics")
       .setUrlParams(AnalyticsSummaryRequestSchema)
       .addSuccess(AnalyticsSummaryResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getTimeSeriesMetrics", "/traces/analytics/timeseries")
+      .setUrlParams(TimeSeriesRequestSchema)
+      .addSuccess(TimeSeriesResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getFunctionAggregates", "/traces/analytics/functions")
+      .setUrlParams(FunctionAggregatesRequestSchema)
+      .addSuccess(FunctionAggregatesResponseSchema)
       .addError(UnauthorizedError, { status: UnauthorizedError.status })
       .addError(PermissionDeniedError, {
         status: PermissionDeniedError.status,

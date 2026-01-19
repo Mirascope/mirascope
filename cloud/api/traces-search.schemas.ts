@@ -9,12 +9,15 @@
  * - `POST /traces/search` - Search spans with filters and pagination
  * - `GET /traces/:traceId` - Get full trace detail with all spans
  * - `GET /traces/analytics` - Get analytics summary for a time range
+ * - `GET /traces/analytics/timeseries` - Get time series metrics for a time range
+ * - `GET /traces/analytics/functions` - Get per-function aggregates for a time range
  *
  * ## Query Constraints
  *
  * - `limit`: max 1000 (default 50)
  * - `offset`: max 10000
  * - `time_range`: max 30 days (search), max 90 days (analytics)
+ * - `rootOnly`: optional root span filter for analytics endpoints
  * - `query`: max 500 characters (token-based matching, not substring)
  * - Required: startTime + endTime
  */
@@ -51,6 +54,7 @@ export const SearchRequestSchema = Schema.Struct({
   fuzzySearch: Schema.optional(Schema.Boolean),
   traceId: Schema.optional(Schema.String),
   spanId: Schema.optional(Schema.String),
+  rootOnly: Schema.optional(Schema.Boolean),
   model: Schema.optional(Schema.Array(Schema.String)),
   provider: Schema.optional(Schema.Array(Schema.String)),
   functionId: Schema.optional(Schema.String),
@@ -150,6 +154,7 @@ export const AnalyticsSummaryRequestSchema = Schema.Struct({
   startTime: Schema.String,
   endTime: Schema.String,
   functionId: Schema.optional(Schema.String),
+  rootOnly: Schema.optional(Schema.BooleanFromString),
 });
 
 export type AnalyticsSummaryRequest = typeof AnalyticsSummaryRequestSchema.Type;
@@ -179,3 +184,76 @@ export const AnalyticsSummaryResponseSchema = Schema.Struct({
 
 export type AnalyticsSummaryResponse =
   typeof AnalyticsSummaryResponseSchema.Type;
+
+// =============================================================================
+// Analytics Time Series Schemas
+// =============================================================================
+
+export const TimeFrameSchema = Schema.Literal(
+  "day",
+  "week",
+  "month",
+  "lifetime",
+);
+
+export type TimeFrame = typeof TimeFrameSchema.Type;
+
+export const TimeSeriesRequestSchema = Schema.Struct({
+  startTime: Schema.String,
+  endTime: Schema.String,
+  timeFrame: TimeFrameSchema,
+  functionId: Schema.optional(Schema.String),
+  rootOnly: Schema.optional(Schema.BooleanFromString),
+});
+
+export type TimeSeriesRequest = typeof TimeSeriesRequestSchema.Type;
+
+const TimeSeriesPointSchema = Schema.Struct({
+  startTime: Schema.String,
+  endTime: Schema.String,
+  totalCostUsd: Schema.Number,
+  totalInputTokens: Schema.Number,
+  totalOutputTokens: Schema.Number,
+  totalTokens: Schema.Number,
+  averageDurationMs: Schema.NullOr(Schema.Number),
+  spanCount: Schema.Number,
+});
+
+export const TimeSeriesResponseSchema = Schema.Struct({
+  points: Schema.Array(TimeSeriesPointSchema),
+  timeFrame: TimeFrameSchema,
+});
+
+export type TimeSeriesResponse = typeof TimeSeriesResponseSchema.Type;
+
+// =============================================================================
+// Function Aggregates Schemas
+// =============================================================================
+
+export const FunctionAggregatesRequestSchema = Schema.Struct({
+  startTime: Schema.String,
+  endTime: Schema.String,
+  rootOnly: Schema.optional(Schema.BooleanFromString),
+});
+
+export type FunctionAggregatesRequest =
+  typeof FunctionAggregatesRequestSchema.Type;
+
+const FunctionAggregateSchema = Schema.Struct({
+  functionId: Schema.String,
+  functionName: Schema.String,
+  totalCostUsd: Schema.Number,
+  totalInputTokens: Schema.Number,
+  totalOutputTokens: Schema.Number,
+  totalTokens: Schema.Number,
+  averageDurationMs: Schema.NullOr(Schema.Number),
+  spanCount: Schema.Number,
+});
+
+export const FunctionAggregatesResponseSchema = Schema.Struct({
+  functions: Schema.Array(FunctionAggregateSchema),
+  total: Schema.Number,
+});
+
+export type FunctionAggregatesResponse =
+  typeof FunctionAggregatesResponseSchema.Type;

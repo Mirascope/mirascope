@@ -23,6 +23,8 @@ import {
   type SpanSearchInput,
   type TraceDetailInput,
   type AnalyticsSummaryInput,
+  type TimeSeriesInput,
+  type FunctionAggregatesInput,
   type AttributeFilter,
   type SearchResponse,
   type TraceDetailResponse,
@@ -31,6 +33,8 @@ import { RealtimeSpans } from "@/workers/realtimeSpans";
 import type {
   SearchRequest,
   AnalyticsSummaryRequest,
+  TimeSeriesRequest,
+  FunctionAggregatesRequest,
 } from "@/api/traces-search.schemas";
 
 export * from "@/api/traces-search.schemas";
@@ -78,6 +82,7 @@ export const searchHandler = (payload: SearchRequest) =>
       fuzzySearch: payload.fuzzySearch,
       traceId: payload.traceId,
       spanId: payload.spanId,
+      rootOnly: payload.rootOnly,
       model,
       provider,
       functionId: payload.functionId,
@@ -175,9 +180,54 @@ export const getAnalyticsSummaryHandler = (params: AnalyticsSummaryRequest) =>
       startTime: new Date(params.startTime),
       endTime: new Date(params.endTime),
       functionId: params.functionId,
+      rootOnly: params.rootOnly,
     };
 
     return yield* searchService.getAnalyticsSummary(input);
+  });
+
+/**
+ * Get time series metrics for a time range.
+ *
+ * Requires API key authentication. Uses the environment ID from the API key scope.
+ */
+export const getTimeSeriesMetricsHandler = (params: TimeSeriesRequest) =>
+  Effect.gen(function* () {
+    const { apiKeyInfo } = yield* Authentication.ApiKey;
+    const searchService = yield* ClickHouseSearch;
+
+    const input: TimeSeriesInput = {
+      environmentId: apiKeyInfo.environmentId,
+      startTime: new Date(params.startTime),
+      endTime: new Date(params.endTime),
+      timeFrame: params.timeFrame,
+      functionId: params.functionId,
+      rootOnly: params.rootOnly,
+    };
+
+    return yield* searchService.getTimeSeriesMetrics(input);
+  });
+
+/**
+ * Get per-function aggregates for a time range.
+ *
+ * Requires API key authentication. Uses the environment ID from the API key scope.
+ */
+export const getFunctionAggregatesHandler = (
+  params: FunctionAggregatesRequest,
+) =>
+  Effect.gen(function* () {
+    const { apiKeyInfo } = yield* Authentication.ApiKey;
+    const searchService = yield* ClickHouseSearch;
+
+    const input: FunctionAggregatesInput = {
+      environmentId: apiKeyInfo.environmentId,
+      startTime: new Date(params.startTime),
+      endTime: new Date(params.endTime),
+      rootOnly: params.rootOnly,
+    };
+
+    return yield* searchService.getFunctionAggregates(input);
   });
 
 // =============================================================================

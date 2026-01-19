@@ -438,6 +438,7 @@ const matchesSearchFilters = (
 
   if (input.traceId && span.traceId !== input.traceId) return false;
   if (input.spanId && span.spanId !== input.spanId) return false;
+  if (input.rootOnly && span.parentSpanId) return false;
 
   if (input.query && !matchesQueryTokens(span.name, input.query)) {
     return false;

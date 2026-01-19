@@ -68,6 +68,28 @@ describe("RealtimeSpansDurableObject", () => {
     expect(searchBody.spans[0]?.spanId).toBe("span-1");
   });
 
+  it("filters root spans when rootOnly is true", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+
+    await durableObject.fetch(createUpsertRequest(createSpanBatch()));
+
+    const searchResponse = await durableObject.fetch(
+      createSearchRequest({
+        rootOnly: true,
+        sortBy: "start_time",
+        sortOrder: "desc",
+      }),
+    );
+    const searchBody = await parseJson<{
+      spans: Array<{ spanId: string }>;
+      total: number;
+    }>(searchResponse);
+
+    expect(searchBody.total).toBe(1);
+    expect(searchBody.spans[0]?.spanId).toBe("span-1");
+  });
+
   it("filters out spans outside time range", async () => {
     const state = createState();
     const durableObject = new RealtimeSpansDurableObject(state);

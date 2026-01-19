@@ -68,6 +68,8 @@ import {
   searchHandler,
   getTraceDetailHandler,
   getAnalyticsSummaryHandler,
+  getTimeSeriesMetricsHandler,
+  getFunctionAggregatesHandler,
 } from "@/api/traces-search.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
@@ -91,6 +93,12 @@ const TracesHandlersLive = HttpApiBuilder.group(
       )
       .handle("getAnalyticsSummary", ({ urlParams }) =>
         getAnalyticsSummaryHandler(urlParams),
+      )
+      .handle("getTimeSeriesMetrics", ({ urlParams }) =>
+        getTimeSeriesMetricsHandler(urlParams),
+      )
+      .handle("getFunctionAggregates", ({ urlParams }) =>
+        getFunctionAggregatesHandler(urlParams),
       )
       .handle("listByFunctionHash", ({ path, urlParams }) =>
         listByFunctionHashHandler(path.hash, urlParams),

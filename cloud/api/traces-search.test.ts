@@ -216,9 +216,11 @@ describe.sequential("Search API", (it) => {
           throw new Error("Missing API key context for search handler test");
         }
 
+        const apiKey = apiKeyInfo;
+
         const authenticationLayer = Layer.succeed(Authentication, {
           user: ownerFromContext,
-          apiKeyInfo,
+          apiKeyInfo: apiKey,
         });
 
         const clickHouseSearchLayer = ClickHouseSearch.Default.pipe(
@@ -288,6 +290,10 @@ describe.sequential("Search API", (it) => {
           Effect.succeed(createTraceDetailResponse({ traceId: "trace-1" })),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -425,6 +431,10 @@ describe.sequential("Search API", (it) => {
               topModels: [],
               topFunctions: [],
             }),
+          getTimeSeriesMetrics: () =>
+            Effect.succeed({ points: [], timeFrame: "day" }),
+          getFunctionAggregates: () =>
+            Effect.succeed({ functions: [], total: 0 }),
         });
 
         const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -536,6 +546,10 @@ describe.sequential("Search API", (it) => {
               topModels: [],
               topFunctions: [],
             }),
+          getTimeSeriesMetrics: () =>
+            Effect.succeed({ points: [], timeFrame: "day" }),
+          getFunctionAggregates: () =>
+            Effect.succeed({ functions: [], total: 0 }),
         });
 
         const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -642,6 +656,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -727,6 +745,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -813,6 +835,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -909,6 +935,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1013,6 +1043,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1116,6 +1150,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1232,6 +1270,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1334,6 +1376,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1440,6 +1486,10 @@ describe.sequential("Search API", (it) => {
         getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeTraceDetail = createTraceDetailResponse({
@@ -1518,6 +1568,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const result = await Effect.runPromise(
@@ -1571,6 +1625,10 @@ describe.sequential("Search API", (it) => {
         getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1633,6 +1691,10 @@ describe.sequential("Search API", (it) => {
         getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeTraceDetail = createTraceDetailResponse({
@@ -1790,6 +1852,10 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
       });
 
       const realtimeLayer = Layer.succeed(RealtimeSpans, {
@@ -1836,6 +1902,7 @@ describe.sequential("Search API", (it) => {
       const result = yield* apiKeyClient.traces.getAnalyticsSummary({
         urlParams: {
           ...createSearchTimeWindow(),
+          rootOnly: true,
         },
       });
 
@@ -1859,6 +1926,37 @@ describe.sequential("Search API", (it) => {
 
       expect(typeof result.totalSpans).toBe("number");
     }),
+  );
+
+  it.effect("GET /traces/analytics/timeseries - returns time series metrics", () =>
+    Effect.gen(function* () {
+      const result = yield* apiKeyClient.traces.getTimeSeriesMetrics({
+        urlParams: {
+          ...createSearchTimeWindow(),
+          timeFrame: "day",
+          rootOnly: true,
+        },
+      });
+
+      expect(Array.isArray(result.points)).toBe(true);
+      expect(result.timeFrame).toBe("day");
+    }),
+  );
+
+  it.effect(
+    "GET /traces/analytics/functions - returns function aggregates",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* apiKeyClient.traces.getFunctionAggregates({
+          urlParams: {
+            ...createSearchTimeWindow(),
+            rootOnly: true,
+          },
+        });
+
+        expect(Array.isArray(result.functions)).toBe(true);
+        expect(typeof result.total).toBe("number");
+      }),
   );
 
   it.effect("Dispose API key client", () =>
@@ -1887,6 +1985,7 @@ describe("Search schema definitions", () => {
         startTime: "2024-01-01T00:00:00Z",
         endTime: "2024-01-31T23:59:59Z",
         query: "llm call",
+        rootOnly: true,
         model: ["gpt-4", "gpt-3.5-turbo"],
         provider: ["openai"],
         hasError: false,
@@ -1897,6 +1996,7 @@ describe("Search schema definitions", () => {
       };
 
       expect(input.query).toBe("llm call");
+      expect(input.rootOnly).toBe(true);
       expect(input.model).toHaveLength(2);
       expect(input.provider).toHaveLength(1);
       expect(input.limit).toBe(100);
@@ -2136,6 +2236,54 @@ describe("Search schema definitions", () => {
       expect(response.topFunctions).toHaveLength(0);
     });
   });
+
+  describe("TimeSeriesResponse", () => {
+    it("validates time series response structure", () => {
+      const response = {
+        points: [
+          {
+            startTime: "2024-01-01T00:00:00Z",
+            endTime: "2024-01-02T00:00:00Z",
+            totalCostUsd: 1.23,
+            totalInputTokens: 100,
+            totalOutputTokens: 50,
+            totalTokens: 150,
+            averageDurationMs: 250,
+            spanCount: 2,
+          },
+        ],
+        timeFrame: "day" as const,
+      };
+
+      expect(response.points).toHaveLength(1);
+      expect(response.points[0].totalTokens).toBe(150);
+      expect(response.timeFrame).toBe("day");
+    });
+  });
+
+  describe("FunctionAggregatesResponse", () => {
+    it("validates function aggregates response structure", () => {
+      const response = {
+        functions: [
+          {
+            functionId: "00000000-0000-0000-0000-000000000001",
+            functionName: "my_function",
+            totalCostUsd: 1.0,
+            totalInputTokens: 120,
+            totalOutputTokens: 30,
+            totalTokens: 150,
+            averageDurationMs: 200,
+            spanCount: 3,
+          },
+        ],
+        total: 1,
+      };
+
+      expect(response.functions).toHaveLength(1);
+      expect(response.functions[0]?.functionName).toBe("my_function");
+      expect(response.total).toBe(1);
+    });
+  });
 });
 
 // =============================================================================
@@ -2200,6 +2348,10 @@ describe("Realtime span merge", () => {
           topModels: [],
           topFunctions: [],
         }),
+      getTimeSeriesMetrics: () =>
+        Effect.succeed({ points: [], timeFrame: "day" }),
+      getFunctionAggregates: () =>
+        Effect.succeed({ functions: [], total: 0 }),
     });
 
   const createRealtimeLayer = (
