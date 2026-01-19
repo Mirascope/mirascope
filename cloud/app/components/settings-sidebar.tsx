@@ -27,6 +27,10 @@ const settingsNavItems: SettingsNavItem[] = [
     label: "Project",
     path: "/cloud/settings/project",
   },
+  {
+    label: "API Keys",
+    path: "/cloud/settings/api-keys",
+  },
 ];
 
 export function SettingsSidebar() {

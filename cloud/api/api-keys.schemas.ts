@@ -30,6 +30,20 @@ export const ApiKeyCreateResponseSchema = Schema.Struct({
   key: Schema.String,
 });
 
+// Schema for API key with project and environment context
+export const ApiKeyWithContextSchema = Schema.Struct({
+  id: Schema.String,
+  name: Schema.String,
+  keyPrefix: Schema.String,
+  environmentId: Schema.String,
+  ownerId: Schema.String,
+  createdAt: Schema.NullOr(Schema.String),
+  lastUsedAt: Schema.NullOr(Schema.String),
+  projectId: Schema.String,
+  projectName: Schema.String,
+  environmentName: Schema.String,
+});
+
 // API key name must be 1-100 characters
 const ApiKeyNameSchema = Schema.String.pipe(
   Schema.minLength(1, { message: () => "API key name is required" }),
@@ -44,7 +58,15 @@ export const CreateApiKeyRequestSchema = Schema.Struct({
 
 export type ApiKey = typeof ApiKeySchema.Type;
 export type ApiKeyCreateResponse = typeof ApiKeyCreateResponseSchema.Type;
+export type ApiKeyWithContext = typeof ApiKeyWithContextSchema.Type;
 export type CreateApiKeyRequest = typeof CreateApiKeyRequestSchema.Type;
+
+// Path for listing all API keys in an organization
+const orgApiKeysPath = "/organizations/:organizationId/api-keys";
+
+const OrgPathParams = Schema.Struct({
+  organizationId: Schema.String,
+});
 
 const basePath =
   "/organizations/:organizationId/projects/:projectId/environments/:environmentId/api-keys";
@@ -64,6 +86,13 @@ const ItemPathParams = Schema.Struct({
 });
 
 export class ApiKeysApi extends HttpApiGroup.make("apiKeys")
+  .add(
+    HttpApiEndpoint.get("listAllForOrg", orgApiKeysPath)
+      .setPath(OrgPathParams)
+      .addSuccess(Schema.Array(ApiKeyWithContextSchema))
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
   .add(
     HttpApiEndpoint.get("list", basePath)
       .setPath(BasePathParams)

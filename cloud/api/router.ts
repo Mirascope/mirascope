@@ -53,6 +53,7 @@ import {
   deleteEnvironmentHandler,
 } from "@/api/environments.handlers";
 import {
+  listAllApiKeysHandler,
   listApiKeysHandler,
   createApiKeyHandler,
   getApiKeyHandler,
@@ -264,6 +265,9 @@ const ApiKeysHandlersLive = HttpApiBuilder.group(
   "apiKeys",
   (handlers) =>
     handlers
+      .handle("listAllForOrg", ({ path }) =>
+        listAllApiKeysHandler(path.organizationId),
+      )
       .handle("list", ({ path }) =>
         listApiKeysHandler(
           path.organizationId,
