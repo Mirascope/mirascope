@@ -8,6 +8,7 @@
  *
  * - `POST /traces/search` - Search spans with filters and pagination
  * - `GET /traces/:traceId` - Get full trace detail with all spans
+ * - `GET /traces/:traceId/spans/:spanId` - Get single span detail by trace/span ID
  * - `GET /traces/analytics` - Get analytics summary for a time range
  * - `GET /traces/analytics/timeseries` - Get time series metrics for a time range
  * - `GET /traces/analytics/functions` - Get per-function aggregates for a time range
@@ -102,7 +103,7 @@ export type SearchResponse = typeof SearchResponseSchema.Type;
 // Trace Detail Schemas
 // =============================================================================
 
-const SpanDetailSchema = Schema.Struct({
+export const SpanDetailSchema = Schema.Struct({
   traceId: Schema.String,
   spanId: Schema.String,
   parentSpanId: Schema.NullOr(Schema.String),
@@ -145,6 +146,13 @@ export const TraceDetailResponseSchema = Schema.Struct({
 });
 
 export type TraceDetailResponse = typeof TraceDetailResponseSchema.Type;
+
+export const SpanDetailRequestSchema = Schema.Struct({
+  traceId: Schema.String,
+  spanId: Schema.String,
+});
+
+export type SpanDetailRequest = typeof SpanDetailRequestSchema.Type;
 
 // =============================================================================
 // Analytics Summary Schemas

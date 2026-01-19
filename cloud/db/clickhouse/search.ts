@@ -50,7 +50,7 @@
 import { Context, Effect, Layer } from "effect";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { formatDateTime64 } from "@/db/clickhouse/transform";
-import { ClickHouseError } from "@/errors";
+import { ClickHouseError, NotFoundError } from "@/errors";
 
 // =============================================================================
 // Query Constraints
@@ -147,6 +147,16 @@ export interface TraceDetailInput {
   environmentId: string;
   /** Trace ID to retrieve (required). */
   traceId: string;
+}
+
+/** Input type for span detail retrieval by trace and span IDs. */
+export interface SpanDetailInput {
+  /** Environment ID to scope the query (required). */
+  environmentId: string;
+  /** Trace ID to scope the query (required). */
+  traceId: string;
+  /** Span ID to retrieve (required). */
+  spanId: string;
 }
 
 /** Input type for analytics summary. */
@@ -429,6 +439,11 @@ export interface ClickHouseSearchClient {
     input: TraceDetailInput,
   ) => Effect.Effect<TraceDetailResponse, ClickHouseError>;
 
+  /** Get span detail by trace and span IDs. */
+  readonly getSpanDetail: (
+    input: SpanDetailInput,
+  ) => Effect.Effect<SpanDetail, ClickHouseError | NotFoundError>;
+
   /** Get analytics summary for a time range. */
   readonly getAnalyticsSummary: (
     input: AnalyticsSummaryInput,
@@ -611,6 +626,67 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
               rootSpanId,
               totalDurationMs,
             };
+          }),
+
+        getSpanDetail: (input: SpanDetailInput) =>
+          Effect.gen(function* () {
+            const rows = yield* client.unsafeQuery<SpanDetailRow>(
+              `
+              SELECT
+                trace_id,
+                span_id,
+                parent_span_id,
+                environment_id,
+                project_id,
+                organization_id,
+                start_time,
+                end_time,
+                duration_ms,
+                name,
+                kind,
+                status_code,
+                status_message,
+                model,
+                provider,
+                input_tokens,
+                output_tokens,
+                total_tokens,
+                cost_usd,
+                function_id,
+                function_name,
+                function_version,
+                error_type,
+                error_message,
+                attributes,
+                events,
+                links,
+                service_name,
+                service_version,
+                resource_attributes
+              FROM spans_analytics FINAL
+              WHERE environment_id = toUUID({environmentId:String})
+                AND trace_id = {traceId:String}
+                AND span_id = {spanId:String}
+              ORDER BY start_time DESC
+              LIMIT 1
+            `,
+              {
+                environmentId: input.environmentId,
+                traceId: input.traceId,
+                spanId: input.spanId,
+              },
+            );
+
+            if (rows.length === 0) {
+              return yield* Effect.fail(
+                new NotFoundError({
+                  message: `Span ${input.spanId} not found`,
+                  resource: "spans",
+                }),
+              );
+            }
+
+            return transformToSpanDetail(rows[0]);
           }),
 
         getAnalyticsSummary: (input: AnalyticsSummaryInput) =>

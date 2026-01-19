@@ -25,10 +25,12 @@ import {
   type AnalyticsSummaryInput,
   type TimeSeriesInput,
   type FunctionAggregatesInput,
+  type SpanDetailInput,
   type AttributeFilter,
   type SearchResponse,
   type TraceDetailResponse,
 } from "@/db/clickhouse/search";
+import { NotFoundError } from "@/errors";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import type {
   SearchRequest,
@@ -184,6 +186,69 @@ export const getAnalyticsSummaryHandler = (params: AnalyticsSummaryRequest) =>
     };
 
     return yield* searchService.getAnalyticsSummary(input);
+  });
+
+/**
+ * Get a single span detail by trace and span IDs.
+ *
+ * Requires API key authentication. Uses the environment ID from the API key scope.
+ */
+export const getSpanDetailHandler = (traceId: string, spanId: string) =>
+  Effect.gen(function* () {
+    const { apiKeyInfo } = yield* Authentication.ApiKey;
+    const searchService = yield* ClickHouseSearch;
+    const realtimeOption = yield* Effect.serviceOption(RealtimeSpans);
+
+    const input: SpanDetailInput = {
+      environmentId: apiKeyInfo.environmentId,
+      traceId,
+      spanId,
+    };
+
+    const clickhouseResult = yield* searchService.getSpanDetail(input).pipe(
+      Effect.catchTag("NotFoundError", () => Effect.succeed(null)),
+    );
+
+    if (clickhouseResult) {
+      return clickhouseResult;
+    }
+
+    const realtimeResult = yield* Option.match(realtimeOption, {
+      onNone: () => Effect.succeed(null),
+      onSome: (realtime) =>
+        realtime
+          .exists({
+            environmentId: apiKeyInfo.environmentId,
+            traceId,
+            spanId,
+          })
+          .pipe(
+            Effect.catchAll(() => Effect.succeed(false)),
+            Effect.flatMap((exists) =>
+              exists
+                ? realtime
+                    .getTraceDetail({
+                      environmentId: apiKeyInfo.environmentId,
+                      traceId,
+                    })
+                    .pipe(Effect.catchAll(() => Effect.succeed(null)))
+                : Effect.succeed(null),
+            ),
+          ),
+    });
+
+    const span = realtimeResult?.spans.find((item) => item.spanId === spanId);
+
+    if (!span) {
+      return yield* Effect.fail(
+        new NotFoundError({
+          message: `Span ${spanId} not found`,
+          resource: "spans",
+        }),
+      );
+    }
+
+    return span;
   });
 
 /**

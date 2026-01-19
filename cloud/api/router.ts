@@ -68,6 +68,7 @@ import {
   searchHandler,
   getTraceDetailHandler,
   getAnalyticsSummaryHandler,
+  getSpanDetailHandler,
   getTimeSeriesMetricsHandler,
   getFunctionAggregatesHandler,
 } from "@/api/traces-search.handlers";
@@ -99,6 +100,9 @@ const TracesHandlersLive = HttpApiBuilder.group(
       )
       .handle("getFunctionAggregates", ({ urlParams }) =>
         getFunctionAggregatesHandler(urlParams),
+      )
+      .handle("getSpanDetail", ({ path }) =>
+        getSpanDetailHandler(path.traceId, path.spanId),
       )
       .handle("listByFunctionHash", ({ path, urlParams }) =>
         listByFunctionHashHandler(path.hash, urlParams),
