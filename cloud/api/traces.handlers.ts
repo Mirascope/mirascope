@@ -21,6 +21,13 @@ export const DEFAULT_LIST_LIMIT = 100;
 /** Default offset for listByFunctionHash query. */
 export const DEFAULT_LIST_OFFSET = 0;
 
+/** Default time range in days for trace queries. */
+export const DEFAULT_TIME_RANGE_DAYS = 30;
+
+/** Default time range in milliseconds for trace queries. */
+export const DEFAULT_TIME_RANGE_MS =
+  DEFAULT_TIME_RANGE_DAYS * 24 * 60 * 60 * 1000;
+
 /**
  * Handler for creating traces from OTLP trace data.
  * Accepts OpenTelemetry trace data and stores it in the database.
@@ -85,7 +92,7 @@ export const listByFunctionHashHandler = (
 
     // Get current time range (last 30 days for search)
     const endTime = new Date();
-    const startTime = new Date(endTime.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const startTime = new Date(endTime.getTime() - DEFAULT_TIME_RANGE_MS);
 
     // Search for spans with this function ID
     const searchResult = yield* clickHouseSearch.search({

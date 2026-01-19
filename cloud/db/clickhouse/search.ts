@@ -949,6 +949,25 @@ function buildOrderByClause(
 }
 
 /**
+ * Convert ClickHouse DateTime64 string to ISO-8601 UTC.
+ *
+ * Handles:
+ * - ClickHouse format: "2024-01-01 12:34:56.123000000" -> "2024-01-01T12:34:56.123Z"
+ * - Already ISO with Z: returned as-is
+ * - ISO without Z: appends Z (assumes UTC)
+ * - Null: returns null
+ */
+const toIsoUtc = (value: string | null): string | null => {
+  if (value === null) return null;
+  if (value.endsWith("Z")) return value;
+  if (value.includes("T")) return `${value}Z`;
+  const [datePart, timePart = "00:00:00"] = value.split(" ");
+  const [time, fraction = ""] = timePart.split(".");
+  const ms = fraction.padEnd(3, "0").slice(0, 3);
+  return `${datePart}T${time}.${ms}Z`;
+};
+
+/**
  * Transform ClickHouse row to API search result (snake_case -> camelCase).
  */
 function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
@@ -956,7 +975,7 @@ function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
     traceId: row.trace_id,
     spanId: row.span_id,
     name: row.name,
-    startTime: row.start_time,
+    startTime: toIsoUtc(row.start_time) ?? row.start_time,
     durationMs: row.duration_ms,
     model: row.model,
     provider: row.provider,
@@ -977,8 +996,8 @@ function transformToSpanDetail(row: SpanDetailRow): SpanDetail {
     environmentId: row.environment_id,
     projectId: row.project_id,
     organizationId: row.organization_id,
-    startTime: row.start_time,
-    endTime: row.end_time,
+    startTime: toIsoUtc(row.start_time) ?? row.start_time,
+    endTime: toIsoUtc(row.end_time) ?? row.end_time,
     durationMs: row.duration_ms,
     name: row.name,
     kind: row.kind,

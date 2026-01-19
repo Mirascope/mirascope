@@ -90,6 +90,42 @@ const getAttributeValue = (
   return attributes[key] ?? null;
 };
 
+/**
+ * Converts a value to a finite number or returns null.
+ */
+const toNumberOrNull = (value: unknown): number | null => {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+};
+
+/**
+ * Computes total tokens from attributes.
+ *
+ * Uses total_tokens if available, otherwise sums input and output tokens.
+ */
+const getTotalTokens = (
+  attributes: Record<string, unknown> | null,
+): number | null => {
+  const total = toNumberOrNull(
+    getAttributeValue(attributes, "gen_ai.usage.total_tokens"),
+  );
+  if (total !== null) return total;
+
+  const input = toNumberOrNull(
+    getAttributeValue(attributes, "gen_ai.usage.input_tokens"),
+  );
+  const output = toNumberOrNull(
+    getAttributeValue(attributes, "gen_ai.usage.output_tokens"),
+  );
+
+  if (input === null && output === null) return null;
+  return (input ?? 0) + (output ?? 0);
+};
+
 // =============================================================================
 // Transform
 // =============================================================================
@@ -156,7 +192,7 @@ export const transformSpanForClickHouse = ({
       attributes,
       "gen_ai.usage.output_tokens",
     ) as number | null,
-    total_tokens: null, // Calculated if needed
+    total_tokens: getTotalTokens(attributes),
     cost_usd: getAttributeValue(attributes, "gen_ai.usage.cost") as
       | number
       | null,
