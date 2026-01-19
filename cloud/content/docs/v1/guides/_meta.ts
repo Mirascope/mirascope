@@ -6,7 +6,6 @@ import type { SectionSpec } from "@/app/lib/content/spec";
 const v1GuidesMeta: SectionSpec = {
   slug: "guides",
   label: "Guides",
-  version: "v1",
   weight: 0,
   children: [
     {

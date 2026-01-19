@@ -7,7 +7,6 @@ import type { SectionSpec } from "@/app/lib/content/spec";
 export const v1ApiMeta: SectionSpec = {
   slug: "api",
   label: "API Reference",
-  version: "v1",
   weight: 0,
   children: [
     {
