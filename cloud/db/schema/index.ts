@@ -40,7 +40,11 @@ export type {
   PublicEnvironment,
   NewEnvironment,
 } from "@/db/schema/environments";
-export type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema/api-keys";
+export type {
+  PublicApiKey,
+  ApiKeyCreateResponse,
+  ApiKeyWithContext,
+} from "@/db/schema/api-keys";
 export type { PublicFunction } from "@/db/schema/functions";
 export type { PublicAnnotation } from "@/db/schema/annotations";
 export type {

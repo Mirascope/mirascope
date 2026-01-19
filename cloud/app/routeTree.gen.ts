@@ -37,6 +37,7 @@ import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/t
 import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
 import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
 import { Route as CloudSettingsMeRouteImport } from './routes/cloud/settings/me'
+import { Route as CloudSettingsApiKeysRouteImport } from './routes/cloud/settings/api-keys'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -188,6 +189,11 @@ const CloudSettingsMeRoute = CloudSettingsMeRouteImport.update({
   path: '/me',
   getParentRoute: () => CloudSettingsRoute,
 } as any)
+const CloudSettingsApiKeysRoute = CloudSettingsApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
   path: '/proxy-callback',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
   '/cloud/settings/me': typeof CloudSettingsMeRoute
   '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
   '/cloud/settings/project': typeof CloudSettingsProjectRoute
@@ -382,6 +391,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/api-keys'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/api-keys'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/api-keys'
     | '/cloud/settings/me'
     | '/cloud/settings/organization'
     | '/cloud/settings/project'
@@ -687,6 +699,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CloudSettingsMeRouteImport
       parentRoute: typeof CloudSettingsRoute
     }
+    '/cloud/settings/api-keys': {
+      id: '/cloud/settings/api-keys'
+      path: '/api-keys'
+      fullPath: '/cloud/settings/api-keys'
+      preLoaderRoute: typeof CloudSettingsApiKeysRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
       path: '/proxy-callback'
@@ -766,6 +785,7 @@ const BlogRouteChildren: BlogRouteChildren = {
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface CloudSettingsRouteChildren {
+  CloudSettingsApiKeysRoute: typeof CloudSettingsApiKeysRoute
   CloudSettingsMeRoute: typeof CloudSettingsMeRoute
   CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
   CloudSettingsProjectRoute: typeof CloudSettingsProjectRoute
@@ -774,6 +794,7 @@ interface CloudSettingsRouteChildren {
 }
 
 const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
+  CloudSettingsApiKeysRoute: CloudSettingsApiKeysRoute,
   CloudSettingsMeRoute: CloudSettingsMeRoute,
   CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
   CloudSettingsProjectRoute: CloudSettingsProjectRoute,

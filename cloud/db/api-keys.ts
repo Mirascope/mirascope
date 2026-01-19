@@ -50,7 +50,7 @@
  */
 
 import { Effect } from "effect";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull, or } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -69,10 +69,13 @@ import {
   users,
   environments,
   projects,
+  projectMemberships,
+  organizationMemberships,
   type NewApiKey,
   type PublicApiKey,
   type ApiKeyCreateResponse,
   type ApiKeyInfo,
+  type ApiKeyWithContext,
   type ProjectRole,
 } from "@/db/schema";
 import * as crypto from "crypto";
@@ -734,6 +737,156 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         );
 
       return apiKeyInfo;
+    });
+  }
+
+  /**
+   * Retrieves all API keys across all projects and environments in an organization
+   * that the user has access to.
+   *
+   * - Org OWNER/ADMIN can see all API keys in the organization
+   * - Other members can only see API keys in projects they have explicit membership in
+   *   with ADMIN or DEVELOPER role
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization to list API keys for
+   * @returns Array of API keys with project and environment context
+   * @throws NotFoundError - If the organization doesn't exist or user is not a member
+   * @throws DatabaseError - If the database query fails
+   */
+  findAllForOrganization({
+    userId,
+    organizationId,
+  }: {
+    userId: string;
+    organizationId: string;
+  }): Effect.Effect<
+    ApiKeyWithContext[],
+    NotFoundError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      // Check the user's organization membership
+      const [orgMembership] = yield* client
+        .select({ role: organizationMemberships.role })
+        .from(organizationMemberships)
+        .where(
+          and(
+            eq(organizationMemberships.organizationId, organizationId),
+            eq(organizationMemberships.memberId, userId),
+          ),
+        )
+        .limit(1)
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to check organization membership",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (!orgMembership) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "Organization not found",
+            resource: "organization",
+          }),
+        );
+      }
+
+      const isOrgAdmin =
+        orgMembership.role === "OWNER" || orgMembership.role === "ADMIN";
+
+      // Build the query for API keys with context
+      const baseQuery = client
+        .select({
+          id: apiKeys.id,
+          name: apiKeys.name,
+          keyPrefix: apiKeys.keyPrefix,
+          environmentId: apiKeys.environmentId,
+          ownerId: apiKeys.ownerId,
+          createdAt: apiKeys.createdAt,
+          lastUsedAt: apiKeys.lastUsedAt,
+          projectId: projects.id,
+          projectName: projects.name,
+          environmentName: environments.name,
+        })
+        .from(apiKeys)
+        .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
+        .innerJoin(projects, eq(environments.projectId, projects.id));
+
+      let results: ApiKeyWithContext[];
+
+      if (isOrgAdmin) {
+        // Org OWNER/ADMIN can see all API keys in the organization
+        results = yield* baseQuery
+          .where(eq(projects.organizationId, organizationId))
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to find API keys for organization",
+                  cause: e,
+                }),
+            ),
+          );
+      } else {
+        // Get projects where the user has ADMIN or DEVELOPER role
+        const userProjectMemberships = yield* client
+          .select({ projectId: projectMemberships.projectId })
+          .from(projectMemberships)
+          .where(
+            and(
+              eq(projectMemberships.memberId, userId),
+              eq(projectMemberships.organizationId, organizationId),
+              or(
+                eq(projectMemberships.role, "ADMIN"),
+                eq(projectMemberships.role, "DEVELOPER"),
+              ),
+            ),
+          )
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to get user project memberships",
+                  cause: e,
+                }),
+            ),
+          );
+
+        const accessibleProjectIds = userProjectMemberships.map(
+          (m) => m.projectId,
+        );
+
+        if (accessibleProjectIds.length === 0) {
+          return [];
+        }
+
+        // Get API keys for accessible projects only
+        results = yield* baseQuery
+          .where(
+            and(
+              eq(projects.organizationId, organizationId),
+              inArray(projects.id, accessibleProjectIds),
+            ),
+          )
+          .pipe(
+            Effect.mapError(
+              (e) =>
+                new DatabaseError({
+                  message: "Failed to find API keys for organization",
+                  cause: e,
+                }),
+            ),
+          );
+      }
+
+      return results;
     });
   }
 }

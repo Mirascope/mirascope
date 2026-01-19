@@ -3,6 +3,22 @@ import { Effect } from "effect";
 import { ApiClient, eq } from "@/app/api/client";
 import type { CreateApiKeyRequest } from "@/api/api-keys.schemas";
 
+export const useAllApiKeys = (organizationId: string | null) => {
+  return useQuery({
+    ...eq.queryOptions({
+      queryKey: ["api-keys", "all", organizationId],
+      queryFn: () =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.apiKeys.listAllForOrg({
+            path: { organizationId: organizationId! },
+          });
+        }),
+    }),
+    enabled: !!organizationId,
+  });
+};
+
 export const useApiKeys = (
   organizationId: string | null,
   projectId: string | null,
@@ -83,6 +99,10 @@ export const useCreateApiKey = () => {
       void queryClient.invalidateQueries({
         queryKey: ["api-keys", organizationId, projectId, environmentId],
       });
+      // Also invalidate the "all" query for the organization
+      void queryClient.invalidateQueries({
+        queryKey: ["api-keys", "all", organizationId],
+      });
     },
   });
 };
@@ -114,6 +134,10 @@ export const useDeleteApiKey = () => {
     onSuccess: (_, { organizationId, projectId, environmentId }) => {
       void queryClient.invalidateQueries({
         queryKey: ["api-keys", organizationId, projectId, environmentId],
+      });
+      // Also invalidate the "all" query for the organization
+      void queryClient.invalidateQueries({
+        queryKey: ["api-keys", "all", organizationId],
       });
     },
   });

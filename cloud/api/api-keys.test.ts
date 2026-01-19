@@ -1,10 +1,15 @@
 import { Effect, Schema } from "effect";
 import { describe, it, expect, TestApiContext } from "@/tests/api";
-import { toApiKey, toApiKeyCreateResponse } from "@/api/api-keys.handlers";
+import {
+  toApiKey,
+  toApiKeyCreateResponse,
+  toApiKeyWithContext,
+} from "@/api/api-keys.handlers";
 import { CreateApiKeyRequestSchema } from "@/api/api-keys.schemas";
 import type {
   PublicApiKey,
   ApiKeyCreateResponse,
+  ApiKeyWithContext,
   PublicProject,
   PublicEnvironment,
 } from "@/db/schema";
@@ -89,6 +94,52 @@ describe("toApiKeyCreateResponse helper", () => {
   });
 });
 
+describe("toApiKeyWithContext helper", () => {
+  it("should convert dates to ISO strings", () => {
+    const date = new Date("2025-01-01T00:00:00.000Z");
+    const apiKey: ApiKeyWithContext = {
+      id: "test-id",
+      name: "test-key",
+      keyPrefix: "mk_abc...",
+      environmentId: "env-id",
+      ownerId: "user-id",
+      createdAt: date,
+      lastUsedAt: date,
+      projectId: "project-id",
+      projectName: "My Project",
+      environmentName: "production",
+    };
+
+    const result = toApiKeyWithContext(apiKey);
+
+    expect(result.createdAt).toBe("2025-01-01T00:00:00.000Z");
+    expect(result.lastUsedAt).toBe("2025-01-01T00:00:00.000Z");
+    expect(result.projectId).toBe("project-id");
+    expect(result.projectName).toBe("My Project");
+    expect(result.environmentName).toBe("production");
+  });
+
+  it("should handle null dates", () => {
+    const apiKey: ApiKeyWithContext = {
+      id: "test-id",
+      name: "test-key",
+      keyPrefix: "mk_abc...",
+      environmentId: "env-id",
+      ownerId: "user-id",
+      createdAt: null,
+      lastUsedAt: null,
+      projectId: "project-id",
+      projectName: "My Project",
+      environmentName: "production",
+    };
+
+    const result = toApiKeyWithContext(apiKey);
+
+    expect(result.createdAt).toBeNull();
+    expect(result.lastUsedAt).toBeNull();
+  });
+});
+
 describe("CreateApiKeyRequestSchema validation", () => {
   it("rejects empty name", () => {
     expect(() =>
@@ -142,6 +193,19 @@ describe.sequential("API Keys API", (it) => {
           payload: { name: "development", slug: "development" },
         });
         expect(environment.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:organizationId/api-keys - list all api keys for org (initially empty)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const apiKeys = yield* client.apiKeys.listAllForOrg({
+          path: { organizationId: org.id },
+        });
+        expect(Array.isArray(apiKeys)).toBe(true);
+        expect(apiKeys).toHaveLength(0);
       }),
   );
 
@@ -247,6 +311,27 @@ describe.sequential("API Keys API", (it) => {
         expect(apiKeys[0].id).toBe(createdApiKeyId);
         expect(apiKeys[0].name).toBe("my-api-key");
         // The plaintext key should NOT be returned on list
+        expect((apiKeys[0] as { key?: string }).key).toBeUndefined();
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:organizationId/api-keys - list all api keys for org (after create)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const apiKeys = yield* client.apiKeys.listAllForOrg({
+          path: { organizationId: org.id },
+        });
+        expect(apiKeys).toHaveLength(1);
+        expect(apiKeys[0].id).toBe(createdApiKeyId);
+        expect(apiKeys[0].name).toBe("my-api-key");
+        // Should include project and environment context
+        expect(apiKeys[0].projectId).toBe(project.id);
+        expect(apiKeys[0].projectName).toBe("API Keys Test Project");
+        expect(apiKeys[0].environmentId).toBe(environment.id);
+        expect(apiKeys[0].environmentName).toBe("development");
+        // The plaintext key should NOT be returned
         expect((apiKeys[0] as { key?: string }).key).toBeUndefined();
       }),
   );

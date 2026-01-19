@@ -1448,4 +1448,372 @@ describe("ApiKeys", () => {
       }),
     );
   });
+
+  // ===========================================================================
+  // findAllForOrganization
+  // ===========================================================================
+
+  describe("findAllForOrganization", () => {
+    it.effect(
+      "org OWNER can see all API keys across all projects/environments",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create API key in the first environment
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "key-1" },
+          });
+
+          // Create second project and environment
+          const project2 = yield* db.organizations.projects.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { name: "project-2", slug: "project-2" },
+          });
+          const env2 = yield* db.organizations.projects.environments.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project2.id,
+            data: { name: "env-2", slug: "env-2" },
+          });
+
+          // Create API key in second project
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project2.id,
+            environmentId: env2.id,
+            data: { name: "key-2" },
+          });
+
+          const apiKeys =
+            yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+              {
+                userId: owner.id,
+                organizationId: org.id,
+              },
+            );
+
+          expect(apiKeys).toHaveLength(2);
+          expect(apiKeys.map((k) => k.name).sort()).toEqual(["key-1", "key-2"]);
+          // Should include project and environment context
+          expect(apiKeys[0].projectName).toBeDefined();
+          expect(apiKeys[0].environmentName).toBeDefined();
+          expect(apiKeys[0].projectId).toBeDefined();
+        }),
+    );
+
+    it.effect(
+      "org ADMIN can see all API keys across all projects/environments",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner, admin } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create API key as owner
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "admin-visible-key" },
+          });
+
+          // Admin should see the key
+          const apiKeys =
+            yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+              {
+                userId: admin.id,
+                organizationId: org.id,
+              },
+            );
+
+          expect(apiKeys).toHaveLength(1);
+          expect(apiKeys[0].name).toBe("admin-visible-key");
+        }),
+    );
+
+    it.effect(
+      "project DEVELOPER only sees API keys in projects they have access to",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner, projectDeveloper } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create API key in the accessible project
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "accessible-key" },
+          });
+
+          // Create second project WITHOUT adding the developer
+          const project2 = yield* db.organizations.projects.create({
+            userId: owner.id,
+            organizationId: org.id,
+            data: { name: "private-project", slug: "private-project" },
+          });
+          const env2 = yield* db.organizations.projects.environments.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project2.id,
+            data: { name: "private-env", slug: "private-env" },
+          });
+
+          // Create API key in the private project
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project2.id,
+            environmentId: env2.id,
+            data: { name: "private-key" },
+          });
+
+          // Developer should only see the accessible key
+          const apiKeys =
+            yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+              {
+                userId: projectDeveloper.id,
+                organizationId: org.id,
+              },
+            );
+
+          expect(apiKeys).toHaveLength(1);
+          expect(apiKeys[0].name).toBe("accessible-key");
+        }),
+    );
+
+    it.effect(
+      "project VIEWER cannot see API keys (no ADMIN/DEVELOPER role)",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner, projectViewer } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create API key
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "viewer-cannot-see" },
+          });
+
+          // Viewer should not see any keys (they don't have ADMIN or DEVELOPER role)
+          const apiKeys =
+            yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+              {
+                userId: projectViewer.id,
+                organizationId: org.id,
+              },
+            );
+
+          expect(apiKeys).toHaveLength(0);
+        }),
+    );
+
+    it.effect(
+      "returns empty array when non-admin user has no ADMIN/DEVELOPER projects",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner, projectAnnotator } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create API key in the project
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "annotator-cannot-see" },
+          });
+
+          // Annotator has no ADMIN/DEVELOPER role so should see no keys
+          const apiKeys =
+            yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+              {
+                userId: projectAnnotator.id,
+                organizationId: org.id,
+              },
+            );
+
+          expect(apiKeys).toHaveLength(0);
+        }),
+    );
+
+    it.effect(
+      "returns `NotFoundError` when user is not an organization member",
+      () =>
+        Effect.gen(function* () {
+          const { org, nonMember } = yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .findAllForOrganization({
+              userId: nonMember.id,
+              organizationId: org.id,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+          expect(result.message).toBe("Organization not found");
+        }),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when organization membership check fails",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .findAllForOrganization({
+              userId: "user-id",
+              organizationId: "org-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe(
+            "Failed to check organization membership",
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // Organization membership check fails
+              .select(new Error("Database connection failed"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when project membership query fails (non-admin)",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .findAllForOrganization({
+              userId: "member-id",
+              organizationId: "org-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to get user project memberships");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // Organization membership check succeeds with MEMBER role
+              .select([{ role: "MEMBER" }])
+              // Project membership query fails
+              .select(new Error("Database connection failed"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when API keys query fails (org admin)",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .findAllForOrganization({
+              userId: "owner-id",
+              organizationId: "org-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe(
+            "Failed to find API keys for organization",
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // Organization membership check succeeds with OWNER role
+              .select([{ role: "OWNER" }])
+              // API keys query fails
+              .select(new Error("Database connection failed"))
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when project memberships query fails (non-admin)",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .findAllForOrganization({
+              userId: "developer-id",
+              organizationId: "org-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe("Failed to get user project memberships");
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // Mock order follows client.select() CREATION order, not execution order:
+              // 1. org membership, 2. baseQuery (API keys), 3. project memberships
+              // But EXECUTION order for non-admin is: 1, 3, 2
+              .select([{ role: "MEMBER" }]) // mock 0: org membership succeeds
+              .select([]) // mock 1: baseQuery - won't be reached
+              .select(new Error("Database connection failed")) // mock 2: project memberships fails
+              .build(),
+          ),
+        ),
+    );
+
+    it.effect(
+      "returns `DatabaseError` when API keys query fails (non-admin with accessible projects)",
+      () =>
+        Effect.gen(function* () {
+          const db = yield* Database;
+
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .findAllForOrganization({
+              userId: "developer-id",
+              organizationId: "org-id",
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(DatabaseError);
+          expect(result.message).toBe(
+            "Failed to find API keys for organization",
+          );
+        }).pipe(
+          Effect.provide(
+            new MockDrizzleORM()
+              // Mock order follows client.select() CREATION order, not execution order:
+              // 1. org membership, 2. baseQuery (API keys), 3. project memberships
+              // But EXECUTION order for non-admin is: 1, 3, 2
+              .select([{ role: "MEMBER" }]) // mock 0: org membership succeeds
+              .select(new Error("Database connection failed")) // mock 1: baseQuery fails
+              .select([{ projectId: "project-1" }]) // mock 2: project memberships succeeds
+              .build(),
+          ),
+        ),
+    );
+  });
 });
