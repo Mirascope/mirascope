@@ -16,26 +16,26 @@ import {
 } from "@/app/lib/billing-utils";
 import { type PlanTier, PLAN_TIERS } from "@/payments/plans";
 
-interface BillingSettingsProps {
+interface PlanSettingsProps {
   organizationId: string;
   onUpgrade: (targetPlan: PlanTier) => void;
   onDowngrade: (targetPlan: PlanTier) => void;
   onCancelDowngrade: () => void;
 }
 
-export function BillingSettings({
+export function PlanSettings({
   organizationId,
   onUpgrade,
   onDowngrade,
   onCancelDowngrade,
-}: BillingSettingsProps) {
+}: PlanSettingsProps) {
   const { data: subscription, isLoading } = useSubscription(organizationId);
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Billing</CardTitle>
+          <CardTitle>Plan Details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
@@ -50,11 +50,11 @@ export function BillingSettings({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Billing</CardTitle>
+          <CardTitle>Plan Details</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            Unable to load billing information.
+            Unable to load plan information.
           </p>
         </CardContent>
       </Card>
@@ -67,7 +67,7 @@ export function BillingSettings({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Billing</CardTitle>
+        <CardTitle>Plan Details</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Current Plan Section */}

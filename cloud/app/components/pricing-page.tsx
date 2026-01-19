@@ -5,9 +5,9 @@ import { Check, X } from "lucide-react";
 
 interface FeatureRowProps {
   feature: string;
-  free: string | boolean;
-  pro: string | boolean;
-  team: string | boolean;
+  free: string | boolean | React.ReactElement;
+  pro: string | boolean | React.ReactElement;
+  team: string | boolean | React.ReactElement;
 }
 // Feature row component for displaying features with the same value across tiers
 const FeatureRow = ({ feature, free, pro, team }: FeatureRowProps) => {
@@ -175,9 +175,27 @@ export const cloudHostedFeatures = [
   { feature: "Projects", free: "1", pro: "5", team: "Unlimited" },
   {
     feature: "Tracing",
-    free: "1M spans / month\nNo overages",
-    pro: "1M spans / month\n$5 / additional million",
-    team: "1M spans / month\n$5 / additional million",
+    free: (
+      <span>
+        1M spans / month
+        <br />
+        No overages
+      </span>
+    ),
+    pro: (
+      <span>
+        1M spans / month
+        <br />
+        $5 / additional million
+      </span>
+    ),
+    team: (
+      <span>
+        1M spans / month
+        <br />
+        $5 / additional million
+      </span>
+    ),
   },
   {
     feature: "Data Retention",
@@ -191,8 +209,8 @@ export const cloudHostedFeatures = [
   {
     feature: "API Rate Limits",
     free: "100 / minute",
-    pro: "1000 / minute",
-    team: "10000 / minute",
+    pro: "1,000 / minute",
+    team: "10,000 / minute",
   },
 ];
 
