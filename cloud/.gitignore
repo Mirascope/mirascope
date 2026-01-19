@@ -3,6 +3,7 @@
 .tanstack
 .dev.vars
 .env.local
+.build-cache/
 tsconfig.tsbuildinfo
 !app/lib
 coverage

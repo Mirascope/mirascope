@@ -1,0 +1,989 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: content
+description: API documentation for content
+---
+
+# content
+
+## <ApiType type="Class" slug="audio" symbolName="Audio" /> Audio
+
+Audio content for a message.
+
+Audio can be included in messages for voice or sound-based interactions.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['audio']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'audio'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "A unique identifier for this audio content. This is useful for tracking and referencing generated audio."
+  },
+  {
+    "name": "data",
+    "type_info": {
+      "type_str": "str | bytes",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "bytes",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "bytes",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The audio data, which can be a URL, file path, base64-encoded string, or binary data."
+  },
+  {
+    "name": "transcript",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The transcript of the audio, if available. This is useful for accessibility and search."
+  },
+  {
+    "name": "mime_type",
+    "type_info": {
+      "type_str": "Literal['audio/wav', 'audio/mp3', 'audio/aiff', 'audio/aac', 'audio/ogg', 'audio/flac']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'audio/wav'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio/wav'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'audio/mp3'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio/mp3'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'audio/aiff'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio/aiff'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'audio/aac'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio/aac'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'audio/ogg'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio/ogg'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'audio/flac'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'audio/flac'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The MIME type of the audio, e.g., 'audio/mp3', 'audio/wav'."
+  }
+]}
+/>
+
+
+## <ApiType type="Attribute" slug="content" symbolName="Content" /> Content
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+Content types that can be included in messages.
+
+
+## <ApiType type="Class" slug="document" symbolName="Document" /> Document
+
+Document content for a message.
+
+Documents (like PDFs) can be included for the model to analyze or reference.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['document']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'document'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'document'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "data",
+    "type_info": {
+      "type_str": "str | bytes",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "bytes",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "bytes",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The document data, which can be a URL, file path, base64-encoded string, or binary data."
+  },
+  {
+    "name": "mime_type",
+    "type_info": {
+      "type_str": "Literal['application/pdf', 'application/json', 'text/plain', 'application/x-javascript', 'text/javascript', 'application/x-python', 'text/x-python', 'text/html', 'text/css', 'text/xml', 'text/rtf']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'application/pdf'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'application/pdf'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'application/json'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'application/json'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/plain'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/plain'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'application/x-javascript'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'application/x-javascript'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/javascript'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/javascript'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'application/x-python'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'application/x-python'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/x-python'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/x-python'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/html'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/html'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/css'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/css'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/xml'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/xml'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'text/rtf'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'text/rtf'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The MIME type of the document, e.g., 'application/pdf'."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="image" symbolName="Image" /> Image
+
+Image content for a message.
+
+Images can be included in messages to provide visual context. This can be
+used for both input (e.g., user uploading an image) and output (e.g., model
+generating an image).
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['image']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'image'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "A unique identifier for this image content. This is useful for tracking and referencing generated images."
+  },
+  {
+    "name": "data",
+    "type_info": {
+      "type_str": "str | bytes",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "bytes",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "bytes",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The image data, which can be a URL, file path, base64-encoded string, or binary data."
+  },
+  {
+    "name": "mime_type",
+    "type_info": {
+      "type_str": "Literal['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/heic', 'image/heif']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'image/png'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image/png'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'image/jpeg'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image/jpeg'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'image/webp'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image/webp'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'image/gif'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image/gif'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'image/heic'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image/heic'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'image/heif'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'image/heif'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The MIME type of the image, e.g., 'image/png', 'image/jpeg'."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="thinking" symbolName="Thinking" /> Thinking
+
+Thinking content for a message.
+
+Represents the thinking or thought process of the assistant. This is part
+of an assistant message's content.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['thinking']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'thinking'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'thinking'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The ID of the thinking content."
+  },
+  {
+    "name": "thoughts",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The thoughts or reasoning of the assistant."
+  },
+  {
+    "name": "redacted",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "bool",
+      "doc_url": null
+    },
+    "description": "Whether the thinking is redacted or not."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="tool-call" symbolName="ToolCall" /> ToolCall
+
+Tool call content for a message.
+
+Represents a request from the assistant to call a tool. This is part of
+an assistant message's content.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['tool_call']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'tool_call'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'tool_call'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "A unique identifier for this tool call."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The name of the tool to call."
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "dict[str, Jsonable]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "dict",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "dict",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "Jsonable",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Jsonable",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The arguments to pass to the tool."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="tool-output" symbolName="ToolOutput" /> ToolOutput
+
+Tool output content for a message.
+
+Represents the output from a tool call. This is part of a user message's
+content, typically following a tool call from the assistant.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[R]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "R", "description": null, "kind": "simple", "symbol_name": "R", "doc_url": null}], "doc_url": null}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['tool_response']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'tool_response'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'tool_response'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The ID of the tool call that this output is for."
+  },
+  {
+    "name": "value",
+    "type_info": {
+      "type_str": "R",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "R",
+      "doc_url": null
+    },
+    "description": "The output value from the tool call."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="video" symbolName="Video" /> Video
+
+Video content for a message.
+
+Video can be included in messages for video-based interactions.
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['video']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'video'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "A unique identifier for this video content. This is useful for tracking and referencing generated videos."
+  },
+  {
+    "name": "data",
+    "type_info": {
+      "type_str": "str | bytes",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "bytes",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "bytes",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The video data, which can be a URL, file path, base64-encoded string, or binary data."
+  },
+  {
+    "name": "transcript",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The transcript of the video, if available. This is useful for accessibility and search."
+  },
+  {
+    "name": "mime_type",
+    "type_info": {
+      "type_str": "Literal['video/mp4', 'video/mpeg', 'video/mov', 'video/avi', 'video/x-flv', 'video/mpg', 'video/webm', 'video/wmv', 'video/3gpp']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'video/mp4'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/mp4'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/mpeg'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/mpeg'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/mov'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/mov'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/avi'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/avi'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/x-flv'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/x-flv'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/mpg'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/mpg'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/webm'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/webm'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/wmv'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/wmv'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'video/3gpp'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'video/3gpp'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The MIME type of the video, e.g., 'video/mp4', 'video/webm'."
+  }
+]}
+/>
+
+

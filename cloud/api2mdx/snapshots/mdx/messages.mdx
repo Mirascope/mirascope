@@ -1,0 +1,522 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: messages
+description: API documentation for messages
+---
+
+# messages
+
+## <ApiType type="Attribute" slug="jsonable" symbolName="Jsonable" /> Jsonable
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+Simple type alias for JSON-serializable types.
+
+
+## <ApiType type="Class" slug="jsonable-object" symbolName="JsonableObject" /> JsonableObject
+
+Protocol for JSON-serializable objects.
+
+This protocol defines the interface for objects that can be serialized to
+JSON. It is used to annotate the `JsonableType` type alias.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}} />
+
+## <ApiType type="Function" slug="mirascope-llm-types-jsonable--jsonable-object-json" symbolName="json" /> json
+
+Serialize the object as a JSON string.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "str",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" slug="message" symbolName="Message" /> Message
+
+A message in an LLM interaction.
+
+Messages have a role (system, user, or assistant) and content that can be
+a simple string or a complex array of content parts. The content can include
+text, images, audio, documents, and tool interactions.
+
+For most use cases, prefer the convenience functions system(), user(), and
+assistant() instead of directly creating Message objects.
+
+Example:
+
+    ```python
+    from mirascope import llm
+
+    messages = [
+        llm.messages.system("You are a helpful assistant."),
+        llm.messages.user("Hello, how are you?"),
+    ]
+    ```
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "role",
+    "type_info": {
+      "type_str": "Literal['system', 'user', 'assistant']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Literal",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "'system'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'system'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'user'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'user'",
+          "doc_url": null
+        },
+        {
+          "type_str": "'assistant'",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "'assistant'",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The role of the message sender (system, user, or assistant)."
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Content | Sequence[Content]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "Content",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Content",
+          "doc_url": null
+        },
+        {
+          "type_str": "Sequence[Content]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": null
+          },
+          "parameters": [
+            {
+              "type_str": "Content",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Content",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The content of the message, which can be text, images, audio, etc."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "Optional name to identify specific users or assistants in multi-party conversations."
+  }
+]}
+/>
+
+
+## <ApiType type="Function" slug="assistant" symbolName="assistant" /> assistant
+
+Shorthand method for creating a `Message` with the assistant role.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Content | Sequence[Content]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Content",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Content",
+          "doc_url": "/docs/mirascope/v2/api/content#content"
+        },
+        {
+          "type_str": "Sequence[Content]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "Content",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Content",
+              "doc_url": "/docs/mirascope/v2/api/content#content"
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The content of the message, which can be a string, a Content-type\nobject, or a sequence of Content-type objects."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional name to identify a specific assistant in multi-party conversations."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Message",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "Message",
+    "doc_url": "/docs/mirascope/v2/api/messages#message"
+  },
+  "description": "A Message with the assistant role."
+}}
+/>
+
+
+## <ApiType type="Function" slug="system" symbolName="system" /> system
+
+Shorthand method for creating a `Message` with the system role.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Content | Sequence[Content]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Content",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Content",
+          "doc_url": "/docs/mirascope/v2/api/content#content"
+        },
+        {
+          "type_str": "Sequence[Content]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "Content",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Content",
+              "doc_url": "/docs/mirascope/v2/api/content#content"
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The content of the message, which can be a string, a Content-type\nobject, or a sequence of Content-type objects."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional name to identify a specific system in multi-party conversations."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Message",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "Message",
+    "doc_url": "/docs/mirascope/v2/api/messages#message"
+  },
+  "description": "A Message with the system role."
+}}
+/>
+
+
+## <ApiType type="Function" slug="user" symbolName="user" /> user
+
+Shorthand method for creating a `Message` with the user role.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "Content | Sequence[Content]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Content",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Content",
+          "doc_url": "/docs/mirascope/v2/api/content#content"
+        },
+        {
+          "type_str": "Sequence[Content]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Sequence",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "Content",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "Content",
+              "doc_url": "/docs/mirascope/v2/api/content#content"
+            }
+          ],
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The content of the message, which can be a string, a Content-type\nobject, or a sequence of Content-type objects."
+  },
+  {
+    "name": "name",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "Optional name to identify a specific user in multi-party conversations."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Message",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "Message",
+    "doc_url": "/docs/mirascope/v2/api/messages#message"
+  },
+  "description": "A Message with the user role."
+}}
+/>
+
+
