@@ -11,6 +11,7 @@ import { Effect, Layer } from "effect";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { beforeAll, afterAll } from "vitest";
+import { NotFoundError } from "@/errors";
 
 // Test data IDs
 const TEST_ENVIRONMENT_ID = "00000000-0000-0000-0000-000000000001";
@@ -419,6 +420,39 @@ describe("ClickHouseSearch", () => {
         expect(result.spans).toHaveLength(0);
         expect(result.rootSpanId).toBeNull();
         expect(result.totalDurationMs).toBeNull();
+      }).pipe(provideSearchLayer),
+    );
+  });
+
+  describe("getSpanDetail", () => {
+    it.effect("returns span detail by trace and span IDs", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService.getSpanDetail({
+          environmentId: TEST_ENVIRONMENT_ID,
+          traceId: TEST_TRACE_ID,
+          spanId: TEST_SPAN_ID_1,
+        });
+
+        expect(result.spanId).toBe(TEST_SPAN_ID_1);
+        expect(result.traceId).toBe(TEST_TRACE_ID);
+      }).pipe(provideSearchLayer),
+    );
+
+    it.effect("returns NotFoundError for missing span", () =>
+      Effect.gen(function* () {
+        const searchService = yield* ClickHouseSearch;
+
+        const result = yield* searchService
+          .getSpanDetail({
+            environmentId: TEST_ENVIRONMENT_ID,
+            traceId: TEST_TRACE_ID,
+            spanId: "00000000-0000-0000-0000-000000000999",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
       }).pipe(provideSearchLayer),
     );
   });

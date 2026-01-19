@@ -31,6 +31,7 @@ import { createMockSettings } from "@/tests/settings";
 import {
   searchHandler,
   getTraceDetailHandler,
+  getSpanDetailHandler,
 } from "@/api/traces-search.handlers";
 import { getTestClickHouseConfig } from "@/tests/global-setup";
 import type {
@@ -40,6 +41,7 @@ import type {
   AnalyticsSummaryResponse,
 } from "@/api/traces-search.schemas";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
+import { NotFoundError } from "@/errors";
 
 describe.sequential("Search API", (it) => {
   let project: PublicProject;
@@ -290,6 +292,7 @@ describe.sequential("Search API", (it) => {
           Effect.succeed(createTraceDetailResponse({ traceId: "trace-1" })),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -431,6 +434,7 @@ describe.sequential("Search API", (it) => {
               topModels: [],
               topFunctions: [],
             }),
+          getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
           getTimeSeriesMetrics: () =>
             Effect.succeed({ points: [], timeFrame: "day" }),
           getFunctionAggregates: () =>
@@ -546,6 +550,7 @@ describe.sequential("Search API", (it) => {
               topModels: [],
               topFunctions: [],
             }),
+          getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
           getTimeSeriesMetrics: () =>
             Effect.succeed({ points: [], timeFrame: "day" }),
           getFunctionAggregates: () =>
@@ -656,6 +661,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -745,6 +751,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -835,6 +842,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -935,6 +943,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1043,6 +1052,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1150,6 +1160,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1270,6 +1281,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1376,6 +1388,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1486,6 +1499,7 @@ describe.sequential("Search API", (it) => {
         getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1568,6 +1582,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1625,6 +1640,7 @@ describe.sequential("Search API", (it) => {
         getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1691,6 +1707,7 @@ describe.sequential("Search API", (it) => {
         getTraceDetail: () => Effect.succeed(clickHouseTraceDetail),
         getAnalyticsSummary: () =>
           Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1852,6 +1869,7 @@ describe.sequential("Search API", (it) => {
             topModels: [],
             topFunctions: [],
           }),
+        getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
         getTimeSeriesMetrics: () =>
           Effect.succeed({ points: [], timeFrame: "day" }),
         getFunctionAggregates: () =>
@@ -1895,6 +1913,337 @@ describe.sequential("Search API", (it) => {
       expect(result.traceId).toBe("00000000-0000-0000-0000-000000000000");
       expect(result.spans).toEqual([]);
     }),
+  );
+
+  it.effect(
+    "getSpanDetailHandler falls back to realtime when ClickHouse is missing",
+    () =>
+      Effect.gen(function* () {
+        if (!apiKeyInfo || !ownerFromContext) {
+          throw new Error("Missing API key context for span detail fallback");
+        }
+
+        const apiKey = apiKeyInfo;
+
+        const authenticationLayer = Layer.succeed(Authentication, {
+          user: ownerFromContext,
+          apiKeyInfo: apiKey,
+        });
+
+        const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+          search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+          getTraceDetail: () =>
+            Effect.succeed(
+              createTraceDetailResponse({
+                traceId: "trace-span",
+                spans: [],
+                rootSpanId: null,
+                totalDurationMs: null,
+              }),
+            ),
+          getAnalyticsSummary: () =>
+            Effect.succeed(createAnalyticsSummaryResponse()),
+          getSpanDetail: () =>
+            Effect.fail(
+              new NotFoundError({
+                message: "Span span-target not found",
+                resource: "spans",
+              }),
+            ),
+          getTimeSeriesMetrics: () =>
+            Effect.succeed({ points: [], timeFrame: "day" }),
+          getFunctionAggregates: () =>
+            Effect.succeed({ functions: [], total: 0 }),
+        });
+
+        const realtimeLayer = Layer.succeed(RealtimeSpans, {
+          upsert: () => Effect.void,
+          search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+          getTraceDetail: () =>
+            Effect.succeed(
+              createTraceDetailResponse({
+                traceId: "trace-span",
+                spans: [
+                  createTraceDetailSpan({
+                    traceId: "trace-span",
+                    spanId: "span-target",
+                    environmentId: apiKey.environmentId,
+                    projectId: apiKey.projectId,
+                    organizationId: apiKey.organizationId,
+                  }),
+                ],
+                rootSpanId: "span-target",
+                totalDurationMs: 10,
+              }),
+            ),
+          exists: () => Effect.succeed(true),
+        });
+
+        const result = yield* getSpanDetailHandler(
+          "trace-span",
+          "span-target",
+        ).pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              authenticationLayer,
+              clickHouseSearchLayer,
+              realtimeLayer,
+            ),
+          ),
+        );
+
+        expect(result.traceId).toBe("trace-span");
+        expect(result.spanId).toBe("span-target");
+      }),
+  );
+
+  it.effect("getSpanDetailHandler returns ClickHouse result when available", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for span detail ClickHouse");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSpan = createTraceDetailSpan({
+        traceId: "trace-clickhouse",
+        spanId: "span-clickhouse",
+        environmentId: apiKey.environmentId,
+        projectId: apiKey.projectId,
+        organizationId: apiKey.organizationId,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed(
+            createTraceDetailResponse({
+              traceId: "trace-clickhouse",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          ),
+        getAnalyticsSummary: () =>
+          Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () => Effect.succeed(clickHouseSpan),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
+      });
+
+      const result = yield* getSpanDetailHandler(
+        "trace-clickhouse",
+        "span-clickhouse",
+      ).pipe(
+        Effect.provide(
+          Layer.mergeAll(authenticationLayer, clickHouseSearchLayer),
+        ),
+      );
+
+      expect(result.traceId).toBe("trace-clickhouse");
+      expect(result.spanId).toBe("span-clickhouse");
+    }),
+  );
+
+  it.effect("getSpanDetailHandler returns NotFound when realtime is missing", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for span detail no realtime");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed(
+            createTraceDetailResponse({
+              traceId: "trace-missing",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          ),
+        getAnalyticsSummary: () =>
+          Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () =>
+          Effect.fail(
+            new NotFoundError({
+              message: "Span span-missing not found",
+              resource: "spans",
+            }),
+          ),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
+      });
+
+      const result = yield* getSpanDetailHandler(
+        "trace-missing",
+        "span-missing",
+      )
+        .pipe(Effect.provide(Layer.mergeAll(authenticationLayer, clickHouseSearchLayer)))
+        .pipe(Effect.flip);
+
+      expect(result).toBeInstanceOf(NotFoundError);
+    }),
+  );
+
+  it.effect("getSpanDetailHandler returns NotFound when exists check fails", () =>
+    Effect.gen(function* () {
+      if (!apiKeyInfo || !ownerFromContext) {
+        throw new Error("Missing API key context for span detail exists failure");
+      }
+
+      const apiKey = apiKeyInfo;
+
+      const authenticationLayer = Layer.succeed(Authentication, {
+        user: ownerFromContext,
+        apiKeyInfo: apiKey,
+      });
+
+      const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed(
+            createTraceDetailResponse({
+              traceId: "trace-exists-fail",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          ),
+        getAnalyticsSummary: () =>
+          Effect.succeed(createAnalyticsSummaryResponse()),
+        getSpanDetail: () =>
+          Effect.fail(
+            new NotFoundError({
+              message: "Span span-exists-fail not found",
+              resource: "spans",
+            }),
+          ),
+        getTimeSeriesMetrics: () =>
+          Effect.succeed({ points: [], timeFrame: "day" }),
+        getFunctionAggregates: () =>
+          Effect.succeed({ functions: [], total: 0 }),
+      });
+
+      const realtimeLayer = Layer.succeed(RealtimeSpans, {
+        upsert: () => Effect.void,
+        search: () => Effect.succeed({ spans: [], total: 0, hasMore: false }),
+        getTraceDetail: () =>
+          Effect.succeed(
+            createTraceDetailResponse({
+              traceId: "trace-exists-fail",
+              spans: [],
+              rootSpanId: null,
+              totalDurationMs: null,
+            }),
+          ),
+        exists: () => Effect.fail(new Error("exists failed")),
+      });
+
+      const result = yield* getSpanDetailHandler(
+        "trace-exists-fail",
+        "span-exists-fail",
+      )
+        .pipe(
+          Effect.provide(
+            Layer.mergeAll(
+              authenticationLayer,
+              clickHouseSearchLayer,
+              realtimeLayer,
+            ),
+          ),
+        )
+        .pipe(Effect.flip);
+
+      expect(result).toBeInstanceOf(NotFoundError);
+    }),
+  );
+
+  it.effect(
+    "getSpanDetailHandler returns NotFound when realtime trace fetch fails",
+    () =>
+      Effect.gen(function* () {
+        if (!apiKeyInfo || !ownerFromContext) {
+          throw new Error(
+            "Missing API key context for span detail trace failure",
+          );
+        }
+
+        const apiKey = apiKeyInfo;
+
+        const authenticationLayer = Layer.succeed(Authentication, {
+          user: ownerFromContext,
+          apiKeyInfo: apiKey,
+        });
+
+        const clickHouseSearchLayer = Layer.succeed(ClickHouseSearch, {
+          search: () =>
+            Effect.succeed({ spans: [], total: 0, hasMore: false }),
+          getTraceDetail: () =>
+            Effect.succeed(
+              createTraceDetailResponse({
+                traceId: "trace-fetch-fail",
+                spans: [],
+                rootSpanId: null,
+                totalDurationMs: null,
+              }),
+            ),
+          getAnalyticsSummary: () =>
+            Effect.succeed(createAnalyticsSummaryResponse()),
+          getSpanDetail: () =>
+            Effect.fail(
+              new NotFoundError({
+                message: "Span span-fetch-fail not found",
+                resource: "spans",
+              }),
+            ),
+          getTimeSeriesMetrics: () =>
+            Effect.succeed({ points: [], timeFrame: "day" }),
+          getFunctionAggregates: () =>
+            Effect.succeed({ functions: [], total: 0 }),
+        });
+
+        const realtimeLayer = Layer.succeed(RealtimeSpans, {
+          upsert: () => Effect.void,
+          search: () =>
+            Effect.succeed({ spans: [], total: 0, hasMore: false }),
+          getTraceDetail: () => Effect.fail(new Error("trace failed")),
+          exists: () => Effect.succeed(true),
+        });
+
+        const result = yield* getSpanDetailHandler(
+          "trace-fetch-fail",
+          "span-fetch-fail",
+        )
+          .pipe(
+            Effect.provide(
+              Layer.mergeAll(
+                authenticationLayer,
+                clickHouseSearchLayer,
+                realtimeLayer,
+              ),
+            ),
+          )
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }),
   );
 
   it.effect("GET /traces/analytics - returns analytics summary", () =>
@@ -1959,6 +2308,22 @@ describe.sequential("Search API", (it) => {
       }),
   );
 
+  it.effect(
+    "GET /traces/:traceId/spans/:spanId - returns NotFound for missing span",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* apiKeyClient.traces
+          .getSpanDetail({
+            path: {
+              traceId: "trace-unknown",
+              spanId: "00000000-0000-0000-0000-000000000999",
+            },
+          })
+          .pipe(Effect.flip);
+
+        expect(result._tag).toBe("NotFoundError");
+      }),
+  );
   it.effect("Dispose API key client", () =>
     Effect.gen(function* () {
       if (disposeApiKeyClient) {
@@ -2348,6 +2713,7 @@ describe("Realtime span merge", () => {
           topModels: [],
           topFunctions: [],
         }),
+      getSpanDetail: () => Effect.succeed(createTraceDetailSpan()),
       getTimeSeriesMetrics: () =>
         Effect.succeed({ points: [], timeFrame: "day" }),
       getFunctionAggregates: () =>

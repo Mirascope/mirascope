@@ -17,6 +17,8 @@ import {
   FunctionAggregatesResponseSchema,
   SearchRequestSchema,
   SearchResponseSchema,
+  SpanDetailRequestSchema,
+  SpanDetailSchema,
   TimeSeriesRequestSchema,
   TimeSeriesResponseSchema,
   TraceDetailResponseSchema,
@@ -219,6 +221,18 @@ export class TracesApi extends HttpApiGroup.make("traces")
       .setUrlParams(FunctionAggregatesRequestSchema)
       .addSuccess(FunctionAggregatesResponseSchema)
       .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("getSpanDetail", "/traces/:traceId/spans/:spanId")
+      .setPath(SpanDetailRequestSchema)
+      .addSuccess(SpanDetailSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, {
         status: PermissionDeniedError.status,
       })
