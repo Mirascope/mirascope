@@ -4,6 +4,7 @@ import {
 } from "@tanstack/react-start/server";
 import reservationExpiryCron from "@/workers/reservationExpiryCron";
 import billingReconciliationCron from "@/workers/billingReconciliationCron";
+import dataRetentionCron from "@/workers/dataRetentionCron";
 import routerMeteringQueue, {
   RouterMeteringQueueService,
 } from "@/workers/routerMeteringQueue";
@@ -131,6 +132,7 @@ export let rateLimiterLayer: Layer.Layer<RateLimiter> = Layer.succeed(
  * Scheduled event handler that routes to the appropriate cron job.
  *
  * - `* /5 * * * *`: Reservation expiry + billing reconciliation (every 5 minutes)
+ * - `0 10 * * *`: Data retention enforcement (daily at 10:00 Coordinated Universal Time)
  *
  * @param event - Cloudflare scheduled event containing the cron expression
  * @param environment - Cloudflare Workers environment bindings
@@ -144,6 +146,9 @@ const scheduled = async (
     // to ensure expired reservations are properly marked
     await reservationExpiryCron.scheduled(event, environment);
     await billingReconciliationCron.scheduled(event, environment);
+  }
+  if (event.cron === "0 10 * * *") {
+    await dataRetentionCron.scheduled(event, environment);
   }
 };
 
@@ -202,6 +207,14 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (
       };
       context.waitUntil(scheduled(event, environment));
       return new Response("Ran billing reconciliation cron");
+    }
+    if (pathname === "/__scheduled/retention") {
+      const event: ScheduledEvent = {
+        cron: "0 10 * * *",
+        scheduledTime: Date.now(),
+      };
+      context.waitUntil(scheduled(event, environment));
+      return new Response("Ran data retention cron");
     }
   }
 

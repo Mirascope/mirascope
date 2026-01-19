@@ -46,6 +46,7 @@ describe("Plans Module", () => {
           projects: 1,
           spansPerMonth: 1_000_000,
           apiRequestsPerMinute: 100,
+          dataRetentionDays: 30,
         });
       });
     });
@@ -57,6 +58,7 @@ describe("Plans Module", () => {
           projects: 5,
           spansPerMonth: Infinity,
           apiRequestsPerMinute: 1000,
+          dataRetentionDays: 90,
         });
       });
 
@@ -72,6 +74,7 @@ describe("Plans Module", () => {
           projects: Infinity,
           spansPerMonth: Infinity,
           apiRequestsPerMinute: 10000,
+          dataRetentionDays: 180,
         });
       });
 
@@ -132,6 +135,7 @@ describe("Plans Module", () => {
         projects: 1,
         spansPerMonth: 1_000_000,
         apiRequestsPerMinute: 100,
+        dataRetentionDays: 30,
       };
       expect(limits).toBeDefined();
     });
