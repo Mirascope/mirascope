@@ -46,12 +46,13 @@ export function RouterCreditsSettings({
           </p>
         </div>
         <p className="text-sm text-muted-foreground mt-4">
-          Credits are consumed with Mirascope Router API usage and expire 1 year
-          after purchase.
+          Credits are consumed with Mirascope Router API usage.
+          <br />
+          They expire 1 year after purchase, and usage includes a 5% gas fee.
           <br />
           By purchasing credits you agree to{" "}
           <a
-            href="/cloud/terms/router-credits"
+            href="/terms/credits"
             className="text-primary underline hover:no-underline"
           >
             Mirascope's Credit Terms
