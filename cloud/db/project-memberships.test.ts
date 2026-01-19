@@ -1077,6 +1077,59 @@ describe("ProjectMemberships", () => {
   });
 
   // ===========================================================================
+  // findAllWithUserInfo
+  // ===========================================================================
+
+  describe("findAllWithUserInfo", () => {
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = yield* Database;
+
+        const result = yield* db.organizations.projects.memberships
+          .findAllWithUserInfo({
+            userId: "owner-id",
+            organizationId: "org-id",
+            projectId: "project-id",
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe(
+          "Failed to find all project memberships with user info",
+        );
+      }).pipe(
+        Effect.provide(
+          new MockDrizzleORM()
+            // authorize -> getRole -> organizationMemberships.findById
+            //   -> authorize -> getRole -> getMembership
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            // organizationMemberships.findById actual query
+            .select([
+              {
+                role: "OWNER",
+                organizationId: "org-id",
+                memberId: "owner-id",
+                createdAt: new Date(),
+              },
+            ])
+            // verifyProjectExists: exists
+            .select([{ id: "project-id" }])
+            // findAllWithUserInfo: fails
+            .select(new Error("Database connection failed"))
+            .build(),
+        ),
+      ),
+    );
+  });
+
+  // ===========================================================================
   // audits
   // ===========================================================================
 

@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Trash2 } from "lucide-react";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
+import { useAuth } from "@/app/contexts/auth";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -13,14 +14,20 @@ import {
 } from "@/app/components/ui/card";
 import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { DeleteProjectModal } from "@/app/components/delete-project-modal";
+import { ProjectMembersSection } from "@/app/components/project-members-section";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 
 function ProjectsSettingsPage() {
   const { selectedOrganization } = useOrganization();
   const { selectedProject, isLoading } = useProject();
+  const { user } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Organization OWNER/ADMIN have implicit project ADMIN access
+  const orgRole = selectedOrganization?.role;
+  const canManageMembers = orgRole === "OWNER" || orgRole === "ADMIN";
 
   const header = (
     <div className="mb-6 flex items-start justify-between">
@@ -85,7 +92,7 @@ function ProjectsSettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl space-y-6">
       {header}
 
       <Card>
@@ -117,7 +124,14 @@ function ProjectsSettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="mt-6 border-destructive">
+      <ProjectMembersSection
+        organizationId={selectedOrganization.id}
+        projectId={selectedProject.id}
+        currentUserId={user?.id ?? ""}
+        canManageMembers={canManageMembers}
+      />
+
+      <Card className="border-destructive">
         <CardHeader>
           <CardTitle className="text-destructive">Danger Zone</CardTitle>
           <CardDescription>
