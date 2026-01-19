@@ -37,6 +37,53 @@ export const listFunctionsHandler = () =>
   });
 
 /**
+ * Handler for listing all versions of a function by name.
+ * Returns functions accessible to the authenticated user and API key.
+ */
+export const listByNameHandler = (name: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+
+    const results =
+      yield* db.organizations.projects.environments.functions.findByName({
+        userId: user.id,
+        organizationId: apiKeyInfo.organizationId,
+        projectId: apiKeyInfo.projectId,
+        environmentId: apiKeyInfo.environmentId,
+        name,
+      });
+
+    return {
+      functions: results.map(toFunction),
+      total: results.length,
+    };
+  });
+
+/**
+ * Handler for listing the latest function version for each name.
+ * Returns functions accessible to the authenticated user and API key.
+ */
+export const listLatestByNameHandler = () =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+
+    const results =
+      yield* db.organizations.projects.environments.functions.findLatestByName({
+        userId: user.id,
+        organizationId: apiKeyInfo.organizationId,
+        projectId: apiKeyInfo.projectId,
+        environmentId: apiKeyInfo.environmentId,
+      });
+
+    return {
+      functions: results.map(toFunction),
+      total: results.length,
+    };
+  });
+
+/**
  * Handler for creating a new function.
  * Accepts function code, signature, and metadata, and stores it in the database.
  */
@@ -114,6 +161,24 @@ export const deleteFunctionHandler = (id: string) =>
       projectId: apiKeyInfo.projectId,
       environmentId: apiKeyInfo.environmentId,
       functionId: id,
+    });
+  });
+
+/**
+ * Handler for deleting all function versions by name.
+ * Removes all matching functions if accessible to the authenticated user and API key.
+ */
+export const deleteByNameHandler = (name: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+
+    yield* db.organizations.projects.environments.functions.deleteByName({
+      userId: user.id,
+      organizationId: apiKeyInfo.organizationId,
+      projectId: apiKeyInfo.projectId,
+      environmentId: apiKeyInfo.environmentId,
+      name,
     });
   });
 

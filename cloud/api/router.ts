@@ -49,10 +49,13 @@ import {
 } from "@/api/api-keys.handlers";
 import {
   listFunctionsHandler,
+  listByNameHandler,
+  listLatestByNameHandler,
   createFunctionHandler,
   getFunctionHandler,
   findByHashHandler,
   deleteFunctionHandler,
+  deleteByNameHandler,
 } from "@/api/functions.handlers";
 import {
   listAnnotationsHandler,
@@ -250,9 +253,12 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
   (handlers) =>
     handlers
       .handle("list", () => listFunctionsHandler())
+      .handle("listByName", ({ path }) => listByNameHandler(path.name))
+      .handle("listLatestByName", () => listLatestByNameHandler())
       .handle("create", ({ payload }) => createFunctionHandler(payload))
       .handle("get", ({ path }) => getFunctionHandler(path.id))
       .handle("delete", ({ path }) => deleteFunctionHandler(path.id))
+      .handle("deleteByName", ({ path }) => deleteByNameHandler(path.name))
       .handle("findByHash", ({ path }) => findByHashHandler(path.hash)),
 );
 
