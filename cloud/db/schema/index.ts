@@ -8,6 +8,7 @@ export * from "@/db/schema/projects";
 export * from "@/db/schema/project-memberships";
 export * from "@/db/schema/project-membership-audit";
 export * from "@/db/schema/environments";
+export * from "@/db/schema/project-tags";
 export * from "@/db/schema/api-keys";
 export * from "@/db/schema/functions";
 export * from "@/db/schema/annotations";
@@ -40,6 +41,7 @@ export type {
   PublicEnvironment,
   NewEnvironment,
 } from "@/db/schema/environments";
+export type { PublicProjectTag } from "@/db/schema/project-tags";
 export type {
   PublicApiKey,
   ApiKeyCreateResponse,
@@ -68,6 +70,7 @@ import { projects } from "@/db/schema/projects";
 import { projectMemberships } from "@/db/schema/project-memberships";
 import { projectMembershipAudit } from "@/db/schema/project-membership-audit";
 import { environments } from "@/db/schema/environments";
+import { projectTags } from "@/db/schema/project-tags";
 import { apiKeys } from "@/db/schema/api-keys";
 import { functions } from "@/db/schema/functions";
 import { annotations } from "@/db/schema/annotations";
@@ -85,6 +88,7 @@ export type DatabaseTable =
   | typeof projectMemberships
   | typeof projectMembershipAudit
   | typeof environments
+  | typeof projectTags
   | typeof apiKeys
   | typeof functions
   | typeof annotations

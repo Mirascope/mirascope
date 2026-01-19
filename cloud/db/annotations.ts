@@ -61,6 +61,7 @@ import {
 } from "@/db/base";
 import { DrizzleORM } from "@/db/client";
 import { ProjectMemberships } from "@/db/project-memberships";
+import { ProjectTags } from "@/db/project-tags";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import {
@@ -141,7 +142,7 @@ const checkSpanExists = ({
 
 export type AnnotationCreateData = Pick<
   NewAnnotation,
-  "otelSpanId" | "otelTraceId" | "label" | "reasoning" | "metadata"
+  "otelSpanId" | "otelTraceId" | "label" | "reasoning" | "metadata" | "tags"
 >;
 
 /**
@@ -169,15 +170,20 @@ export class Annotations extends BaseAuthenticatedEffectService<
   PublicAnnotation,
   "organizations/:organizationId/projects/:projectId/environments/:environmentId/annotations/:annotationId",
   AnnotationCreateData,
-  Partial<Pick<NewAnnotation, "label" | "reasoning" | "metadata">>,
+  Partial<Pick<NewAnnotation, "label" | "reasoning" | "metadata" | "tags">>,
   ProjectRole,
   ClickHouseSearch | RealtimeSpans
 > {
   private readonly projectMemberships: ProjectMemberships;
+  private readonly projectTags: ProjectTags;
 
-  constructor(projectMemberships: ProjectMemberships) {
+  constructor(
+    projectMemberships: ProjectMemberships,
+    projectTags: ProjectTags,
+  ) {
     super();
     this.projectMemberships = projectMemberships;
+    this.projectTags = projectTags;
   }
 
   // ---------------------------------------------------------------------------
@@ -296,12 +302,22 @@ export class Annotations extends BaseAuthenticatedEffectService<
         );
       }
 
+      if (data.tags) {
+        yield* this.projectTags.findByNames({
+          userId,
+          organizationId,
+          projectId,
+          names: data.tags,
+        });
+      }
+
       const newAnnotation: NewAnnotation = {
         otelSpanId: data.otelSpanId,
         otelTraceId: data.otelTraceId,
         label: data.label ?? null,
         reasoning: data.reasoning ?? null,
         metadata: data.metadata ?? null,
+        tags: data.tags ?? null,
         environmentId,
         projectId,
         organizationId,
@@ -527,7 +543,9 @@ export class Annotations extends BaseAuthenticatedEffectService<
     projectId: string;
     environmentId: string;
     annotationId: string;
-    data: Partial<Pick<NewAnnotation, "label" | "reasoning" | "metadata">>;
+    data: Partial<
+      Pick<NewAnnotation, "label" | "reasoning" | "metadata" | "tags">
+    >;
   }): Effect.Effect<
     PublicAnnotation,
     NotFoundError | PermissionDeniedError | DatabaseError,
@@ -557,6 +575,17 @@ export class Annotations extends BaseAuthenticatedEffectService<
       }
       if (data.metadata !== undefined) {
         updateData.metadata = data.metadata;
+      }
+      if (data.tags) {
+        yield* this.projectTags.findByNames({
+          userId,
+          organizationId,
+          projectId,
+          names: data.tags,
+        });
+        updateData.tags = data.tags;
+      } else if (data.tags === null) {
+        updateData.tags = null;
       }
 
       const result: PublicAnnotation[] = yield* client

@@ -27,6 +27,7 @@ export const annotations = pgTable(
     label: labelEnum("label"),
     reasoning: text("reasoning"),
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    tags: jsonb("tags").$type<string[]>(),
     environmentId: uuid("environment_id")
       .references(() => environments.id, { onDelete: "cascade" })
       .notNull(),
@@ -91,4 +92,5 @@ export type PublicAnnotation = Pick<
   | "createdBy"
   | "createdAt"
   | "updatedAt"
+  | "tags"
 >;
