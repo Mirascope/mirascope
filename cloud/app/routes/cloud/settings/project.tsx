@@ -15,6 +15,7 @@ import {
 import { CreateProjectModal } from "@/app/components/create-project-modal";
 import { DeleteProjectModal } from "@/app/components/delete-project-modal";
 import { ProjectMembersSection } from "@/app/components/project-members-section";
+import { EnvironmentsSection } from "@/app/components/environments-section";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 
@@ -129,6 +130,12 @@ function ProjectsSettingsPage() {
         projectId={selectedProject.id}
         currentUserId={user?.id ?? ""}
         canManageMembers={canManageMembers}
+      />
+
+      <EnvironmentsSection
+        organizationId={selectedOrganization.id}
+        projectId={selectedProject.id}
+        canManageEnvironments={canManageMembers}
       />
 
       <Card className="border-destructive">

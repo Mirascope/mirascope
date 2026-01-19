@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Effect } from "effect";
 import { ApiClient, eq } from "@/app/api/client";
-import type { CreateEnvironmentRequest } from "@/api/environments.schemas";
+import type {
+  CreateEnvironmentRequest,
+  UpdateEnvironmentRequest,
+} from "@/api/environments.schemas";
 
 export const useEnvironments = (
   organizationId: string | null,
@@ -92,6 +95,39 @@ export const useDeleteEnvironment = () => {
           const client = yield* ApiClient;
           return yield* client.environments.delete({
             path: { organizationId, projectId, environmentId },
+          });
+        }),
+    }),
+    onSuccess: (_, { organizationId, projectId }) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["environments", organizationId, projectId],
+      });
+    },
+  });
+};
+
+export const useUpdateEnvironment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...eq.mutationOptions({
+      mutationKey: ["environments", "update"],
+      mutationFn: ({
+        organizationId,
+        projectId,
+        environmentId,
+        data,
+      }: {
+        organizationId: string;
+        projectId: string;
+        environmentId: string;
+        data: UpdateEnvironmentRequest;
+      }) =>
+        Effect.gen(function* () {
+          const client = yield* ApiClient;
+          return yield* client.environments.update({
+            path: { organizationId, projectId, environmentId },
+            payload: data,
           });
         }),
     }),
