@@ -13,6 +13,7 @@ export default defineConfig({
       reporter: ["text", "json", "html"],
       include: ["api", "auth", "db", "payments", "rate-limiting", "workers"],
       exclude: [
+        "app", // Currently manual testing only. We should cover this at some point
         "**.md",
         "**/index.ts",
         "db/migrations/**",

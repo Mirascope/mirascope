@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { Protected } from "@/app/components/protected";
-import { DashboardLayout } from "@/app/components/dashboard-layout";
+import { CloudLayout } from "@/app/components/cloud-layout";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useEnvironment } from "@/app/contexts/environment";
@@ -81,9 +81,9 @@ function DashboardContent() {
 function DashboardPage() {
   return (
     <Protected>
-      <DashboardLayout>
+      <CloudLayout>
         <DashboardContent />
-      </DashboardLayout>
+      </CloudLayout>
     </Protected>
   );
 }

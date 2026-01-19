@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/app/components/dashboard-layout";
+import { CloudLayout } from "@/app/components/cloud-layout";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Protected } from "@/app/components/protected";
 import { SettingsSidebar } from "@/app/components/settings-sidebar";
@@ -6,7 +6,7 @@ import { SettingsSidebar } from "@/app/components/settings-sidebar";
 function CloudSettingsLayout() {
   return (
     <Protected>
-      <DashboardLayout>
+      <CloudLayout>
         <div className="flex h-full justify-center">
           <div className="flex h-full w-full max-w-5xl">
             <SettingsSidebar />
@@ -15,7 +15,7 @@ function CloudSettingsLayout() {
             </main>
           </div>
         </div>
-      </DashboardLayout>
+      </CloudLayout>
     </Protected>
   );
 }
