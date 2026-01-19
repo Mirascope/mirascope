@@ -83,6 +83,9 @@ export function Sidebar() {
       {/* Project selector at top */}
       {selectedOrganization && (
         <div className="px-2 pt-4 pb-2">
+          <div className="text-xs font-medium text-muted-foreground mb-1 px-1">
+            Project
+          </div>
           {projectsLoading ? (
             <div className="text-sm text-muted-foreground px-2">Loading...</div>
           ) : (
@@ -114,6 +117,9 @@ export function Sidebar() {
       {/* Environment selector - shown when project is selected */}
       {selectedProject && (
         <div className="px-2 pb-2">
+          <div className="text-xs font-medium text-muted-foreground mb-1 px-1">
+            Environment
+          </div>
           {environmentsLoading ? (
             <div className="text-sm text-muted-foreground px-2">Loading...</div>
           ) : (
