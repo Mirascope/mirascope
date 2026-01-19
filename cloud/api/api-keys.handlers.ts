@@ -3,7 +3,11 @@ import { Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import { Analytics } from "@/analytics";
 import type { CreateApiKeyRequest } from "@/api/api-keys.schemas";
-import type { PublicApiKey, ApiKeyCreateResponse } from "@/db/schema";
+import type {
+  PublicApiKey,
+  ApiKeyCreateResponse,
+  ApiKeyWithContext,
+} from "@/db/schema";
 
 export * from "@/api/api-keys.schemas";
 
@@ -19,6 +23,26 @@ export const toApiKeyCreateResponse = (apiKey: ApiKeyCreateResponse) => ({
   createdAt: apiKey.createdAt?.toISOString() ?? null,
   lastUsedAt: apiKey.lastUsedAt?.toISOString() ?? null,
 });
+
+export const toApiKeyWithContext = (apiKey: ApiKeyWithContext) => ({
+  ...apiKey,
+  createdAt: apiKey.createdAt?.toISOString() ?? null,
+  lastUsedAt: apiKey.lastUsedAt?.toISOString() ?? null,
+});
+
+export const listAllApiKeysHandler = (organizationId: string) =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+    const user = yield* AuthenticatedUser;
+    const apiKeys =
+      yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+        {
+          userId: user.id,
+          organizationId,
+        },
+      );
+    return apiKeys.map(toApiKeyWithContext);
+  });
 
 export const listApiKeysHandler = (
   organizationId: string,

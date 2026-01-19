@@ -32,7 +32,7 @@ import {
   CardContent,
 } from "@/app/components/ui/card";
 import { generateSlug } from "@/db/slug";
-import { BillingSettings } from "@/app/components/billing-settings";
+import { PlanSettings } from "@/app/components/plan-settings";
 import { BillingErrorBoundary } from "@/app/components/billing-error-boundary";
 import { UpgradePlanDialog } from "@/app/components/upgrade-plan-dialog";
 import { DowngradePlanDialog } from "@/app/components/downgrade-plan-dialog";
@@ -101,7 +101,7 @@ function SettingsContent() {
 
         {selectedOrganization?.id && (
           <BillingErrorBoundary>
-            <BillingSettings
+            <PlanSettings
               organizationId={selectedOrganization.id}
               onUpgrade={handleUpgrade}
               onDowngrade={handleDowngrade}

@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from "react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/app/components/ui/button";
+import { useState } from "react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -8,215 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { CreateOrganizationModal } from "@/app/components/create-organization-modal";
+import { CreateProjectModal } from "@/app/components/create-project-modal";
+import { CreateEnvironmentModal } from "@/app/components/create-environment-modal";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
-import { useCreateOrganization } from "@/app/api/organizations";
-import { useCreateProject } from "@/app/api/projects";
 import { useEnvironment } from "@/app/contexts/environment";
-import { useCreateEnvironment } from "@/app/api/environments";
-import { generateSlug } from "@/db/slug";
-
-function CreateOrganizationDialog({ onClose }: { onClose: () => void }) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const createOrganization = useCreateOrganization();
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!name.trim()) {
-      setError("Organization name is required");
-      return;
-    }
-
-    try {
-      await createOrganization.mutateAsync({
-        name: name.trim(),
-        slug: generateSlug(name.trim()),
-      });
-      onClose();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create organization",
-      );
-    }
-  };
-
-  return (
-    <div className="p-3 border-t border-sidebar-border">
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-2">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Organization name"
-          className="w-full px-2 py-1.5 text-sm border border-input rounded-md bg-background"
-          autoFocus
-        />
-        {error && <p className="text-xs text-destructive">{error}</p>}
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={createOrganization.isPending}
-            className="flex-1"
-          >
-            {createOrganization.isPending ? "..." : "Create"}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function CreateProjectDialog({
-  organizationId,
-  onClose,
-}: {
-  organizationId: string;
-  onClose: () => void;
-}) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const createProject = useCreateProject();
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!name.trim()) {
-      setError("Project name is required");
-      return;
-    }
-
-    try {
-      await createProject.mutateAsync({
-        organizationId: organizationId,
-        name: name.trim(),
-      });
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create project");
-    }
-  };
-
-  return (
-    <div className="p-3 border-b border-sidebar-border">
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-2">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Project name"
-          className="w-full px-2 py-1.5 text-sm border border-input rounded-md bg-background"
-          autoFocus
-        />
-        {error && <p className="text-xs text-destructive">{error}</p>}
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={createProject.isPending}
-            className="flex-1"
-          >
-            {createProject.isPending ? "..." : "Create"}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function CreateEnvironmentDialog({
-  organizationId,
-  projectId,
-  onClose,
-}: {
-  organizationId: string;
-  projectId: string;
-  onClose: () => void;
-}) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const createEnvironment = useCreateEnvironment();
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!name.trim()) {
-      setError("Environment name is required");
-      return;
-    }
-
-    try {
-      await createEnvironment.mutateAsync({
-        organizationId,
-        projectId,
-        data: { name: name.trim(), slug: generateSlug(name.trim()) },
-      });
-      onClose();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create environment",
-      );
-    }
-  };
-
-  return (
-    <div className="p-3 border-b border-sidebar-border">
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-2">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Environment name"
-          className="w-full px-2 py-1.5 text-sm border border-input rounded-md bg-background"
-          autoFocus
-        />
-        {error && <p className="text-xs text-destructive">{error}</p>}
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={createEnvironment.isPending}
-            className="flex-1"
-          >
-            {createEnvironment.isPending ? "..." : "Create"}
-          </Button>
-        </div>
-      </form>
-    </div>
-  );
-}
+import { useAuth } from "@/app/contexts/auth";
 
 export function Sidebar() {
   const {
@@ -235,127 +33,177 @@ export function Sidebar() {
     environments,
     selectedEnvironment,
     setSelectedEnvironment,
-    isLoading: envsLoading,
+    isLoading: environmentsLoading,
   } = useEnvironment();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const [showCreateOrg, setShowCreateOrg] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
-  const [showCreateEnv, setShowCreateEnv] = useState(false);
+  const [showCreateEnvironment, setShowCreateEnvironment] = useState(false);
+
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
+
+  const handleSignOut = async () => {
+    await logout();
+    void navigate({ to: "/" });
+  };
+
+  const handleOrgSelectChange = (value: string) => {
+    if (value === "__create_new__") {
+      setShowCreateOrg(true);
+    } else {
+      const org = organizations.find((o) => o.id === value);
+      setSelectedOrganization(org || null);
+    }
+  };
+
+  const handleProjectSelectChange = (value: string) => {
+    if (value === "__create_new__") {
+      setShowCreateProject(true);
+    } else {
+      const project = projects.find((p) => p.id === value);
+      setSelectedProject(project || null);
+    }
+  };
+
+  const handleEnvironmentSelectChange = (value: string) => {
+    if (value === "__create_new__") {
+      setShowCreateEnvironment(true);
+    } else {
+      const environment = environments.find((e) => e.id === value);
+      setSelectedEnvironment(environment || null);
+    }
+  };
+
+  const isActive = (path: string) => {
+    if (currentPath === path) return true;
+    // For Settings, also match child routes
+    if (path === "/cloud/settings") {
+      return currentPath.startsWith("/cloud/settings/");
+    }
+    return false;
+  };
 
   return (
-    <aside className="w-64 h-screen flex flex-col bg-sidebar border-r border-sidebar-border">
+    <aside className="w-48 h-full flex flex-col bg-background">
       {/* Project selector at top */}
-      <div className="p-3 border-b border-sidebar-border">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-sidebar-foreground/70">
+      {selectedOrganization && (
+        <div className="px-2 pt-4 pb-2">
+          <div className="text-xs font-medium text-muted-foreground mb-1 px-1">
             Project
-          </span>
-          {selectedOrganization && (
-            <button
-              onClick={() => setShowCreateProject(!showCreateProject)}
-              className="text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            >
-              {showCreateProject ? "×" : "+"}
-            </button>
-          )}
-        </div>
-        {projectsLoading ? (
-          <div className="text-sm text-sidebar-foreground/50">Loading...</div>
-        ) : projects.length === 0 ? (
-          <div className="text-sm text-sidebar-foreground/50">No projects</div>
-        ) : (
-          <Select
-            value={selectedProject?.id || ""}
-            onValueChange={(value) => {
-              const project = projects.find((p) => p.id === value);
-              setSelectedProject(project || null);
-            }}
-          >
-            <SelectTrigger className="bg-sidebar">
-              <SelectValue placeholder="Select project" />
-            </SelectTrigger>
-            <SelectContent>
-              {projects.map((project) => (
-                <SelectItem key={project.id} value={project.id}>
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-
-      {showCreateProject && selectedOrganization && (
-        <CreateProjectDialog
-          organizationId={selectedOrganization.id}
-          onClose={() => setShowCreateProject(false)}
-        />
-      )}
-
-      {/* Environment selector */}
-      <div className="p-3 border-b border-sidebar-border">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-sidebar-foreground/70">
-            Environment
-          </span>
-          {selectedOrganization && selectedProject && (
-            <button
-              onClick={() => setShowCreateEnv(!showCreateEnv)}
-              className="text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            >
-              {showCreateEnv ? "×" : "+"}
-            </button>
-          )}
-        </div>
-        {envsLoading ? (
-          <div className="text-sm text-sidebar-foreground/50">Loading...</div>
-        ) : environments.length === 0 ? (
-          <div className="text-sm text-sidebar-foreground/50">
-            No environments
           </div>
-        ) : (
-          <Select
-            value={selectedEnvironment?.id || ""}
-            onValueChange={(value) => {
-              const env = environments.find((e) => e.id === value);
-              setSelectedEnvironment(env || null);
-            }}
-          >
-            <SelectTrigger className="bg-sidebar">
-              <SelectValue placeholder="Select environment" />
-            </SelectTrigger>
-            <SelectContent>
-              {environments.map((env) => (
-                <SelectItem key={env.id} value={env.id}>
-                  {env.name}
+          {projectsLoading ? (
+            <div className="flex justify-center py-2">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <Select
+              value={selectedProject?.id || ""}
+              onValueChange={handleProjectSelectChange}
+            >
+              <SelectTrigger className="bg-background text-base">
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+                <SelectItem
+                  value="__create_new__"
+                  className="text-primary font-medium"
+                >
+                  + Create New Project
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-
-      {showCreateEnv && selectedOrganization && selectedProject && (
-        <CreateEnvironmentDialog
-          organizationId={selectedOrganization.id}
-          projectId={selectedProject.id}
-          onClose={() => setShowCreateEnv(false)}
-        />
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       )}
 
-      {/* Main content area - empty for now, will be used for navigation */}
-      <div className="flex-1 overflow-y-auto p-3">
+      {/* Environment selector - shown when project is selected */}
+      {selectedProject && (
+        <div className="px-2 pb-2">
+          <div className="text-xs font-medium text-muted-foreground mb-1 px-1">
+            Environment
+          </div>
+          {environmentsLoading ? (
+            <div className="flex justify-center py-2">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <Select
+              value={selectedEnvironment?.id || ""}
+              onValueChange={handleEnvironmentSelectChange}
+            >
+              <SelectTrigger className="bg-background text-base">
+                <SelectValue placeholder="Select environment" />
+              </SelectTrigger>
+              <SelectContent>
+                {environments.map((environment) => (
+                  <SelectItem key={environment.id} value={environment.id}>
+                    {environment.name}
+                  </SelectItem>
+                ))}
+                <SelectItem
+                  value="__create_new__"
+                  className="text-primary font-medium"
+                >
+                  + Create New Environment
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      )}
+
+      {/* Dashboard link */}
+      <div className="px-2 pt-4">
+        <Link
+          to="/cloud/dashboard"
+          className={`relative flex items-center justify-center px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
+            isActive("/cloud/dashboard")
+              ? "bg-muted font-medium"
+              : "hover:bg-muted"
+          }`}
+        >
+          <svg
+            className="w-5 h-5 absolute left-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+          </svg>
+          Dashboard
+        </Link>
+      </div>
+
+      {/* Main content area - empty for now */}
+      <div className="flex-1 overflow-y-auto px-2">
         {/* Future: Navigation items will go here */}
       </div>
 
       {/* Settings link */}
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="px-2 pb-2">
         <Link
-          to="/dashboard/settings"
-          className="flex items-center gap-2 px-2 py-1.5 text-sm rounded-md hover:bg-sidebar-accent text-sidebar-foreground"
+          to="/cloud/settings"
+          className={`relative flex items-center justify-center px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent ${
+            isActive("/cloud/settings")
+              ? "bg-muted font-medium"
+              : "hover:bg-muted"
+          }`}
         >
           <svg
-            className="w-4 h-4"
+            className="w-5 h-5 absolute left-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -377,34 +225,41 @@ export function Sidebar() {
         </Link>
       </div>
 
-      {/* Organization selector at bottom */}
-      <div className="p-3 border-t border-sidebar-border">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-sidebar-foreground/70">
-            Organization
-          </span>
-          <button
-            onClick={() => setShowCreateOrg(!showCreateOrg)}
-            className="text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground"
+      {/* Sign Out button */}
+      <div className="px-2 pb-2">
+        <button
+          onClick={() => void handleSignOut()}
+          className="relative flex items-center justify-center w-full px-3 py-2 text-base rounded-md text-foreground font-handwriting-descent hover:bg-muted"
+        >
+          <svg
+            className="w-5 h-5 absolute left-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            {showCreateOrg ? "×" : "+"}
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+          Sign Out
+        </button>
+      </div>
+
+      {/* Organization selector at bottom */}
+      <div className="px-2 pb-3 pt-3">
         {orgsLoading ? (
-          <div className="text-sm text-sidebar-foreground/50">Loading...</div>
-        ) : organizations.length === 0 ? (
-          <div className="text-sm text-sidebar-foreground/50">
-            No organizations
+          <div className="flex justify-center py-2">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <Select
             value={selectedOrganization?.id || ""}
-            onValueChange={(value) => {
-              const org = organizations.find((o) => o.id === value);
-              setSelectedOrganization(org || null);
-            }}
+            onValueChange={handleOrgSelectChange}
           >
-            <SelectTrigger className="bg-sidebar">
+            <SelectTrigger className="bg-background text-base">
               <SelectValue placeholder="Select organization" />
             </SelectTrigger>
             <SelectContent>
@@ -413,14 +268,29 @@ export function Sidebar() {
                   {org.name}
                 </SelectItem>
               ))}
+              <SelectItem
+                value="__create_new__"
+                className="text-primary font-medium"
+              >
+                + Create New Organization
+              </SelectItem>
             </SelectContent>
           </Select>
         )}
       </div>
 
-      {showCreateOrg && (
-        <CreateOrganizationDialog onClose={() => setShowCreateOrg(false)} />
-      )}
+      <CreateOrganizationModal
+        open={showCreateOrg}
+        onOpenChange={setShowCreateOrg}
+      />
+      <CreateProjectModal
+        open={showCreateProject}
+        onOpenChange={setShowCreateProject}
+      />
+      <CreateEnvironmentModal
+        open={showCreateEnvironment}
+        onOpenChange={setShowCreateEnvironment}
+      />
     </aside>
   );
 }

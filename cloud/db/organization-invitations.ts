@@ -439,7 +439,11 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
 
       yield* this.checkExistingMembership(organizationId, normalizedEmail);
       yield* this.checkExistingInvitation(organizationId, normalizedEmail);
-      yield* this.organizationMemberships.checkSeatLimit({ organizationId });
+      // Check seat limit including pending invitations to prevent over-inviting
+      yield* this.organizationMemberships.checkSeatLimit({
+        organizationId,
+        check: "invitation",
+      });
 
       const metadata = yield* this.getInvitationMetadata(
         organizationId,
@@ -862,7 +866,7 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
     token: string;
     acceptingUserId: string;
   }): Effect.Effect<
-    PublicOrganizationMembership,
+    PublicOrganizationMembership & { organizationId: string },
     | NotFoundError
     | PermissionDeniedError
     | DatabaseError
@@ -944,15 +948,13 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
         );
       }
 
-      yield* this.organizationMemberships.checkSeatLimit({
-        organizationId: invitation.organizationId,
-      });
-
       // Wrap membership creation + invitation update in a transaction
       const membership = yield* client.withTransaction(
         Effect.gen(this, function* () {
           // Use OrganizationMemberships.create to handle membership creation + audit log
           // The sender becomes the "userId" for authorization purposes
+          // The create method uses check: "membership" which only counts actual members,
+          // so accepting an invitation (converting pending → member) works correctly
           const newMembership = yield* this.organizationMemberships.create({
             userId: invitation.senderId,
             organizationId: invitation.organizationId,
@@ -981,7 +983,11 @@ export class OrganizationInvitations extends BaseAuthenticatedEffectService<
               ),
             );
 
-          return newMembership;
+          // Return membership with organizationId for redirect purposes
+          return {
+            ...newMembership,
+            organizationId: invitation.organizationId,
+          };
         }),
       );
 

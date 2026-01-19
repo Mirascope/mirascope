@@ -1,6 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { MOBILE_NAV_STYLES, NAV_LINK_STYLES } from "./styles";
-import { useAuth } from "@/app/contexts/auth";
 import { cn } from "@/app/lib/utils";
 
 interface MobileNavigationProps {
@@ -18,54 +17,65 @@ export default function MobileNavigation({
   isOpen,
   onClose,
 }: MobileNavigationProps) {
-  const { user, isLoading, logout } = useAuth();
+  const router = useRouterState();
+  const currentPath = router.location.pathname;
 
   if (!isOpen) return null;
 
-  const handleLogout = async () => {
-    await logout();
-    onClose();
+  // Helper function to check if a link is active
+  const isLinkActive = (href: string) => {
+    if (href === "/cloud") {
+      return currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+    }
+    return currentPath === href || currentPath.startsWith(href + "/");
   };
 
   return (
     <div className={MOBILE_NAV_STYLES.container}>
       <div className={MOBILE_NAV_STYLES.content}>
-        <Link to="/docs" className={NAV_LINK_STYLES.mobile} onClick={onClose}>
+        <Link
+          to="/docs"
+          className={cn(
+            NAV_LINK_STYLES.mobile,
+            isLinkActive("/docs") && NAV_LINK_STYLES.mobileActive,
+          )}
+          onClick={onClose}
+        >
           Docs
         </Link>
 
-        <Link to="/blog" className={NAV_LINK_STYLES.mobile} onClick={onClose}>
+        <Link
+          to="/blog"
+          className={cn(
+            NAV_LINK_STYLES.mobile,
+            isLinkActive("/blog") && NAV_LINK_STYLES.mobileActive,
+          )}
+          onClick={onClose}
+        >
           Blog
         </Link>
 
         <Link
           to="/pricing"
-          className={NAV_LINK_STYLES.mobile}
+          className={cn(
+            NAV_LINK_STYLES.mobile,
+            isLinkActive("/pricing") && NAV_LINK_STYLES.mobileActive,
+          )}
           onClick={onClose}
         >
           Pricing
         </Link>
 
-        {!isLoading && (
-          <>
-            {user ? (
-              <button
-                onClick={() => void handleLogout()}
-                className={cn(NAV_LINK_STYLES.mobile)}
-              >
-                Logout
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className={NAV_LINK_STYLES.mobile}
-                onClick={onClose}
-              >
-                Login
-              </Link>
-            )}
-          </>
-        )}
+        <Link
+          to="/cloud"
+          className={cn(
+            NAV_LINK_STYLES.mobile,
+            isLinkActive("/cloud") && NAV_LINK_STYLES.mobileActive,
+          )}
+          onClick={onClose}
+        >
+          Cloud
+        </Link>
       </div>
     </div>
   );

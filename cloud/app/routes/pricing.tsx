@@ -7,21 +7,21 @@ const pricingActions = {
   hosted: {
     free: {
       button: (
-        <ButtonLink href="/login" variant="default">
+        <ButtonLink href="/cloud/login" variant="default">
           Get Started
         </ButtonLink>
       ),
     },
     pro: {
       button: (
-        <ButtonLink href="/login" variant="outline">
+        <ButtonLink href="/cloud/login" variant="outline">
           Get Started
         </ButtonLink>
       ),
     },
     team: {
       button: (
-        <ButtonLink href="/login" variant="outline">
+        <ButtonLink href="/cloud/login" variant="outline">
           Get Started
         </ButtonLink>
       ),

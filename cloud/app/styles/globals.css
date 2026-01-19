@@ -81,7 +81,7 @@
 
   /* Header and footer height variables */
   --header-height-base: 86px; /* Standard header without selector (measured) */
-  --header-height-with-selector: 126px; /* Header with product selector (measured) */
+  --header-height-with-selector: 100px; /* Header with product selector (measured) */
   --header-height: var(--header-height-base); /* Default value */
   --footer-height: 52px;
 

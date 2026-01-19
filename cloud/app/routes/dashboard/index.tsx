@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import { Protected } from "@/app/components/protected";
 import { DashboardLayout } from "@/app/components/dashboard-layout";
 import { useOrganization } from "@/app/contexts/organization";
@@ -47,7 +48,7 @@ function DashboardContent() {
             </div>
             <p className="text-lg font-semibold">
               {routerBalanceLoading ? (
-                <span className="text-muted-foreground">Loading...</span>
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               ) : routerBalance ? (
                 `$${centicentsToDollars(routerBalance.balance).toFixed(2)}`
               ) : (

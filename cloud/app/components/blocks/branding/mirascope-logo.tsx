@@ -4,16 +4,22 @@ import { logoSizeMap } from "@/app/components/blocks/branding/logo-utils";
 import type { BaseLogoProps } from "@/app/components/blocks/branding/logo-utils";
 import { MIRASCOPE } from "@/app/lib/site";
 
+interface MirascopeLogoProps extends BaseLogoProps {
+  /** Use white text color (for landing page) */
+  lightText?: boolean;
+}
+
 /**
  * Mirascope Logo component with customizable size and text display
  */
-const MirascopeLogo: React.FC<BaseLogoProps> = ({
+const MirascopeLogo: React.FC<MirascopeLogoProps> = ({
   size = "medium",
   withText = true,
   className,
   textClassName,
   imgClassName,
   containerClassName,
+  lightText = false,
 }) => {
   const selectedSize = logoSizeMap[size];
   const logoPath = "/assets/branding/mirascope-logo.svg";
@@ -29,7 +35,11 @@ const MirascopeLogo: React.FC<BaseLogoProps> = ({
         <img
           src={logoPath}
           alt="Mirascope Frog Logo"
-          className={cn(selectedSize.img, imgClassName)}
+          className={cn(
+            selectedSize.img,
+            imgClassName,
+            lightText && "brightness-0 invert",
+          )}
         />
       </div>
 
@@ -38,7 +48,8 @@ const MirascopeLogo: React.FC<BaseLogoProps> = ({
           <span
             className={cn(
               selectedSize.text,
-              "text-mirple font-handwriting mb-0",
+              "font-handwriting mb-0 drop-shadow-md",
+              lightText ? "text-white" : "text-mirple",
             )}
           >
             {MIRASCOPE.title}

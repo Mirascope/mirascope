@@ -12,23 +12,33 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as DocsRouteImport } from './routes/docs'
+import { Route as CloudRouteImport } from './routes/cloud'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as CloudIndexRouteImport } from './routes/cloud/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
+import { Route as CloudLoginRouteImport } from './routes/cloud/login'
+import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
 import { Route as AuthGithubRouteImport } from './routes/auth/github'
 import { Route as ApiAnalyticsRouteImport } from './routes/api.analytics'
+import { Route as CloudSettingsIndexRouteImport } from './routes/cloud/settings/index'
 import { Route as DocsV1SplatRouteImport } from './routes/docs.v1.$'
+import { Route as CloudSettingsTeamRouteImport } from './routes/cloud/settings/team'
+import { Route as CloudSettingsProjectRouteImport } from './routes/cloud/settings/project'
+import { Route as CloudSettingsOrganizationRouteImport } from './routes/cloud/settings/organization'
+import { Route as CloudSettingsMeRouteImport } from './routes/cloud/settings/me'
+import { Route as CloudSettingsBillingRouteImport } from './routes/cloud/settings/billing'
+import { Route as CloudSettingsApiKeysRouteImport } from './routes/cloud/settings/api-keys'
 import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/google.proxy-callback'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
@@ -54,19 +64,14 @@ const OrganizationsRoute = OrganizationsRouteImport.update({
   path: '/organizations',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CloudRoute = CloudRouteImport.update({
+  id: '/cloud',
+  path: '/cloud',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -83,6 +88,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CloudIndexRoute = CloudIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CloudRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
@@ -109,6 +119,21 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/dashboard/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CloudSettingsRoute = CloudSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudLoginRoute = CloudLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudDashboardRoute = CloudDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CloudRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -134,10 +159,46 @@ const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
   path: '/api/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CloudSettingsIndexRoute = CloudSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
 const DocsV1SplatRoute = DocsV1SplatRouteImport.update({
   id: '/v1/$',
   path: '/v1/$',
   getParentRoute: () => DocsRoute,
+} as any)
+const CloudSettingsTeamRoute = CloudSettingsTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
+const CloudSettingsProjectRoute = CloudSettingsProjectRouteImport.update({
+  id: '/project',
+  path: '/project',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
+const CloudSettingsOrganizationRoute =
+  CloudSettingsOrganizationRouteImport.update({
+    id: '/organization',
+    path: '/organization',
+    getParentRoute: () => CloudSettingsRoute,
+  } as any)
+const CloudSettingsMeRoute = CloudSettingsMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
+const CloudSettingsBillingRoute = CloudSettingsBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => CloudSettingsRoute,
+} as any)
+const CloudSettingsApiKeysRoute = CloudSettingsApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => CloudSettingsRoute,
 } as any)
 const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
   id: '/proxy-callback',
@@ -188,9 +249,8 @@ const RouterV0ProviderSplatRoute = RouterV0ProviderSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cloud': typeof CloudRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -199,11 +259,15 @@ export interface FileRoutesByFullPath {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/login': typeof CloudLoginRoute
+  '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
+  '/cloud/': typeof CloudIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -213,14 +277,19 @@ export interface FileRoutesByFullPath {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
+  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
+  '/cloud/settings/me': typeof CloudSettingsMeRoute
+  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
+  '/cloud/settings/project': typeof CloudSettingsProjectRoute
+  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRouteWithChildren
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -229,11 +298,14 @@ export interface FileRoutesByTo {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/login': typeof CloudLoginRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
+  '/cloud': typeof CloudIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -243,16 +315,22 @@ export interface FileRoutesByTo {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
+  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
+  '/cloud/settings/me': typeof CloudSettingsMeRoute
+  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
+  '/cloud/settings/project': typeof CloudSettingsProjectRoute
+  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/settings': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cloud': typeof CloudRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
   '/organizations': typeof OrganizationsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -261,11 +339,15 @@ export interface FileRoutesById {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/login': typeof CloudLoginRoute
+  '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
+  '/cloud/': typeof CloudIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
@@ -275,7 +357,14 @@ export interface FileRoutesById {
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/proxy-callback': typeof AuthGoogleProxyCallbackRoute
+  '/cloud/settings/api-keys': typeof CloudSettingsApiKeysRoute
+  '/cloud/settings/billing': typeof CloudSettingsBillingRoute
+  '/cloud/settings/me': typeof CloudSettingsMeRoute
+  '/cloud/settings/organization': typeof CloudSettingsOrganizationRoute
+  '/cloud/settings/project': typeof CloudSettingsProjectRoute
+  '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
+  '/cloud/settings/': typeof CloudSettingsIndexRoute
   '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
 }
 export interface FileRouteTypes {
@@ -283,9 +372,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/blog'
+    | '/cloud'
     | '/docs'
-    | '/home'
-    | '/login'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -294,11 +382,15 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/dashboard'
+    | '/cloud/login'
+    | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
+    | '/cloud/'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -308,14 +400,19 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/api-keys'
+    | '/cloud/settings/billing'
+    | '/cloud/settings/me'
+    | '/cloud/settings/organization'
+    | '/cloud/settings/project'
+    | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/settings/'
     | '/router/v0/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/docs'
-    | '/home'
-    | '/login'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -324,11 +421,14 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/dashboard'
+    | '/cloud/login'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog'
+    | '/cloud'
     | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -338,15 +438,21 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/api-keys'
+    | '/cloud/settings/billing'
+    | '/cloud/settings/me'
+    | '/cloud/settings/organization'
+    | '/cloud/settings/project'
+    | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/settings'
     | '/router/v0/$provider/$'
   id:
     | '__root__'
     | '/'
     | '/blog'
+    | '/cloud'
     | '/docs'
-    | '/home'
-    | '/login'
     | '/organizations'
     | '/pricing'
     | '/privacy'
@@ -355,11 +461,15 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/dashboard'
+    | '/cloud/login'
+    | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
+    | '/cloud/'
     | '/dashboard/'
     | '/api/v0/$'
     | '/api/v0/docs'
@@ -369,16 +479,22 @@ export interface FileRouteTypes {
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
     | '/auth/google/proxy-callback'
+    | '/cloud/settings/api-keys'
+    | '/cloud/settings/billing'
+    | '/cloud/settings/me'
+    | '/cloud/settings/organization'
+    | '/cloud/settings/project'
+    | '/cloud/settings/team'
     | '/docs/v1/$'
+    | '/cloud/settings/'
     | '/router/v0/$provider/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CloudRoute: typeof CloudRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
-  HomeRoute: typeof HomeRoute
-  LoginRoute: typeof LoginRoute
   OrganizationsRoute: typeof OrganizationsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -420,25 +536,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/docs': {
       id: '/docs'
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cloud': {
+      id: '/cloud'
+      path: '/cloud'
+      fullPath: '/cloud'
+      preLoaderRoute: typeof CloudRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -461,6 +570,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/cloud/': {
+      id: '/cloud/'
+      path: '/'
+      fullPath: '/cloud/'
+      preLoaderRoute: typeof CloudIndexRouteImport
+      parentRoute: typeof CloudRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -497,6 +613,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloud/settings': {
+      id: '/cloud/settings'
+      path: '/settings'
+      fullPath: '/cloud/settings'
+      preLoaderRoute: typeof CloudSettingsRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/login': {
+      id: '/cloud/login'
+      path: '/login'
+      fullPath: '/cloud/login'
+      preLoaderRoute: typeof CloudLoginRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/dashboard': {
+      id: '/cloud/dashboard'
+      path: '/dashboard'
+      fullPath: '/cloud/dashboard'
+      preLoaderRoute: typeof CloudDashboardRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -532,12 +669,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloud/settings/': {
+      id: '/cloud/settings/'
+      path: '/'
+      fullPath: '/cloud/settings/'
+      preLoaderRoute: typeof CloudSettingsIndexRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
     '/docs/v1/$': {
       id: '/docs/v1/$'
       path: '/v1/$'
       fullPath: '/docs/v1/$'
       preLoaderRoute: typeof DocsV1SplatRouteImport
       parentRoute: typeof DocsRoute
+    }
+    '/cloud/settings/team': {
+      id: '/cloud/settings/team'
+      path: '/team'
+      fullPath: '/cloud/settings/team'
+      preLoaderRoute: typeof CloudSettingsTeamRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
+    '/cloud/settings/project': {
+      id: '/cloud/settings/project'
+      path: '/project'
+      fullPath: '/cloud/settings/project'
+      preLoaderRoute: typeof CloudSettingsProjectRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
+    '/cloud/settings/organization': {
+      id: '/cloud/settings/organization'
+      path: '/organization'
+      fullPath: '/cloud/settings/organization'
+      preLoaderRoute: typeof CloudSettingsOrganizationRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
+    '/cloud/settings/me': {
+      id: '/cloud/settings/me'
+      path: '/me'
+      fullPath: '/cloud/settings/me'
+      preLoaderRoute: typeof CloudSettingsMeRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
+    '/cloud/settings/billing': {
+      id: '/cloud/settings/billing'
+      path: '/billing'
+      fullPath: '/cloud/settings/billing'
+      preLoaderRoute: typeof CloudSettingsBillingRouteImport
+      parentRoute: typeof CloudSettingsRoute
+    }
+    '/cloud/settings/api-keys': {
+      id: '/cloud/settings/api-keys'
+      path: '/api-keys'
+      fullPath: '/cloud/settings/api-keys'
+      preLoaderRoute: typeof CloudSettingsApiKeysRouteImport
+      parentRoute: typeof CloudSettingsRoute
     }
     '/auth/google/proxy-callback': {
       id: '/auth/google/proxy-callback'
@@ -617,6 +803,46 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface CloudSettingsRouteChildren {
+  CloudSettingsApiKeysRoute: typeof CloudSettingsApiKeysRoute
+  CloudSettingsBillingRoute: typeof CloudSettingsBillingRoute
+  CloudSettingsMeRoute: typeof CloudSettingsMeRoute
+  CloudSettingsOrganizationRoute: typeof CloudSettingsOrganizationRoute
+  CloudSettingsProjectRoute: typeof CloudSettingsProjectRoute
+  CloudSettingsTeamRoute: typeof CloudSettingsTeamRoute
+  CloudSettingsIndexRoute: typeof CloudSettingsIndexRoute
+}
+
+const CloudSettingsRouteChildren: CloudSettingsRouteChildren = {
+  CloudSettingsApiKeysRoute: CloudSettingsApiKeysRoute,
+  CloudSettingsBillingRoute: CloudSettingsBillingRoute,
+  CloudSettingsMeRoute: CloudSettingsMeRoute,
+  CloudSettingsOrganizationRoute: CloudSettingsOrganizationRoute,
+  CloudSettingsProjectRoute: CloudSettingsProjectRoute,
+  CloudSettingsTeamRoute: CloudSettingsTeamRoute,
+  CloudSettingsIndexRoute: CloudSettingsIndexRoute,
+}
+
+const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
+  CloudSettingsRouteChildren,
+)
+
+interface CloudRouteChildren {
+  CloudDashboardRoute: typeof CloudDashboardRoute
+  CloudLoginRoute: typeof CloudLoginRoute
+  CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
+  CloudIndexRoute: typeof CloudIndexRoute
+}
+
+const CloudRouteChildren: CloudRouteChildren = {
+  CloudDashboardRoute: CloudDashboardRoute,
+  CloudLoginRoute: CloudLoginRoute,
+  CloudSettingsRoute: CloudSettingsRouteWithChildren,
+  CloudIndexRoute: CloudIndexRoute,
+}
+
+const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)
+
 interface DocsRouteChildren {
   DocsSplatRoute: typeof DocsSplatRoute
   DocsV1SplatRoute: typeof DocsV1SplatRoute
@@ -660,9 +886,8 @@ const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogRoute: BlogRouteWithChildren,
+  CloudRoute: CloudRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
-  HomeRoute: HomeRoute,
-  LoginRoute: LoginRoute,
   OrganizationsRoute: OrganizationsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

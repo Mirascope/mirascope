@@ -86,3 +86,10 @@ export type ApiKeyInfo = {
   projectId: string;
   organizationId: string;
 } & OwnerFields<PublicUser>;
+
+// Type for API key with project and environment context (for listing all keys)
+export type ApiKeyWithContext = PublicApiKey & {
+  projectId: string;
+  projectName: string;
+  environmentName: string;
+};
