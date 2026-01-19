@@ -72,8 +72,8 @@ const docsSection = {
     },
     {
       slug: "providers",
-      label: "Providers & Supported Features",
-    }, // TODO
+      label: "Providers",
+    },
     {
       slug: "local-models",
       label: "Local Models",
