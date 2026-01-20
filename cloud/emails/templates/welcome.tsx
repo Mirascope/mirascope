@@ -89,30 +89,11 @@ export function WelcomeEmail({ name }: WelcomeEmailProps) {
               </Heading>
 
               <Text className="text-gray-700 text-base leading-6 my-4">
-                We'd love to learn more about how you're using Mirascope. Here's
-                how you can earn additional credits:
+                We're offering free credits to early adopters who help us build
+                a better product. To learn about current opportunities, join our
+                Discord and send me a DM - I'd love to hear what you're building
+                and share how you can earn credits.
               </Text>
-
-              <ul className="pl-5 my-4">
-                <li className="mb-3">
-                  <Text className="text-gray-700 text-base leading-6 my-2">
-                    <strong>$5</strong> - Join our Discord and introduce
-                    yourself
-                  </Text>
-                </li>
-                <li className="mb-3">
-                  <Text className="text-gray-700 text-base leading-6 my-2">
-                    <strong>$5</strong> - Share your project in our
-                    show-and-tell channel
-                  </Text>
-                </li>
-                <li className="mb-3">
-                  <Text className="text-gray-700 text-base leading-6 my-2">
-                    <strong>$20</strong> - Schedule a user interview after using
-                    your credits
-                  </Text>
-                </li>
-              </ul>
 
               <Section className="text-center my-6">
                 <Button href="https://mirascope.com/discord-invite">
