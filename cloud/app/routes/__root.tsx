@@ -12,7 +12,10 @@ import { AnalyticsProvider } from "@/app/contexts/analytics";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/app/api/client";
 import globalsCss from "@/app/styles/globals.css?url";
-import { ThemeProvider } from "@/app/components/blocks/theme-provider";
+import {
+  ThemeProvider,
+  useIsLandingPage,
+} from "@/app/components/blocks/theme-provider";
 import Header from "@/app/components/blocks/navigation/header";
 import Footer from "@/app/components/blocks/navigation/footer";
 import { usePageView } from "@/app/hooks/use-page-view";
@@ -65,22 +68,35 @@ function AppContent() {
   const currentPath = router.location.pathname;
   const isCloudRoute =
     currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+  const isLandingPage = useIsLandingPage();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div
+      className={
+        isLandingPage
+          ? "relative h-screen overflow-hidden"
+          : "flex min-h-screen flex-col"
+      }
+    >
       <Header />
       <div
         className={
           isCloudRoute
             ? "w-full grow pt-[60px]"
-            : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
+            : isLandingPage
+              ? "w-full"
+              : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
         <main className="grow">
           <Outlet />
         </main>
       </div>
-      {!isCloudRoute && <Footer />}
+      {!isCloudRoute && (
+        <div className={isLandingPage ? "fixed right-0 bottom-0 left-0" : ""}>
+          <Footer />
+        </div>
+      )}
       <Toaster />
       <TanStackRouterDevtools />
       <Scripts />
