@@ -1,0 +1,211 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: prompts
+description: API documentation for prompts
+---
+
+# prompts
+
+## <ApiType type="Attribute" slug="async-context-promptable" symbolName="AsyncContextPromptable" /> AsyncContextPromptable
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+An asynchronous context promptable function.
+
+An `AsyncContextPromptable` function takes input arguments
+`Context[DepsT]` and `P` and returns one of:
+- A single `Content` part that will be rendered as a single user message
+- A sequence of `Content` parts that will be rendered as a single user message
+- A list of `Message` objects that will be rendered as-is
+
+
+## <ApiType type="Class" slug="async-context-prompt" symbolName="AsyncContextPrompt" /> AsyncContextPrompt
+
+Protocol for a context prompt function that returns a list of messages.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Attribute" slug="async-promptable" symbolName="AsyncPromptable" /> AsyncPromptable
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+An asynchronous promptable function.
+
+An `AsyncPromptable` function takes input arguments `P` and returns one of:
+- A single `Content` part that will be rendered as a single user message
+- A sequence of `Content` parts that will be rendered as a single user message
+- A list of `Message` objects that will be rendered as-is
+
+
+## <ApiType type="Class" slug="async-prompt" symbolName="AsyncPrompt" /> AsyncPrompt
+
+Protocol for a prompt function that returns a list of messages.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Attribute" slug="context-promptable" symbolName="ContextPromptable" /> ContextPromptable
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+A context promptable function.
+
+A `ContextPromptable` function takes input arguments `Context[DepsT]` and `P` and
+returns one of:
+- A single `Content` part that will be rendered as a single user message
+- A sequence of `Content` parts that will be rendered as a single user message
+- A list of `Message` objects that will be rendered as-is
+
+
+## <ApiType type="Class" slug="context-prompt" symbolName="ContextPrompt" /> ContextPrompt
+
+Protocol for a context prompt function that returns a list of messages.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Attribute" slug="promptable" symbolName="Promptable" /> Promptable
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
+
+A function that can be promoted to a prompt.
+
+A `Promptable` function takes input arguments `P` and returns one of:
+- A single `Content` part that will be rendered as a single user message
+- A sequence of `Content` parts that will be rendered as a single user message
+- A list of `Message` objects that will be rendered as-is
+
+
+## <ApiType type="Class" slug="prompt" symbolName="Prompt" /> Prompt
+
+Protocol for a prompt function that returns a list of messages.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="promptable-decorator" symbolName="PromptableDecorator" /> PromptableDecorator
+
+Protocol for the `prompt` decorator when used without a template.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="prompt-template-decorator" symbolName="PromptTemplateDecorator" /> PromptTemplateDecorator
+
+Protocol for the `prompt` decorator when used with a template.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Function" slug="prompt_fn" symbolName="prompt" /> prompt
+
+Prompt decorator for turning functions into prompts.
+
+This decorator transforms a function into a Prompt, i.e. a function that returns
+`list[llm.Message]`. Its behavior depends on whether it's called with a template
+string.
+
+With a template string, it returns a PromptTemplateDecorator, in which case it uses
+the provided template to decorate an function with an empty body, and uses arguments
+to the function for variable substitution in the template. The resulting Prompt
+returns messages based on the template.
+
+Without a template string, it returns a PromptableDecorator, which transforms a
+Promptable (a function returning either content, content sequence, or messages)
+into a Prompt. The resulting prompt either promotes the content / content sequence
+into a list containing a single user message with that content, or passes along
+the messages returned by the decorated function.
+
+Template substitution rules:
+- [USER], [ASSISTANT], [SYSTEM] demarcate the start of a new message with that role
+- [MESSAGES] indicates the next variable contains a list of messages to include
+- `{{ variable }}` injects the variable as a string, unless annotated
+- Annotations: `{{ variable:annotation }}` where annotation is one of:
+    image, images, audio, audios, video, videos, document, documents
+- Single content annotations (image, audio, video, document) expect a file path,
+    URL, base64 string, or bytes, which becomes a content part with inferred mime-type
+- Multiple content annotations (images, audios, videos, documents) expect a list
+    of strings or bytes, each becoming a content part with inferred mime-type
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "template",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "A string template with placeholders using `{{ variable_name }}`\nand optional role markers like [SYSTEM], [USER], and [ASSISTANT]."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "PromptableDecorator | PromptTemplateDecorator",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "PromptableDecorator",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "PromptableDecorator",
+        "doc_url": "/docs/mirascope/v2/api/prompts#promptable-decorator"
+      },
+      {
+        "type_str": "PromptTemplateDecorator",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "PromptTemplateDecorator",
+        "doc_url": "/docs/mirascope/v2/api/prompts#prompt-template-decorator"
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A PromptTemplateDecorator or PromptableDecorator that converts the decorated\nfunction into a prompt."
+}}
+/>
+
+

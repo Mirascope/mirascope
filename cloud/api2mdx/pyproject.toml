@@ -1,0 +1,114 @@
+[project]
+name = "api2mdx"
+version = "0.2.2"
+description = "Generate MDX API documentation from Python source code"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Dandelion Mané", email = "dandelion@mirascope.com" }
+]
+keywords = ["documentation", "api", "mdx", "python"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+]
+urls = { Homepage = "https://github.com/Mirascope/api2mdx", Repository = "https://github.com/Mirascope/api2mdx" }
+
+dependencies = [
+    "griffe>=1.7.2",
+]
+
+[tool.setuptools]
+packages = ["api2mdx", "scripts"]
+
+
+[project.scripts]
+api2mdx = "api2mdx.main:main"
+regenerate-snapshots = "scripts.regenerate_snapshots:main"
+
+[tool.uv]
+package = true
+dev-dependencies = [
+    "pyright>=1.1.396",
+    "ruff>=0.1.6",
+    "pytest>=8.3.5",
+]
+
+[tool.pyright]
+include = [
+    "api2mdx"
+]
+exclude = [
+    "**/__pycache__",
+    ".venv",
+    "venv",
+    "snapshots",  # Exclude example code from type checking
+]
+
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "venv",
+    ".coveragerc",
+]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "YTT",
+    "B",
+    "T10",
+    "T20",
+    "C4",
+    "PYI006",
+    "SIM",
+    "ANN",
+    "RUF022",
+]
+ignore = ['D105', 'D107', 'D205', 'D415', 'E501', 'B011', 'B028', 'B904', 'T201']
+fixable = ["ALL"]
+pydocstyle = { convention = 'google' }
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ['mirascope', 'tests', 'examples']
+extra-standard-library = ["typing_extensions"]
+combine-as-imports = true
+
