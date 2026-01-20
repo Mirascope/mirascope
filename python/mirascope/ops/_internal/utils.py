@@ -76,10 +76,15 @@ def extract_arguments(
 ) -> tuple[dict[str, str], dict[str, Any]]:
     """Returns a tuple of (arg_types, arg_values) dictionaries from function call.
 
+    If the function is a Call method (e.g., Call.call), uses the original
+    decorated function's signature to get proper parameter names and types.
+
     If the function has `trace_ctx: Span` as first parameter (detected via
     fn_wants_span), that parameter is skipped since it's injected by the
     decorator and shouldn't be recorded in span attributes.
     """
+    # Use original function signature for Call methods
+    fn = get_original_fn(fn)
     signature = inspect.signature(fn)
 
     # If function wants span injection, skip the first parameter
