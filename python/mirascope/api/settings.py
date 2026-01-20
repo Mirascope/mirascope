@@ -46,6 +46,24 @@ def get_settings() -> Settings:
     return settings
 
 
+def update_settings(
+    *,
+    api_key: str | None = None,
+    base_url: str | None = None,
+) -> None:
+    """Update the current settings with provided values.
+
+    This allows programmatic configuration of settings (e.g., from ops.configure)
+    that will be used by get_sync_client() and get_async_client().
+
+    Args:
+        api_key: API key to set (if provided)
+        base_url: Base URL to set (if provided)
+    """
+    current = get_settings()
+    current.update(api_key=api_key, base_url=base_url)
+
+
 @contextmanager
 def settings(
     base_url: str | None = None,

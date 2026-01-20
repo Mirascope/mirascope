@@ -12,6 +12,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from ...api.client import Mirascope
+from ...api.settings import update_settings
 from .exporters import MirascopeOTLPExporter
 
 if TYPE_CHECKING:
@@ -110,6 +111,10 @@ def configure(
         ```
     """
     global _tracer_provider, _tracer_name, _tracer_version, _tracer
+
+    # Update settings so get_sync_client/get_async_client can use these values
+    if api_key is not None or base_url is not None:
+        update_settings(api_key=api_key, base_url=base_url)
 
     # If no tracer_provider given, auto-configure Mirascope Cloud
     if tracer_provider is None:
