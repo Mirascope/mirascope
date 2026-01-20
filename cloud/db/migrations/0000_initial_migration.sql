@@ -13,6 +13,7 @@ CREATE TABLE "annotations" (
 	"label" "annotation_label",
 	"reasoning" text,
 	"metadata" jsonb,
+	"tags" jsonb,
 	"environment_id" uuid NOT NULL,
 	"project_id" uuid NOT NULL,
 	"organization_id" uuid NOT NULL,
@@ -175,6 +176,17 @@ CREATE TABLE "project_membership_audit" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "project_tags" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"project_id" uuid NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"created_by" uuid,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "project_tags_project_id_name_unique" UNIQUE("project_id","name")
+);
+--> statement-breakpoint
 CREATE TABLE "router_requests" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"provider" text NOT NULL,
@@ -225,6 +237,9 @@ ALTER TABLE "project_memberships" ADD CONSTRAINT "project_memberships_member_id_
 ALTER TABLE "project_membership_audit" ADD CONSTRAINT "project_membership_audit_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "project_membership_audit" ADD CONSTRAINT "project_membership_audit_actor_id_users_id_fk" FOREIGN KEY ("actor_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "project_membership_audit" ADD CONSTRAINT "project_membership_audit_target_id_users_id_fk" FOREIGN KEY ("target_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_tags" ADD CONSTRAINT "project_tags_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_tags" ADD CONSTRAINT "project_tags_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_tags" ADD CONSTRAINT "project_tags_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "router_requests" ADD CONSTRAINT "router_requests_api_key_id_api_keys_id_fk" FOREIGN KEY ("api_key_id") REFERENCES "public"."api_keys"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "router_requests" ADD CONSTRAINT "router_requests_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "annotations_otel_trace_id_idx" ON "annotations" USING btree ("otel_trace_id");--> statement-breakpoint
