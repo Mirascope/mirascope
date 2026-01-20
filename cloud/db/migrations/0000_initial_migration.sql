@@ -32,6 +32,7 @@ CREATE TABLE "api_keys" (
 	"ownerId" uuid NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"last_used_at" timestamp,
+	"deleted_at" timestamp,
 	CONSTRAINT "api_keys_environment_id_name_unique" UNIQUE("environment_id","name")
 );
 --> statement-breakpoint

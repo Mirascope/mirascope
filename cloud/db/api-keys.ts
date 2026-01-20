@@ -125,6 +125,7 @@ const publicFields = {
   ownerId: apiKeys.ownerId,
   createdAt: apiKeys.createdAt,
   lastUsedAt: apiKeys.lastUsedAt,
+  deletedAt: apiKeys.deletedAt,
 };
 
 // =============================================================================
@@ -354,7 +355,12 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
       const results: PublicApiKey[] = yield* client
         .select(publicFields)
         .from(apiKeys)
-        .where(eq(apiKeys.environmentId, environmentId))
+        .where(
+          and(
+            eq(apiKeys.environmentId, environmentId),
+            isNull(apiKeys.deletedAt),
+          ),
+        )
         .pipe(
           Effect.mapError(
             (e) =>
@@ -421,6 +427,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           and(
             eq(apiKeys.id, apiKeyId),
             eq(apiKeys.environmentId, environmentId),
+            isNull(apiKeys.deletedAt),
           ),
         )
         .limit(1)
@@ -504,6 +511,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           and(
             eq(apiKeys.id, apiKeyId),
             eq(apiKeys.environmentId, environmentId),
+            isNull(apiKeys.deletedAt),
           ),
         )
         .returning(publicFields)
@@ -589,6 +597,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
             and(
               eq(apiKeys.id, apiKeyId),
               eq(apiKeys.environmentId, environmentId),
+              isNull(apiKeys.deletedAt),
             ),
           )
           .limit(1)
@@ -622,13 +631,18 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         }
       }
 
-      // Delete the API key
+      // Soft-delete the API key by setting deletedAt and renaming to free up the name
       const [deleted] = yield* client
-        .delete(apiKeys)
+        .update(apiKeys)
+        .set({
+          name: `deleted-${apiKeyId}`,
+          deletedAt: new Date(),
+        })
         .where(
           and(
             eq(apiKeys.id, apiKeyId),
             eq(apiKeys.environmentId, environmentId),
+            isNull(apiKeys.deletedAt),
           ),
         )
         .returning({ id: apiKeys.id })
@@ -700,7 +714,13 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
         .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
         .innerJoin(projects, eq(environments.projectId, projects.id))
         .innerJoin(users, eq(apiKeys.ownerId, users.id))
-        .where(and(eq(apiKeys.keyHash, keyHash), isNull(users.deletedAt)))
+        .where(
+          and(
+            eq(apiKeys.keyHash, keyHash),
+            isNull(users.deletedAt),
+            isNull(apiKeys.deletedAt),
+          ),
+        )
         .limit(1)
         .pipe(
           Effect.mapError(
@@ -811,6 +831,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           ownerId: apiKeys.ownerId,
           createdAt: apiKeys.createdAt,
           lastUsedAt: apiKeys.lastUsedAt,
+          deletedAt: apiKeys.deletedAt,
           projectId: projects.id,
           projectName: projects.name,
           environmentName: environments.name,
@@ -824,7 +845,12 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
       if (isOrgAdmin) {
         // Org OWNER/ADMIN can see all API keys in the organization
         results = yield* baseQuery
-          .where(eq(projects.organizationId, organizationId))
+          .where(
+            and(
+              eq(projects.organizationId, organizationId),
+              isNull(apiKeys.deletedAt),
+            ),
+          )
           .pipe(
             Effect.mapError(
               (e) =>
@@ -873,6 +899,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
             and(
               eq(projects.organizationId, organizationId),
               inArray(projects.id, accessibleProjectIds),
+              isNull(apiKeys.deletedAt),
             ),
           )
           .pipe(

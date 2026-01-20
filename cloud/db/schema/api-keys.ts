@@ -22,6 +22,8 @@ export const apiKeys = pgTable(
     createdAt: timestamp("created_at").defaultNow(),
     // Track last usage for auditing
     lastUsedAt: timestamp("last_used_at"),
+    // Soft-delete timestamp (null = active, non-null = deleted)
+    deletedAt: timestamp("deleted_at"),
   },
   (table) => ({
     environmentNameUnique: unique().on(table.environmentId, table.name),
@@ -53,6 +55,7 @@ export type PublicApiKey = Pick<
   | "ownerId"
   | "createdAt"
   | "lastUsedAt"
+  | "deletedAt"
 >;
 
 // Type for the create response (includes the plaintext key)

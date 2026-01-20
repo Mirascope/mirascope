@@ -25,6 +25,7 @@ describe("toApiKey helper", () => {
       ownerId: "user-id",
       createdAt: date,
       lastUsedAt: date,
+      deletedAt: null,
     };
 
     const result = toApiKey(apiKey);
@@ -43,6 +44,7 @@ describe("toApiKey helper", () => {
       ownerId: "user-id",
       createdAt: null,
       lastUsedAt: null,
+      deletedAt: null,
     };
 
     const result = toApiKey(apiKey);
@@ -63,6 +65,7 @@ describe("toApiKeyCreateResponse helper", () => {
       ownerId: "user-id",
       createdAt: date,
       lastUsedAt: date,
+      deletedAt: null,
       key: "mk_secret_key",
     };
 
@@ -83,6 +86,7 @@ describe("toApiKeyCreateResponse helper", () => {
       ownerId: "user-id",
       createdAt: null,
       lastUsedAt: null,
+      deletedAt: null,
       key: "mk_secret_key",
     };
 
@@ -105,6 +109,7 @@ describe("toApiKeyWithContext helper", () => {
       ownerId: "user-id",
       createdAt: date,
       lastUsedAt: date,
+      deletedAt: null,
       projectId: "project-id",
       projectName: "My Project",
       environmentName: "production",
@@ -128,6 +133,7 @@ describe("toApiKeyWithContext helper", () => {
       ownerId: "user-id",
       createdAt: null,
       lastUsedAt: null,
+      deletedAt: null,
       projectId: "project-id",
       projectName: "My Project",
       environmentName: "production",
