@@ -1,22 +1,46 @@
 ---
 title: Local Models
-description: Learn how to use local models with Mirascope via Ollama, vLLM, and other local providers.
+description: Learn how to use local models with Mirascope via Ollama, vLLM, and MLX.
 ---
-
-<Info>
-Reference: This doc should draw from:
-- legacy/legacy-content-v1/local_models.mdx (Ollama, vLLM, local model setup)
-- index.mdx "Using Local Models" section
-</Info>
 
 # Local Models
 
-This document covers using local models with Mirascope.
+Mirascope supports local models through built-in providers and OpenAI-compatible routing. This lets you run models on your own hardware for privacy, cost savings, or offline access.
 
-## Topics Covered
+<Note>
+This guide builds on concepts from [Providers](/docs/mirascope/v2/providers). Read that first to understand how provider registration and routing work.
+</Note>
 
-- Using local models with Ollama
-- Using MLX models on Apple Silicon
-- Setting up vLLM for local inference
-- Configuring base URLs for local endpoints
-- Performance considerations for local models
+## Ollama
+
+[Ollama](https://ollama.com/) makes it easy to run open-source models locally. Mirascope includes a built-in Ollama provider that works out of the box:
+
+<CodeExample file="examples/local_models/local_ollama.py" />
+
+The Ollama provider connects to `http://localhost:11434/v1/` by default. Set the `OLLAMA_BASE_URL` environment variable to use a different endpoint, or use `llm.register_provider()` to configure it programmatically. See [Providers](/docs/mirascope/v2/providers) for details.
+
+## vLLM and OpenAI-Compatible Servers
+
+Many local inference servers expose OpenAI-compatible APIs, including [vLLM](https://docs.vllm.ai/) and [LM Studio](https://lmstudio.ai/). Use `llm.register_provider()` to route models through Mirascope's OpenAI provider:
+
+<CodeExample file="examples/local_models/local_vllm.py" />
+
+This pattern works with any server that implements the OpenAI chat completions API. Adjust the `scope` prefix and `base_url` to match your setup.
+
+## MLX (Apple Silicon)
+
+On Mac, you can run models directly on Apple Silicon using [MLX](https://github.com/ml-explore/mlx). Mirascope's MLX provider loads models from Hugging Face and runs them locally:
+
+<CodeExample file="examples/local_models/local_mlx.py" />
+
+Models download automatically on first use. The provider caches loaded models in memory, so subsequent calls are fast.
+
+<Note>
+The MLX provider currently supports basic text generation and streaming. Tools and structured output are not yet supported.
+</Note>
+
+## Next Steps
+
+- [Providers](/docs/mirascope/v2/providers) — Configure provider settings and routing
+- [Streaming](/docs/mirascope/v2/streaming) — Stream responses from local models
+- [Tools](/docs/mirascope/v2/tools) — Use tools with Ollama and vLLM
