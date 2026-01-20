@@ -11,10 +11,23 @@ from .types.organizations_create_payment_intent_response import (
 from .types.organizations_create_response import OrganizationsCreateResponse
 from .types.organizations_get_response import OrganizationsGetResponse
 from .types.organizations_list_response_item import OrganizationsListResponseItem
+from .types.organizations_preview_subscription_change_request_target_plan import (
+    OrganizationsPreviewSubscriptionChangeRequestTargetPlan,
+)
+from .types.organizations_preview_subscription_change_response import (
+    OrganizationsPreviewSubscriptionChangeResponse,
+)
 from .types.organizations_router_balance_response import (
     OrganizationsRouterBalanceResponse,
 )
+from .types.organizations_subscription_response import OrganizationsSubscriptionResponse
 from .types.organizations_update_response import OrganizationsUpdateResponse
+from .types.organizations_update_subscription_request_target_plan import (
+    OrganizationsUpdateSubscriptionRequestTargetPlan,
+)
+from .types.organizations_update_subscription_response import (
+    OrganizationsUpdateSubscriptionResponse,
+)
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -257,6 +270,137 @@ class OrganizationsClient:
         """
         _response = self._raw_client.createpaymentintent(
             id, amount=amount, request_options=request_options
+        )
+        return _response.data
+
+    def subscription(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsSubscriptionResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsSubscriptionResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.subscription(
+            id="id",
+        )
+        """
+        _response = self._raw_client.subscription(id, request_options=request_options)
+        return _response.data
+
+    def previewsubscriptionchange(
+        self,
+        id: str,
+        *,
+        target_plan: OrganizationsPreviewSubscriptionChangeRequestTargetPlan,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsPreviewSubscriptionChangeResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        target_plan : OrganizationsPreviewSubscriptionChangeRequestTargetPlan
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsPreviewSubscriptionChangeResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.previewsubscriptionchange(
+            id="id",
+            target_plan="free",
+        )
+        """
+        _response = self._raw_client.previewsubscriptionchange(
+            id, target_plan=target_plan, request_options=request_options
+        )
+        return _response.data
+
+    def updatesubscription(
+        self,
+        id: str,
+        *,
+        target_plan: OrganizationsUpdateSubscriptionRequestTargetPlan,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsUpdateSubscriptionResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        target_plan : OrganizationsUpdateSubscriptionRequestTargetPlan
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsUpdateSubscriptionResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.updatesubscription(
+            id="id",
+            target_plan="free",
+        )
+        """
+        _response = self._raw_client.updatesubscription(
+            id, target_plan=target_plan, request_options=request_options
+        )
+        return _response.data
+
+    def cancelscheduleddowngrade(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.organizations.cancelscheduleddowngrade(
+            id="id",
+        )
+        """
+        _response = self._raw_client.cancelscheduleddowngrade(
+            id, request_options=request_options
         )
         return _response.data
 
@@ -556,5 +700,170 @@ class AsyncOrganizationsClient:
         """
         _response = await self._raw_client.createpaymentintent(
             id, amount=amount, request_options=request_options
+        )
+        return _response.data
+
+    async def subscription(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OrganizationsSubscriptionResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsSubscriptionResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.subscription(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.subscription(
+            id, request_options=request_options
+        )
+        return _response.data
+
+    async def previewsubscriptionchange(
+        self,
+        id: str,
+        *,
+        target_plan: OrganizationsPreviewSubscriptionChangeRequestTargetPlan,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsPreviewSubscriptionChangeResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        target_plan : OrganizationsPreviewSubscriptionChangeRequestTargetPlan
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsPreviewSubscriptionChangeResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.previewsubscriptionchange(
+                id="id",
+                target_plan="free",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.previewsubscriptionchange(
+            id, target_plan=target_plan, request_options=request_options
+        )
+        return _response.data
+
+    async def updatesubscription(
+        self,
+        id: str,
+        *,
+        target_plan: OrganizationsUpdateSubscriptionRequestTargetPlan,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OrganizationsUpdateSubscriptionResponse:
+        """
+        Parameters
+        ----------
+        id : str
+
+        target_plan : OrganizationsUpdateSubscriptionRequestTargetPlan
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OrganizationsUpdateSubscriptionResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.updatesubscription(
+                id="id",
+                target_plan="free",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.updatesubscription(
+            id, target_plan=target_plan, request_options=request_options
+        )
+        return _response.data
+
+    async def cancelscheduleddowngrade(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
+        """
+        Parameters
+        ----------
+        id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.organizations.cancelscheduleddowngrade(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.cancelscheduleddowngrade(
+            id, request_options=request_options
         )
         return _response.data

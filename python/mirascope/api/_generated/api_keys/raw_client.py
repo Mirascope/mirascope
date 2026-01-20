@@ -14,12 +14,17 @@ from ..errors.conflict_error import ConflictError
 from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.already_exists_error import AlreadyExistsError
-from ..types.http_api_decode_error import HttpApiDecodeError
+from ..errors.service_unavailable_error import ServiceUnavailableError
+from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
+from ..types.rate_limit_error import RateLimitError
+from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 from .types.api_keys_create_response import ApiKeysCreateResponse
 from .types.api_keys_get_response import ApiKeysGetResponse
+from .types.api_keys_list_all_for_org_response_item import (
+    ApiKeysListAllForOrgResponseItem,
+)
 from .types.api_keys_list_response_item import ApiKeysListResponseItem
 
 # this is used as the default value for optional parameters
@@ -29,6 +34,108 @@ OMIT = typing.cast(typing.Any, ...)
 class RawApiKeysClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    def api_keys_list_all_for_org(
+        self,
+        organization_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[typing.List[ApiKeysListAllForOrgResponseItem]]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[ApiKeysListAllForOrgResponseItem]]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/api-keys",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[ApiKeysListAllForOrgResponseItem],
+                    parse_obj_as(
+                        type_=typing.List[ApiKeysListAllForOrgResponseItem],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def api_keys_list(
         self,
@@ -74,9 +181,9 @@ class RawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -103,6 +210,17 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -114,10 +232,29 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def api_keys_create(
         self,
@@ -174,9 +311,9 @@ class RawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -207,9 +344,20 @@ class RawApiKeysClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -225,10 +373,29 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def api_keys_get(
         self,
@@ -277,9 +444,9 @@ class RawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -306,6 +473,17 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -317,10 +495,29 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def api_keys_delete(
         self,
@@ -361,9 +558,9 @@ class RawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -390,6 +587,17 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -401,15 +609,136 @@ class RawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
 
 class AsyncRawApiKeysClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    async def api_keys_list_all_for_org(
+        self,
+        organization_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[typing.List[ApiKeysListAllForOrgResponseItem]]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[typing.List[ApiKeysListAllForOrgResponseItem]]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/api-keys",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[ApiKeysListAllForOrgResponseItem],
+                    parse_obj_as(
+                        type_=typing.List[ApiKeysListAllForOrgResponseItem],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def api_keys_list(
         self,
@@ -455,9 +784,9 @@ class AsyncRawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -484,6 +813,17 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -495,10 +835,29 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def api_keys_create(
         self,
@@ -555,9 +914,9 @@ class AsyncRawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -588,9 +947,20 @@ class AsyncRawApiKeysClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -606,10 +976,29 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def api_keys_get(
         self,
@@ -658,9 +1047,9 @@ class AsyncRawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -687,6 +1076,17 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -698,10 +1098,29 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def api_keys_delete(
         self,
@@ -742,9 +1161,9 @@ class AsyncRawApiKeysClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -771,6 +1190,17 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -782,7 +1212,26 @@ class AsyncRawApiKeysClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )

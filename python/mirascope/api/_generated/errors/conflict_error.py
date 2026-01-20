@@ -3,9 +3,12 @@
 import typing
 
 from ..core.api_error import ApiError
-from ..types.already_exists_error import AlreadyExistsError
 
 
 class ConflictError(ApiError):
-    def __init__(self, body: AlreadyExistsError, headers: typing.Optional[typing.Dict[str, str]] = None):
+    def __init__(
+        self,
+        body: typing.Optional[typing.Any],
+        headers: typing.Optional[typing.Dict[str, str]] = None,
+    ):
         super().__init__(status_code=409, headers=headers, body=body)

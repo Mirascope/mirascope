@@ -7,6 +7,9 @@ from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawApiKeysClient, RawApiKeysClient
 from .types.api_keys_create_response import ApiKeysCreateResponse
 from .types.api_keys_get_response import ApiKeysGetResponse
+from .types.api_keys_list_all_for_org_response_item import (
+    ApiKeysListAllForOrgResponseItem,
+)
 from .types.api_keys_list_response_item import ApiKeysListResponseItem
 
 # this is used as the default value for optional parameters
@@ -27,6 +30,39 @@ class ApiKeysClient:
         RawApiKeysClient
         """
         return self._raw_client
+
+    def api_keys_list_all_for_org(
+        self,
+        organization_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[ApiKeysListAllForOrgResponseItem]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[ApiKeysListAllForOrgResponseItem]
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.api_keys.api_keys_list_all_for_org(
+            organization_id="organizationId",
+        )
+        """
+        _response = self._raw_client.api_keys_list_all_for_org(
+            organization_id, request_options=request_options
+        )
+        return _response.data
 
     def api_keys_list(
         self,
@@ -111,7 +147,11 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_create(
-            organization_id, project_id, environment_id, name=name, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            name=name,
+            request_options=request_options,
         )
         return _response.data
 
@@ -156,7 +196,11 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_get(
-            organization_id, project_id, environment_id, api_key_id, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            api_key_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -200,7 +244,11 @@ class ApiKeysClient:
         )
         """
         _response = self._raw_client.api_keys_delete(
-            organization_id, project_id, environment_id, api_key_id, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            api_key_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -219,6 +267,47 @@ class AsyncApiKeysClient:
         AsyncRawApiKeysClient
         """
         return self._raw_client
+
+    async def api_keys_list_all_for_org(
+        self,
+        organization_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> typing.List[ApiKeysListAllForOrgResponseItem]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[ApiKeysListAllForOrgResponseItem]
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.api_keys.api_keys_list_all_for_org(
+                organization_id="organizationId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.api_keys_list_all_for_org(
+            organization_id, request_options=request_options
+        )
+        return _response.data
 
     async def api_keys_list(
         self,
@@ -319,7 +408,11 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_create(
-            organization_id, project_id, environment_id, name=name, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            name=name,
+            request_options=request_options,
         )
         return _response.data
 
@@ -372,7 +465,11 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_get(
-            organization_id, project_id, environment_id, api_key_id, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            api_key_id,
+            request_options=request_options,
         )
         return _response.data
 
@@ -424,6 +521,10 @@ class AsyncApiKeysClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.api_keys_delete(
-            organization_id, project_id, environment_id, api_key_id, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            api_key_id,
+            request_options=request_options,
         )
         return _response.data

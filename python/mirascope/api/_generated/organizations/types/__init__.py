@@ -11,9 +11,40 @@ from .organizations_get_response import OrganizationsGetResponse
 from .organizations_get_response_role import OrganizationsGetResponseRole
 from .organizations_list_response_item import OrganizationsListResponseItem
 from .organizations_list_response_item_role import OrganizationsListResponseItemRole
+from .organizations_preview_subscription_change_request_target_plan import (
+    OrganizationsPreviewSubscriptionChangeRequestTargetPlan,
+)
+from .organizations_preview_subscription_change_response import (
+    OrganizationsPreviewSubscriptionChangeResponse,
+)
+from .organizations_preview_subscription_change_response_validation_errors_item import (
+    OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem,
+)
+from .organizations_preview_subscription_change_response_validation_errors_item_resource import (
+    OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource,
+)
 from .organizations_router_balance_response import OrganizationsRouterBalanceResponse
+from .organizations_subscription_response import OrganizationsSubscriptionResponse
+from .organizations_subscription_response_current_plan import (
+    OrganizationsSubscriptionResponseCurrentPlan,
+)
+from .organizations_subscription_response_payment_method import (
+    OrganizationsSubscriptionResponsePaymentMethod,
+)
+from .organizations_subscription_response_scheduled_change import (
+    OrganizationsSubscriptionResponseScheduledChange,
+)
+from .organizations_subscription_response_scheduled_change_target_plan import (
+    OrganizationsSubscriptionResponseScheduledChangeTargetPlan,
+)
 from .organizations_update_response import OrganizationsUpdateResponse
 from .organizations_update_response_role import OrganizationsUpdateResponseRole
+from .organizations_update_subscription_request_target_plan import (
+    OrganizationsUpdateSubscriptionRequestTargetPlan,
+)
+from .organizations_update_subscription_response import (
+    OrganizationsUpdateSubscriptionResponse,
+)
 
 __all__ = [
     "OrganizationsCreatePaymentIntentResponse",
@@ -23,7 +54,18 @@ __all__ = [
     "OrganizationsGetResponseRole",
     "OrganizationsListResponseItem",
     "OrganizationsListResponseItemRole",
+    "OrganizationsPreviewSubscriptionChangeRequestTargetPlan",
+    "OrganizationsPreviewSubscriptionChangeResponse",
+    "OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItem",
+    "OrganizationsPreviewSubscriptionChangeResponseValidationErrorsItemResource",
     "OrganizationsRouterBalanceResponse",
+    "OrganizationsSubscriptionResponse",
+    "OrganizationsSubscriptionResponseCurrentPlan",
+    "OrganizationsSubscriptionResponsePaymentMethod",
+    "OrganizationsSubscriptionResponseScheduledChange",
+    "OrganizationsSubscriptionResponseScheduledChangeTargetPlan",
     "OrganizationsUpdateResponse",
     "OrganizationsUpdateResponseRole",
+    "OrganizationsUpdateSubscriptionRequestTargetPlan",
+    "OrganizationsUpdateSubscriptionResponse",
 ]

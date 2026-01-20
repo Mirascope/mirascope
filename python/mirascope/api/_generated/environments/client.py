@@ -6,6 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawEnvironmentsClient, RawEnvironmentsClient
 from .types.environments_create_response import EnvironmentsCreateResponse
+from .types.environments_get_analytics_response import EnvironmentsGetAnalyticsResponse
 from .types.environments_get_response import EnvironmentsGetResponse
 from .types.environments_list_response_item import EnvironmentsListResponseItem
 from .types.environments_update_response import EnvironmentsUpdateResponse
@@ -30,7 +31,11 @@ class EnvironmentsClient:
         return self._raw_client
 
     def list(
-        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        project_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EnvironmentsListResponseItem]:
         """
         Parameters
@@ -57,7 +62,9 @@ class EnvironmentsClient:
             project_id="projectId",
         )
         """
-        _response = self._raw_client.list(organization_id, project_id, request_options=request_options)
+        _response = self._raw_client.list(
+            organization_id, project_id, request_options=request_options
+        )
         return _response.data
 
     def create(
@@ -103,7 +110,11 @@ class EnvironmentsClient:
         )
         """
         _response = self._raw_client.create(
-            organization_id, project_id, name=name, slug=slug, request_options=request_options
+            organization_id,
+            project_id,
+            name=name,
+            slug=slug,
+            request_options=request_options,
         )
         return _response.data
 
@@ -143,7 +154,9 @@ class EnvironmentsClient:
             environment_id="environmentId",
         )
         """
-        _response = self._raw_client.get(organization_id, project_id, environment_id, request_options=request_options)
+        _response = self._raw_client.get(
+            organization_id, project_id, environment_id, request_options=request_options
+        )
         return _response.data
 
     def update(
@@ -191,7 +204,12 @@ class EnvironmentsClient:
         )
         """
         _response = self._raw_client.update(
-            organization_id, project_id, environment_id, name=name, slug=slug, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            name=name,
+            slug=slug,
+            request_options=request_options,
         )
         return _response.data
 
@@ -235,6 +253,60 @@ class EnvironmentsClient:
         )
         return _response.data
 
+    def getanalytics(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        start_time: str,
+        end_time: str,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EnvironmentsGetAnalyticsResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        start_time : str
+
+        end_time : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EnvironmentsGetAnalyticsResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.environments.getanalytics(
+            organization_id="organizationId",
+            project_id="projectId",
+            environment_id="environmentId",
+            start_time="startTime",
+            end_time="endTime",
+        )
+        """
+        _response = self._raw_client.getanalytics(
+            organization_id,
+            project_id,
+            environment_id,
+            start_time=start_time,
+            end_time=end_time,
+            request_options=request_options,
+        )
+        return _response.data
+
 
 class AsyncEnvironmentsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -252,7 +324,11 @@ class AsyncEnvironmentsClient:
         return self._raw_client
 
     async def list(
-        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        project_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> typing.List[EnvironmentsListResponseItem]:
         """
         Parameters
@@ -287,7 +363,9 @@ class AsyncEnvironmentsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(organization_id, project_id, request_options=request_options)
+        _response = await self._raw_client.list(
+            organization_id, project_id, request_options=request_options
+        )
         return _response.data
 
     async def create(
@@ -341,7 +419,11 @@ class AsyncEnvironmentsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.create(
-            organization_id, project_id, name=name, slug=slug, request_options=request_options
+            organization_id,
+            project_id,
+            name=name,
+            slug=slug,
+            request_options=request_options,
         )
         return _response.data
 
@@ -447,7 +529,12 @@ class AsyncEnvironmentsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            organization_id, project_id, environment_id, name=name, slug=slug, request_options=request_options
+            organization_id,
+            project_id,
+            environment_id,
+            name=name,
+            slug=slug,
+            request_options=request_options,
         )
         return _response.data
 
@@ -496,5 +583,67 @@ class AsyncEnvironmentsClient:
         """
         _response = await self._raw_client.delete(
             organization_id, project_id, environment_id, request_options=request_options
+        )
+        return _response.data
+
+    async def getanalytics(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        start_time: str,
+        end_time: str,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> EnvironmentsGetAnalyticsResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        start_time : str
+
+        end_time : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        EnvironmentsGetAnalyticsResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.environments.getanalytics(
+                organization_id="organizationId",
+                project_id="projectId",
+                environment_id="environmentId",
+                start_time="startTime",
+                end_time="endTime",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.getanalytics(
+            organization_id,
+            project_id,
+            environment_id,
+            start_time=start_time,
+            end_time=end_time,
+            request_options=request_options,
         )
         return _response.data

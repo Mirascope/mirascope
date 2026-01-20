@@ -4,6 +4,9 @@
 
 from .types import (
     EnvironmentsCreateResponse,
+    EnvironmentsGetAnalyticsResponse,
+    EnvironmentsGetAnalyticsResponseTopFunctionsItem,
+    EnvironmentsGetAnalyticsResponseTopModelsItem,
     EnvironmentsGetResponse,
     EnvironmentsListResponseItem,
     EnvironmentsUpdateResponse,
@@ -11,6 +14,9 @@ from .types import (
 
 __all__ = [
     "EnvironmentsCreateResponse",
+    "EnvironmentsGetAnalyticsResponse",
+    "EnvironmentsGetAnalyticsResponseTopFunctionsItem",
+    "EnvironmentsGetAnalyticsResponseTopModelsItem",
     "EnvironmentsGetResponse",
     "EnvironmentsListResponseItem",
     "EnvironmentsUpdateResponse",

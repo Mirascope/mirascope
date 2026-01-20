@@ -9,8 +9,6 @@ from ...core.serialization import FieldMetadata
 
 
 class TracesGetTraceDetailResponseSpansItem(UniversalBaseModel):
-    id: str
-    trace_db_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceDbId")]
     trace_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceId")]
     span_id: typing_extensions.Annotated[str, FieldMetadata(alias="spanId")]
     parent_span_id: typing_extensions.Annotated[

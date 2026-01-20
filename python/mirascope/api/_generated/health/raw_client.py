@@ -9,7 +9,10 @@ from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
-from ..types.http_api_decode_error import HttpApiDecodeError
+from ..errors.service_unavailable_error import ServiceUnavailableError
+from ..errors.too_many_requests_error import TooManyRequestsError
+from ..types.rate_limit_error import RateLimitError
+from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 from .types.health_check_response import HealthCheckResponse
 
 
@@ -17,7 +20,9 @@ class RawHealthClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def check(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[HealthCheckResponse]:
+    def check(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[HealthCheckResponse]:
         """
         Parameters
         ----------
@@ -48,17 +53,47 @@ class RawHealthClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
 
 class AsyncRawHealthClient:
@@ -98,14 +133,44 @@ class AsyncRawHealthClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
                 )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )

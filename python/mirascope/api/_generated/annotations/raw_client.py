@@ -14,12 +14,14 @@ from ..errors.conflict_error import ConflictError
 from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..errors.service_unavailable_error import ServiceUnavailableError
+from ..errors.too_many_requests_error import TooManyRequestsError
 from ..errors.unauthorized_error import UnauthorizedError
-from ..types.already_exists_error import AlreadyExistsError
-from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.number_from_string import NumberFromString
 from ..types.permission_denied_error import PermissionDeniedError
+from ..types.rate_limit_error import RateLimitError
+from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 from ..types.unauthorized_error_body import UnauthorizedErrorBody
 from .types.annotations_create_request_label import AnnotationsCreateRequestLabel
 from .types.annotations_create_response import AnnotationsCreateResponse
@@ -94,9 +96,9 @@ class RawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -134,6 +136,17 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -145,10 +158,29 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def create(
         self,
@@ -158,6 +190,7 @@ class RawAnnotationsClient:
         label: typing.Optional[AnnotationsCreateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AnnotationsCreateResponse]:
         """
@@ -172,6 +205,8 @@ class RawAnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -190,6 +225,7 @@ class RawAnnotationsClient:
                 "label": label,
                 "reasoning": reasoning,
                 "metadata": metadata,
+                "tags": tags,
             },
             headers={
                 "content-type": "application/json",
@@ -211,9 +247,9 @@ class RawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -255,9 +291,20 @@ class RawAnnotationsClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -273,10 +320,29 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def get(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -313,9 +379,9 @@ class RawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -353,6 +419,17 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -364,10 +441,29 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def update(
         self,
@@ -376,6 +472,7 @@ class RawAnnotationsClient:
         label: typing.Optional[AnnotationsUpdateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[AnnotationsUpdateResponse]:
         """
@@ -388,6 +485,8 @@ class RawAnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -404,6 +503,7 @@ class RawAnnotationsClient:
                 "label": label,
                 "reasoning": reasoning,
                 "metadata": metadata,
+                "tags": tags,
             },
             headers={
                 "content-type": "application/json",
@@ -425,9 +525,9 @@ class RawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -465,6 +565,17 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -476,12 +587,33 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
-    def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
+    def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[None]:
         """
         Parameters
         ----------
@@ -506,9 +638,9 @@ class RawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -546,6 +678,17 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -557,10 +700,29 @@ class RawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
 
 class AsyncRawAnnotationsClient:
@@ -624,9 +786,9 @@ class AsyncRawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -664,6 +826,17 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -675,10 +848,29 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def create(
         self,
@@ -688,6 +880,7 @@ class AsyncRawAnnotationsClient:
         label: typing.Optional[AnnotationsCreateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AnnotationsCreateResponse]:
         """
@@ -702,6 +895,8 @@ class AsyncRawAnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -720,6 +915,7 @@ class AsyncRawAnnotationsClient:
                 "label": label,
                 "reasoning": reasoning,
                 "metadata": metadata,
+                "tags": tags,
             },
             headers={
                 "content-type": "application/json",
@@ -741,9 +937,9 @@ class AsyncRawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -785,9 +981,20 @@ class AsyncRawAnnotationsClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -803,10 +1010,29 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def get(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -843,9 +1069,9 @@ class AsyncRawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -883,6 +1109,17 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -894,10 +1131,29 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def update(
         self,
@@ -906,6 +1162,7 @@ class AsyncRawAnnotationsClient:
         label: typing.Optional[AnnotationsUpdateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[AnnotationsUpdateResponse]:
         """
@@ -918,6 +1175,8 @@ class AsyncRawAnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -934,6 +1193,7 @@ class AsyncRawAnnotationsClient:
                 "label": label,
                 "reasoning": reasoning,
                 "metadata": metadata,
+                "tags": tags,
             },
             headers={
                 "content-type": "application/json",
@@ -955,9 +1215,9 @@ class AsyncRawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -995,6 +1255,17 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -1006,10 +1277,29 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def delete(
         self, id: str, *, request_options: typing.Optional[RequestOptions] = None
@@ -1038,9 +1328,9 @@ class AsyncRawAnnotationsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1078,6 +1368,17 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -1089,7 +1390,26 @@ class AsyncRawAnnotationsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )

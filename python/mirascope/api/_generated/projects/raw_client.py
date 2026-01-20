@@ -14,10 +14,14 @@ from ..errors.conflict_error import ConflictError
 from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
-from ..types.already_exists_error import AlreadyExistsError
-from ..types.http_api_decode_error import HttpApiDecodeError
+from ..errors.payment_required_error import PaymentRequiredError
+from ..errors.service_unavailable_error import ServiceUnavailableError
+from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
+from ..types.plan_limit_exceeded_error import PlanLimitExceededError
+from ..types.rate_limit_error import RateLimitError
+from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 from .types.projects_create_response import ProjectsCreateResponse
 from .types.projects_get_response import ProjectsGetResponse
 from .types.projects_list_response_item import ProjectsListResponseItem
@@ -32,7 +36,10 @@ class RawProjectsClient:
         self._client_wrapper = client_wrapper
 
     def list(
-        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[typing.List[ProjectsListResponseItem]]:
         """
         Parameters
@@ -66,9 +73,9 @@ class RawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -95,6 +102,17 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -106,13 +124,37 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def create(
-        self, organization_id: str, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ProjectsCreateResponse]:
         """
         Parameters
@@ -160,9 +202,20 @@ class RawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 402:
+                raise PaymentRequiredError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PlanLimitExceededError,
+                        parse_obj_as(
+                            type_=PlanLimitExceededError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -193,9 +246,20 @@ class RawProjectsClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -211,13 +275,36 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def get(
-        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        project_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ProjectsGetResponse]:
         """
         Parameters
@@ -253,9 +340,9 @@ class RawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -282,6 +369,17 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -293,10 +391,29 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def update(
         self,
@@ -355,9 +472,9 @@ class RawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -388,9 +505,20 @@ class RawProjectsClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -406,13 +534,36 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     def delete(
-        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        project_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[None]:
         """
         Parameters
@@ -440,9 +591,9 @@ class RawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -469,6 +620,17 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -480,10 +642,29 @@ class RawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
 
 class AsyncRawProjectsClient:
@@ -491,7 +672,10 @@ class AsyncRawProjectsClient:
         self._client_wrapper = client_wrapper
 
     async def list(
-        self, organization_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[typing.List[ProjectsListResponseItem]]:
         """
         Parameters
@@ -525,9 +709,9 @@ class AsyncRawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -554,6 +738,17 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -565,13 +760,37 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def create(
-        self, organization_id: str, *, name: str, slug: str, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        *,
+        name: str,
+        slug: str,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ProjectsCreateResponse]:
         """
         Parameters
@@ -619,9 +838,20 @@ class AsyncRawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 402:
+                raise PaymentRequiredError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PlanLimitExceededError,
+                        parse_obj_as(
+                            type_=PlanLimitExceededError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -652,9 +882,20 @@ class AsyncRawProjectsClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -670,13 +911,36 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def get(
-        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        project_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ProjectsGetResponse]:
         """
         Parameters
@@ -712,9 +976,9 @@ class AsyncRawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -741,6 +1005,17 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -752,10 +1027,29 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def update(
         self,
@@ -814,9 +1108,9 @@ class AsyncRawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -847,9 +1141,20 @@ class AsyncRawProjectsClient:
                 raise ConflictError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        AlreadyExistsError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -865,13 +1170,36 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
 
     async def delete(
-        self, organization_id: str, project_id: str, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        organization_id: str,
+        project_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
         Parameters
@@ -899,9 +1227,9 @@ class AsyncRawProjectsClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        HttpApiDecodeError,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=HttpApiDecodeError,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -928,6 +1256,17 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 500:
                 raise InternalServerError(
                     headers=dict(_response.headers),
@@ -939,7 +1278,26 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ServiceUnavailableErrorBody,
+                        parse_obj_as(
+                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )

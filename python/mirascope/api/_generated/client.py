@@ -11,8 +11,21 @@ from .environment import MirascopeEnvironment
 from .environments.client import AsyncEnvironmentsClient, EnvironmentsClient
 from .functions.client import AsyncFunctionsClient, FunctionsClient
 from .health.client import AsyncHealthClient, HealthClient
+from .organization_invitations.client import (
+    AsyncOrganizationInvitationsClient,
+    OrganizationInvitationsClient,
+)
+from .organization_memberships.client import (
+    AsyncOrganizationMembershipsClient,
+    OrganizationMembershipsClient,
+)
 from .organizations.client import AsyncOrganizationsClient, OrganizationsClient
+from .project_memberships.client import (
+    AsyncProjectMembershipsClient,
+    ProjectMembershipsClient,
+)
 from .projects.client import AsyncProjectsClient, ProjectsClient
+from .tags.client import AsyncTagsClient, TagsClient
 from .traces.client import AsyncTracesClient, TracesClient
 
 
@@ -81,11 +94,21 @@ class Mirascope:
         self.traces = TracesClient(client_wrapper=self._client_wrapper)
         self.docs = DocsClient(client_wrapper=self._client_wrapper)
         self.organizations = OrganizationsClient(client_wrapper=self._client_wrapper)
+        self.organization_invitations = OrganizationInvitationsClient(
+            client_wrapper=self._client_wrapper
+        )
+        self.organization_memberships = OrganizationMembershipsClient(
+            client_wrapper=self._client_wrapper
+        )
         self.projects = ProjectsClient(client_wrapper=self._client_wrapper)
+        self.project_memberships = ProjectMembershipsClient(
+            client_wrapper=self._client_wrapper
+        )
         self.environments = EnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = ApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
+        self.tags = TagsClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -155,11 +178,21 @@ class AsyncMirascope:
         self.organizations = AsyncOrganizationsClient(
             client_wrapper=self._client_wrapper
         )
+        self.organization_invitations = AsyncOrganizationInvitationsClient(
+            client_wrapper=self._client_wrapper
+        )
+        self.organization_memberships = AsyncOrganizationMembershipsClient(
+            client_wrapper=self._client_wrapper
+        )
         self.projects = AsyncProjectsClient(client_wrapper=self._client_wrapper)
+        self.project_memberships = AsyncProjectMembershipsClient(
+            client_wrapper=self._client_wrapper
+        )
         self.environments = AsyncEnvironmentsClient(client_wrapper=self._client_wrapper)
         self.api_keys = AsyncApiKeysClient(client_wrapper=self._client_wrapper)
         self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
+        self.tags = AsyncTagsClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(
