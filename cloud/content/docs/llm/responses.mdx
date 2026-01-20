@@ -39,7 +39,7 @@ It's often useful to combine a response's content into a single string. `respons
 | `pretty()` | `str` | Human-readable representation of all content |
 
 <Note>
-`tool_calls` and `thoughts` are populated only when relevant. See [Tools](/docs/tools) and [Thinking](/docs/thinking) for details.
+`tool_calls` and `thoughts` are populated only when relevant. See [Tools](/docs/llm/tools) and [Thinking](/docs/llm/thinking) for details.
 </Note>
 
 ## Continuing Conversations
@@ -117,20 +117,20 @@ Mirascope has several response types for different calling patterns:
 
 All variants share the same core properties. Retrieving data via `response.content`, `response.messages`, etc. works the same for all of them.
 
-- **Streaming:** The response content gets populated by iterating through the stream. See [Streaming](/docs/streaming).
-- **Async:** Methods like `resume()` are async. See [Async](/docs/async).
-- **Context:** Methods like `resume()` require a context argument. See [Context](/docs/context).
+- **Streaming:** The response content gets populated by iterating through the stream. See [Streaming](/docs/llm/streaming).
+- **Async:** Methods like `resume()` are async. See [Async](/docs/llm/async).
+- **Context:** Methods like `resume()` require a context argument. See [Context](/docs/llm/context).
 
 Sometimes you'll want to write a function that can accept any response, whether it is a regular `Response`, a `StreamResponse`, an `AsyncResponse`, et cetera. If so, you can use the type alias `llm.AnyResponse`, which will have all of the core properties shared by every response class.
 
 ## Structured Output
 
-When the response was generated with a `format` parameter, use `response.parse()` to extract structured data. See [Structured Output](/docs/structured-output) for the full guide on structured output.
+When the response was generated with a `format` parameter, use `response.parse()` to extract structured data. See [Structured Output](/docs/llm/structured-output) for the full guide on structured output.
 
 ## Next Steps
 
 Now that you understand responses, explore:
 
-- [Streaming](/docs/streaming) — Process responses as they're generated
-- [Tools](/docs/tools) — Let LLMs call your functions
-- [Structured Output](/docs/structured-output) — Extract structured data from responses
+- [Streaming](/docs/llm/streaming) — Process responses as they're generated
+- [Tools](/docs/llm/tools) — Let LLMs call your functions
+- [Structured Output](/docs/llm/structured-output) — Extract structured data from responses

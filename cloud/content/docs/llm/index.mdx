@@ -1,0 +1,56 @@
+---
+title: LLM Overview
+description: Build LLM-powered applications with type-safe, provider-agnostic abstractions.
+---
+
+# LLM Module
+
+The `mirascope.llm` module provides type-safe, provider-agnostic abstractions for building LLM-powered applications. It handles calling LLMs, using tools, streaming responses, and getting structured output.
+
+## Core Concepts
+
+| Concept | Description |
+| --- | --- |
+| [Messages](/docs/llm/messages) | Understand message types and multimodal content |
+| [Models](/docs/llm/models) | Configure and call LLMs across providers |
+| [Responses](/docs/llm/responses) | Work with LLM responses and continue conversations |
+| [Prompts](/docs/llm/prompts) | Create reusable prompt functions with `@llm.prompt` |
+| [Calls](/docs/llm/calls) | Bundle models with prompts using `@llm.call` |
+
+## Features
+
+| Feature | Description |
+| --- | --- |
+| [Thinking](/docs/llm/thinking) | Use extended reasoning capabilities |
+| [Tools](/docs/llm/tools) | Let LLMs call your functions |
+| [Structured Output](/docs/llm/structured-output) | Get typed responses with Pydantic models |
+| [Streaming](/docs/llm/streaming) | Stream responses in real-time |
+| [Async](/docs/llm/async) | Async operations for concurrent calls |
+
+## Advanced Topics
+
+| Topic | Description |
+| --- | --- |
+| [Agents](/docs/llm/agents) | Build autonomous agent systems |
+| [Context](/docs/llm/context) | Manage call context and model resolution |
+| [Chaining](/docs/llm/chaining) | Chain prompts for multi-step workflows |
+| [Errors](/docs/llm/errors) | Handle errors and edge cases |
+| [Reliability](/docs/llm/reliability) | Retries, validation, and resilience |
+| [Providers](/docs/llm/providers) | Provider-specific configuration |
+| [Local Models](/docs/llm/local-models) | Run models locally |
+| [MCP](/docs/llm/mcp) | Model Context Protocol integration |
+
+## Quick Example
+
+```python
+from mirascope import llm
+
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+print(response.text())
+```
+
+For a complete introduction, see the [Quickstart](/docs).

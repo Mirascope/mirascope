@@ -47,7 +47,7 @@ When you call `response.execute_tools`, it will automatically use `asyncio.gathe
 <Note>
 If any tool in the toolkit is async, all tools must be async and the call must be async. To convert sync tools or prompts, just change `def` to `async def`.
 
-Tools from [MCP](/docs/mcp) servers are always async, so you'll need to use async when working with MCP.
+Tools from [MCP](/docs/llm/mcp) servers are always async, so you'll need to use async when working with MCP.
 </Note>
 
 ## Async Streaming
@@ -83,13 +83,13 @@ Async and sync responses are the same with respect to properties and how they ac
 Async is most beneficial when:
 - Making multiple LLM calls that can run in parallel
 - Your tools perform network requests or database queries
-- Interacting with [MCP](/docs/mcp) servers
+- Interacting with [MCP](/docs/llm/mcp) servers
 - Building web applications (most frameworks are async-native)
 
 For simple scripts with single sequential calls, sync code is simpler and equally performant.
 
 ## Next Steps
 
-- [Streaming](/docs/streaming) — Stream responses in real-time
-- [Tools](/docs/tools) — Learn more about tool calling
-- [Agents](/docs/agents) — Build agents with async patterns
+- [Streaming](/docs/llm/streaming) — Stream responses in real-time
+- [Tools](/docs/llm/tools) — Learn more about tool calling
+- [Agents](/docs/llm/agents) — Build agents with async patterns
