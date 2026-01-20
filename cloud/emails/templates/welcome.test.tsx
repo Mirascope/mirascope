@@ -57,12 +57,9 @@ describe("WelcomeEmail", () => {
         React.createElement(WelcomeEmail, { name: "Dana" }),
       );
 
-      expect(html).toContain("$5");
-      expect(html).toContain("$20");
       expect(html).toContain("Earn Up to $30 in Credits");
-      expect(html).toContain("introduce yourself");
-      expect(html).toContain("show-and-tell");
-      expect(html).toContain("user interview");
+      expect(html).toContain("early adopters");
+      expect(html).toContain("send me a DM");
     }).pipe(Effect.runPromise);
   });
 
