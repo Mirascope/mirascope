@@ -8,7 +8,7 @@ description: Learn how to use Model Context Protocol (MCP) servers to provide to
 The [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is an open standard for connecting AI applications to external resources. Mirascope's `llm.mcp` module allows you to connect to MCP servers and use their tools with any LLM provider.
 
 <Info>
-MCP tools are always async. You'll want to read the [Tools](/docs/tools) and [Async](/docs/async) guides first.
+MCP tools are always async. You'll want to read the [Tools](/docs/llm/tools) and [Async](/docs/llm/async) guides first.
 </Info>
 
 In the example below, we connect to the MCP server of [FastMCP](https://gofastmcp.com/getting-started/welcome), a library for creating MCP servers. Their server exposes a `"SearchFastMcp"` tool, which our agent uses to research FastMCP on its own.
@@ -77,6 +77,6 @@ In this example, we add a local `search_codebase` tool that searches our own cod
 
 ## Next Steps
 
-- [Tools](/docs/tools) — Tool calling fundamentals
-- [Async](/docs/async) — Async patterns
-- [Agents](/docs/agents) — Build agents with MCP tools
+- [Tools](/docs/llm/tools) — Tool calling fundamentals
+- [Async](/docs/llm/async) — Async patterns
+- [Agents](/docs/llm/agents) — Build agents with MCP tools

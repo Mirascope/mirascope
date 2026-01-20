@@ -1,0 +1,41 @@
+---
+title: Ops Overview
+description: Observability and function management for LLM applications.
+---
+
+# Ops Module
+
+The `mirascope.ops` module provides observability and function management for LLM applications. Built on OpenTelemetry, it enables distributed tracing, function versioning, and session tracking.
+
+<Note>
+Full documentation for the ops module is coming soon. The ops module integrates with Mirascope Cloud for visualization and analytics, but works with any OpenTelemetry-compliant backend.
+</Note>
+
+## Key Features
+
+- **Tracing**: Distributed tracing for functions and LLM calls with `@ops.trace`
+- **Versioning**: Automatic function versioning with `@ops.version`
+- **Sessions**: Group related traces with `ops.session()`
+- **LLM Instrumentation**: Automatic OpenTelemetry GenAI semantic conventions
+- **Context Propagation**: Distributed tracing across services
+
+## Quick Example
+
+```python
+from mirascope import llm, ops
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
+# Configure tracing
+provider = TracerProvider()
+provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+ops.configure(tracer_provider=provider)
+
+@ops.trace
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+print(response.text())
+```

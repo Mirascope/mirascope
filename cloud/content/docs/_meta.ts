@@ -5,6 +5,8 @@ import {
   type VersionSpec,
 } from "../../app/lib/content/spec";
 import api from "./api/_meta";
+import llm from "./llm/_meta";
+import ops from "./ops/_meta";
 import v1 from "./v1/_meta";
 
 const v2: VersionSpec = {
@@ -12,84 +14,14 @@ const v2: VersionSpec = {
     {
       label: "Docs",
       slug: "index",
-      weight: 2,
+      weight: 3,
       children: [
         {
           slug: "index",
           label: "Quickstart",
         },
-        {
-          slug: "messages",
-          label: "Messages",
-        },
-        {
-          slug: "models",
-          label: "Models",
-        },
-        {
-          slug: "responses",
-          label: "Responses",
-        },
-        {
-          slug: "prompts",
-          label: "Prompts",
-        },
-        {
-          slug: "calls",
-          label: "Calls",
-        },
-        {
-          slug: "thinking",
-          label: "Thinking",
-        },
-        {
-          slug: "tools",
-          label: "Tools",
-        },
-        {
-          slug: "structured-output",
-          label: "Structured Output",
-        },
-        {
-          slug: "streaming",
-          label: "Streaming",
-        },
-        {
-          slug: "async",
-          label: "Async",
-        },
-        {
-          slug: "agents",
-          label: "Agents",
-        },
-        {
-          slug: "context",
-          label: "Context",
-        },
-        {
-          slug: "chaining",
-          label: "Chaining",
-        },
-        {
-          slug: "errors",
-          label: "Errors",
-        },
-        {
-          slug: "reliability",
-          label: "Reliability",
-        },
-        {
-          slug: "providers",
-          label: "Providers",
-        },
-        {
-          slug: "local-models",
-          label: "Local Models",
-        },
-        {
-          slug: "mcp",
-          label: "MCP",
-        },
+        llm,
+        ops,
       ],
     },
     api,

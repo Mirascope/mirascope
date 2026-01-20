@@ -125,7 +125,7 @@ For async operations like network requests or database queries, define async too
 
 <CodeExample file="python/examples/tools/async_tools.py" />
 
-When any tool is async, the call must be async too, and you use `await` with `execute_tools()` and `resume()`. See the [Async](/docs/async) guide for more details.
+When any tool is async, the call must be async too, and you use `await` with `execute_tools()` and `resume()`. See the [Async](/docs/llm/async) guide for more details.
 
 <Note>
 If any tool in the toolkit is async, all tools must be async, and the entire call chain must use async/await.
@@ -151,7 +151,7 @@ All three approaches work the same way: you provide tools and handle tool calls 
 
 ## Next Steps
 
-- [Structured Output](/docs/structured-output) — Parse responses into typed objects
-- [Streaming](/docs/streaming) — Stream responses with tool calls
-- [Context](/docs/context) — Inject dependencies into tools
-- [Agents](/docs/agents) — Build autonomous agents with tools
+- [Structured Output](/docs/llm/structured-output) — Parse responses into typed objects
+- [Streaming](/docs/llm/streaming) — Stream responses with tool calls
+- [Context](/docs/llm/context) — Inject dependencies into tools
+- [Agents](/docs/llm/agents) — Build autonomous agents with tools

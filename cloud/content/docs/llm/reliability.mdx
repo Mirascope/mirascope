@@ -25,7 +25,7 @@ Not all errors should be retried. Authentication errors won't succeed on retry, 
 
 <CodeExample file="python/examples/reliability/retry_specific_errors.py" />
 
-Mirascope provides [unified error types](/docs/errors) that work across all providers, so you can write provider-agnostic retry logic.
+Mirascope provides [unified error types](/docs/llm/errors) that work across all providers, so you can write provider-agnostic retry logic.
 
 
 ## Retrying Streams
@@ -80,6 +80,6 @@ Combine retries with fallbacks: retry each provider multiple times before moving
 
 ## Next Steps
 
-- [Errors](/docs/errors) — Unified error types across providers
-- [Streaming](/docs/streaming) — Streaming patterns in depth
-- [Structured Output](/docs/structured-output) — Validation and parsing
+- [Errors](/docs/llm/errors) — Unified error types across providers
+- [Streaming](/docs/llm/streaming) — Streaming patterns in depth
+- [Structured Output](/docs/llm/structured-output) — Validation and parsing
