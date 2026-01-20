@@ -1,22 +1,75 @@
 ---
 title: Reliability
-description: Learn about retry strategies and fallback patterns for building reliable LLM applications.
+description: Learn how to build robust LLM applications with retry strategies, error recovery, and provider fallbacks.
 ---
-
-<Info>
-Reference: This doc should draw from:
-- legacy/legacy-content-v1/retries.mdx (tenacity retry, error reinsertion, fallback decorator)
-Note: Retry patterns carry over from v1
-</Info>
 
 # Reliability
 
-This document covers reliability patterns for LLM applications.
+LLM API calls can fail for many reasons: rate limits, server errors, network issues, or malformed responses. Building reliable applications means handling these failures gracefully through retries, error recovery, and fallbacks.
 
-## Topics Covered
+<Note>
+The Mirascope team is working on a Mirascope-native retry interface, to release shortly after Mirascope 2.0.
+</Note>
 
-- Using `tenacity` for retry with exponential backoff
-- Retrying calls, streams, and tool executions
-- Error reinsertion: feeding errors back to the LLM to self-correct
-- Catching specific errors and falling back to alternative providers/models
-- Combining retries with fallbacks for maximum reliability
+## Retrying Calls
+
+Wrap your calls in a retry loop to handle transient failures:
+
+<CodeExample file="examples/reliability/basic_retry.py" />
+
+This retries up to 3 times before re-raising the error.
+
+### Retrying Specific Errors
+
+Not all errors should be retried. Authentication errors won't succeed on retry, but rate limits and server errors often will:
+
+<CodeExample file="examples/reliability/retry_specific_errors.py" />
+
+Mirascope provides [unified error types](/docs/mirascope/v2/errors) that work across all providers, so you can write provider-agnostic retry logic.
+
+
+## Retrying Streams
+
+Streaming responses can fail mid-stream—the initial connection succeeds, but an error occurs while iterating. Wrap the streaming loop and use `response.resume()` to continue from where you left off:
+
+<CodeExample file="examples/reliability/stream_retry.py" />
+
+This works because `StreamResponse` accumulates content as you iterate. When an error occurs, `response.messages` contains everything received up to that point, so the model has context about what it already said.
+
+## Retrying on Structured Output Validation Errors
+
+When using [structured output](/docs/mirascope/v2/structured-output), the LLM's response might fail Pydantic validation. Instead of retrying blindly, tell the model what went wrong so it can fix its mistake:
+
+<CodeExample file="examples/reliability/validation_retry.py" />
+
+This pattern—catching the error and resuming with feedback—gives the model a chance to self-correct. It's more effective than blind retries because the model learns from its mistake.
+
+## Tool Error Recovery
+
+Tools can fail during execution. Rather than crashing, return the error as a `ToolOutput` so the model can adapt:
+
+<CodeExample file="examples/reliability/tool_error_recovery.py" />
+
+The model receives the error message and can explain what went wrong or try a different approach.
+
+## Provider Fallbacks
+
+Combine retries with fallbacks: retry each provider multiple times before moving to the next:
+
+<TabbedSection>
+<Tab value="@llm.call">
+<CodeExample file="examples/reliability/fallback_call.py" />
+</Tab>
+<Tab value="@llm.prompt">
+<CodeExample file="examples/reliability/fallback_prompt.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/reliability/fallback_model.py" />
+</Tab>
+</TabbedSection>
+
+## Next Steps
+
+- [Errors](/docs/mirascope/v2/errors) — Unified error types across providers
+- [Streaming](/docs/mirascope/v2/streaming) — Streaming patterns in depth
+- [Structured Output](/docs/mirascope/v2/structured-output) — Validation and parsing

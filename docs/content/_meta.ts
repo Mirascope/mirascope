@@ -69,7 +69,7 @@ const docsSection = {
     {
       slug: "reliability",
       label: "Reliability",
-    }, // TODO
+    },
     {
       slug: "providers",
       label: "Providers & Supported Features",
