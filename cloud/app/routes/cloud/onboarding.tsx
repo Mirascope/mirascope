@@ -226,19 +226,12 @@ function OnboardingContent() {
                 <h3 className="font-semibold text-blue-800 dark:text-blue-200">
                   Earn Up to $30 in Credits
                 </h3>
-                <ul className="mt-2 space-y-1 text-sm text-blue-700 dark:text-blue-300">
-                  <li>
-                    <strong>$5</strong> — Join our Discord and introduce
-                    yourself
-                  </li>
-                  <li>
-                    <strong>$5</strong> — Share your project in show-and-tell
-                  </li>
-                  <li>
-                    <strong>$20</strong> — Schedule a user interview after using
-                    credits
-                  </li>
-                </ul>
+                <p className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                  We're offering free credits to early adopters who help us
+                  build a better product. To learn about current opportunities,
+                  join our Discord and send William Bakst a DM — we'd love to
+                  hear what you're building and share how you can earn credits.
+                </p>
                 <a
                   href="https://mirascope.com/discord-invite"
                   target="_blank"
