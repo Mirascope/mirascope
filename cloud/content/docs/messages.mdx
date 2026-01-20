@@ -7,7 +7,7 @@ description: Learn how to construct messages for LLM communication using Mirasco
 
 Messages are the fundamental building blocks of LLM interactions. You provide context to the LLM via messages, and it responds by generating messages of its own.
 
-<CodeExample file="examples/messages/basic.py" />
+<CodeExample file="python/examples/messages/basic.py" />
 
 Each message has a `role` (system, user, or assistant) and `content`. Mirascope provides shorthand functions for creating messages: `llm.messages.system()`, `llm.messages.user()`, and `llm.messages.assistant()`.
 
@@ -15,7 +15,7 @@ Each message has a `role` (system, user, or assistant) and `content`. Mirascope 
 
 Every message is associated with one of three roles: "system", "user", or "assistant". These roles determine how the LLM interprets the message.
 
-<CodeExample file="examples/messages/roles.py" />
+<CodeExample file="python/examples/messages/roles.py" />
 
 ### System Messages
 
@@ -37,19 +37,19 @@ Messages can contain more than just text. Modern LLMs support multimodal content
 
 Text is the most common content type. Plain strings are automatically wrapped as `llm.Text`:
 
-<CodeExample file="examples/messages/text_content.py" lines="3-" />
+<CodeExample file="python/examples/messages/text_content.py" lines="3-" />
 
 ### Images
 
 Images can be provided via URL (the provider downloads directly) or as base64-encoded data:
 
-<CodeExample file="examples/messages/image_content.py" lines="3-" />
+<CodeExample file="python/examples/messages/image_content.py" lines="3-" />
 
 ### Audio
 
 Audio content is useful for transcription or voice-based interactions:
 
-<CodeExample file="examples/messages/audio_content.py" lines="3-" />
+<CodeExample file="python/examples/messages/audio_content.py" lines="3-" />
 
 <Info title="Media Loading Methods" collapsible={true} defaultOpen={false}>
 `Image` and `Audio` provide consistent class methods for loading:
@@ -68,7 +68,7 @@ Note: `from_url` creates a URL reference without downloading. Use `download` if 
 
 A single message can contain multiple content pieces of different types:
 
-<CodeExample file="examples/messages/multimodal.py" lines="3-" />
+<CodeExample file="python/examples/messages/multimodal.py" lines="3-" />
 
 ## Content Type Reference
 

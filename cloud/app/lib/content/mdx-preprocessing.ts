@@ -17,13 +17,10 @@ export interface PreprocessMdxOptions {
 }
 
 function resolveExampleBasePath(filePath: string): string {
-  const pathsToTry = ["content/docs/v1", "content/docs", "content"];
-
-  for (const pathSegment of pathsToTry) {
-    if (filePath.includes(pathSegment)) {
-      const index = filePath.indexOf(pathSegment);
-      return filePath.slice(0, index + pathSegment.length);
-    }
+  // Find the cloud/ directory and resolve to project root (parent of cloud/)
+  const cloudIndex = filePath.indexOf("/cloud/");
+  if (cloudIndex !== -1) {
+    return filePath.slice(0, cloudIndex + 1); // Include trailing slash after removing "cloud/"
   }
 
   throw new Error(`Could not resolve example base path for: ${filePath}`);

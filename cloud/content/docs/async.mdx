@@ -13,13 +13,13 @@ Make any prompt function async by adding the `async` keyword:
 
 <TabbedSection>
 <Tab value="@llm.call">
-<CodeExample file="examples/async/basic.py" />
+<CodeExample file="python/examples/async/basic.py" />
 </Tab>
 <Tab value="@llm.prompt">
-<CodeExample file="examples/async/basic_prompt.py" />
+<CodeExample file="python/examples/async/basic_prompt.py" />
 </Tab>
 <Tab value="Model">
-<CodeExample file="examples/async/basic_model.py" />
+<CodeExample file="python/examples/async/basic_model.py" />
 </Tab>
 </TabbedSection>
 
@@ -32,7 +32,7 @@ The changes from synchronous code are:
 
 One benefit of async is that you can run multiple calls concurrently. Use `asyncio.gather()` to run calls in parallel:
 
-<CodeExample file="examples/async/parallel.py" />
+<CodeExample file="python/examples/async/parallel.py" />
 
 All three book recommendations run simultaneously—the total time is roughly the time of the slowest call, not the sum of all three.
 
@@ -40,7 +40,7 @@ All three book recommendations run simultaneously—the total time is roughly th
 
 When your tools perform I/O operations (API calls, database queries, file operations), make them async:
 
-<CodeExample file="examples/async/async_tools.py" />
+<CodeExample file="python/examples/async/async_tools.py" />
 
 When you call `response.execute_tools`, it will automatically use `asyncio.gather()` to ensure that all tools are executed concurrently.
 
@@ -54,7 +54,7 @@ Tools from [MCP](/docs/mirascope/v2/mcp) servers are always async, so you'll nee
 
 Streaming works the same way in async, just use `async for`:
 
-<CodeExample file="examples/async/async_streaming.py" />
+<CodeExample file="python/examples/async/async_streaming.py" />
 
 All stream iterators (`pretty_stream()`, `streams()`, `chunk_stream()`, `structured_stream()`) support async iteration.
 
