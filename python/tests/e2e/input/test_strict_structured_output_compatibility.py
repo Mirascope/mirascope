@@ -151,11 +151,11 @@ def test_strict_mode_unsupported_models(
     def get_answer(question: str) -> str:
         return f"Answer this question: {question}"
 
-    with pytest.raises(llm.FormattingModeNotSupportedError) as exc_info:
+    with pytest.raises(llm.FeatureNotSupportedError) as exc_info:
         get_answer("What is 2 + 2?")
 
     error = exc_info.value
-    assert error.formatting_mode == "strict"
+    assert error.feature == "formatting_mode:strict"
     assert error.model_id == model_id
     assert error.provider_id == model_id.split("/")[0]
 

@@ -13,5 +13,5 @@ except llm.AuthenticationError as e:
     print(f"Invalid API key: {e}")
 except llm.RateLimitError as e:
     print(f"Rate limit exceeded: {e}")
-except llm.APIError as e:
-    print(f"API error: {e}")
+except llm.Error as e:
+    print(f"LLM error: {e}")

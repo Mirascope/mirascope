@@ -15,5 +15,5 @@ except llm.RateLimitError as e:
     print(f"Rate limit exceeded: {e}")
 except llm.ConnectionError as e:
     print(f"Connection error: {e}")
-except llm.APIError as e:
-    print(f"API error during streaming: {e}")
+except llm.Error as e:
+    print(f"Error during streaming: {e}")

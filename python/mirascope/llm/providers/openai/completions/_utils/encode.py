@@ -10,10 +10,7 @@ from openai import Omit
 from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
-from .....exceptions import (
-    FeatureNotSupportedError,
-    FormattingModeNotSupportedError,
-)
+from .....exceptions import FeatureNotSupportedError
 from .....formatting import Format, FormattableT, OutputParser, resolve_format
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
@@ -338,8 +335,8 @@ def encode_request(
     if format is not None:
         if format.mode == "strict":
             if not model_supports_strict:
-                raise FormattingModeNotSupportedError(
-                    formatting_mode="strict",
+                raise FeatureNotSupportedError(
+                    feature="formatting_mode:strict",
                     provider_id="openai",
                     model_id=model_id,
                 )

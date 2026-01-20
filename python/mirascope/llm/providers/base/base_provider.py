@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, cast, overl
 from typing_extensions import TypeVar, Unpack
 
 from ...context import Context, DepsT
-from ...exceptions import APIError, MirascopeLLMError
+from ...exceptions import APIError, ProviderError
 from ...formatting import Format, FormattableT, OutputParser
 from ...messages import Message, UserContent, user
 from ...responses import (
@@ -36,7 +36,6 @@ from ...tools import (
 )
 
 if TYPE_CHECKING:
-    from ...exceptions import MirascopeLLMError
     from ...models import Params
     from ..provider_id import ProviderId
 
@@ -47,7 +46,7 @@ Provider: TypeAlias = "BaseProvider[Any]"
 
 ProviderErrorMap: TypeAlias = Mapping[
     type[Exception],
-    "type[MirascopeLLMError] | Callable[[Exception], type[MirascopeLLMError]]",
+    "type[ProviderError] | Callable[[Exception], type[ProviderError]]",
 ]
 """Mapping from provider SDK exceptions to Mirascope error types.
 
@@ -85,7 +84,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
                 (e.g., lambda e: NotFoundError if e.code == "model_not_found" else BadRequestError)
 
     The mapping is walked via the exception's MRO, allowing both specific error handling
-    and fallback to base SDK error types (e.g., AnthropicError -> APIError).
+    and fallback to base SDK error types (e.g., AnthropicError -> ProviderError).
     """
 
     client: ProviderClientT
@@ -96,7 +95,7 @@ class BaseProvider(Generic[ProviderClientT], ABC):
 
         Walks the exception's MRO to find the first matching error type in the
         provider's error_map, allowing both specific error handling and fallback
-        to base SDK error types (e.g., AnthropicError -> APIError).
+        to base SDK error types (e.g., AnthropicError -> ProviderError).
         """
         try:
             yield
@@ -107,16 +106,24 @@ class BaseProvider(Generic[ProviderClientT], ABC):
                     error_type_or_fn = self.error_map[error_class]
 
                     if isinstance(error_type_or_fn, type):
-                        error_type = cast(type[MirascopeLLMError], error_type_or_fn)
+                        error_type = cast(type[ProviderError], error_type_or_fn)
                     else:
                         error_type = error_type_or_fn(e)
 
                     # Construct Mirascope error with metadata
-                    error: MirascopeLLMError = error_type(str(e))
-                    if isinstance(error, APIError):
-                        error.status_code = self.get_error_status(e)
-                    error.provider = self.id
-                    error.original_exception = e
+                    if issubclass(error_type, APIError):
+                        error: ProviderError = error_type(
+                            str(e),
+                            provider=self.id,
+                            status_code=self.get_error_status(e),
+                            original_exception=e,
+                        )
+                    else:
+                        error = error_type(
+                            str(e),
+                            provider=self.id,
+                            original_exception=e,
+                        )
                     raise error from e
 
             # Not in error_map - not a provider error, re-raise as-is
