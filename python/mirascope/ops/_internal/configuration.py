@@ -22,9 +22,11 @@ logger = logging.getLogger(__name__)
 
 try:
     from opentelemetry import trace as otel_trace
+    from opentelemetry.sdk.trace import TracerProvider as OtelTracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
 except ImportError:  # pragma: no cover
     otel_trace = None
+    OtelTracerProvider = None
     BatchSpanProcessor = None
 
 _tracer_provider: TracerProvider | None = None
@@ -45,6 +47,12 @@ def _create_mirascope_cloud_provider(api_key: str | None = None) -> TracerProvid
     Raises:
         RuntimeError: If API key is not available.
     """
+    if OtelTracerProvider is None or BatchSpanProcessor is None:  # pragma: no cover
+        raise ImportError(
+            "OpenTelemetry is not installed. Run `pip install mirascope[otel]` "
+            "before calling `ops.configure()`."
+        )
+
     try:
         client = Mirascope(api_key=api_key)
     except (ValueError, RuntimeError) as e:
@@ -54,7 +62,7 @@ def _create_mirascope_cloud_provider(api_key: str | None = None) -> TracerProvid
         ) from e
 
     exporter = MirascopeOTLPExporter(client=client)
-    provider = TracerProvider()
+    provider = OtelTracerProvider()
     provider.add_span_processor(BatchSpanProcessor(exporter))
 
     return provider
