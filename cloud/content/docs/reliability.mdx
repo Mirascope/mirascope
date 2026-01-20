@@ -36,13 +36,21 @@ Streaming responses can fail mid-stream—the initial connection succeeds, but a
 
 This works because `StreamResponse` accumulates content as you iterate. When an error occurs, `response.messages` contains everything received up to that point, so the model has context about what it already said.
 
-## Retrying on Structured Output Validation Errors
+## Retrying on Structured Output Parse Errors
 
-When using [structured output](/docs/structured-output), the LLM's response might fail Pydantic validation. Instead of retrying blindly, tell the model what went wrong so it can fix its mistake:
+When using [structured output](/docs/structured-output), the LLM's response might fail to parse—either because the JSON is malformed or because it doesn't match the expected schema. Mirascope wraps all parsing failures in `llm.ParseError`, which provides the original exception.
+
+Instead of retrying blindly, use `error.retry_message()` to tell the model what went wrong so it can fix its mistake:
 
 <CodeExample file="python/examples/reliability/validation_retry.py" />
 
 This pattern—catching the error and resuming with feedback—gives the model a chance to self-correct. It's more effective than blind retries because the model learns from its mistake.
+
+The `ParseError` wraps several underlying error types:
+- `ValueError` when no valid JSON object is found in the response
+- `json.JSONDecodeError` when the JSON syntax is invalid
+- `pydantic.ValidationError` when the JSON doesn't match the schema
+- Any exception from custom [OutputParsers](/docs/structured-output#custom-parsing)
 
 ## Tool Error Recovery
 

@@ -1,0 +1,236 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Find out the
+      secret and report back."}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      with a single word: the passphrase.","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '243'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VSwW7bMAz9FU6XXJwhCZoO8yXoNgwIMgxDLxuwDoZiMbEQmXIlOokT5N9HeTXW
+        NuhJAt/Te3okz6r2Bp3KVel0a3AcPRHy+GY8m8zmk/n0RmXKGsHruC0m0y/3m2+35n519/hx++mX
+        PXxf/YyrmXC4azCxMEa9RSkE71JBx2gja2IplZ4Y5Zb/Pg98xmNC+iNXSzCeRgwRETR1cpYBGSxt
+        fKg1W0/gAzTt6eQQ2EP0bo8CQ+fbAE/e7+Gzb51JNWiC31uDUPuA0NsfGfTatwyHSvNgINSRAWd3
+        wuyFN5bMAr6KGR513TjMH+iBxrCMwBWKlhY1g2bwzKC0jQDZs/9diWrSrjvhIgndhZ4AATcYgqVt
+        T4BgjZGnIrIOWnIx6ohh8dLaGJtaod3rxgwBlxCrvgVrhIMPuyR/sFwtUogfLmkKQ4uWKIJB1tZF
+        8Jt/Pbn6t6U9RrZbzZJTk4HlyDmZFNSdOEROnApd805d/mQqsm+KIB6eZKJIpuA2kHoCIj62SKWM
+        nlrnMtX225KflaWm5YL9DimqfPZBtkWXFRYynz5f8ZIwGXCBzVvY8Dbpo4ynxqBdMa+v+f/RafUa
+        vWRK9uV5aTq5lTgY9rbEgi0GCZp23Ohg1OXyF0XJdtJUAwAA
+    headers:
+      CF-RAY:
+      - 9c0c2d28ea833119-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 20 Jan 2026 05:29:53 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-20T05:29:50Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-20T05:29:53Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-20T05:29:50Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-20T05:29:50Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXJ5aNPBN5BrDov82Uk2S
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '3145'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Find out the
+      secret and report back."},{"role":"assistant","content":[{"text":"I don''t see
+      any secret information or puzzle to solve in your message. Could you provide
+      more context about what secret you''d like me to find? For example:\n\n- Is
+      there a coded message, cipher, or puzzle you''d like me to analyze?\n- Are you
+      referring to a riddle or brain teaser?\n- Is there additional information or
+      context I should be working with?\n\nPlease share the details of what you''d
+      like me to investigate, and I''ll do my best to help!","type":"text"}]},{"role":"user","content":[{"type":"text","text":"Your
+      response could not be parsed: Incorrect passphrase. The correct passphrase is
+      ''cake''\n\nPlease ensure your response matches the expected format.","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      with a single word: the passphrase.","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '989'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQzWrEMAyE30XnBJKQtDTnnnLqYQ8LpRhji8SsI6e2vLSEvHuVpaF/9GQz30gj
+        aYU5WPTQg/E6WyxTIEIu27Kpmq7q6hYKcFb4nEZV1U+jseb8OGQcrroJw/l0b4eTePh9wd2FKekR
+        RYjB74JOySXWxCKZQIzy65/Xw8/4tpPbIzPoC8L2UkDisKiIWqYRGckqzpHgEyR8zUhG6il7X0C+
+        RfYrOFoyKw4XpAR9ffcgmdpMqIz0YhdI/XRUBxds/2NH7R6Ay4QzRu1VN//1f9F6+k23AkLm71Ir
+        22C8OoOKHUbZc7+T1dHCtn0AQ8m2zpgBAAA=
+    headers:
+      CF-RAY:
+      - 9c0c2d3e2f4e3119-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 20 Jan 2026 05:29:54 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-20T05:29:54Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-20T05:29:54Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-20T05:29:53Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-20T05:29:54Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXJ5acvnsuTESiSeZgZwu
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '957'
+    status:
+      code: 200
+      message: OK
+version: 1

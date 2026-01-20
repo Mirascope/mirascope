@@ -1,6 +1,9 @@
 """Mirascope llm exception hierarchy for unified error handling across providers."""
 
+import json
 from typing import TYPE_CHECKING
+
+from pydantic import ValidationError
 
 if TYPE_CHECKING:
     from .providers import ModelId, ProviderId
@@ -224,6 +227,58 @@ class ToolNotFoundError(ToolError):
 
     def __hash__(self) -> int:
         return hash((type(self), self.tool_name))
+
+
+class ParseError(Error):
+    """Raised when response.parse() fails to parse the response content.
+
+    This wraps errors from JSON extraction, JSON parsing, Pydantic validation,
+    or custom OutputParser functions.
+    """
+
+    original_exception: Exception
+    """The original exception that caused the parse failure."""
+
+    def __init__(
+        self,
+        message: str,
+        original_exception: Exception,
+    ) -> None:
+        super().__init__(message)
+        self.original_exception = original_exception
+        self.__cause__ = original_exception
+
+    def retry_message(self) -> str:
+        """Generate a message suitable for retrying with the LLM.
+
+        Returns a user-friendly message describing what went wrong,
+        suitable for including in a retry prompt.
+        """
+
+        if isinstance(self.original_exception, ValidationError):
+            return (
+                f"Your response failed schema validation:\n"
+                f"{self.original_exception}\n\n"
+                "Please correct these issues and respond again."
+            )
+        elif isinstance(self.original_exception, json.JSONDecodeError):
+            # JSON syntax error
+            return (
+                "Your response could not be parsed because no valid JSON object "
+                "was found. Please ensure your response contains a JSON object "
+                "with opening '{' and closing '}' braces."
+            )
+        else:
+            # ValueError from JSON extraction, or OutputParser error
+            return (
+                f"Your response could not be parsed: {self.original_exception}\n\n"
+                "Please ensure your response matches the expected format."
+            )
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ParseError):
+            return False
+        return str(self) == str(other)
 
 
 class FeatureNotSupportedError(Error):

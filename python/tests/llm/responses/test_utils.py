@@ -1,4 +1,5 @@
 import inspect
+import json
 
 import pytest
 from pydantic import BaseModel
@@ -121,7 +122,7 @@ def test_no_opening_brace_raises_error() -> None:
     text = inspect.cleandoc("""
         This has no JSON
     """)
-    with pytest.raises(ValueError, match="no opening `{`"):
+    with pytest.raises(json.JSONDecodeError, match="missing '{'"):
         extract_serialized_json(text)
 
 
@@ -130,14 +131,14 @@ def test_no_closing_brace_raises_error() -> None:
     text = inspect.cleandoc("""
         {"key": "value"
     """)
-    with pytest.raises(ValueError, match="no closing `}`"):
+    with pytest.raises(json.JSONDecodeError, match="missing '}'"):
         extract_serialized_json(text)
 
 
 def test_empty_string_raises_error() -> None:
     """Empty string raises an error."""
     text = ""
-    with pytest.raises(ValueError, match="no opening `{`"):
+    with pytest.raises(json.JSONDecodeError, match="missing '{'"):
         extract_serialized_json(text)
 
 
