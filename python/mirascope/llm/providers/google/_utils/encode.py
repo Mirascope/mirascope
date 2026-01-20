@@ -315,6 +315,16 @@ def encode_request(
                 encode_thoughts_as_text = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
+
+    if _base_utils.has_strict_tools(tools):
+        raise FeatureNotSupportedError(
+            feature="strict tools",
+            provider_id="google",
+            model_id=model_id,
+            message="Google does not support strict mode for tools. "
+            "Set strict=False on your tools or omit the strict parameter.",
+        )
+
     google_tools: list[genai_types.ToolDict] = []
 
     allows_strict_mode_with_tools = (

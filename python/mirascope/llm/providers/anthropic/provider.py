@@ -22,16 +22,18 @@ from ...responses import (
     StreamResponse,
 )
 from ...tools import (
+    AnyToolSchema,
     AsyncContextTool,
     AsyncContextToolkit,
     AsyncTool,
     AsyncToolkit,
+    BaseToolkit,
     ContextTool,
     ContextToolkit,
     Tool,
     Toolkit,
 )
-from ..base import BaseProvider
+from ..base import BaseProvider, _utils as _base_utils
 from . import _utils
 from .beta_provider import AnthropicBetaProvider
 from .model_id import AnthropicModelId, model_name
@@ -47,16 +49,23 @@ def _should_use_beta(
     | Format[FormattableT]
     | OutputParser[FormattableT]
     | None,
+    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
 ) -> bool:
-    """Determine whether to use the beta API based on format mode.
+    """Determine whether to use the beta API based on format mode or strict tools.
 
-    If the format resolves to strict mode, and the model plausibly has
-    strict structured output support, then we will use the beta provider.
+    If the format resolves to strict mode, or any tools have strict=True,
+    and the model plausibly has strict structured output support, then we
+    will use the beta provider.
     """
-    resolved = resolve_format(format, default_mode=_utils.DEFAULT_FORMAT_MODE)
-    if resolved is None or resolved.mode != "strict":
+    if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
         return False
-    return model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
+
+    # Check if format requires strict mode
+    resolved = resolve_format(format, default_mode=_utils.DEFAULT_FORMAT_MODE)
+    if resolved is not None and resolved.mode == "strict":
+        return True
+
+    return _base_utils.has_strict_tools(tools)
 
 
 class AnthropicProvider(BaseProvider[Anthropic]):
@@ -92,7 +101,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
         """Generate an `llm.Response` by synchronously calling the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return self._beta_provider.call(
                 model_id=model_id,
                 messages=messages,
@@ -143,7 +152,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextResponse` by synchronously calling the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return self._beta_provider.context_call(
                 ctx=ctx,
                 model_id=model_id,
@@ -192,7 +201,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate an `llm.AsyncResponse` by asynchronously calling the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return await self._beta_provider.call_async(
                 model_id=model_id,
                 messages=messages,
@@ -243,7 +252,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate an `llm.AsyncContextResponse` by asynchronously calling the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return await self._beta_provider.context_call_async(
                 ctx=ctx,
                 model_id=model_id,
@@ -292,7 +301,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generate an `llm.StreamResponse` by synchronously streaming from the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return self._beta_provider.stream(
                 model_id=model_id,
                 messages=messages,
@@ -340,7 +349,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return self._beta_provider.context_stream(
                 ctx=ctx,
                 model_id=model_id,
@@ -386,7 +395,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return await self._beta_provider.stream_async(
                 model_id=model_id,
                 messages=messages,
@@ -436,7 +445,7 @@ class AnthropicProvider(BaseProvider[Anthropic]):
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the Anthropic Messages API."""
-        if _should_use_beta(model_id, format):
+        if _should_use_beta(model_id, format, tools):
             return await self._beta_provider.context_stream_async(
                 ctx=ctx,
                 model_id=model_id,

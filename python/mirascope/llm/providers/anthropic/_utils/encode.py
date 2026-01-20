@@ -356,6 +356,16 @@ def encode_request(
     )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
+
+    # Check for strict tools - the non-beta API doesn't support them
+    if _base_utils.has_strict_tools(tools):
+        raise FeatureNotSupportedError(
+            feature="strict tools",
+            provider_id="anthropic",
+            model_id=model_id,
+            message="Anthropic provider does not support strict tools. Try the beta provider.",
+        )
+
     anthropic_tools = [convert_tool_to_tool_param(tool) for tool in tools]
     format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
     if format is not None:

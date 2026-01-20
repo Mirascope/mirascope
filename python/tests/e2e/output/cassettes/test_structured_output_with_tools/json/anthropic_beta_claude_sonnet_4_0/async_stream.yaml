@@ -10,7 +10,7 @@ interactions:
       {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
       [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
       \"BookSummary\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"get_book_info","description":"Look
-      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"stream":true}'
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}],"stream":true}'
     headers:
       accept:
       - application/json
@@ -23,7 +23,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1142'
+      - '1157'
       content-type:
       - application/json
       host:
@@ -62,12 +62,12 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_018gBS7YY6cZxYtReacA5sED","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":594,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":8,"service_tier":"standard"}}     }
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01U7wkkvT4Kg84BFLKM7LA4b","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":594,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":3,"service_tier":"standard"}}              }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}     }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}              }
 
 
         event: ping
@@ -78,34 +78,34 @@ interactions:
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"I''ll
-        look up the book information for"}     }
+        look"}    }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        ISBN"}         }
+        up the book information for ISBN"}           }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        0-7653-1178"}           }
+        0-7653-1178"}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"-X."}        }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"-X."}           }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0            }
+        data: {"type":"content_block_stop","index":0               }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"toolu_01My26oDaaNkgBerQJcroNv4","name":"get_book_info","input":{}}      }
+        data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"toolu_01B6Kpgsu5hK2tZoC8Utqyks","name":"get_book_info","input":{}}             }
 
 
         event: content_block_delta
@@ -115,50 +115,49 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"isbn\":
-        \"0-"}  }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"i"}              }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"76"}        }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"sb"}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"53-"}      }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"n\":
+        \"0-76"}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"1178-"}          }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"53-11"}         }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"X\"}"}
-        }
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"78-X\"}"}    }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":1         }
+        data: {"type":"content_block_stop","index":1            }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":594,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":84}          }
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":594,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":84}           }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"       }
+        data: {"type":"message_stop"              }
 
 
         '
     headers:
       CF-RAY:
-      - 9beae9244d186826-SEA
+      - 9c11f6aea92feb73-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -166,7 +165,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Fri, 16 Jan 2026 04:36:15 GMT
+      - Tue, 20 Jan 2026 22:21:15 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -180,33 +179,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-16T04:36:14Z'
+      - '2026-01-20T22:21:13Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-16T04:36:14Z'
+      - '2026-01-20T22:21:13Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-16T04:36:14Z'
+      - '2026-01-20T22:21:13Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-16T04:36:14Z'
+      - '2026-01-20T22:21:13Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CXASFdm3BTXqtVj1wK5of
+      - req_011CXKQhb5prV7QAa8BXuHR8
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1400'
+      - '1977'
     status:
       code: 200
       message: OK
@@ -214,7 +213,7 @@ interactions:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
       score"},{"role":"assistant","content":[{"type":"text","text":"I''ll look up
-      the book information for ISBN 0-7653-1178-X."},{"type":"tool_use","id":"toolu_01My26oDaaNkgBerQJcroNv4","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01My26oDaaNkgBerQJcroNv4","content":"Title:
+      the book information for ISBN 0-7653-1178-X."},{"type":"tool_use","id":"toolu_01B6Kpgsu5hK2tZoC8Utqyks","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01B6Kpgsu5hK2tZoC8Utqyks","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
       only with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
@@ -224,7 +223,7 @@ interactions:
       {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
       [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
       \"BookSummary\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"get_book_info","description":"Look
-      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}],"stream":true}'
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}],"stream":true}'
     headers:
       accept:
       - application/json
@@ -237,7 +236,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1615'
+      - '1630'
       content-type:
       - application/json
       host:
@@ -276,12 +275,12 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_016vcYj9JxGXXuMNuWXs6anE","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":721,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}          }
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01U7Ff9VPCtCXcfEnt9wzvQZ","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":721,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}}
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}    }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}         }
 
 
         event: ping
@@ -291,64 +290,68 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{"}
-        }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{"}        }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n  \"title\":
-        \"Mist"}  }
+        \"Mist"}}
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"born:
-        The Final Empire\",\n  "}               }
+        The Final Empire\",\n  "}        }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\"author\":
-        \"Brandon Sanderson"}       }
+        \"Brandon Sanderson"}        }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\",\n  \"pages\":
-        544"}              }
+        544"}               }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":",\n  \"publication_year\":"}       }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":",\n  \"publication_year\":"}              }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        2006\n}"}               }
+        2006"}    }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n}"}         }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0     }
+        data: {"type":"content_block_stop","index":0  }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":721,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":49}              }
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":721,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":49}    }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"             }
+        data: {"type":"message_stop"    }
 
 
         '
     headers:
       CF-RAY:
-      - 9beae93398ed6826-SEA
+      - 9c11f6c1d880eb73-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -356,7 +359,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Fri, 16 Jan 2026 04:36:17 GMT
+      - Tue, 20 Jan 2026 22:21:18 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -370,33 +373,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2026-01-16T04:36:16Z'
+      - '2026-01-20T22:21:16Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2026-01-16T04:36:16Z'
+      - '2026-01-20T22:21:16Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2026-01-16T04:36:16Z'
+      - '2026-01-20T22:21:16Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2026-01-16T04:36:16Z'
+      - '2026-01-20T22:21:16Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CXASFpDaWtHBXyb1d7wsi
+      - req_011CXKQhp8tmCBzM24tXhxH6
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '566'
+      - '1523'
     status:
       code: 200
       message: OK
