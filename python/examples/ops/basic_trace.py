@@ -2,11 +2,11 @@ from mirascope import ops
 
 
 @ops.trace
-def process_data(data: dict) -> dict:
+def process_data(data: dict[str, str]) -> dict[str, dict[str, str]]:
     return {"processed": data}
 
 
-# Call returns Trace containing both result and span info
-trace = process_data({"key": "value"})
+# Use .wrapped() to get Trace containing both result and span info
+trace = process_data.wrapped({"key": "value"})
 print(trace.result)  # {"processed": {"key": "value"}}
 print(trace.span_id)  # Access the span ID

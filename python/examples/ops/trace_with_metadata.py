@@ -7,5 +7,5 @@ def analyze_sentiment(text: str) -> str:
     return "positive" if "good" in text.lower() else "neutral"
 
 
-trace = analyze_sentiment("This product is really good!")
+trace = analyze_sentiment.wrapped("This product is really good!")
 print(trace.result)  # "positive"

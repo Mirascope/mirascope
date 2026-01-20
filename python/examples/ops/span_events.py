@@ -1,7 +1,7 @@
 from mirascope import ops
 
 
-def fetch_and_transform(url: str) -> dict:
+def fetch_and_transform(url: str) -> dict[str, int | str | bool]:
     with ops.span("fetch_and_transform", url=url) as s:
         # Log different event types
         s.info("Starting fetch operation")
@@ -11,8 +11,9 @@ def fetch_and_transform(url: str) -> dict:
         s.debug("Received response", response_size=len(str(data)))
 
         # Check for issues
-        if data.get("status") != "ok":
-            s.warning("Unexpected status", status=data.get("status"))
+        status = data.get("status")
+        if status is not None and status != "ok":
+            s.warning("Unexpected status", status=status)
 
         # Transform
         s.info("Transforming data")

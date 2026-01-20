@@ -8,9 +8,10 @@ def process_data(data: str) -> str:
 
 
 # Access version info
-print(f"Hash: {process_data.version_info.hash}")
-print(f"Version: {process_data.version_info.version}")
-print(f"Name: {process_data.version_info.name}")
+if (info := process_data.version_info) is not None:
+    print(f"Hash: {info.hash}")
+    print(f"Version: {info.version}")
+    print(f"Name: {info.name}")
 
 # Call the function
 result = process_data("example")
