@@ -6,6 +6,7 @@ from collections.abc import Generator
 
 import pytest
 from inline_snapshot import snapshot
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
     InMemorySpanExporter,
 )
@@ -15,9 +16,9 @@ from tests.ops.utils import span_snapshot
 
 
 @pytest.fixture(autouse=True, scope="function")
-def initialize() -> Generator[None, None, None]:
+def initialize(tracer_provider: TracerProvider) -> Generator[None, None, None]:
     """Initialize ops configuration and LLM instrumentation for each test."""
-    ops.configure()
+    ops.configure(tracer_provider=tracer_provider)
     ops.instrument_llm()
     yield
     ops.uninstrument_llm()
