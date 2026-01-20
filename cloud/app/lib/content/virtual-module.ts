@@ -62,9 +62,9 @@ function buildModuleMap(
 /* ========== MODULE-LEVEL GLOB IMPORTS =========== */
 // Evaluated once at module load for memory efficiency.
 
-const BLOG_PATH_REGEX = /^\/content\/blog\/(.*)\.mdx$/;
-const DOCS_PATH_REGEX = /^\/content\/docs\/(.*)\.mdx$/;
-const POLICY_PATH_REGEX = /^\/content\/policy\/(.*)\.mdx$/;
+const BLOG_PATH_REGEX = /^\/?\.{2}\/content\/blog\/(.*)\.mdx$/;
+const DOCS_PATH_REGEX = /^\/?\.{2}\/content\/docs\/(.*)\.mdx$/;
+const POLICY_PATH_REGEX = /^\/?\.{2}\/content\/policy\/(.*)\.mdx$/;
 
 const BLOG_MODULES = import.meta.glob<VirtualModuleExport>(
   "@/../content/blog/*.mdx",
