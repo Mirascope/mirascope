@@ -194,12 +194,122 @@ This wraps the APIResponseValidationErrors that OpenAI and Anthropic both return
 <TypeLink type={{"type_str": "ProviderError", "description": null, "kind": "simple", "symbol_name": "ProviderError", "doc_url": "/docs/api/exceptions#provider-error"}} />
 
 
-## <ApiType type="Class" slug="tool-not-found-error" symbolName="ToolNotFoundError" /> ToolNotFoundError
+## <ApiType type="Class" slug="tool-error" symbolName="ToolError" /> ToolError
 
-Raised if a tool_call cannot be converted to any corresponding tool.
+Base class for errors that occur during tool execution.
 
 **Bases:** 
 <TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/api/exceptions#error"}} />
+
+
+## <ApiType type="Class" slug="tool-execution-error" symbolName="ToolExecutionError" /> ToolExecutionError
+
+Raised if an uncaught exception is thrown while executing a tool.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolError", "description": null, "kind": "simple", "symbol_name": "ToolError", "doc_url": "/docs/api/exceptions#tool-error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_exception",
+    "type_info": {
+      "type_str": "Exception",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Exception",
+      "doc_url": null
+    },
+    "description": "The exception that was thrown while executing the tool."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="tool-not-found-error" symbolName="ToolNotFoundError" /> ToolNotFoundError
+
+Raised if a tool call does not match any registered tool.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolError", "description": null, "kind": "simple", "symbol_name": "ToolError", "doc_url": "/docs/api/exceptions#tool-error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_name",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The name of the tool that was not found."
+  }
+]}
+/>
+
+
+## <ApiType type="Class" slug="parse-error" symbolName="ParseError" /> ParseError
+
+Raised when response.parse() fails to parse the response content.
+
+This wraps errors from JSON extraction, JSON parsing, Pydantic validation,
+or custom OutputParser functions.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/api/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "original_exception",
+    "type_info": {
+      "type_str": "Exception",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Exception",
+      "doc_url": null
+    },
+    "description": "The original exception that caused the parse failure."
+  }
+]}
+/>
+
+## <ApiType type="Function" slug="mirascope-llm-exceptions--parse-error-retry_message" symbolName="retry_message" /> retry_message
+
+Generate a message suitable for retrying with the LLM.
+
+Returns a user-friendly message describing what went wrong,
+suitable for including in a retry prompt.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": null,
+      "doc_url": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "symbol_name": "str",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  }
+}}
+/>
+
 
 
 ## <ApiType type="Class" slug="feature-not-supported-error" symbolName="FeatureNotSupportedError" /> FeatureNotSupportedError
