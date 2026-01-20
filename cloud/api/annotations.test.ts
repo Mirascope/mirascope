@@ -34,7 +34,7 @@ describe("toAnnotation", () => {
       label: "pass" as const,
       reasoning: "test-reasoning",
       metadata: { key: "value" },
-      tags: ["tag1", "tag2"],
+      tags: ["Bug"],
       environmentId: "env-id",
       projectId: "project-id",
       organizationId: "org-id",
@@ -47,6 +47,7 @@ describe("toAnnotation", () => {
 
     expect(result.otelSpanId).toBe("otel-span-id");
     expect(result.otelTraceId).toBe("otel-trace-id");
+    expect(result.tags).toEqual(["Bug"]);
     expect(result.createdAt).toBe(now.toISOString());
     expect(result.updatedAt).toBe(now.toISOString());
   });
@@ -72,6 +73,7 @@ describe("toAnnotation", () => {
 
     expect(result.otelSpanId).toBe("otel-span-id");
     expect(result.otelTraceId).toBe("otel-trace-id");
+    expect(result.tags).toEqual([]);
     expect(result.createdAt).toBeNull();
     expect(result.updatedAt).toBeNull();
   });
@@ -113,6 +115,27 @@ describe.sequential("Annotations API", (it) => {
           },
         });
         expect(environment.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:orgId/projects/:projId/tags - create tags for annotations test",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+
+        const tag = yield* client.tags.create({
+          path: { organizationId: org.id, projectId: project.id },
+          payload: { name: "Bug" },
+        });
+
+        const secondTag = yield* client.tags.create({
+          path: { organizationId: org.id, projectId: project.id },
+          payload: { name: "Feature" },
+        });
+
+        expect(tag.id).toBeDefined();
+        expect(secondTag.id).toBeDefined();
       }),
   );
 
@@ -183,12 +206,14 @@ describe.sequential("Annotations API", (it) => {
           otelTraceId: "0123456789abcdef0123456789abcdef",
           otelSpanId: "0123456789abcdef",
           label: "pass",
+          tags: ["Bug"],
         },
       });
       expect(result.id).toBeDefined();
       expect(result.otelTraceId).toBe("0123456789abcdef0123456789abcdef");
       expect(result.otelSpanId).toBe("0123456789abcdef");
       expect(result.label).toBe("pass");
+      expect(result.tags).toEqual(["Bug"]);
       createdAnnotationId = result.id;
     }),
   );
@@ -233,12 +258,105 @@ describe.sequential("Annotations API", (it) => {
           label: "fail",
           reasoning: "test-reasoning",
           metadata: { key: "value" },
+          tags: ["Feature"],
         },
       });
       expect(result.id).toBeDefined();
       expect(result.label).toBe("fail");
       expect(result.reasoning).toBe("test-reasoning");
       expect(result.metadata).toEqual({ key: "value" });
+      expect(result.tags).toEqual(["Feature"]);
+    }),
+  );
+
+  it.effect("POST /annotations - creates annotation with null tags", () =>
+    Effect.gen(function* () {
+      const nullTagsTraceId = "1234567890abcdef1234567890abcdef";
+      const nullTagsSpanId = "1234567890abcdef";
+
+      yield* apiKeyClient.traces.create({
+        payload: {
+          resourceSpans: [
+            {
+              resource: {
+                attributes: [
+                  { key: "service.name", value: { stringValue: "test-svc" } },
+                ],
+              },
+              scopeSpans: [
+                {
+                  scope: { name: "test-scope" },
+                  spans: [
+                    {
+                      traceId: nullTagsTraceId,
+                      spanId: nullTagsSpanId,
+                      name: "null-tags-span",
+                      startTimeUnixNano: "1700000000000000003",
+                      endTimeUnixNano: "1700000001000000003",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      const result = yield* apiKeyClient.annotations.create({
+        payload: {
+          otelTraceId: nullTagsTraceId,
+          otelSpanId: nullTagsSpanId,
+          tags: null,
+        },
+      });
+
+      expect(result.id).toBeDefined();
+      expect(result.tags).toEqual([]);
+    }),
+  );
+
+  it.effect("POST /annotations - creates annotation without tags", () =>
+    Effect.gen(function* () {
+      const noTagsTraceId = "abcdefabcdefabcdefabcdefabcdefab";
+      const noTagsSpanId = "abcdefabcdefabcd";
+
+      yield* apiKeyClient.traces.create({
+        payload: {
+          resourceSpans: [
+            {
+              resource: {
+                attributes: [
+                  { key: "service.name", value: { stringValue: "test-svc" } },
+                ],
+              },
+              scopeSpans: [
+                {
+                  scope: { name: "test-scope" },
+                  spans: [
+                    {
+                      traceId: noTagsTraceId,
+                      spanId: noTagsSpanId,
+                      name: "no-tags-span",
+                      startTimeUnixNano: "1700000000000000004",
+                      endTimeUnixNano: "1700000001000000004",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      const result = yield* apiKeyClient.annotations.create({
+        payload: {
+          otelTraceId: noTagsTraceId,
+          otelSpanId: noTagsSpanId,
+        },
+      });
+
+      expect(result.id).toBeDefined();
+      expect(result.tags).toEqual([]);
     }),
   );
 
@@ -307,11 +425,39 @@ describe.sequential("Annotations API", (it) => {
         payload: {
           label: "fail",
           reasoning: "updated-reasoning",
+          tags: null,
         },
       });
       expect(result.id).toBe(createdAnnotationId);
       expect(result.label).toBe("fail");
       expect(result.reasoning).toBe("updated-reasoning");
+      expect(result.tags).toEqual([]);
+    }),
+  );
+
+  it.effect("PUT /annotations/:id - updates annotation without tags", () =>
+    Effect.gen(function* () {
+      const result = yield* apiKeyClient.annotations.update({
+        path: { id: createdAnnotationId },
+        payload: {
+          label: "pass",
+        },
+      });
+      expect(result.id).toBe(createdAnnotationId);
+      expect(result.label).toBe("pass");
+    }),
+  );
+
+  it.effect("PUT /annotations/:id - updates annotation tags", () =>
+    Effect.gen(function* () {
+      const result = yield* apiKeyClient.annotations.update({
+        path: { id: createdAnnotationId },
+        payload: {
+          tags: ["Bug"],
+        },
+      });
+      expect(result.id).toBe(createdAnnotationId);
+      expect(result.tags).toEqual(["Bug"]);
     }),
   );
 

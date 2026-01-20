@@ -13,9 +13,9 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/errors";
-import type { PublicProjectTag } from "@/db/schema";
+import type { PublicTag } from "@/db/schema";
 
-describe("ProjectTags", () => {
+describe("Tags", () => {
   // ==========================================================================
   // create
   // ==========================================================================
@@ -38,7 +38,7 @@ describe("ProjectTags", () => {
           projectId: project.id,
           organizationId: org.id,
           createdBy: owner.id,
-        } satisfies Partial<PublicProjectTag>);
+        } satisfies Partial<PublicTag>);
         expect(tag.id).toBeDefined();
       }),
     );

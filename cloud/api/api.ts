@@ -11,6 +11,7 @@ import { EnvironmentsApi } from "@/api/environments.schemas";
 import { ApiKeysApi } from "@/api/api-keys.schemas";
 import { FunctionsApi } from "@/api/functions.schemas";
 import { AnnotationsApi } from "@/api/annotations.schemas";
+import { TagsApi } from "@/api/tags.schemas";
 import { RateLimitError, ServiceUnavailableError } from "@/errors";
 
 export * from "@/errors";
@@ -26,6 +27,7 @@ export * from "@/api/environments.schemas";
 export * from "@/api/api-keys.schemas";
 export * from "@/api/functions.schemas";
 export * from "@/api/annotations.schemas";
+export * from "@/api/tags.schemas";
 export * from "@/api/traces-search.schemas";
 
 export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
@@ -41,6 +43,7 @@ export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(ApiKeysApi)
   .add(FunctionsApi)
   .add(AnnotationsApi)
+  .add(TagsApi)
   .addError(RateLimitError, { status: RateLimitError.status })
   .addError(ServiceUnavailableError, {
     status: ServiceUnavailableError.status,

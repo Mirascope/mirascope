@@ -1,20 +1,20 @@
 /**
- * @fileoverview Effect-native Project Tags service.
+ * @fileoverview Effect-native Tags service.
  *
- * Provides authenticated CRUD operations for project tags with role-based access
- * control. Tags belong to projects and inherit authorization from the
+ * Provides authenticated CRUD operations for tags with role-based access
+ * control. Tags are project-scoped and inherit authorization from the
  * project's membership system.
  *
  * ## Architecture
  *
  * ```
- * ProjectTags (authenticated)
+ * Tags (authenticated)
  *   └── authorization via ProjectMemberships.getRole()
  * ```
  *
  * ## Tag Roles
  *
- * Project tags use the project's role system:
+ * Tags use the project's role system:
  * - `ADMIN` - Full tag management (create, read, update, delete)
  * - `DEVELOPER` - Read-only access to tags
  * - `VIEWER` - Read-only access to tags
@@ -54,9 +54,9 @@ import {
 } from "@/errors";
 import { isUniqueConstraintError } from "@/db/utils";
 import {
-  projectTags,
-  type NewProjectTag,
-  type PublicProjectTag,
+  tags,
+  type NewTag,
+  type PublicTag,
   type ProjectRole,
 } from "@/db/schema";
 
@@ -64,19 +64,19 @@ import {
  * Public fields to select from the project_tags table.
  */
 const publicFields = {
-  id: projectTags.id,
-  name: projectTags.name,
-  projectId: projectTags.projectId,
-  organizationId: projectTags.organizationId,
-  createdBy: projectTags.createdBy,
-  createdAt: projectTags.createdAt,
-  updatedAt: projectTags.updatedAt,
+  id: tags.id,
+  name: tags.name,
+  projectId: tags.projectId,
+  organizationId: tags.organizationId,
+  createdBy: tags.createdBy,
+  createdAt: tags.createdAt,
+  updatedAt: tags.updatedAt,
 };
 
-export type ProjectTagCreateData = Pick<NewProjectTag, "name">;
+export type TagCreateData = Pick<NewTag, "name">;
 
 /**
- * Effect-native Project Tags service.
+ * Effect-native Tags service.
  *
  * Provides CRUD operations with role-based access control for tags.
  * Authorization is inherited from project membership via ProjectMemberships.getRole().
@@ -96,11 +96,11 @@ export type ProjectTagCreateData = Pick<NewProjectTag, "name">;
  * - Non-members cannot see that a project/tag exists (returns NotFoundError)
  * - Tag names are unique within a project
  */
-export class ProjectTags extends BaseAuthenticatedEffectService<
-  PublicProjectTag,
+export class Tags extends BaseAuthenticatedEffectService<
+  PublicTag,
   "organizations/:organizationId/projects/:projectId/tags/:tagId",
-  ProjectTagCreateData,
-  Partial<ProjectTagCreateData>,
+  TagCreateData,
+  Partial<TagCreateData>,
   ProjectRole
 > {
   private readonly projectMemberships: ProjectMemberships;
@@ -189,9 +189,9 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
     userId: string;
     organizationId: string;
     projectId: string;
-    data: ProjectTagCreateData;
+    data: TagCreateData;
   }): Effect.Effect<
-    PublicProjectTag,
+    PublicTag,
     AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -206,7 +206,7 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
         tagId: "",
       });
 
-      const newTag: NewProjectTag = {
+      const newTag: NewTag = {
         name: data.name,
         projectId,
         organizationId,
@@ -214,7 +214,7 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
       };
 
       const [tag] = yield* client
-        .insert(projectTags)
+        .insert(tags)
         .values(newTag)
         .returning(publicFields)
         .pipe(
@@ -250,7 +250,7 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
     organizationId: string;
     projectId: string;
   }): Effect.Effect<
-    PublicProjectTag[],
+    PublicTag[],
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -267,14 +267,14 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
 
       return yield* client
         .select(publicFields)
-        .from(projectTags)
+        .from(tags)
         .where(
           and(
-            eq(projectTags.projectId, projectId),
-            eq(projectTags.organizationId, organizationId),
+            eq(tags.projectId, projectId),
+            eq(tags.organizationId, organizationId),
           ),
         )
-        .orderBy(desc(projectTags.createdAt))
+        .orderBy(desc(tags.createdAt))
         .pipe(
           Effect.mapError(
             (e) =>
@@ -303,7 +303,7 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
     projectId: string;
     tagId: string;
   }): Effect.Effect<
-    PublicProjectTag,
+    PublicTag,
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -320,10 +320,8 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
 
       const [tag] = yield* client
         .select(publicFields)
-        .from(projectTags)
-        .where(
-          and(eq(projectTags.id, tagId), eq(projectTags.projectId, projectId)),
-        )
+        .from(tags)
+        .where(and(eq(tags.id, tagId), eq(tags.projectId, projectId)))
         .limit(1)
         .pipe(
           Effect.mapError(
@@ -364,9 +362,9 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
     organizationId: string;
     projectId: string;
     tagId: string;
-    data: Partial<ProjectTagCreateData>;
+    data: Partial<TagCreateData>;
   }): Effect.Effect<
-    PublicProjectTag,
+    PublicTag,
     NotFoundError | PermissionDeniedError | DatabaseError | AlreadyExistsError,
     DrizzleORM
   > {
@@ -382,11 +380,9 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
       });
 
       const [updated] = yield* client
-        .update(projectTags)
+        .update(tags)
         .set({ ...data, updatedAt: new Date() })
-        .where(
-          and(eq(projectTags.id, tagId), eq(projectTags.projectId, projectId)),
-        )
+        .where(and(eq(tags.id, tagId), eq(tags.projectId, projectId)))
         .returning(publicFields)
         .pipe(
           Effect.mapError((e) => {
@@ -448,11 +444,9 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
       });
 
       const [deleted] = yield* client
-        .delete(projectTags)
-        .where(
-          and(eq(projectTags.id, tagId), eq(projectTags.projectId, projectId)),
-        )
-        .returning({ id: projectTags.id })
+        .delete(tags)
+        .where(and(eq(tags.id, tagId), eq(tags.projectId, projectId)))
+        .returning({ id: tags.id })
         .pipe(
           Effect.mapError(
             (e) =>
@@ -494,7 +488,7 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
     projectId: string;
     names: string[];
   }): Effect.Effect<
-    PublicProjectTag[],
+    PublicTag[],
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
@@ -515,14 +509,14 @@ export class ProjectTags extends BaseAuthenticatedEffectService<
 
       const uniqueNames = Array.from(new Set(names));
 
-      const results: PublicProjectTag[] = yield* client
+      const results: PublicTag[] = yield* client
         .select(publicFields)
-        .from(projectTags)
+        .from(tags)
         .where(
           and(
-            eq(projectTags.projectId, projectId),
-            eq(projectTags.organizationId, organizationId),
-            inArray(projectTags.name, uniqueNames),
+            eq(tags.projectId, projectId),
+            eq(tags.organizationId, organizationId),
+            inArray(tags.name, uniqueNames),
           ),
         )
         .pipe(

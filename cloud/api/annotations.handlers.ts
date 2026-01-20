@@ -12,6 +12,7 @@ export * from "@/api/annotations.schemas";
 export const toAnnotation = (annotation: PublicAnnotation) => {
   return {
     ...annotation,
+    tags: annotation.tags ?? [],
     spanId: annotation.otelSpanId,
     traceId: annotation.otelTraceId,
     createdAt: annotation.createdAt?.toISOString() ?? null,
@@ -64,6 +65,9 @@ export const createAnnotationHandler = (payload: CreateAnnotationRequest) =>
     const db = yield* Database;
     const { user, apiKeyInfo } = yield* Authentication.ApiKey;
 
+    const tags =
+      payload.tags === null ? null : payload.tags ? [...payload.tags] : null;
+
     const result =
       yield* db.organizations.projects.environments.traces.annotations.create({
         userId: user.id,
@@ -76,6 +80,7 @@ export const createAnnotationHandler = (payload: CreateAnnotationRequest) =>
           label: payload.label ?? null,
           reasoning: payload.reasoning ?? null,
           metadata: payload.metadata ?? null,
+          tags,
         },
       });
 
@@ -117,6 +122,13 @@ export const updateAnnotationHandler = (
     const db = yield* Database;
     const { user, apiKeyInfo } = yield* Authentication.ApiKey;
 
+    const tags =
+      payload.tags === null
+        ? null
+        : payload.tags
+          ? [...payload.tags]
+          : undefined;
+
     const result =
       yield* db.organizations.projects.environments.traces.annotations.update({
         userId: user.id,
@@ -128,6 +140,7 @@ export const updateAnnotationHandler = (
           label: payload.label,
           reasoning: payload.reasoning,
           metadata: payload.metadata,
+          tags,
         },
       });
 
