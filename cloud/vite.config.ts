@@ -14,7 +14,7 @@ import ContentProcessor from "./app/lib/content/content-processor";
 
 export default defineConfig(() => {
   const contentProcessorOptions = {
-    contentDir: path.resolve(process.cwd(), "content"),
+    contentDir: path.resolve(process.cwd(), "../content"),
     verbose: true,
   };
   const processor = new ContentProcessor(contentProcessorOptions);

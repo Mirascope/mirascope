@@ -67,19 +67,19 @@ const DOCS_PATH_REGEX = /^\/content\/docs\/(.*)\.mdx$/;
 const POLICY_PATH_REGEX = /^\/content\/policy\/(.*)\.mdx$/;
 
 const BLOG_MODULES = import.meta.glob<VirtualModuleExport>(
-  "@/content/blog/*.mdx",
+  "@/../content/blog/*.mdx",
   {
     eager: false,
   },
 );
 
 const DOCS_MODULES = import.meta.glob<VirtualModuleExport>(
-  "@/content/docs/**/*.mdx",
+  "@/../content/docs/**/*.mdx",
   { eager: false },
 );
 
 const POLICY_MODULES = import.meta.glob<VirtualModuleExport>(
-  "@/content/policy/**/*.mdx",
+  "@/../content/policy/**/*.mdx",
   { eager: false },
 );
 

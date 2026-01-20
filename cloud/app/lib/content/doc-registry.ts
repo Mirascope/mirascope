@@ -7,7 +7,7 @@
 
 import type { FullDocsSpec, DocInfo } from "./spec";
 import { getDocsFromSpec } from "./spec";
-import { docsSpec } from "@/content/docs/_meta";
+import { docsSpec } from "@/../content/docs/_meta";
 
 /**
  * DocRegistry service - Singleton for efficient document information management

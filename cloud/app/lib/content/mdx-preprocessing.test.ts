@@ -29,9 +29,7 @@ This is the actual content.`;
 
     mockedReadFile.mockResolvedValue(mdxWithFrontmatter);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     // Frontmatter should be extracted to the frontmatter object
     expect(result.frontmatter).toEqual({
@@ -78,9 +76,7 @@ Nested content.`;
 
     mockedReadFile.mockResolvedValue(mdxWithFrontmatter);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     // Table of contents should be extracted from the headings
     expect(result.tableOfContents).toHaveLength(4);
@@ -118,9 +114,7 @@ No frontmatter here, just markdown.`;
 
     mockedReadFile.mockResolvedValue(mdxWithoutFrontmatter);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     expect(result.frontmatter).toEqual({});
     expect(result.content).toBe(mdxWithoutFrontmatter);
@@ -139,9 +133,7 @@ Content.`;
 
     mockedReadFile.mockResolvedValue(mdx);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     // Verify the shape of PreprocessedMDX
     expect(result).toHaveProperty("frontmatter");

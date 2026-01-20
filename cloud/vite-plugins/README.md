@@ -19,7 +19,7 @@ Transforms `.mdx` files into importable ES modules at build time.
 Import MDX files directly in your components:
 
 ```typescript
-import { mdx } from "@/content/docs/v1/placeholder.mdx";
+import { mdx } from "@/../content/docs/v1/placeholder.mdx";
 
 // mdx is a React component with metadata attached
 console.log(mdx.frontmatter.title); // Access frontmatter

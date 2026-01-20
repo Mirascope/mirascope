@@ -3,7 +3,7 @@ import {
   type DocInfo,
   type FullDocsSpec,
   type VersionSpec,
-} from "../../app/lib/content/spec";
+} from "../../cloud/app/lib/content/spec";
 import api from "./api/_meta";
 import v1 from "./v1/_meta";
 
