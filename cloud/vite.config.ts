@@ -20,15 +20,10 @@ const processor = new ContentProcessor({
 // Pre-run content processing at startup
 await processor.processAllContent();
 
-// Filter pages to include in prerendering, sitemap, and robots.txt
+// Filter pages to include in prerendering and robots.txt
 const filterPages = (page: { path: string }) => {
   return (
-    page.path.startsWith("/home") ||
-    page.path.startsWith("/pricing") ||
-    page.path.startsWith("/docs") ||
-    page.path.startsWith("/blog") ||
-    page.path.startsWith("/terms") ||
-    page.path.startsWith("/privacy")
+    !page.path.startsWith("/cloud") && !page.path.startsWith("/discord-invite")
   );
 };
 
