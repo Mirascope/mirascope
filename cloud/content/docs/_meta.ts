@@ -4,12 +4,13 @@ import {
   type FullDocsSpec,
   type VersionSpec,
 } from "../../app/lib/content/spec";
+import api from "./api/_meta";
 import v1 from "./v1/_meta";
 
 const v2: VersionSpec = {
   sections: [
     {
-      label: "Docs",
+      label: "Docs v2",
       slug: "index",
       weight: 2,
       children: [
@@ -91,6 +92,7 @@ const v2: VersionSpec = {
         },
       ],
     },
+    api,
   ],
 };
 
