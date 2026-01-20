@@ -13,7 +13,7 @@ for attempt in range(max_retries):
         for chunk in response.text_stream():
             print(chunk, end="", flush=True)
         break
-    except llm.APIError:
+    except llm.Error:
         if attempt == max_retries - 1:
             raise
         # Stream failed mid-way. Resume from where we left off.

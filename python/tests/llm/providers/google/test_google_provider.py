@@ -141,9 +141,9 @@ async def test_async_call_rate_limit_error() -> None:
 
 
 def test_map_google_error_not_google_error() -> None:
-    """Test that non-Google errors return APIError."""
+    """Test that non-Google errors return ProviderError."""
     result = map_google_error(Exception("test"))
-    assert result == llm.APIError
+    assert result == llm.ProviderError
 
 
 def test_map_google_error_permission_denied() -> None:

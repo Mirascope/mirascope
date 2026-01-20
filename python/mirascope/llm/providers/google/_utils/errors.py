@@ -11,20 +11,21 @@ from ....exceptions import (
     BadRequestError,
     NotFoundError,
     PermissionError,
+    ProviderError,
     RateLimitError,
     ServerError,
 )
 from ...base import ProviderErrorMap
 
 
-def map_google_error(e: Exception) -> type[APIError]:
+def map_google_error(e: Exception) -> type[ProviderError]:
     """Map Google error to appropriate Mirascope error type.
 
     Google only provides ClientError (4xx) and ServerError (5xx) with status codes,
     so we map based on status code and message patterns.
     """
     if not isinstance(e, GoogleClientError | GoogleServerError):
-        return APIError
+        return ProviderError
 
     # Authentication errors (401) or 400 with "API key not valid"
     if e.code == 401 or (e.code == 400 and "API key not valid" in str(e)):

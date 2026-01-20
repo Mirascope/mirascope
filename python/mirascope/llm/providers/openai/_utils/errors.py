@@ -16,12 +16,12 @@ from openai import (
 )
 
 from ....exceptions import (
-    APIError,
     AuthenticationError,
     BadRequestError,
     ConnectionError,
     NotFoundError,
     PermissionError,
+    ProviderError,
     RateLimitError,
     ResponseValidationError,
     ServerError,
@@ -42,5 +42,5 @@ OPENAI_ERROR_MAP: ProviderErrorMap = {
     OpenAIAPITimeoutError: TimeoutError,
     OpenAIAPIConnectionError: ConnectionError,
     OpenAIAPIResponseValidationError: ResponseValidationError,
-    OpenAIError: APIError,  # Catch-all for unknown OpenAI errors
+    OpenAIError: ProviderError,  # Catch-all for unknown OpenAI errors
 }

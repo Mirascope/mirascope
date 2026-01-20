@@ -12,6 +12,6 @@ for attempt in range(max_retries):
         response = recommend_book("fantasy")
         print(response.pretty())
         break
-    except llm.APIError:
+    except llm.Error:
         if attempt == max_retries - 1:
             raise

@@ -16,12 +16,12 @@ from anthropic import (
 )
 
 from ....exceptions import (
-    APIError,
     AuthenticationError,
     BadRequestError,
     ConnectionError,
     NotFoundError,
     PermissionError,
+    ProviderError,
     RateLimitError,
     ResponseValidationError,
     ServerError,
@@ -42,5 +42,5 @@ ANTHROPIC_ERROR_MAP: ProviderErrorMap = {
     AnthropicAPITimeoutError: TimeoutError,
     AnthropicAPIConnectionError: ConnectionError,
     AnthropicAPIResponseValidationError: ResponseValidationError,
-    AnthropicError: APIError,  # Catch-all for unknown Anthropic errors
+    AnthropicError: ProviderError,  # Catch-all for unknown Anthropic errors
 }

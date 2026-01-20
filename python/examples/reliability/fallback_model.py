@@ -12,13 +12,13 @@ def recommend_book(model: llm.Model, genre: str):
 
 
 def with_fallbacks(genre: str, max_retries: int = 3) -> llm.Response:
-    errors: list[llm.APIError] = []
+    errors: list[llm.Error] = []
     for model_id in models:
         model = llm.model(model_id)
         for attempt in range(max_retries):
             try:
                 return recommend_book(model, genre)
-            except llm.APIError as e:
+            except llm.Error as e:
                 errors.append(e)
                 if attempt == max_retries - 1:
                     break  # Try next model

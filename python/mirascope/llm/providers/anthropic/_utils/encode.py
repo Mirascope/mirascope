@@ -11,7 +11,7 @@ from typing_extensions import Required
 from anthropic import Omit, types as anthropic_types
 
 from ....content import ContentPart, ImageMimeType
-from ....exceptions import FeatureNotSupportedError, FormattingModeNotSupportedError
+from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
     FormattableT,
@@ -360,8 +360,8 @@ def encode_request(
     format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
     if format is not None:
         if format.mode == "strict":
-            raise FormattingModeNotSupportedError(
-                formatting_mode="strict",
+            raise FeatureNotSupportedError(
+                feature="formatting_mode:strict",
                 provider_id="anthropic",
                 model_id=model_id,
             )

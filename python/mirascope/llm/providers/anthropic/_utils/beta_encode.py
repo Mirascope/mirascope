@@ -17,7 +17,7 @@ from anthropic.types.beta import (
 from pydantic import BaseModel
 
 from ....content import ContentPart
-from ....exceptions import FormattingModeNotSupportedError
+from ....exceptions import FeatureNotSupportedError
 from ....formatting import (
     Format,
     FormattableT,
@@ -173,8 +173,8 @@ def beta_encode_request(
     if format is not None:
         if format.mode == "strict":
             if model_name(model_id) in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS:
-                raise FormattingModeNotSupportedError(
-                    formatting_mode=format.mode,
+                raise FeatureNotSupportedError(
+                    feature=f"formatting_mode:{format.mode}",
                     provider_id="anthropic",
                     model_id=model_id,
                 )

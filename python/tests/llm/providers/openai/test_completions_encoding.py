@@ -105,7 +105,7 @@ def test_strict_unsupported_legacy_model() -> None:
 
     format = llm.format(Book, mode="strict")
 
-    with pytest.raises(llm.FormattingModeNotSupportedError):
+    with pytest.raises(llm.FeatureNotSupportedError):
         encode_request(
             model_id="openai/gpt-4",
             messages=messages,

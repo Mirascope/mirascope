@@ -352,7 +352,9 @@ class TestMirascopeProviderErrorHandling:
 
         # Mock underlying provider to raise a Mirascope exception
         mock_underlying = Mock()
-        mock_underlying.call.side_effect = RateLimitError("Rate limit exceeded")
+        mock_underlying.call.side_effect = RateLimitError(
+            "Rate limit exceeded", provider="openai"
+        )
         mock_create_provider.return_value = mock_underlying
 
         provider = MirascopeProvider(api_key="test-key")
@@ -374,7 +376,7 @@ class TestMirascopeProviderErrorHandling:
         # Mock underlying provider to raise a Mirascope exception
         mock_underlying = Mock()
         mock_underlying.call_async = AsyncMock(
-            side_effect=AuthenticationError("Invalid API key")
+            side_effect=AuthenticationError("Invalid API key", provider="anthropic")
         )
         mock_create_provider.return_value = mock_underlying
 
@@ -395,7 +397,9 @@ class TestMirascopeProviderErrorHandling:
 
         # Mock underlying provider to raise a Mirascope exception
         mock_underlying = Mock()
-        mock_underlying.stream.side_effect = ServerError("Internal server error")
+        mock_underlying.stream.side_effect = ServerError(
+            "Internal server error", provider="google"
+        )
         mock_create_provider.return_value = mock_underlying
 
         provider = MirascopeProvider(api_key="test-key")

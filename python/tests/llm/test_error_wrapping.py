@@ -44,17 +44,19 @@ def test_openai_responses_get_error_status() -> None:
 
 def test_permission_error_without_status_code() -> None:
     """Test PermissionError uses default 403 when status_code is None."""
-    error = llm.PermissionError("Permission denied", status_code=None)
+    error = llm.PermissionError(
+        "Permission denied", provider="openai", status_code=None
+    )
     assert error.status_code == 403
 
 
 def test_bad_request_error_without_status_code() -> None:
     """Test BadRequestError uses default 400 when status_code is None."""
-    error = llm.BadRequestError("Bad request", status_code=None)
+    error = llm.BadRequestError("Bad request", provider="openai", status_code=None)
     assert error.status_code == 400
 
 
 def test_server_error_without_status_code() -> None:
     """Test ServerError uses default 500 when status_code is None."""
-    error = llm.ServerError("Server error", status_code=None)
+    error = llm.ServerError("Server error", provider="openai", status_code=None)
     assert error.status_code == 500
