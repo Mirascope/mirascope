@@ -92,6 +92,74 @@ describe("Annotations", () => {
       }),
     );
 
+    it.effect("creates an annotation with tags", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner, traceId, spanId } =
+          yield* TestSpanFixture;
+        const db = yield* Database;
+
+        yield* db.organizations.projects.tags.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          data: { name: "Bug" },
+        });
+
+        const annotation =
+          yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: {
+                otelSpanId: spanId,
+                otelTraceId: traceId,
+                label: "pass",
+                tags: ["Bug"],
+              },
+            },
+          );
+
+        expect(annotation.tags).toEqual(["Bug"]);
+      }),
+    );
+
+    it.effect("returns NotFoundError when tags do not exist", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner, traceId, spanId } =
+          yield* TestSpanFixture;
+        const db = yield* Database;
+
+        yield* db.organizations.projects.tags.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          data: { name: "Bug" },
+        });
+
+        const result =
+          yield* db.organizations.projects.environments.traces.annotations
+            .create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: {
+                otelSpanId: spanId,
+                otelTraceId: traceId,
+                label: "pass",
+                tags: ["Bug", "Missing"],
+              },
+            })
+            .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect((result as NotFoundError).resource).toBe("tag");
+        expect(result.message).toContain("Missing");
+      }),
+    );
+
     it.effect("returns NotFoundError when span does not exist", () =>
       Effect.gen(function* () {
         const { environment, project, org, owner } =
@@ -721,6 +789,210 @@ describe("Annotations", () => {
 
         expect(updated.metadata).toEqual({ key: "updated", extra: true });
       }),
+    );
+
+    it.effect("updates annotation tags", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner, traceId, spanId } =
+          yield* TestSpanFixture;
+        const db = yield* Database;
+
+        yield* db.organizations.projects.tags.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          data: { name: "Bug" },
+        });
+
+        yield* db.organizations.projects.tags.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          data: { name: "Feature" },
+        });
+
+        const created =
+          yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: {
+                otelSpanId: spanId,
+                otelTraceId: traceId,
+                label: "pass",
+                tags: ["Bug"],
+              },
+            },
+          );
+
+        const updated =
+          yield* db.organizations.projects.environments.traces.annotations.update(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              annotationId: created.id,
+              data: { tags: ["Feature"] },
+            },
+          );
+
+        expect(updated.tags).toEqual(["Feature"]);
+      }),
+    );
+
+    it.effect("clears annotation tags with null and empty arrays", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner, traceId, spanId } =
+          yield* TestSpanFixture;
+        const db = yield* Database;
+
+        yield* db.organizations.projects.tags.create({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          data: { name: "Bug" },
+        });
+
+        const created =
+          yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: {
+                otelSpanId: spanId,
+                otelTraceId: traceId,
+                label: "pass",
+                tags: ["Bug"],
+              },
+            },
+          );
+
+        const cleared =
+          yield* db.organizations.projects.environments.traces.annotations.update(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              annotationId: created.id,
+              data: { tags: null },
+            },
+          );
+
+        expect(cleared.tags).toBeNull();
+
+        const empty =
+          yield* db.organizations.projects.environments.traces.annotations.update(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              annotationId: created.id,
+              data: { tags: [] },
+            },
+          );
+
+        expect(empty.tags).toEqual([]);
+      }),
+    );
+
+    it.effect("returns NotFoundError when update tags do not exist", () =>
+      Effect.gen(function* () {
+        const { environment, project, org, owner, traceId, spanId } =
+          yield* TestSpanFixture;
+        const db = yield* Database;
+
+        const created =
+          yield* db.organizations.projects.environments.traces.annotations.create(
+            {
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: {
+                otelSpanId: spanId,
+                otelTraceId: traceId,
+                label: "pass",
+              },
+            },
+          );
+
+        const result =
+          yield* db.organizations.projects.environments.traces.annotations
+            .update({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              annotationId: created.id,
+              data: { tags: ["Missing"] },
+            })
+            .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect((result as NotFoundError).resource).toBe("tag");
+        expect(result.message).toContain("Missing");
+      }),
+    );
+
+    it.effect(
+      "allows stale tags after tag deletion when tags are unchanged",
+      () =>
+        Effect.gen(function* () {
+          const { environment, project, org, owner, traceId, spanId } =
+            yield* TestSpanFixture;
+          const db = yield* Database;
+
+          const tag = yield* db.organizations.projects.tags.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            data: { name: "Bug" },
+          });
+
+          const created =
+            yield* db.organizations.projects.environments.traces.annotations.create(
+              {
+                userId: owner.id,
+                organizationId: org.id,
+                projectId: project.id,
+                environmentId: environment.id,
+                data: {
+                  otelSpanId: spanId,
+                  otelTraceId: traceId,
+                  label: "pass",
+                  tags: ["Bug"],
+                },
+              },
+            );
+
+          yield* db.organizations.projects.tags.delete({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            tagId: tag.id,
+          });
+
+          const updated =
+            yield* db.organizations.projects.environments.traces.annotations.update(
+              {
+                userId: owner.id,
+                organizationId: org.id,
+                projectId: project.id,
+                environmentId: environment.id,
+                annotationId: created.id,
+                data: { reasoning: "still valid" },
+              },
+            );
+
+          expect(updated.tags).toEqual(["Bug"]);
+        }),
     );
 
     it.effect("returns NotFoundError when annotation does not exist", () =>
