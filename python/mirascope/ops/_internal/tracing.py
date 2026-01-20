@@ -11,8 +11,11 @@ from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
 from ...llm.context import DepsT
 from .protocols import (
     AsyncFunction,
+    AsyncSpanFunction,
     SyncFunction,
+    SyncSpanFunction,
     fn_is_async,
+    fn_wants_span,
 )
 from .traced_calls import (
     TracedAsyncCall,
@@ -24,7 +27,9 @@ from .traced_calls import (
 )
 from .traced_functions import (
     AsyncTracedFunction,
+    AsyncTracedSpanFunction,
     TracedFunction,
+    TracedSpanFunction,
 )
 from .types import P, R
 
@@ -43,7 +48,7 @@ class TraceDecorator:
     """Arbitrary key-value pairs for additional metadata."""
 
     # IMPORTANT: The order of these overloads matters for type inference.
-    # Call type overloads come first, then function overloads.
+    # Call type overloads come first, then span function overloads, then regular functions.
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
@@ -77,6 +82,22 @@ class TraceDecorator:
         ...
 
     @overload
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
+        self,
+        fn: AsyncSpanFunction[P, R],
+    ) -> AsyncTracedSpanFunction[P, R]:
+        """Overload for applying decorator to an async function with span injection."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: SyncSpanFunction[P, R],
+    ) -> TracedSpanFunction[P, R]:
+        """Overload for applying decorator to a sync function with span injection."""
+        ...
+
+    @overload
     def __call__(
         self,
         fn: AsyncFunction[P, R],
@@ -99,6 +120,8 @@ class TraceDecorator:
             | ContextCall[P, DepsT, FormattableT]
             | AsyncCall[P, FormattableT]
             | Call[P, FormattableT]
+            | AsyncSpanFunction[P, R]
+            | SyncSpanFunction[P, R]
             | AsyncFunction[P, R]
             | SyncFunction[P, R]
         ),
@@ -107,12 +130,21 @@ class TraceDecorator:
         | TracedContextCall[P, DepsT, FormattableT]
         | TracedAsyncCall[P, FormattableT]
         | TracedCall[P, FormattableT]
+        | AsyncTracedSpanFunction[P, R]
+        | TracedSpanFunction[P, R]
         | AsyncTracedFunction[P, R]
         | TracedFunction[P, R]
     ):
         """Applies the decorator to the given function or Call object."""
         if is_call_type(fn):
             return wrap_call(fn=fn, tags=self.tags, metadata=self.metadata)
+        elif fn_wants_span(fn):
+            if fn_is_async(fn):
+                return AsyncTracedSpanFunction(
+                    fn=fn, tags=self.tags, metadata=self.metadata
+                )
+            else:
+                return TracedSpanFunction(fn=fn, tags=self.tags, metadata=self.metadata)
         elif fn_is_async(fn):
             return AsyncTracedFunction(fn=fn, tags=self.tags, metadata=self.metadata)
         else:
@@ -175,6 +207,28 @@ def trace(
 
 
 @overload
+def trace(  # pyright: ignore[reportOverlappingOverload]
+    __fn: AsyncSpanFunction[P, R],
+    *,
+    tags: None = None,
+    metadata: None = None,
+) -> AsyncTracedSpanFunction[P, R]:
+    """Overload for directly decorating an async function with span injection."""
+    ...
+
+
+@overload
+def trace(
+    __fn: SyncSpanFunction[P, R],
+    *,
+    tags: None = None,
+    metadata: None = None,
+) -> TracedSpanFunction[P, R]:
+    """Overload for directly decorating a sync function with span injection."""
+    ...
+
+
+@overload
 def trace(
     __fn: AsyncFunction[P, R],
     *,
@@ -202,6 +256,8 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
         | ContextCall[P, DepsT, FormattableT]
         | AsyncCall[P, FormattableT]
         | Call[P, FormattableT]
+        | AsyncSpanFunction[P, R]
+        | SyncSpanFunction[P, R]
         | AsyncFunction[P, R]
         | SyncFunction[P, R]
         | None
@@ -214,6 +270,8 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
     | TracedContextCall[P, DepsT, FormattableT]
     | TracedAsyncCall[P, FormattableT]
     | TracedCall[P, FormattableT]
+    | AsyncTracedSpanFunction[P, R]
+    | TracedSpanFunction[P, R]
     | AsyncTracedFunction[P, R]
     | TracedFunction[P, R]
     | TraceDecorator
@@ -226,6 +284,9 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
 
     When decorating an @llm.call function, returns a TracedCall that wraps both
     the call and stream methods with tracing capabilities.
+
+    If the decorated function has `trace_ctx: Span` as its first parameter,
+    the span will be injected automatically and callers should NOT pass it.
 
     Args:
         __fn: The function or Call object to decorate.
@@ -262,6 +323,17 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
         print(trace.result.content)
         print(trace.span_id)
         ```
+
+    Example:
+        ```python
+        @ops.trace
+        def my_fn(trace_ctx: Span, arg: str) -> str:
+            trace_ctx.info(f"Processing: {arg}")
+            return arg.upper()
+
+        # Call without trace_ctx - it's injected automatically
+        result = my_fn("hello")  # Returns "HELLO"
+        ```
     """
     tags = tuple(sorted(set(tags or [])))
     metadata = metadata or {}
@@ -270,6 +342,11 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
 
     if is_call_type(__fn):
         return wrap_call(fn=__fn, tags=tags, metadata=metadata)
+    elif fn_wants_span(__fn):
+        if fn_is_async(__fn):
+            return AsyncTracedSpanFunction(fn=__fn, tags=tags, metadata=metadata)
+        else:
+            return TracedSpanFunction(fn=__fn, tags=tags, metadata=metadata)
     elif fn_is_async(__fn):
         return AsyncTracedFunction(fn=__fn, tags=tags, metadata=metadata)
     else:

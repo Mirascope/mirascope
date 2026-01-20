@@ -6,7 +6,7 @@ from typing import Any, TypeAlias
 
 import orjson
 
-from .protocols import P
+from .protocols import P, fn_wants_span
 
 ORJSON_OPTS = (
     orjson.OPT_NON_STR_KEYS
@@ -44,8 +44,21 @@ def extract_arguments(
     *args: P.args,
     **kwargs: P.kwargs,
 ) -> tuple[dict[str, str], dict[str, Any]]:
-    """Returns a tuple of (arg_types, arg_values) dictionaries from function call."""
+    """Returns a tuple of (arg_types, arg_values) dictionaries from function call.
+
+    If the function has `trace_ctx: Span` as first parameter (detected via
+    fn_wants_span), that parameter is skipped since it's injected by the
+    decorator and shouldn't be recorded in span attributes.
+    """
     signature = inspect.signature(fn)
+
+    # If function wants span injection, skip the first parameter
+    if fn_wants_span(fn):
+        params = list(signature.parameters.values())
+        if params:
+            remaining_params = params[1:]
+            signature = signature.replace(parameters=remaining_params)
+
     bound_arguments = signature.bind(*args, **kwargs)
     bound_arguments.apply_defaults()
 

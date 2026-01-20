@@ -44,9 +44,11 @@ def test_configure_with_api_key(
     mock_mirascope_client: MagicMock, mock_exporter: MagicMock
 ) -> None:
     """Configure with explicit API key auto-creates Mirascope Cloud provider."""
-    ops.configure(api_key="test-api-key")
+    ops.configure(api_key="test-api-key", base_url="test-base-url")
 
-    mock_mirascope_client.assert_called_once_with(api_key="test-api-key")
+    mock_mirascope_client.assert_called_once_with(
+        api_key="test-api-key", base_url="test-base-url"
+    )
     mock_exporter.assert_called_once()
     assert configuration._tracer_provider is not None  # pyright: ignore[reportPrivateUsage]
     assert configuration._tracer is not None  # pyright: ignore[reportPrivateUsage]
@@ -61,7 +63,7 @@ def test_configure_with_env_api_key(
     try:
         ops.configure()
 
-        mock_mirascope_client.assert_called_once_with(api_key=None)
+        mock_mirascope_client.assert_called_once_with(api_key=None, base_url=None)
         mock_exporter.assert_called_once()
         assert configuration._tracer_provider is not None  # pyright: ignore[reportPrivateUsage]
         assert configuration._tracer is not None  # pyright: ignore[reportPrivateUsage]
@@ -114,10 +116,14 @@ def test_create_mirascope_cloud_provider_success(
     mock_mirascope_client: MagicMock, mock_exporter: MagicMock
 ) -> None:
     """_create_mirascope_cloud_provider creates provider successfully."""
-    provider = configuration._create_mirascope_cloud_provider(api_key="test-key")  # pyright: ignore[reportPrivateUsage]
+    provider = configuration._create_mirascope_cloud_provider(  # pyright: ignore[reportPrivateUsage]
+        api_key="test-key", base_url="test-base-url"
+    )
 
     assert isinstance(provider, TracerProvider)
-    mock_mirascope_client.assert_called_once_with(api_key="test-key")
+    mock_mirascope_client.assert_called_once_with(
+        api_key="test-key", base_url="test-base-url"
+    )
     mock_exporter.assert_called_once()
 
 
