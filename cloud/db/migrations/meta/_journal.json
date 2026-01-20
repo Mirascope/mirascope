@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768675709023,
+      "when": 1768882185666,
       "tag": "0000_initial_migration",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768819092373,
-      "tag": "0001_nebulous_fabian_cortez",
       "breakpoints": true
     }
   ]
