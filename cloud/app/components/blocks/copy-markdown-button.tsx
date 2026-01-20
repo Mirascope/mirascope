@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Clipboard, Check } from "lucide-react";
-// import analyticsManager from "@/app/lib/services/analytics";
+import { useAnalytics } from "@/app/contexts/analytics";
 
 interface CopyMarkdownButtonProps {
   content: string;
@@ -12,12 +12,17 @@ interface CopyMarkdownButtonProps {
 
 export function CopyMarkdownButton({
   content,
+  itemId,
+  contentType,
   className = "",
 }: CopyMarkdownButtonProps) {
+  const analytics = useAnalytics();
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
-    if (!content) return;
+    if (!content) {
+      return;
+    }
 
     navigator.clipboard
       .writeText(content)
@@ -27,10 +32,10 @@ export function CopyMarkdownButton({
           setIsCopied(false);
         }, 2000);
 
-        // analyticsManager.trackCopyEvent({
-        //   contentType,
-        //   itemId,
-        // });
+        analytics.trackEvent("select_content", {
+          contentType,
+          itemId,
+        });
       })
       .catch((err) => {
         console.error("Failed to copy content: ", err);
