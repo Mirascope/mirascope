@@ -195,6 +195,10 @@ export function CreateApiKeyModal({
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
+              ) : (projects ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">
+                  No projects in this organization
+                </p>
               ) : (
                 <Select
                   value={selectedProjectId}
