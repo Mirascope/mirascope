@@ -13,16 +13,24 @@ export const apiMeta: SectionSpec = {
       label: "llm",
     },
     {
-      slug: "agents",
-      label: "agents",
-    },
-    {
       slug: "calls",
       label: "calls",
     },
     {
       slug: "content",
       label: "content",
+    },
+    {
+      slug: "exceptions",
+      label: "exceptions",
+    },
+    {
+      slug: "formatting",
+      label: "formatting",
+    },
+    {
+      slug: "mcp",
+      label: "mcp",
     },
     {
       slug: "messages",
@@ -37,8 +45,8 @@ export const apiMeta: SectionSpec = {
       label: "prompts",
     },
     {
-      slug: "response-formatting",
-      label: "response_formatting",
+      slug: "providers",
+      label: "providers",
     },
     {
       slug: "responses",

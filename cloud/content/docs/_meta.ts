@@ -10,7 +10,7 @@ import v1 from "./v1/_meta";
 const v2: VersionSpec = {
   sections: [
     {
-      label: "Docs v2",
+      label: "Docs",
       slug: "index",
       weight: 2,
       children: [

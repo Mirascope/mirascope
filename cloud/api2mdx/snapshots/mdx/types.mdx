@@ -6,6 +6,20 @@ description: API documentation for types
 
 # types
 
+## <ApiType type="Attribute" slug="any-p" symbolName="AnyP" /> AnyP
+
+**Type:** <TypeLink type={{"type_str": "ParamSpec('AnyP', default=...)", "description": null, "kind": "simple", "symbol_name": null, "doc_url": null}} />
+
+A parameter specification that defaults to ...
+
+
+## <ApiType type="Attribute" slug="covariant-t" symbolName="CovariantT" /> CovariantT
+
+**Type:** <TypeLink type={{"type_str": "TypeVar('CovariantT', covariant=True)", "description": null, "kind": "simple", "symbol_name": null, "doc_url": null}} />
+
+Type variable for covariant types.
+
+
 ## <ApiType type="Class" slug="dataclass_cls" symbolName="Dataclass" /> Dataclass
 
 **Bases:** 
@@ -17,5 +31,39 @@ description: API documentation for types
 **Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "symbol_name": "TypeAlias", "doc_url": null}} />
 
 Simple type alias for JSON-serializable types.
+
+
+## <ApiType type="Attribute" slug="jsonable-covariant-t" symbolName="JsonableCovariantT" /> JsonableCovariantT
+
+**Type:** <TypeLink type={{"type_str": "TypeVar('JsonableCovariantT', covariant=True, bound=Jsonable, default=Jsonable)", "description": null, "kind": "simple", "symbol_name": null, "doc_url": null}} />
+
+Type variable for covariant types that are Jsonable.
+
+
+## <ApiType type="Attribute" slug="jsonable-t" symbolName="JsonableT" /> JsonableT
+
+**Type:** <TypeLink type={{"type_str": "TypeVar('JsonableT', bound=Jsonable)", "description": null, "kind": "simple", "symbol_name": null, "doc_url": null}} />
+
+Type variable for tool output types.
+
+This TypeVar represents the return type of tool functions, which must be
+serializable to JSON (bound to Jsonable) for LLM consumption.
+
+
+## <ApiType type="Attribute" slug="none-type" symbolName="NoneType" /> NoneType
+
+**Type:** <TypeLink type={{"type_str": "type(None)", "description": null, "kind": "simple", "symbol_name": "type(None)", "doc_url": null}} />
+
+
+## <ApiType type="Attribute" slug="p" symbolName="P" /> P
+
+**Type:** <TypeLink type={{"type_str": "ParamSpec('P')", "description": null, "kind": "simple", "symbol_name": "ParamSpec('P')", "doc_url": null}} />
+
+Parameter specification for function signatures.
+
+This ParamSpec is used to preserve function parameter types and signatures
+when wrapping functions with decorators or creating generic callable types.
+It captures both positional and keyword arguments (*args, **kwargs) while
+maintaining their original types.
 
 
