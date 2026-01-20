@@ -1,0 +1,147 @@
+---
+title: Versioning
+description: Track function versions with @ops.version for reproducibility and analysis.
+---
+
+# Versioning
+
+The `@ops.version` decorator tracks function versions by computing a hash of the function's source code and dependencies. This enables reproducibility, A/B testing, and historical analysis of function behavior.
+
+## Basic Versioning
+
+<CodeExample file="python/examples/ops/version_basic.py" />
+
+The decorator automatically computes:
+
+- A hash of the function's complete closure (source code + dependencies)
+- A signature hash for the function's interface
+- An auto-incremented version number
+
+## Version Metadata
+
+Add metadata for organization and filtering:
+
+<CodeExample file="python/examples/ops/version_with_metadata.py" />
+
+| Option | Description |
+| --- | --- |
+| `name` | Custom name for the function (defaults to function name) |
+| `tags` | List of strings for categorization |
+| `metadata` | Key-value pairs for additional context |
+
+## Accessing Version Info
+
+The `version_info` property provides version metadata:
+
+```python
+from mirascope import ops
+
+@ops.version
+def my_function():
+    return "result"
+
+info = my_function.version_info
+print(info.hash)            # SHA256 hash of the closure
+print(info.signature_hash)  # SHA256 hash of the signature
+print(info.version)         # Auto-computed version (e.g., "1.0")
+print(info.name)            # Function name
+print(info.description)     # Docstring
+print(info.tags)            # Tags tuple
+print(info.metadata)        # Metadata dict
+```
+
+## Versioning LLM Calls
+
+Combine `@ops.version` with `@llm.call` to track prompt versions:
+
+<CodeExample file="python/examples/ops/version_llm_call.py" />
+
+This is particularly useful for:
+
+- Tracking prompt iterations
+- A/B testing different prompts
+- Analyzing performance across versions
+
+<Note>
+When combining decorators, `@ops.version` should come before `@llm.call` (listed first).
+</Note>
+
+## How Versioning Works
+
+### Closure Analysis
+
+The version hash is computed from the function's complete closure, including:
+
+- The function's source code
+- Any functions or variables the function references
+- Import dependencies
+
+This means changing anything the function depends on will create a new version.
+
+### Automatic Version Numbers
+
+Version numbers are auto-computed in `X.Y` format:
+
+- Same signature but different implementation → increment `Y` (e.g., `1.0` → `1.1`)
+- Different signature → increment `X` (e.g., `1.1` → `2.0`)
+
+### Registration
+
+When connected to Mirascope Cloud or a compatible API, versions are automatically registered on first call. This enables:
+
+- Central tracking of all function versions
+- Historical analysis of version performance
+- Retrieval of specific versions
+
+## Combining with @ops.trace
+
+You can use both `@ops.version` and `@ops.trace`:
+
+```python
+from mirascope import ops
+
+@ops.trace
+@ops.version(tags=["production"])
+def process_data(data: str) -> str:
+    return f"Processed: {data}"
+```
+
+Order matters: `@ops.trace` should be outermost (first) if you want version info included in traces.
+
+## Use Cases
+
+### Prompt Engineering
+
+```python
+from mirascope import llm, ops
+
+@ops.version(tags=["experiment-a"])
+@llm.call("openai/gpt-4o-mini")
+def summarize_v1(text: str) -> str:
+    return f"Summarize this text concisely: {text}"
+
+@ops.version(tags=["experiment-b"])
+@llm.call("openai/gpt-4o-mini")
+def summarize_v2(text: str) -> str:
+    return f"Provide a brief summary of the main points: {text}"
+```
+
+### Production Tracking
+
+```python
+from mirascope import ops
+
+@ops.version(
+    name="fraud_detector",
+    tags=["production", "ml-pipeline"],
+    metadata={"model_type": "xgboost", "threshold": "0.85"}
+)
+def detect_fraud(transaction: dict) -> bool:
+    # Implementation
+    pass
+```
+
+## Next Steps
+
+- [LLM Instrumentation](/docs/ops/instrumentation) — Automatic LLM tracing
+- [Context Propagation](/docs/ops/context-propagation) — Distributed tracing
