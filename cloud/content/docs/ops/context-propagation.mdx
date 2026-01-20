@@ -1,0 +1,219 @@
+---
+title: Context Propagation
+description: Enable distributed tracing across service boundaries with context propagation.
+---
+
+# Context Propagation
+
+Context propagation enables distributed tracing across service boundaries. When your application spans multiple services, context propagation ensures traces are connected end-to-end.
+
+## How It Works
+
+1. **Client side**: Inject trace context into outgoing request headers
+2. **Server side**: Extract context from incoming request headers
+3. **Traces connect**: Child spans automatically link to the parent trace
+
+## Basic Example
+
+<CodeExample file="python/examples/ops/context_propagation.py" />
+
+## Injecting Context
+
+Use `ops.inject_context()` to add trace context to outgoing requests:
+
+```python
+from mirascope import ops
+import httpx
+
+@ops.trace
+def call_downstream_service():
+    headers: dict[str, str] = {}
+    ops.inject_context(headers)
+
+    response = httpx.post(
+        "http://downstream-service/api",
+        headers=headers,
+        json={"data": "value"}
+    )
+    return response.json()
+```
+
+The injected headers typically include:
+
+| Header | Description |
+| --- | --- |
+| `traceparent` | W3C Trace Context format (default) |
+| `tracestate` | Vendor-specific trace information |
+| `X-Mirascope-Session-Id` | Session ID (if a session is active) |
+
+## Extracting Context
+
+Use `ops.propagated_context()` to extract and attach incoming trace context:
+
+```python
+from mirascope import ops
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.post("/api")
+async def endpoint(request: Request):
+    with ops.propagated_context(extract_from=dict(request.headers)):
+        # All traces here are children of the incoming trace
+        return process_request()
+```
+
+## Propagator Formats
+
+Configure the propagation format via environment variable:
+
+| Format | Description | Headers |
+| --- | --- | --- |
+| `tracecontext` | W3C Trace Context (default) | `traceparent`, `tracestate` |
+| `b3` | Zipkin B3 single header | `b3` |
+| `b3multi` | Zipkin B3 multi-header | `X-B3-TraceId`, `X-B3-SpanId`, etc. |
+| `jaeger` | Jaeger format | `uber-trace-id` |
+| `composite` | All formats combined | All above |
+
+Set the format:
+
+```bash
+export MIRASCOPE_PROPAGATOR=b3  # Use B3 single header format
+```
+
+## Framework Integration
+
+### FastAPI
+
+```python
+from mirascope import ops
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.middleware("http")
+async def tracing_middleware(request: Request, call_next):
+    with ops.propagated_context(extract_from=dict(request.headers)):
+        return await call_next(request)
+```
+
+### Flask
+
+```python
+from mirascope import ops
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.before_request
+def extract_trace_context():
+    # Store context token for cleanup
+    request.trace_token = ops.extract_context(dict(request.headers))
+
+@app.route("/api")
+def endpoint():
+    with ops.propagated_context(extract_from=dict(request.headers)):
+        return process_request()
+```
+
+### httpx Client
+
+```python
+from mirascope import ops
+import httpx
+
+class TracedClient:
+    def __init__(self):
+        self.client = httpx.Client()
+
+    def post(self, url: str, **kwargs):
+        headers = kwargs.pop("headers", {})
+        ops.inject_context(headers)
+        return self.client.post(url, headers=headers, **kwargs)
+```
+
+## Session Propagation
+
+Sessions are automatically propagated with trace context:
+
+```python
+from mirascope import ops
+
+# Client
+with ops.session(id="user-session-123"):
+    headers: dict[str, str] = {}
+    ops.inject_context(headers)
+    # headers["X-Mirascope-Session-Id"] = "user-session-123"
+
+# Server
+with ops.propagated_context(extract_from=headers):
+    session = ops.current_session()
+    print(session.id)  # "user-session-123"
+```
+
+## Manual Context Handling
+
+For advanced use cases, you can work with context objects directly:
+
+```python
+from mirascope import ops
+
+# Extract to a context object
+context = ops.extract_context(headers)
+
+# Attach an existing context
+with ops.propagated_context(parent=context):
+    do_work()
+```
+
+## Use Cases
+
+### Microservices
+
+```
+[Frontend] → [API Gateway] → [Auth Service]
+                          → [Business Logic]
+                          → [Database Service]
+
+All services share the same trace ID, showing the full request flow.
+```
+
+### Background Jobs
+
+```python
+from mirascope import ops
+
+# In the web handler
+@ops.trace
+def enqueue_job(data):
+    headers: dict[str, str] = {}
+    ops.inject_context(headers)
+    queue.put({"data": data, "trace_headers": headers})
+
+# In the worker
+def process_job(job):
+    with ops.propagated_context(extract_from=job["trace_headers"]):
+        # Worker traces connect to the original request
+        do_work(job["data"])
+```
+
+### Cross-Language Tracing
+
+Since the ops module uses standard OpenTelemetry propagation formats, traces work across languages:
+
+```python
+# Python service
+ops.inject_context(headers)
+# Headers: {"traceparent": "00-abc123-def456-01"}
+```
+
+```javascript
+// Node.js service
+const context = propagation.extract(headers);
+// Same trace continues
+```
+
+## Next Steps
+
+- [Configuration](/docs/ops/configuration) — Set up tracer providers
+- [Sessions](/docs/ops/sessions) — Group related traces

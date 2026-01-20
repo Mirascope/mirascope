@@ -110,9 +110,7 @@ def test_create_mirascope_cloud_provider_success(
     mock_mirascope_client: MagicMock, mock_exporter: MagicMock
 ) -> None:
     """_create_mirascope_cloud_provider creates provider successfully."""
-    provider = configuration._create_mirascope_cloud_provider(  # pyright: ignore[reportPrivateUsage]
-        api_key="test-key"
-    )
+    provider = configuration._create_mirascope_cloud_provider(api_key="test-key")  # pyright: ignore[reportPrivateUsage]
 
     assert isinstance(provider, TracerProvider)
     mock_mirascope_client.assert_called_once_with(api_key="test-key")

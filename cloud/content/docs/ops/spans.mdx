@@ -1,0 +1,163 @@
+---
+title: Spans
+description: Create explicit spans with ops.span() for fine-grained tracing control.
+---
+
+# Spans
+
+While `@ops.trace` automatically creates spans for function calls, `ops.span()` lets you create spans explicitly for more fine-grained control over what gets traced.
+
+## Basic Spans
+
+<CodeExample file="python/examples/ops/span_basic.py" />
+
+The span context manager creates a span that:
+
+- Starts when entering the `with` block
+- Ends when exiting the block
+- Captures any attributes you set
+
+## Setting Attributes
+
+Use `span.set()` to add attributes at any point during the span:
+
+```python
+from mirascope import ops
+
+with ops.span("process_order", order_id="12345") as s:
+    # Initial attributes set at creation
+
+    items = fetch_items()
+    s.set(item_count=len(items))  # Add more attributes
+
+    total = calculate_total(items)
+    s.set(total_amount=total, currency="USD")
+```
+
+## Span Events
+
+Events mark specific moments within a span with optional attributes:
+
+<CodeExample file="python/examples/ops/span_events.py" />
+
+| Method | Description |
+| --- | --- |
+| `s.event(name, **attrs)` | Generic event |
+| `s.info(message, **attrs)` | Info-level event |
+| `s.debug(message, **attrs)` | Debug-level event |
+| `s.warning(message, **attrs)` | Warning-level event |
+| `s.error(message, **attrs)` | Error-level event |
+
+Events are useful for marking milestones, logging decisions, or capturing intermediate state without creating separate spans.
+
+## Error Handling
+
+Errors are automatically captured when an exception occurs:
+
+```python
+from mirascope import ops
+
+with ops.span("risky_operation") as s:
+    s.info("Starting operation")
+    if something_wrong:
+        s.error("Detected problem", error_code=500)
+        raise ValueError("Operation failed")
+    # Span is marked with error status automatically
+```
+
+You can also manually set error status:
+
+```python
+from mirascope import ops
+
+with ops.span("operation") as s:
+    try:
+        result = do_something()
+    except Exception as e:
+        s.error("Operation failed", exception=str(e))
+        result = fallback_value
+    # Span completes normally with error event recorded
+```
+
+## Nested Spans
+
+Spans automatically form parent-child relationships:
+
+```python
+from mirascope import ops
+
+with ops.span("parent_operation") as parent:
+    parent.info("Starting")
+
+    with ops.span("child_operation") as child:
+        child.info("Processing")
+        # child is automatically a child of parent
+
+    with ops.span("another_child") as child2:
+        child2.info("More processing")
+```
+
+## Combining with @ops.trace
+
+Explicit spans work alongside traced functions:
+
+```python
+from mirascope import ops
+
+@ops.trace
+def process_batch(items: list) -> list:
+    results = []
+
+    with ops.span("validation") as s:
+        valid_items = [i for i in items if validate(i)]
+        s.set(valid_count=len(valid_items), total_count=len(items))
+
+    with ops.span("transformation") as s:
+        for item in valid_items:
+            results.append(transform(item))
+        s.set(transformed_count=len(results))
+
+    return results
+```
+
+## Use Cases
+
+### Database Operations
+
+```python
+from mirascope import ops
+
+with ops.span("database_query", table="users") as s:
+    s.debug("Executing query")
+    results = db.execute("SELECT * FROM users WHERE active = true")
+    s.set(row_count=len(results))
+```
+
+### External API Calls
+
+```python
+from mirascope import ops
+
+with ops.span("api_call", service="payment", endpoint="/charge") as s:
+    response = httpx.post(url, json=data)
+    s.set(status_code=response.status_code)
+    if response.status_code >= 400:
+        s.error("API call failed", response_body=response.text[:500])
+```
+
+### Batch Processing
+
+```python
+from mirascope import ops
+
+with ops.span("batch_job", job_id=job_id) as s:
+    for i, item in enumerate(items):
+        s.event("item_processed", index=i, item_id=item.id)
+        process(item)
+    s.set(total_processed=len(items))
+```
+
+## Next Steps
+
+- [Versioning](/docs/ops/versioning) — Track function versions
+- [LLM Instrumentation](/docs/ops/instrumentation) — Automatic LLM tracing
