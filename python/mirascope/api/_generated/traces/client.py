@@ -4,6 +4,7 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.number_from_string import NumberFromString
 from .raw_client import AsyncRawTracesClient, RawTracesClient
 from .types.traces_create_request_resource_spans_item import (
     TracesCreateRequestResourceSpansItem,
@@ -13,6 +14,9 @@ from .types.traces_get_analytics_summary_response import (
     TracesGetAnalyticsSummaryResponse,
 )
 from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
+from .types.traces_list_by_function_hash_response import (
+    TracesListByFunctionHashResponse,
+)
 from .types.traces_search_request_attribute_filters_item import (
     TracesSearchRequestAttributeFiltersItem,
 )
@@ -284,6 +288,45 @@ class TracesClient:
             end_time=end_time,
             function_id=function_id,
             request_options=request_options,
+        )
+        return _response.data
+
+    def listbyfunctionhash(
+        self,
+        hash: str,
+        *,
+        limit: typing.Optional[NumberFromString] = None,
+        offset: typing.Optional[NumberFromString] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesListByFunctionHashResponse:
+        """
+        Parameters
+        ----------
+        hash : str
+
+        limit : typing.Optional[NumberFromString]
+
+        offset : typing.Optional[NumberFromString]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesListByFunctionHashResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.traces.listbyfunctionhash(
+            hash="hash",
+        )
+        """
+        _response = self._raw_client.listbyfunctionhash(
+            hash, limit=limit, offset=offset, request_options=request_options
         )
         return _response.data
 
@@ -580,5 +623,52 @@ class AsyncTracesClient:
             end_time=end_time,
             function_id=function_id,
             request_options=request_options,
+        )
+        return _response.data
+
+    async def listbyfunctionhash(
+        self,
+        hash: str,
+        *,
+        limit: typing.Optional[NumberFromString] = None,
+        offset: typing.Optional[NumberFromString] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesListByFunctionHashResponse:
+        """
+        Parameters
+        ----------
+        hash : str
+
+        limit : typing.Optional[NumberFromString]
+
+        offset : typing.Optional[NumberFromString]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesListByFunctionHashResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.listbyfunctionhash(
+                hash="hash",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.listbyfunctionhash(
+            hash, limit=limit, offset=offset, request_options=request_options
         )
         return _response.data

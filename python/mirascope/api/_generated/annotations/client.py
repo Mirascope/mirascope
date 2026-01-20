@@ -89,6 +89,7 @@ class AnnotationsClient:
         label: typing.Optional[AnnotationsCreateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AnnotationsCreateResponse:
         """
@@ -103,6 +104,8 @@ class AnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -128,11 +131,14 @@ class AnnotationsClient:
             label=label,
             reasoning=reasoning,
             metadata=metadata,
+            tags=tags,
             request_options=request_options,
         )
         return _response.data
 
-    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> AnnotationsGetResponse:
+    def get(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AnnotationsGetResponse:
         """
         Parameters
         ----------
@@ -165,6 +171,7 @@ class AnnotationsClient:
         label: typing.Optional[AnnotationsUpdateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AnnotationsUpdateResponse:
         """
@@ -177,6 +184,8 @@ class AnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -196,11 +205,18 @@ class AnnotationsClient:
         )
         """
         _response = self._raw_client.update(
-            id, label=label, reasoning=reasoning, metadata=metadata, request_options=request_options
+            id,
+            label=label,
+            reasoning=reasoning,
+            metadata=metadata,
+            tags=tags,
+            request_options=request_options,
         )
         return _response.data
 
-    def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -305,6 +321,7 @@ class AsyncAnnotationsClient:
         label: typing.Optional[AnnotationsCreateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AnnotationsCreateResponse:
         """
@@ -319,6 +336,8 @@ class AsyncAnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -352,11 +371,14 @@ class AsyncAnnotationsClient:
             label=label,
             reasoning=reasoning,
             metadata=metadata,
+            tags=tags,
             request_options=request_options,
         )
         return _response.data
 
-    async def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> AnnotationsGetResponse:
+    async def get(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AnnotationsGetResponse:
         """
         Parameters
         ----------
@@ -397,6 +419,7 @@ class AsyncAnnotationsClient:
         label: typing.Optional[AnnotationsUpdateRequestLabel] = OMIT,
         reasoning: typing.Optional[str] = OMIT,
         metadata: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
+        tags: typing.Optional[typing.Sequence[str]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AnnotationsUpdateResponse:
         """
@@ -409,6 +432,8 @@ class AsyncAnnotationsClient:
         reasoning : typing.Optional[str]
 
         metadata : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
+
+        tags : typing.Optional[typing.Sequence[str]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -436,11 +461,18 @@ class AsyncAnnotationsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            id, label=label, reasoning=reasoning, metadata=metadata, request_options=request_options
+            id,
+            label=label,
+            reasoning=reasoning,
+            metadata=metadata,
+            tags=tags,
+            request_options=request_options,
         )
         return _response.data
 
-    async def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    async def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
         """
         Parameters
         ----------

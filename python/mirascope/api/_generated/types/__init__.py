@@ -4,15 +4,22 @@
 
 from .already_exists_error import AlreadyExistsError
 from .already_exists_error_tag import AlreadyExistsErrorTag
+from .bad_request_error_body import (
+    BadRequestErrorBody,
+    BadRequestErrorBody_HttpApiDecodeError,
+    BadRequestErrorBody_ImmutableResourceError,
+)
 from .click_house_error import ClickHouseError
 from .database_error import DatabaseError
 from .database_error_tag import DatabaseErrorTag
+from .date import Date
 from .http_api_decode_error import HttpApiDecodeError
 from .http_api_decode_error_tag import HttpApiDecodeErrorTag
+from .immutable_resource_error import ImmutableResourceError
 from .internal_server_error_body import (
     InternalServerErrorBody,
+    InternalServerErrorBody_ClickHouseError,
     InternalServerErrorBody_DatabaseError,
-    InternalServerErrorBody_StripeError,
 )
 from .issue import Issue
 from .issue_tag import IssueTag
@@ -21,24 +28,37 @@ from .not_found_error_tag import NotFoundErrorTag
 from .number_from_string import NumberFromString
 from .permission_denied_error import PermissionDeniedError
 from .permission_denied_error_tag import PermissionDeniedErrorTag
+from .plan_limit_exceeded_error import PlanLimitExceededError
+from .plan_limit_exceeded_error_tag import PlanLimitExceededErrorTag
 from .property_key import PropertyKey
 from .property_key_key import PropertyKeyKey
 from .property_key_key_tag import PropertyKeyKeyTag
+from .rate_limit_error import RateLimitError
+from .rate_limit_error_tag import RateLimitErrorTag
+from .service_unavailable_error_body import ServiceUnavailableErrorBody
+from .service_unavailable_error_tag import ServiceUnavailableErrorTag
 from .stripe_error import StripeError
+from .subscription_past_due_error import SubscriptionPastDueError
+from .subscription_past_due_error_tag import SubscriptionPastDueErrorTag
 from .unauthorized_error_body import UnauthorizedErrorBody
 from .unauthorized_error_tag import UnauthorizedErrorTag
 
 __all__ = [
     "AlreadyExistsError",
     "AlreadyExistsErrorTag",
+    "BadRequestErrorBody",
+    "BadRequestErrorBody_HttpApiDecodeError",
+    "BadRequestErrorBody_ImmutableResourceError",
     "ClickHouseError",
     "DatabaseError",
     "DatabaseErrorTag",
+    "Date",
     "HttpApiDecodeError",
     "HttpApiDecodeErrorTag",
+    "ImmutableResourceError",
     "InternalServerErrorBody",
+    "InternalServerErrorBody_ClickHouseError",
     "InternalServerErrorBody_DatabaseError",
-    "InternalServerErrorBody_StripeError",
     "Issue",
     "IssueTag",
     "NotFoundErrorBody",
@@ -46,10 +66,18 @@ __all__ = [
     "NumberFromString",
     "PermissionDeniedError",
     "PermissionDeniedErrorTag",
+    "PlanLimitExceededError",
+    "PlanLimitExceededErrorTag",
     "PropertyKey",
     "PropertyKeyKey",
     "PropertyKeyKeyTag",
+    "RateLimitError",
+    "RateLimitErrorTag",
+    "ServiceUnavailableErrorBody",
+    "ServiceUnavailableErrorTag",
     "StripeError",
+    "SubscriptionPastDueError",
+    "SubscriptionPastDueErrorTag",
     "UnauthorizedErrorBody",
     "UnauthorizedErrorTag",
 ]

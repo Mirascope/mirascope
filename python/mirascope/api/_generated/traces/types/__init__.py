@@ -78,6 +78,10 @@ from .traces_get_trace_detail_response import TracesGetTraceDetailResponse
 from .traces_get_trace_detail_response_spans_item import (
     TracesGetTraceDetailResponseSpansItem,
 )
+from .traces_list_by_function_hash_response import TracesListByFunctionHashResponse
+from .traces_list_by_function_hash_response_traces_item import (
+    TracesListByFunctionHashResponseTracesItem,
+)
 from .traces_search_request_attribute_filters_item import (
     TracesSearchRequestAttributeFiltersItem,
 )
@@ -118,6 +122,8 @@ __all__ = [
     "TracesGetAnalyticsSummaryResponseTopModelsItem",
     "TracesGetTraceDetailResponse",
     "TracesGetTraceDetailResponseSpansItem",
+    "TracesListByFunctionHashResponse",
+    "TracesListByFunctionHashResponseTracesItem",
     "TracesSearchRequestAttributeFiltersItem",
     "TracesSearchRequestAttributeFiltersItemOperator",
     "TracesSearchRequestSortBy",
