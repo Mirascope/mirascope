@@ -16,9 +16,85 @@
 
 ---
 
-## Mirascope v2 Alpha
+## Mirascope 
 
-This branch contains Mirascope v2, which is under active development.
+Welcome to Mirascope, which allows you to use any frontier LLM with one unified interface.
+
+## Quick Start
+
+Install Mirascope:
+
+```bash
+uv add "mirascope[all]"
+```
+
+### Call LLMs with a Decorator
+
+```python
+from mirascope import llm
+
+
+@llm.call("anthropic/claude-sonnet-4-5")
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book."
+
+
+response = recommend_book("fantasy")
+print(response.text())
+```
+
+### Get Structured Output
+
+```python
+from pydantic import BaseModel
+from mirascope import llm
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@llm.call("anthropic/claude-sonnet-4-5", format=Book)
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book."
+
+
+book = recommend_book("fantasy").parse()
+print(f"{book.title} by {book.author}")
+```
+
+### Build an Agent with Tools
+
+```python
+from pydantic import BaseModel
+from mirascope import llm
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@llm.tool
+def get_available_books(genre: str) -> list[Book]:
+    """Get available books in the library by genre."""
+    return [Book(title="The Name of the Wind", author="Patrick Rothfuss")]
+
+
+@llm.call("anthropic/claude-sonnet-4-5", tools=[get_available_books], format=Book)
+def librarian(request: str):
+    return f"You are a librarian. Help the user: {request}"
+
+
+response = librarian("I want a fantasy book")
+while response.tool_calls:
+    response = response.resume(response.execute_tools())
+book = response.parse()
+print(f"Recommending: {book.title} by {book.author}")
+```
+
+For streaming, async, multi-turn conversations, and more, see the [full documentation](https://mirascope.com/docs).
 
 ## Monorepo Structure
 
@@ -31,15 +107,11 @@ This project is structured as a monorepo, that conceptually divides into four pa
 
 For detailed information about the codebase structure, architecture, and design decisions, see [`STRUCTURE.md`](STRUCTURE.md).
 
-## Viewing & Building Documentation
+## Developing the site
 
-Use `bun run docs:dev` to launch the dev server. Note it does not currently have hot reloading; you'll need to restart it on every change.
-
-Use `bun run docs:build` to build the docs, and `bun run docs:preview` to preview the built docs.
+Use `bun run cloud:dev` to launch the dev server.
 
 Note that [Bun](http://bun.sh/) must be installed.
-
-The docs are automatically built and previewed on every pull request or push.
 
 ## CI and local testing
 
