@@ -557,6 +557,247 @@ export class Functions extends BaseAuthenticatedEffectService<
   // ===========================================================================
 
   /**
+   * Retrieves all versions of a function by name.
+   *
+   * Requires any role on the project (ADMIN, DEVELOPER, VIEWER, or ANNOTATOR).
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization containing the project
+   * @param args.projectId - The project containing the environment
+   * @param args.environmentId - The environment containing the functions
+   * @param args.name - The function name to filter by
+   * @returns Array of function versions matching the name
+   * @throws NotFoundError - If the environment doesn't exist or user lacks access
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
+  findByName({
+    userId,
+    organizationId,
+    projectId,
+    environmentId,
+    name,
+  }: {
+    userId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    name: string;
+  }): Effect.Effect<
+    PublicFunction[],
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        projectId,
+        environmentId,
+        functionId: "",
+      });
+
+      return yield* client
+        .select()
+        .from(functions)
+        .where(
+          and(
+            eq(functions.environmentId, environmentId),
+            eq(functions.name, name),
+          ),
+        )
+        .orderBy(desc(functions.createdAt))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to list functions by name",
+                cause: e,
+              }),
+          ),
+        );
+    });
+  }
+
+  /**
+   * Retrieves the latest version for each function name in an environment.
+   *
+   * Requires any role on the project (ADMIN, DEVELOPER, VIEWER, or ANNOTATOR).
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization containing the project
+   * @param args.projectId - The project containing the environment
+   * @param args.environmentId - The environment to list functions for
+   * @returns Array of latest function versions (one per name)
+   * @throws NotFoundError - If the environment doesn't exist or user lacks access
+   * @throws PermissionDeniedError - If the user lacks read permission
+   * @throws DatabaseError - If the database query fails
+   */
+  findLatestByName({
+    userId,
+    organizationId,
+    projectId,
+    environmentId,
+  }: {
+    userId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+  }): Effect.Effect<
+    PublicFunction[],
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "read",
+        organizationId,
+        projectId,
+        environmentId,
+        functionId: "",
+      });
+
+      const rows = yield* client
+        .select()
+        .from(functions)
+        .where(eq(functions.environmentId, environmentId))
+        .orderBy(desc(functions.createdAt))
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to list latest functions",
+                cause: e,
+              }),
+          ),
+        );
+
+      const latestByName = new Map<string, PublicFunction>();
+      for (const row of rows) {
+        const existing = latestByName.get(row.name);
+        if (!existing) {
+          latestByName.set(row.name, row);
+          continue;
+        }
+        const [currentMajor, currentMinor] = existing.version
+          .split(".")
+          .map(Number);
+        const [nextMajor, nextMinor] = row.version.split(".").map(Number);
+
+        const hasParsedVersions =
+          Number.isFinite(currentMajor) &&
+          Number.isFinite(currentMinor) &&
+          Number.isFinite(nextMajor) &&
+          Number.isFinite(nextMinor);
+
+        if (hasParsedVersions) {
+          if (nextMajor > currentMajor) {
+            latestByName.set(row.name, row);
+            continue;
+          }
+          if (nextMajor < currentMajor) {
+            continue;
+          }
+          if (nextMinor > currentMinor) {
+            latestByName.set(row.name, row);
+            continue;
+          }
+          if (nextMinor < currentMinor) {
+            continue;
+          }
+        }
+
+        const existingCreatedAt = existing.createdAt?.getTime() ?? 0;
+        const rowCreatedAt = row.createdAt?.getTime() ?? 0;
+        if (rowCreatedAt > existingCreatedAt) {
+          latestByName.set(row.name, row);
+        }
+      }
+
+      return Array.from(latestByName.values());
+    });
+  }
+
+  /**
+   * Deletes all versions of a function by name.
+   *
+   * Requires ADMIN role on the project.
+   *
+   * @param args.userId - The authenticated user
+   * @param args.organizationId - The organization containing the project
+   * @param args.projectId - The project containing the environment
+   * @param args.environmentId - The environment containing the functions
+   * @param args.name - The function name to delete
+   * @throws NotFoundError - If no functions match the name
+   * @throws PermissionDeniedError - If the user lacks delete permission
+   * @throws DatabaseError - If the database operation fails
+   */
+  deleteByName({
+    userId,
+    organizationId,
+    projectId,
+    environmentId,
+    name,
+  }: {
+    userId: string;
+    organizationId: string;
+    projectId: string;
+    environmentId: string;
+    name: string;
+  }): Effect.Effect<
+    void,
+    NotFoundError | PermissionDeniedError | DatabaseError,
+    DrizzleORM
+  > {
+    return Effect.gen(this, function* () {
+      const client = yield* DrizzleORM;
+
+      yield* this.authorize({
+        userId,
+        action: "delete",
+        organizationId,
+        projectId,
+        environmentId,
+        functionId: "",
+      });
+
+      const rows = yield* client
+        .delete(functions)
+        .where(
+          and(
+            eq(functions.environmentId, environmentId),
+            eq(functions.name, name),
+          ),
+        )
+        .returning({ id: functions.id })
+        .pipe(
+          Effect.mapError(
+            (e) =>
+              new DatabaseError({
+                message: "Failed to delete functions by name",
+                cause: e,
+              }),
+          ),
+        );
+
+      if (rows.length === 0) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: `Functions with name ${name} not found`,
+            resource: "functions",
+          }),
+        );
+      }
+    });
+  }
+
+  /**
    * Retrieves a function by its content hash.
    *
    * Requires any role on the project (ADMIN, DEVELOPER, VIEWER, or ANNOTATOR).

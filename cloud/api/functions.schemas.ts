@@ -75,6 +75,27 @@ export class FunctionsApi extends HttpApiGroup.make("functions")
       .addError(DatabaseError, { status: DatabaseError.status }),
   )
   .add(
+    HttpApiEndpoint.get("listByName", "/functions/name/:name")
+      .setPath(
+        Schema.Struct({
+          name: Schema.String,
+        }),
+      )
+      .addSuccess(ListFunctionsResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get("listLatestByName", "/functions/names/latest")
+      .addSuccess(ListFunctionsResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
     HttpApiEndpoint.post("create", "/functions")
       .setPayload(CreateFunctionRequestSchema)
       .addSuccess(FunctionSchema)
@@ -102,6 +123,19 @@ export class FunctionsApi extends HttpApiGroup.make("functions")
       .setPath(
         Schema.Struct({
           id: Schema.String,
+        }),
+      )
+      .addSuccess(Schema.Void)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.del("deleteByName", "/functions/name/:name")
+      .setPath(
+        Schema.Struct({
+          name: Schema.String,
         }),
       )
       .addSuccess(Schema.Void)

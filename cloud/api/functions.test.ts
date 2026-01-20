@@ -184,6 +184,84 @@ describe.sequential("Functions API", (it) => {
     }),
   );
 
+  it.effect("GET /functions/name/:name - lists functions by name", () =>
+    Effect.gen(function* () {
+      const name = "api_named_func";
+      const hashSuffix = Date.now();
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_named_func(): pass",
+          hash: `api-named-hash-${hashSuffix}-1`,
+          signature: "def api_named_func() -> None",
+          signatureHash: "api-named-sig",
+          name,
+        },
+      });
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_named_func(): pass",
+          hash: `api-named-hash-${hashSuffix}-2`,
+          signature: "def api_named_func() -> None",
+          signatureHash: "api-named-sig",
+          name,
+        },
+      });
+
+      const result = yield* apiKeyClient.functions.listByName({
+        path: { name },
+      });
+
+      expect(result.total).toBeGreaterThanOrEqual(2);
+      expect(result.functions.every((fn) => fn.name === name)).toBe(true);
+    }),
+  );
+
+  it.effect("GET /functions/names/latest - lists latest versions per name", () =>
+    Effect.gen(function* () {
+      const latestName = "api_latest_func";
+      const hashSuffix = Date.now();
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_latest_func(): pass",
+          hash: `api-latest-hash-${hashSuffix}-1`,
+          signature: "def api_latest_func() -> None",
+          signatureHash: "api-latest-sig",
+          name: latestName,
+        },
+      });
+
+      const latest = yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_latest_func(): pass",
+          hash: `api-latest-hash-${hashSuffix}-2`,
+          signature: "def api_latest_func() -> None",
+          signatureHash: "api-latest-sig",
+          name: latestName,
+        },
+      });
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_other_func(): pass",
+          hash: `api-other-hash-${hashSuffix}`,
+          signature: "def api_other_func() -> None",
+          signatureHash: "api-other-sig",
+          name: "api_other_func",
+        },
+      });
+
+      const result = yield* apiKeyClient.functions.listLatestByName({});
+      const latestResult = result.functions.find(
+        (fn) => fn.name === latestName,
+      );
+
+      expect(latestResult?.id).toBe(latest.id);
+    }),
+  );
+
   it.effect("GET /functions/:functionId - gets function by ID", () =>
     Effect.gen(function* () {
       const created = yield* apiKeyClient.functions.create({
@@ -252,6 +330,44 @@ describe.sequential("Functions API", (it) => {
         .pipe(Effect.flip);
 
       expect(result._tag).toBe("NotFoundError");
+    }),
+  );
+
+  it.effect("DELETE /functions/name/:name - deletes functions by name", () =>
+    Effect.gen(function* () {
+      const name = "api_delete_name_func";
+      const hashSuffix = Date.now();
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_delete_name_func(): pass",
+          hash: `api-delete-name-${hashSuffix}-1`,
+          signature: "def api_delete_name_func() -> None",
+          signatureHash: "api-delete-name-sig",
+          name,
+        },
+      });
+
+      yield* apiKeyClient.functions.create({
+        payload: {
+          code: "def api_delete_name_func(): pass",
+          hash: `api-delete-name-${hashSuffix}-2`,
+          signature: "def api_delete_name_func() -> None",
+          signatureHash: "api-delete-name-sig",
+          name,
+        },
+      });
+
+      yield* apiKeyClient.functions.deleteByName({
+        path: { name },
+      });
+
+      const result = yield* apiKeyClient.functions.listByName({
+        path: { name },
+      });
+
+      expect(result.total).toBe(0);
+      expect(result.functions).toEqual([]);
     }),
   );
 
