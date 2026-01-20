@@ -201,6 +201,24 @@ export default class ContentProcessor {
   }
 
   /**
+   * Get a flat list of pages for prerendering.
+   * Includes blog, docs, and policy content (excludes dev).
+   *
+   * @param filter Optional filter function to include/exclude pages
+   * @returns Array of page objects with path property
+   */
+  getPages(filter?: (page: { path: string }) => boolean): { path: string }[] {
+    const metadata = this.getMetadata();
+    const pages = [
+      ...metadata.blog.map((item) => ({ path: item.route })),
+      ...metadata.docs.map((item) => ({ path: item.route })),
+      ...metadata.policy.map((item) => ({ path: item.route })),
+    ];
+
+    return filter ? pages.filter(filter) : pages;
+  }
+
+  /**
    * Process a specific content type
    */
   private async processContentType(
