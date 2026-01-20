@@ -9,8 +9,9 @@ def recommend_book(genre: str) -> str:
 
 
 # Access version info before calling
-print(f"Hash: {recommend_book.version_info.hash}")
-print(f"Version: {recommend_book.version_info.version}")
+if (info := recommend_book.version_info) is not None:
+    print(f"Hash: {info.hash}")
+    print(f"Version: {info.version}")
 
 # Call the function
 response = recommend_book("fantasy")

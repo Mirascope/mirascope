@@ -12,11 +12,11 @@ def process_data(data: str) -> str:
 
 
 # Access version info
-info = process_data.version_info
-print(f"Name: {info.name}")
-print(f"Tags: {info.tags}")
-print(f"Metadata: {info.metadata}")
-print(f"Description: {info.description}")
+if (info := process_data.version_info) is not None:
+    print(f"Name: {info.name}")
+    print(f"Tags: {info.tags}")
+    print(f"Metadata: {info.metadata}")
+    print(f"Description: {info.description}")
 
 # Call the function
 result = process_data("example")

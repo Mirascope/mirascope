@@ -14,5 +14,5 @@ with ops.session(
     print(f"Session ID: {session_ctx.id}")
     print(f"Attributes: {session_ctx.attributes}")
 
-    trace = handle_request("What's the weather?")
+    trace = handle_request.wrapped("What's the weather?")
     print(trace.result)
