@@ -1145,7 +1145,7 @@ describe("ApiKeys", () => {
         }),
     );
 
-    it.effect("returns `DatabaseError` when delete fails", () =>
+    it.effect("returns `DatabaseError` when soft-delete fails", () =>
       Effect.gen(function* () {
         const db = yield* Database;
 
@@ -1184,15 +1184,15 @@ describe("ApiKeys", () => {
             ])
             // verifyProjectExists
             .select([{ id: "project-id" }])
-            // delete fails
-            .delete(new Error("Database connection failed"))
+            // soft-delete (update) fails
+            .update(new Error("Database connection failed"))
             .build(),
         ),
       ),
     );
 
     it.effect(
-      "returns `NotFoundError` when delete returns empty (defensive)",
+      "returns `NotFoundError` when soft-delete returns empty (defensive)",
       () =>
         Effect.gen(function* () {
           const db = yield* Database;
@@ -1232,8 +1232,8 @@ describe("ApiKeys", () => {
               ])
               // verifyProjectExists
               .select([{ id: "project-id" }])
-              // delete returns empty array
-              .delete([])
+              // soft-delete (update) returns empty array
+              .update([])
               .build(),
           ),
         ),
@@ -1814,6 +1814,245 @@ describe("ApiKeys", () => {
               .build(),
           ),
         ),
+    );
+  });
+
+  // ===========================================================================
+  // Soft-delete behavior
+  // ===========================================================================
+
+  describe("soft-delete behavior", () => {
+    it.effect("soft-deleted keys are not returned by findAll", () =>
+      Effect.gen(function* () {
+        const { org, project, environment, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        // Create and delete a key
+        const created =
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "soft-deleted-key" },
+          });
+
+        yield* db.organizations.projects.environments.apiKeys.delete({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          apiKeyId: created.id,
+        });
+
+        // Verify not in findAll results
+        const apiKeys =
+          yield* db.organizations.projects.environments.apiKeys.findAll({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          });
+
+        expect(apiKeys.find((k) => k.id === created.id)).toBeUndefined();
+      }),
+    );
+
+    it.effect("soft-deleted keys fail authentication (getApiKeyInfo)", () =>
+      Effect.gen(function* () {
+        const { org, project, environment, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        // Create an API key
+        const created =
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "auth-test-key" },
+          });
+
+        // Soft-delete it
+        yield* db.organizations.projects.environments.apiKeys.delete({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          apiKeyId: created.id,
+        });
+
+        // Try to authenticate - should fail
+        const result = yield* db.organizations.projects.environments.apiKeys
+          .getApiKeyInfo(created.key)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Invalid API key or owner not found");
+      }),
+    );
+
+    it.effect("soft-deleted keys cannot be updated", () =>
+      Effect.gen(function* () {
+        const { org, project, environment, owner } =
+          yield* TestEnvironmentFixture;
+        const db = yield* Database;
+
+        // Create and soft-delete
+        const created =
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "update-test-key" },
+          });
+
+        yield* db.organizations.projects.environments.apiKeys.delete({
+          userId: owner.id,
+          organizationId: org.id,
+          projectId: project.id,
+          environmentId: environment.id,
+          apiKeyId: created.id,
+        });
+
+        // Try to update - should fail
+        const result = yield* db.organizations.projects.environments.apiKeys
+          .update({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            apiKeyId: created.id,
+            data: { name: "new-name" },
+          })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }),
+    );
+
+    it.effect(
+      "deleting an already soft-deleted key returns NotFoundError",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create and soft-delete
+          const created =
+            yield* db.organizations.projects.environments.apiKeys.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: { name: "double-delete-key" },
+            });
+
+          yield* db.organizations.projects.environments.apiKeys.delete({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            apiKeyId: created.id,
+          });
+
+          // Try to delete again - should fail
+          const result = yield* db.organizations.projects.environments.apiKeys
+            .delete({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              apiKeyId: created.id,
+            })
+            .pipe(Effect.flip);
+
+          expect(result).toBeInstanceOf(NotFoundError);
+        }),
+    );
+
+    it.effect(
+      "soft-deleted keys are not returned by findAllForOrganization",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create and soft-delete
+          const created =
+            yield* db.organizations.projects.environments.apiKeys.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: { name: "org-list-test-key" },
+            });
+
+          yield* db.organizations.projects.environments.apiKeys.delete({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            apiKeyId: created.id,
+          });
+
+          // Verify not in organization-wide list
+          const apiKeys =
+            yield* db.organizations.projects.environments.apiKeys.findAllForOrganization(
+              {
+                userId: owner.id,
+                organizationId: org.id,
+              },
+            );
+
+          expect(apiKeys.find((k) => k.id === created.id)).toBeUndefined();
+        }),
+    );
+
+    it.effect(
+      "can create a new key with the same name after soft-deleting the original",
+      () =>
+        Effect.gen(function* () {
+          const { org, project, environment, owner } =
+            yield* TestEnvironmentFixture;
+          const db = yield* Database;
+
+          // Create and soft-delete a key
+          const original =
+            yield* db.organizations.projects.environments.apiKeys.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: { name: "reusable-name" },
+            });
+
+          yield* db.organizations.projects.environments.apiKeys.delete({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            apiKeyId: original.id,
+          });
+
+          // Create a new key with the same name - should succeed
+          const newKey =
+            yield* db.organizations.projects.environments.apiKeys.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              environmentId: environment.id,
+              data: { name: "reusable-name" },
+            });
+
+          expect(newKey.name).toBe("reusable-name");
+          expect(newKey.id).not.toBe(original.id);
+        }),
     );
   });
 });

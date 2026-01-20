@@ -1,5 +1,5 @@
 {
-  "id": "a5b7a306-402f-45a8-850c-15cda927453d",
+  "id": "3a8c612f-6cfd-46ed-a42d-91147a9191eb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -208,6 +208,12 @@
         },
         "last_used_at": {
           "name": "last_used_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
