@@ -82,12 +82,12 @@ sync_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01BUvqBj8Yb34pNAbCJJY1oc",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="toolu_01VPuQJ1LonDBYXrr8pqPkqQ",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),
@@ -221,12 +221,12 @@ async_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01D9i29ihVc1jnMZcsnjihvd",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="toolu_01MHY6tDEpQVfKiymoNQuc3j",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),
@@ -349,12 +349,12 @@ stream_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_015cUijgET79LXjgeYQerN2h",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="toolu_01XZTimPexA7h3EVKesnKt5T",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),
@@ -490,12 +490,12 @@ async_stream_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_017N2md1Efjsccg9yCoHRqaC",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="toolu_01S7QvvN8RQAx1m31iAG4HYA",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),

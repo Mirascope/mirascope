@@ -64,7 +64,7 @@ sync_snapshot = snapshot(
                         ToolOutput(
                             id="call_JxCd7a3pb9ksjj99VMgOFdcL",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -185,7 +185,7 @@ async_snapshot = snapshot(
                         ToolOutput(
                             id="call_Vt5XbvP10cJCvVoT5PMz6ykU",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -283,7 +283,7 @@ stream_snapshot = snapshot(
                         ToolOutput(
                             id="call_5yn4cgrPcCS7zAg2wg28Jp8S",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -387,7 +387,7 @@ async_stream_snapshot = snapshot(
                         ToolOutput(
                             id="call_hk7gZi3KYLexHM4IxFJilYir",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),

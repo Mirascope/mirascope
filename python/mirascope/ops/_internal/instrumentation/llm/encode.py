@@ -91,7 +91,7 @@ def _serialize_message_parts(
                 tool_output_part: gen_ai_types.ToolCallResponsePart = {
                     "type": "tool_call_response",
                     "id": part.id,
-                    "response": part.value,
+                    "response": part.result,
                 }
                 serialized.append(tool_output_part)
             case Thought():

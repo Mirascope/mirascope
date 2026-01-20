@@ -67,6 +67,8 @@ from .exceptions import (
     ResponseValidationError,
     ServerError,
     TimeoutError,
+    ToolError,
+    ToolExecutionError,
     ToolNotFoundError,
 )
 from .formatting import (
@@ -253,6 +255,8 @@ __all__ = [
     "ToolCallEndChunk",
     "ToolCallStartChunk",
     "ToolCallStream",
+    "ToolError",
+    "ToolExecutionError",
     "ToolNotFoundError",
     "ToolOutput",
     "ToolSchema",

@@ -61,7 +61,7 @@ test_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01AZ4GPmus1WZnerDUvvTLHG",
                             name="customAdditionImplementation",
-                            value=13,
+                            result=13,
                         )
                     ]
                 ),

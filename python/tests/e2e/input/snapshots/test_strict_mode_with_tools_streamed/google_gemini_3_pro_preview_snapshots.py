@@ -77,7 +77,7 @@ test_snapshot = snapshot(
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="customAdditionImplementation",
-                            value=13,
+                            result=13,
                         )
                     ]
                 ),

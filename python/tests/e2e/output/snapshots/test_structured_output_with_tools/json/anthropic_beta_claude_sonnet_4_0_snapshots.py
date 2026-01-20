@@ -104,7 +104,7 @@ Respond only with valid JSON that matches this exact schema:
                         ToolOutput(
                             id="toolu_0195FRTwMnwtuHnvC51yXqQZ",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -312,7 +312,7 @@ Respond only with valid JSON that matches this exact schema:
                         ToolOutput(
                             id="toolu_016L8a39TJjhhV6JsghdkGkx",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -510,7 +510,7 @@ Respond only with valid JSON that matches this exact schema:
                         ToolOutput(
                             id="toolu_01D5sCubnE8q2gTAGjTv2bc4",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -718,7 +718,7 @@ Respond only with valid JSON that matches this exact schema:
                         ToolOutput(
                             id="toolu_01My26oDaaNkgBerQJcroNv4",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
