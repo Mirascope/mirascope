@@ -35,7 +35,7 @@ import { ButtonLink } from "@/app/components/ui/button-link";
 import MirascopeLogo from "@/app/components/blocks/branding/mirascope-logo";
 import ProductLogo from "@/app/components/blocks/branding/mirascope-logo";
 import { ModelProviderCodeWrapper } from "@/app/components/mdx/elements/model-provider-code-wrapper";
-// import { ResponsiveImage } from "@/src/components/mdx/providers/ResponsiveImage";
+import { ResponsiveImage } from "@/app/components/mdx/elements/responsive-image";
 // import { devComponents } from "@/app/components/mdx/elements/DevComponents";
 import { idSlugFromChildren } from "@/app/lib/mdx/heading-utils";
 
@@ -263,9 +263,9 @@ const tableElements = {
 
 const mediaElements = {
   // Responsive image component
-  //   img: (props: React.ComponentPropsWithoutRef<"img">) => (
-  //     <ResponsiveImage {...props} />
-  //   ),
+  img: (props: React.ComponentPropsWithoutRef<"img">) => (
+    <ResponsiveImage {...props} />
+  ),
   a: (props: React.ComponentPropsWithoutRef<"a">) => {
     const { href, ...rest } = props;
     const navigate = useNavigate();
