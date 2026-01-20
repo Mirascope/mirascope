@@ -32,9 +32,9 @@ class Book(BaseModel):
 
 
 @pytest.fixture(autouse=True, scope="function")
-def initialize() -> Generator[None, None, None]:
+def initialize(tracer_provider: TracerProvider) -> Generator[None, None, None]:
     """Initialize ops configuration and LLM instrumentation for each test."""
-    ops.configure()
+    ops.configure(tracer_provider=tracer_provider)
     ops.instrument_llm()
     yield
     ops.uninstrument_llm()
@@ -167,9 +167,11 @@ def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None
 
 
 @pytest.mark.vcr()
-def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> None:
+def test_model_call_with_json_format(
+    span_exporter: InMemorySpanExporter, tracer_provider: TracerProvider
+) -> None:
     """Test OpenTelemetry instrumentation with structured output."""
-    ops.configure()
+    ops.configure(tracer_provider=tracer_provider)
 
     class Person(BaseModel):
         name: str

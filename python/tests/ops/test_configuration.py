@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
 import pytest
+from opentelemetry.sdk.trace import TracerProvider
+
 from mirascope import ops
 from mirascope.ops._internal import configuration
-from opentelemetry.sdk.trace import TracerProvider
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 def mock_mirascope_client() -> Generator[MagicMock, None, None]:
     """Mock the Mirascope client to avoid actual API calls."""
-    with patch("mirascope.api.client.Mirascope") as mock:
+    with patch("mirascope.ops._internal.configuration.Mirascope") as mock:
         mock.return_value = MagicMock()
         yield mock
 
@@ -26,7 +27,7 @@ def mock_mirascope_client() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_exporter() -> Generator[MagicMock, None, None]:
     """Mock the MirascopeOTLPExporter at the re-export location."""
-    with patch("mirascope.ops._internal.exporters.MirascopeOTLPExporter") as mock:
+    with patch("mirascope.ops._internal.configuration.MirascopeOTLPExporter") as mock:
         mock.return_value = MagicMock()
         yield mock
 
@@ -55,6 +56,7 @@ def test_configure_with_env_api_key(
     mock_mirascope_client: MagicMock, mock_exporter: MagicMock
 ) -> None:
     """Configure with MIRASCOPE_API_KEY env var auto-creates Mirascope Cloud provider."""
+    original_value = os.environ.get("MIRASCOPE_API_KEY")
     os.environ["MIRASCOPE_API_KEY"] = "env-api-key"
     try:
         ops.configure()
@@ -64,7 +66,10 @@ def test_configure_with_env_api_key(
         assert configuration._tracer_provider is not None  # pyright: ignore[reportPrivateUsage]
         assert configuration._tracer is not None  # pyright: ignore[reportPrivateUsage]
     finally:
-        os.environ.pop("MIRASCOPE_API_KEY", None)
+        if original_value is not None:
+            os.environ["MIRASCOPE_API_KEY"] = original_value
+        else:
+            os.environ.pop("MIRASCOPE_API_KEY", None)
 
 
 def test_configure_without_credentials_raises() -> None:
@@ -109,7 +114,9 @@ def test_create_mirascope_cloud_provider_success(
     mock_mirascope_client: MagicMock, mock_exporter: MagicMock
 ) -> None:
     """_create_mirascope_cloud_provider creates provider successfully."""
-    provider = configuration._create_mirascope_cloud_provider(api_key="test-key")
+    provider = configuration._create_mirascope_cloud_provider(  # pyright: ignore[reportPrivateUsage]
+        api_key="test-key"
+    )
 
     assert isinstance(provider, TracerProvider)
     mock_mirascope_client.assert_called_once_with(api_key="test-key")
@@ -121,7 +128,7 @@ def test_create_mirascope_cloud_provider_no_api_key() -> None:
     os.environ.pop("MIRASCOPE_API_KEY", None)
 
     with pytest.raises(RuntimeError, match="Failed to create Mirascope Cloud client"):
-        configuration._create_mirascope_cloud_provider()
+        configuration._create_mirascope_cloud_provider()  # pyright: ignore[reportPrivateUsage]
 
 
 def test_set_tracer() -> None:

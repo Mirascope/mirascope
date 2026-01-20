@@ -7,25 +7,19 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
+from opentelemetry import trace as otel_trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
 from ...api.client import Mirascope
 from .exporters import MirascopeOTLPExporter
 
 if TYPE_CHECKING:
-    from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.trace import Tracer
-else:
-    Tracer = None
 
 DEFAULT_TRACER_NAME = "mirascope.llm"
 
 logger = logging.getLogger(__name__)
-
-try:
-    from opentelemetry import trace as otel_trace
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
-except ImportError:  # pragma: no cover
-    otel_trace = None
-    BatchSpanProcessor = None
 
 _tracer_provider: TracerProvider | None = None
 _tracer_name: str = DEFAULT_TRACER_NAME
@@ -82,7 +76,6 @@ def configure(
         tracer_version: Optional tracer version.
 
     Raises:
-        ImportError: If OpenTelemetry is not installed.
         RuntimeError: If no tracer_provider is given and Mirascope Cloud
             cannot be configured (missing API key).
 
@@ -113,12 +106,6 @@ def configure(
         ops.configure(tracer_provider=provider)
         ```
     """
-    if otel_trace is None:  # pragma: no cover
-        raise ImportError(
-            "OpenTelemetry is not installed. Run `pip install mirascope[otel]` "
-            "before calling `ops.configure()`."
-        )
-
     global _tracer_provider, _tracer_name, _tracer_version, _tracer
 
     # If no tracer_provider given, auto-configure Mirascope Cloud
@@ -177,6 +164,4 @@ def tracer_context(tracer: Tracer | None) -> Iterator[Tracer | None]:
     try:
         yield tracer
     finally:
-        set_tracer(previous_tracer)
-        set_tracer(previous_tracer)
         set_tracer(previous_tracer)

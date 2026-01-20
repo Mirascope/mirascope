@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from inline_snapshot import snapshot
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from mirascope import llm, ops
@@ -20,9 +21,9 @@ from .utils import extract_span_data
 
 
 @pytest.fixture(autouse=True, scope="function")
-def initialize() -> Generator[None, None, None]:
+def initialize(tracer_provider: TracerProvider) -> Generator[None, None, None]:
     """Initialize ops configuration and LLM instrumentation for each test."""
-    ops.configure()
+    ops.configure(tracer_provider=tracer_provider)
     ops.instrument_llm()
     yield
     ops.uninstrument_llm()
@@ -767,7 +768,10 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
 
 
 @pytest.mark.vcr()
-def test_versioned_call_wrapped_method(span_exporter: InMemorySpanExporter) -> None:
+def test_versioned_call_wrapped_method(
+    span_exporter: InMemorySpanExporter,
+    mirascope_api_key: None,
+) -> None:
     """Test VersionedCall.wrapped() returns VersionedResult."""
 
     @ops.version
@@ -811,7 +815,10 @@ def test_versioned_call_wrapped_method(span_exporter: InMemorySpanExporter) -> N
 
 
 @pytest.mark.vcr()
-def test_versioned_call_call_method(span_exporter: InMemorySpanExporter) -> None:
+def test_versioned_call_call_method(
+    span_exporter: InMemorySpanExporter,
+    mirascope_api_key: None,
+) -> None:
     """Test VersionedCall.call() returns Response directly and creates span."""
 
     @ops.version
@@ -868,7 +875,10 @@ def test_versioned_call_stream_method(span_exporter: InMemorySpanExporter) -> No
 
 
 @pytest.mark.vcr()
-def test_versioned_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> None:
+def test_versioned_call_wrapped_stream(
+    span_exporter: InMemorySpanExporter,
+    mirascope_api_key: None,
+) -> None:
     """Test VersionedCall.wrapped_stream() returns VersionedResult[StreamResponse]."""
 
     @ops.version
@@ -961,6 +971,7 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
 @pytest.mark.asyncio
 async def test_versioned_async_call_call_method(
     span_exporter: InMemorySpanExporter,
+    mirascope_api_key: None,
 ) -> None:
     """Test VersionedAsyncCall.call() returns AsyncResponse directly."""
 
@@ -1182,7 +1193,10 @@ async def test_versioned_async_context_call_stream_method(
 
 
 @pytest.mark.vcr()
-def test_versioned_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
+def test_versioned_call_with_tags(
+    span_exporter: InMemorySpanExporter,
+    mirascope_api_key: None,
+) -> None:
     """Test @ops.version(tags=[...]) passes tags to VersionedCall."""
 
     @ops.version(tags=["production", "recommendations"])
