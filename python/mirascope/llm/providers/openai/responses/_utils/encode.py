@@ -119,7 +119,7 @@ def _encode_user_message(
             result.append(
                 FunctionCallOutput(
                     call_id=part.id,
-                    output=str(part.value),
+                    output=str(part.result),
                     type="function_call_output",
                 )
             )

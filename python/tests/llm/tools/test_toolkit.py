@@ -77,9 +77,20 @@ def test_toolkit_get_nonexistent_tool(tool_call: llm.ToolCall) -> None:
     toolkit = llm.Toolkit(tools=[])
 
     with pytest.raises(
-        llm.ToolNotFoundError, match=f"Tool not found in toolkit: {tool_call.name}"
+        llm.ToolNotFoundError,
+        match=f"Tool '{tool_call.name}' not found in registered tools",
     ):
         toolkit.get(tool_call)
+
+
+def test_toolkit_execute_nonexistent_tool(tool_call: llm.ToolCall) -> None:
+    """Test that execute returns ToolOutput with error for nonexistent tool."""
+    toolkit = llm.Toolkit(tools=[])
+
+    output = toolkit.execute(tool_call)
+    assert output.error is not None
+    assert isinstance(output.error, llm.ToolNotFoundError)
+    assert output.result == f"Tool '{tool_call.name}' not found in registered tools"
 
 
 def test_toolkit_execute(tools: list[llm.Tool], tool_call: llm.ToolCall) -> None:
@@ -87,7 +98,7 @@ def test_toolkit_execute(tools: list[llm.Tool], tool_call: llm.ToolCall) -> None
     toolkit = llm.Toolkit(tools=tools)
     output = toolkit.execute(tool_call)
 
-    assert output.value == "result: value"
+    assert output.result == "result: value"
 
 
 @pytest.mark.asyncio
@@ -113,9 +124,21 @@ async def test_async_toolkit_get_nonexistent_tool(tool_call: llm.ToolCall) -> No
     toolkit = llm.AsyncToolkit(tools=[])
 
     with pytest.raises(
-        llm.ToolNotFoundError, match=f"Tool not found in toolkit: {tool_call.name}"
+        llm.ToolNotFoundError,
+        match=f"Tool '{tool_call.name}' not found in registered tools",
     ):
         toolkit.get(tool_call)
+
+
+@pytest.mark.asyncio
+async def test_async_toolkit_execute_nonexistent_tool(tool_call: llm.ToolCall) -> None:
+    """Test that execute returns ToolOutput with error for nonexistent tool."""
+    toolkit = llm.AsyncToolkit(tools=[])
+
+    output = await toolkit.execute(tool_call)
+    assert output.error is not None
+    assert isinstance(output.error, llm.ToolNotFoundError)
+    assert output.result == f"Tool '{tool_call.name}' not found in registered tools"
 
 
 @pytest.mark.asyncio
@@ -126,7 +149,7 @@ async def test_async_toolkit_execute(
     toolkit = llm.AsyncToolkit(tools=async_tools)
     output = await toolkit.execute(tool_call)
 
-    assert output.value == "result: value"
+    assert output.result == "result: value"
 
 
 @pytest.fixture
@@ -168,10 +191,21 @@ def test_context_toolkit_execute(
     ctx = llm.Context(deps=None)
 
     output = toolkit.execute(ctx, tool_call)
-    assert output.value == "result: value"
+    assert output.result == "result: value"
 
     output = toolkit.execute(ctx, context_tool_call)
-    assert output.value == "deps: None"
+    assert output.result == "deps: None"
+
+
+def test_context_toolkit_execute_nonexistent_tool(tool_call: llm.ToolCall) -> None:
+    """Test that execute returns ToolOutput with error for nonexistent tool."""
+    toolkit = llm.ContextToolkit[None](tools=[])
+    ctx = llm.Context(deps=None)
+
+    output = toolkit.execute(ctx, tool_call)
+    assert output.error is not None
+    assert isinstance(output.error, llm.ToolNotFoundError)
+    assert output.result == f"Tool '{tool_call.name}' not found in registered tools"
 
 
 @pytest.mark.asyncio
@@ -186,7 +220,21 @@ async def test_async_context_toolkit_execute(
     ctx = llm.Context(deps=None)
 
     output = await toolkit.execute(ctx, tool_call)
-    assert output.value == "result: value"
+    assert output.result == "result: value"
 
     output = await toolkit.execute(ctx, context_tool_call)
-    assert output.value == "deps: None"
+    assert output.result == "deps: None"
+
+
+@pytest.mark.asyncio
+async def test_async_context_toolkit_execute_nonexistent_tool(
+    tool_call: llm.ToolCall,
+) -> None:
+    """Test that execute returns ToolOutput with error for nonexistent tool."""
+    toolkit = llm.AsyncContextToolkit[None](tools=[])
+    ctx = llm.Context(deps=None)
+
+    output = await toolkit.execute(ctx, tool_call)
+    assert output.error is not None
+    assert isinstance(output.error, llm.ToolNotFoundError)
+    assert output.result == f"Tool '{tool_call.name}' not found in registered tools"

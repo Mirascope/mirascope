@@ -79,7 +79,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="customAdditionImplementation",
-                            value=13,
+                            result=13,
                         )
                     ]
                 ),

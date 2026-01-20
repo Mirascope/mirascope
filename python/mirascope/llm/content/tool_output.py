@@ -1,8 +1,9 @@
 """The `ToolOutput` content class."""
 
 from dataclasses import dataclass
-from typing import Generic, Literal
+from typing import Generic, Literal, cast
 
+from ..exceptions import ToolError
 from ..types import JsonableCovariantT
 
 
@@ -22,5 +23,21 @@ class ToolOutput(Generic[JsonableCovariantT]):
     name: str
     """The name of the tool that created this output."""
 
-    value: JsonableCovariantT
-    """The output value from the tool call."""
+    result: JsonableCovariantT | str
+    """The result of calling the tool.
+    
+    If the tool executed successfully, this will be the tool output.
+    If the tool errored, this will be the error message, as a string.
+    
+    In either case, the result should be passed back to the LLM (so it can
+    either process the output, or re-try with awareness of the error.)
+    """
+
+    error: ToolError | None = None
+    """The error from calling the tool, if any."""
+
+    @property
+    def output(self) -> JsonableCovariantT:
+        if self.error is not None:
+            raise self.error
+        return cast(JsonableCovariantT, self.result)

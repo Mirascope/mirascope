@@ -71,7 +71,7 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         ToolOutput(
                             id="toolu_016feRCAQERKZe9apWg1fnsJ",
                             name="compute_fib",
-                            value="218922995834555169026",
+                            result="218922995834555169026",
                         )
                     ]
                 ),

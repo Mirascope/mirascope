@@ -9,6 +9,7 @@ from typing_extensions import TypeVar
 
 from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
+from ..exceptions import ToolError, ToolExecutionError
 from ..types import AnyP, JsonableCovariantT
 from .protocols import (
     AsyncContextToolFn,
@@ -69,10 +70,15 @@ class Tool(
 
     def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the tool using an LLM-provided `ToolCall`."""
-        kwargs_from_json = json.loads(tool_call.args)
         kwargs_callable = cast(KwargsCallable[JsonableCovariantT], self.fn)
-        result = kwargs_callable(**kwargs_from_json)
-        return ToolOutput(id=tool_call.id, value=result, name=self.name)
+        error: ToolError | None = None
+        try:
+            kwargs_from_json = json.loads(tool_call.args)
+            result = kwargs_callable(**kwargs_from_json)
+        except Exception as e:
+            result = str(e)
+            error = ToolExecutionError(e)
+        return ToolOutput(id=tool_call.id, result=result, error=error, name=self.name)
 
 
 class AsyncTool(
@@ -118,10 +124,15 @@ class AsyncTool(
 
     async def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the async tool using an LLM-provided `ToolCall`."""
-        kwargs_from_json = json.loads(tool_call.args)
         kwargs_callable = cast(AsyncKwargsCallable[JsonableCovariantT], self.fn)
-        result = await kwargs_callable(**kwargs_from_json)
-        return ToolOutput(id=tool_call.id, value=result, name=self.name)
+        error: ToolError | None = None
+        try:
+            kwargs_from_json = json.loads(tool_call.args)
+            result = await kwargs_callable(**kwargs_from_json)
+        except Exception as e:
+            result = str(e)
+            error = ToolExecutionError(e)
+        return ToolOutput(id=tool_call.id, result=result, error=error, name=self.name)
 
 
 class ContextTool(
@@ -175,12 +186,17 @@ class ContextTool(
         self, ctx: Context[DepsT], tool_call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Execute the context tool using an LLM-provided `ToolCall`."""
-        kwargs_from_json = json.loads(tool_call.args)
         kwargs_callable = cast(
             ContextKwargsCallable[DepsT, JsonableCovariantT], self.fn
         )
-        result = kwargs_callable(ctx, **kwargs_from_json)
-        return ToolOutput(id=tool_call.id, value=result, name=self.name)
+        error: ToolError | None = None
+        try:
+            kwargs_from_json = json.loads(tool_call.args)
+            result = kwargs_callable(ctx, **kwargs_from_json)
+        except Exception as e:
+            result = str(e)
+            error = ToolExecutionError(e)
+        return ToolOutput(id=tool_call.id, result=result, error=error, name=self.name)
 
 
 class AsyncContextTool(
@@ -234,9 +250,14 @@ class AsyncContextTool(
         self, ctx: Context[DepsT], tool_call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Execute the async context tool using an LLM-provided `ToolCall`."""
-        kwargs_from_json = json.loads(tool_call.args)
         kwargs_callable = cast(
             AsyncJsonKwargsCallable[DepsT, JsonableCovariantT], self.fn
         )
-        result = await kwargs_callable(ctx, **kwargs_from_json)
-        return ToolOutput(id=tool_call.id, value=result, name=self.name)
+        error: ToolError | None = None
+        try:
+            kwargs_from_json = json.loads(tool_call.args)
+            result = await kwargs_callable(ctx, **kwargs_from_json)
+        except Exception as e:
+            result = str(e)
+            error = ToolExecutionError(e)
+        return ToolOutput(id=tool_call.id, result=result, error=error, name=self.name)

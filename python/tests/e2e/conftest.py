@@ -11,8 +11,16 @@ from copy import deepcopy
 from typing import Any, TypedDict, get_args
 
 import pytest
+from inline_snapshot import customize_repr
 
 from mirascope import llm
+
+
+@customize_repr
+def _(value: llm.ToolExecutionError) -> str:
+    """Custom repr for ToolExecutionError that produces valid snapshot code."""
+    return f"ToolExecutionError({str(value)!r})"
+
 
 SENSITIVE_HEADERS = [
     "authorization",  # OpenAI Bearer tokens
@@ -200,6 +208,8 @@ SNAPSHOT_IMPORT_SYMBOLS = [
     "Thought",
     "ToolCall",
     "ToolCallChunk",
+    "ToolExecutionError",
+    "ToolNotFoundError",
     "ToolCallEndChunk",
     "ToolCallStartChunk",
     "ToolOutput",

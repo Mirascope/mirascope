@@ -232,7 +232,7 @@ def encode_content(
                 anthropic_types.ToolResultBlockParam(
                     type="tool_result",
                     tool_use_id=part.id,
-                    content=str(part.value),
+                    content=str(part.result),
                     cache_control={"type": "ephemeral"} if should_add_cache else None,
                 )
             )

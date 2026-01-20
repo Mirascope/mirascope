@@ -176,8 +176,54 @@ class ResponseValidationError(ProviderError):
     """
 
 
-class ToolNotFoundError(Error):
-    """Raised if a tool_call cannot be converted to any corresponding tool."""
+class ToolError(Error):
+    """Base class for errors that occur during tool execution."""
+
+
+class ToolExecutionError(ToolError):
+    """Raised if an uncaught exception is thrown while executing a tool."""
+
+    tool_exception: Exception
+    """The exception that was thrown while executing the tool."""
+
+    def __init__(self, tool_exception: Exception | str) -> None:
+        if isinstance(tool_exception, str):
+            # Support string for snapshot reconstruction
+            message = tool_exception
+            tool_exception = ValueError(message)
+        else:
+            message = str(tool_exception)
+        super().__init__(message)
+        self.tool_exception = tool_exception
+        self.__cause__ = tool_exception
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ToolExecutionError):
+            return False
+        # Needed for snapshot tests.
+        return str(self) == str(other)
+
+
+class ToolNotFoundError(ToolError):
+    """Raised if a tool call does not match any registered tool."""
+
+    tool_name: str
+    """The name of the tool that was not found."""
+
+    def __init__(self, tool_name: str) -> None:
+        super().__init__(f"Tool '{tool_name}' not found in registered tools")
+        self.tool_name = tool_name
+
+    def __repr__(self) -> str:
+        return f"ToolNotFoundError({self.tool_name!r})"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ToolNotFoundError):
+            return NotImplemented
+        return self.tool_name == other.tool_name
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.tool_name))
 
 
 class FeatureNotSupportedError(Error):

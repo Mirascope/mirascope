@@ -46,11 +46,13 @@ This pattern—catching the error and resuming with feedback—gives the model a
 
 ## Tool Error Recovery
 
-Tools can fail during execution. Rather than crashing, return the error as a `ToolOutput` so the model can adapt:
+Tools can fail during execution. Mirascope automatically catches these errors and includes them in the `ToolOutput`, so the error message is passed to the LLM and it can adapt—no manual exception handling required.
+
+If you want to monitor for errors or limit retries, check `tool_output.error`:
 
 <CodeExample file="python/examples/reliability/tool_error_recovery.py" />
 
-The model receives the error message and can explain what went wrong or try a different approach.
+The model receives the error message and can explain what went wrong or try a different approach. If the same error keeps occurring, you can raise it after a set number of retries.
 
 ## Provider Fallbacks
 

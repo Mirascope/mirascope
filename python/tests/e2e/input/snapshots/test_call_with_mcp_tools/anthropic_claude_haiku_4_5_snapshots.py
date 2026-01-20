@@ -86,7 +86,7 @@ test_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01EXNZbjro89baFVduagcmUS",
                             name="greet",
-                            value=[
+                            result=[
                                 {
                                     "type": "text",
                                     "text": "Welcome to Zombo.com, Mirascope",
@@ -98,7 +98,7 @@ test_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01H3qMv9XPQWxwYJGPbdq91C",
                             name="answer_ultimate_question",
-                            value=[
+                            result=[
                                 {
                                     "type": "text",
                                     "text": """\
@@ -163,7 +163,7 @@ test_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01TQByfwngEjeFsRYDscMTrf",
                             name="process_answer",
-                            value=[
+                            result=[
                                 {
                                     "type": "text",
                                     "text": "The answer 42 to 'What is the answer to life, the universe, and everything?' was computed by Deep Thought over 7,500,000 years",

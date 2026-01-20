@@ -60,7 +60,7 @@ class BaseToolkit(Generic[ToolSchemaT]):
         """
         tool = self.tools_dict.get(tool_call.name, None)
         if not tool:
-            raise ToolNotFoundError(f"Tool not found in toolkit: {tool_call.name}")
+            raise ToolNotFoundError(tool_call.name)
         return tool
 
 
@@ -75,12 +75,14 @@ class Toolkit(BaseToolkit[Tool]):
 
         Returns:
             The output from executing the `Tool`.
-
-        Raises:
-            ToolNotFoundError: If the requested tool is not found.
         """
-        tool = self.get(tool_call)
-        return tool.execute(tool_call)
+        try:
+            tool = self.get(tool_call)
+            return tool.execute(tool_call)
+        except ToolNotFoundError as e:
+            return ToolOutput(
+                id=tool_call.id, result=str(e), error=e, name=tool_call.name
+            )
 
 
 class AsyncToolkit(BaseToolkit[AsyncTool]):
@@ -94,12 +96,14 @@ class AsyncToolkit(BaseToolkit[AsyncTool]):
 
         Returns:
             The output from executing the `AsyncTool`.
-
-        Raises:
-            ToolNotFoundError: If the requested tool is not found.
         """
-        tool = self.get(tool_call)
-        return await tool.execute(tool_call)
+        try:
+            tool = self.get(tool_call)
+            return await tool.execute(tool_call)
+        except ToolNotFoundError as e:
+            return ToolOutput(
+                id=tool_call.id, result=str(e), error=e, name=tool_call.name
+            )
 
 
 class ContextToolkit(BaseToolkit[Tool | ContextTool[DepsT]], Generic[DepsT]):
@@ -114,15 +118,17 @@ class ContextToolkit(BaseToolkit[Tool | ContextTool[DepsT]], Generic[DepsT]):
 
         Returns:
             The output from executing the `ContextTool`.
-
-        Raises:
-            ToolNotFoundError: If the requested tool is not found.
         """
-        tool = self.get(tool_call)
-        if isinstance(tool, ContextTool):
-            return tool.execute(ctx, tool_call)
-        else:
-            return tool.execute(tool_call)
+        try:
+            tool = self.get(tool_call)
+            if isinstance(tool, ContextTool):
+                return tool.execute(ctx, tool_call)
+            else:
+                return tool.execute(tool_call)
+        except ToolNotFoundError as e:
+            return ToolOutput(
+                id=tool_call.id, result=str(e), error=e, name=tool_call.name
+            )
 
 
 class AsyncContextToolkit(
@@ -141,12 +147,14 @@ class AsyncContextToolkit(
 
         Returns:
             The output from executing the `AsyncContextTool`.
-
-        Raises:
-            ToolNotFoundError: If the requested tool is not found.
         """
-        tool = self.get(tool_call)
-        if isinstance(tool, AsyncContextTool):
-            return await tool.execute(ctx, tool_call)
-        else:
-            return await tool.execute(tool_call)
+        try:
+            tool = self.get(tool_call)
+            if isinstance(tool, AsyncContextTool):
+                return await tool.execute(ctx, tool_call)
+            else:
+                return await tool.execute(tool_call)
+        except ToolNotFoundError as e:
+            return ToolOutput(
+                id=tool_call.id, result=str(e), error=e, name=tool_call.name
+            )

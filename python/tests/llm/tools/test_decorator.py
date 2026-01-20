@@ -33,7 +33,7 @@ class TestTool:
             id="call_123", name="add_numbers", args='{"a": 5, "b": 7}'
         )
         output = add_numbers.execute(tool_call)
-        expected = llm.ToolOutput(id="call_123", value=12, name="add_numbers")
+        expected = llm.ToolOutput(id="call_123", result=12, name="add_numbers")
         assert output == expected
 
     def test_sync_tool_with_strict(self) -> None:
@@ -81,7 +81,7 @@ class TestTool:
             id="call_456", name="async_add", args='{"a": 10, "b": 15}'
         )
         output = await async_add.execute(tool_call)
-        expected = llm.ToolOutput(id="call_456", value=25, name="async_add")
+        expected = llm.ToolOutput(id="call_456", result=25, name="async_add")
         assert output == expected
 
     def test_decorator_syntax(self) -> None:
@@ -154,7 +154,7 @@ class TestContextTool:
             id="call_123", name="add_with_constant", args='{"a": 7}'
         )
         output = add_with_constant.execute(context, tool_call)
-        expected = llm.ToolOutput(id="call_123", value=17, name="add_with_constant")
+        expected = llm.ToolOutput(id="call_123", result=17, name="add_with_constant")
         assert output == expected
 
     def test_sync_context_tool_with_strict(self) -> None:
@@ -212,7 +212,7 @@ class TestContextTool:
             id="call_456", name="async_add_with_base", args='{"a": 20}'
         )
         output = await async_add_with_base.execute(context, tool_call)
-        expected = llm.ToolOutput(id="call_456", value=35, name="async_add_with_base")
+        expected = llm.ToolOutput(id="call_456", result=35, name="async_add_with_base")
         assert output == expected
 
     def test_decorator_syntax(self) -> None:
@@ -413,3 +413,208 @@ class TestContextTool:
         assert isinstance(with_custom_context, llm.AsyncContextTool)
         assert "ctx" not in with_custom_context.parameters.properties
         assert "value" in with_custom_context.parameters.properties
+
+
+class TestToolOutput:
+    """Tests for ToolOutput behavior."""
+
+    def test_output_property_raises_when_error(self) -> None:
+        """Test that ToolOutput.output raises the error when error is set."""
+
+        @llm.tool
+        def failing_tool(x: int) -> int:
+            """A tool that fails."""
+            raise ValueError("intentional error")
+
+        tool_call = llm.ToolCall(id="call_123", name="failing_tool", args='{"x": 5}')
+        output = failing_tool.execute(tool_call)
+
+        assert output.error is not None
+        with pytest.raises(llm.ToolExecutionError):
+            _ = output.output
+
+    def test_output_property_returns_result_when_no_error(self) -> None:
+        """Test that ToolOutput.output returns result when no error."""
+
+        @llm.tool
+        def add_numbers(a: int, b: int) -> int:
+            """Add two numbers."""
+            return a + b
+
+        tool_call = llm.ToolCall(
+            id="call_123", name="add_numbers", args='{"a": 5, "b": 7}'
+        )
+        output = add_numbers.execute(tool_call)
+
+        assert output.error is None
+        assert output.output == 12
+
+
+class TestToolExecutionError:
+    """Tests for tool execution error handling."""
+
+    def test_sync_tool_execution_error(self) -> None:
+        """Test that sync tool execution errors are captured in ToolOutput."""
+
+        @llm.tool
+        def failing_tool(x: int) -> int:
+            """A tool that fails."""
+            raise ValueError("intentional error")
+
+        tool_call = llm.ToolCall(id="call_123", name="failing_tool", args='{"x": 5}')
+        output = failing_tool.execute(tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.error.tool_exception, ValueError)
+        assert output.result == "intentional error"
+
+    @pytest.mark.asyncio
+    async def test_async_tool_execution_error(self) -> None:
+        """Test that async tool execution errors are captured in ToolOutput."""
+
+        @llm.tool
+        async def failing_async_tool(x: int) -> int:
+            """An async tool that fails."""
+            raise TypeError("async error")
+
+        tool_call = llm.ToolCall(
+            id="call_async", name="failing_async_tool", args='{"x": 5}'
+        )
+        output = await failing_async_tool.execute(tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.error.tool_exception, TypeError)
+        assert output.result == "async error"
+
+    def test_sync_context_tool_execution_error(self) -> None:
+        """Test that sync context tool execution errors are captured in ToolOutput."""
+
+        @llm.tool
+        def failing_context_tool(ctx: llm.Context[int], x: int) -> int:
+            """A context tool that fails."""
+            raise RuntimeError("context error")
+
+        context = llm.Context[int](deps=10)
+        tool_call = llm.ToolCall(
+            id="call_456", name="failing_context_tool", args='{"x": 5}'
+        )
+        output = failing_context_tool.execute(context, tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.error.tool_exception, RuntimeError)
+        assert output.result == "context error"
+
+    @pytest.mark.asyncio
+    async def test_async_context_tool_execution_error(self) -> None:
+        """Test that async context tool execution errors are captured in ToolOutput."""
+
+        @llm.tool
+        async def failing_async_context_tool(ctx: llm.Context[str], x: int) -> int:
+            """An async context tool that fails."""
+            raise KeyError("async context error")
+
+        context = llm.Context[str](deps="test")
+        tool_call = llm.ToolCall(
+            id="call_789", name="failing_async_context_tool", args='{"x": 5}'
+        )
+        output = await failing_async_context_tool.execute(context, tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.error.tool_exception, KeyError)
+        assert output.result == "'async context error'"
+
+    def test_tool_execution_error_eq_different_type(self) -> None:
+        """Test that ToolExecutionError.__eq__ returns False for different types."""
+        error = llm.ToolExecutionError(ValueError("test"))
+        assert error != "not an error"
+        assert error != 123
+        assert error != None  # noqa: E711
+
+    def test_tool_execution_error_eq_same_type(self) -> None:
+        """Test that ToolExecutionError.__eq__ compares by string representation."""
+        error1 = llm.ToolExecutionError(ValueError("test error"))
+        error2 = llm.ToolExecutionError(ValueError("test error"))
+        error3 = llm.ToolExecutionError(ValueError("different error"))
+
+        assert error1 == error2
+        assert error1 != error3
+
+    def test_sync_tool_invalid_json(self) -> None:
+        """Test that sync tool handles invalid JSON in tool_call.args."""
+
+        @llm.tool
+        def simple_tool(x: int) -> int:
+            """A simple tool."""
+            return x
+
+        tool_call = llm.ToolCall(
+            id="call_123", name="simple_tool", args="not valid json"
+        )
+        output = simple_tool.execute(tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.result, str)
+        assert "Expecting value" in output.result
+
+    @pytest.mark.asyncio
+    async def test_async_tool_invalid_json(self) -> None:
+        """Test that async tool handles invalid JSON in tool_call.args."""
+
+        @llm.tool
+        async def async_simple_tool(x: int) -> int:
+            """An async simple tool."""
+            return x
+
+        tool_call = llm.ToolCall(
+            id="call_456", name="async_simple_tool", args="not valid json"
+        )
+        output = await async_simple_tool.execute(tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.result, str)
+        assert "Expecting value" in output.result
+
+    def test_sync_context_tool_invalid_json(self) -> None:
+        """Test that sync context tool handles invalid JSON in tool_call.args."""
+
+        @llm.tool
+        def context_simple_tool(ctx: llm.Context[int], x: int) -> int:
+            """A context tool."""
+            return x + ctx.deps
+
+        context = llm.Context[int](deps=10)
+        tool_call = llm.ToolCall(
+            id="call_789", name="context_simple_tool", args="not valid json"
+        )
+        output = context_simple_tool.execute(context, tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.result, str)
+        assert "Expecting value" in output.result
+
+    @pytest.mark.asyncio
+    async def test_async_context_tool_invalid_json(self) -> None:
+        """Test that async context tool handles invalid JSON in tool_call.args."""
+
+        @llm.tool
+        async def async_context_simple_tool(ctx: llm.Context[str], x: int) -> int:
+            """An async context tool."""
+            return x
+
+        context = llm.Context[str](deps="test")
+        tool_call = llm.ToolCall(
+            id="call_abc", name="async_context_simple_tool", args="not valid json"
+        )
+        output = await async_context_simple_tool.execute(context, tool_call)
+
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.result, str)
+        assert "Expecting value" in output.result

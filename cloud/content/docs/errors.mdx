@@ -27,7 +27,9 @@ All exceptions inherit from `llm.Error`. Indentation shows the hierarchy:
 | &emsp;↳ `llm.ConnectionError` | Network connectivity issues, DNS failures |
 | &emsp;↳ `llm.TimeoutError` | Request exceeded the allowed time limit |
 | &emsp;↳ `llm.ResponseValidationError` | API response failed validation |
-| ↳ `llm.ToolNotFoundError` | LLM returned a tool call that doesn't match any tool in your toolkit |
+| ↳ `llm.ToolError` | Base class for tool-related errors |
+| &emsp;↳ `llm.ToolExecutionError` | Tool threw an exception during execution (has `tool_exception`) |
+| &emsp;↳ `llm.ToolNotFoundError` | Tool call doesn't match any registered tool (has `tool_name`) |
 | ↳ `llm.FeatureNotSupportedError` | Feature not supported by provider/model (has `provider_id`, `model_id`, `feature`) |
 | ↳ `llm.NoRegisteredProviderError` | Model ID has no registered provider |
 

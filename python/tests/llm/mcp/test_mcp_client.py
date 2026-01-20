@@ -167,7 +167,7 @@ Returns:
 
             assert greet_output.id == "call_123"
             assert greet_output.name == "greet"
-            assert greet_output.value == snapshot(
+            assert greet_output.result == snapshot(
                 [
                     {
                         "type": "text",
@@ -187,7 +187,7 @@ Returns:
 
             assert answer_output.id == "call_456"
             assert answer_output.name == "answer_ultimate_question"
-            assert answer_output.value == snapshot(
+            assert answer_output.result == snapshot(
                 [
                     {
                         "type": "text",
@@ -227,7 +227,7 @@ Returns:
 
             assert process_output.id == "call_789"
             assert process_output.name == "process_answer"
-            assert process_output.value == snapshot(
+            assert process_output.result == snapshot(
                 [
                     {
                         "type": "text",
@@ -245,9 +245,11 @@ Returns:
 
         greet_tool = next(t for t in tools if t.name == "greet")
         greet_call = llm.ToolCall(id="call_123", name="greet", args='{"name": "Alice"}')
-        with pytest.raises(anyio.ClosedResourceError):
-            # Client now closed!
-            await greet_tool.execute(greet_call)
+        # Client now closed! Error is captured in ToolOutput
+        output = await greet_tool.execute(greet_call)
+        assert output.error is not None
+        assert isinstance(output.error, llm.ToolExecutionError)
+        assert isinstance(output.error.tool_exception, anyio.ClosedResourceError)
 
 
 @pytest.mark.asyncio

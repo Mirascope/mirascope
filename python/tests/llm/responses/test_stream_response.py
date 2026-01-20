@@ -1562,8 +1562,8 @@ def test_stream_response_execute_tools() -> None:
 
     outputs = stream_response.execute_tools()
     assert len(outputs) == 2
-    assert outputs[0].value == 10
-    assert outputs[1].value == "HELLO"
+    assert outputs[0].result == 10
+    assert outputs[1].result == "HELLO"
 
 
 @pytest.mark.asyncio
@@ -1605,8 +1605,8 @@ async def test_async_stream_response_execute_tools() -> None:
 
     outputs = await stream_response.execute_tools()
     assert len(outputs) == 2
-    assert outputs[0].value == 10
-    assert outputs[1].value == "HELLO"
+    assert outputs[0].result == 10
+    assert outputs[1].result == "HELLO"
 
 
 def test_response_toolkit_initialization() -> None:

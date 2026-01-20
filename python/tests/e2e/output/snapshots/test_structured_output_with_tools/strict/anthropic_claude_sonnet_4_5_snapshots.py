@@ -61,7 +61,7 @@ sync_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_014nCrVkJt2WpmQPs5adsDEw",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -189,7 +189,7 @@ async_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01Da5Bg5EQojg2o7HLGt268N",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -307,7 +307,7 @@ stream_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_012rGPjgcgCmEEDtmSdVUYSK",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),
@@ -429,7 +429,7 @@ async_stream_snapshot = snapshot(
                         ToolOutput(
                             id="toolu_01MHCLxpF4PVKhW69eNmBdEM",
                             name="get_book_info",
-                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                            result="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
                     ]
                 ),

@@ -105,12 +105,12 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),
@@ -265,12 +265,12 @@ cache_tokens_details=None cached_content_token_count=None candidates_token_count
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),
@@ -410,12 +410,12 @@ stream_snapshot = snapshot(
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),
@@ -591,12 +591,12 @@ async_stream_snapshot = snapshot(
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Welcome to Moria!",
+                            result="Welcome to Moria!",
                         ),
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="secret_retrieval_tool",
-                            value="Life before Death",
+                            result="Life before Death",
                         ),
                     ]
                 ),

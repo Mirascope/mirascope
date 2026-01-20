@@ -127,7 +127,7 @@ def _encode_user_message(
             result.append(
                 openai_types.ChatCompletionToolMessageParam(
                     role="tool",
-                    content=str(part.value),
+                    content=str(part.result),
                     tool_call_id=part.id,
                 )
             )

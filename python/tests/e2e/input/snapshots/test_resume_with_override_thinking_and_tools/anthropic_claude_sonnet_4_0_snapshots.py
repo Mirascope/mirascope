@@ -68,7 +68,7 @@ test_snapshot = snapshot(
                         ToolOutput(
                             id="google_unknown_tool_id",
                             name="compute_fib",
-                            value="218922995834555169026",
+                            result="218922995834555169026",
                         )
                     ]
                 ),
