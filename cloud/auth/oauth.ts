@@ -599,7 +599,7 @@ function sendWelcomeEmail(
     if (htmlContent !== null) {
       yield* emails
         .send({
-          from: "william@mirascope.com",
+          from: "William Bakst <william@mirascope.com>",
           replyTo: "william@mirascope.com",
           to: email,
           subject: "Welcome to Mirascope Cloud!",

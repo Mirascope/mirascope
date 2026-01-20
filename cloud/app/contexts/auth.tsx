@@ -47,6 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (redirectUrl) {
         sessionStorage.removeItem("redirectAfterLogin");
         window.location.href = redirectUrl;
+      } else if (isNewUser) {
+        // New users go through onboarding
+        void navigate({ to: "/cloud/onboarding", replace: true });
       } else {
         void navigate({ to: "/cloud", replace: true });
       }

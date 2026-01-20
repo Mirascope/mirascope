@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "@/app/components/sidebar";
 
-type DashboardLayoutProps = {
+type CloudLayoutProps = {
   children: ReactNode;
 };
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function CloudLayout({ children }: CloudLayoutProps) {
   return (
     <div className="flex h-[calc(100vh-60px)]">
       <Sidebar />

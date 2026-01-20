@@ -1,6 +1,7 @@
 import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
 import { Database } from "@/db";
+import { DrizzleORM } from "@/db/client";
 import { Settings, validateSettings, type SettingsConfig } from "@/settings";
 import { Emails } from "@/emails";
 import { ExecutionContext, executionContextLayer } from "@/server-entry";
@@ -10,6 +11,7 @@ export type { Result } from "./types";
 export type AppServices =
   | Settings
   | Database
+  | DrizzleORM
   | AuthService
   | Emails
   | ExecutionContext;

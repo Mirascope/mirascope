@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { DashboardLayout } from "@/app/components/dashboard-layout";
+import { CloudLayout } from "@/app/components/cloud-layout";
 import { createFileRoute } from "@tanstack/react-router";
 import { Protected } from "@/app/components/protected";
 import { useOrganization } from "@/app/contexts/organization";
@@ -40,7 +40,7 @@ function CloudDashboardPage() {
 
   return (
     <Protected>
-      <DashboardLayout>
+      <CloudLayout>
         <div className="p-6 space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -114,7 +114,7 @@ function CloudDashboardPage() {
             </>
           )}
         </div>
-      </DashboardLayout>
+      </CloudLayout>
     </Protected>
   );
 }

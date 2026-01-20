@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Protected } from "@/app/components/protected";
-import { DashboardLayout } from "@/app/components/dashboard-layout";
+import { CloudLayout } from "@/app/components/cloud-layout";
 import { useOrganization } from "@/app/contexts/organization";
 import { useProject } from "@/app/contexts/project";
 import { useEnvironment } from "@/app/contexts/environment";
@@ -142,9 +142,9 @@ function SettingsContent() {
 function SettingsPage() {
   return (
     <Protected>
-      <DashboardLayout>
+      <CloudLayout>
         <SettingsContent />
-      </DashboardLayout>
+      </CloudLayout>
     </Protected>
   );
 }

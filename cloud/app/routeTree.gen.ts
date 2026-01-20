@@ -24,6 +24,7 @@ import { Route as InvitationsAcceptRouteImport } from './routes/invitations.acce
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
+import { Route as CloudOnboardingRouteImport } from './routes/cloud/onboarding'
 import { Route as CloudLoginRouteImport } from './routes/cloud/login'
 import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -122,6 +123,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
 const CloudSettingsRoute = CloudSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudOnboardingRoute = CloudOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => CloudRoute,
 } as any)
 const CloudLoginRoute = CloudLoginRouteImport.update({
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
+  '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
+  '/cloud/onboarding': typeof CloudOnboardingRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
+  '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
@@ -384,6 +393,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
+    | '/cloud/onboarding'
     | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
+    | '/cloud/onboarding'
     | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
@@ -463,6 +474,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/cloud/dashboard'
     | '/cloud/login'
+    | '/cloud/onboarding'
     | '/cloud/settings'
     | '/dashboard/settings'
     | '/docs/$'
@@ -618,6 +630,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/cloud/settings'
       preLoaderRoute: typeof CloudSettingsRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/onboarding': {
+      id: '/cloud/onboarding'
+      path: '/onboarding'
+      fullPath: '/cloud/onboarding'
+      preLoaderRoute: typeof CloudOnboardingRouteImport
       parentRoute: typeof CloudRoute
     }
     '/cloud/login': {
@@ -830,6 +849,7 @@ const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
 interface CloudRouteChildren {
   CloudDashboardRoute: typeof CloudDashboardRoute
   CloudLoginRoute: typeof CloudLoginRoute
+  CloudOnboardingRoute: typeof CloudOnboardingRoute
   CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
   CloudIndexRoute: typeof CloudIndexRoute
 }
@@ -837,6 +857,7 @@ interface CloudRouteChildren {
 const CloudRouteChildren: CloudRouteChildren = {
   CloudDashboardRoute: CloudDashboardRoute,
   CloudLoginRoute: CloudLoginRoute,
+  CloudOnboardingRoute: CloudOnboardingRoute,
   CloudSettingsRoute: CloudSettingsRouteWithChildren,
   CloudIndexRoute: CloudIndexRoute,
 }
