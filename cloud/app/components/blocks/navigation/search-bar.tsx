@@ -42,7 +42,7 @@ function SearchResult({
     >
       <div className="min-w-0 flex-1">
         <div className="mb-2 flex items-center justify-between">
-          <h4 className="text-foreground truncate text-base font-medium">
+          <h4 className="text-accent-foreground truncate text-base font-medium">
             {result.title || "Untitled"}
           </h4>
           <div className="flex items-center gap-2">

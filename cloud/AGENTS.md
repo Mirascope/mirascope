@@ -122,6 +122,75 @@ export const useEnvironments = (organizationId: string | null, projectId: string
 };
 ```
 
+## Design System, Styles, & UI Components
+
+The frontend uses [shadcn/ui](https://ui.shadcn.com/) with Tailwind CSS v4.
+
+### Adding shadcn Components
+
+For easier maintenance, avoid making significant modifications to shadcn components. Instead, build your custom components by composing the provided primitives, following the structure outlined below.
+
+```bash
+bunx --bun shadcn@latest add <component>  # e.g., bunx --bun shadcn@latest add pagination
+```
+
+### Component Directory Structure
+
+```
+app/components/
+├── blocks/           # Complex, often shared, composed components
+│   ├── branding/     # Logo, GitHub button, Discord link
+│   ├── code-block/   # Syntax-highlighted code blocks
+│   ├── docs/         # Documentation-specific components (API signatures, tables)
+│   └── navigation/   # Header, footer, sidebar, search bar
+├── dashboard/        # Dashboard-specific components (stat cards, selectors)
+├── error/            # Error boundary components
+├── mdx/              # MDX rendering and custom elements
+│   └── elements/     # MDX-specific components (callouts, tabs, code blocks)
+└── ui/               # shadcn/ui primitives (button, dialog, input, etc.)
+```
+
+### CSS Organization
+
+- `globals.css` - theme variables, base styles, and custom utilities
+- `content.css` - MDX/documentation content styling
+- `code-highlighting.css` - syntax highlighting for code blocks
+
+**CSS Modules**: Use `.module.css` files when UI/UX differs significantly from the design system (e.g., `home-page.module.css`, `mermaid-diagram.module.css`).
+
+### Class Utilities
+
+- **Always use `cn()`** from `@/app/lib/utils` when combining Tailwind classes
+- **Use `cva`** from `class-variance-authority` when creating components with style variants (see `button.tsx`, `alert.tsx` for examples)
+
+```typescript
+// Example: Component with variants using cva
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/app/lib/utils";
+
+const myComponentVariants = cva("base-classes", {
+  variants: {
+    variant: { default: "...", secondary: "..." },
+    size: { default: "...", sm: "..." },
+  },
+  defaultVariants: { variant: "default", size: "default" },
+});
+```
+
+### Custom Utility Classes
+
+These utility classes are defined in `globals.css`:
+
+- `textured-bg` - paper texture overlay
+- `text-shade` / `box-shade` - shadow effects
+- `nav-text` - navigation text with theme-aware styling
+
+### Brand & Typography
+
+- `text-mirple` / `bg-mirple` - Mirascope brand purple
+- `font-handwriting` - headings and UI elements
+- `font-sans` - body/content text
+
 ## Authentication (`cloud/auth/`)
 
 - **Session-based**: Via cookies with `getSessionIdFromCookie()`
