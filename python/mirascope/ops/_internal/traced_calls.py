@@ -22,8 +22,10 @@ from ...llm.responses import (
 from ...llm.types import P
 from .protocols import (
     AsyncFunction,
+    AsyncSpanFunction,
     R,
     SyncFunction,
+    SyncSpanFunction,
 )
 from .traced_functions import (
     AsyncTrace,
@@ -47,6 +49,8 @@ def is_call_type(
     fn: (
         SyncFunction[P, R]
         | AsyncFunction[P, R]
+        | SyncSpanFunction[P, R]
+        | AsyncSpanFunction[P, R]
         | ContextCall[P, DepsT, FormattableT]
         | AsyncContextCall[P, DepsT, FormattableT]
         | Call[P, FormattableT]

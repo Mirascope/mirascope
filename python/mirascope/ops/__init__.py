@@ -41,8 +41,10 @@ from ._internal.traced_calls import (
 from ._internal.traced_functions import (
     AsyncTrace,
     AsyncTracedFunction,
+    AsyncTracedSpanFunction,
     Trace,
     TracedFunction,
+    TracedSpanFunction,
 )
 from ._internal.tracing import (
     TraceDecorator,
@@ -69,6 +71,7 @@ __all__ = [
     "SESSION_HEADER_NAME",
     "AsyncTrace",
     "AsyncTracedFunction",
+    "AsyncTracedSpanFunction",
     "AsyncVersionedFunction",
     "ClosureComputationError",
     "ContextPropagator",
@@ -82,6 +85,7 @@ __all__ = [
     "TracedCall",
     "TracedContextCall",
     "TracedFunction",
+    "TracedSpanFunction",
     "VersionDecorator",
     "VersionInfo",
     "VersionedAsyncCall",

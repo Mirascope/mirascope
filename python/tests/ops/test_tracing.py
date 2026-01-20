@@ -1384,3 +1384,309 @@ async def test_async_trace_annotate_noop_span() -> None:
         await trace.annotate(label="pass")
 
         mock_get_client.assert_not_called()
+
+
+def test_sync_trace_with_span_injection(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @trace decorator injects Span as first parameter when requested."""
+
+    @ops.trace
+    def process(trace_ctx: ops.Span, value: int) -> int:
+        trace_ctx.info(f"Processing value: {value}")
+        return value * 2
+
+    # Call WITHOUT trace_ctx - it should be injected
+    result = process(5)
+    assert result == 10
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "process",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "process",
+                "mirascope.fn.module": "ops.test_tracing",
+                "mirascope.fn.is_async": False,
+                # Note: trace_ctx is NOT in arg_types or arg_values
+                "mirascope.trace.arg_types": '{"value":"int"}',
+                "mirascope.trace.arg_values": '{"value":5}',
+                "mirascope.trace.output": 10,
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [
+                {
+                    "name": "info",
+                    "attributes": {"level": "info", "message": "Processing value: 5"},
+                }
+            ],
+        }
+    )
+
+
+def test_sync_trace_with_span_injection_wrapped(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @trace decorator with span injection returns Trace from wrapped()."""
+
+    @ops.trace
+    def process(trace_ctx: ops.Span, value: int) -> int:
+        trace_ctx.debug("Debug message")
+        return value * 3
+
+    wrapped_result = process.wrapped(7)
+
+    assert wrapped_result.result == 21
+    assert wrapped_result.span_id is not None
+    assert wrapped_result.trace_id is not None
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data["attributes"]["mirascope.trace.arg_types"] == '{"value":"int"}'
+    assert span_data["attributes"]["mirascope.trace.arg_values"] == '{"value":7}'
+    assert span_data["events"][0]["name"] == "debug"
+
+
+@pytest.mark.asyncio
+async def test_async_trace_with_span_injection(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @trace decorator injects Span for async functions."""
+
+    @ops.trace
+    async def process(trace_ctx: ops.Span, value: int) -> int:
+        trace_ctx.warning(f"Processing async: {value}")
+        return value * 4
+
+    # Call WITHOUT trace_ctx - it should be injected
+    result = await process(3)
+    assert result == 12
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "process",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "process",
+                "mirascope.fn.module": "ops.test_tracing",
+                "mirascope.fn.is_async": True,
+                "mirascope.trace.arg_types": '{"value":"int"}',
+                "mirascope.trace.arg_values": '{"value":3}',
+                "mirascope.trace.output": 12,
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [
+                {
+                    "name": "warning",
+                    "attributes": {
+                        "level": "warning",
+                        "message": "Processing async: 3",
+                    },
+                }
+            ],
+        }
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_trace_with_span_injection_wrapped(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @trace decorator with span injection returns AsyncTrace from wrapped()."""
+
+    @ops.trace
+    async def process(trace_ctx: ops.Span, value: int) -> int:
+        trace_ctx.error("Error occurred")
+        return value * 5
+
+    wrapped_result = await process.wrapped(2)
+
+    assert wrapped_result.result == 10
+    assert wrapped_result.span_id is not None
+    assert wrapped_result.trace_id is not None
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data["attributes"]["mirascope.trace.arg_types"] == '{"value":"int"}'
+    assert span_data["events"][0]["name"] == "error"
+
+
+def test_sync_trace_with_span_injection_and_tags(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @trace with span injection supports tags and metadata."""
+
+    @ops.trace(tags=["span-test"], metadata={"env": "test"})
+    def process(trace_ctx: ops.Span, value: str) -> str:
+        trace_ctx.critical("Critical message")
+        return value.upper()
+
+    result = process("hello")
+    assert result == "HELLO"
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data["attributes"]["mirascope.trace.tags"] == ("span-test",)
+    assert span_data["attributes"]["mirascope.trace.metadata"] == '{"env":"test"}'
+    assert span_data["events"][0]["name"] == "critical"
+
+
+@pytest.mark.asyncio
+async def test_async_trace_with_span_injection_and_tags(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @trace with span injection supports tags and metadata for async functions."""
+
+    @ops.trace(tags=["async-span-test"], metadata={"async": "true"})
+    async def process(trace_ctx: ops.Span, value: str) -> str:
+        trace_ctx.info("Async processing")
+        return value.lower()
+
+    result = await process("HELLO")
+    assert result == "hello"
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data["attributes"]["mirascope.trace.tags"] == ("async-span-test",)
+    assert span_data["attributes"]["mirascope.trace.metadata"] == '{"async":"true"}'
+    assert span_data["events"][0]["name"] == "info"
+
+
+def test_trace_returns_correct_type_for_span_function() -> None:
+    """Test that @trace returns TracedSpanFunction for functions with trace_ctx."""
+
+    @ops.trace
+    def with_span(trace_ctx: ops.Span, x: int) -> int:
+        return x
+
+    @ops.trace
+    async def async_with_span(trace_ctx: ops.Span, x: int) -> int:
+        return x
+
+    @ops.trace
+    def without_span(x: int) -> int:
+        return x
+
+    assert isinstance(with_span, ops.TracedSpanFunction)
+    assert isinstance(async_with_span, ops.AsyncTracedSpanFunction)
+    assert isinstance(without_span, ops.TracedFunction)
+
+
+def test_fn_wants_span_detection() -> None:
+    """Test fn_wants_span correctly detects functions wanting span injection."""
+    from mirascope.ops._internal.protocols import fn_wants_span
+    from mirascope.ops._internal.spans import Span
+
+    def with_span(trace_ctx: ops.Span, x: int) -> int:
+        return x
+
+    def wrong_name(span: ops.Span, x: int) -> int:
+        return x
+
+    def no_annotation(trace_ctx, x: int) -> int:  # pyright: ignore[reportMissingParameterType]  # noqa: ANN001
+        return x
+
+    def wrong_type(trace_ctx: str, x: int) -> int:
+        return x
+
+    def no_params() -> None:
+        pass
+
+    assert fn_wants_span(with_span) is True
+    assert fn_wants_span(wrong_name) is False
+    assert fn_wants_span(no_annotation) is False
+    assert fn_wants_span(wrong_type) is False
+    assert fn_wants_span(no_params) is False
+
+    # Test with direct Span annotation (not string)
+    def with_direct_span(trace_ctx: Span, x: int) -> int:
+        return x
+
+    # Clear the __annotations__ to force evaluation
+    with_direct_span.__annotations__ = {"trace_ctx": Span, "x": int, "return": int}
+    assert fn_wants_span(with_direct_span) is True
+
+    # Test with a callable that raises on signature inspection
+    # Use a mock to reliably trigger the exception path across all Python versions
+    # (In Python 3.11+, many built-ins like `print` now have valid signatures)
+    def some_func() -> None:
+        pass
+
+    with patch("inspect.signature", side_effect=ValueError("no signature")):
+        assert fn_wants_span(some_func) is False
+
+    # Test with annotation that's neither string nor type (edge case)
+    def with_weird_annotation(trace_ctx: int, x: int) -> int:
+        return x
+
+    # Replace annotation with something unusual
+    with_weird_annotation.__annotations__["trace_ctx"] = 123
+    assert fn_wants_span(with_weird_annotation) is False
+
+    # Test with a fake Span class that has the right name and module
+    # This tests the fallback path when `annotation is Span` is False
+    class FakeSpan:
+        pass
+
+    FakeSpan.__name__ = "Span"
+    FakeSpan.__module__ = "mirascope.ops._internal.spans"
+
+    def with_fake_span(trace_ctx: int, x: int) -> int:
+        return x
+
+    with_fake_span.__annotations__["trace_ctx"] = FakeSpan
+    assert fn_wants_span(with_fake_span) is True
+
+    # Test with a class that has wrong module
+    class WrongModuleSpan:
+        pass
+
+    WrongModuleSpan.__name__ = "Span"
+    WrongModuleSpan.__module__ = "wrong.module"
+
+    def with_wrong_module(trace_ctx: int, x: int) -> int:
+        return x
+
+    with_wrong_module.__annotations__["trace_ctx"] = WrongModuleSpan
+    assert fn_wants_span(with_wrong_module) is False
+
+
+def test_sync_trace_with_span_multiple_args(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test span injection with multiple arguments."""
+
+    @ops.trace
+    def process(trace_ctx: ops.Span, a: int, b: str, c: float = 1.5) -> str:
+        trace_ctx.info(f"a={a}, b={b}, c={c}")
+        return f"{a}-{b}-{c}"
+
+    result = process(10, "test")
+    assert result == "10-test-1.5"
+
+    spans = span_exporter.get_finished_spans()
+    span_data = extract_span_data(spans[0])
+
+    # Verify trace_ctx is NOT in the arguments
+    assert span_data["attributes"]["mirascope.trace.arg_types"] == snapshot(
+        '{"a":"int","b":"str","c":"float"}'
+    )
+    assert span_data["attributes"]["mirascope.trace.arg_values"] == snapshot(
+        '{"a":10,"b":"test","c":1.5}'
+    )

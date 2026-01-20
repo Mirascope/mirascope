@@ -27,7 +27,9 @@ _tracer_version: str | None = None
 _tracer: Tracer | None = None
 
 
-def _create_mirascope_cloud_provider(api_key: str | None = None) -> TracerProvider:
+def _create_mirascope_cloud_provider(
+    api_key: str | None = None, base_url: str | None = None
+) -> TracerProvider:
     """Create a TracerProvider configured for Mirascope Cloud.
 
     Args:
@@ -40,7 +42,7 @@ def _create_mirascope_cloud_provider(api_key: str | None = None) -> TracerProvid
         RuntimeError: If API key is not available.
     """
     try:
-        client = Mirascope(api_key=api_key)
+        client = Mirascope(api_key=api_key, base_url=base_url)
     except (ValueError, RuntimeError) as e:
         raise RuntimeError(
             "Failed to create Mirascope Cloud client. "
@@ -56,8 +58,9 @@ def _create_mirascope_cloud_provider(api_key: str | None = None) -> TracerProvid
 
 def configure(
     *,
-    tracer_provider: TracerProvider | None = None,
     api_key: str | None = None,
+    base_url: str | None = None,
+    tracer_provider: TracerProvider | None = None,
     tracer_name: str = DEFAULT_TRACER_NAME,
     tracer_version: str | None = None,
 ) -> None:
@@ -110,7 +113,9 @@ def configure(
 
     # If no tracer_provider given, auto-configure Mirascope Cloud
     if tracer_provider is None:
-        tracer_provider = _create_mirascope_cloud_provider(api_key=api_key)
+        tracer_provider = _create_mirascope_cloud_provider(
+            api_key=api_key, base_url=base_url
+        )
 
     _tracer_provider = tracer_provider
     otel_trace.set_tracer_provider(tracer_provider)
