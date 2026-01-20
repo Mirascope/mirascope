@@ -1,0 +1,117 @@
+---
+title: Configuration
+description: Configure the ops module to send traces to Mirascope Cloud or other backends.
+---
+
+# Configuration
+
+Before using tracing features, you need to configure where traces are sent. The ops module supports Mirascope Cloud as well as any OpenTelemetry-compatible backend.
+
+## Mirascope Cloud
+
+The simplest way to get started is with Mirascope Cloud:
+
+1. Get your API key from [Mirascope Cloud](https://v2.mirascope.com)
+2. Set the `MIRASCOPE_API_KEY` environment variable
+3. Call `ops.configure()`:
+
+```python
+from mirascope import ops
+
+ops.configure()  # Automatically connects to Mirascope Cloud
+```
+
+That's it! All traced operations will now be sent to Mirascope Cloud for visualization and analytics.
+
+### Configuration Options
+
+You can also pass the API key directly:
+
+```python
+from mirascope import ops
+
+ops.configure(api_key="your-api-key")
+```
+
+### Environment Variables
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `MIRASCOPE_API_KEY` | Your Mirascope Cloud API key | Required |
+| `MIRASCOPE_BASE_URL` | API endpoint URL | `https://v2.mirascope.com` |
+
+<details>
+<summary>**Under the Hood**: What `ops.configure()` does</summary>
+
+When you call `ops.configure()`, it automatically:
+
+1. Creates a `Mirascope` API client using your API key
+2. Sets up a `MirascopeOTLPExporter` to send spans to Mirascope Cloud
+3. Creates a `TracerProvider` with a `BatchSpanProcessor` for efficient batching
+4. Configures the global OpenTelemetry tracer
+
+Here's the equivalent manual setup:
+
+```python
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+from mirascope import ops
+from mirascope.api.client import Mirascope
+from mirascope.ops._internal.exporters import MirascopeOTLPExporter
+
+# Create the Mirascope Cloud exporter
+client = Mirascope()  # Uses MIRASCOPE_API_KEY env var
+exporter = MirascopeOTLPExporter(client=client)
+
+# Create and configure the tracer provider
+provider = TracerProvider()
+provider.add_span_processor(BatchSpanProcessor(exporter))
+
+# Configure ops with the provider
+ops.configure(tracer_provider=provider)
+```
+
+</details>
+
+## Alternative Backends
+
+The ops module is built on OpenTelemetry, so you can export traces to any OTEL-compatible backend.
+
+### Console Exporter (Development)
+
+For local development and debugging, output traces to the console:
+
+<CodeExample file="python/examples/ops/configure_basic.py" />
+
+### OTLP Exporter
+
+Export to any OpenTelemetry collector (Jaeger, Zipkin, Grafana, etc.):
+
+<CodeExample file="python/examples/ops/configure_otlp.py" />
+
+## Advanced Options
+
+The `ops.configure()` function accepts:
+
+| Parameter | Description |
+| --- | --- |
+| `tracer_provider` | Custom `TracerProvider` (overrides automatic Mirascope Cloud setup) |
+| `api_key` | Mirascope Cloud API key (alternative to env var) |
+| `tracer_name` | Name for the tracer (default: `"mirascope.llm"`) |
+| `tracer_version` | Optional version string for the tracer |
+
+## Propagator Configuration
+
+The context propagation format can be configured via environment variable:
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `MIRASCOPE_PROPAGATOR` | Propagation format: `tracecontext`, `b3`, `b3multi`, `jaeger`, or `composite` | `tracecontext` |
+
+See [Context Propagation](/docs/ops/context-propagation) for more details on distributed tracing.
+
+## Next Steps
+
+- [Tracing](/docs/ops/tracing) — Start tracing your functions
+- [LLM Instrumentation](/docs/ops/instrumentation) — Automatically trace LLM calls

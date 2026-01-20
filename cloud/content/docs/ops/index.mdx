@@ -1,41 +1,66 @@
 ---
 title: Ops Overview
-description: Observability and function management for LLM applications.
+description: Observe and manage LLM-powered applications with tracing, versioning, and sessions.
 ---
 
 # Ops Module
 
-The `mirascope.ops` module provides observability and function management for LLM applications. Built on OpenTelemetry, it enables distributed tracing, function versioning, and session tracking.
+The `mirascope.ops` module provides observability and management capabilities for LLM applications. It enables distributed tracing, function versioning, and session management with seamless integration into [Mirascope Cloud](https://v2.mirascope.com).
 
-<Note>
-Full documentation for the ops module is coming soon. The ops module integrates with Mirascope Cloud for visualization and analytics, but works with any OpenTelemetry-compliant backend.
-</Note>
+## Core Concepts
 
-## Key Features
+| Concept | Description |
+| --- | --- |
+| [Configuration](/docs/ops/configuration) | Connect to Mirascope Cloud or other backends |
+| [Tracing](/docs/ops/tracing) | Track function execution with `@ops.trace` |
+| [Sessions](/docs/ops/sessions) | Group related traces with `ops.session()` |
+| [Spans](/docs/ops/spans) | Create explicit spans with `ops.span()` |
 
-- **Tracing**: Distributed tracing for functions and LLM calls with `@ops.trace`
-- **Versioning**: Automatic function versioning with `@ops.version`
-- **Sessions**: Group related traces with `ops.session()`
-- **LLM Instrumentation**: Automatic OpenTelemetry GenAI semantic conventions
-- **Context Propagation**: Distributed tracing across services
+## Advanced Topics
 
-## Quick Example
+| Topic | Description |
+| --- | --- |
+| [Versioning](/docs/ops/versioning) | Track function versions with `@ops.version` |
+| [LLM Instrumentation](/docs/ops/instrumentation) | Automatic tracing for LLM calls |
+| [Context Propagation](/docs/ops/context-propagation) | Distributed tracing across services |
+
+## Quick Start
+
+1. Install dependencies:
+
+```bash
+pip install "mirascope[otel]"
+```
+
+2. Set your Mirascope Cloud API key:
+
+```bash
+export MIRASCOPE_API_KEY="your-api-key"
+```
+
+3. Configure and trace your functions:
 
 ```python
 from mirascope import llm, ops
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
 
-# Configure tracing
-provider = TracerProvider()
-provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
-ops.configure(tracer_provider=provider)
+# Configure Mirascope Cloud (uses MIRASCOPE_API_KEY env var)
+ops.configure()
 
 @ops.trace
 @llm.call("openai/gpt-4o-mini")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
+# All calls are traced and sent to Mirascope Cloud
 response = recommend_book("fantasy")
 print(response.text())
 ```
+
+## OpenTelemetry Compatible
+
+The ops module is built on [OpenTelemetry](https://opentelemetry.io/), so you can also export traces to any OTEL-compatible backend (Jaeger, Zipkin, Grafana, etc.). See [Configuration](/docs/ops/configuration) for details.
+
+## Next Steps
+
+- [Configuration](/docs/ops/configuration) — Set up Mirascope Cloud or other backends
+- [Tracing](/docs/ops/tracing) — Learn about the `@ops.trace` decorator

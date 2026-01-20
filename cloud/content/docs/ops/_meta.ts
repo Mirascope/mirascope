@@ -9,7 +9,34 @@ const ops: DocSpec = {
       slug: "index",
       label: "Overview",
     },
-    // Additional docs will be added in PR 2
+    {
+      slug: "configuration",
+      label: "Configuration",
+    },
+    {
+      slug: "tracing",
+      label: "Tracing",
+    },
+    {
+      slug: "sessions",
+      label: "Sessions",
+    },
+    {
+      slug: "spans",
+      label: "Spans",
+    },
+    {
+      slug: "versioning",
+      label: "Versioning",
+    },
+    {
+      slug: "instrumentation",
+      label: "LLM Instrumentation",
+    },
+    {
+      slug: "context-propagation",
+      label: "Context Propagation",
+    },
   ],
 };
 

@@ -1,0 +1,132 @@
+---
+title: Sessions
+description: Group related traces together with ops.session() for multi-turn conversations.
+---
+
+# Sessions
+
+Sessions group related traces together, which is essential for tracking multi-turn conversations, user interactions, or any sequence of related operations.
+
+## Basic Sessions
+
+<CodeExample file="python/examples/ops/session_basic.py" />
+
+All traces created within a session block share the same session ID, making it easy to analyze related operations together.
+
+## Custom Session IDs
+
+You can provide your own session ID or let the system generate one:
+
+```python
+from mirascope import ops
+
+# Auto-generated session ID
+with ops.session() as ctx:
+    print(ctx.id)  # e.g., "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+# Custom session ID
+with ops.session(id="user-123-conversation-1"):
+    do_work()
+```
+
+## Session Attributes
+
+Add attributes to sessions for filtering and organization:
+
+<CodeExample file="python/examples/ops/session_attributes.py" />
+
+| Parameter | Description |
+| --- | --- |
+| `id` | Custom session ID (auto-generated if not provided) |
+| `attributes` | Key-value pairs for session metadata |
+
+## Accessing the Current Session
+
+Use `ops.current_session()` to access the active session from anywhere:
+
+```python
+from mirascope import ops
+
+@ops.trace
+def process_request():
+    session = ops.current_session()
+    if session:
+        print(f"Processing in session: {session.id}")
+        print(f"User tier: {session.attributes.get('user_tier')}")
+    return "done"
+
+with ops.session(attributes={"user_tier": "premium"}):
+    process_request()
+```
+
+Returns `None` if no session is active.
+
+## Nested Sessions
+
+Sessions can be nested. The innermost session takes precedence:
+
+```python
+from mirascope import ops
+
+with ops.session(id="outer"):
+    with ops.session(id="inner"):
+        session = ops.current_session()
+        print(session.id)  # "inner"
+
+    session = ops.current_session()
+    print(session.id)  # "outer"
+```
+
+## Session Propagation
+
+Sessions are automatically propagated across service boundaries when using context propagation:
+
+```python
+from mirascope import ops
+
+# Client side
+with ops.session(id="user-session-123"):
+    headers: dict[str, str] = {}
+    ops.inject_context(headers)
+    # headers includes "X-Mirascope-Session-Id: user-session-123"
+```
+
+See [Context Propagation](/docs/ops/context-propagation) for more details.
+
+## Use Cases
+
+### Multi-turn Conversations
+
+```python
+from mirascope import llm, ops
+
+messages = []
+
+@ops.trace
+@llm.call("openai/gpt-4o-mini")
+def chat(user_message: str) -> list:
+    messages.append({"role": "user", "content": user_message})
+    return messages
+
+with ops.session(id=f"conversation-{user_id}"):
+    response1 = chat("Hello!")
+    response2 = chat("Tell me more")
+    response3 = chat("Thanks!")
+```
+
+### Request Tracing
+
+```python
+from mirascope import ops
+
+@app.middleware("http")
+async def session_middleware(request, call_next):
+    session_id = request.headers.get("X-Session-Id", str(uuid.uuid4()))
+    with ops.session(id=session_id, attributes={"path": request.url.path}):
+        return await call_next(request)
+```
+
+## Next Steps
+
+- [Spans](/docs/ops/spans) — Create explicit spans for fine-grained control
+- [Context Propagation](/docs/ops/context-propagation) — Pass context across services

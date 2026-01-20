@@ -1,0 +1,218 @@
+---
+title: Tracing
+description: Track function execution with the @ops.trace decorator.
+---
+
+# Tracing
+
+The `@ops.trace` decorator wraps functions to create OpenTelemetry spans for each call. This enables distributed tracing and performance monitoring across your application.
+
+## Basic Setup
+
+First, configure ops to connect to Mirascope Cloud:
+
+```python
+from mirascope import ops
+
+ops.configure()  # Uses MIRASCOPE_API_KEY env var
+```
+
+## Tracing Functions
+
+Add `@ops.trace` to any function to create a span for each call:
+
+<CodeExample file="python/examples/ops/basic_trace.py" />
+
+When `calculate` is called, a span is created that captures:
+
+- Function name and module
+- Input arguments
+- Return value
+- Execution duration
+- Any errors that occur
+
+## Tracing LLM Calls
+
+The `@ops.trace` decorator integrates with Mirascope's LLM abstractions:
+
+<TabbedSection>
+<Tab value="Call">
+
+```python
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()  # Enable automatic LLM instrumentation
+
+@ops.trace
+@llm.call("openai/gpt-5-mini")
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+print(response.text())
+```
+
+</Tab>
+<Tab value="Prompt">
+
+```python
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()  # Enable automatic LLM instrumentation
+
+@ops.trace
+@llm.prompt
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book"
+
+model = llm.model("openai/gpt-5-mini")
+response = recommend_book(model, "fantasy")
+print(response.text())
+```
+
+</Tab>
+<Tab value="Model">
+
+```python
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()  # Enable automatic LLM instrumentation
+
+@ops.trace
+def recommend_book(genre: str):
+    model = llm.model("openai/gpt-4o-mini")
+    return model.call(f"Recommend a {genre} book")
+
+response = recommend_book("fantasy")
+print(response.text())
+```
+
+</Tab>
+</TabbedSection>
+
+<Note>
+When combining decorators, `@ops.trace` should be the outermost decorator (listed first).
+</Note>
+
+## Gen AI Semantic Conventions
+
+For detailed LLM telemetry following [OpenTelemetry Gen AI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/), use `ops.instrument_llm()`:
+
+```python
+from mirascope import llm, ops
+
+ops.configure()
+ops.instrument_llm()  # Enables Gen AI spans
+
+@ops.trace
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+# Creates two nested spans:
+# 1. recommend_book (from @ops.trace)
+#    └── chat gpt-4o-mini (Gen AI span from instrument_llm)
+response = recommend_book("fantasy")
+```
+
+The Gen AI spans capture:
+
+| Attribute | Description |
+| --- | --- |
+| `gen_ai.operation.name` | Operation type (e.g., "chat") |
+| `gen_ai.request.model` | Model ID (e.g., "gpt-4o-mini") |
+| `gen_ai.usage.input_tokens` | Input token count |
+| `gen_ai.usage.output_tokens` | Output token count |
+
+See [LLM Instrumentation](/docs/ops/instrumentation) for more details.
+
+## Tracing with Tags and Metadata
+
+Add tags and metadata to spans for filtering and organization:
+
+<CodeExample file="python/examples/ops/trace_with_metadata.py" />
+
+| Option | Description |
+| --- | --- |
+| `tags` | List of strings for categorizing traces |
+| `name` | Custom span name (defaults to function name) |
+| `metadata` | Key-value pairs for additional context |
+
+## Accessing Trace Information
+
+Use `.wrapped()` to get both the result and trace information:
+
+<CodeExample file="python/examples/ops/trace_wrapped.py" />
+
+The `Trace` object provides:
+
+| Property | Description |
+| --- | --- |
+| `result` | The function's return value |
+| `span_id` | The span ID for this trace |
+| `trace_id` | The trace ID (shared across related spans) |
+
+## Nested Traces
+
+Traces automatically form parent-child relationships:
+
+```python
+from mirascope import ops
+
+ops.configure()
+
+@ops.trace
+def outer():
+    return inner()  # inner's span is a child of outer's span
+
+@ops.trace
+def inner():
+    return "done"
+```
+
+This creates a trace hierarchy that shows the call flow through your application.
+
+## Error Handling
+
+Errors are automatically captured in spans:
+
+```python
+from mirascope import ops
+
+ops.configure()
+
+@ops.trace
+def might_fail():
+    raise ValueError("Something went wrong")
+
+try:
+    might_fail()
+except ValueError:
+    # The span is marked with error status and includes exception details
+    pass
+```
+
+## Async Support
+
+The `@ops.trace` decorator works with async functions:
+
+```python
+from mirascope import ops
+
+ops.configure()
+
+@ops.trace
+async def fetch_data(url: str) -> dict:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        return response.json()
+```
+
+## Next Steps
+
+- [Sessions](/docs/ops/sessions) — Group related traces together
+- [Spans](/docs/ops/spans) — Create explicit spans for fine-grained control
+- [LLM Instrumentation](/docs/ops/instrumentation) — Automatic Gen AI spans
