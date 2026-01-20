@@ -16,13 +16,11 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CloudRouteImport } from './routes/cloud'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CloudIndexRouteImport } from './routes/cloud/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
-import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
 import { Route as CloudOnboardingRouteImport } from './routes/cloud/onboarding'
 import { Route as CloudLoginRouteImport } from './routes/cloud/login'
@@ -85,11 +83,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CloudIndexRoute = CloudIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -114,11 +107,6 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => DocsRoute,
-} as any)
-const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
-  id: '/dashboard/settings',
-  path: '/dashboard/settings',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const CloudSettingsRoute = CloudSettingsRouteImport.update({
   id: '/settings',
@@ -269,13 +257,11 @@ export interface FileRoutesByFullPath {
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
-  '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
@@ -308,13 +294,11 @@ export interface FileRoutesByTo {
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
-  '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
   '/cloud': typeof CloudIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
@@ -351,13 +335,11 @@ export interface FileRoutesById {
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
-  '/dashboard/settings': typeof DashboardSettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
   '/api/v0/health': typeof ApiV0HealthRoute
@@ -395,13 +377,11 @@ export interface FileRouteTypes {
     | '/cloud/login'
     | '/cloud/onboarding'
     | '/cloud/settings'
-    | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
     | '/cloud/'
-    | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
@@ -434,13 +414,11 @@ export interface FileRouteTypes {
     | '/cloud/dashboard'
     | '/cloud/login'
     | '/cloud/onboarding'
-    | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog'
     | '/cloud'
-    | '/dashboard'
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
@@ -476,13 +454,11 @@ export interface FileRouteTypes {
     | '/cloud/login'
     | '/cloud/onboarding'
     | '/cloud/settings'
-    | '/dashboard/settings'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
     | '/blog/'
     | '/cloud/'
-    | '/dashboard/'
     | '/api/v0/$'
     | '/api/v0/docs'
     | '/api/v0/health'
@@ -514,10 +490,8 @@ export interface RootRouteChildren {
   AuthGithubRoute: typeof AuthGithubRouteWithChildren
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren
   AuthMeRoute: typeof AuthMeRoute
-  DashboardSettingsRoute: typeof DashboardSettingsRoute
   InvitationsAcceptRoute: typeof InvitationsAcceptRoute
   TermsSplatRoute: typeof TermsSplatRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
   ApiV0HealthRoute: typeof ApiV0HealthRoute
@@ -576,13 +550,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cloud/': {
       id: '/cloud/'
       path: '/'
@@ -617,13 +584,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/docs/$'
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof DocsRoute
-    }
-    '/dashboard/settings': {
-      id: '/dashboard/settings'
-      path: '/dashboard/settings'
-      fullPath: '/dashboard/settings'
-      preLoaderRoute: typeof DashboardSettingsRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/cloud/settings': {
       id: '/cloud/settings'
@@ -916,10 +876,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
-  DashboardSettingsRoute: DashboardSettingsRoute,
   InvitationsAcceptRoute: InvitationsAcceptRoute,
   TermsSplatRoute: TermsSplatRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
   ApiV0HealthRoute: ApiV0HealthRoute,
