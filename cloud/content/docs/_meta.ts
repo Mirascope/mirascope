@@ -20,6 +20,10 @@ const v2: VersionSpec = {
           slug: "index",
           label: "Quickstart",
         },
+        {
+          slug: "contributing",
+          label: "Contributing",
+        },
         llm,
         ops,
       ],
