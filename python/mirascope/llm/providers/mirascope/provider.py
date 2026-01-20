@@ -51,7 +51,8 @@ class MirascopeProvider(BaseProvider[None]):
 
     Environment Variables:
         MIRASCOPE_API_KEY: Required API key for Mirascope Router authentication
-        MIRASCOPE_ROUTER_BASE_URL: Optional base URL override (default: https://mirascope.com/router/v0)
+        MIRASCOPE_ROUTER_BASE_URL: Optional base URL override
+            (default: https://mirascope.com/router/v2)
 
     Example:
         ```python
@@ -96,7 +97,7 @@ class MirascopeProvider(BaseProvider[None]):
                 environment variable.
             base_url: Optional base URL override for the Mirascope Router. If not
                 provided, reads from MIRASCOPE_ROUTER_BASE_URL environment variable
-                or defaults to https://mirascope.com/router/v0
+                or defaults to https://mirascope.com/router/v2
         """
         api_key = api_key or os.environ.get("MIRASCOPE_API_KEY")
         if not api_key:

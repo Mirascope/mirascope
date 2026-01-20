@@ -6,7 +6,7 @@ Prerequisites:
 3. Create API key via UI or set MIRASCOPE_API_KEY env var
 
 Usage:
-    MIRASCOPE_API_KEY=mk_xxx MIRASCOPE_BASE_URL=http://localhost:3000/api/v0 uv run python examples/misc/local_versioning_example.py
+    MIRASCOPE_API_KEY=mk_xxx MIRASCOPE_BASE_URL=http://localhost:3000/api/v2 uv run python examples/misc/local_versioning_example.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from mirascope import llm, ops
 from mirascope.api.client import create_export_client
 from mirascope.ops._internal.exporters import MirascopeOTLPExporter
 
-BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v0")
+BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v2")
 API_KEY = os.getenv("MIRASCOPE_API_KEY")
 
 if not API_KEY:

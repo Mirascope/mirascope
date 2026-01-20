@@ -19,23 +19,23 @@ import { Settings, validateSettings } from "@/settings";
 /**
  * Unified Provider Proxy Route
  *
- * Catches all requests to `/router/v0/{provider}/*` and proxies them to the respective
+ * Catches all requests to `/router/v2/{provider}/*` and proxies them to the respective
  * AI provider's API. Authenticates users via Mirascope API key, uses internal provider
  * API keys, extracts usage data, and calculates costs.
  *
  * Supported providers: openai, anthropic, google
  *
  * Base URL examples:
- * - OpenAI: `base_url="https://mirascope.com/router/v0/openai/v1"`
- * - Anthropic: `base_url="https://mirascope.com/router/v0/anthropic"`
- * - Google: `base_url="https://mirascope.com/router/v0/google/v1beta"`
+ * - OpenAI: `base_url="https://mirascope.com/router/v2/openai/v1"`
+ * - Anthropic: `base_url="https://mirascope.com/router/v2/anthropic"`
+ * - Google: `base_url="https://mirascope.com/router/v2/google/v1beta"`
  *
  * Request examples:
- * - `/router/v0/openai/v1/chat/completions` → `https://api.openai.com/v1/chat/completions`
- * - `/router/v0/anthropic/v1/messages` → `https://api.anthropic.com/v1/messages`
- * - `/router/v0/google/v1beta/models/{model}:generateContent` → Google API
+ * - `/router/v2/openai/v1/chat/completions` → `https://api.openai.com/v1/chat/completions`
+ * - `/router/v2/anthropic/v1/messages` → `https://api.anthropic.com/v1/messages`
+ * - `/router/v2/google/v1beta/models/{model}:generateContent` → Google API
  */
-export const Route = createFileRoute("/router/v0/$provider/$")({
+export const Route = createFileRoute("/router/v2/$provider/$")({
   server: {
     handlers: {
       ANY: async ({

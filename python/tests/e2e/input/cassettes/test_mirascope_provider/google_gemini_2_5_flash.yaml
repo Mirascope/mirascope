@@ -23,7 +23,7 @@ interactions:
       x-goog-api-key:
       - <filtered>
     method: POST
-    uri: http://localhost:3000/router/v0/google/v1beta/models/gemini-2.5-flash:generateContent
+    uri: http://localhost:3000/router/v2/google/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: "{\n  \"candidates\": [\n    {\n      \"content\": {\n        \"parts\":

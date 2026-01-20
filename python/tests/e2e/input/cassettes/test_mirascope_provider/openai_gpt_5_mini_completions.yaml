@@ -37,7 +37,7 @@ interactions:
       x-stainless-runtime-version:
       - 3.10.16
     method: POST
-    uri: http://localhost:3000/router/v0/openai/v1/chat/completions
+    uri: http://localhost:3000/router/v2/openai/v1/chat/completions
   response:
     body:
       string: "{\n  \"id\": \"chatcmpl-CuvWD952J4PtKXUAH54iXxVG4AiGd\",\n  \"object\":

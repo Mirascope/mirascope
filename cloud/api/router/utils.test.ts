@@ -34,7 +34,7 @@ describe("Route Handlers", () => {
         const { owner, apiKey } = yield* TestApiKeyFixture;
 
         const request = new Request(
-          "http://localhost/router/v0/openai/v1/chat/completions",
+          "http://localhost/router/v2/openai/v1/chat/completions",
           {
             method: "POST",
             headers: {
@@ -122,7 +122,7 @@ describe("Route Handlers", () => {
         const { apiKey } = yield* TestApiKeyFixture;
 
         const request = new Request(
-          "http://localhost/router/v0/openai/v1/chat/completions",
+          "http://localhost/router/v2/openai/v1/chat/completions",
           {
             method: "POST",
             headers: {
@@ -149,7 +149,7 @@ describe("Route Handlers", () => {
         const { apiKey } = yield* TestApiKeyFixture;
 
         const request = new Request(
-          "http://localhost/router/v0/openai/v1/chat/completions",
+          "http://localhost/router/v2/openai/v1/chat/completions",
           {
             method: "POST",
             headers: {
@@ -175,7 +175,7 @@ describe("Route Handlers", () => {
 
         // Create a mock request where clone().text() throws
         const mockRequest = {
-          url: "http://localhost/router/v0/openai/v1/chat/completions",
+          url: "http://localhost/router/v2/openai/v1/chat/completions",
           method: "POST",
           headers: new Headers({
             "X-API-Key": apiKey.key,

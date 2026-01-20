@@ -37,7 +37,7 @@ interactions:
       x-stainless-runtime-version:
       - 3.10.16
     method: POST
-    uri: http://localhost:3000/router/v0/openai/v1/responses
+    uri: http://localhost:3000/router/v2/openai/v1/responses
   response:
     body:
       string: "{\n  \"id\": \"resp_0682958ac604b79f00695cb5aecaf8819795863248566ec2bd\",\n

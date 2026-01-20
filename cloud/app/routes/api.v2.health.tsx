@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 import { Settings, validateSettings } from "@/settings";
 
-export const Route = createFileRoute("/api/v0/health")({
+export const Route = createFileRoute("/api/v2/health")({
   server: {
     handlers: {
       GET: async () => {

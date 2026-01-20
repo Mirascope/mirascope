@@ -45,10 +45,10 @@ import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.cal
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
 import { Route as AuthGithubCallbackRouteImport } from './routes/auth/github.callback'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api.webhooks.stripe'
-import { Route as ApiV0HealthRouteImport } from './routes/api.v0.health'
-import { Route as ApiV0DocsRouteImport } from './routes/api.v0.docs'
-import { Route as ApiV0SplatRouteImport } from './routes/api.v0.$'
-import { Route as RouterV0ProviderSplatRouteImport } from './routes/router.v0.$provider.$'
+import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
+import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
+import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
+import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
 
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
@@ -231,24 +231,24 @@ const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   path: '/api/webhooks/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiV0HealthRoute = ApiV0HealthRouteImport.update({
-  id: '/api/v0/health',
-  path: '/api/v0/health',
+const ApiV2HealthRoute = ApiV2HealthRouteImport.update({
+  id: '/api/v2/health',
+  path: '/api/v2/health',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiV0DocsRoute = ApiV0DocsRouteImport.update({
-  id: '/api/v0/docs',
-  path: '/api/v0/docs',
+const ApiV2DocsRoute = ApiV2DocsRouteImport.update({
+  id: '/api/v2/docs',
+  path: '/api/v2/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiV0SplatRoute = ApiV0SplatRouteImport.update({
-  id: '/api/v0/$',
-  path: '/api/v0/$',
+const ApiV2SplatRoute = ApiV2SplatRouteImport.update({
+  id: '/api/v2/$',
+  path: '/api/v2/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RouterV0ProviderSplatRoute = RouterV0ProviderSplatRouteImport.update({
-  id: '/router/v0/$provider/$',
-  path: '/router/v0/$provider/$',
+const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
+  id: '/router/v2/$provider/$',
+  path: '/router/v2/$provider/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -276,9 +276,9 @@ export interface FileRoutesByFullPath {
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
-  '/api/v0/$': typeof ApiV0SplatRoute
-  '/api/v0/docs': typeof ApiV0DocsRoute
-  '/api/v0/health': typeof ApiV0HealthRoute
+  '/api/v2/$': typeof ApiV2SplatRoute
+  '/api/v2/docs': typeof ApiV2DocsRoute
+  '/api/v2/health': typeof ApiV2HealthRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
@@ -292,7 +292,7 @@ export interface FileRoutesByFullPath {
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
-  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
+  '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -315,9 +315,9 @@ export interface FileRoutesByTo {
   '/terms/$': typeof TermsSplatRoute
   '/blog': typeof BlogIndexRoute
   '/cloud': typeof CloudIndexRoute
-  '/api/v0/$': typeof ApiV0SplatRoute
-  '/api/v0/docs': typeof ApiV0DocsRoute
-  '/api/v0/health': typeof ApiV0HealthRoute
+  '/api/v2/$': typeof ApiV2SplatRoute
+  '/api/v2/docs': typeof ApiV2DocsRoute
+  '/api/v2/health': typeof ApiV2HealthRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
@@ -331,7 +331,7 @@ export interface FileRoutesByTo {
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/settings': typeof CloudSettingsIndexRoute
-  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
+  '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -358,9 +358,9 @@ export interface FileRoutesById {
   '/terms/$': typeof TermsSplatRoute
   '/blog/': typeof BlogIndexRoute
   '/cloud/': typeof CloudIndexRoute
-  '/api/v0/$': typeof ApiV0SplatRoute
-  '/api/v0/docs': typeof ApiV0DocsRoute
-  '/api/v0/health': typeof ApiV0HealthRoute
+  '/api/v2/$': typeof ApiV2SplatRoute
+  '/api/v2/docs': typeof ApiV2DocsRoute
+  '/api/v2/health': typeof ApiV2HealthRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
@@ -374,7 +374,7 @@ export interface FileRoutesById {
   '/cloud/settings/team': typeof CloudSettingsTeamRoute
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
-  '/router/v0/$provider/$': typeof RouterV0ProviderSplatRoute
+  '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -402,9 +402,9 @@ export interface FileRouteTypes {
     | '/terms/$'
     | '/blog/'
     | '/cloud/'
-    | '/api/v0/$'
-    | '/api/v0/docs'
-    | '/api/v0/health'
+    | '/api/v2/$'
+    | '/api/v2/docs'
+    | '/api/v2/health'
     | '/api/webhooks/stripe'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
@@ -418,7 +418,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/team'
     | '/docs/v1/$'
     | '/cloud/settings/'
-    | '/router/v0/$provider/$'
+    | '/router/v2/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -441,9 +441,9 @@ export interface FileRouteTypes {
     | '/terms/$'
     | '/blog'
     | '/cloud'
-    | '/api/v0/$'
-    | '/api/v0/docs'
-    | '/api/v0/health'
+    | '/api/v2/$'
+    | '/api/v2/docs'
+    | '/api/v2/health'
     | '/api/webhooks/stripe'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
@@ -457,7 +457,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/team'
     | '/docs/v1/$'
     | '/cloud/settings'
-    | '/router/v0/$provider/$'
+    | '/router/v2/$provider/$'
   id:
     | '__root__'
     | '/'
@@ -483,9 +483,9 @@ export interface FileRouteTypes {
     | '/terms/$'
     | '/blog/'
     | '/cloud/'
-    | '/api/v0/$'
-    | '/api/v0/docs'
-    | '/api/v0/health'
+    | '/api/v2/$'
+    | '/api/v2/docs'
+    | '/api/v2/health'
     | '/api/webhooks/stripe'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
@@ -499,7 +499,7 @@ export interface FileRouteTypes {
     | '/cloud/settings/team'
     | '/docs/v1/$'
     | '/cloud/settings/'
-    | '/router/v0/$provider/$'
+    | '/router/v2/$provider/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -516,11 +516,11 @@ export interface RootRouteChildren {
   AuthMeRoute: typeof AuthMeRoute
   InvitationsAcceptRoute: typeof InvitationsAcceptRoute
   TermsSplatRoute: typeof TermsSplatRoute
-  ApiV0SplatRoute: typeof ApiV0SplatRoute
-  ApiV0DocsRoute: typeof ApiV0DocsRoute
-  ApiV0HealthRoute: typeof ApiV0HealthRoute
+  ApiV2SplatRoute: typeof ApiV2SplatRoute
+  ApiV2DocsRoute: typeof ApiV2DocsRoute
+  ApiV2HealthRoute: typeof ApiV2HealthRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
-  RouterV0ProviderSplatRoute: typeof RouterV0ProviderSplatRoute
+  RouterV2ProviderSplatRoute: typeof RouterV2ProviderSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -777,32 +777,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v0/health': {
-      id: '/api/v0/health'
-      path: '/api/v0/health'
-      fullPath: '/api/v0/health'
-      preLoaderRoute: typeof ApiV0HealthRouteImport
+    '/api/v2/health': {
+      id: '/api/v2/health'
+      path: '/api/v2/health'
+      fullPath: '/api/v2/health'
+      preLoaderRoute: typeof ApiV2HealthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v0/docs': {
-      id: '/api/v0/docs'
-      path: '/api/v0/docs'
-      fullPath: '/api/v0/docs'
-      preLoaderRoute: typeof ApiV0DocsRouteImport
+    '/api/v2/docs': {
+      id: '/api/v2/docs'
+      path: '/api/v2/docs'
+      fullPath: '/api/v2/docs'
+      preLoaderRoute: typeof ApiV2DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v0/$': {
-      id: '/api/v0/$'
-      path: '/api/v0/$'
-      fullPath: '/api/v0/$'
-      preLoaderRoute: typeof ApiV0SplatRouteImport
+    '/api/v2/$': {
+      id: '/api/v2/$'
+      path: '/api/v2/$'
+      fullPath: '/api/v2/$'
+      preLoaderRoute: typeof ApiV2SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/router/v0/$provider/$': {
-      id: '/router/v0/$provider/$'
-      path: '/router/v0/$provider/$'
-      fullPath: '/router/v0/$provider/$'
-      preLoaderRoute: typeof RouterV0ProviderSplatRouteImport
+    '/router/v2/$provider/$': {
+      id: '/router/v2/$provider/$'
+      path: '/router/v2/$provider/$'
+      fullPath: '/router/v2/$provider/$'
+      preLoaderRoute: typeof RouterV2ProviderSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -920,11 +920,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthMeRoute: AuthMeRoute,
   InvitationsAcceptRoute: InvitationsAcceptRoute,
   TermsSplatRoute: TermsSplatRoute,
-  ApiV0SplatRoute: ApiV0SplatRoute,
-  ApiV0DocsRoute: ApiV0DocsRoute,
-  ApiV0HealthRoute: ApiV0HealthRoute,
+  ApiV2SplatRoute: ApiV2SplatRoute,
+  ApiV2DocsRoute: ApiV2DocsRoute,
+  ApiV2HealthRoute: ApiV2HealthRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
-  RouterV0ProviderSplatRoute: RouterV0ProviderSplatRoute,
+  RouterV2ProviderSplatRoute: RouterV2ProviderSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

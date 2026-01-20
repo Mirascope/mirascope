@@ -46,7 +46,7 @@ interactions:
       x-stainless-timeout:
       - NOT_GIVEN
     method: POST
-    uri: http://localhost:3000/router/v0/anthropic/v1/messages
+    uri: http://localhost:3000/router/v2/anthropic/v1/messages
   response:
     body:
       string: 'event: message_start

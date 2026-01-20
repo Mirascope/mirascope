@@ -18,14 +18,14 @@ import type { ProxyConfig, ProviderName } from "@/api/router/providers";
  * @returns The path to forward to the provider
  *
  * @example
- * extractProviderPath("/router/v0/openai/v1/chat/completions", "openai")
+ * extractProviderPath("/router/v2/openai/v1/chat/completions", "openai")
  * // Returns: "v1/chat/completions"
  */
 export function extractProviderPath(
   pathname: string,
   provider: string,
 ): string {
-  const prefix = `/router/v0/${provider}/`;
+  const prefix = `/router/v2/${provider}/`;
   if (pathname.startsWith(prefix)) {
     return pathname.slice(prefix.length);
   }
