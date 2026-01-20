@@ -29,7 +29,7 @@ from mirascope.api._generated.traces import TracesSearchResponse
 from mirascope.api.client import Mirascope, create_export_client
 from mirascope.ops._internal.exporters import MirascopeOTLPExporter
 
-BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v0")
+BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v2")
 API_KEY = os.getenv("MIRASCOPE_API_KEY")
 
 

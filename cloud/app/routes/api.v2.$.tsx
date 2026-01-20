@@ -33,7 +33,7 @@ function extractPathParameters(
 
   const pathParts = splat.split("/").filter(Boolean);
 
-  // API v0 routes follow pattern: organizations/:id/projects/:id/environments/:id/...
+  // API v2 routes follow pattern: organizations/:id/projects/:id/environments/:id/...
   const pathParams: PathParameters = {};
   let hasParams = false;
 
@@ -53,7 +53,7 @@ function extractPathParameters(
   return hasParams ? pathParams : undefined;
 }
 
-export const Route = createFileRoute("/api/v0/$")({
+export const Route = createFileRoute("/api/v2/$")({
   server: {
     handlers: {
       ANY: async ({
@@ -111,7 +111,7 @@ export const Route = createFileRoute("/api/v0/$")({
           const spansIngestQueue = yield* SpansIngestQueue;
 
           const result = yield* handleRequest(request, {
-            prefix: "/api/v0",
+            prefix: "/api/v2",
             user: authResult.user,
             apiKeyInfo: authResult.apiKeyInfo,
             settings,

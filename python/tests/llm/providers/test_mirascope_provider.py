@@ -30,7 +30,7 @@ class TestMirascopeUtils:
         original_url = os.environ.pop("MIRASCOPE_ROUTER_BASE_URL", None)
         try:
             url = _utils.get_default_router_base_url()
-            assert url == "https://mirascope.com/router/v0"
+            assert url == "https://mirascope.com/router/v2"
         finally:
             if original_url is not None:
                 os.environ["MIRASCOPE_ROUTER_BASE_URL"] = original_url
@@ -38,10 +38,10 @@ class TestMirascopeUtils:
     def test_get_default_router_base_url_from_env(self) -> None:
         """Test getting router base URL from environment variable."""
         original_url = os.environ.get("MIRASCOPE_ROUTER_BASE_URL")
-        os.environ["MIRASCOPE_ROUTER_BASE_URL"] = "http://localhost:3000/router/v0"
+        os.environ["MIRASCOPE_ROUTER_BASE_URL"] = "http://localhost:3000/router/v2"
         try:
             url = _utils.get_default_router_base_url()
-            assert url == "http://localhost:3000/router/v0"
+            assert url == "http://localhost:3000/router/v2"
         finally:
             if original_url is not None:
                 os.environ["MIRASCOPE_ROUTER_BASE_URL"] = original_url
@@ -53,27 +53,27 @@ class TestMirascopeUtils:
         provider = _utils.create_underlying_provider(
             model_scope="openai",
             api_key="test-key",
-            router_base_url="http://localhost:3000/router/v0",
+            router_base_url="http://localhost:3000/router/v2",
         )
         assert provider.id == "openai"
-        assert "localhost:3000/router/v0/openai" in str(provider.client.base_url)
+        assert "localhost:3000/router/v2/openai" in str(provider.client.base_url)
 
     def test_create_underlying_provider_anthropic(self) -> None:
         """Test creating Anthropic provider."""
         provider = _utils.create_underlying_provider(
             model_scope="anthropic",
             api_key="test-key",
-            router_base_url="http://localhost:3000/router/v0",
+            router_base_url="http://localhost:3000/router/v2",
         )
         assert provider.id == "anthropic"
-        assert "localhost:3000/router/v0/anthropic" in str(provider.client.base_url)
+        assert "localhost:3000/router/v2/anthropic" in str(provider.client.base_url)
 
     def test_create_underlying_provider_google(self) -> None:
         """Test creating Google provider."""
         provider = _utils.create_underlying_provider(
             model_scope="google",
             api_key="test-key",
-            router_base_url="http://localhost:3000/router/v0",
+            router_base_url="http://localhost:3000/router/v2",
         )
         assert provider.id == "google"
 
@@ -83,7 +83,7 @@ class TestMirascopeUtils:
             _utils.create_underlying_provider(
                 model_scope="unknown",
                 api_key="test-key",
-                router_base_url="http://localhost:3000/router/v0",
+                router_base_url="http://localhost:3000/router/v2",
             )
         assert "Unsupported provider: unknown" in str(exc_info.value)
         assert "anthropic, google, openai" in str(exc_info.value)
@@ -93,12 +93,12 @@ class TestMirascopeUtils:
         provider1 = _utils.create_underlying_provider(
             model_scope="openai",
             api_key="test-key",
-            router_base_url="http://localhost:3000/router/v0",
+            router_base_url="http://localhost:3000/router/v2",
         )
         provider2 = _utils.create_underlying_provider(
             model_scope="openai",
             api_key="test-key",
-            router_base_url="http://localhost:3000/router/v0",
+            router_base_url="http://localhost:3000/router/v2",
         )
         # Should be the exact same instance due to caching
         assert provider1 is provider2
@@ -107,7 +107,7 @@ class TestMirascopeUtils:
         provider3 = _utils.create_underlying_provider(
             model_scope="openai",
             api_key="different-key",
-            router_base_url="http://localhost:3000/router/v0",
+            router_base_url="http://localhost:3000/router/v2",
         )
         assert provider1 is not provider3
 
@@ -121,7 +121,7 @@ class TestMirascopeProvider:
         assert provider.id == "mirascope"
         assert provider.default_scope == ["anthropic/", "google/", "openai/"]
         assert provider.api_key == "test-api-key"
-        assert provider.router_base_url == "https://mirascope.com/router/v0"
+        assert provider.router_base_url == "https://mirascope.com/router/v2"
 
     def test_mirascope_provider_missing_api_key(self) -> None:
         """Test MirascopeProvider raises error when API key is missing."""
@@ -151,17 +151,17 @@ class TestMirascopeProvider:
     def test_mirascope_provider_custom_base_url(self) -> None:
         """Test MirascopeProvider with custom base_url."""
         provider = MirascopeProvider(
-            api_key="test-key", base_url="http://localhost:3000/router/v0"
+            api_key="test-key", base_url="http://localhost:3000/router/v2"
         )
-        assert provider.router_base_url == "http://localhost:3000/router/v0"
+        assert provider.router_base_url == "http://localhost:3000/router/v2"
 
     def test_mirascope_provider_uses_env_var_base_url(self) -> None:
         """Test MirascopeProvider uses MIRASCOPE_ROUTER_BASE_URL from environment."""
         original_url = os.environ.get("MIRASCOPE_ROUTER_BASE_URL")
-        os.environ["MIRASCOPE_ROUTER_BASE_URL"] = "http://custom:8080/router/v0"
+        os.environ["MIRASCOPE_ROUTER_BASE_URL"] = "http://custom:8080/router/v2"
         try:
             provider = MirascopeProvider(api_key="test-key")
-            assert provider.router_base_url == "http://custom:8080/router/v0"
+            assert provider.router_base_url == "http://custom:8080/router/v2"
         finally:
             if original_url is not None:
                 os.environ["MIRASCOPE_ROUTER_BASE_URL"] = original_url

@@ -7,21 +7,21 @@ describe("Proxy", () => {
   describe("extractProviderPath", () => {
     it("should extract path for OpenAI", () => {
       const path = extractProviderPath(
-        "/router/v0/openai/v1/chat/completions",
+        "/router/v2/openai/v1/chat/completions",
         "openai",
       );
       expect(path).toBe("v1/chat/completions");
     });
     it("should extract path for Anthropic", () => {
       const path = extractProviderPath(
-        "/router/v0/anthropic/v1/messages",
+        "/router/v2/anthropic/v1/messages",
         "anthropic",
       );
       expect(path).toBe("v1/messages");
     });
     it("should extract path for Google", () => {
       const path = extractProviderPath(
-        "/router/v0/google/v1beta/models/gemini-pro:generateContent",
+        "/router/v2/google/v1beta/models/gemini-pro:generateContent",
         "google",
       );
       expect(path).toBe("v1beta/models/gemini-pro:generateContent");
@@ -38,7 +38,7 @@ describe("Proxy", () => {
     });
     it("should fail with ProxyError when API key is missing", async () => {
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           headers: {
@@ -79,7 +79,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           headers: {
@@ -123,7 +123,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           body: JSON.stringify({ model: "gpt-4", messages: [], stream: true }),
@@ -160,7 +160,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           body: JSON.stringify({ model: "gpt-4", messages: [], stream: true }),
@@ -202,7 +202,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/google/v1beta/models/gemini-pro:streamGenerateContent",
+        "http://localhost/router/v2/google/v1beta/models/gemini-pro:streamGenerateContent",
         {
           method: "POST",
           body: JSON.stringify({ prompt: { text: "Hello" } }),
@@ -239,7 +239,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           body: JSON.stringify({ model: "gpt-4", messages: [] }),
@@ -271,7 +271,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           body: JSON.stringify({ model: "gpt-4", messages: [] }),
@@ -297,7 +297,7 @@ describe("Proxy", () => {
           new Error("Network error"),
         ) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           body: JSON.stringify({ model: "gpt-4", messages: [] }),
@@ -330,7 +330,7 @@ describe("Proxy", () => {
         .fn()
         .mockResolvedValue(mockResponse) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           body: JSON.stringify({ model: "gpt-4", messages: [] }),
@@ -366,7 +366,7 @@ describe("Proxy", () => {
           return Promise.resolve(mockResponse);
         }) as unknown as typeof fetch;
       const request = new Request(
-        "http://localhost/router/v0/openai/v1/chat/completions",
+        "http://localhost/router/v2/openai/v1/chat/completions",
         {
           method: "POST",
           headers: {

@@ -89,14 +89,14 @@ describe("handleRequest", () => {
     Effect.gen(function* () {
       const clickHouseSearch = yield* ClickHouseSearch;
       const req = new Request(
-        "http://localhost/api/v0/this-route-does-not-exist",
+        "http://localhost/api/v2/this-route-does-not-exist",
         { method: "GET" },
       );
 
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
         settings,
-        prefix: "/api/v0",
+        prefix: "/api/v2",
         drizzle: yield* DrizzleORM,
         analytics: yield* Analytics,
         emails: yield* Emails,
@@ -114,14 +114,14 @@ describe("handleRequest", () => {
     Effect.gen(function* () {
       const clickHouseSearch = yield* ClickHouseSearch;
       const req = new Request(
-        "http://localhost/api/v0/this-route-does-not-exist",
+        "http://localhost/api/v2/this-route-does-not-exist",
         { method: "GET" },
       );
 
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
         settings,
-        prefix: "/api/v0",
+        prefix: "/api/v2",
         drizzle: yield* DrizzleORM,
         analytics: yield* Analytics,
         emails: yield* Emails,
@@ -140,12 +140,12 @@ describe("handleRequest", () => {
     () =>
       Effect.gen(function* () {
         const clickHouseSearch = yield* ClickHouseSearch;
-        const req = new Request("http://localhost/api/v0", { method: "GET" });
+        const req = new Request("http://localhost/api/v2", { method: "GET" });
 
         const { matched, response } = yield* handleRequest(req, {
           user: mockUser,
           settings,
-          prefix: "/api/v0",
+          prefix: "/api/v2",
           drizzle: yield* DrizzleORM,
           analytics: yield* Analytics,
           emails: yield* Emails,
@@ -197,7 +197,7 @@ describe("handleRequest", () => {
       const clickHouseSearch = yield* ClickHouseSearch;
       // POST request with body to trigger duplex: "half"
       const req = new Request(
-        "http://localhost/api/v0/organizations/00000000-0000-0000-0000-000000000099/projects",
+        "http://localhost/api/v2/organizations/00000000-0000-0000-0000-000000000099/projects",
         {
           method: "POST",
           headers: { "content-type": "application/json" },
@@ -208,7 +208,7 @@ describe("handleRequest", () => {
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
         settings,
-        prefix: "/api/v0",
+        prefix: "/api/v2",
         drizzle: yield* DrizzleORM,
         analytics: yield* Analytics,
         emails: yield* Emails,
@@ -227,7 +227,7 @@ describe("handleRequest", () => {
       const clickHouseSearch = yield* ClickHouseSearch;
       // Trigger a NotFoundError by trying to get a non-existent organization
       const req = new Request(
-        "http://localhost/api/v0/organizations/00000000-0000-0000-0000-000000000099",
+        "http://localhost/api/v2/organizations/00000000-0000-0000-0000-000000000099",
         {
           method: "GET",
         },
@@ -236,7 +236,7 @@ describe("handleRequest", () => {
       const { matched, response } = yield* handleRequest(req, {
         user: mockUser,
         settings,
-        prefix: "/api/v0",
+        prefix: "/api/v2",
         drizzle: yield* DrizzleORM,
         analytics: yield* Analytics,
         emails: yield* Emails,

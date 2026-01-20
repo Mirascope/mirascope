@@ -30,7 +30,7 @@ def test_mirascope_provider(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 
     llm.register_provider(
         "mirascope",
-        base_url="http://localhost:3000/router/v0",
+        base_url="http://localhost:3000/router/v2",
     )
 
     model_scope, model_name = model_id.split("/", 1)
@@ -58,7 +58,7 @@ def test_mirascope_provider_streaming(
 
     llm.register_provider(
         "mirascope",
-        base_url="http://localhost:3000/router/v0",
+        base_url="http://localhost:3000/router/v2",
     )
 
     model_scope, model_name = model_id.split("/", 1)

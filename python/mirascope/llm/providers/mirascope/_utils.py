@@ -29,7 +29,7 @@ def get_default_router_base_url() -> str:
         The router base URL (without trailing provider path).
     """
     return os.environ.get(
-        "MIRASCOPE_ROUTER_BASE_URL", "https://mirascope.com/router/v0"
+        "MIRASCOPE_ROUTER_BASE_URL", "https://mirascope.com/router/v2"
     )
 
 
@@ -44,7 +44,7 @@ def create_underlying_provider(
     Args:
         model_scope: The model scope (e.g., "openai", "anthropic", "google")
         api_key: The API key to use for authentication
-        router_base_url: The base router URL (e.g., "http://mirascope.com/router/v0")
+        router_base_url: The base router URL (e.g., "http://mirascope.com/router/v2")
 
     Returns:
         A cached provider instance configured for the Mirascope Router.

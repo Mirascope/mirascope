@@ -37,7 +37,7 @@ interactions:
       x-stainless-runtime-version:
       - 3.10.16
     method: POST
-    uri: http://localhost:3000/router/v0/openai/v1/chat/completions
+    uri: http://localhost:3000/router/v2/openai/v1/chat/completions
   response:
     body:
       string: 'data: {"id":"chatcmpl-CuvWLOqHN8DnuHRkCADkE1cyZOB16","object":"chat.completion.chunk","created":1767683513,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"usage":null,"obfuscation":"QPBHO"}

@@ -39,7 +39,7 @@ describe("generateOpenApiSpec", () => {
     );
 
     expect(productionServer).toMatchObject({
-      url: "https://v2.mirascope.com/api/v0",
+      url: "https://mirascope.com/api/v2",
       description: "Production server",
     });
   });
@@ -52,7 +52,7 @@ describe("generateOpenApiSpec", () => {
     );
 
     expect(stagingServer).toMatchObject({
-      url: "https://staging.mirascope.com/api/v0",
+      url: "https://staging.mirascope.com/api/v2",
       description: "Staging server",
     });
   });
@@ -65,7 +65,7 @@ describe("generateOpenApiSpec", () => {
     );
 
     expect(localServer).toMatchObject({
-      url: "http://localhost:3000/api/v0",
+      url: "http://localhost:3000/api/v2",
       description: "Local development server",
     });
   });

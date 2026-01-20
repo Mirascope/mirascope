@@ -80,7 +80,7 @@ const BrowserHttpClientLayer = Layer.succeed(
 export class ApiClient extends Effect.Service<ApiClient>()("ApiClient", {
   dependencies: [BrowserHttpClientLayer],
   scoped: HttpApiClient.make(MirascopeCloudApi, {
-    baseUrl: "/api/v0",
+    baseUrl: "/api/v2",
   }),
 }) {}
 

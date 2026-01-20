@@ -58,17 +58,17 @@ export function generateOpenApiSpec(): OpenApiSpec {
     },
     servers: [
       {
-        url: "https://v2.mirascope.com/api/v0",
+        url: "https://mirascope.com/api/v2",
         description: "Production server",
         "x-fern-server-name": "production",
       },
       {
-        url: "https://staging.mirascope.com/api/v0",
+        url: "https://staging.mirascope.com/api/v2",
         description: "Staging server",
         "x-fern-server-name": "staging",
       },
       {
-        url: "http://localhost:3000/api/v0",
+        url: "http://localhost:3000/api/v2",
         description: "Local development server",
         "x-fern-server-name": "local",
       },

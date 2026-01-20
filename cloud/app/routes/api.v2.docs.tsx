@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/api/v0/docs")({
+export const Route = createFileRoute("/api/v2/docs")({
   server: {
     handlers: {
       GET: () => {
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/api/v0/docs")({
   <script>
     window.onload = () => {
       window.ui = SwaggerUIBundle({
-        url: '/api/v0/docs/openapi.json',
+        url: '/api/v2/docs/openapi.json',
         dom_id: '#swagger-ui',
         presets: [
           SwaggerUIBundle.presets.apis,

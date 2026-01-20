@@ -42,7 +42,7 @@ interactions:
       x-stainless-timeout:
       - '600'
     method: POST
-    uri: http://localhost:3000/router/v0/anthropic/v1/messages
+    uri: http://localhost:3000/router/v2/anthropic/v1/messages
   response:
     body:
       string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01RysMuqFTMTVDxjjk63Ahst","type":"message","role":"assistant","content":[{"type":"text","text":"4200

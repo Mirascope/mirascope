@@ -4,7 +4,7 @@
 Usage:
     OPENAI_API_KEY=sk-xxx \
     MIRASCOPE_API_KEY=mk_xxx \
-    MIRASCOPE_BASE_URL="http://localhost:3000/api/v0" \
+    MIRASCOPE_BASE_URL="http://localhost:3000/api/v2" \
         uv run python examples/misc/ask_llm.py "What is your favorite book?"
 
 After running, trigger sync:
@@ -23,7 +23,7 @@ from mirascope import llm, ops
 from mirascope.api.client import create_export_client
 from mirascope.ops._internal.exporters import MirascopeOTLPExporter
 
-BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v0")
+BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v2")
 API_KEY = os.getenv("MIRASCOPE_API_KEY")
 
 # ANSI colors

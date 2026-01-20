@@ -40,7 +40,7 @@ from datetime import datetime, timedelta, timezone
 
 from mirascope.api.client import Mirascope
 
-BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v0")
+BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v2")
 API_KEY = os.getenv("MIRASCOPE_API_KEY")
 
 # ANSI colors
