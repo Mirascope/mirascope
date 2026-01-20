@@ -25,18 +25,48 @@ def json_dumps(obj: Any) -> str:  # noqa: ANN401
     return orjson.dumps(obj, option=ORJSON_OPTS).decode("utf-8")
 
 
+def _is_call_method(fn: Callable[..., Any]) -> bool:
+    """Check if fn is a bound method of a Call object (e.g., Call.call or Call.stream)."""
+    return (
+        hasattr(fn, "__self__") and hasattr(fn.__self__, "prompt")  # pyright: ignore[reportFunctionMemberAccess]
+    )
+
+
+def get_original_fn(fn: Callable[..., Any]) -> Callable[..., Any]:
+    """Get the original function from a Call method or return fn as-is.
+
+    When fn is a bound method of a Call object (e.g., Call.call or Call.stream),
+    returns the original decorated function from prompt.fn. Otherwise returns fn.
+    """
+    if _is_call_method(fn):
+        prompt = fn.__self__.prompt  # pyright: ignore[reportFunctionMemberAccess]
+        if hasattr(prompt, "fn"):
+            return prompt.fn
+    return fn
+
+
 def get_qualified_name(fn: Callable[..., Any]) -> str:
     """Return the simplified qualified name of a function.
+
+    If the function is a bound method of a Call object (e.g., Call.call or Call.stream),
+    returns the qualified name of the original decorated function from prompt.fn,
+    suffixed with the method name (e.g., "recommend.call" or "recommend.stream").
 
     If the function is defined locally, return the name after '<locals>.'; otherwise,
     return the last non-empty part after splitting by '.'.
     """
+    # Check if this is a Call method and capture the method name
+    method_suffix = f".{fn.__name__}" if _is_call_method(fn) else ""
+
+    fn = get_original_fn(fn)
     qualified_name = fn.__qualname__
     if "<locals>." in qualified_name:
-        return qualified_name.split("<locals>.")[-1]
+        base_name = qualified_name.split("<locals>.")[-1]
     else:
         parts = [part for part in qualified_name.split(".") if part]
-        return parts[-1] if parts else qualified_name
+        base_name = parts[-1] if parts else qualified_name
+
+    return f"{base_name}{method_suffix}"
 
 
 def extract_arguments(

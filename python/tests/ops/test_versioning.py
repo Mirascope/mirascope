@@ -748,11 +748,11 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
@@ -794,11 +794,11 @@ def test_versioned_call_wrapped_method(
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["mystery"],"kwargs":{}}',
@@ -840,11 +840,11 @@ def test_versioned_call_call_method(
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
@@ -902,11 +902,11 @@ def test_versioned_call_wrapped_stream(
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "stream",
+            "name": "recommend.stream",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "stream",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.stream",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["adventure"],"kwargs":{}}',
@@ -948,11 +948,11 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
@@ -994,11 +994,11 @@ async def test_versioned_async_call_call_method(
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
@@ -1057,11 +1057,11 @@ def test_versioned_context_call(span_exporter: InMemorySpanExporter) -> None:
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["fantasy"],"kwargs":{}}',
@@ -1138,11 +1138,11 @@ async def test_versioned_async_context_call(
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["mystery"],"kwargs":{}}',
@@ -1218,11 +1218,11 @@ def test_versioned_call_with_tags(
     span_data = extract_span_data(trace_spans[0])
     assert span_data == snapshot(
         {
-            "name": "call",
+            "name": "recommend.call",
             "attributes": {
                 "mirascope.type": "trace",
-                "mirascope.fn.qualname": "call",
-                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.qualname": "recommend.call",
+                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["romance"],"kwargs":{}}',

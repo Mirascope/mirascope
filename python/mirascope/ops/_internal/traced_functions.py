@@ -23,7 +23,13 @@ from .protocols import (
 )
 from .spans import Span
 from .types import Jsonable, P, R
-from .utils import PrimitiveType, extract_arguments, get_qualified_name, json_dumps
+from .utils import (
+    PrimitiveType,
+    extract_arguments,
+    get_original_fn,
+    get_qualified_name,
+    json_dumps,
+)
 
 FunctionT = TypeVar(
     "FunctionT",
@@ -170,7 +176,8 @@ class _BaseFunction(Generic[P, R, FunctionT], ABC):
     def __post_init__(self) -> None:
         """Initialize additional attributes after dataclass init."""
         self._qualified_name = get_qualified_name(self.fn)
-        self._module_name = getattr(self.fn, "__module__", "")
+        original_fn = get_original_fn(self.fn)
+        self._module_name = getattr(original_fn, "__module__", "")
 
 
 @dataclass(kw_only=True)
