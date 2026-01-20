@@ -8,10 +8,10 @@ description: Learn how to combine multiple LLM calls to solve complex tasks thro
 Chaining combines multiple LLM calls to solve complex tasks. Since Mirascope calls are just Python functions, chaining them is as simple as calling one function after another:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/chaining/basic_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/chaining/basic_prompt.py" />
 </Tab>
 <Tab value="Model">
@@ -30,10 +30,10 @@ This approach lets you:
 You can call one prompt function inside another to encapsulate chains. This also lets you use different models for different steps—for example, a more capable model for nuanced summarization and a faster one for straightforward translation:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/chaining/nested_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/chaining/nested_prompt.py" />
 </Tab>
 <Tab value="Model">
@@ -48,10 +48,10 @@ The inner call executes first, and its result flows into the outer call's prompt
 Route to different prompts based on prior outputs. Here, we classify sentiment first, then generate an appropriate response:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/chaining/conditional_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/chaining/conditional_prompt.py" />
 </Tab>
 <Tab value="Model">
@@ -66,10 +66,10 @@ Using `format=` with an `Enum` ensures the classifier returns a valid value we c
 When steps are independent, run them concurrently with `asyncio.gather()`:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/chaining/parallel_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/chaining/parallel_prompt.py" />
 </Tab>
 <Tab value="Model">

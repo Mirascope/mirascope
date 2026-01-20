@@ -91,10 +91,10 @@ See [Responses](/docs/responses) for content access, metadata, and more.
 Tools let LLMs request function calls. Define tools with `@llm.tool`, pass them to your call, then loop until done:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/tools/with_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/tools/with_prompt.py" />
 </Tab>
 <Tab value="Model">
@@ -109,10 +109,10 @@ See [Tools](/docs/tools) for async tools, parallel execution, and more.
 Use the `format` parameter to get typed responses. Mirascope supports primitives, enums, and Pydantic models:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/structured_output/basic_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/structured_output/basic_prompt.py" />
 </Tab>
 <Tab value="Model">
@@ -127,10 +127,10 @@ See [Structured Output](/docs/structured-output) for formatting modes, validatio
 Call `.stream()` to get responses as they're generated:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/streaming/basic_call.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/streaming/basic_prompt.py" />
 </Tab>
 <Tab value="Model">
@@ -145,10 +145,10 @@ See [Streaming](/docs/streaming) for stream iterators, accumulated content, and 
 Make any prompt function async for concurrent operations:
 
 <TabbedSection>
-<Tab value="@llm.call">
+<Tab value="Call">
 <CodeExample file="python/examples/async/basic.py" />
 </Tab>
-<Tab value="@llm.prompt">
+<Tab value="Prompt">
 <CodeExample file="python/examples/async/basic_prompt.py" />
 </Tab>
 <Tab value="Model">
