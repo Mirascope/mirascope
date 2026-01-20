@@ -21,9 +21,11 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TermsSplatRouteImport } from './routes/terms.$'
 import { Route as InvitationsAcceptRouteImport } from './routes/invitations.accept'
 import { Route as DocsSplatRouteImport } from './routes/docs.$'
+import { Route as CloudTracesRouteImport } from './routes/cloud/traces'
 import { Route as CloudSettingsRouteImport } from './routes/cloud/settings'
 import { Route as CloudOnboardingRouteImport } from './routes/cloud/onboarding'
 import { Route as CloudLoginRouteImport } from './routes/cloud/login'
+import { Route as CloudFunctionsRouteImport } from './routes/cloud/functions'
 import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
@@ -108,6 +110,11 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => DocsRoute,
 } as any)
+const CloudTracesRoute = CloudTracesRouteImport.update({
+  id: '/traces',
+  path: '/traces',
+  getParentRoute: () => CloudRoute,
+} as any)
 const CloudSettingsRoute = CloudSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -121,6 +128,11 @@ const CloudOnboardingRoute = CloudOnboardingRouteImport.update({
 const CloudLoginRoute = CloudLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudFunctionsRoute = CloudFunctionsRouteImport.update({
+  id: '/functions',
+  path: '/functions',
   getParentRoute: () => CloudRoute,
 } as any)
 const CloudDashboardRoute = CloudDashboardRouteImport.update({
@@ -254,9 +266,11 @@ export interface FileRoutesByFullPath {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/functions': typeof CloudFunctionsRoute
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
+  '/cloud/traces': typeof CloudTracesRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
@@ -292,8 +306,10 @@ export interface FileRoutesByTo {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/functions': typeof CloudFunctionsRoute
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
+  '/cloud/traces': typeof CloudTracesRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
@@ -332,9 +348,11 @@ export interface FileRoutesById {
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
+  '/cloud/functions': typeof CloudFunctionsRoute
   '/cloud/login': typeof CloudLoginRoute
   '/cloud/onboarding': typeof CloudOnboardingRoute
   '/cloud/settings': typeof CloudSettingsRouteWithChildren
+  '/cloud/traces': typeof CloudTracesRoute
   '/docs/$': typeof DocsSplatRoute
   '/invitations/accept': typeof InvitationsAcceptRoute
   '/terms/$': typeof TermsSplatRoute
@@ -374,9 +392,11 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/cloud/dashboard'
+    | '/cloud/functions'
     | '/cloud/login'
     | '/cloud/onboarding'
     | '/cloud/settings'
+    | '/cloud/traces'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
@@ -412,8 +432,10 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/cloud/dashboard'
+    | '/cloud/functions'
     | '/cloud/login'
     | '/cloud/onboarding'
+    | '/cloud/traces'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
@@ -451,9 +473,11 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/blog/$slug'
     | '/cloud/dashboard'
+    | '/cloud/functions'
     | '/cloud/login'
     | '/cloud/onboarding'
     | '/cloud/settings'
+    | '/cloud/traces'
     | '/docs/$'
     | '/invitations/accept'
     | '/terms/$'
@@ -585,6 +609,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof DocsRoute
     }
+    '/cloud/traces': {
+      id: '/cloud/traces'
+      path: '/traces'
+      fullPath: '/cloud/traces'
+      preLoaderRoute: typeof CloudTracesRouteImport
+      parentRoute: typeof CloudRoute
+    }
     '/cloud/settings': {
       id: '/cloud/settings'
       path: '/settings'
@@ -604,6 +635,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/cloud/login'
       preLoaderRoute: typeof CloudLoginRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/functions': {
+      id: '/cloud/functions'
+      path: '/functions'
+      fullPath: '/cloud/functions'
+      preLoaderRoute: typeof CloudFunctionsRouteImport
       parentRoute: typeof CloudRoute
     }
     '/cloud/dashboard': {
@@ -808,17 +846,21 @@ const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
 
 interface CloudRouteChildren {
   CloudDashboardRoute: typeof CloudDashboardRoute
+  CloudFunctionsRoute: typeof CloudFunctionsRoute
   CloudLoginRoute: typeof CloudLoginRoute
   CloudOnboardingRoute: typeof CloudOnboardingRoute
   CloudSettingsRoute: typeof CloudSettingsRouteWithChildren
+  CloudTracesRoute: typeof CloudTracesRoute
   CloudIndexRoute: typeof CloudIndexRoute
 }
 
 const CloudRouteChildren: CloudRouteChildren = {
   CloudDashboardRoute: CloudDashboardRoute,
+  CloudFunctionsRoute: CloudFunctionsRoute,
   CloudLoginRoute: CloudLoginRoute,
   CloudOnboardingRoute: CloudOnboardingRoute,
   CloudSettingsRoute: CloudSettingsRouteWithChildren,
+  CloudTracesRoute: CloudTracesRoute,
   CloudIndexRoute: CloudIndexRoute,
 }
 
