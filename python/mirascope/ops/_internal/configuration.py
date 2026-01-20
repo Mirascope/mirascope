@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
+
+from ...api.client import Mirascope
+from .exporters import MirascopeOTLPExporter
 
 if TYPE_CHECKING:
     from opentelemetry.sdk.trace import TracerProvider
@@ -14,10 +18,14 @@ else:
 
 DEFAULT_TRACER_NAME = "mirascope.llm"
 
+logger = logging.getLogger(__name__)
+
 try:
     from opentelemetry import trace as otel_trace
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
 except ImportError:  # pragma: no cover
     otel_trace = None
+    BatchSpanProcessor = None
 
 _tracer_provider: TracerProvider | None = None
 _tracer_name: str = DEFAULT_TRACER_NAME
@@ -25,59 +33,105 @@ _tracer_version: str | None = None
 _tracer: Tracer | None = None
 
 
+def _create_mirascope_cloud_provider(api_key: str | None = None) -> TracerProvider:
+    """Create a TracerProvider configured for Mirascope Cloud.
+
+    Args:
+        api_key: Optional API key. If not provided, uses MIRASCOPE_API_KEY env var.
+
+    Returns:
+        Configured TracerProvider with MirascopeOTLPExporter.
+
+    Raises:
+        RuntimeError: If API key is not available.
+    """
+    try:
+        client = Mirascope(api_key=api_key)
+    except (ValueError, RuntimeError) as e:
+        raise RuntimeError(
+            "Failed to create Mirascope Cloud client. "
+            "Set MIRASCOPE_API_KEY environment variable or pass api_key parameter."
+        ) from e
+
+    exporter = MirascopeOTLPExporter(client=client)
+    provider = TracerProvider()
+    provider.add_span_processor(BatchSpanProcessor(exporter))
+
+    return provider
+
+
 def configure(
     *,
     tracer_provider: TracerProvider | None = None,
+    api_key: str | None = None,
     tracer_name: str = DEFAULT_TRACER_NAME,
     tracer_version: str | None = None,
 ) -> None:
-    """Configure the ops module defaults for tracing.
+    """Configure the ops module for tracing.
 
-    Sets up default tracer settings for the ops module. If a tracer_provider
-    is supplied, it will be installed as the global OpenTelemetry tracer provider.
+    When called without arguments, automatically configures Mirascope Cloud
+    using the MIRASCOPE_API_KEY environment variable.
 
     Args:
-        tracer_provider: Optional OpenTelemetry TracerProvider to use as default
-            and to install globally.
+        tracer_provider: Optional custom TracerProvider. If provided, this takes
+            precedence over automatic Mirascope Cloud configuration.
+        api_key: Optional Mirascope Cloud API key. If not provided, uses
+            MIRASCOPE_API_KEY environment variable.
         tracer_name: Tracer name to use when creating a tracer.
             Defaults to "mirascope.llm".
         tracer_version: Optional tracer version.
 
-    Example:
+    Raises:
+        ImportError: If OpenTelemetry is not installed.
+        RuntimeError: If no tracer_provider is given and Mirascope Cloud
+            cannot be configured (missing API key).
 
-        Configure custom tracer settings:
+    Example:
+        Simple Mirascope Cloud configuration (recommended):
+        ```python
+        import os
+        os.environ["MIRASCOPE_API_KEY"] = "your-api-key"
+
+        from mirascope import ops
+
+        ops.configure()  # Automatically uses Mirascope Cloud
+        ```
+
+        With explicit API key:
+        ```python
+        from mirascope import ops
+
+        ops.configure(api_key="your-api-key")
+        ```
+
+        With custom tracer provider:
         ```python
         from mirascope import ops
         from opentelemetry.sdk.trace import TracerProvider
 
         provider = TracerProvider()
         ops.configure(tracer_provider=provider)
-        ops.instrument_llm()
         ```
     """
-    # TODO: refactor alongside other import error handling improvements
     if otel_trace is None:  # pragma: no cover
         raise ImportError(
             "OpenTelemetry is not installed. Run `pip install mirascope[otel]` "
-            "before calling `ops.configure(tracer_provider=...)`."
+            "before calling `ops.configure()`."
         )
 
     global _tracer_provider, _tracer_name, _tracer_version, _tracer
 
-    if tracer_provider is not None:
-        _tracer_provider = tracer_provider
-        otel_trace.set_tracer_provider(tracer_provider)
+    # If no tracer_provider given, auto-configure Mirascope Cloud
+    if tracer_provider is None:
+        tracer_provider = _create_mirascope_cloud_provider(api_key=api_key)
+
+    _tracer_provider = tracer_provider
+    otel_trace.set_tracer_provider(tracer_provider)
 
     _tracer_name = tracer_name
     _tracer_version = tracer_version
 
-    if otel_trace is not None:
-        provider = (
-            otel_trace.get_tracer_provider()
-            if _tracer_provider is None
-            else _tracer_provider
-        )
-        _tracer = provider.get_tracer(_tracer_name, _tracer_version)
+    _tracer = tracer_provider.get_tracer(_tracer_name, _tracer_version)
 
 
 def set_tracer(tracer: Tracer | None) -> None:
@@ -123,4 +177,6 @@ def tracer_context(tracer: Tracer | None) -> Iterator[Tracer | None]:
     try:
         yield tracer
     finally:
+        set_tracer(previous_tracer)
+        set_tracer(previous_tracer)
         set_tracer(previous_tracer)
