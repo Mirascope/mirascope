@@ -6,6 +6,7 @@ from types import NoneType
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, overload
 
 from ..content import AssistantContentPart, Text, Thought, ToolCall
+from ..exceptions import ParseError
 from ..formatting import (
     Format,
     FormattableT,
@@ -134,11 +135,11 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
             returns. When partial=True, returns None if JSON is incomplete or unparsable.
 
         Raises:
-            json.JSONDecodeError: If the response's textual content can't be parsed as
-                JSON (BaseModel/primitive types, when partial=False).
-            pydantic.ValidationError: If the response's content fails validation for the
-                format type (BaseModel/primitive types, when partial=False).
-            Any exception raised by the custom parser (OutputParser).
+            NotImplementedError: If partial=True with OutputParser.
+            ParseError: If parsing fails. The `original_exception` attribute contains the
+                underlying error (ValueError for JSON extraction, json.JSONDecodeError
+                for invalid JSON, pydantic.ValidationError for schema validation, or
+                any exception from a custom OutputParser).
         """
         if self.format is None:
             return None
@@ -151,25 +152,37 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
                     "parse(partial=True) not supported with OutputParser. "
                     "Use BaseModel or primitive types."
                 )
-            return formattable(self)
+            try:
+                return formattable(self)
+            except Exception as e:
+                raise ParseError(
+                    f"OutputParser failed: {e}",
+                    original_exception=e,
+                ) from e
 
         if formattable is None or formattable is NoneType:  # pyright: ignore[reportUnnecessaryComparison]
             # note: pyright claims the None comparison is unnecessary, but removing it
             # introduces type errors.
             return None  # pragma: no cover
 
-        text = "".join(text.text for text in self.texts)
+        text = self.text("")
 
         if partial:
             return _utils.parse_partial_json(text, formattable)
         else:
-            json_text = _utils.extract_serialized_json(text)
-            if is_primitive_type(formattable):
-                wrapper_model = create_wrapper_model(formattable)
-                wrapper_instance = wrapper_model.model_validate_json(json_text)
-                return wrapper_instance.output
+            try:
+                json_text = _utils.extract_serialized_json(text)
+                if is_primitive_type(formattable):
+                    wrapper_model = create_wrapper_model(formattable)
+                    wrapper_instance = wrapper_model.model_validate_json(json_text)
+                    return wrapper_instance.output
 
-            return formattable.model_validate_json(json_text)
+                return formattable.model_validate_json(json_text)
+            except Exception as e:
+                raise ParseError(
+                    f"Failed to parse response: {e}",
+                    original_exception=e,
+                ) from e
 
     def text(self, sep: str = "\n") -> str:
         """Return all text content from this response as a single string.

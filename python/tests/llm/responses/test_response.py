@@ -364,7 +364,7 @@ def test_response_format_success() -> None:
 
 
 def test_response_format_invalid_json() -> None:
-    """Test that response.parse() raises ValueError for invalid JSON."""
+    """Test that response.parse() raises ParseError for invalid JSON."""
 
     class Book(BaseModel):
         title: str
@@ -392,12 +392,13 @@ def test_response_format_invalid_json() -> None:
         format=llm.format(Book, mode="tool"),
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(llm.ParseError) as exc_info:
         response.parse()
+    assert isinstance(exc_info.value.original_exception, ValueError)
 
 
 def test_response_format_validation_error() -> None:
-    """Test that response.parse() raises ValueError for JSON that doesn't match schema."""
+    """Test that response.parse() raises ParseError for JSON that doesn't match schema."""
 
     class Book(BaseModel):
         title: str
@@ -426,8 +427,9 @@ def test_response_format_validation_error() -> None:
         format=llm.format(Book, mode="tool"),
     )
 
-    with pytest.raises(pydantic.ValidationError):
+    with pytest.raises(llm.ParseError) as exc_info:
         response.parse()
+    assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
 
 
 def test_response_format_no_format_type() -> None:
@@ -1043,7 +1045,8 @@ def test_parse_dict_primitive() -> None:
 
 def test_parse_primitive_validation_error() -> None:
     """Test that validation errors propagate correctly for primitives."""
-    text_content = [llm.Text(text='{"output": "not an int"}')]
+    invalid_content = '{"output": "not an int"}'
+    text_content = [llm.Text(text=invalid_content)]
     assistant_message = llm.messages.assistant(
         text_content, model_id="openai/gpt-5-mini", provider_id="openai"
     )
@@ -1064,8 +1067,9 @@ def test_parse_primitive_validation_error() -> None:
         finish_reason=None,
     )
 
-    with pytest.raises(pydantic.ValidationError):
+    with pytest.raises(llm.ParseError) as exc_info:
         response.parse()
+    assert isinstance(exc_info.value.original_exception, pydantic.ValidationError)
 
 
 def test_parse_with_output_parser() -> None:
@@ -1135,3 +1139,197 @@ def test_parse_with_output_parser_and_partial_not_supported() -> None:
 
     with pytest.raises(NotImplementedError):
         response.parse(partial=True)
+
+
+def test_parse_error_output_parser_exception() -> None:
+    """Test that OutputParser exceptions are wrapped in ParseError."""
+
+    @llm.output_parser(formatting_instructions="Return XML")
+    def failing_parser(response: llm.AnyResponse) -> str:
+        """A parser that always fails."""
+        raise RuntimeError("Custom parser failure")
+
+    text_content = [llm.Text(text="some text")]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(failing_parser, mode="parser")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    with pytest.raises(llm.ParseError) as exc_info:
+        response.parse()
+    assert isinstance(exc_info.value.original_exception, RuntimeError)
+    assert "Custom parser failure" in str(exc_info.value.original_exception)
+
+
+def test_parse_error_exception_chaining() -> None:
+    """Test that ParseError properly chains the original exception."""
+
+    class Book(BaseModel):
+        title: str
+        pages: int
+
+    incomplete_json = '{"title": "Test"}'  # Missing pages
+    text_content = [llm.Text(text=incomplete_json)]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+        format=llm.format(Book, mode="tool"),
+    )
+
+    with pytest.raises(llm.ParseError) as exc_info:
+        response.parse()
+    # Verify __cause__ is set correctly
+    assert exc_info.value.__cause__ is exc_info.value.original_exception
+
+
+def test_parse_error_retry_message_validation() -> None:
+    """Test retry_message() for validation errors."""
+
+    class Book(BaseModel):
+        title: str
+        pages: int
+
+    incomplete_json = '{"title": "Test"}'
+    text_content = [llm.Text(text=incomplete_json)]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+        format=llm.format(Book, mode="tool"),
+    )
+
+    with pytest.raises(llm.ParseError) as exc_info:
+        response.parse()
+
+    retry_msg = exc_info.value.retry_message()
+    assert "schema validation" in retry_msg
+    assert "Please correct" in retry_msg
+
+
+def test_parse_error_retry_message_json_extraction() -> None:
+    """Test retry_message() for JSON extraction errors."""
+
+    class Book(BaseModel):
+        title: str
+
+    no_json = "This has no JSON at all"
+    text_content = [llm.Text(text=no_json)]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+        format=llm.format(Book, mode="tool"),
+    )
+
+    with pytest.raises(llm.ParseError) as exc_info:
+        response.parse()
+
+    retry_msg = exc_info.value.retry_message()
+    assert "no valid JSON object" in retry_msg
+    assert "opening '{'" in retry_msg
+
+
+def test_parse_error_retry_message_output_parser() -> None:
+    """Test retry_message() for OutputParser errors."""
+
+    @llm.output_parser(formatting_instructions="Return XML")
+    def failing_parser(response: llm.AnyResponse) -> str:
+        """A parser that always fails."""
+        raise RuntimeError("XML parsing failed")
+
+    text_content = [llm.Text(text="invalid xml")]
+    assistant_message = llm.messages.assistant(
+        text_content, model_id="openai/gpt-5-mini", provider_id="openai"
+    )
+
+    format = llm.format(failing_parser, mode="parser")
+
+    response = llm.Response(
+        raw={"test": "response"},
+        usage=None,
+        provider_id="openai",
+        model_id="openai/gpt-5-mini",
+        provider_model_name="gpt-5-mini",
+        params={},
+        tools=[],
+        format=format,
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=None,
+    )
+
+    with pytest.raises(llm.ParseError) as exc_info:
+        response.parse()
+
+    retry_msg = exc_info.value.retry_message()
+    assert "could not be parsed" in retry_msg
+    assert "XML parsing failed" in retry_msg
+
+
+def test_parse_error_equality() -> None:
+    """Test ParseError __eq__ method."""
+    error1 = llm.ParseError(
+        "Parse failed",
+        original_exception=ValueError("test"),
+    )
+    error2 = llm.ParseError(
+        "Parse failed",
+        original_exception=ValueError("test"),
+    )
+    error3 = llm.ParseError(
+        "Different message",
+        original_exception=ValueError("test"),
+    )
+
+    assert error1 == error2
+    assert error1 != error3
+    assert error1 != "not an error"

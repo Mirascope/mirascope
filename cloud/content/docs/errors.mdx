@@ -30,6 +30,7 @@ All exceptions inherit from `llm.Error`. Indentation shows the hierarchy:
 | ↳ `llm.ToolError` | Base class for tool-related errors |
 | &emsp;↳ `llm.ToolExecutionError` | Tool threw an exception during execution (has `tool_exception`) |
 | &emsp;↳ `llm.ToolNotFoundError` | Tool call doesn't match any registered tool (has `tool_name`) |
+| ↳ `llm.ParseError` | Failed to parse structured response (has `original_exception`) |
 | ↳ `llm.FeatureNotSupportedError` | Feature not supported by provider/model (has `provider_id`, `model_id`, `feature`) |
 | ↳ `llm.NoRegisteredProviderError` | Model ID has no registered provider |
 

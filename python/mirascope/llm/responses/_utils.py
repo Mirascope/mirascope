@@ -1,5 +1,6 @@
 """Utilities for response classes."""
 
+import json
 from typing import cast
 
 import jiter
@@ -56,14 +57,14 @@ def extract_serialized_json(text: str) -> str:
         text: The raw text that may contain a JSON object
 
     Raises:
-        ValueError: If no serialized json object string was found.
+        json.JSONDecodeError: If no valid JSON object could be extracted.
 
     Returns:
         The extracted serialized JSON string
     """
     stripped = _strip_json_preamble(text)
     if stripped is None:
-        raise ValueError("Could not extract json: no opening `{`")
+        raise json.JSONDecodeError("No JSON object found: missing '{'", text, 0)
 
     # Find the matching closing brace
     brace_count = 0
@@ -91,7 +92,7 @@ def extract_serialized_json(text: str) -> str:
                 if brace_count == 0:
                     return stripped[: i + 1]
 
-    raise ValueError("Could not extract json: no closing `}`")
+    raise json.JSONDecodeError("No JSON object found: missing '}'", text, len(text))
 
 
 def parse_partial_json(

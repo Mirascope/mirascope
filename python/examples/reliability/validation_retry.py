@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from mirascope import llm
 
@@ -21,10 +21,8 @@ for attempt in range(max_retries):
         book = response.parse()
         print(f"{book.title} by {book.author} ({book.year})")
         break
-    except ValidationError as e:
+    except llm.ParseError as e:
         if attempt == max_retries - 1:
             raise
         # Tell the model what went wrong so it can fix it
-        response = response.resume(
-            f"Your response failed validation:\n{e}\n\nPlease fix."
-        )
+        response = response.resume(e.retry_message())
