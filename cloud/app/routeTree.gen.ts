@@ -27,6 +27,7 @@ import { Route as CloudOnboardingRouteImport } from './routes/cloud/onboarding'
 import { Route as CloudLoginRouteImport } from './routes/cloud/login'
 import { Route as CloudFunctionsRouteImport } from './routes/cloud/functions'
 import { Route as CloudDashboardRouteImport } from './routes/cloud/dashboard'
+import { Route as CloudAnnotationQueueRouteImport } from './routes/cloud/annotation-queue'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthMeRouteImport } from './routes/auth/me'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google'
@@ -138,6 +139,11 @@ const CloudFunctionsRoute = CloudFunctionsRouteImport.update({
 const CloudDashboardRoute = CloudDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => CloudRoute,
+} as any)
+const CloudAnnotationQueueRoute = CloudAnnotationQueueRouteImport.update({
+  id: '/annotation-queue',
+  path: '/annotation-queue',
   getParentRoute: () => CloudRoute,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/annotation-queue': typeof CloudAnnotationQueueRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/functions': typeof CloudFunctionsRoute
   '/cloud/login': typeof CloudLoginRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/annotation-queue': typeof CloudAnnotationQueueRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/functions': typeof CloudFunctionsRoute
   '/cloud/login': typeof CloudLoginRoute
@@ -347,6 +355,7 @@ export interface FileRoutesById {
   '/auth/google': typeof AuthGoogleRouteWithChildren
   '/auth/me': typeof AuthMeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/cloud/annotation-queue': typeof CloudAnnotationQueueRoute
   '/cloud/dashboard': typeof CloudDashboardRoute
   '/cloud/functions': typeof CloudFunctionsRoute
   '/cloud/login': typeof CloudLoginRoute
@@ -391,6 +400,7 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/annotation-queue'
     | '/cloud/dashboard'
     | '/cloud/functions'
     | '/cloud/login'
@@ -431,6 +441,7 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/annotation-queue'
     | '/cloud/dashboard'
     | '/cloud/functions'
     | '/cloud/login'
@@ -472,6 +483,7 @@ export interface FileRouteTypes {
     | '/auth/google'
     | '/auth/me'
     | '/blog/$slug'
+    | '/cloud/annotation-queue'
     | '/cloud/dashboard'
     | '/cloud/functions'
     | '/cloud/login'
@@ -649,6 +661,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/cloud/dashboard'
       preLoaderRoute: typeof CloudDashboardRouteImport
+      parentRoute: typeof CloudRoute
+    }
+    '/cloud/annotation-queue': {
+      id: '/cloud/annotation-queue'
+      path: '/annotation-queue'
+      fullPath: '/cloud/annotation-queue'
+      preLoaderRoute: typeof CloudAnnotationQueueRouteImport
       parentRoute: typeof CloudRoute
     }
     '/blog/$slug': {
@@ -845,6 +864,7 @@ const CloudSettingsRouteWithChildren = CloudSettingsRoute._addFileChildren(
 )
 
 interface CloudRouteChildren {
+  CloudAnnotationQueueRoute: typeof CloudAnnotationQueueRoute
   CloudDashboardRoute: typeof CloudDashboardRoute
   CloudFunctionsRoute: typeof CloudFunctionsRoute
   CloudLoginRoute: typeof CloudLoginRoute
@@ -855,6 +875,7 @@ interface CloudRouteChildren {
 }
 
 const CloudRouteChildren: CloudRouteChildren = {
+  CloudAnnotationQueueRoute: CloudAnnotationQueueRoute,
   CloudDashboardRoute: CloudDashboardRoute,
   CloudFunctionsRoute: CloudFunctionsRoute,
   CloudLoginRoute: CloudLoginRoute,
