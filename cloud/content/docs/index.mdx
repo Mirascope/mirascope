@@ -60,7 +60,7 @@ The simplest way to call an LLM is with `llm.Model`. Specify a model ID in the f
 
 <CodeExample file="python/examples/models/basic.py" />
 
-See [Models](/docs/mirascope/v2/models) for parameters, model overrides, and more.
+See [Models](/docs/models) for parameters, model overrides, and more.
 
 ## Prompts
 
@@ -68,7 +68,7 @@ The `@llm.prompt` decorator creates reusable prompt functions. You write a funct
 
 <CodeExample file="python/examples/prompts/basic.py" />
 
-See [Prompts](/docs/mirascope/v2/prompts) for return types, multimodal content, and more.
+See [Prompts](/docs/prompts) for return types, multimodal content, and more.
 
 ## Calls
 
@@ -76,7 +76,7 @@ The `@llm.call` decorator bundles a model with your prompt function for a more c
 
 <CodeExample file="python/examples/calls/basic.py" />
 
-See [Calls](/docs/mirascope/v2/calls) for runtime overrides, parameters, and more.
+See [Calls](/docs/calls) for runtime overrides, parameters, and more.
 
 ## Continuing Conversations
 
@@ -84,7 +84,7 @@ Every response contains the full message history. Use `response.resume()` to con
 
 <CodeExample file="python/examples/responses/resume.py" lines="3-" />
 
-See [Responses](/docs/mirascope/v2/responses) for content access, metadata, and more.
+See [Responses](/docs/responses) for content access, metadata, and more.
 
 ## Tools
 
@@ -102,7 +102,7 @@ Tools let LLMs request function calls. Define tools with `@llm.tool`, pass them 
 </Tab>
 </TabbedSection>
 
-See [Tools](/docs/mirascope/v2/tools) for async tools, parallel execution, and more.
+See [Tools](/docs/tools) for async tools, parallel execution, and more.
 
 ## Structured Output
 
@@ -120,7 +120,7 @@ Use the `format` parameter to get typed responses. Mirascope supports primitives
 </Tab>
 </TabbedSection>
 
-See [Structured Output](/docs/mirascope/v2/structured-output) for formatting modes, validation, and more.
+See [Structured Output](/docs/structured-output) for formatting modes, validation, and more.
 
 ## Streaming
 
@@ -138,7 +138,7 @@ Call `.stream()` to get responses as they're generated:
 </Tab>
 </TabbedSection>
 
-See [Streaming](/docs/mirascope/v2/streaming) for stream iterators, accumulated content, and more.
+See [Streaming](/docs/streaming) for stream iterators, accumulated content, and more.
 
 ## Async
 
@@ -156,7 +156,7 @@ Make any prompt function async for concurrent operations:
 </Tab>
 </TabbedSection>
 
-See [Async](/docs/mirascope/v2/async) for parallel calls, async tools, and more.
+See [Async](/docs/async) for parallel calls, async tools, and more.
 
 ## Learning More 
 
@@ -164,7 +164,7 @@ If you'd like to learn more about Mirascope, consider the following resources:
 
 - Read all of the focused topic guides that you'll find in these docs. They are organized so you can read them top to bottom, starting with [messages](/docs/messages)
 - We have extensive [end-to-end snapshot testing](https://github.com/Mirascope/mirascope/tree/v2/python/tests/e2e) which consists of real runnable Mirascope code, and snapshots that serialize the expected output. For example, here are [end to end tests for cross-provider thinking support](https://github.com/Mirascope/mirascope/blob/v2/python/tests/e2e/output/test_call_with_thinking_true.py) and [here are the corresponding snapshots](https://github.com/Mirascope/mirascope/tree/v2/python/tests/e2e/output/snapshots/test_call_with_thinking_true).
-- The [API reference](/docs/mirascope/api) documents all of the public functionality in Mirascope.
+- The [API reference](/docs/api) documents all of the public functionality in Mirascope.
 - You can hop on our [Discord](/discord-invite) and ask us questions directly!
 
 We welcome your feedback, questions, and bug reports.

@@ -7,21 +7,21 @@ description: Learn how to build LLM agents that use tools to accomplish tasks au
 
 Agents are LLM-powered systems that use tools to accomplish tasks on your behalf. The core pattern is simple: call the LLM, execute any requested tools, and repeat until done.
 
-Here's a fully-functional coding agent built with Mirascope. It uses [Thinking](/docs/mirascope/v2/thinking) to reason through problems, [Tools](/docs/mirascope/v2/tools) to read and write files, and [Streaming](/docs/mirascope/v2/streaming) for real-time feedback as it works.
+Here's a fully-functional coding agent built with Mirascope. It uses [Thinking](/docs/thinking) to reason through problems, [Tools](/docs/tools) to read and write files, and [Streaming](/docs/streaming) for real-time feedback as it works.
 
 <CodeExample file="python/examples/agents/basic.py" />
 
 This example is simple, but it demonstrates the power of Mirascope's abstractions. It serves as a starting point for building more sophisticated agents. Some directions to explore:
 
-- [Context](/docs/mirascope/v2/context) — Encapsulate the workspace the agent operates in
-- [MCP](/docs/mirascope/v2/mcp) — Add capabilities like a language server for smarter code assistance
-- [Reliability](/docs/mirascope/v2/reliability) — Handle failures gracefully with retries and fallbacks
+- [Context](/docs/context) — Encapsulate the workspace the agent operates in
+- [MCP](/docs/mcp) — Add capabilities like a language server for smarter code assistance
+- [Reliability](/docs/reliability) — Handle failures gracefully with retries and fallbacks
 - Human-in-the-loop — Let the agent ask clarifying questions or request feedback
 
 ## Next Steps
 
-- [Tools](/docs/mirascope/v2/tools) — Tool calling fundamentals
-- [Streaming](/docs/mirascope/v2/streaming) — Streaming patterns in depth
-- [Async](/docs/mirascope/v2/async) — Concurrent tool execution
-- [Context](/docs/mirascope/v2/context) — Inject dependencies into agent tools
-- [MCP](/docs/mirascope/v2/mcp) — Connect to external tool servers
+- [Tools](/docs/tools) — Tool calling fundamentals
+- [Streaming](/docs/streaming) — Streaming patterns in depth
+- [Async](/docs/async) — Concurrent tool execution
+- [Context](/docs/context) — Inject dependencies into agent tools
+- [MCP](/docs/mcp) — Connect to external tool servers

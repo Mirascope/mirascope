@@ -25,7 +25,7 @@ Not all errors should be retried. Authentication errors won't succeed on retry, 
 
 <CodeExample file="python/examples/reliability/retry_specific_errors.py" />
 
-Mirascope provides [unified error types](/docs/mirascope/v2/errors) that work across all providers, so you can write provider-agnostic retry logic.
+Mirascope provides [unified error types](/docs/errors) that work across all providers, so you can write provider-agnostic retry logic.
 
 
 ## Retrying Streams
@@ -38,7 +38,7 @@ This works because `StreamResponse` accumulates content as you iterate. When an 
 
 ## Retrying on Structured Output Validation Errors
 
-When using [structured output](/docs/mirascope/v2/structured-output), the LLM's response might fail Pydantic validation. Instead of retrying blindly, tell the model what went wrong so it can fix its mistake:
+When using [structured output](/docs/structured-output), the LLM's response might fail Pydantic validation. Instead of retrying blindly, tell the model what went wrong so it can fix its mistake:
 
 <CodeExample file="python/examples/reliability/validation_retry.py" />
 
@@ -70,6 +70,6 @@ Combine retries with fallbacks: retry each provider multiple times before moving
 
 ## Next Steps
 
-- [Errors](/docs/mirascope/v2/errors) — Unified error types across providers
-- [Streaming](/docs/mirascope/v2/streaming) — Streaming patterns in depth
-- [Structured Output](/docs/mirascope/v2/structured-output) — Validation and parsing
+- [Errors](/docs/errors) — Unified error types across providers
+- [Streaming](/docs/streaming) — Streaming patterns in depth
+- [Structured Output](/docs/structured-output) — Validation and parsing
