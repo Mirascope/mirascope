@@ -15,7 +15,7 @@ const toplevelDocs: SectionSpec = {
   children: [
     {
       slug: "index",
-      label: "Welcome",
+      label: "Quickstart",
     },
     {
       slug: "messages",

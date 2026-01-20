@@ -14,11 +14,11 @@ def math_assistant(query: str):
     return query
 
 
-model = llm.use_model("openai/gpt-5-mini")
+model = llm.Model("openai/gpt-5-mini")
 response = math_assistant(model, "What's the square root of 4242?")
 
 while response.tool_calls:
     tool_outputs = response.execute_tools()
     response = response.resume(tool_outputs)
 
-print(response.pretty())
+print(response.text())

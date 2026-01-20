@@ -9,11 +9,11 @@ def sqrt_tool(number: float) -> float:
     return math.sqrt(number)
 
 
-model = llm.use_model("openai/gpt-5-mini")
+model = llm.Model("openai/gpt-5-mini")
 response = model.call("What's the square root of 4242?", tools=[sqrt_tool])
 
 while response.tool_calls:
     tool_outputs = response.execute_tools()
     response = response.resume(tool_outputs)
 
-print(response.pretty())
+print(response.text())

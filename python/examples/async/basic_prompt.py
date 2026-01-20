@@ -10,7 +10,7 @@ async def recommend_book(genre: str):
 
 async def main():
     response: llm.AsyncResponse = await recommend_book("openai/gpt-5-mini", "fantasy")
-    print(response.pretty())
+    print(response.text())
 
 
 asyncio.run(main())

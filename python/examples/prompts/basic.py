@@ -7,4 +7,4 @@ def recommend_book(genre: str):
 
 
 response = recommend_book("anthropic/claude-haiku-4-5", "fantasy")
-print(response.pretty())
+print(response.text())
