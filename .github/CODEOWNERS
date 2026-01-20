@@ -2,7 +2,7 @@
 *           @willbakst
 
 # Python Owner
-*.py        @willbakst
+/python/    @willbakst @teamdandelion
 
-# Examples Owner
-/examples/  @willbakst
+# Cloud Owner
+/cloud/     @willbakst @teamdandelion
