@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 REPO_URL = "https://github.com/mirascope/mirascope.git"
-SNAPSHOT_COMMIT = "d98c01edcafa65bfe339d3795396e77fd8217413" # first mono-repo commit
+SNAPSHOT_COMMIT = "c7bbfa81f7a203bc4ec527db21a9aa5842da8e3d"
 CACHE_DIR = Path(__file__).parent.parent.parent / ".build-cache" / "mirascope-snapshots"
 
 

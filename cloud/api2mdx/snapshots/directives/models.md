@@ -1,78 +1,50 @@
 # models
 
 <ApiObject
-  path="mirascope.llm.models.register.ANTHROPIC_REGISTERED_LLMS"
-  symbolName="ANTHROPIC_REGISTERED_LLMS"
-  slug="a-n-t-h-r-o-p-i-c_-r-e-g-i-s-t-e-r-e-d_-l-l-m-s"
+  path="mirascope.llm.models.models.Model"
+  symbolName="Model"
+  slug="model"
   canonicalPath="models"
 />
 
 <ApiObject
-  path="mirascope.llm.models.register.GOOGLE_REGISTERED_LLMS"
-  symbolName="GOOGLE_REGISTERED_LLMS"
-  slug="g-o-o-g-l-e_-r-e-g-i-s-t-e-r-e-d_-l-l-m-s"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.base.LLM"
-  symbolName="LLM"
-  slug="l-l-m"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.register.OPENAI_REGISTERED_LLMS"
-  symbolName="OPENAI_REGISTERED_LLMS"
-  slug="o-p-e-n-a-i_-r-e-g-i-s-t-e-r-e-d_-l-l-m-s"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.register.REGISTERED_LLMS"
-  symbolName="REGISTERED_LLMS"
-  slug="r-e-g-i-s-t-e-r-e-d_-l-l-m-s"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.anthropic.Anthropic"
-  symbolName="Anthropic"
-  slug="anthropic"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.anthropic.AnthropicClient"
-  symbolName="AnthropicClient"
-  slug="anthropic-client"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.anthropic.AnthropicParams"
-  symbolName="AnthropicParams"
-  slug="anthropic-params"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.base.Client"
-  symbolName="Client"
-  slug="client"
-  canonicalPath="models"
-/>
-
-<ApiObject
-  path="mirascope.llm.models.base.Params"
+  path="mirascope.llm.models.params.Params"
   symbolName="Params"
   slug="params"
   canonicalPath="models"
 />
 
 <ApiObject
-  path="mirascope.llm.models.context.model"
+  path="mirascope.llm.models.thinking_config.ThinkingConfig"
+  symbolName="ThinkingConfig"
+  slug="thinking-config"
+  canonicalPath="models"
+/>
+
+<ApiObject
+  path="mirascope.llm.models.thinking_config.ThinkingLevel"
+  symbolName="ThinkingLevel"
+  slug="thinking-level"
+  canonicalPath="models"
+/>
+
+<ApiObject
+  path="mirascope.llm.models.models.model"
   symbolName="model"
-  slug="model"
+  slug="model_fn"
+  canonicalPath="models"
+/>
+
+<ApiObject
+  path="mirascope.llm.models.models.model_from_context"
+  symbolName="model_from_context"
+  slug="model_from_context"
+  canonicalPath="models"
+/>
+
+<ApiObject
+  path="mirascope.llm.models.models.use_model"
+  symbolName="use_model"
+  slug="use_model"
   canonicalPath="models"
 />

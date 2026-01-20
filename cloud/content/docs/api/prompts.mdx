@@ -15,7 +15,7 @@ Can be converted by the `llm.prompt` decorator into an `AsyncContextPrompt`, or 
 the `llm.call` decorator into an `AsyncContextCall`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/mirascope/v2/api#deps-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/api#deps-t"}], "doc_url": null}} />
 
 
 ## <ApiType type="Class" slug="async-context-prompt" symbolName="AsyncContextPrompt" /> AsyncContextPrompt
@@ -30,7 +30,7 @@ An `AsyncContextPrompt` is essentially: async `ContextMessageTemplate` + tools +
 It can be invoked with a model: `await prompt(model, ctx, *args, **kwargs)`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/mirascope/v2/api#deps-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/api#deps-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/api/formatting#formattable-t"}], "doc_url": null}} />
 
 <AttributesTable
   attributes={[
@@ -215,7 +215,7 @@ Return the `Messages` from invoking this prompt.
         "description": null,
         "kind": "simple",
         "symbol_name": "Context",
-        "doc_url": "/docs/mirascope/v2/api#context"
+        "doc_url": "/docs/api#context"
       },
       "parameters": [
         {
@@ -223,7 +223,7 @@ Return the `Messages` from invoking this prompt.
           "description": null,
           "kind": "simple",
           "symbol_name": "DepsT",
-          "doc_url": "/docs/mirascope/v2/api#deps-t"
+          "doc_url": "/docs/api#deps-t"
         }
       ],
       "doc_url": null
@@ -273,7 +273,7 @@ Return the `Messages` from invoking this prompt.
         "description": null,
         "kind": "simple",
         "symbol_name": "Message",
-        "doc_url": "/docs/mirascope/v2/api/messages#message"
+        "doc_url": "/docs/api/messages#message"
       }
     ],
     "doc_url": null
@@ -317,14 +317,14 @@ Generates a response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -341,7 +341,7 @@ Generates a response using the provided model asynchronously.
         "description": null,
         "kind": "simple",
         "symbol_name": "Context",
-        "doc_url": "/docs/mirascope/v2/api#context"
+        "doc_url": "/docs/api#context"
       },
       "parameters": [
         {
@@ -349,7 +349,7 @@ Generates a response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "DepsT",
-          "doc_url": "/docs/mirascope/v2/api#deps-t"
+          "doc_url": "/docs/api#deps-t"
         }
       ],
       "doc_url": null
@@ -403,7 +403,7 @@ Generates a response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncContextResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#async-context-response"
+          "doc_url": "/docs/api/responses#async-context-response"
         },
         "parameters": [
           {
@@ -411,7 +411,7 @@ Generates a response using the provided model asynchronously.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "None",
@@ -432,7 +432,7 @@ Generates a response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncContextResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#async-context-response"
+          "doc_url": "/docs/api/responses#async-context-response"
         },
         "parameters": [
           {
@@ -440,14 +440,14 @@ Generates a response using the provided model asynchronously.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -494,14 +494,14 @@ Generates a streaming response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -518,7 +518,7 @@ Generates a streaming response using the provided model asynchronously.
         "description": null,
         "kind": "simple",
         "symbol_name": "Context",
-        "doc_url": "/docs/mirascope/v2/api#context"
+        "doc_url": "/docs/api#context"
       },
       "parameters": [
         {
@@ -526,7 +526,7 @@ Generates a streaming response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "DepsT",
-          "doc_url": "/docs/mirascope/v2/api#deps-t"
+          "doc_url": "/docs/api#deps-t"
         }
       ],
       "doc_url": null
@@ -580,7 +580,7 @@ Generates a streaming response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncContextStreamResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#async-context-stream-response"
+          "doc_url": "/docs/api/responses#async-context-stream-response"
         },
         "parameters": [
           {
@@ -588,7 +588,7 @@ Generates a streaming response using the provided model asynchronously.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "None",
@@ -609,7 +609,7 @@ Generates a streaming response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncContextStreamResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#async-context-stream-response"
+          "doc_url": "/docs/api/responses#async-context-stream-response"
         },
         "parameters": [
           {
@@ -617,14 +617,14 @@ Generates a streaming response using the provided model asynchronously.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -645,7 +645,7 @@ An async `MessageTemplate` that can be converted by the `llm.prompt` decorator
 into an `AsyncPrompt`, or by the `llm.call` decorator into an `AsyncCall`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}], "doc_url": null}} />
 
 
 ## <ApiType type="Class" slug="async-prompt" symbolName="AsyncPrompt" /> AsyncPrompt
@@ -659,7 +659,7 @@ An `AsyncPrompt` is essentially: async `MessageTemplate` + tools + format.
 It can be invoked with a model: `await prompt(model, *args, **kwargs)`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/api/formatting#formattable-t"}], "doc_url": null}} />
 
 <AttributesTable
   attributes={[
@@ -855,7 +855,7 @@ Return the `Messages` from invoking this prompt.
         "description": null,
         "kind": "simple",
         "symbol_name": "Message",
-        "doc_url": "/docs/mirascope/v2/api/messages#message"
+        "doc_url": "/docs/api/messages#message"
       }
     ],
     "doc_url": null
@@ -899,14 +899,14 @@ Generates a response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -956,7 +956,7 @@ Generates a response using the provided model asynchronously.
         "description": null,
         "kind": "simple",
         "symbol_name": "AsyncResponse",
-        "doc_url": "/docs/mirascope/v2/api/responses#async-response"
+        "doc_url": "/docs/api/responses#async-response"
       },
       {
         "type_str": "AsyncResponse[FormattableT]",
@@ -967,7 +967,7 @@ Generates a response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#async-response"
+          "doc_url": "/docs/api/responses#async-response"
         },
         "parameters": [
           {
@@ -975,7 +975,7 @@ Generates a response using the provided model asynchronously.
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -1022,14 +1022,14 @@ Generates a streaming response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -1079,7 +1079,7 @@ Generates a streaming response using the provided model asynchronously.
         "description": null,
         "kind": "simple",
         "symbol_name": "AsyncStreamResponse",
-        "doc_url": "/docs/mirascope/v2/api/responses#async-stream-response"
+        "doc_url": "/docs/api/responses#async-stream-response"
       },
       {
         "type_str": "AsyncStreamResponse[FormattableT]",
@@ -1090,7 +1090,7 @@ Generates a streaming response using the provided model asynchronously.
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncStreamResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#async-stream-response"
+          "doc_url": "/docs/api/responses#async-stream-response"
         },
         "parameters": [
           {
@@ -1098,7 +1098,7 @@ Generates a streaming response using the provided model asynchronously.
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -1120,7 +1120,7 @@ Can be converted by the `llm.prompt` decorator into a `ContextPrompt`, or by
 the `llm.call` decorator into a `ContextCall`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/mirascope/v2/api#deps-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/api#deps-t"}], "doc_url": null}} />
 
 
 ## <ApiType type="Class" slug="context-prompt" symbolName="ContextPrompt" /> ContextPrompt
@@ -1135,7 +1135,7 @@ A `ContextPrompt` is essentially: `ContextMessageTemplate` + tools + format.
 It can be invoked with a model: `prompt(model, ctx, *args, **kwargs)`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/mirascope/v2/api#deps-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Generic[P, DepsT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": "/docs/api#deps-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/api/formatting#formattable-t"}], "doc_url": null}} />
 
 <AttributesTable
   attributes={[
@@ -1320,7 +1320,7 @@ Return the `Messages` from invoking this prompt.
         "description": null,
         "kind": "simple",
         "symbol_name": "Context",
-        "doc_url": "/docs/mirascope/v2/api#context"
+        "doc_url": "/docs/api#context"
       },
       "parameters": [
         {
@@ -1328,7 +1328,7 @@ Return the `Messages` from invoking this prompt.
           "description": null,
           "kind": "simple",
           "symbol_name": "DepsT",
-          "doc_url": "/docs/mirascope/v2/api#deps-t"
+          "doc_url": "/docs/api#deps-t"
         }
       ],
       "doc_url": null
@@ -1378,7 +1378,7 @@ Return the `Messages` from invoking this prompt.
         "description": null,
         "kind": "simple",
         "symbol_name": "Message",
-        "doc_url": "/docs/mirascope/v2/api/messages#message"
+        "doc_url": "/docs/api/messages#message"
       }
     ],
     "doc_url": null
@@ -1422,14 +1422,14 @@ Generates a response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -1446,7 +1446,7 @@ Generates a response using the provided model.
         "description": null,
         "kind": "simple",
         "symbol_name": "Context",
-        "doc_url": "/docs/mirascope/v2/api#context"
+        "doc_url": "/docs/api#context"
       },
       "parameters": [
         {
@@ -1454,7 +1454,7 @@ Generates a response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "DepsT",
-          "doc_url": "/docs/mirascope/v2/api#deps-t"
+          "doc_url": "/docs/api#deps-t"
         }
       ],
       "doc_url": null
@@ -1508,7 +1508,7 @@ Generates a response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "ContextResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#context-response"
+          "doc_url": "/docs/api/responses#context-response"
         },
         "parameters": [
           {
@@ -1516,7 +1516,7 @@ Generates a response using the provided model.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "None",
@@ -1537,7 +1537,7 @@ Generates a response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "ContextResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#context-response"
+          "doc_url": "/docs/api/responses#context-response"
         },
         "parameters": [
           {
@@ -1545,14 +1545,14 @@ Generates a response using the provided model.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -1599,14 +1599,14 @@ Generates a streaming response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -1623,7 +1623,7 @@ Generates a streaming response using the provided model.
         "description": null,
         "kind": "simple",
         "symbol_name": "Context",
-        "doc_url": "/docs/mirascope/v2/api#context"
+        "doc_url": "/docs/api#context"
       },
       "parameters": [
         {
@@ -1631,7 +1631,7 @@ Generates a streaming response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "DepsT",
-          "doc_url": "/docs/mirascope/v2/api#deps-t"
+          "doc_url": "/docs/api#deps-t"
         }
       ],
       "doc_url": null
@@ -1685,7 +1685,7 @@ Generates a streaming response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "ContextStreamResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#context-stream-response"
+          "doc_url": "/docs/api/responses#context-stream-response"
         },
         "parameters": [
           {
@@ -1693,7 +1693,7 @@ Generates a streaming response using the provided model.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "None",
@@ -1714,7 +1714,7 @@ Generates a streaming response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "ContextStreamResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#context-stream-response"
+          "doc_url": "/docs/api/responses#context-stream-response"
         },
         "parameters": [
           {
@@ -1722,14 +1722,14 @@ Generates a streaming response using the provided model.
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -1751,7 +1751,7 @@ converted by the `llm.prompt` decorator into a `Prompt` (callable with a `Model`
 or by the `llm.call` decorator into a `Call` (`Prompt` + `Model`).
 
 **Bases:** 
-<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}], "doc_url": null}} />
 
 
 ## <ApiType type="Class" slug="prompt" symbolName="Prompt" /> Prompt
@@ -1765,7 +1765,7 @@ A `Prompt` is essentially: `MessageTemplate` + tools + format.
 It can be invoked with a model: `prompt(model, *args, **kwargs)`.
 
 **Bases:** 
-<TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Generic[P, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/api/types#p"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/api/formatting#formattable-t"}], "doc_url": null}} />
 
 <AttributesTable
   attributes={[
@@ -1961,7 +1961,7 @@ Return the `Messages` from invoking this prompt.
         "description": null,
         "kind": "simple",
         "symbol_name": "Message",
-        "doc_url": "/docs/mirascope/v2/api/messages#message"
+        "doc_url": "/docs/api/messages#message"
       }
     ],
     "doc_url": null
@@ -2005,14 +2005,14 @@ Generates a response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -2062,7 +2062,7 @@ Generates a response using the provided model.
         "description": null,
         "kind": "simple",
         "symbol_name": "Response",
-        "doc_url": "/docs/mirascope/v2/api/responses#response"
+        "doc_url": "/docs/api/responses#response"
       },
       {
         "type_str": "Response[FormattableT]",
@@ -2073,7 +2073,7 @@ Generates a response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "Response",
-          "doc_url": "/docs/mirascope/v2/api/responses#response"
+          "doc_url": "/docs/api/responses#response"
         },
         "parameters": [
           {
@@ -2081,7 +2081,7 @@ Generates a response using the provided model.
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -2128,14 +2128,14 @@ Generates a streaming response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "Model",
-          "doc_url": "/docs/mirascope/v2/api/models#model"
+          "doc_url": "/docs/api/models#model"
         },
         {
           "type_str": "ModelId",
           "description": null,
           "kind": "simple",
           "symbol_name": "ModelId",
-          "doc_url": "/docs/mirascope/v2/api/providers#model-id"
+          "doc_url": "/docs/api/providers#model-id"
         }
       ],
       "doc_url": null
@@ -2185,7 +2185,7 @@ Generates a streaming response using the provided model.
         "description": null,
         "kind": "simple",
         "symbol_name": "StreamResponse",
-        "doc_url": "/docs/mirascope/v2/api/responses#stream-response"
+        "doc_url": "/docs/api/responses#stream-response"
       },
       {
         "type_str": "StreamResponse[FormattableT]",
@@ -2196,7 +2196,7 @@ Generates a streaming response using the provided model.
           "description": null,
           "kind": "simple",
           "symbol_name": "StreamResponse",
-          "doc_url": "/docs/mirascope/v2/api/responses#stream-response"
+          "doc_url": "/docs/api/responses#stream-response"
         },
         "parameters": [
           {
@@ -2204,7 +2204,7 @@ Generates a streaming response using the provided model.
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -2229,7 +2229,7 @@ and creates the appropriate Prompt variant (Prompt, AsyncPrompt, ContextPrompt,
 or AsyncContextPrompt).
 
 **Bases:** 
-<TypeLink type={{"type_str": "Generic[ToolT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "ToolT", "description": null, "kind": "simple", "symbol_name": "ToolT", "doc_url": "/docs/mirascope/v2/api/tools#tool-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"}], "doc_url": null}} />
+<TypeLink type={{"type_str": "Generic[ToolT, FormattableT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "symbol_name": "Generic", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "ToolT", "description": null, "kind": "simple", "symbol_name": "ToolT", "doc_url": "/docs/api/tools#tool-t"}, {"type_str": "FormattableT", "description": null, "kind": "simple", "symbol_name": "FormattableT", "doc_url": "/docs/api/formatting#formattable-t"}], "doc_url": null}} />
 
 <AttributesTable
   attributes={[
@@ -2414,7 +2414,7 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "AsyncContextMessageTemplate",
-            "doc_url": "/docs/mirascope/v2/api/prompts#async-context-message-template"
+            "doc_url": "/docs/api/prompts#async-context-message-template"
           },
           "parameters": [
             {
@@ -2422,14 +2422,14 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "P",
-              "doc_url": "/docs/mirascope/v2/api/types#p"
+              "doc_url": "/docs/api/types#p"
             },
             {
               "type_str": "DepsT",
               "description": null,
               "kind": "simple",
               "symbol_name": "DepsT",
-              "doc_url": "/docs/mirascope/v2/api#deps-t"
+              "doc_url": "/docs/api#deps-t"
             }
           ],
           "doc_url": null
@@ -2443,7 +2443,7 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "ContextMessageTemplate",
-            "doc_url": "/docs/mirascope/v2/api/prompts#context-message-template"
+            "doc_url": "/docs/api/prompts#context-message-template"
           },
           "parameters": [
             {
@@ -2451,14 +2451,14 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "P",
-              "doc_url": "/docs/mirascope/v2/api/types#p"
+              "doc_url": "/docs/api/types#p"
             },
             {
               "type_str": "DepsT",
               "description": null,
               "kind": "simple",
               "symbol_name": "DepsT",
-              "doc_url": "/docs/mirascope/v2/api#deps-t"
+              "doc_url": "/docs/api#deps-t"
             }
           ],
           "doc_url": null
@@ -2472,7 +2472,7 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "AsyncMessageTemplate",
-            "doc_url": "/docs/mirascope/v2/api/prompts#async-message-template"
+            "doc_url": "/docs/api/prompts#async-message-template"
           },
           "parameters": [
             {
@@ -2480,7 +2480,7 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "P",
-              "doc_url": "/docs/mirascope/v2/api/types#p"
+              "doc_url": "/docs/api/types#p"
             }
           ],
           "doc_url": null
@@ -2494,7 +2494,7 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "MessageTemplate",
-            "doc_url": "/docs/mirascope/v2/api/prompts#message-template"
+            "doc_url": "/docs/api/prompts#message-template"
           },
           "parameters": [
             {
@@ -2502,7 +2502,7 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "P",
-              "doc_url": "/docs/mirascope/v2/api/types#p"
+              "doc_url": "/docs/api/types#p"
             }
           ],
           "doc_url": null
@@ -2551,7 +2551,7 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "ToolT",
-              "doc_url": "/docs/mirascope/v2/api/tools#tool-t"
+              "doc_url": "/docs/api/tools#tool-t"
             }
           ],
           "doc_url": null
@@ -2600,7 +2600,7 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "FormattableT",
-              "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+              "doc_url": "/docs/api/formatting#formattable-t"
             }
           ],
           "doc_url": null
@@ -2614,7 +2614,7 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "Format",
-            "doc_url": "/docs/mirascope/v2/api/formatting#format"
+            "doc_url": "/docs/api/formatting#format"
           },
           "parameters": [
             {
@@ -2622,7 +2622,7 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "FormattableT",
-              "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+              "doc_url": "/docs/api/formatting#formattable-t"
             }
           ],
           "doc_url": null
@@ -2636,7 +2636,7 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "OutputParser",
-            "doc_url": "/docs/mirascope/v2/api/formatting#output-parser"
+            "doc_url": "/docs/api/formatting#output-parser"
           },
           "parameters": [
             {
@@ -2644,7 +2644,7 @@ The decorator automatically detects the function type:
               "description": null,
               "kind": "simple",
               "symbol_name": "FormattableT",
-              "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+              "doc_url": "/docs/api/formatting#formattable-t"
             }
           ],
           "doc_url": null
@@ -2688,7 +2688,7 @@ The decorator automatically detects the function type:
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncContextPrompt",
-          "doc_url": "/docs/mirascope/v2/api/prompts#async-context-prompt"
+          "doc_url": "/docs/api/prompts#async-context-prompt"
         },
         "parameters": [
           {
@@ -2696,21 +2696,21 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "P",
-            "doc_url": "/docs/mirascope/v2/api/types#p"
+            "doc_url": "/docs/api/types#p"
           },
           {
             "type_str": "DepsT",
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -2724,7 +2724,7 @@ The decorator automatically detects the function type:
           "description": null,
           "kind": "simple",
           "symbol_name": "ContextPrompt",
-          "doc_url": "/docs/mirascope/v2/api/prompts#context-prompt"
+          "doc_url": "/docs/api/prompts#context-prompt"
         },
         "parameters": [
           {
@@ -2732,21 +2732,21 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "P",
-            "doc_url": "/docs/mirascope/v2/api/types#p"
+            "doc_url": "/docs/api/types#p"
           },
           {
             "type_str": "DepsT",
             "description": null,
             "kind": "simple",
             "symbol_name": "DepsT",
-            "doc_url": "/docs/mirascope/v2/api#deps-t"
+            "doc_url": "/docs/api#deps-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -2760,7 +2760,7 @@ The decorator automatically detects the function type:
           "description": null,
           "kind": "simple",
           "symbol_name": "AsyncPrompt",
-          "doc_url": "/docs/mirascope/v2/api/prompts#async-prompt"
+          "doc_url": "/docs/api/prompts#async-prompt"
         },
         "parameters": [
           {
@@ -2768,14 +2768,14 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "P",
-            "doc_url": "/docs/mirascope/v2/api/types#p"
+            "doc_url": "/docs/api/types#p"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -2789,7 +2789,7 @@ The decorator automatically detects the function type:
           "description": null,
           "kind": "simple",
           "symbol_name": "Prompt",
-          "doc_url": "/docs/mirascope/v2/api/prompts#prompt"
+          "doc_url": "/docs/api/prompts#prompt"
         },
         "parameters": [
           {
@@ -2797,14 +2797,14 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "P",
-            "doc_url": "/docs/mirascope/v2/api/types#p"
+            "doc_url": "/docs/api/types#p"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null
@@ -2818,7 +2818,7 @@ The decorator automatically detects the function type:
           "description": null,
           "kind": "simple",
           "symbol_name": "PromptDecorator",
-          "doc_url": "/docs/mirascope/v2/api/prompts#prompt-decorator"
+          "doc_url": "/docs/api/prompts#prompt-decorator"
         },
         "parameters": [
           {
@@ -2826,14 +2826,14 @@ The decorator automatically detects the function type:
             "description": null,
             "kind": "simple",
             "symbol_name": "ToolT",
-            "doc_url": "/docs/mirascope/v2/api/tools#tool-t"
+            "doc_url": "/docs/api/tools#tool-t"
           },
           {
             "type_str": "FormattableT",
             "description": null,
             "kind": "simple",
             "symbol_name": "FormattableT",
-            "doc_url": "/docs/mirascope/v2/api/formatting#formattable-t"
+            "doc_url": "/docs/api/formatting#formattable-t"
           }
         ],
         "doc_url": null

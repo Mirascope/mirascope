@@ -36,19 +36,24 @@ export interface SectionSpec {
   slug: Slug; // Section slug for URL
   label: string; // Display name
   children: DocSpec[]; // Items in this section
-  weight?: number; // Search weight for this section
-  version?: string; // Optional version (e.g., "v1"). When set, included in URL paths like /docs/v1/section/doc
+  weight?: number; // Search weight for this section (multiplicative with product weight)
 }
 
 /**
- * Documentation structure
+ * Version documentation structure
  */
-export interface FullDocsSpec {
+export interface VersionSpec {
+  version?: string; // Optional version (e.g., "v1"). When set, included in URL paths like /docs/v1/section/doc
   // All sections (including the main/default section)
   // A section with slug "index" is treated as the default section (no prefix in URL)
   sections: SectionSpec[];
-  weight?: number; // Base search weight
+  weight?: number; // Base search weight for this version
 }
+
+/**
+ * Overall docs structure (VersionSpec for each version)
+ */
+export type FullDocsSpec = VersionSpec[];
 
 /**
  * Validation results
@@ -113,46 +118,41 @@ export function processDocSpec(
 }
 
 /**
- * Get all docs metadata from a DocsSpec
- * Processes the DocsSpec and returns DocInfo items
+ * Get all docs metadata from a ProductDocsSpec
+ * Processes the ProductDocsSpec and returns DocMeta items
  * @param docsSpec The specification to process
- * @returns Array of DocInfo for all docs
+ * @returns Array of DocMeta for all products and docs
  */
-export function getDocsFromSpec(docsSpec: FullDocsSpec): DocInfo[] {
+export function getDocsFromSpec(fullSpec: FullDocsSpec): DocInfo[] {
   const allDocs: DocInfo[] = [];
 
-  const { sections, weight: baseWeight = 1.0 } = docsSpec;
+  fullSpec.forEach((versionSpec) => {
+    const { version, sections, weight: versionWeight = 1.0 } = versionSpec;
 
-  // Process all sections
-  sections.forEach((section) => {
-    // For the default section (index), don't add a section slug prefix
-    const isDefaultSection = section.slug === "index";
-    const sectionSlug = isDefaultSection ? "" : section.slug;
+    const basePathPrefix = version ?? "";
 
-    // Build base path prefix with version if present (version is per-section)
-    const versionPrefix = section.version ? section.version : "";
+    // Process all sections
+    sections.forEach((section) => {
+      // For the default section (index), don't add a section slug prefix
+      const isDefaultSection = section.slug === "index";
+      const sectionPathPrefix = isDefaultSection
+        ? basePathPrefix
+        : basePathPrefix
+          ? `${basePathPrefix}/${section.slug}`
+          : section.slug;
 
-    // Build section path prefix: version/section or just section (or just version if no section)
-    let sectionPathPrefix = "";
-    if (versionPrefix && sectionSlug) {
-      sectionPathPrefix = `${versionPrefix}/${sectionSlug}`;
-    } else if (versionPrefix) {
-      sectionPathPrefix = versionPrefix;
-    } else if (sectionSlug) {
-      sectionPathPrefix = sectionSlug;
-    }
+      // Calculate section weight (version weight * section weight)
+      const sectionWeight = versionWeight * (section.weight ?? 1.0);
 
-    // Important to use nullish coalescing to handle zero vs undefined weights.
-    const sectionWeight = baseWeight * (section.weight ?? 1.0);
-
-    // Process each document in this section
-    section.children.forEach((docSpec) => {
-      const docItems = processDocSpec(
-        docSpec,
-        sectionPathPrefix,
-        sectionWeight,
-      );
-      allDocs.push(...docItems);
+      // Process each document in this section
+      section.children.forEach((docSpec) => {
+        const docItems = processDocSpec(
+          docSpec,
+          sectionPathPrefix,
+          sectionWeight,
+        );
+        allDocs.push(...docItems);
+      });
     });
   });
 
@@ -324,9 +324,9 @@ export function validateSectionSpec(spec: SectionSpec): ValidationResult {
 }
 
 /**
- * Validate a DocsSpec
+ * Validate a VersionSpec
  */
-export function validateDocsSpec(spec: FullDocsSpec): ValidationResult {
+export function validateVersionSpec(spec: VersionSpec): ValidationResult {
   const errors: string[] = [];
 
   // Validate sections
@@ -350,6 +350,34 @@ export function validateDocsSpec(spec: FullDocsSpec): ValidationResult {
       }
     });
   }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Validate an entire FullDocsSpec
+ */
+export function validateDocsSpec(specs: FullDocsSpec): ValidationResult {
+  const errors: string[] = [];
+
+  // Check for duplicate versions
+  const versionPaths = new Set();
+  specs.forEach((versionSpec) => {
+    const path = versionSpec.version ? `${versionSpec.version}/` : "";
+    if (versionPaths.has(path)) {
+      errors.push(`Duplicate version path: ${path}`);
+    }
+    versionPaths.add(path);
+    const versionResult = validateVersionSpec(versionSpec);
+    if (!versionResult.isValid) {
+      errors.push(
+        ...versionResult.errors.map((err) => `In version "${path}": ${err}`),
+      );
+    }
+  });
 
   return {
     isValid: errors.length === 0,

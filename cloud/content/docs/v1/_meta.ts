@@ -1,9 +1,10 @@
-import type { SectionSpec } from "@/app/lib/content/spec";
+import type { SectionSpec, VersionSpec } from "@/app/lib/content/spec";
+import api from "./api/_meta";
+import guides from "./guides/_meta";
 
-const docsSection: SectionSpec = {
+const docs: SectionSpec = {
   label: "Docs v1 (legacy)",
   slug: "index",
-  version: "v1",
   weight: 0,
   children: [
     {
@@ -137,4 +138,9 @@ const docsSection: SectionSpec = {
   ],
 };
 
-export default docsSection;
+const v1: VersionSpec = {
+  version: "v1",
+  sections: [docs, api, guides],
+};
+
+export default v1;

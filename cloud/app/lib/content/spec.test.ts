@@ -110,33 +110,37 @@ describe("validateSectionSpec", () => {
 
 describe("validateDocsSpec", () => {
   test("valid docs spec passes validation", () => {
-    const validDocs: FullDocsSpec = {
-      sections: [
-        {
-          slug: "api",
-          label: "API",
-          children: [{ slug: "overview", label: "Overview" }],
-        },
-      ],
-    };
+    const validDocs: FullDocsSpec = [
+      {
+        sections: [
+          {
+            slug: "api",
+            label: "API",
+            children: [{ slug: "overview", label: "Overview" }],
+          },
+        ],
+      },
+    ];
     expect(validateDocsSpec(validDocs).isValid).toBe(true);
   });
 
   test("docs spec with duplicate sections fails validation", () => {
-    const docsWithDupeSections: FullDocsSpec = {
-      sections: [
-        {
-          slug: "api",
-          label: "API",
-          children: [{ slug: "overview", label: "Overview" }],
-        },
-        {
-          slug: "api", // Duplicate slug
-          label: "API Reference",
-          children: [{ slug: "reference", label: "Reference" }],
-        },
-      ],
-    };
+    const docsWithDupeSections: FullDocsSpec = [
+      {
+        sections: [
+          {
+            slug: "api",
+            label: "API",
+            children: [{ slug: "overview", label: "Overview" }],
+          },
+          {
+            slug: "api", // Duplicate slug
+            label: "API Reference",
+            children: [{ slug: "reference", label: "Reference" }],
+          },
+        ],
+      },
+    ];
     const result = validateDocsSpec(docsWithDupeSections);
     expect(result.isValid).toBe(false);
     expect(result.errors[0]).toContain("Duplicate section slugs");
@@ -146,15 +150,17 @@ describe("validateDocsSpec", () => {
 describe("getDocsFromSpec", () => {
   describe("version handling", () => {
     test("generates paths without version when version is not set", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "api",
-            label: "API",
-            children: [{ slug: "overview", label: "Overview" }],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          sections: [
+            {
+              slug: "api",
+              label: "API",
+              children: [{ slug: "overview", label: "Overview" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -168,17 +174,19 @@ describe("getDocsFromSpec", () => {
       });
     });
 
-    test("generates paths with version when version is set on section", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "api",
-            label: "API",
-            version: "v1",
-            children: [{ slug: "overview", label: "Overview" }],
-          },
-        ],
-      };
+    test("generates paths with version when version is set on VersionSpec", () => {
+      const docsSpec: FullDocsSpec = [
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "api",
+              label: "API",
+              children: [{ slug: "overview", label: "Overview" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -193,16 +201,18 @@ describe("getDocsFromSpec", () => {
     });
 
     test("generates paths with version only for default section (index)", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            version: "v1",
-            children: [{ slug: "getting-started", label: "Getting Started" }],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "getting-started", label: "Getting Started" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -217,15 +227,17 @@ describe("getDocsFromSpec", () => {
     });
 
     test("generates paths without version for default section when version not set", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            children: [{ slug: "getting-started", label: "Getting Started" }],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "getting-started", label: "Getting Started" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -240,26 +252,28 @@ describe("getDocsFromSpec", () => {
     });
 
     test("handles nested docs with version", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            version: "v1",
-            children: [
-              {
-                slug: "getting-started",
-                label: "Getting Started",
-                hasContent: true, // Parent has its own content page
-                children: [
-                  { slug: "why", label: "Why Mirascope?" },
-                  { slug: "help", label: "Help" },
-                ],
-              },
-            ],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [
+                {
+                  slug: "getting-started",
+                  label: "Getting Started",
+                  hasContent: true, // Parent has its own content page
+                  children: [
+                    { slug: "why", label: "Why Mirascope?" },
+                    { slug: "help", label: "Help" },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -284,23 +298,24 @@ describe("getDocsFromSpec", () => {
       });
     });
 
-    test("handles multiple sections with mixed versions", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            version: "v1",
-            children: [{ slug: "welcome", label: "Welcome" }],
-          },
-          {
-            slug: "api",
-            label: "API",
-            version: "v1",
-            children: [{ slug: "overview", label: "Overview" }],
-          },
-        ],
-      };
+    test("handles multiple sections with same version", () => {
+      const docsSpec: FullDocsSpec = [
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "welcome", label: "Welcome" }],
+            },
+            {
+              slug: "api",
+              label: "API",
+              children: [{ slug: "overview", label: "Overview" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -319,23 +334,29 @@ describe("getDocsFromSpec", () => {
       });
     });
 
-    test("handles sections with and without version in same spec", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            // No version - unversioned section
-            children: [{ slug: "getting-started", label: "Getting Started" }],
-          },
-          {
-            slug: "api",
-            label: "API",
-            version: "v1",
-            children: [{ slug: "overview", label: "Overview" }],
-          },
-        ],
-      };
+    test("handles multiple versions in same spec", () => {
+      const docsSpec: FullDocsSpec = [
+        {
+          // No version - unversioned
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "getting-started", label: "Getting Started" }],
+            },
+          ],
+        },
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "api",
+              label: "API",
+              children: [{ slug: "overview", label: "Overview" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -357,16 +378,18 @@ describe("getDocsFromSpec", () => {
 
   describe("path generation", () => {
     test("handles index pages with trailing slashes", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            version: "v1",
-            children: [{ slug: "index", label: "Welcome" }],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "index", label: "Welcome" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -380,23 +403,25 @@ describe("getDocsFromSpec", () => {
     });
 
     test("handles docs without content (folder only)", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            version: "v1",
-            children: [
-              {
-                slug: "folder",
-                label: "Folder",
-                hasContent: false,
-                children: [{ slug: "child", label: "Child" }],
-              },
-            ],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          version: "v1",
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [
+                {
+                  slug: "folder",
+                  label: "Folder",
+                  hasContent: false,
+                  children: [{ slug: "child", label: "Child" }],
+                },
+              ],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -412,15 +437,17 @@ describe("getDocsFromSpec", () => {
 
   describe("weight handling", () => {
     test("weight of zero is preserved (not treated as undefined)", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            children: [{ slug: "doc", label: "Doc", weight: 0 }],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "doc", label: "Doc", weight: 0 }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -429,15 +456,17 @@ describe("getDocsFromSpec", () => {
     });
 
     test("undefined weight defaults to 1.0", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            children: [{ slug: "doc", label: "Doc" }], // weight is undefined
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "doc", label: "Doc" }], // weight is undefined
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -446,16 +475,18 @@ describe("getDocsFromSpec", () => {
     });
 
     test("section weight of zero is preserved", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            weight: 0, // Section weight is zero
-            children: [{ slug: "doc", label: "Doc" }],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              weight: 0, // Section weight is zero
+              children: [{ slug: "doc", label: "Doc" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -463,17 +494,19 @@ describe("getDocsFromSpec", () => {
       expect(result[0].searchWeight).toBe(0);
     });
 
-    test("base weight of zero is preserved", () => {
-      const docsSpec: FullDocsSpec = {
-        weight: 0, // Base weight is zero
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            children: [{ slug: "doc", label: "Doc" }],
-          },
-        ],
-      };
+    test("version weight of zero is preserved", () => {
+      const docsSpec: FullDocsSpec = [
+        {
+          weight: 0, // Version weight is zero
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [{ slug: "doc", label: "Doc" }],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
@@ -482,58 +515,61 @@ describe("getDocsFromSpec", () => {
     });
 
     test("weights multiply correctly through hierarchy", () => {
-      const docsSpec: FullDocsSpec = {
-        weight: 0.5, // Base weight
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            weight: 0.5, // Section weight
-            children: [
-              {
-                slug: "parent",
-                label: "Parent",
-                weight: 0.5, // Parent weight
-                hasContent: true,
-                children: [
-                  { slug: "child", label: "Child", weight: 0.5 }, // Child weight
-                ],
-              },
-            ],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          weight: 0.5, // Version weight
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [
+                {
+                  slug: "parent",
+                  label: "Parent",
+                  weight: 0.5, // Parent weight
+                  hasContent: true,
+                  children: [
+                    { slug: "child", label: "Child", weight: 0.5 }, // Child weight
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 
       expect(result).toHaveLength(2);
-      // Parent: 0.5 * 0.5 * 0.5 = 0.125
-      expect(result[0].searchWeight).toBeCloseTo(0.125);
-      // Child: 0.5 * 0.5 * 0.5 * 0.5 = 0.0625
-      expect(result[1].searchWeight).toBeCloseTo(0.0625);
+      // Parent: 0.5 * 0.5 = 0.25
+      expect(result[0].searchWeight).toBeCloseTo(0.25);
+      // Child: 0.5 * 0.5 * 0.5 = 0.125
+      expect(result[1].searchWeight).toBeCloseTo(0.125);
     });
 
     test("zero weight in hierarchy makes all descendants zero", () => {
-      const docsSpec: FullDocsSpec = {
-        sections: [
-          {
-            slug: "index",
-            label: "Docs",
-            weight: 0, // Section weight is zero
-            children: [
-              {
-                slug: "parent",
-                label: "Parent",
-                weight: 2.0, // Non-zero weight
-                hasContent: true,
-                children: [
-                  { slug: "child", label: "Child", weight: 3.0 }, // Non-zero weight
-                ],
-              },
-            ],
-          },
-        ],
-      };
+      const docsSpec: FullDocsSpec = [
+        {
+          weight: 0, // Version weight is zero
+          sections: [
+            {
+              slug: "index",
+              label: "Docs",
+              children: [
+                {
+                  slug: "parent",
+                  label: "Parent",
+                  weight: 2.0, // Non-zero weight
+                  hasContent: true,
+                  children: [
+                    { slug: "child", label: "Child", weight: 3.0 }, // Non-zero weight
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
 
       const result = getDocsFromSpec(docsSpec);
 

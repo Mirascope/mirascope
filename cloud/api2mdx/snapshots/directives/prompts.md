@@ -1,72 +1,65 @@
 # prompts
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.AsyncContextPromptable"
-  symbolName="AsyncContextPromptable"
-  slug="async-context-promptable"
+  path="mirascope.llm.prompts.protocols.AsyncContextMessageTemplate"
+  symbolName="AsyncContextMessageTemplate"
+  slug="async-context-message-template"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.AsyncContextPrompt"
+  path="mirascope.llm.prompts.prompts.AsyncContextPrompt"
   symbolName="AsyncContextPrompt"
   slug="async-context-prompt"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.AsyncPromptable"
-  symbolName="AsyncPromptable"
-  slug="async-promptable"
+  path="mirascope.llm.prompts.protocols.AsyncMessageTemplate"
+  symbolName="AsyncMessageTemplate"
+  slug="async-message-template"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.AsyncPrompt"
+  path="mirascope.llm.prompts.prompts.AsyncPrompt"
   symbolName="AsyncPrompt"
   slug="async-prompt"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.ContextPromptable"
-  symbolName="ContextPromptable"
-  slug="context-promptable"
+  path="mirascope.llm.prompts.protocols.ContextMessageTemplate"
+  symbolName="ContextMessageTemplate"
+  slug="context-message-template"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.ContextPrompt"
+  path="mirascope.llm.prompts.prompts.ContextPrompt"
   symbolName="ContextPrompt"
   slug="context-prompt"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.Promptable"
-  symbolName="Promptable"
-  slug="promptable"
+  path="mirascope.llm.prompts.protocols.MessageTemplate"
+  symbolName="MessageTemplate"
+  slug="message-template"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.Prompt"
+  path="mirascope.llm.prompts.prompts.Prompt"
   symbolName="Prompt"
   slug="prompt"
   canonicalPath="prompts"
 />
 
 <ApiObject
-  path="mirascope.llm.prompts.decorator.PromptableDecorator"
-  symbolName="PromptableDecorator"
-  slug="promptable-decorator"
-  canonicalPath="prompts"
-/>
-
-<ApiObject
-  path="mirascope.llm.prompts.decorator.PromptTemplateDecorator"
-  symbolName="PromptTemplateDecorator"
-  slug="prompt-template-decorator"
+  path="mirascope.llm.prompts.decorator.PromptDecorator"
+  symbolName="PromptDecorator"
+  slug="prompt-decorator"
   canonicalPath="prompts"
 />
 
