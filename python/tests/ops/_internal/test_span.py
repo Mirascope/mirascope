@@ -20,7 +20,7 @@ from opentelemetry.trace import (
 
 import mirascope
 
-from .utils import extract_span_data
+from ..utils import extract_span_data
 
 
 class _StaticNoOpTracer:

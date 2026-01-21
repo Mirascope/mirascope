@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"input":[{"content":"What''s the weather in Vienna?","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"get_weather","description":"Get
+    body: '{"input":[{"content":"What''s the weather in Prague?","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"get_weather","description":"Get
       the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
     headers:
       accept:
@@ -16,11 +16,11 @@ interactions:
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 2.15.0
+      - AsyncOpenAI/Python 2.15.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
-      - 'false'
+      - async:asyncio
       x-stainless-lang:
       - python
       x-stainless-os:
@@ -40,23 +40,23 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 9c12f2208cec3bb9-LAX
+      - 9c1461615ebf2b92-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -64,14 +64,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 21 Jan 2026 01:12:54 GMT
+      - Wed, 21 Jan 2026 05:23:35 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=wmSWGrFZS8g3yKh6L8L_1S0iFHAgkT7je1hneS.YNM4-1768957974-1.0.1.1-y.sGIyLUDaJG9xkyGmPFVjRC4.Alo.gGPzjmK4.o1HYeMv_kPBln_q5nTTxgtqQFinfS67ln34CK0m9VJ98_v5FHXzlYcsYKGa1uK5chRAM;
-        path=/; expires=Wed, 21-Jan-26 01:42:54 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=MY5HV7plN93CdspK.1JCBxN0Yn0l1qXU4N.6BPo0F4c-1768973015-1.0.1.1-wc9WOG94m3FOSHVT3GI90.E9z3VBtnTEu29KXSk8f3Owr_6l5e14NCnKbbhFKd9lGd3wHAOaXaay5TyS8RCzEbk5_tTu2qGuDaPBB2tlzeI;
+        path=/; expires=Wed, 21-Jan-26 05:53:35 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=AASGgzNoao82xZeNHi27cOQ7vgUx2tdYq9v.zsOjheM-1768957974250-0.0.1.1-604800000;
+      - _cfuvid=pNotZsYy2y_2gCNic1RukezcFjaLouJHr_I1CHXouF4-1768973015991-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -86,13 +86,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1199'
+      - '661'
       openai-project:
       - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1201'
+      - '664'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -106,13 +106,13 @@ interactions:
       x-ratelimit-reset-tokens:
       - 3ms
       x-request-id:
-      - req_26a86d98f32b4df2b359791db89ff8b7
+      - req_b6e75c412b0c41e7b5b351edcfba76a9
     status:
       code: 200
       message: OK
 - request:
-    body: "{\"input\":[{\"content\":\"What's the weather in Vienna?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Vienna\\\"}\",\"call_id\":\"call_aZMVxgULsvsTg9UeWVdmVDAy\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_0bce868b4bb9c6d20069702815e9c081a28a6fba0fd723caee\",\"status\":\"completed\"},{\"call_id\":\"call_aZMVxgULsvsTg9UeWVdmVDAy\",\"output\":\"Weather
-      in Vienna: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+    body: "{\"input\":[{\"content\":\"What's the weather in Prague?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Prague\\\"}\",\"call_id\":\"call_tiGaey9I9pY3AYvehqRFTaBO\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_06f645345ada69b700697062d7bb988193a27e548ea96d2ed4\",\"status\":\"completed\"},{\"call_id\":\"call_tiGaey9I9pY3AYvehqRFTaBO\",\"output\":\"Weather
+      in Prague: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
       the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
     headers:
       accept:
@@ -128,11 +128,11 @@ interactions:
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 2.15.0
+      - AsyncOpenAI/Python 2.15.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
-      - 'false'
+      - async:asyncio
       x-stainless-lang:
       - python
       x-stainless-os:
@@ -152,24 +152,24 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//fFXLkts4DLz7K1g8j6dkjy3J/oDdyx72kMol2VJBJOThDkVySXASV8r/
-        viXq7fHkZqOBJh4N6NeGMa4kPzPuMbgqqwWWeVkf6vokcrnPsvxUZPtylx/zIit3sC8xFzvIX+pT
-        8XLIYM+fOgpb/4uCRhprAvZ24REIZQUdtivy8nQsTsUhYYGAYuhihG2dRkLZB9Ug3i7eRtPl1YAO
-        2JuV1spc+Jn92jDGGHdwRd/FS3xHbR16vmHs1j88Ut49fUwoem+7SBO1TobG438RjbhWDg1ouvIz
-        y56zhCkzklUSCZQOy0hlAvkoSFmzsrfws7KRXKSK7Bt+BMlaXQnQa7rWStRdTRdH24Pdtsqo7T7b
-        H7ZZsd2VQ7cTLz+zb6kRfTumQbbh8ps5ytNepDkW+aF5qbE+YlECHBJzYqGrw8SDIcAFZ+CzgSVQ
-        WENo5qSWia1ox6bgT5qikwMYYwnGRn77ZwVqe3He1g+QRHRm/MsrMhG9R0PsBwK9omfKsK8KjQGm
-        Aiv232OW1dkfDIxkIRpzfeYT0234NZFzb3VKGEJQgcBQ79w5JifuwIPWqNejJB97vTqPAY3AB5Jy
-        Ht+VjaEat6VKo5tU4LxtHVUCxCtWb3j9FPPYNV1Zs/TwCMGa1apg01hPC6dunLFtwY/c0+YEaJCu
-        lZIdcaNwtScB/bsSWJEaN6+BqPtB8kDW47IDhK1DDxSTeTcUPwxsyKyxvoX5/0Ioya9v+ZDxO/ra
-        BpVayVuUKrbzxvdDeLVK9FOLZPkEhI/LMj7TRJO2d5ayxCC8ckNb+Z9IjB6Iq7GeAdNWJM0+z/EG
-        2sR8QaoG5xnsRNMioQ+LmvuxOvSkcG1P0u9fuLN3JSjqJfrX6PJ05zDUGMh3cliAt1n4cwzvrqDy
-        KFdbvExhMi52kIOUqkNB/70sYrrc9weg/1Zs7p5PSaZvSKefu1Uj66rFCcgmo1sKy0cztYpLFaDW
-        4zclplM2qU6Z1WEud08f7YtrP4kmbZ2cA7OVPu/v/e7wCHjEO63sZ9RkCfQMno6T7mNYr2iLBBII
-        Ovrb5vY/AAAA//8DALOPA43iBwAA
+        H4sIAAAAAAAAA3xVy5LjNgy8+ytYPI+nKFsjPz4gueSwh9w2KRUsQjYzFMmQ4GRdW/73FCnr5fHs
+        zUYDTRDopn6uGONK8iPjHoOrRdVW5du2fAMJ1eG0E6I67ES1kftNJZp9cdieis1b28o3LAsQezzw
+        l0RhT/9gQwONNQH7eOMRCGUNCSt21f6w24qiylggoBhSTWM7p5FQ9kUnaN7P3kaT+mpBB+zDSmtl
+        zvzIfq4YY4w7uKJP9RI/UFuHnq8Yu/UHD5RPj0bvbao0UescaD3+G9E019qhAU1XfmTiVWRMmYGs
+        lkigdJhXKhPIx4aUNYt4Bz9qG8lFqsm+42eQrNV1A3pJ11mJOt3p7Ghd2nWnjFpvxKZci9262N+n
+        nXn5kX3Pg+jHMS6yC+df7HEn2jLtcV+ArPYH2By2ZSmgzMyZha4OMw+GAGecgK8WlsHGGkIzNTVv
+        bEE7DAV/0FidE8AYSzAM8vvfC1Dbs/P29ATJREfG/7wg+w+BLuiZMuybh3NEpgLbbf6KQpzEbwyM
+        ZCEac33lI8Pt/msk5d7q3CiEoAKBoT45JeYk7sCD1qiXKyQfe506jwFNg0+k5Dx+KBtDPbikzisb
+        t++87RzVDTQXrN/x+iXmMQ1bWTPP8AjBmoVFsG2tp1lSWmPsOvAD9+iYAC3StVYyEbcKF/4I6D9U
+        gzWpwXEtRN0vkAeyHucTIOwceqCYw8X98vdF3Ttrre9g+j8TSM7rR37v+AP9yQaVR8k7lCp2k9P7
+        JVysavqtRbJ8BMJnkwzHtNFk104Slhgar9x9rPx3JEYXZE30Hg2N4mqtZ8C0bbJWX6d6A11mPiPV
+        9+QJTKLpkNCH2Z37tTr0pHAZz5LvT3iIpyso6iX6x5Dy8pBwv2Mgn+QwA2+T8Kcanl4/5VEu3Dtv
+        YQzOvMdBSpVQ0N/mlxhf7Efj99+I1cPxucn87Uj6ebAaWVfPrC/GoJsLy0czjopLFeCkh29JzE/Y
+        qDplFg/yvnj5HJ+98qNosuvkVCgW+nx854vtM+AZ72jZr6jJEugJPJSj7mNYWrRDAgkEif62uv0P
+        AAD//wMAB0rb6doHAAA=
     headers:
       CF-RAY:
-      - 9c12f22b3c4e3bb9-LAX
+      - 9c1461666c122b92-LAX
       Connection:
       - keep-alive
       Content-Encoding:
@@ -177,7 +177,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 21 Jan 2026 01:12:55 GMT
+      - Wed, 21 Jan 2026 05:23:36 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -193,13 +193,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '848'
+      - '619'
       openai-project:
       - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '851'
+      - '621'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -213,7 +213,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 4ms
       x-request-id:
-      - req_0676254669ce4c3ba44e193f703f633b
+      - req_7b87f4a1d975465e9a9a8f2c64d397d8
     status:
       code: 200
       message: OK

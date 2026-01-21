@@ -16,8 +16,7 @@ from mirascope.ops._internal.closure import Closure
 from mirascope.ops._internal.versioned_calls import (
     _compute_closure_from_call,  # pyright: ignore[reportPrivateUsage]
 )
-
-from .utils import extract_span_data
+from tests.ops.utils import extract_span_data
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -91,7 +90,7 @@ def test_version_with_all_decorator_arguments(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend_book",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"fantasy"}',
@@ -147,7 +146,7 @@ async def test_async_version_with_all_decorator_arguments(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend_async",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"mystery"}',
@@ -196,7 +195,7 @@ def test_version_with_default_arguments(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
@@ -239,7 +238,7 @@ def test_version_with_empty_parens(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":4}',
@@ -279,7 +278,7 @@ def test_version_sync(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "multiply",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int","y":"int"}',
                 "mirascope.trace.arg_values": '{"x":5,"y":7}',
@@ -326,7 +325,7 @@ async def test_version_async(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "process_data",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"data":"dict[str, int]"}',
                 "mirascope.trace.arg_values": '{"data":{"a":1,"b":2}}',
@@ -369,7 +368,7 @@ def test_version_with_session(
                 "mirascope.ops.session.id": "version-session-789",
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":3}',
@@ -410,7 +409,7 @@ async def test_async_version_with_session(
                 "mirascope.ops.session.id": "async-version-session-999",
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":4}',
@@ -752,13 +751,15 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"fantasy"}',
                 "mirascope.version.hash": "2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e",
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a fantasy book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The Name of the Wind\\" by Patrick Rothfuss**. It\'s the first book in the *Kingkiller Chronicle* series and follows the story of Kvothe, a talented young man who becomes a legendary figure. The narrative blends elements of magic, music, and adventure with rich world-building and an engaging, character-driven plot. It\'s a fantastic read for anyone who loves immersive fantasy!"}]',
                 "mirascope.response.usage": '{"input_tokens":12,"output_tokens":82,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
@@ -801,7 +802,7 @@ def test_versioned_call_wrapped_method(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"mystery"}',
@@ -809,6 +810,8 @@ def test_versioned_call_wrapped_method(
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
                 "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a mystery book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The No. 1 Ladies\' Detective Agency\\"** by Alexander McCall Smith. It\'s a charming mystery set in Botswana, featuring the clever and resourceful Precious Ramotswe as she solves various cases with a unique blend of humor and insight. The book combines an engaging storyline with rich cultural details, making it both an enjoyable read and a delightful introduction to the series."}]',
                 "mirascope.response.usage": '{"input_tokens":12,"output_tokens":79,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":91}',
@@ -850,7 +853,7 @@ def test_versioned_call_call_method(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"fantasy"}',
@@ -858,6 +861,8 @@ def test_versioned_call_call_method(
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
                 "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a fantasy book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The Name of the Wind\\" by Patrick Rothfuss**. It’s the first book in the *The Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows to become a legendary figure. The narrative weaves magic, music, and adventure in a richly detailed world. Its lyrical prose and deep character development make it a captivating read for fantasy lovers. Enjoy!"}]',
                 "mirascope.response.usage": '{"input_tokens":12,"output_tokens":86,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":98}',
@@ -915,7 +920,7 @@ def test_versioned_call_wrapped_stream(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.stream",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"adventure"}',
@@ -923,6 +928,8 @@ def test_versioned_call_wrapped_stream(
                 "mirascope.version.signature_hash": "d3afa65513fc5a9d79bcfdadd5775889dc259dc949c76d2c476ef916b4f234c2",
                 "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a adventure book."}],"name":null}]',
                 "mirascope.response.content": "[]",
                 "mirascope.trace.output": "",
@@ -963,13 +970,15 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"horror"}',
                 "mirascope.version.hash": "0391c2bfd9cae644a1b467679c5d6b8a03a8df17c733c4309e36838127bc6d85",
                 "mirascope.version.signature_hash": "b9cd3d0dbb1c669832bb9bec2c556281f7587625908d698c7152a510b516ec26",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a horror book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The Haunting of Hill House\\" by Shirley Jackson**. This classic novel masterfully blends psychological tension with supernatural elements, following a group of people who experience unsettling occurrences in a mysterious mansion. Jackson\'s atmospheric writing and exploration of fear and isolation make it a compelling read for any horror enthusiast. Enjoy the chills!"}]',
                 "mirascope.response.usage": '{"input_tokens":12,"output_tokens":67,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":79}',
@@ -1012,7 +1021,7 @@ async def test_versioned_async_call_call_method(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"horror"}',
@@ -1020,6 +1029,8 @@ async def test_versioned_async_call_call_method(
                 "mirascope.version.signature_hash": "b9cd3d0dbb1c669832bb9bec2c556281f7587625908d698c7152a510b516ec26",
                 "mirascope.version.uuid": "1c6495c3-f5b4-4795-b99c-221ff3273156",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a horror book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend \\"The Haunting of Hill House\\" by Shirley Jackson. It\'s a classic in the horror genre, exploring themes of fear, isolation, and psychological disturbance. The story follows a group of people who gather at a supposedly haunted mansion, and the eerie atmosphere and character dynamics make it both chilling and thought-provoking. Enjoy!"}]',
                 "mirascope.response.usage": '{"input_tokens":12,"output_tokens":66,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":78}',
@@ -1078,13 +1089,15 @@ def test_versioned_context_call(span_exporter: InMemorySpanExporter) -> None:
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"ctx":"llm.Context[str]","genre":"str"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"genre":"fantasy"}',
                 "mirascope.version.hash": "040ba4bb8fbe484b0fec96048fc27c7f1b8c8f3ed36a2ed94e92e8cc13407517",
                 "mirascope.version.signature_hash": "3d98c672f65730494cad6b8cc3410c69067bbaa986d745e26f416e99b9db9373",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"As a librarian, Recommend a fantasy book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The Night Circus\\" by Erin Morgenstern**. This enchanting novel tells the story of a mysterious circus that appears only at night, featuring exquisite performances and magical wonders. At the heart of the story is a competition between two young illusionists, Celia and Marco, bound to each other by a challenge that intertwines their fates. The lush, imaginative writing and intricate plot make it a captivating read for any fantasy enthusiast. Enjoy the magic!"}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":94,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":110}',
@@ -1162,13 +1175,15 @@ async def test_versioned_async_context_call(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"ctx":"llm.Context[str]","genre":"str"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"genre":"mystery"}',
                 "mirascope.version.hash": "79085c0ac8178f3ae453795c87e509b7738abc1b1dcf58b045137c5cfe7e7923",
                 "mirascope.version.signature_hash": "ae19bdc73bdb0f93f143b7df3c8cead8efc708c74688fcf000de53be729c5e96",
                 "mirascope.version.version": "1.0",
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"As a librarian, Recommend a mystery book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The Cuckoo\'s Calling\\"** by Robert Galbraith (pen name of J.K. Rowling). It\'s the first book in the Cormoran Strike series, featuring a private detective investigating the suspicious death of a supermodel. The plot is intricately woven with rich character development and sharp insights into the world of fame and fortune. It expertly balances suspense and a deep exploration of human nature, making it a compelling read for any mystery enthusiast. Enjoy!"}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":97,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":113}',
@@ -1245,7 +1260,7 @@ def test_versioned_call_with_tags(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend.call",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.arg_values": '{"genre":"romance"}',
@@ -1255,6 +1270,8 @@ def test_versioned_call_with_tags(
                 "mirascope.version.uuid": "f90e3dcd-5907-4822-aa74-f051a60e37de",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.tags": ("production", "recommendations"),
+                "mirascope.provider_id": "openai",
+                "mirascope.model_id": "openai/gpt-4o-mini",
                 "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"Recommend a romance book."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"I recommend **\\"The Kiss Quotient\\" by Helen Hoang**. It’s a refreshing story about Stella Lane, a successful woman with Asperger\'s, who decides to hire an escort to help her gain more experience in relationships. The book beautifully explores themes of love, acceptance, and self-discovery, with a charming romance that unfolds between Stella and the escort, Michael. It\'s both sweet and steamy, making it a wonderful read for romance lovers!"}]',
                 "mirascope.response.usage": '{"input_tokens":12,"output_tokens":93,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":105}',
@@ -1477,7 +1494,7 @@ def test_version_registers_new_function(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute_new",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
@@ -1520,7 +1537,7 @@ def test_version_uses_existing_function(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute_existing",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
@@ -1562,7 +1579,7 @@ async def test_async_version_registers_new_function(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "async_compute_new",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
@@ -1606,7 +1623,7 @@ async def test_async_version_uses_existing_function(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "async_compute_existing",
-                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.module": "ops._internal.test_versioning",
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
@@ -1649,7 +1666,7 @@ def test_version_continues_when_get_client_fails(
                 "attributes": {
                     "mirascope.type": "trace",
                     "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops.test_versioning",
+                    "mirascope.fn.module": "ops._internal.test_versioning",
                     "mirascope.fn.is_async": False,
                     "mirascope.trace.arg_types": '{"x":"int"}',
                     "mirascope.trace.arg_values": '{"x":5}',
@@ -1694,7 +1711,7 @@ def test_version_continues_when_api_fails(
                 "attributes": {
                     "mirascope.type": "trace",
                     "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops.test_versioning",
+                    "mirascope.fn.module": "ops._internal.test_versioning",
                     "mirascope.fn.is_async": False,
                     "mirascope.trace.arg_types": '{"x":"int"}',
                     "mirascope.trace.arg_values": '{"x":5}',
@@ -1738,7 +1755,7 @@ async def test_async_version_continues_when_get_client_fails(
                 "attributes": {
                     "mirascope.type": "trace",
                     "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops.test_versioning",
+                    "mirascope.fn.module": "ops._internal.test_versioning",
                     "mirascope.fn.is_async": True,
                     "mirascope.trace.arg_types": '{"x":"int"}',
                     "mirascope.trace.arg_values": '{"x":5}',
@@ -1784,7 +1801,7 @@ async def test_async_version_continues_when_api_fails(
                 "attributes": {
                     "mirascope.type": "trace",
                     "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops.test_versioning",
+                    "mirascope.fn.module": "ops._internal.test_versioning",
                     "mirascope.fn.is_async": True,
                     "mirascope.trace.arg_types": '{"x":"int"}',
                     "mirascope.trace.arg_values": '{"x":5}',
@@ -1830,7 +1847,7 @@ async def test_async_version_continues_when_closure_is_none(
                 "attributes": {
                     "mirascope.type": "trace",
                     "mirascope.fn.qualname": "compute",
-                    "mirascope.fn.module": "ops.test_versioning",
+                    "mirascope.fn.module": "ops._internal.test_versioning",
                     "mirascope.fn.is_async": True,
                     "mirascope.trace.arg_types": '{"x":"int"}',
                     "mirascope.trace.arg_values": '{"x":5}',
