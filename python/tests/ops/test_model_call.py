@@ -119,6 +119,29 @@ def test_model_call_with_tools(span_exporter: InMemorySpanExporter) -> None:
 
 
 @pytest.mark.vcr()
+def test_model_call_with_strict_tool(span_exporter: InMemorySpanExporter) -> None:
+    """Test OpenTelemetry instrumentation records strict attribute on tools."""
+
+    @llm.tool(strict=True)
+    def get_current_weather(location: str, unit: str = "fahrenheit") -> str:
+        """Get the current weather in a given location."""
+        return f"Weather in {location}: 72°{unit[0].upper()}, sunny"
+
+    model = llm.Model(model_id="openai/gpt-4o-mini")
+    messages = [llm.messages.user("What's the weather like in San Francisco?")]
+
+    model.call(messages, tools=[get_current_weather])
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+    span_dict = span_snapshot(spans[0])
+    # Verify that strict: true appears in tool definitions
+    tool_defs = span_dict["attributes"]["gen_ai.tool.definitions"]
+    assert isinstance(tool_defs, str)
+    assert '"strict":true' in tool_defs
+
+
+@pytest.mark.vcr()
 def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None:
     """Test OpenTelemetry instrumentation with model parameters."""
     model_params: dict[str, Any] = {
@@ -810,7 +833,7 @@ def test_model_call_with_format_tool_finish_reason(
                 "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "json",
                 "gen_ai.request.max_tokens": 5,
-                "gen_ai.tool.definitions": '[{"name":"__mirascope_formatted_output_tool__","description":"Use this tool to extract data in Book format for a final response.\\nA book with title and author.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"additionalProperties":false,"$defs":null},"strict":true}]',
+                "gen_ai.tool.definitions": '[{"name":"__mirascope_formatted_output_tool__","description":"Use this tool to extract data in Book format for a final response.\\nA book with title and author.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"additionalProperties":false,"$defs":null}}]',
                 "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["length"],
                 "gen_ai.response.id": "resp_format_tool_finish",

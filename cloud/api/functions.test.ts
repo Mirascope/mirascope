@@ -255,6 +255,38 @@ describe.sequential("Functions API", (it) => {
     }),
   );
 
+  it.effect(
+    "GET /organizations/:orgId/projects/:projId/environments/:envId/functions/:functionId - gets function by env (session auth)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+
+        // Create a function first using API key client
+        const created = yield* apiKeyClient.functions.create({
+          payload: {
+            code: "def get_by_env_func(): pass",
+            hash: `get-by-env-hash-${Date.now()}`,
+            signature: "def get_by_env_func() -> None",
+            signatureHash: "get-by-env-sig-hash",
+            name: "get_by_env_func",
+          },
+        });
+
+        // Use session-authenticated client to get the function via getByEnv endpoint
+        const result = yield* client.functions.getByEnv({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            functionId: created.id,
+          },
+        });
+
+        expect(result.id).toBe(created.id);
+        expect(result.name).toBe("get_by_env_func");
+      }),
+  );
+
   it.effect("Dispose API key client", () =>
     Effect.gen(function* () {
       if (disposeApiKeyClient) {

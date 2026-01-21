@@ -189,6 +189,49 @@ describe.sequential("Search API", (it) => {
     }),
   );
 
+  // Session-auth endpoint tests
+  it.effect(
+    "POST /organizations/:orgId/projects/:projId/environments/:envId/traces/search - returns empty results",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.traces.searchByEnv({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          },
+          payload: createSearchTimeWindow(),
+        });
+
+        expect(result.spans).toBeDefined();
+        expect(Array.isArray(result.spans)).toBe(true);
+        expect(typeof result.total).toBe("number");
+        expect(typeof result.hasMore).toBe("boolean");
+      }),
+  );
+
+  it.effect(
+    "GET /organizations/:orgId/projects/:projId/environments/:envId/traces/:traceId - returns empty trace",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const result = yield* client.traces.getTraceDetailByEnv({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            traceId: "nonexistent-trace-id",
+          },
+        });
+
+        expect(result.traceId).toBe("nonexistent-trace-id");
+        expect(result.spans).toEqual([]);
+        expect(result.rootSpanId).toBeNull();
+        expect(result.totalDurationMs).toBeNull();
+      }),
+  );
+
   it.effect(
     "searchHandler supports optional filters and maps attributeFilters",
     () =>
@@ -226,7 +269,7 @@ describe.sequential("Search API", (it) => {
           Layer.provide(settingsLayer),
         );
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(apiKeyInfo.environmentId, {
           ...createSearchTimeWindow(),
           attributeFilters: [
             {
@@ -303,9 +346,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 200,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
               {
                 traceId: "trace-1",
@@ -315,9 +361,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 50,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 2,
@@ -333,7 +382,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         limit: 10,
@@ -385,9 +434,12 @@ describe.sequential("Search API", (it) => {
                   durationMs: 100,
                   model: null,
                   provider: null,
+                  inputTokens: null,
+                  outputTokens: null,
                   totalTokens: null,
                   functionId: null,
                   functionName: null,
+                  hasChildren: false,
                 },
                 {
                   traceId: "trace-total",
@@ -397,9 +449,12 @@ describe.sequential("Search API", (it) => {
                   durationMs: 200,
                   model: null,
                   provider: null,
+                  inputTokens: null,
+                  outputTokens: null,
                   totalTokens: null,
                   functionId: null,
                   functionName: null,
+                  hasChildren: false,
                 },
               ],
               total: 10,
@@ -440,9 +495,12 @@ describe.sequential("Search API", (it) => {
                   durationMs: 50,
                   model: null,
                   provider: null,
+                  inputTokens: null,
+                  outputTokens: null,
                   totalTokens: null,
                   functionId: null,
                   functionName: null,
+                  hasChildren: false,
                 },
               ],
               total: 1,
@@ -458,7 +516,7 @@ describe.sequential("Search API", (it) => {
           exists: () => Effect.succeed(true),
         });
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(apiKeyInfo.environmentId, {
           startTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
           endTime: new Date().toISOString(),
           limit: 2,
@@ -508,9 +566,12 @@ describe.sequential("Search API", (it) => {
                   durationMs: 100,
                   model: null,
                   provider: null,
+                  inputTokens: null,
+                  outputTokens: null,
                   totalTokens: null,
                   functionId: null,
                   functionName: null,
+                  hasChildren: false,
                 },
               ],
               total: 10,
@@ -551,9 +612,12 @@ describe.sequential("Search API", (it) => {
                   durationMs: 50,
                   model: null,
                   provider: null,
+                  inputTokens: null,
+                  outputTokens: null,
                   totalTokens: null,
                   functionId: null,
                   functionName: null,
+                  hasChildren: false,
                 },
               ],
               total: 1,
@@ -569,7 +633,7 @@ describe.sequential("Search API", (it) => {
           exists: () => Effect.succeed(true),
         });
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(apiKeyInfo.environmentId, {
           startTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
           endTime: new Date().toISOString(),
           limit: 1,
@@ -614,9 +678,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 10,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -658,7 +725,7 @@ describe.sequential("Search API", (it) => {
       });
 
       const now = Date.now();
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(now - 60 * 60 * 1000).toISOString(),
         endTime: new Date(now - 59 * 60 * 1000).toISOString(),
       }).pipe(
@@ -699,9 +766,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 10,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 10,
@@ -742,7 +812,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         limit: 10,
@@ -785,9 +855,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 25,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -828,7 +901,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
       }).pipe(
@@ -869,9 +942,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 50,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 100,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
               {
                 traceId: "trace-sort-duration",
@@ -881,9 +957,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 50,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 20,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 2,
@@ -924,9 +1003,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: null,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -942,7 +1024,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         sortBy: "duration_ms",
@@ -985,9 +1067,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 100,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 10,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1028,9 +1113,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: null,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1046,7 +1134,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         sortBy: "duration_ms",
@@ -1088,9 +1176,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 10,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 200,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1131,9 +1222,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 20,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
               {
                 traceId: "trace-sort-tokens",
@@ -1143,9 +1237,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 30,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 50,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 2,
@@ -1161,7 +1258,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         sortBy: "total_tokens",
@@ -1204,9 +1301,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 10,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 50,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1247,9 +1347,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 20,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: null,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1265,7 +1368,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* searchHandler({
+      const result = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         sortBy: "total_tokens",
@@ -1306,9 +1409,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 10,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 10,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1349,9 +1455,12 @@ describe.sequential("Search API", (it) => {
                 durationMs: 20,
                 model: null,
                 provider: null,
+                inputTokens: null,
+                outputTokens: null,
                 totalTokens: 20,
                 functionId: null,
                 functionName: null,
+                hasChildren: false,
               },
             ],
             total: 1,
@@ -1367,7 +1476,7 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const resultAsc = yield* searchHandler({
+      const resultAsc = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         sortBy: "start_time",
@@ -1382,7 +1491,7 @@ describe.sequential("Search API", (it) => {
         ),
       );
 
-      const resultDesc = yield* searchHandler({
+      const resultDesc = yield* searchHandler(apiKeyInfo.environmentId, {
         startTime: new Date(Date.now() - 5_000).toISOString(),
         endTime: new Date().toISOString(),
         sortBy: "start_time",
@@ -1469,7 +1578,10 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* getTraceDetailHandler("trace-merge").pipe(
+      const result = yield* getTraceDetailHandler(
+        apiKeyInfo.environmentId,
+        "trace-merge",
+      ).pipe(
         Effect.provide(
           Layer.mergeAll(
             authenticationLayer,
@@ -1521,7 +1633,10 @@ describe.sequential("Search API", (it) => {
       });
 
       const result = await Effect.runPromise(
-        getTraceDetailHandler("trace-no-realtime").pipe(
+        getTraceDetailHandler(
+          apiKeyInfo.environmentId,
+          "trace-no-realtime",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(authenticationLayer, clickHouseSearchLayer),
           ),
@@ -1580,7 +1695,10 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* getTraceDetailHandler("trace-fallback").pipe(
+      const result = yield* getTraceDetailHandler(
+        apiKeyInfo.environmentId,
+        "trace-fallback",
+      ).pipe(
         Effect.provide(
           Layer.mergeAll(
             authenticationLayer,
@@ -1674,7 +1792,10 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* getTraceDetailHandler("trace-invalid").pipe(
+      const result = yield* getTraceDetailHandler(
+        apiKeyInfo.environmentId,
+        "trace-invalid",
+      ).pipe(
         Effect.provide(
           Layer.mergeAll(
             authenticationLayer,
@@ -1805,7 +1926,10 @@ describe.sequential("Search API", (it) => {
         exists: () => Effect.succeed(false),
       });
 
-      const result = yield* getTraceDetailHandler("trace-duration").pipe(
+      const result = yield* getTraceDetailHandler(
+        apiKeyInfo.environmentId,
+        "trace-duration",
+      ).pipe(
         Effect.provide(
           Layer.mergeAll(
             authenticationLayer,
@@ -2015,6 +2139,8 @@ describe("Search schema definitions", () => {
             durationMs: null,
             model: null,
             provider: null,
+            inputTokens: null,
+            outputTokens: null,
             totalTokens: null,
             functionId: null,
             functionName: null,
@@ -2256,7 +2382,7 @@ describe("Realtime span merge", () => {
             hasMore: false,
           };
 
-          const result = yield* searchHandler({
+          const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
             startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
             endTime: now.toISOString(),
           }).pipe(
@@ -2292,7 +2418,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
           endTime: now.toISOString(),
           offset: 10,
@@ -2337,7 +2463,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
           endTime: now.toISOString(),
         }).pipe(
@@ -2367,7 +2493,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
           endTime: now.toISOString(),
         }).pipe(
@@ -2402,7 +2528,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: oldDate.toISOString(),
           endTime: new Date(oldDate.getTime() + 60 * 1000).toISOString(),
         }).pipe(
@@ -2444,7 +2570,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "start_time",
@@ -2488,7 +2614,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "duration_ms",
@@ -2532,7 +2658,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "duration_ms",
@@ -2577,7 +2703,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "total_tokens",
@@ -2619,7 +2745,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           limit: 3,
@@ -2660,7 +2786,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "duration_ms",
@@ -2705,7 +2831,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "total_tokens",
@@ -2750,7 +2876,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "total_tokens",
@@ -2795,7 +2921,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "start_time",
@@ -2840,7 +2966,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
           sortBy: "start_time",
@@ -2879,7 +3005,7 @@ describe("Realtime span merge", () => {
           hasMore: false,
         };
 
-        const result = yield* searchHandler({
+        const result = yield* searchHandler(mockApiKeyInfo.environmentId, {
           startTime: new Date(now - 5 * 60 * 1000).toISOString(),
           endTime: new Date(now).toISOString(),
         }).pipe(
@@ -2923,7 +3049,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: null,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -2967,7 +3096,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: null,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3017,7 +3149,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: 100,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3047,7 +3182,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: 100,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3080,7 +3218,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: null,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3127,7 +3268,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: null,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,
@@ -3168,7 +3312,10 @@ describe("Realtime span merge", () => {
           totalDurationMs: null,
         };
 
-        const result = yield* getTraceDetailHandler("trace-1").pipe(
+        const result = yield* getTraceDetailHandler(
+          mockApiKeyInfo.environmentId,
+          "trace-1",
+        ).pipe(
           Effect.provide(
             Layer.mergeAll(
               authenticationLayer,

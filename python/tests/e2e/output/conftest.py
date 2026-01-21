@@ -101,6 +101,63 @@ def vcr_cassette_name(
         return f"{scenario}/{formatting_mode}/{model_id_str}/{cassette_call_type}"
 
 
+def _get_snapshot_paths(
+    test_name: str,
+    model_id: llm.ModelId,
+    formatting_mode: llm.FormattingMode | None,
+) -> tuple[str, Path]:
+    """Get module path and file path for a snapshot.
+
+    Returns:
+        Tuple of (module_path, snapshot_file_path)
+    """
+    scenario, _ = _parse_test_name(test_name)
+    model_id_str = (
+        model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
+    )
+    file_name = f"{model_id_str}_snapshots"
+
+    if formatting_mode is None:
+        module_path = f"e2e.output.snapshots.{scenario}.{file_name}"
+        snapshot_file = (
+            Path(__file__).parent / "snapshots" / scenario / f"{file_name}.py"
+        )
+    else:
+        module_path = f"e2e.output.snapshots.{scenario}.{formatting_mode}.{file_name}"
+        snapshot_file = (
+            Path(__file__).parent
+            / "snapshots"
+            / scenario
+            / formatting_mode
+            / f"{file_name}.py"
+        )
+
+    return module_path, snapshot_file
+
+
+@pytest.fixture(autouse=True)
+def _hard_refresh_snapshot_cleanup(  # pyright: ignore[reportUnusedFunction]
+    request: FixtureRequest,
+) -> None:
+    """Delete snapshot file before test when --hard-refresh is enabled."""
+    if not request.config.getoption("--hard-refresh", default=False):
+        return
+
+    # Only run for tests that use the model_id fixture (parametrized tests)
+    if "model_id" not in request.fixturenames:
+        return
+
+    # Get the fixture values
+    model_id: llm.ModelId = request.getfixturevalue("model_id")
+    formatting_mode: llm.FormattingMode | None = request.getfixturevalue(
+        "formatting_mode"
+    )
+
+    _, snapshot_file = _get_snapshot_paths(request.node.name, model_id, formatting_mode)
+    if snapshot_file.exists():
+        snapshot_file.unlink()
+
+
 @pytest.fixture
 def snapshot(
     request: FixtureRequest,
@@ -119,28 +176,10 @@ def snapshot(
     - Without formatting_mode: snapshots/{scenario}/{model_id}_snapshots.py
     - With formatting_mode: snapshots/{scenario}/{formatting_mode}/{model_id}_snapshots.py
     """
-    test_name = request.node.name
-    scenario, call_type = _parse_test_name(test_name)
-    model_id_str = (
-        model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
+    module_path, snapshot_file = _get_snapshot_paths(
+        request.node.name, model_id, formatting_mode
     )
-
-    file_name = f"{model_id_str}_snapshots"
-
-    if formatting_mode is None:
-        module_path = f"e2e.output.snapshots.{scenario}.{file_name}"
-        snapshot_file = (
-            Path(__file__).parent / "snapshots" / scenario / f"{file_name}.py"
-        )
-    else:
-        module_path = f"e2e.output.snapshots.{scenario}.{formatting_mode}.{file_name}"
-        snapshot_file = (
-            Path(__file__).parent
-            / "snapshots"
-            / scenario
-            / formatting_mode
-            / f"{file_name}.py"
-        )
+    _, call_type = _parse_test_name(request.node.name)
 
     if not snapshot_file.exists():
         snapshot_file.parent.mkdir(parents=True, exist_ok=True)

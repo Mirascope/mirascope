@@ -112,9 +112,12 @@ describe("listByFunctionHashHandler", () => {
               durationMs: 100,
               model: null,
               provider: null,
+              inputTokens: null,
+              outputTokens: null,
               totalTokens: null,
               functionId: mockFunctionId,
               functionName: null,
+              hasChildren: false,
             },
             {
               // Same traceId - should be deduplicated (hits line 117 false branch)
@@ -125,9 +128,12 @@ describe("listByFunctionHashHandler", () => {
               durationMs: 200,
               model: null,
               provider: null,
+              inputTokens: null,
+              outputTokens: null,
               totalTokens: null,
               functionId: mockFunctionId,
               functionName: null,
+              hasChildren: false,
             },
             {
               // Different traceId - should be included
@@ -138,9 +144,12 @@ describe("listByFunctionHashHandler", () => {
               durationMs: 300,
               model: null,
               provider: null,
+              inputTokens: null,
+              outputTokens: null,
               totalTokens: null,
               functionId: mockFunctionId,
               functionName: null,
+              hasChildren: false,
             },
           ],
           total: 3,

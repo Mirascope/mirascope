@@ -35,7 +35,10 @@ export default defineConfig(() => {
     plugins: [
       viteContent({ processor }),
       viteMDX(),
-      viteImages({ viteEnvironments: ["client"] }),
+      viteImages({
+        viteEnvironments: ["client"],
+        skipPatterns: [/\/social-cards\/background\.png/],
+      }),
       cloudflare({ viteEnvironment: { name: "ssr" } }),
       tanstackStart({
         srcDirectory: "app",
