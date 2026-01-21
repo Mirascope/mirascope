@@ -17,7 +17,7 @@ export const ResponsiveTextBlock = ({
   lineClassName = "",
   textShadow = false,
 }: ResponsiveTextBlockProps) => {
-  const containerClasses = `${className} ${textShadow ? "landing-page-text-shadow" : ""}`;
+  const containerClasses = `${className} ${textShadow ? "text-shade" : ""}`;
 
   return (
     <div className={containerClasses}>
@@ -27,7 +27,7 @@ export const ResponsiveTextBlock = ({
           fontSize,
           lineHeight: "0.9",
         };
-        const lineClasses = `whitespace-normal sm:whitespace-nowrap ${lineClassName} ${
+        const lineClasses = `whitespace-normal md:whitespace-nowrap ${lineClassName} ${
           !isLastLine ? lineSpacing : ""
         }`;
 
