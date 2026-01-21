@@ -449,19 +449,6 @@ export function validateSettings(): Effect.Effect<
 export function validateSettingsFromEnvironment(
   env: CloudflareEnvironment,
 ): Effect.Effect<SettingsConfig, SettingsValidationError> {
-  // Log HYPERDRIVE binding status for debugging
-  console.log("[Settings] HYPERDRIVE binding exists:", !!env.HYPERDRIVE);
-  console.log(
-    "[Settings] HYPERDRIVE.connectionString exists:",
-    !!env.HYPERDRIVE?.connectionString,
-  );
-  if (env.HYPERDRIVE?.connectionString) {
-    // Log partial connection string (hide credentials)
-    const connStr = env.HYPERDRIVE.connectionString;
-    const safeStr = connStr.replace(/:([^@]+)@/, ":****@");
-    console.log("[Settings] HYPERDRIVE connection string (redacted):", safeStr);
-  }
-
   // Check HYPERDRIVE binding first with clear error message
   if (!env.HYPERDRIVE?.connectionString) {
     return Effect.fail(

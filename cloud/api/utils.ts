@@ -48,13 +48,8 @@ export const handleDefects = (
   effect: Effect.Effect<Response, never, never>,
 ): Effect.Effect<Response, never, never> =>
   effect.pipe(
-    Effect.catchAllDefect((defect) => {
-      // Log the defect for debugging - this will appear in Cloudflare Workers logs
-      console.error("[handleDefects] Caught defect:", defect);
-      if (defect instanceof Error) {
-        console.error("[handleDefects] Error stack:", defect.stack);
-      }
-      return Effect.succeed(
+    Effect.catchAllDefect((defect) =>
+      Effect.succeed(
         toErrorResponse(
           new InternalError({
             message:
@@ -64,6 +59,6 @@ export const handleDefects = (
             cause: defect,
           }),
         ),
-      );
-    }),
+      ),
+    ),
   );

@@ -114,7 +114,7 @@
         "GOOGLE_CALLBACK_URL": "https://staging.mirascope.com/auth/google/proxy-callback",
         "VITE_STRIPE_PUBLISHABLE_KEY": "pk_test_51Sq9urJhkjd7EGF3KhYnhAOsfXpyMFMPHWcHfcuG7HrBAR7QihYhoXM43X3VOU4mUU4qIgPiGOQUpO7jx6xnzGUK001TQT7ab9",
         "STRIPE_PUBLISHABLE_KEY": "pk_test_51Sq9urJhkjd7EGF3KhYnhAOsfXpyMFMPHWcHfcuG7HrBAR7QihYhoXM43X3VOU4mUU4qIgPiGOQUpO7jx6xnzGUK001TQT7ab9",
-        "STRIPE_ROUTER_PRICE_ID": "price_1Sq9yiJhkjd7EGF3ANwpMBZN",
+        "STRIPE_ROUTER_PRICE_ID": "price_1Ss1nZJhkjd7EGF3TRpfefa8",
         "STRIPE_ROUTER_METER_ID": "mtr_test_61TzXtcaP1Yow55Hb41Jhkjd7EGF31Zw",
         "STRIPE_CLOUD_FREE_PRICE_ID": "price_1SqA2kJhkjd7EGF3fJep8VxO",
         "STRIPE_CLOUD_PRO_PRICE_ID": "price_1SqA2kJhkjd7EGF3vL0FeUnk",
