@@ -1,71 +1,14 @@
-name: Cleanup Cloud PR Preview
+name: Deploy Cloud to Staging
 
 on:
-  pull_request:
+  push:
     branches: [v2]
-    types: [closed]
     paths:
       - 'cloud/**'
+      - '.github/workflows/cloud-staging-deploy.yml'
 
 jobs:
-  cleanup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PlanetScale CLI
-        uses: planetscale/setup-pscale-action@v1
-
-      - name: Delete PlanetScale Branch
-        env:
-          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
-          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
-        run: |
-          pscale branch delete ${{ vars.PLANETSCALE_DATABASE }} preview-pr-${{ github.event.number }} --org ${{ vars.PLANETSCALE_ORG }} --force || true
-        continue-on-error: true
-
-      - name: Delete ClickHouse Database
-        env:
-          CLICKHOUSE_HOST: ${{ secrets.STAGING_CLICKHOUSE_HOST }}
-          CLICKHOUSE_USER: ${{ secrets.STAGING_CLICKHOUSE_USER }}
-          CLICKHOUSE_PASSWORD: ${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}
-        run: |
-          DB_NAME="preview_pr_${{ github.event.number }}"
-
-          echo "Dropping ClickHouse database: $DB_NAME"
-
-          curl -X POST "https://${CLICKHOUSE_HOST}:8443/" \
-            --user "${CLICKHOUSE_USER}:${CLICKHOUSE_PASSWORD}" \
-            --data-binary "DROP DATABASE IF EXISTS ${DB_NAME}" || true
-        continue-on-error: true
-
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - name: Delete Hyperdrive config
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          cd cloud
-          HYPERDRIVE_NAME="mirascope-cloud-pr-${{ github.event.number }}"
-          HYPERDRIVE_ID=$(bunx wrangler hyperdrive list --json 2>/dev/null | jq -r ".[] | select(.name == \"$HYPERDRIVE_NAME\") | .id" || echo "")
-
-          if [ -n "$HYPERDRIVE_ID" ]; then
-            bunx wrangler hyperdrive delete $HYPERDRIVE_ID --yes || true
-          fi
-        continue-on-error: true
-
-      - name: Delete Cloudflare Worker
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          cd cloud
-          bunx wrangler delete --name mirascope-cloud-pr-${{ github.event.number }} --force || true
-        continue-on-error: true
-
-  deploy-staging-on-merge:
-    if: github.event.pull_request.merged == true
+  deploy-staging:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -84,6 +27,16 @@ jobs:
         run: bun run db:migrate
         env:
           DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: Run ClickHouse migrations
+        env:
+          CLICKHOUSE_URL: ${{ secrets.STAGING_CLICKHOUSE_HOST }}
+          CLICKHOUSE_USER: ${{ secrets.STAGING_CLICKHOUSE_USER }}
+          CLICKHOUSE_PASSWORD: ${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}
+          CLICKHOUSE_DATABASE: staging
+          CLICKHOUSE_TLS_ENABLED: true
+          CLICKHOUSE_MIGRATE_NATIVE_PORT: 9440
+        run: bun run clickhouse:migrate
 
       - name: Build for staging
         run: bun run build
@@ -112,5 +65,5 @@ jobs:
             echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" | bunx wrangler secret put GOOGLE_ANALYTICS_MEASUREMENT_ID --env staging
             echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_API_SECRET }}" | bunx wrangler secret put GOOGLE_ANALYTICS_API_SECRET --env staging
 
-      - name: Notify staging deployment
+      - name: Deployment complete
         run: echo "✅ Successfully deployed to staging at https://staging.mirascope.com"

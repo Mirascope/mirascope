@@ -183,9 +183,7 @@ async function processMessage(
   // Database connection string from Hyperdrive
   const databaseUrl = env.HYPERDRIVE?.connectionString;
   if (!databaseUrl) {
-    console.error(
-      "[routerMeteringQueue] HYPERDRIVE binding not configured",
-    );
+    console.error("[routerMeteringQueue] HYPERDRIVE binding not configured");
     message.retry({ delaySeconds: 60 });
     return;
   }

@@ -12,9 +12,13 @@ import {
 } from "@/api/router/utils";
 import { handleStreamingResponse } from "@/api/router/streaming";
 import { handleNonStreamingResponse } from "@/api/router/non-streaming";
-import { routerMeteringQueueLayer, rateLimiterLayer } from "@/server-entry";
+import {
+  routerMeteringQueueLayer,
+  rateLimiterLayer,
+  settingsLayer,
+} from "@/server-entry";
 import { RateLimiter } from "@/rate-limiting";
-import { Settings, validateSettings } from "@/settings";
+import { Settings } from "@/settings";
 
 /**
  * Unified Provider Proxy Route
@@ -170,20 +174,18 @@ export const Route = createFileRoute("/router/v2/$provider/$")({
         }).pipe(
           Effect.provide(
             Layer.unwrapEffect(
-              validateSettings().pipe(
-                Effect.orDie, // Settings validation failure is fatal
-                Effect.map((settings) =>
-                  Layer.mergeAll(
-                    Layer.succeed(Settings, settings),
-                    Database.Live({
-                      database: { connectionString: settings.databaseUrl },
-                      payments: settings.stripe,
-                    }),
-                    routerMeteringQueueLayer,
-                    rateLimiterLayer,
-                  ),
-                ),
-              ),
+              Effect.gen(function* () {
+                const settings = yield* Settings;
+                return Layer.mergeAll(
+                  Layer.succeed(Settings, settings),
+                  Database.Live({
+                    database: { connectionString: settings.databaseUrl },
+                    payments: settings.stripe,
+                  }),
+                  routerMeteringQueueLayer,
+                  rateLimiterLayer,
+                );
+              }).pipe(Effect.provide(settingsLayer)),
             ),
           ),
           handleErrors,

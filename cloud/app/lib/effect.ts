@@ -2,9 +2,13 @@ import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
-import { Settings, validateSettings, type SettingsConfig } from "@/settings";
+import { Settings, type SettingsConfig } from "@/settings";
 import { Emails } from "@/emails";
-import { ExecutionContext, executionContextLayer } from "@/server-entry";
+import {
+  ExecutionContext,
+  executionContextLayer,
+  settingsLayer,
+} from "@/server-entry";
 import type { Result } from "./types";
 export type { Result } from "./types";
 
@@ -54,16 +58,18 @@ async function runEffectWithServices<A, E>(
 export async function runEffectResponse<E extends { message: string }>(
   effect: Effect.Effect<Response, E, AppServices>,
 ): Promise<Response> {
-  // Validate settings once at entry
+  // Get settings from the global layer (set by server-entry fetch handler)
   const settingsResult = await Effect.runPromise(
-    validateSettings().pipe(Effect.either),
+    Effect.gen(function* () {
+      return yield* Settings;
+    }).pipe(Effect.provide(settingsLayer), Effect.either),
   );
 
   if (Either.isLeft(settingsResult)) {
     // Settings validation failed - return error response
     const error = settingsResult.left;
     return Response.redirect(
-      `http://localhost:3000/cloud/login?error=${encodeURIComponent(error.message)}`,
+      `http://localhost:3000/cloud/login?error=${encodeURIComponent(String(error))}`,
       302,
     );
   }
@@ -86,13 +92,15 @@ export async function runEffectResponse<E extends { message: string }>(
 export async function runEffect<A, E extends { message: string }>(
   effect: Effect.Effect<A, E, AppServices>,
 ): Promise<Result<A>> {
-  // Validate settings once at entry
+  // Get settings from the global layer (set by server-entry fetch handler)
   const settingsResult = await Effect.runPromise(
-    validateSettings().pipe(Effect.either),
+    Effect.gen(function* () {
+      return yield* Settings;
+    }).pipe(Effect.provide(settingsLayer), Effect.either),
   );
 
   if (Either.isLeft(settingsResult)) {
-    return { success: false, error: settingsResult.left.message };
+    return { success: false, error: String(settingsResult.left) };
   }
 
   const settings = settingsResult.right;

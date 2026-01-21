@@ -18,7 +18,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 import { Analytics } from "@/analytics";
-import { Settings, validateSettings } from "@/settings";
+import { Settings } from "@/settings";
+import { settingsLayer } from "@/server-entry";
 
 /**
  * Analytics event request payload from the frontend.
@@ -80,18 +81,16 @@ export const Route = createFileRoute("/api/analytics")({
             }).pipe(
               Effect.provide(
                 Layer.unwrapEffect(
-                  validateSettings().pipe(
-                    Effect.orDie, // Settings validation failure is fatal
-                    Effect.map((settings) =>
-                      Layer.mergeAll(
-                        Layer.succeed(Settings, settings),
-                        Analytics.Live({
-                          googleAnalytics: settings.googleAnalytics,
-                          postHog: settings.posthog,
-                        }),
-                      ),
-                    ),
-                  ),
+                  Effect.gen(function* () {
+                    const settings = yield* Settings;
+                    return Layer.mergeAll(
+                      Layer.succeed(Settings, settings),
+                      Analytics.Live({
+                        googleAnalytics: settings.googleAnalytics,
+                        postHog: settings.posthog,
+                      }),
+                    );
+                  }).pipe(Effect.provide(settingsLayer)),
                 ),
               ),
             ),

@@ -5,92 +5,78 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": "server-entry.ts",
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "triggers": {
-    "crons": ["*/5 * * * *", "0 10 * * *"]
+    "crons": ["*/5 * * * *", "0 10 * * *"],
   },
   "queues": {
     "producers": [
-      { "queue": "router-metering", "binding": "ROUTER_METERING_QUEUE" },
-      { "queue": "spans-ingest", "binding": "SPANS_INGEST_QUEUE" }
+      { "queue": "router-metering-local", "binding": "ROUTER_METERING_QUEUE" },
+      { "queue": "spans-ingest-local", "binding": "SPANS_INGEST_QUEUE" },
     ],
-    "consumers": []
+    "consumers": [
+      {
+        "queue": "router-metering-local",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "dead_letter_queue": "router-metering-dlq-local",
+      },
+      {
+        "queue": "spans-ingest-local",
+        "max_batch_size": 50,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "dead_letter_queue": "spans-ingest-dlq-local",
+      },
+    ],
   },
   "ratelimits": [
     {
       "name": "RATE_LIMITER_FREE",
       "namespace_id": "1001",
-      "simple": { "limit": 100, "period": 60 }
+      "simple": { "limit": 100, "period": 60 },
     },
     {
       "name": "RATE_LIMITER_PRO",
       "namespace_id": "1002",
-      "simple": { "limit": 1000, "period": 60 }
+      "simple": { "limit": 1000, "period": 60 },
     },
     {
       "name": "RATE_LIMITER_TEAM",
       "namespace_id": "1003",
-      "simple": { "limit": 10000, "period": 60 }
-    }
+      "simple": { "limit": 10000, "period": 60 },
+    },
   ],
   "durable_objects": {
     "bindings": [
       {
         "name": "REALTIME_SPANS_DURABLE_OBJECT",
-        "class_name": "RealtimeSpansDurableObject"
-      }
-    ]
+        "class_name": "RealtimeSpansDurableObject",
+      },
+    ],
   },
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["RealtimeSpansDurableObject"]
-    }
+      "new_classes": ["RealtimeSpansDurableObject"],
+    },
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "local-dev-placeholder",
+      "localConnectionString": "postgres://postgres:postgres@localhost:5432/mirascope_cloud_dev",
+    },
   ],
   "env": {
-    "local": {
-      "name": "mirascope-cloud-local",
-      "vars": {
-        "ENVIRONMENT": "local",
-        "SITE_URL": "http://localhost:5173"
-      },
-      "hyperdrive": [
-        {
-          "binding": "HYPERDRIVE",
-          "id": "local-dev-placeholder",
-          "localConnectionString": "postgres://postgres:postgres@localhost:5432/mirascope_cloud_dev"
-        }
-      ],
-      "queues": {
-        "producers": [
-          { "queue": "router-metering-local", "binding": "ROUTER_METERING_QUEUE" },
-          { "queue": "spans-ingest-local", "binding": "SPANS_INGEST_QUEUE" }
-        ],
-        "consumers": [
-          {
-            "queue": "router-metering-local",
-            "max_batch_size": 10,
-            "max_batch_timeout": 5,
-            "max_retries": 5,
-            "dead_letter_queue": "router-metering-dlq-local"
-          },
-          {
-            "queue": "spans-ingest-local",
-            "max_batch_size": 50,
-            "max_batch_timeout": 5,
-            "max_retries": 5,
-            "dead_letter_queue": "spans-ingest-dlq-local"
-          }
-        ]
-      }
-    },
     "staging": {
       "name": "staging",
       "route": {
         "pattern": "staging.mirascope.com",
         "zone_name": "mirascope.com",
-        "custom_domain": true
+        "custom_domain": true,
       },
       "vars": {
         "ENVIRONMENT": "staging",
@@ -115,21 +101,24 @@
         "CLICKHOUSE_TLS_SKIP_VERIFY": "false",
         "CLICKHOUSE_TLS_HOSTNAME_VERIFY": "true",
         "CLICKHOUSE_TLS_MIN_VERSION": "1.2",
-        "VITE_POSTHOG_HOST": "https://app.posthog.com"
+        "VITE_POSTHOG_HOST": "https://app.posthog.com",
       },
       "hyperdrive": [
         {
           "binding": "HYPERDRIVE",
-          "id": "ebf5361da856472dbdf2efedf8260bc8"
-        }
+          "id": "ebf5361da856472dbdf2efedf8260bc8",
+        },
       ],
       "triggers": {
-        "crons": ["*/1 * * * *", "*/5 * * * *"]
+        "crons": ["*/1 * * * *", "*/5 * * * *"],
       },
       "queues": {
         "producers": [
-          { "queue": "router-metering-staging", "binding": "ROUTER_METERING_QUEUE" },
-          { "queue": "spans-ingest-staging", "binding": "SPANS_INGEST_QUEUE" }
+          {
+            "queue": "router-metering-staging",
+            "binding": "ROUTER_METERING_QUEUE",
+          },
+          { "queue": "spans-ingest-staging", "binding": "SPANS_INGEST_QUEUE" },
         ],
         "consumers": [
           {
@@ -137,17 +126,17 @@
             "max_batch_size": 10,
             "max_batch_timeout": 5,
             "max_retries": 5,
-            "dead_letter_queue": "router-metering-dlq-staging"
+            "dead_letter_queue": "router-metering-dlq-staging",
           },
           {
             "queue": "spans-ingest-staging",
             "max_batch_size": 50,
             "max_batch_timeout": 5,
             "max_retries": 5,
-            "dead_letter_queue": "spans-ingest-dlq-staging"
-          }
-        ]
-      }
-    }
-  }
+            "dead_letter_queue": "spans-ingest-dlq-staging",
+          },
+        ],
+      },
+    },
+  },
 }
