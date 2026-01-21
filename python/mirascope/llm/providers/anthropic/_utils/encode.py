@@ -357,6 +357,8 @@ def encode_request(
     tools: BaseToolkit[AnyToolSchema],
     format: FormatSpec[FormattableT] | None,
     params: Params,
+    model_name_override: str | None = None,
+    provider_id: str = "anthropic",
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the Anthropic messages.create method."""
 
@@ -364,15 +366,16 @@ def encode_request(
     encode_thoughts_as_text = processed.pop("encode_thoughts_as_text", False)
     max_tokens = processed.pop("max_tokens", DEFAULT_MAX_TOKENS)
 
+    resolved_model_name = model_name_override or model_name(model_id)
     kwargs: MessageCreateKwargs = MessageCreateKwargs(
-        {"model": model_name(model_id), "max_tokens": max_tokens, **processed}
+        {"model": resolved_model_name, "max_tokens": max_tokens, **processed}
     )
 
     # Check for strict tools - the non-beta API doesn't support them
     if _base_utils.has_strict_tools(tools.tools):
         raise FeatureNotSupportedError(
             feature="strict tools",
-            provider_id="anthropic",
+            provider_id=provider_id,
             model_id=model_id,
             message="Anthropic provider does not support strict tools. Try the beta provider.",
         )
@@ -383,7 +386,7 @@ def encode_request(
         if format.mode == "strict":
             raise FeatureNotSupportedError(
                 feature="formatting_mode:strict",
-                provider_id="anthropic",
+                provider_id=provider_id,
                 model_id=model_id,
             )
         if format.mode == "tool":

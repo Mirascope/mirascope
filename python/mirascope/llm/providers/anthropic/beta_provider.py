@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
-from typing_extensions import Unpack
+from typing import TYPE_CHECKING, Generic
+from typing_extensions import TypeVar, Unpack
 
 from anthropic import Anthropic, AsyncAnthropic
 
@@ -35,20 +35,24 @@ from .model_id import model_name
 if TYPE_CHECKING:
     from ...models import Params
 
+SyncBetaClientT = TypeVar("SyncBetaClientT", bound=Anthropic)
+AsyncBetaClientT = TypeVar("AsyncBetaClientT", bound=AsyncAnthropic)
 
-class AnthropicBetaProvider(BaseProvider[Anthropic]):
-    """Provider using beta Anthropic API."""
 
-    id = "anthropic-beta"
-    default_scope = "anthropic-beta/"
-    error_map = _utils.ANTHROPIC_ERROR_MAP
+class BaseAnthropicBetaProvider(
+    BaseProvider[SyncBetaClientT], Generic[SyncBetaClientT, AsyncBetaClientT]
+):
+    """Shared beta Anthropic provider implementation for API-compatible clients."""
 
-    def __init__(
-        self, *, api_key: str | None = None, base_url: str | None = None
-    ) -> None:
-        """Initialize the beta Anthropic client."""
-        self.client = Anthropic(api_key=api_key, base_url=base_url)
-        self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
+    client: SyncBetaClientT
+    async_client: AsyncBetaClientT
+
+    def _model_name(self, model_id: str) -> str:
+        return model_name(model_id)
+
+    def _response_provider_id(self) -> str:
+        """Return the provider_id to use in responses and errors."""
+        return self.id.removesuffix("-beta")
 
     def get_error_status(self, e: Exception) -> int | None:
         """Extract HTTP status code from Anthropic exception."""
@@ -70,17 +74,23 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_response = self.client.beta.messages.parse(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id, include_thoughts=include_thoughts
+            beta_response,
+            model_id,
+            include_thoughts=include_thoughts,
+            provider_id=self._response_provider_id(),
+            provider_model_name=self._model_name(model_id),
         )
         return Response(
             raw=beta_response,
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -107,17 +117,23 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_response = self.client.beta.messages.parse(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id, include_thoughts=include_thoughts
+            beta_response,
+            model_id,
+            include_thoughts=include_thoughts,
+            provider_id=self._response_provider_id(),
+            provider_model_name=self._model_name(model_id),
         )
         return ContextResponse(
             raw=beta_response,
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -143,17 +159,23 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_response = await self.async_client.beta.messages.parse(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id, include_thoughts=include_thoughts
+            beta_response,
+            model_id,
+            include_thoughts=include_thoughts,
+            provider_id=self._response_provider_id(),
+            provider_model_name=self._model_name(model_id),
         )
         return AsyncResponse(
             raw=beta_response,
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -180,17 +202,23 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_response = await self.async_client.beta.messages.parse(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
         assistant_message, finish_reason, usage = beta_decode.beta_decode_response(
-            beta_response, model_id, include_thoughts=include_thoughts
+            beta_response,
+            model_id,
+            include_thoughts=include_thoughts,
+            provider_id=self._response_provider_id(),
+            provider_model_name=self._model_name(model_id),
         )
         return AsyncContextResponse(
             raw=beta_response,
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -216,6 +244,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_stream = self.client.beta.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -223,9 +253,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             beta_stream, include_thoughts=include_thoughts
         )
         return StreamResponse(
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -250,6 +280,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_stream = self.client.beta.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -257,9 +289,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             beta_stream, include_thoughts=include_thoughts
         )
         return ContextStreamResponse(
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -283,6 +315,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_stream = self.async_client.beta.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -290,9 +324,9 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             beta_stream, include_thoughts=include_thoughts
         )
         return AsyncStreamResponse(
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
@@ -320,6 +354,8 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             tools=toolkit,
             format=format,
             params=params,
+            model_name_override=self._model_name(model_id),
+            provider_id=self._response_provider_id(),
         )
         beta_stream = self.async_client.beta.messages.stream(**kwargs)
         include_thoughts = _utils.get_include_thoughts(params)
@@ -327,12 +363,27 @@ class AnthropicBetaProvider(BaseProvider[Anthropic]):
             beta_stream, include_thoughts=include_thoughts
         )
         return AsyncContextStreamResponse(
-            provider_id="anthropic",
+            provider_id=self._response_provider_id(),
             model_id=model_id,
-            provider_model_name=model_name(model_id),
+            provider_model_name=self._model_name(model_id),
             params=params,
             tools=toolkit,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format=resolved_format,
         )
+
+
+class AnthropicBetaProvider(BaseAnthropicBetaProvider[Anthropic, AsyncAnthropic]):
+    """Provider using beta Anthropic API."""
+
+    id = "anthropic-beta"
+    default_scope = "anthropic-beta/"
+    error_map = _utils.ANTHROPIC_ERROR_MAP
+
+    def __init__(
+        self, *, api_key: str | None = None, base_url: str | None = None
+    ) -> None:
+        """Initialize the beta Anthropic client."""
+        self.client = Anthropic(api_key=api_key, base_url=base_url)
+        self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)

@@ -42,7 +42,7 @@ EXTRA_IMPORTS: dict[str, list[str]] = {
 # END GENERATED
 
 
-def _make_import_error(package_name: str, name: str) -> ImportError:
+def make_import_error(package_name: str, name: str) -> ImportError:
     """Create an ImportError with a helpful installation message.
 
     Args:
@@ -72,18 +72,18 @@ class _StubMeta(type):
 
     def __call__(cls, *args: Any, **kwargs: Any) -> Any:
         """Raise ImportError when trying to instantiate the stub class."""
-        raise _make_import_error(cls._package_name, cls._stub_name)
+        raise make_import_error(cls._package_name, cls._stub_name)
 
     def __getattr__(cls, name: str) -> Any:
         """Raise ImportError when accessing class attributes (except private/dunder)."""
         # Allow private/dunder attributes to raise AttributeError normally
         if name.startswith("_"):
             raise AttributeError(name)
-        raise _make_import_error(cls._package_name, cls._stub_name)
+        raise make_import_error(cls._package_name, cls._stub_name)
 
     def __instancecheck__(cls, instance: Any) -> bool:
         """Raise ImportError when checking isinstance()."""
-        raise _make_import_error(cls._package_name, cls._stub_name)
+        raise make_import_error(cls._package_name, cls._stub_name)
 
     def __subclasscheck__(cls, subclass: Any) -> bool:
         """Allow the stub to be subclassed, but raise ImportError for issubclass checks.
@@ -95,7 +95,7 @@ class _StubMeta(type):
         if subclass is cls:
             return True
         # For issubclass() checks with other classes, fail
-        raise _make_import_error(cls._package_name, cls._stub_name)
+        raise make_import_error(cls._package_name, cls._stub_name)
 
 
 def _create_stub(package_name: str, name: str) -> type:
@@ -244,7 +244,7 @@ class _StubModule(ModuleType):
         Raises:
             ImportError: With installation instructions
         """
-        raise _make_import_error(self.__package_name, self.__stub_name)
+        raise make_import_error(self.__package_name, self.__stub_name)
 
     def __getattr__(self, name: str) -> Any:
         """Return a stub for any accessed attribute.
@@ -288,7 +288,7 @@ class _StubModule(ModuleType):
         Raises:
             ImportError: With installation instructions
         """
-        raise _make_import_error(self.__package_name, self.__stub_name)
+        raise make_import_error(self.__package_name, self.__stub_name)
 
     def __subclasscheck__(self, subclass: Any) -> bool:
         """Allow subclassing but raise ImportError for issubclass checks.
@@ -304,7 +304,7 @@ class _StubModule(ModuleType):
         """
         if subclass is self:
             return True
-        raise _make_import_error(self.__package_name, self.__stub_name)
+        raise make_import_error(self.__package_name, self.__stub_name)
 
     def __dir__(self) -> list[str]:
         """Return empty list to avoid advertising stub names.

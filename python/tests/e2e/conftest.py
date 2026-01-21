@@ -32,6 +32,8 @@ SENSITIVE_HEADERS = [
     "cookie",  # Session cookies
 ]
 
+_DUMMY_AZURE_ANTHROPIC_ENDPOINT = "https://dummy.services.ai.azure.com"
+
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
     "anthropic-beta/claude-sonnet-4-0",
@@ -122,6 +124,12 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
         request.uri = re.sub(
             r"https://[^/]+\.openai\.azure\.com",
             "https://dummy.openai.azure.com",
+            request.uri,
+        )
+    if ".services.ai.azure.com" in request.uri:
+        request.uri = re.sub(
+            r"https://[^/]+\.services\.ai\.azure\.com",
+            _DUMMY_AZURE_ANTHROPIC_ENDPOINT,
             request.uri,
         )
 

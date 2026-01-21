@@ -1,11 +1,13 @@
 """Tests for Azure OpenAI providers."""
 
 import os
+import sys
 
 import pytest
 
 from mirascope import llm
 from mirascope.llm.providers.azure import AzureOpenAIProvider, AzureProvider
+from mirascope.llm.providers.azure._utils import wrap_async_token_provider
 from mirascope.llm.providers.azure.model_id import model_name as azure_model_name
 from mirascope.llm.providers.openai.completions._utils import encode_request
 from mirascope.llm.tools import Toolkit
@@ -49,32 +51,16 @@ def test_azure_model_name() -> None:
     assert azure_model_name("gpt-5-mini") == "gpt-5-mini"
 
 
-def test_azure_provider_initialization() -> None:
-    """Test AzureProvider initialization."""
-    provider = AzureProvider(
-        api_key="test-key", base_url="https://example.openai.azure.com"
-    )
-    assert provider.id == "azure"
-    assert provider.default_scope == "azure/openai/"
-    assert provider.client is not None
-    assert (
-        str(provider.client.base_url) == "https://example.openai.azure.com/openai/v1/"
-    )
-
-
 def test_azure_provider_get_error_status() -> None:
     """Test AzureProvider.get_error_status extracts status code."""
     provider = AzureProvider(
         api_key="test-key", base_url="https://example.openai.azure.com"
     )
 
-    # Test with exception that has status_code
     class MockException(Exception):
         status_code = 401
 
     assert provider.get_error_status(MockException()) == 401
-
-    # Test with exception without status_code
     assert provider.get_error_status(ValueError("no status")) is None
 
 
@@ -89,6 +75,64 @@ def test_azure_openai_provider_get_error_status() -> None:
 
     assert provider.get_error_status(MockException()) == 418
     assert provider.get_error_status(ValueError("no status")) is None
+
+
+@pytest.mark.asyncio
+async def test_wrap_async_token_provider_awaits_coroutine() -> None:
+    """Test async token provider wrapper awaits awaitable results."""
+
+    async def token_provider() -> str:
+        return "token"
+
+    async_provider = wrap_async_token_provider(token_provider)
+    assert callable(async_provider)
+    result = await async_provider()
+    assert result == "token"
+
+
+def test_azure_provider_openai_scopes_fallback_on_import_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test AzureProvider falls back to base OpenAI scope if model list import fails."""
+    import builtins
+    from types import ModuleType
+    from typing import Any
+
+    sys.modules.pop("mirascope.llm.providers.openai.model_id", None)
+    original_import = builtins.__import__
+
+    def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+        if name == "openai.model_id":
+            raise ImportError("boom")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+
+    provider = AzureProvider()
+    assert "azure/openai/" in provider._routing_scopes["openai"]  # pyright: ignore[reportPrivateUsage]
+
+
+def test_azure_provider_openai_import_error_raises(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test AzureProvider raises ImportError when OpenAI provider cannot import."""
+    import builtins
+    from types import ModuleType
+    from typing import Any
+
+    sys.modules.pop("mirascope.llm.providers.azure.openai.provider", None)
+    sys.modules.pop("mirascope.llm.providers.azure.openai", None)
+    original_import = builtins.__import__
+
+    def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+        if name in {"openai.provider", "mirascope.llm.providers.azure.openai.provider"}:
+            raise ImportError("boom")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+
+    with pytest.raises(ImportError, match="openai"):
+        AzureProvider(api_key="test-key", base_url="https://example.openai.azure.com")
 
 
 def test_azure_model_id_preserved_in_error_messages() -> None:

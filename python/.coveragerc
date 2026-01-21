@@ -13,7 +13,11 @@ omit =
 
     # Exclude other top-level modules for now
     mirascope/graphs/*
-    
+
+    # Azure Anthropic excluded until deployed
+    # TODO: Remove this exclusion when Azure Anthropic is deployed
+    mirascope/llm/providers/azure/anthropic/*
+
     # Exclude examples, tests, and scripts from coverage
     examples/*
     tests/*
