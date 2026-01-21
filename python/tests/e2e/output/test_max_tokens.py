@@ -9,8 +9,14 @@ from tests.utils import (
     snapshot_test,
 )
 
+MAX_TOKENS_MODEL_IDS: list[llm.ModelId] = [
+    *E2E_MODEL_IDS,
+    # Include reasoning model to test max_tokens → max_completion_tokens mapping
+    "openai/gpt-5-mini:completions",
+]
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+
+@pytest.mark.parametrize("model_id", MAX_TOKENS_MODEL_IDS)
 @pytest.mark.vcr
 def test_max_tokens_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call with token limits."""
@@ -25,7 +31,7 @@ def test_max_tokens_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", MAX_TOKENS_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_max_tokens_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
@@ -41,7 +47,7 @@ async def test_max_tokens_async(model_id: llm.ModelId, snapshot: Snapshot) -> No
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", MAX_TOKENS_MODEL_IDS)
 @pytest.mark.vcr
 def test_max_tokens_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call with token limits."""
@@ -57,7 +63,7 @@ def test_max_tokens_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", MAX_TOKENS_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_max_tokens_async_stream(
