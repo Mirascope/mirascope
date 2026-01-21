@@ -87,6 +87,7 @@ import {
   getTraceDetailHandler,
   getAnalyticsSummaryHandler,
 } from "@/api/traces-search.handlers";
+import { tokenCostHandler } from "@/api/token-cost.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -452,6 +453,19 @@ const TagsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const TokenCostHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "token-cost",
+  (handlers) =>
+    handlers.handle("calculate", ({ payload }) =>
+      Effect.gen(function* () {
+        // Require API key authentication
+        yield* Authentication.ApiKey;
+        return yield* tokenCostHandler(payload);
+      }),
+    ),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -466,4 +480,5 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(FunctionsHandlersLive),
   Layer.provide(AnnotationsHandlersLive),
   Layer.provide(TagsHandlersLive),
+  Layer.provide(TokenCostHandlersLive),
 );

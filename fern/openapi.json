@@ -12116,6 +12116,191 @@
           }
         }
       }
+    },
+    "/token-cost": {
+      "post": {
+        "tags": [
+          "token-cost"
+        ],
+        "operationId": "token-cost.calculate",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "inputCostCenticents",
+                    "outputCostCenticents",
+                    "totalCostCenticents",
+                    "inputCostDollars",
+                    "outputCostDollars",
+                    "totalCostDollars"
+                  ],
+                  "properties": {
+                    "inputCostCenticents": {
+                      "type": "number"
+                    },
+                    "outputCostCenticents": {
+                      "type": "number"
+                    },
+                    "cacheReadCostCenticents": {
+                      "type": "number"
+                    },
+                    "cacheWriteCostCenticents": {
+                      "type": "number"
+                    },
+                    "totalCostCenticents": {
+                      "type": "number"
+                    },
+                    "inputCostDollars": {
+                      "type": "number"
+                    },
+                    "outputCostDollars": {
+                      "type": "number"
+                    },
+                    "cacheReadCostDollars": {
+                      "type": "number"
+                    },
+                    "cacheWriteCostDollars": {
+                      "type": "number"
+                    },
+                    "totalCostDollars": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ServiceUnavailableError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ServiceUnavailableError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PricingUnavailableError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "provider",
+                  "model",
+                  "usage"
+                ],
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "description": "a non empty string",
+                    "title": "nonEmptyString",
+                    "minLength": 1
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "a non empty string",
+                    "title": "nonEmptyString",
+                    "minLength": 1
+                  },
+                  "usage": {
+                    "type": "object",
+                    "required": [
+                      "inputTokens",
+                      "outputTokens"
+                    ],
+                    "properties": {
+                      "inputTokens": {
+                        "type": "number",
+                        "description": "a non-negative number",
+                        "title": "nonNegative",
+                        "minimum": 0
+                      },
+                      "outputTokens": {
+                        "type": "number",
+                        "description": "a non-negative number",
+                        "title": "nonNegative",
+                        "minimum": 0
+                      },
+                      "cacheReadTokens": {
+                        "type": "number",
+                        "description": "a non-negative number",
+                        "title": "nonNegative",
+                        "minimum": 0
+                      },
+                      "cacheWriteTokens": {
+                        "type": "number",
+                        "description": "a non-negative number",
+                        "title": "nonNegative",
+                        "minimum": 0
+                      },
+                      "cacheWriteBreakdown": {
+                        "type": "object",
+                        "required": [],
+                        "properties": {},
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "viaRouter": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        }
+      }
     }
   },
   "components": {
@@ -12523,6 +12708,31 @@
           }
         },
         "additionalProperties": false
+      },
+      "PricingUnavailableError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "PricingUnavailableError"
+            ]
+          }
+        },
+        "additionalProperties": false
       }
     },
     "securitySchemes": {}
@@ -12567,6 +12777,9 @@
     },
     {
       "name": "tags"
+    },
+    {
+      "name": "token-cost"
     }
   ],
   "servers": [

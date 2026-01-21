@@ -74,6 +74,10 @@ from .traces_get_analytics_summary_response_top_functions_item import (
 from .traces_get_analytics_summary_response_top_models_item import (
     TracesGetAnalyticsSummaryResponseTopModelsItem,
 )
+from .traces_get_trace_detail_by_env_response import TracesGetTraceDetailByEnvResponse
+from .traces_get_trace_detail_by_env_response_spans_item import (
+    TracesGetTraceDetailByEnvResponseSpansItem,
+)
 from .traces_get_trace_detail_response import TracesGetTraceDetailResponse
 from .traces_get_trace_detail_response_spans_item import (
     TracesGetTraceDetailResponseSpansItem,
@@ -82,6 +86,16 @@ from .traces_list_by_function_hash_response import TracesListByFunctionHashRespo
 from .traces_list_by_function_hash_response_traces_item import (
     TracesListByFunctionHashResponseTracesItem,
 )
+from .traces_search_by_env_request_attribute_filters_item import (
+    TracesSearchByEnvRequestAttributeFiltersItem,
+)
+from .traces_search_by_env_request_attribute_filters_item_operator import (
+    TracesSearchByEnvRequestAttributeFiltersItemOperator,
+)
+from .traces_search_by_env_request_sort_by import TracesSearchByEnvRequestSortBy
+from .traces_search_by_env_request_sort_order import TracesSearchByEnvRequestSortOrder
+from .traces_search_by_env_response import TracesSearchByEnvResponse
+from .traces_search_by_env_response_spans_item import TracesSearchByEnvResponseSpansItem
 from .traces_search_request_attribute_filters_item import (
     TracesSearchRequestAttributeFiltersItem,
 )
@@ -120,10 +134,18 @@ __all__ = [
     "TracesGetAnalyticsSummaryResponse",
     "TracesGetAnalyticsSummaryResponseTopFunctionsItem",
     "TracesGetAnalyticsSummaryResponseTopModelsItem",
+    "TracesGetTraceDetailByEnvResponse",
+    "TracesGetTraceDetailByEnvResponseSpansItem",
     "TracesGetTraceDetailResponse",
     "TracesGetTraceDetailResponseSpansItem",
     "TracesListByFunctionHashResponse",
     "TracesListByFunctionHashResponseTracesItem",
+    "TracesSearchByEnvRequestAttributeFiltersItem",
+    "TracesSearchByEnvRequestAttributeFiltersItemOperator",
+    "TracesSearchByEnvRequestSortBy",
+    "TracesSearchByEnvRequestSortOrder",
+    "TracesSearchByEnvResponse",
+    "TracesSearchByEnvResponseSpansItem",
     "TracesSearchRequestAttributeFiltersItem",
     "TracesSearchRequestAttributeFiltersItemOperator",
     "TracesSearchRequestSortBy",

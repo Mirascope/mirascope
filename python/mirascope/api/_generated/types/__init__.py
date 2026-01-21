@@ -30,6 +30,7 @@ from .permission_denied_error import PermissionDeniedError
 from .permission_denied_error_tag import PermissionDeniedErrorTag
 from .plan_limit_exceeded_error import PlanLimitExceededError
 from .plan_limit_exceeded_error_tag import PlanLimitExceededErrorTag
+from .pricing_unavailable_error import PricingUnavailableError
 from .property_key import PropertyKey
 from .property_key_key import PropertyKeyKey
 from .property_key_key_tag import PropertyKeyKeyTag
@@ -68,6 +69,7 @@ __all__ = [
     "PermissionDeniedErrorTag",
     "PlanLimitExceededError",
     "PlanLimitExceededErrorTag",
+    "PricingUnavailableError",
     "PropertyKey",
     "PropertyKeyKey",
     "PropertyKeyKeyTag",

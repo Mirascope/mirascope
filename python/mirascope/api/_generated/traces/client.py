@@ -13,10 +13,21 @@ from .types.traces_create_response import TracesCreateResponse
 from .types.traces_get_analytics_summary_response import (
     TracesGetAnalyticsSummaryResponse,
 )
+from .types.traces_get_trace_detail_by_env_response import (
+    TracesGetTraceDetailByEnvResponse,
+)
 from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
 from .types.traces_list_by_function_hash_response import (
     TracesListByFunctionHashResponse,
 )
+from .types.traces_search_by_env_request_attribute_filters_item import (
+    TracesSearchByEnvRequestAttributeFiltersItem,
+)
+from .types.traces_search_by_env_request_sort_by import TracesSearchByEnvRequestSortBy
+from .types.traces_search_by_env_request_sort_order import (
+    TracesSearchByEnvRequestSortOrder,
+)
+from .types.traces_search_by_env_response import TracesSearchByEnvResponse
 from .types.traces_search_request_attribute_filters_item import (
     TracesSearchRequestAttributeFiltersItem,
 )
@@ -112,6 +123,7 @@ class TracesClient:
         provider: typing.Optional[typing.Sequence[str]] = OMIT,
         function_id: typing.Optional[str] = OMIT,
         function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
         has_error: typing.Optional[bool] = OMIT,
         min_tokens: typing.Optional[float] = OMIT,
         max_tokens: typing.Optional[float] = OMIT,
@@ -124,6 +136,7 @@ class TracesClient:
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
         sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TracesSearchResponse:
         """
@@ -153,6 +166,8 @@ class TracesClient:
 
         function_name : typing.Optional[str]
 
+        span_name_prefix : typing.Optional[str]
+
         has_error : typing.Optional[bool]
 
         min_tokens : typing.Optional[float]
@@ -172,6 +187,8 @@ class TracesClient:
         sort_by : typing.Optional[TracesSearchRequestSortBy]
 
         sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -204,6 +221,7 @@ class TracesClient:
             provider=provider,
             function_id=function_id,
             function_name=function_name,
+            span_name_prefix=span_name_prefix,
             has_error=has_error,
             min_tokens=min_tokens,
             max_tokens=max_tokens,
@@ -214,6 +232,7 @@ class TracesClient:
             offset=offset,
             sort_by=sort_by,
             sort_order=sort_order,
+            root_spans_only=root_spans_only,
             request_options=request_options,
         )
         return _response.data
@@ -330,6 +349,199 @@ class TracesClient:
         )
         return _response.data
 
+    def searchbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchByEnvRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesSearchByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        span_name_prefix : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchByEnvRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchByEnvRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesSearchByEnvResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.traces.searchbyenv(
+            organization_id="organizationId",
+            project_id="projectId",
+            environment_id="environmentId",
+            start_time="startTime",
+            end_time="endTime",
+        )
+        """
+        _response = self._raw_client.searchbyenv(
+            organization_id,
+            project_id,
+            environment_id,
+            start_time=start_time,
+            end_time=end_time,
+            query=query,
+            input_messages_query=input_messages_query,
+            output_messages_query=output_messages_query,
+            fuzzy_search=fuzzy_search,
+            trace_id=trace_id,
+            span_id=span_id,
+            model=model,
+            provider=provider,
+            function_id=function_id,
+            function_name=function_name,
+            span_name_prefix=span_name_prefix,
+            has_error=has_error,
+            min_tokens=min_tokens,
+            max_tokens=max_tokens,
+            min_duration=min_duration,
+            max_duration=max_duration,
+            attribute_filters=attribute_filters,
+            limit=limit,
+            offset=offset,
+            sort_by=sort_by,
+            sort_order=sort_order,
+            root_spans_only=root_spans_only,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def gettracedetailbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        trace_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesGetTraceDetailByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesGetTraceDetailByEnvResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.traces.gettracedetailbyenv(
+            organization_id="organizationId",
+            project_id="projectId",
+            environment_id="environmentId",
+            trace_id="traceId",
+        )
+        """
+        _response = self._raw_client.gettracedetailbyenv(
+            organization_id,
+            project_id,
+            environment_id,
+            trace_id,
+            request_options=request_options,
+        )
+        return _response.data
+
 
 class AsyncTracesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -423,6 +635,7 @@ class AsyncTracesClient:
         provider: typing.Optional[typing.Sequence[str]] = OMIT,
         function_id: typing.Optional[str] = OMIT,
         function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
         has_error: typing.Optional[bool] = OMIT,
         min_tokens: typing.Optional[float] = OMIT,
         max_tokens: typing.Optional[float] = OMIT,
@@ -435,6 +648,7 @@ class AsyncTracesClient:
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
         sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TracesSearchResponse:
         """
@@ -464,6 +678,8 @@ class AsyncTracesClient:
 
         function_name : typing.Optional[str]
 
+        span_name_prefix : typing.Optional[str]
+
         has_error : typing.Optional[bool]
 
         min_tokens : typing.Optional[float]
@@ -483,6 +699,8 @@ class AsyncTracesClient:
         sort_by : typing.Optional[TracesSearchRequestSortBy]
 
         sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -523,6 +741,7 @@ class AsyncTracesClient:
             provider=provider,
             function_id=function_id,
             function_name=function_name,
+            span_name_prefix=span_name_prefix,
             has_error=has_error,
             min_tokens=min_tokens,
             max_tokens=max_tokens,
@@ -533,6 +752,7 @@ class AsyncTracesClient:
             offset=offset,
             sort_by=sort_by,
             sort_order=sort_order,
+            root_spans_only=root_spans_only,
             request_options=request_options,
         )
         return _response.data
@@ -670,5 +890,214 @@ class AsyncTracesClient:
         """
         _response = await self._raw_client.listbyfunctionhash(
             hash, limit=limit, offset=offset, request_options=request_options
+        )
+        return _response.data
+
+    async def searchbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchByEnvRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesSearchByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        span_name_prefix : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchByEnvRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchByEnvRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesSearchByEnvResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.searchbyenv(
+                organization_id="organizationId",
+                project_id="projectId",
+                environment_id="environmentId",
+                start_time="startTime",
+                end_time="endTime",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.searchbyenv(
+            organization_id,
+            project_id,
+            environment_id,
+            start_time=start_time,
+            end_time=end_time,
+            query=query,
+            input_messages_query=input_messages_query,
+            output_messages_query=output_messages_query,
+            fuzzy_search=fuzzy_search,
+            trace_id=trace_id,
+            span_id=span_id,
+            model=model,
+            provider=provider,
+            function_id=function_id,
+            function_name=function_name,
+            span_name_prefix=span_name_prefix,
+            has_error=has_error,
+            min_tokens=min_tokens,
+            max_tokens=max_tokens,
+            min_duration=min_duration,
+            max_duration=max_duration,
+            attribute_filters=attribute_filters,
+            limit=limit,
+            offset=offset,
+            sort_by=sort_by,
+            sort_order=sort_order,
+            root_spans_only=root_spans_only,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def gettracedetailbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        trace_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TracesGetTraceDetailByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TracesGetTraceDetailByEnvResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.traces.gettracedetailbyenv(
+                organization_id="organizationId",
+                project_id="projectId",
+                environment_id="environmentId",
+                trace_id="traceId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.gettracedetailbyenv(
+            organization_id,
+            project_id,
+            environment_id,
+            trace_id,
+            request_options=request_options,
         )
         return _response.data

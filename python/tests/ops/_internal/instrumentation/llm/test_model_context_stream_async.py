@@ -8,9 +8,7 @@ from typing import Any
 import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
-    InMemorySpanExporter,
-)
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from mirascope import llm, ops
 from mirascope.llm.messages import Message
@@ -65,7 +63,7 @@ async def test_model_context_stream_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello, Kai!"}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 25,
                 "gen_ai.usage.output_tokens": 5,
-                "mirascope.messages": '[{"role":"system","content":{"type":"text","text":"You are a concise assistant."}},{"role":"user","content":[{"type":"text","text":"Say hello to the user named Kai."}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"system","content":{"type":"text","text":"You are a concise assistant."}},{"role":"user","content":[{"type":"text","text":"Say hello to the user named Kai."}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"Hello, Kai!"}]',
                 "mirascope.response.usage": '{"input_tokens":25,"output_tokens":5,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":30}',
             },
@@ -217,7 +215,7 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"hi"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[],"finish_reason":"stop"}]',
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"hi"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"hi"}],"name":null}]',
                 "mirascope.response.content": "[]",
                 "error.type": "RuntimeError",
                 "error.message": "chunk-error",

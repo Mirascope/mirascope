@@ -26,6 +26,7 @@ from .project_memberships.client import (
 )
 from .projects.client import AsyncProjectsClient, ProjectsClient
 from .tags.client import AsyncTagsClient, TagsClient
+from .token_cost.client import AsyncTokenCostClient, TokenCostClient
 from .traces.client import AsyncTracesClient, TracesClient
 
 
@@ -109,6 +110,7 @@ class Mirascope:
         self.functions = FunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AnnotationsClient(client_wrapper=self._client_wrapper)
         self.tags = TagsClient(client_wrapper=self._client_wrapper)
+        self.token_cost = TokenCostClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -193,6 +195,7 @@ class AsyncMirascope:
         self.functions = AsyncFunctionsClient(client_wrapper=self._client_wrapper)
         self.annotations = AsyncAnnotationsClient(client_wrapper=self._client_wrapper)
         self.tags = AsyncTagsClient(client_wrapper=self._client_wrapper)
+        self.token_cost = AsyncTokenCostClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(

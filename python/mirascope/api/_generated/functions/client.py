@@ -5,10 +5,14 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawFunctionsClient, RawFunctionsClient
-from .types.functions_create_request_dependencies_value import FunctionsCreateRequestDependenciesValue
+from .types.functions_create_request_dependencies_value import (
+    FunctionsCreateRequestDependenciesValue,
+)
 from .types.functions_create_response import FunctionsCreateResponse
 from .types.functions_find_by_hash_response import FunctionsFindByHashResponse
+from .types.functions_get_by_env_response import FunctionsGetByEnvResponse
 from .types.functions_get_response import FunctionsGetResponse
+from .types.functions_list_by_env_response import FunctionsListByEnvResponse
 from .types.functions_list_response import FunctionsListResponse
 
 # this is used as the default value for optional parameters
@@ -30,7 +34,9 @@ class FunctionsClient:
         """
         return self._raw_client
 
-    def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsListResponse:
+    def list(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> FunctionsListResponse:
         """
         Parameters
         ----------
@@ -124,7 +130,9 @@ class FunctionsClient:
         )
         return _response.data
 
-    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsGetResponse:
+    def get(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> FunctionsGetResponse:
         """
         Parameters
         ----------
@@ -150,7 +158,9 @@ class FunctionsClient:
         _response = self._raw_client.get(id, request_options=request_options)
         return _response.data
 
-    def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -203,6 +213,96 @@ class FunctionsClient:
         _response = self._raw_client.findbyhash(hash, request_options=request_options)
         return _response.data
 
+    def getbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        function_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FunctionsGetByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        function_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FunctionsGetByEnvResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.functions.getbyenv(
+            organization_id="organizationId",
+            project_id="projectId",
+            environment_id="environmentId",
+            function_id="functionId",
+        )
+        """
+        _response = self._raw_client.getbyenv(
+            organization_id,
+            project_id,
+            environment_id,
+            function_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def listbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FunctionsListByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FunctionsListByEnvResponse
+            Success
+
+        Examples
+        --------
+        from mirascope.api._generated import Mirascope
+
+        client = Mirascope()
+        client.functions.listbyenv(
+            organization_id="organizationId",
+            project_id="projectId",
+            environment_id="environmentId",
+        )
+        """
+        _response = self._raw_client.listbyenv(
+            organization_id, project_id, environment_id, request_options=request_options
+        )
+        return _response.data
+
 
 class AsyncFunctionsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -219,7 +319,9 @@ class AsyncFunctionsClient:
         """
         return self._raw_client
 
-    async def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsListResponse:
+    async def list(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> FunctionsListResponse:
         """
         Parameters
         ----------
@@ -329,7 +431,9 @@ class AsyncFunctionsClient:
         )
         return _response.data
 
-    async def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> FunctionsGetResponse:
+    async def get(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> FunctionsGetResponse:
         """
         Parameters
         ----------
@@ -363,7 +467,9 @@ class AsyncFunctionsClient:
         _response = await self._raw_client.get(id, request_options=request_options)
         return _response.data
 
-    async def delete(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+    async def delete(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -429,5 +535,113 @@ class AsyncFunctionsClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.findbyhash(hash, request_options=request_options)
+        _response = await self._raw_client.findbyhash(
+            hash, request_options=request_options
+        )
+        return _response.data
+
+    async def getbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        function_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FunctionsGetByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        function_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FunctionsGetByEnvResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.functions.getbyenv(
+                organization_id="organizationId",
+                project_id="projectId",
+                environment_id="environmentId",
+                function_id="functionId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.getbyenv(
+            organization_id,
+            project_id,
+            environment_id,
+            function_id,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def listbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> FunctionsListByEnvResponse:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        FunctionsListByEnvResponse
+            Success
+
+        Examples
+        --------
+        import asyncio
+
+        from mirascope.api._generated import AsyncMirascope
+
+        client = AsyncMirascope()
+
+
+        async def main() -> None:
+            await client.functions.listbyenv(
+                organization_id="organizationId",
+                project_id="projectId",
+                environment_id="environmentId",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.listbyenv(
+            organization_id, project_id, environment_id, request_options=request_options
+        )
         return _response.data

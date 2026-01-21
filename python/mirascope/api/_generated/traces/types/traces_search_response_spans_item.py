@@ -18,6 +18,12 @@ class TracesSearchResponseSpansItem(UniversalBaseModel):
     ] = None
     model: typing.Optional[str] = None
     provider: typing.Optional[str] = None
+    input_tokens: typing_extensions.Annotated[
+        typing.Optional[float], FieldMetadata(alias="inputTokens")
+    ] = None
+    output_tokens: typing_extensions.Annotated[
+        typing.Optional[float], FieldMetadata(alias="outputTokens")
+    ] = None
     total_tokens: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="totalTokens")
     ] = None
@@ -27,6 +33,7 @@ class TracesSearchResponseSpansItem(UniversalBaseModel):
     function_name: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="functionName")
     ] = None
+    has_children: typing_extensions.Annotated[bool, FieldMetadata(alias="hasChildren")]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

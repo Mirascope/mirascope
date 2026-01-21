@@ -11,9 +11,7 @@ import openai
 import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
-    InMemorySpanExporter,
-)
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from pydantic import BaseModel, Field
 
 from mirascope import llm, ops
@@ -93,7 +91,7 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"tool_call","id":"call_nQBHB7aQgltW1QH94YRQYyer","name":"secret_retrieval_tool","arguments":{"password":"mellon"}},{"type":"tool_call","id":"call_rI7qIauOBe4l1rEe4enUzA2a","name":"secret_retrieval_tool","arguments":{"password":"radiance"}}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 36,
                 "gen_ai.usage.output_tokens": 54,
-                "mirascope.messages": '[{"role":"system","content":{"type":"text","text":"Use parallel tool calling."}},{"role":"user","content":[{"type":"text","text":"Please retrieve the secrets associated with each of these passwords: mellon,radiance"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"system","content":{"type":"text","text":"Use parallel tool calling."}},{"role":"user","content":[{"type":"text","text":"Please retrieve the secrets associated with each of these passwords: mellon,radiance"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"tool_call","id":"call_nQBHB7aQgltW1QH94YRQYyer","name":"secret_retrieval_tool","args":"{\\"password\\":\\"mellon\\"}"},{"type":"tool_call","id":"call_rI7qIauOBe4l1rEe4enUzA2a","name":"secret_retrieval_tool","args":"{\\"password\\":\\"radiance\\"}"}]',
                 "mirascope.response.usage": '{"input_tokens":36,"output_tokens":54,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":90}',
             },
@@ -154,7 +152,7 @@ def test_model_stream_with_json_format(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"{\\"title\\":\\"THE NAME OF THE WIND\\",\\"author\\":{\\"first_name\\":\\"Patrick\\",\\"last_name\\":\\"Rothfuss\\"},\\"rating\\":7}"}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 170,
                 "gen_ai.usage.output_tokens": 30,
-                "mirascope.messages": '[{"role":"system","content":{"type":"text","text":"Always respond to the user\'s query using the __mirascope_formatted_output_tool__ tool for structured output."}},{"role":"user","content":[{"type":"text","text":"Please recommend the most popular book by Patrick Rothfuss"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"system","content":{"type":"text","text":"Always respond to the user\'s query using the __mirascope_formatted_output_tool__ tool for structured output."}},{"role":"user","content":[{"type":"text","text":"Please recommend the most popular book by Patrick Rothfuss"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"{\\"title\\":\\"THE NAME OF THE WIND\\",\\"author\\":{\\"first_name\\":\\"Patrick\\",\\"last_name\\":\\"Rothfuss\\"},\\"rating\\":7}"}]',
                 "mirascope.response.usage": '{"input_tokens":170,"output_tokens":30,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":200}',
             },
@@ -279,7 +277,7 @@ def test_model_stream_with_none_parameters(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 = 4242"}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 16,
                 "gen_ai.usage.output_tokens": 10,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"4200 + 42 = 4242"}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":10,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":26}',
             },
@@ -319,7 +317,7 @@ def test_model_stream_records_response_id(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 equals 4242."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 16,
                 "gen_ai.usage.output_tokens": 11,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"4200 + 42 equals 4242."}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":11,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":27}',
             },

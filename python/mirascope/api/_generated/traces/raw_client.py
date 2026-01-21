@@ -24,7 +24,6 @@ from ..types.number_from_string import NumberFromString
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.plan_limit_exceeded_error import PlanLimitExceededError
 from ..types.rate_limit_error import RateLimitError
-from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 from ..types.unauthorized_error_body import UnauthorizedErrorBody
 from .types.traces_create_request_resource_spans_item import (
     TracesCreateRequestResourceSpansItem,
@@ -33,10 +32,21 @@ from .types.traces_create_response import TracesCreateResponse
 from .types.traces_get_analytics_summary_response import (
     TracesGetAnalyticsSummaryResponse,
 )
+from .types.traces_get_trace_detail_by_env_response import (
+    TracesGetTraceDetailByEnvResponse,
+)
 from .types.traces_get_trace_detail_response import TracesGetTraceDetailResponse
 from .types.traces_list_by_function_hash_response import (
     TracesListByFunctionHashResponse,
 )
+from .types.traces_search_by_env_request_attribute_filters_item import (
+    TracesSearchByEnvRequestAttributeFiltersItem,
+)
+from .types.traces_search_by_env_request_sort_by import TracesSearchByEnvRequestSortBy
+from .types.traces_search_by_env_request_sort_order import (
+    TracesSearchByEnvRequestSortOrder,
+)
+from .types.traces_search_by_env_response import TracesSearchByEnvResponse
 from .types.traces_search_request_attribute_filters_item import (
     TracesSearchRequestAttributeFiltersItem,
 )
@@ -189,9 +199,9 @@ class RawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -224,6 +234,7 @@ class RawTracesClient:
         provider: typing.Optional[typing.Sequence[str]] = OMIT,
         function_id: typing.Optional[str] = OMIT,
         function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
         has_error: typing.Optional[bool] = OMIT,
         min_tokens: typing.Optional[float] = OMIT,
         max_tokens: typing.Optional[float] = OMIT,
@@ -236,6 +247,7 @@ class RawTracesClient:
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
         sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TracesSearchResponse]:
         """
@@ -265,6 +277,8 @@ class RawTracesClient:
 
         function_name : typing.Optional[str]
 
+        span_name_prefix : typing.Optional[str]
+
         has_error : typing.Optional[bool]
 
         min_tokens : typing.Optional[float]
@@ -284,6 +298,8 @@ class RawTracesClient:
         sort_by : typing.Optional[TracesSearchRequestSortBy]
 
         sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -309,6 +325,7 @@ class RawTracesClient:
                 "provider": provider,
                 "functionId": function_id,
                 "functionName": function_name,
+                "spanNamePrefix": span_name_prefix,
                 "hasError": has_error,
                 "minTokens": min_tokens,
                 "maxTokens": max_tokens,
@@ -323,6 +340,7 @@ class RawTracesClient:
                 "offset": offset,
                 "sortBy": sort_by,
                 "sortOrder": sort_order,
+                "rootSpansOnly": root_spans_only,
             },
             headers={
                 "content-type": "application/json",
@@ -399,9 +417,9 @@ class RawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -520,9 +538,9 @@ class RawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -644,9 +662,9 @@ class RawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -778,9 +796,382 @@ class RawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def searchbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchByEnvRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TracesSearchByEnvResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        span_name_prefix : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchByEnvRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchByEnvRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TracesSearchByEnvResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}/environments/{jsonable_encoder(environment_id)}/traces/search",
+            method="POST",
+            json={
+                "startTime": start_time,
+                "endTime": end_time,
+                "query": query,
+                "inputMessagesQuery": input_messages_query,
+                "outputMessagesQuery": output_messages_query,
+                "fuzzySearch": fuzzy_search,
+                "traceId": trace_id,
+                "spanId": span_id,
+                "model": model,
+                "provider": provider,
+                "functionId": function_id,
+                "functionName": function_name,
+                "spanNamePrefix": span_name_prefix,
+                "hasError": has_error,
+                "minTokens": min_tokens,
+                "maxTokens": max_tokens,
+                "minDuration": min_duration,
+                "maxDuration": max_duration,
+                "attributeFilters": convert_and_respect_annotation_metadata(
+                    object_=attribute_filters,
+                    annotation=typing.Sequence[
+                        TracesSearchByEnvRequestAttributeFiltersItem
+                    ],
+                    direction="write",
+                ),
+                "limit": limit,
+                "offset": offset,
+                "sortBy": sort_by,
+                "sortOrder": sort_order,
+                "rootSpansOnly": root_spans_only,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesSearchByEnvResponse,
+                    parse_obj_as(
+                        type_=TracesSearchByEnvResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    def gettracedetailbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        trace_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TracesGetTraceDetailByEnvResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TracesGetTraceDetailByEnvResponse]
+            Success
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}/environments/{jsonable_encoder(environment_id)}/traces/{jsonable_encoder(trace_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesGetTraceDetailByEnvResponse,
+                    parse_obj_as(
+                        type_=TracesGetTraceDetailByEnvResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -940,9 +1331,9 @@ class AsyncRawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -975,6 +1366,7 @@ class AsyncRawTracesClient:
         provider: typing.Optional[typing.Sequence[str]] = OMIT,
         function_id: typing.Optional[str] = OMIT,
         function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
         has_error: typing.Optional[bool] = OMIT,
         min_tokens: typing.Optional[float] = OMIT,
         max_tokens: typing.Optional[float] = OMIT,
@@ -987,6 +1379,7 @@ class AsyncRawTracesClient:
         offset: typing.Optional[float] = OMIT,
         sort_by: typing.Optional[TracesSearchRequestSortBy] = OMIT,
         sort_order: typing.Optional[TracesSearchRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TracesSearchResponse]:
         """
@@ -1016,6 +1409,8 @@ class AsyncRawTracesClient:
 
         function_name : typing.Optional[str]
 
+        span_name_prefix : typing.Optional[str]
+
         has_error : typing.Optional[bool]
 
         min_tokens : typing.Optional[float]
@@ -1035,6 +1430,8 @@ class AsyncRawTracesClient:
         sort_by : typing.Optional[TracesSearchRequestSortBy]
 
         sort_order : typing.Optional[TracesSearchRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -1060,6 +1457,7 @@ class AsyncRawTracesClient:
                 "provider": provider,
                 "functionId": function_id,
                 "functionName": function_name,
+                "spanNamePrefix": span_name_prefix,
                 "hasError": has_error,
                 "minTokens": min_tokens,
                 "maxTokens": max_tokens,
@@ -1074,6 +1472,7 @@ class AsyncRawTracesClient:
                 "offset": offset,
                 "sortBy": sort_by,
                 "sortOrder": sort_order,
+                "rootSpansOnly": root_spans_only,
             },
             headers={
                 "content-type": "application/json",
@@ -1150,9 +1549,9 @@ class AsyncRawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1271,9 +1670,9 @@ class AsyncRawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1395,9 +1794,9 @@ class AsyncRawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1529,9 +1928,382 @@ class AsyncRawTracesClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def searchbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        *,
+        start_time: str,
+        end_time: str,
+        query: typing.Optional[str] = OMIT,
+        input_messages_query: typing.Optional[str] = OMIT,
+        output_messages_query: typing.Optional[str] = OMIT,
+        fuzzy_search: typing.Optional[bool] = OMIT,
+        trace_id: typing.Optional[str] = OMIT,
+        span_id: typing.Optional[str] = OMIT,
+        model: typing.Optional[typing.Sequence[str]] = OMIT,
+        provider: typing.Optional[typing.Sequence[str]] = OMIT,
+        function_id: typing.Optional[str] = OMIT,
+        function_name: typing.Optional[str] = OMIT,
+        span_name_prefix: typing.Optional[str] = OMIT,
+        has_error: typing.Optional[bool] = OMIT,
+        min_tokens: typing.Optional[float] = OMIT,
+        max_tokens: typing.Optional[float] = OMIT,
+        min_duration: typing.Optional[float] = OMIT,
+        max_duration: typing.Optional[float] = OMIT,
+        attribute_filters: typing.Optional[
+            typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]
+        ] = OMIT,
+        limit: typing.Optional[float] = OMIT,
+        offset: typing.Optional[float] = OMIT,
+        sort_by: typing.Optional[TracesSearchByEnvRequestSortBy] = OMIT,
+        sort_order: typing.Optional[TracesSearchByEnvRequestSortOrder] = OMIT,
+        root_spans_only: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TracesSearchByEnvResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        start_time : str
+
+        end_time : str
+
+        query : typing.Optional[str]
+
+        input_messages_query : typing.Optional[str]
+
+        output_messages_query : typing.Optional[str]
+
+        fuzzy_search : typing.Optional[bool]
+
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        model : typing.Optional[typing.Sequence[str]]
+
+        provider : typing.Optional[typing.Sequence[str]]
+
+        function_id : typing.Optional[str]
+
+        function_name : typing.Optional[str]
+
+        span_name_prefix : typing.Optional[str]
+
+        has_error : typing.Optional[bool]
+
+        min_tokens : typing.Optional[float]
+
+        max_tokens : typing.Optional[float]
+
+        min_duration : typing.Optional[float]
+
+        max_duration : typing.Optional[float]
+
+        attribute_filters : typing.Optional[typing.Sequence[TracesSearchByEnvRequestAttributeFiltersItem]]
+
+        limit : typing.Optional[float]
+
+        offset : typing.Optional[float]
+
+        sort_by : typing.Optional[TracesSearchByEnvRequestSortBy]
+
+        sort_order : typing.Optional[TracesSearchByEnvRequestSortOrder]
+
+        root_spans_only : typing.Optional[bool]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TracesSearchByEnvResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}/environments/{jsonable_encoder(environment_id)}/traces/search",
+            method="POST",
+            json={
+                "startTime": start_time,
+                "endTime": end_time,
+                "query": query,
+                "inputMessagesQuery": input_messages_query,
+                "outputMessagesQuery": output_messages_query,
+                "fuzzySearch": fuzzy_search,
+                "traceId": trace_id,
+                "spanId": span_id,
+                "model": model,
+                "provider": provider,
+                "functionId": function_id,
+                "functionName": function_name,
+                "spanNamePrefix": span_name_prefix,
+                "hasError": has_error,
+                "minTokens": min_tokens,
+                "maxTokens": max_tokens,
+                "minDuration": min_duration,
+                "maxDuration": max_duration,
+                "attributeFilters": convert_and_respect_annotation_metadata(
+                    object_=attribute_filters,
+                    annotation=typing.Sequence[
+                        TracesSearchByEnvRequestAttributeFiltersItem
+                    ],
+                    direction="write",
+                ),
+                "limit": limit,
+                "offset": offset,
+                "sortBy": sort_by,
+                "sortOrder": sort_order,
+                "rootSpansOnly": root_spans_only,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesSearchByEnvResponse,
+                    parse_obj_as(
+                        type_=TracesSearchByEnvResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(
+                status_code=_response.status_code,
+                headers=dict(_response.headers),
+                body=_response.text,
+            )
+        raise ApiError(
+            status_code=_response.status_code,
+            headers=dict(_response.headers),
+            body=_response_json,
+        )
+
+    async def gettracedetailbyenv(
+        self,
+        organization_id: str,
+        project_id: str,
+        environment_id: str,
+        trace_id: str,
+        *,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TracesGetTraceDetailByEnvResponse]:
+        """
+        Parameters
+        ----------
+        organization_id : str
+
+        project_id : str
+
+        environment_id : str
+
+        trace_id : str
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TracesGetTraceDetailByEnvResponse]
+            Success
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}/environments/{jsonable_encoder(environment_id)}/traces/{jsonable_encoder(trace_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TracesGetTraceDetailByEnvResponse,
+                    parse_obj_as(
+                        type_=TracesGetTraceDetailByEnvResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        UnauthorizedErrorBody,
+                        parse_obj_as(
+                            type_=UnauthorizedErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        PermissionDeniedError,
+                        parse_obj_as(
+                            type_=PermissionDeniedError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        NotFoundErrorBody,
+                        parse_obj_as(
+                            type_=NotFoundErrorBody,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        RateLimitError,
+                        parse_obj_as(
+                            type_=RateLimitError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise ServiceUnavailableError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Optional[typing.Any],
+                        parse_obj_as(
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
