@@ -1,9 +1,4 @@
-/* todo(sebastian): tailwind-ify or remove superfluous pricing styles */
-/* Pricing table adjustments */
-.grid.grid-cols-3 {
-  min-width: 800px;
-}
-
+/* Font family for MDX content */
 .mdx-content {
   font-family: var(--font-sans);
 }

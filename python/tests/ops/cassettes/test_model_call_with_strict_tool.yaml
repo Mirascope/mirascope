@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather like in San Francisco?","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"get_current_weather","description":"Get
+      the current weather in a given location.","parameters":{"properties":{"location":{"title":"Location","type":"string"},"unit":{"default":"fahrenheit","title":"Unit","type":"string"}},"required":["location","unit"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '454'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4xVS5PbNgy++1dweF5nZK1f8rlNcuih0+2euhkNTEE2uxTJkKATZ8f/vUPKevg1
+        05uED/gIAh+IjwljXFZ8w7hDb8tsLYptni/Ws+ViuShmWbYsVlmOYpmv59l6Viy3s3w1K/LZotjm
+        8Lxd8adIYbb/oqCOxmiPrV04BMKqhIjNVst1sSiW62XCPAEFH2OEaaxCwqoN2oJ43zkTdMyrBuWx
+        NUulpN7xDfuYMMYYt3BEF+MrPKAyFh2fMHZqD+4or45eJRSdMzFSB6WSoXb4PaAWx9KiBkVHvmHZ
+        pyxhUndkZYUEUvlxpNSeXBAkjb6wN/CzNIFsoJLMO96CZIwqBahLusZUqOKddpamczNtpJbTPMvn
+        02w1na3P1U68fMP+SYVoy9E3shaP27haLYp5auNzVgDWq2fI13NYtG1MJHS0mGiCTrdKOQ7wo64l
+        ENwuNKgp4R9vXBkBkeONb974C2j22YEW0gvzxp/eeNCSElTD3qHeY/w9DXTx5LK9VPr87bv78fr7
+        r5f8q7Gf89fsxR7+/kv+EkOEhiYlv0MqRXAONZU/EGjfaoOx04Sxb6mIFhwoheqyEeRCqzbr0KMW
+        eEcQ1uFBmuDLTuttjn0PrTONpVKA2GP5jseHmENCHesz9nAI3ugLoWNdG0cjp9iH0DTgOu5e9x5q
+        pGMpq0hcS7xQuUd3kAJLkt3c1BAU8fM4GofjChA2Fh1QSObZ+fKEP2nIrDaugeF/JJ/k15b8nPEB
+        3dZ4mUrJG6xkaIZ5bZuwN1KkaAhkeA/4W6lfq3SQQIVeOGnPZeVfkBjtkZ3VwM5qYFIzYDt5QM06
+        lX76fzrqnaKCGiR0flSAtscWHUm8tDPWz8OVPd5Hkkon/tG5PF05nC/syUVtjMDT2DPN1C191+lY
+        sX7Wbo7ocnjVd8DH50/uZMLjgyodVn3rrktwm3Vv+DbigaqS0R/Un+Oy9mvhKr3zIppcJZTSTgsq
+        yvvqJSBjS2V21pltpM56ox3r3gXdN49X0sNWdQsreNjhMBRSX7z6y8XTrX20Sj6G507ssRoCs4vx
+        uV4meX4PuMfbvyiPqMkQqAFcr/qxDP7yBWmQoAKCSH+anP4DAAD//wMAcdZ4CD8IAAA=
+    headers:
+      CF-RAY:
+      - 9c131bf3edbc6805-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Jan 2026 01:41:27 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=7wObT7rloE.vtDHUvSbO2wquPt.o6asRKa4Zn.Ef3H4-1768959687-1.0.1.1-bDkT__qnsgwnEwNXzt8FWg4nRQfgUUm1N0WamybGPvH18gPbn1op0XBlbgn4VyoJV3sNK835NuW4LMMDjAa49JdXY01SJwhrVHdbvaGCu7A;
+        path=/; expires=Wed, 21-Jan-26 02:11:27 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=gwyWC1zKHY0XowWunY4Sc4IullGVQ.VgLq4n7et_Tf8-1768959687724-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1544'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1553'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999718'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_853508e22c1c4798aa4b89eed1daefa4
+    status:
+      code: 200
+      message: OK
+version: 1

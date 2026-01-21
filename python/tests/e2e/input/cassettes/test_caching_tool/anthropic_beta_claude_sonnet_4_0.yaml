@@ -209,7 +209,7 @@ interactions:
       or do you wish me to \\\"alter the deal\\\" until you beg me to stop?led the
       length, just as the Sith always travel in pairs. Is this protocol \\\"impressive...
       most impressive,\\\" or shall I continue to \\\"alter the deal\\\" until you
-      pray I do not alter it further?\\n\",\"input_schema\":{\"properties\":{},\"required\":[],\"additionalProperties\":false,\"type\":\"object\"},\"cache_control\":{\"type\":\"ephemeral\"}}]}"
+      pray I do not alter it further?\\n\",\"input_schema\":{\"properties\":{},\"required\":[],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":false,\"cache_control\":{\"type\":\"ephemeral\"}}]}"
     headers:
       accept:
       - application/json
@@ -222,13 +222,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '16317'
+      - '16332'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - Anthropic/Python 0.75.0
+      - Anthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -240,7 +242,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.75.0
+      - 0.76.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -256,17 +258,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/2WQy06EMBSG36VrJgEEUXYms9JZEE00aEzTtEfA6QV70UwI7+7pTIgOs2vP9196
-        OhFlBEhSEy5ZELBxRmvwm2KTp3mZlllBEjII5Mp1NM1KtW3sa2ju964vHqrP0FWteEaNP4wQVeAc
-        6wAH1sg4YM4NzjPtccSN9oCn+m1a9N4YSYODpSXeA/YU2+zp7rH5aFV12InAb1u7G15QpZmKPoy0
-        9IdZR6MjuvUYMHma5/cEqRmpBYbLnHccgYOvAJpjjA5SJiQcX1xPpwwM3IN2pM6KCp/MeA+UY5Yf
-        jKbninThiMWKFddpvrbHDhh7UGCZpKW6jPujWb+mc0JM8P9HVze4EdjvgQP1A9jTv2jBrCDz/Auk
-        eQiw2wEAAA==
+        H4sIAAAAAAAA/22QzU7DMBCE38XnVEpCUiBHClQqlx5QJYqQZcWrxMI/qX9oSpR3Z90qgkbc7J2Z
+        b7weiDIcJKlILVngsHBGa/CLYpGneZmWWUESIjjqyjU0zR5O3+vDvn/dlG/NRj0X4r7Pnzr0+FMH
+        0QXOsQZwYI2MA+accJ5pj6PaaA94qt6Hye+NkTQ4mFriPWDPehW2vtwFxpf99mX1uN81RzDo0kzF
+        HCItPTLraEzEtO4Ckodx/EhQNR21wHCZ646z4OAQQNeI0UHKhITzi6vhwkDgJ2hHqqy4xSezugVa
+        I8sLo+m1o1im+WRBB5/J6TweO6BrQYFlkpbqX9yvIWvnwDEhJvi/o5s7XArsl6iBegH28jWaM8vJ
+        OP4A7CjNHN4BAAA=
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b02c4c19e88ba1c-SEA
+      - 9c11fd825f54372b-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -274,15 +274,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 19 Dec 2025 00:26:31 GMT
+      - Tue, 20 Jan 2026 22:25:55 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -290,31 +286,35 @@ interactions:
       anthropic-ratelimit-input-tokens-limit:
       - '2000000'
       anthropic-ratelimit-input-tokens-remaining:
-      - '2000000'
+      - '1998000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-19T00:26:30Z'
+      - '2026-01-20T22:25:54Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-19T00:26:31Z'
+      - '2026-01-20T22:25:55Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-19T00:26:27Z'
+      - '2026-01-20T22:25:53Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
-      - '2400000'
+      - '2398000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-19T00:26:30Z'
+      - '2026-01-20T22:25:54Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF6ZGGSKUACbWjyxrqXG
+      - req_011CXKR4CZLG6WC5twRP6M4z
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '3519'
+      - '2234'
     status:
       code: 200
       message: OK
@@ -528,7 +528,7 @@ interactions:
       or do you wish me to \\\"alter the deal\\\" until you beg me to stop?led the
       length, just as the Sith always travel in pairs. Is this protocol \\\"impressive...
       most impressive,\\\" or shall I continue to \\\"alter the deal\\\" until you
-      pray I do not alter it further?\\n\",\"input_schema\":{\"properties\":{},\"required\":[],\"additionalProperties\":false,\"type\":\"object\"},\"cache_control\":{\"type\":\"ephemeral\"}}]}"
+      pray I do not alter it further?\\n\",\"input_schema\":{\"properties\":{},\"required\":[],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":false,\"cache_control\":{\"type\":\"ephemeral\"}}]}"
     headers:
       accept:
       - application/json
@@ -541,13 +541,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '16338'
+      - '16353'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - Anthropic/Python 0.75.0
+      - Anthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -559,7 +561,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.75.0
+      - 0.76.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -575,17 +577,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/2WQW0vDMBTHv0ueO+hVRh8FnaiMOVGnIiEkx7WYS81lXkq/uycbRVffkvP7X3LS
-        E2UESFITLlkQMHNGa/CzcpaneZVWWUkS0grkym1pmt2dffPi/GleXG/8p7m4VPDarNao8V8dRBU4
-        x7aAA2tkHDDnWueZ9jjiRnvAU/3cj3pvjKTBwdgS7wF7Fuvi8cbempW+3ywflplb+N3VKao0U9GH
-        kZZ+MOtodES37gIm98PwkiA1HbXAcJnjjj1w8B5Ac4zRQcqEhP2L6/6QgYFvoB2psyrDJzPeAOWY
-        5Vuj6bEiHTliMWHlSZpP7bEDugYUWCZppf7H/dKsmdIhISb4v6NijhuB3bUcqG/BHv5FC2YFGYYf
-        v8MGE9sBAAA=
+        H4sIAAAAAAAA/2WQXUvDMBSG/0uuO2i7dkrvZCJjFzIRL1QkZMmhDaZJzUe1lv53TzaKrt4l53k/
+        cjKS1ghQpCJcsSBg5YzW4FfFKk/zMi2zgiRECuStq2marf3zcHzp7+4PUmxFsbNftdsMqPFDB1EF
+        zrEacGCNigPmnHSeaY8jbrQHPFWv46z3xigaHMwt8R6w54ZJON4+yq7f75vtU/7wvesPV6jSrI0+
+        jLT0k1lHoyO6dRcweZymtwSp6agFhstcdpyAg48AmmOMDkolJJxeXI3nDAx8B+1IlZUZPpnxBijH
+        LC+NppeKdOaIxYIVmzRf2mMHdA20YJmiZfs/7pdmzZJOCTHB/x2tr3EjsL3kQL0Ee/4XLZgVZJp+
+        ANkPPtrbAQAA
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b02c4d88878ba1c-SEA
+      - 9c11fd91e82c372b-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -593,15 +593,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 19 Dec 2025 00:26:35 GMT
+      - Tue, 20 Jan 2026 22:25:57 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -611,29 +607,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-19T00:26:34Z'
+      - '2026-01-20T22:25:57Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-19T00:26:35Z'
+      - '2026-01-20T22:25:57Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-19T00:26:31Z'
+      - '2026-01-20T22:25:55Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-19T00:26:34Z'
+      - '2026-01-20T22:25:57Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF6ZXxFzSFGayDUzvwum
+      - req_011CXKR4P95BkkUT3YNe5iaZ
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '4247'
+      - '2079'
     status:
       code: 200
       message: OK

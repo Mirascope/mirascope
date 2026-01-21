@@ -3,7 +3,7 @@ import {
   useProvider,
   replaceProviderVariables,
 } from "@/app/components/mdx/elements/model-provider-provider";
-import { AnalyticsCodeBlock } from "@/app/components/mdx/elements/analytics-code-block";
+import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 
 /**
  * A wrapper component for code blocks that handles provider-specific substitutions.
@@ -28,7 +28,7 @@ export function ModelProviderCodeWrapper({
   }
 
   return (
-    <AnalyticsCodeBlock
+    <CodeBlock
       className={className}
       code={code}
       language={language}

@@ -45,16 +45,15 @@ async function loadFont(): Promise<ArrayBuffer> {
 
 /**
  * Load the light background image and convert to base64 data URL
- * todo(sebastian): Investigate using water color background-image CSS property.
  */
 async function loadBackgroundImage(): Promise<string> {
   if (!backgroundDataUrl) {
     const imgPath = path.resolve(
       process.cwd(),
-      "public/assets/backgrounds/light.webp",
+      "public/assets/social-cards/background.png",
     );
     const buffer = await fs.readFile(imgPath);
-    backgroundDataUrl = `data:image/webp;base64,${buffer.toString("base64")}`;
+    backgroundDataUrl = `data:image/png;base64,${buffer.toString("base64")}`;
   }
   return backgroundDataUrl;
 }
@@ -85,12 +84,11 @@ export async function loadAssets(): Promise<{
 /**
  * Create the social card element structure as a plain object
  * Satori accepts both React elements and plain object representations
- *
- * Note: Uses a light gradient background instead of the watercolor image
- * because Satori has issues with children arrays containing images.
- * todo(sebastian): Investigate using water color background-image CSS property.
  */
-function createSocialCardElement(title: string): Record<string, unknown> {
+function createSocialCardElement(
+  title: string,
+  backgroundDataUrl: string,
+): Record<string, unknown> {
   return {
     type: "div",
     props: {
@@ -101,9 +99,9 @@ function createSocialCardElement(title: string): Record<string, unknown> {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        // Light watercolor-inspired gradient background
-        background:
-          "linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 50%, #d4dbe6 100%)",
+        backgroundImage: `url(${backgroundDataUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         padding: 60,
       },
       children: {
@@ -112,10 +110,12 @@ function createSocialCardElement(title: string): Record<string, unknown> {
           style: {
             fontFamily: "Williams Handwriting",
             fontSize: 72,
-            color: "#1a1a2e",
+            color: "#ffffff",
             textAlign: "center",
             lineHeight: 1.3,
             maxWidth: "90%",
+            textShadow:
+              "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
           },
           children: title,
         },
@@ -130,7 +130,7 @@ export async function renderSocialCard(
   quality = 85,
 ): Promise<Buffer> {
   // Create element as plain object (Satori accepts both React and plain objects)
-  const element = createSocialCardElement(title);
+  const element = createSocialCardElement(title, assets.background);
 
   // 1. Satori: Element -> SVG string
   // Note: Satori accepts both React elements and plain object representations

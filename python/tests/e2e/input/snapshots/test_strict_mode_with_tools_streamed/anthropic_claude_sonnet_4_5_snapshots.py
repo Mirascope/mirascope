@@ -26,7 +26,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="toolu_01Qrhi4by4gBqGmYzVUTGgFd",
+                            id="toolu_01GWMYVRPdJWuP8ywu1XZDW8",
                             name="customAdditionImplementation",
                             args='{"a": 2, "b": 3}',
                         )
@@ -39,7 +39,7 @@ test_snapshot = snapshot(
                         "content": [
                             {
                                 "type": "tool_use",
-                                "id": "toolu_01Qrhi4by4gBqGmYzVUTGgFd",
+                                "id": "toolu_01GWMYVRPdJWuP8ywu1XZDW8",
                                 "name": "customAdditionImplementation",
                                 "input": {"a": 2, "b": 3},
                             }
@@ -49,7 +49,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01Qrhi4by4gBqGmYzVUTGgFd",
+                            id="toolu_01GWMYVRPdJWuP8ywu1XZDW8",
                             name="customAdditionImplementation",
                             result=13,
                         )
@@ -126,7 +126,7 @@ test_snapshot = snapshot(
                 "raw": "None",
                 "total_tokens": 964,
             },
-            "n_chunks": 8,
+            "n_chunks": 6,
         }
     }
 )
