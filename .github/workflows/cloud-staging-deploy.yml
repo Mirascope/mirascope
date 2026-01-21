@@ -49,23 +49,23 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloud
-          command: deploy --env staging
+          command: deploy
           postCommands: |
             echo "Setting staging worker secrets..."
-            echo "${{ secrets.STAGING_GITHUB_CLIENT_SECRET }}" | bunx wrangler secret put GITHUB_CLIENT_SECRET --env staging
-            echo "${{ secrets.STAGING_GOOGLE_CLIENT_SECRET }}" | bunx wrangler secret put GOOGLE_CLIENT_SECRET --env staging
-            echo "${{ secrets.STAGING_RESEND_API_KEY }}" | bunx wrangler secret put RESEND_API_KEY --env staging
-            echo "${{ secrets.STAGING_RESEND_AUDIENCE_SEGMENT_ID }}" | bunx wrangler secret put RESEND_AUDIENCE_SEGMENT_ID --env staging
-            echo "${{ secrets.STAGING_STRIPE_SECRET_KEY }}" | bunx wrangler secret put STRIPE_SECRET_KEY --env staging
-            echo "${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}" | bunx wrangler secret put STRIPE_WEBHOOK_SECRET --env staging
-            echo "${{ secrets.STAGING_ANTHROPIC_API_KEY }}" | bunx wrangler secret put ANTHROPIC_API_KEY --env staging
-            echo "${{ secrets.STAGING_GEMINI_API_KEY }}" | bunx wrangler secret put GEMINI_API_KEY --env staging
-            echo "${{ secrets.STAGING_OPENAI_API_KEY }}" | bunx wrangler secret put OPENAI_API_KEY --env staging
-            echo "${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}" | bunx wrangler secret put CLICKHOUSE_PASSWORD --env staging
-            echo "${{ secrets.STAGING_POSTHOG_API_KEY }}" | bunx wrangler secret put POSTHOG_API_KEY --env staging
-            echo "${{ secrets.STAGING_POSTHOG_HOST }}" | bunx wrangler secret put POSTHOG_HOST --env staging
-            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" | bunx wrangler secret put GOOGLE_ANALYTICS_MEASUREMENT_ID --env staging
-            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_API_SECRET }}" | bunx wrangler secret put GOOGLE_ANALYTICS_API_SECRET --env staging
+            echo "${{ secrets.STAGING_GITHUB_CLIENT_SECRET }}" | bunx wrangler secret put GITHUB_CLIENT_SECRET --name staging
+            echo "${{ secrets.STAGING_GOOGLE_CLIENT_SECRET }}" | bunx wrangler secret put GOOGLE_CLIENT_SECRET --name staging
+            echo "${{ secrets.STAGING_RESEND_API_KEY }}" | bunx wrangler secret put RESEND_API_KEY --name staging
+            echo "${{ secrets.STAGING_RESEND_AUDIENCE_SEGMENT_ID }}" | bunx wrangler secret put RESEND_AUDIENCE_SEGMENT_ID --name staging
+            echo "${{ secrets.STAGING_STRIPE_SECRET_KEY }}" | bunx wrangler secret put STRIPE_SECRET_KEY --name staging
+            echo "${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}" | bunx wrangler secret put STRIPE_WEBHOOK_SECRET --name staging
+            echo "${{ secrets.STAGING_ANTHROPIC_API_KEY }}" | bunx wrangler secret put ANTHROPIC_API_KEY --name staging
+            echo "${{ secrets.STAGING_GEMINI_API_KEY }}" | bunx wrangler secret put GEMINI_API_KEY --name staging
+            echo "${{ secrets.STAGING_OPENAI_API_KEY }}" | bunx wrangler secret put OPENAI_API_KEY --name staging
+            echo "${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}" | bunx wrangler secret put CLICKHOUSE_PASSWORD --name staging
+            echo "${{ secrets.STAGING_POSTHOG_API_KEY }}" | bunx wrangler secret put POSTHOG_API_KEY --name staging
+            echo "${{ secrets.STAGING_POSTHOG_HOST }}" | bunx wrangler secret put POSTHOG_HOST --name staging
+            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" | bunx wrangler secret put GOOGLE_ANALYTICS_MEASUREMENT_ID --name staging
+            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_API_SECRET }}" | bunx wrangler secret put GOOGLE_ANALYTICS_API_SECRET --name staging
 
       - name: Deployment complete
         run: echo "✅ Successfully deployed to staging at https://staging.mirascope.com"
