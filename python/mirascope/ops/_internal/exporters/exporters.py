@@ -233,24 +233,51 @@ class MirascopeOTLPExporter(SpanExporter):
                 message=span.status.description or "",
             )
 
+        # Convert events
+        events = None
+        if span.events:
+            events = []
+            for event in span.events:
+                event_attrs: list[dict[str, object]] = []
+                if event.attributes:
+                    for key, value in event.attributes.items():
+                        # Convert to OTLP attribute format with typed values
+                        attr_value = self._convert_event_attribute_value(value)
+                        event_attrs.append({"key": key, "value": attr_value})
+                events.append(
+                    {
+                        "name": event.name,
+                        "timeUnixNano": str(event.timestamp)
+                        if event.timestamp
+                        else None,
+                        "attributes": event_attrs if event_attrs else None,
+                    }
+                )
+
         trace_id = format(context.trace_id, "032x")
         span_id = format(context.span_id, "016x")
 
-        return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
-            trace_id=trace_id,
-            span_id=span_id,
-            parent_span_id=(
+        # Build kwargs, only including events if present (to avoid sending null)
+        kwargs: dict[str, object] = {
+            "trace_id": trace_id,
+            "span_id": span_id,
+            "parent_span_id": (
                 format(span.parent.span_id, "016x")
                 if span.parent and span.parent.span_id
                 else None
             ),
-            name=span.name,
-            kind=span.kind.value if span.kind else 0,
-            start_time_unix_nano=str(span.start_time) if span.start_time else "0",
-            end_time_unix_nano=str(span.end_time) if span.end_time else "0",
-            attributes=attributes or None,
-            status=status,
-        )
+            "name": span.name,
+            "kind": span.kind.value if span.kind else 0,
+            "start_time_unix_nano": str(span.start_time) if span.start_time else "0",
+            "end_time_unix_nano": str(span.end_time) if span.end_time else "0",
+            "attributes": attributes or None,
+            "status": status,
+        }
+        # Only include events if present (omit entirely to avoid sending null)
+        if events:
+            kwargs["events"] = events
+
+        return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(**kwargs)  # type: ignore[arg-type]
 
     def _convert_attribute_value(
         self, value: AttributeValue
@@ -287,6 +314,32 @@ class MirascopeOTLPExporter(SpanExporter):
                 return TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue(
                     string_value=str(list(value))
                 )
+
+    def _convert_event_attribute_value(
+        self, value: AttributeValue
+    ) -> dict[str, object]:
+        """Convert OpenTelemetry AttributeValue to OTLP event attribute value format.
+
+        This uses the OTLP JSON format with typed value wrappers (e.g., stringValue, intValue).
+
+        Args:
+            value: An OpenTelemetry AttributeValue (bool, int, float, str, or Sequence)
+
+        Returns:
+            A dict with the typed value (e.g., {"stringValue": "..."})
+        """
+        match value:
+            case str():
+                return {"stringValue": value}
+            case bool():
+                return {"boolValue": value}
+            case int():
+                return {"intValue": str(value)}
+            case float():
+                return {"doubleValue": value}
+            case _:
+                # Sequences - convert to string representation
+                return {"stringValue": str(list(value))}
 
     def _convert_resource_attribute_value(
         self, value: AttributeValue

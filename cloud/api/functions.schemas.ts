@@ -65,6 +65,9 @@ const ListFunctionsResponseSchema = Schema.Struct({
 
 export type ListFunctionsResponse = typeof ListFunctionsResponseSchema.Type;
 
+export { FunctionSchema };
+export type FunctionResponse = typeof FunctionSchema.Type;
+
 export class FunctionsApi extends HttpApiGroup.make("functions")
   .add(
     HttpApiEndpoint.get("list", "/functions")
@@ -115,6 +118,26 @@ export class FunctionsApi extends HttpApiGroup.make("functions")
       .setPath(
         Schema.Struct({
           hash: Schema.String,
+        }),
+      )
+      .addSuccess(FunctionSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  // Session-authenticated route - gets IDs from path
+  .add(
+    HttpApiEndpoint.get(
+      "getByEnv",
+      "/organizations/:organizationId/projects/:projectId/environments/:environmentId/functions/:functionId",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+          functionId: Schema.String,
         }),
       )
       .addSuccess(FunctionSchema)

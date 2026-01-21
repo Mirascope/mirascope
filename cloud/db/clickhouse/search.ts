@@ -179,9 +179,13 @@ export interface SpanSearchResult {
   durationMs: number | null;
   model: string | null;
   provider: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
   totalTokens: number | null;
   functionId: string | null;
   functionName: string | null;
+  /** Whether this span has child spans */
+  hasChildren: boolean;
 }
 
 /** Search response with pagination info. */
@@ -260,9 +264,12 @@ interface SpanSummaryRow {
   duration_ms: number | null;
   model: string | null;
   provider: string | null;
+  input_tokens: number | null;
+  output_tokens: number | null;
   total_tokens: number | null;
   function_id: string | null;
   function_name: string | null;
+  has_children: number; // ClickHouse returns 0/1 for boolean expressions
 }
 
 interface SpanDetailRow {
@@ -379,9 +386,13 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
 
             // Summary query using argMax for deduplication (hot path)
             // Use table alias 's' to avoid column/alias name conflicts
+            // Use LEFT JOIN with a subquery to compute has_children (ClickHouse doesn't support correlated subqueries)
+            // Children subquery uses FINAL to match trace detail query's deduplication for consistency
             const rows = yield* client.unsafeQuery<SpanSummaryRow>(
               `
-              SELECT *
+              SELECT
+                main.*,
+                children.parent_span_id IS NOT NULL as has_children
               FROM (
                 SELECT
                   s.environment_id,
@@ -392,13 +403,27 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
                   argMax(s.duration_ms, s._version) as duration_ms,
                   argMax(s.model, s._version) as model,
                   argMax(s.provider, s._version) as provider,
+                  argMax(s.input_tokens, s._version) as input_tokens,
+                  argMax(s.output_tokens, s._version) as output_tokens,
                   argMax(s.total_tokens, s._version) as total_tokens,
                   argMax(s.function_id, s._version) as function_id,
                   argMax(s.function_name, s._version) as function_name
                 FROM spans_analytics AS s
                 WHERE ${whereClause}
                 GROUP BY s.environment_id, s.trace_id, s.span_id
-              )
+              ) AS main
+              LEFT JOIN (
+                SELECT DISTINCT
+                  environment_id,
+                  trace_id,
+                  parent_span_id
+                FROM spans_analytics FINAL
+                WHERE environment_id = toUUID({environmentId_0:String})
+                  AND parent_span_id IS NOT NULL
+              ) AS children
+              ON main.environment_id = children.environment_id
+                AND main.trace_id = children.trace_id
+                AND main.span_id = children.parent_span_id
               ORDER BY ${orderBy}
               LIMIT ${limit} OFFSET ${offset}
             `,
@@ -986,9 +1011,12 @@ function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
     durationMs: row.duration_ms,
     model: row.model,
     provider: row.provider,
+    inputTokens: row.input_tokens,
+    outputTokens: row.output_tokens,
     totalTokens: row.total_tokens,
     functionId: row.function_id,
     functionName: row.function_name,
+    hasChildren: row.has_children === 1,
   };
 }
 

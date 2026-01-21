@@ -515,3 +515,117 @@ def test_force_flush_returns_true() -> None:
 
     assert exporter.force_flush() is True
     assert exporter.force_flush(timeout_millis=1000) is True
+
+
+def test_export_span_with_events(
+    mirascope_client: Mirascope,
+    mock_span_ids: None,
+) -> None:
+    """Test exporting spans with events that have various attribute types."""
+    mirascope_client.traces.create = MagicMock(return_value=None)
+
+    resource = Resource.create({"service.name": "test-service"})
+    provider = TracerProvider(resource=resource, id_generator=RandomIdGenerator())
+    memory_exporter = InMemorySpanExporter()
+    processor = SimpleSpanProcessor(memory_exporter)
+    provider.add_span_processor(processor)
+
+    otlp_exporter = MirascopeOTLPExporter(
+        client=mirascope_client,
+    )
+
+    tracer = provider.get_tracer("event-test-tracer")
+    with tracer.start_as_current_span("span-with-events") as span:
+        # Add events with various attribute types
+        span.add_event(
+            "event-with-string",
+            attributes={"string_attr": "hello"},
+        )
+        span.add_event(
+            "event-with-bool",
+            attributes={"bool_attr": True},
+        )
+        span.add_event(
+            "event-with-int",
+            attributes={"int_attr": 42},
+        )
+        span.add_event(
+            "event-with-float",
+            attributes={"float_attr": 3.14},
+        )
+        span.add_event(
+            "event-with-sequence",
+            attributes={"sequence_attr": ["a", "b", "c"]},
+        )
+        span.add_event(
+            "event-with-multiple-attrs",
+            attributes={
+                "str": "value",
+                "num": 123,
+            },
+        )
+
+    provider.force_flush()
+    spans = memory_exporter.get_finished_spans()
+
+    result = otlp_exporter.export(spans)
+    assert result == SpanExportResult.SUCCESS
+
+    mirascope_client.traces.create.assert_called_once()
+    sent_data = mirascope_client.traces.create.call_args[1]["resource_spans"]
+    assert len(sent_data) == 1
+
+    exported_span = sent_data[0].scope_spans[0].spans[0]
+    assert exported_span.name == "span-with-events"
+
+    # Verify events were exported
+    events = exported_span.events
+    assert events is not None
+    assert len(events) == 6
+
+    # Verify event names
+    event_names = [e["name"] for e in events]
+    assert event_names == snapshot(
+        [
+            "event-with-string",
+            "event-with-bool",
+            "event-with-int",
+            "event-with-float",
+            "event-with-sequence",
+            "event-with-multiple-attrs",
+        ]
+    )
+
+    # Verify attribute conversions
+    string_event = events[0]
+    assert string_event["attributes"] == snapshot(
+        [{"key": "string_attr", "value": {"stringValue": "hello"}}]
+    )
+
+    bool_event = events[1]
+    assert bool_event["attributes"] == snapshot(
+        [{"key": "bool_attr", "value": {"boolValue": True}}]
+    )
+
+    int_event = events[2]
+    assert int_event["attributes"] == snapshot(
+        [{"key": "int_attr", "value": {"intValue": "42"}}]
+    )
+
+    float_event = events[3]
+    assert float_event["attributes"] == snapshot(
+        [{"key": "float_attr", "value": {"doubleValue": 3.14}}]
+    )
+
+    sequence_event = events[4]
+    assert sequence_event["attributes"] == snapshot(
+        [{"key": "sequence_attr", "value": {"stringValue": "['a', 'b', 'c']"}}]
+    )
+
+    multi_attr_event = events[5]
+    assert multi_attr_event["attributes"] == snapshot(
+        [
+            {"key": "str", "value": {"stringValue": "value"}},
+            {"key": "num", "value": {"intValue": "123"}},
+        ]
+    )
