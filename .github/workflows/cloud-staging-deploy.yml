@@ -41,7 +41,7 @@ jobs:
       - name: Build for staging
         run: bun run build
         env:
-          WRANGLER_ENV: staging
+          CLOUDFLARE_ENV: staging
 
       - name: Deploy to Cloudflare Workers (Staging)
         uses: cloudflare/wrangler-action@v3
@@ -49,7 +49,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloud
-          command: deploy --env staging --config wrangler.jsonc
+          command: deploy --env staging
           postCommands: |
             echo "Setting staging worker secrets..."
             echo "${{ secrets.STAGING_GITHUB_CLIENT_SECRET }}" | bunx wrangler secret put GITHUB_CLIENT_SECRET --env staging
