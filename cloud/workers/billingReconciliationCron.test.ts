@@ -15,8 +15,13 @@ import type { CronTriggerEnv } from "@/workers/billingReconciliationCron";
 import { createMockEnv } from "@/tests/settings";
 
 describe("billingReconciliationCron", () => {
-  // Create a complete mock environment with all required vars
-  const mockEnv = createMockEnv() as unknown as CronTriggerEnv;
+  // Create a complete mock environment with all required vars including HYPERDRIVE
+  const mockEnv = {
+    ...createMockEnv(),
+    HYPERDRIVE: {
+      connectionString: "postgres://test:test@localhost:5432/test",
+    },
+  } as unknown as CronTriggerEnv;
 
   const mockEvent = {
     scheduledTime: Date.now(),
@@ -814,7 +819,7 @@ describe("billingReconciliationCron", () => {
     await billingReconciliationCron.scheduled(mockEvent, envWithoutDb);
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[billingReconciliationCron] No database connection available (HYPERDRIVE or DATABASE_URL required)",
+      "[billingReconciliationCron] HYPERDRIVE binding not configured",
     );
 
     consoleErrorSpy.mockRestore();
@@ -825,9 +830,11 @@ describe("billingReconciliationCron", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    // Environment with some required vars missing
+    // Environment with HYPERDRIVE but missing other required vars
     const envWithMissingVars: CronTriggerEnv = {
-      DATABASE_URL: "postgres://test:test@localhost:5432/test",
+      HYPERDRIVE: {
+        connectionString: "postgres://test:test@localhost:5432/test",
+      },
       ENVIRONMENT: "test",
       // Missing all other required vars
     } as CronTriggerEnv;
@@ -860,9 +867,9 @@ describe("billingReconciliationCron", () => {
 
     await billingReconciliationCron.scheduled(mockEvent, envWithHyperdrive);
 
-    // Should not log the "No database connection" error
+    // Should not log the "HYPERDRIVE binding not configured" error
     expect(consoleErrorSpy).not.toHaveBeenCalledWith(
-      "[billingReconciliationCron] No database connection available (HYPERDRIVE or DATABASE_URL required)",
+      "[billingReconciliationCron] HYPERDRIVE binding not configured",
     );
 
     consoleErrorSpy.mockRestore();
@@ -873,10 +880,13 @@ describe("billingReconciliationCron", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    // Use invalid database connection to trigger error
+    // Use HYPERDRIVE with invalid connection to trigger error
     const envWithInvalidDb: CronTriggerEnv = {
       ...mockEnv,
-      DATABASE_URL: "postgres://invalid:invalid@localhost:5432/nonexistent",
+      HYPERDRIVE: {
+        connectionString:
+          "postgres://invalid:invalid@localhost:5432/nonexistent",
+      },
     };
 
     await billingReconciliationCron.scheduled(mockEvent, envWithInvalidDb);

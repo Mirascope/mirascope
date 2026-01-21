@@ -195,12 +195,19 @@ export const processEnvSource: EnvSource = {
 };
 
 /**
+ * Hyperdrive binding type for Cloudflare Workers.
+ */
+export type HyperdriveBinding = {
+  connectionString: string;
+};
+
+/**
  * Cloudflare Workers environment type for settings extraction.
  * Extends as needed for additional bindings.
  */
 export type CloudflareEnvironment = {
   ENVIRONMENT?: string;
-  DATABASE_URL?: string;
+  HYPERDRIVE?: HyperdriveBinding;
   SITE_URL?: string;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
@@ -243,9 +250,13 @@ export type CloudflareEnvironment = {
 
 /**
  * Creates an EnvSource from Cloudflare Workers environment bindings.
+ * Only returns string values, excludes bindings like HYPERDRIVE.
  */
 export const cloudflareEnvSource = (env: CloudflareEnvironment): EnvSource => ({
-  get: (name) => env[name as keyof CloudflareEnvironment],
+  get: (name) => {
+    const value = env[name as keyof CloudflareEnvironment];
+    return typeof value === "string" ? value : undefined;
+  },
 });
 
 // =============================================================================
@@ -433,11 +444,32 @@ export function validateSettings(): Effect.Effect<
 
 /**
  * Validates settings from Cloudflare Workers environment bindings.
+ * Uses HYPERDRIVE.connectionString for databaseUrl.
  */
 export function validateSettingsFromEnvironment(
   env: CloudflareEnvironment,
 ): Effect.Effect<SettingsConfig, SettingsValidationError> {
-  return validateSettingsFromSource(cloudflareEnvSource(env));
+  // Check HYPERDRIVE binding first with clear error message
+  if (!env.HYPERDRIVE?.connectionString) {
+    return Effect.fail(
+      new SettingsValidationError({
+        message:
+          "HYPERDRIVE binding not configured. Ensure HYPERDRIVE is set up in wrangler.jsonc.",
+        missingVariables: ["HYPERDRIVE"],
+      }),
+    );
+  }
+
+  // Create an env source that gets DATABASE_URL from HYPERDRIVE binding
+  const envSource: EnvSource = {
+    get: (name) => {
+      if (name === "DATABASE_URL") {
+        return env.HYPERDRIVE?.connectionString;
+      }
+      return env[name as keyof CloudflareEnvironment] as string | undefined;
+    },
+  };
+  return validateSettingsFromSource(envSource);
 }
 
 // =============================================================================

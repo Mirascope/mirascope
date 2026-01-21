@@ -707,13 +707,13 @@ describe("routerMeteringQueue", () => {
       const message = createMockMessage(meteringMessage);
       const batch = createMockBatch([message]);
 
+      // Include HYPERDRIVE to pass settings validation and reach the bigint branch
       const env = {
-        ENVIRONMENT: "test",
-        DATABASE_URL: TEST_DATABASE_URL,
-        STRIPE_SECRET_KEY: "sk_test_xxx",
-        STRIPE_ROUTER_PRICE_ID: "price_xxx",
-        STRIPE_ROUTER_METER_ID: "meter_xxx",
-      } as WorkerEnv;
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: TEST_DATABASE_URL,
+        },
+      } as unknown as WorkerEnv;
 
       await routerMeteringQueue.queue(batch, env);
 
@@ -786,14 +786,15 @@ describe("routerMeteringQueue", () => {
       const message = createMockMessage(createTestMessage());
       const batch = createMockBatch([message]);
 
-      // Environment with valid config but invalid DB connection
+      // Environment with complete settings but invalid DB connection
+      // This allows the code to pass settings validation and reach the Effect program
       const env = {
-        ENVIRONMENT: "test",
-        DATABASE_URL: "postgresql://invalid:invalid@localhost:5432/nonexistent",
-        STRIPE_SECRET_KEY: "sk_test_xxx",
-        STRIPE_ROUTER_PRICE_ID: "price_xxx",
-        STRIPE_ROUTER_METER_ID: "meter_xxx",
-      } as WorkerEnv;
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString:
+            "postgresql://invalid:invalid@localhost:5432/nonexistent",
+        },
+      } as unknown as WorkerEnv;
 
       await routerMeteringQueue.queue(batch, env);
 

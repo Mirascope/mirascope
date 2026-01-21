@@ -17,6 +17,11 @@ import type { MessageBatch } from "@cloudflare/workers-types";
 import { type WorkerEnv } from "@/workers/config";
 import { Effect, Layer, Context } from "effect";
 import { RateLimiter } from "@/rate-limiting";
+import {
+  Settings,
+  validateSettingsFromEnvironment,
+  type CloudflareEnvironment,
+} from "@/settings";
 
 /**
  * ExecutionContext service tag for Effect dependency injection.
@@ -129,6 +134,16 @@ export let rateLimiterLayer: Layer.Layer<RateLimiter> = Layer.succeed(
 );
 
 /**
+ * Global settings layer.
+ *
+ * Set by the fetch handler with validated settings from Cloudflare environment.
+ * This allows route handlers to access settings without re-validating.
+ */
+export let settingsLayer: Layer.Layer<Settings, never, never> = Layer.fail(
+  new Error("Settings not initialized - fetch handler not called yet"),
+) as Layer.Layer<Settings, never, never>;
+
+/**
  * Scheduled event handler that routes to the appropriate cron job.
  *
  * - `* /5 * * * *`: Reservation expiry + billing reconciliation (every 5 minutes)
@@ -159,6 +174,15 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (
 ) => {
   // Set execution context layer for route handlers
   executionContextLayer = Layer.succeed(ExecutionContext, context);
+
+  // Set settings layer from Cloudflare environment (uses HYPERDRIVE for database)
+  // Use orDie to convert validation errors to defects (they're fatal anyway)
+  settingsLayer = Layer.unwrapEffect(
+    validateSettingsFromEnvironment(environment as CloudflareEnvironment).pipe(
+      Effect.orDie,
+      Effect.map((settings) => Layer.succeed(Settings, settings)),
+    ),
+  );
 
   // Set router metering queue layer for route handlers
   if (environment.ROUTER_METERING_QUEUE) {

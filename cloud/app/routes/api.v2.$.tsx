@@ -11,11 +11,12 @@ import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 import { Analytics } from "@/analytics";
 import { Emails } from "@/emails";
-import { Settings, validateSettings } from "@/settings";
+import { Settings } from "@/settings";
 import {
   spansIngestQueueLayer,
   realtimeSpansLayer,
   rateLimiterLayer,
+  settingsLayer,
 } from "@/server-entry";
 import { SpansIngestQueue } from "@/workers/spanIngestQueue";
 import { RateLimiter } from "@/rate-limiting";
@@ -135,30 +136,28 @@ export const Route = createFileRoute("/api/v2/$")({
         }).pipe(
           Effect.provide(
             Layer.unwrapEffect(
-              validateSettings().pipe(
-                Effect.orDie, // Settings validation failure is fatal
-                Effect.map((settings) =>
-                  Layer.mergeAll(
-                    Layer.succeed(Settings, settings),
-                    Database.Live({
-                      database: { connectionString: settings.databaseUrl },
-                      payments: settings.stripe,
-                    }),
-                    Analytics.Live({
-                      postHog: settings.posthog,
-                      googleAnalytics: settings.googleAnalytics,
-                    }),
-                    Emails.Live(settings.resend),
-                    ClickHouseSearch.Default.pipe(
-                      Layer.provide(ClickHouse.Default),
-                      Layer.provide(Layer.succeed(Settings, settings)),
-                    ),
-                    spansIngestQueueLayer,
-                    realtimeSpansLayer,
-                    rateLimiterLayer,
+              Effect.gen(function* () {
+                const settings = yield* Settings;
+                return Layer.mergeAll(
+                  Layer.succeed(Settings, settings),
+                  Database.Live({
+                    database: { connectionString: settings.databaseUrl },
+                    payments: settings.stripe,
+                  }),
+                  Analytics.Live({
+                    postHog: settings.posthog,
+                    googleAnalytics: settings.googleAnalytics,
+                  }),
+                  Emails.Live(settings.resend),
+                  ClickHouseSearch.Default.pipe(
+                    Layer.provide(ClickHouse.Default),
+                    Layer.provide(Layer.succeed(Settings, settings)),
                   ),
-                ),
-              ),
+                  spansIngestQueueLayer,
+                  realtimeSpansLayer,
+                  rateLimiterLayer,
+                );
+              }).pipe(Effect.provide(settingsLayer)),
             ),
           ),
           handleErrors,

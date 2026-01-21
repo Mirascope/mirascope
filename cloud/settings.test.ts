@@ -150,8 +150,27 @@ describe("settings", () => {
   });
 
   describe("validateSettingsFromEnvironment", () => {
-    it("fails when required env vars are missing", async () => {
+    it("fails when HYPERDRIVE binding is missing", async () => {
       const env: CloudflareEnvironment = {};
+
+      const result = await Effect.runPromise(
+        validateSettingsFromEnvironment(env).pipe(Effect.either),
+      );
+
+      assert(Either.isLeft(result));
+      expect(result.left).toBeInstanceOf(SettingsValidationError);
+      expect(result.left.missingVariables).toContain("HYPERDRIVE");
+      expect(result.left.message).toContain(
+        "HYPERDRIVE binding not configured",
+      );
+    });
+
+    it("fails when required env vars are missing (after HYPERDRIVE)", async () => {
+      const env: CloudflareEnvironment = {
+        HYPERDRIVE: {
+          connectionString: "postgres://test:test@localhost:5432/test",
+        },
+      };
 
       const result = await Effect.runPromise(
         validateSettingsFromEnvironment(env).pipe(Effect.either),
@@ -163,7 +182,12 @@ describe("settings", () => {
     });
 
     it("succeeds with all required env bindings", async () => {
-      const env = createMockEnv() as CloudflareEnvironment;
+      const env: CloudflareEnvironment = {
+        ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: "postgres://test:test@localhost:5432/test",
+        },
+      };
 
       const result = await Effect.runPromise(
         validateSettingsFromEnvironment(env).pipe(Effect.either),
@@ -179,6 +203,9 @@ describe("settings", () => {
     it("maps all ClickHouse settings from env", async () => {
       const env: CloudflareEnvironment = {
         ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: "postgres://test:test@localhost:5432/test",
+        },
         CLICKHOUSE_URL: "https://ch.example.com",
         CLICKHOUSE_USER: "user",
         CLICKHOUSE_PASSWORD: "pass",
@@ -199,6 +226,9 @@ describe("settings", () => {
     it("maps TLS settings from env", async () => {
       const env: CloudflareEnvironment = {
         ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString: "postgres://test:test@localhost:5432/test",
+        },
         CLICKHOUSE_TLS_ENABLED: "false",
         CLICKHOUSE_TLS_CA: "test-ca",
         CLICKHOUSE_TLS_SKIP_VERIFY: "false",

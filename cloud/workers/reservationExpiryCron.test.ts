@@ -11,7 +11,10 @@ describe("reservationExpiryCron", () => {
     DATABASE_URL: "postgres://test:test@localhost:5432/test",
     ENVIRONMENT: "test",
     CLICKHOUSE_URL: "http://localhost:8123",
-  };
+    HYPERDRIVE: {
+      connectionString: "postgres://test:test@localhost:5432/test",
+    },
+  } as CronTriggerEnv;
 
   const mockEvent = {
     scheduledTime: Date.now(),
@@ -115,12 +118,12 @@ describe("reservationExpiryCron", () => {
       ...mockEnv,
       DATABASE_URL: undefined,
       HYPERDRIVE: undefined,
-    };
+    } as CronTriggerEnv;
 
     await reservationExpiryCron.scheduled(mockEvent, envWithoutDb);
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "[reservationExpiryCron] No database connection available (HYPERDRIVE or DATABASE_URL required)",
+      "[reservationExpiryCron] HYPERDRIVE binding not configured",
     );
 
     consoleErrorSpy.mockRestore();
@@ -137,13 +140,13 @@ describe("reservationExpiryCron", () => {
       HYPERDRIVE: {
         connectionString: "postgres://hyperdrive:test@localhost:5432/test",
       },
-    };
+    } as CronTriggerEnv;
 
     await reservationExpiryCron.scheduled(mockEvent, envWithHyperdrive);
 
-    // Should not log the "No database connection" error
+    // Should not log the "HYPERDRIVE binding not configured" error
     expect(consoleErrorSpy).not.toHaveBeenCalledWith(
-      "[reservationExpiryCron] No database connection available (HYPERDRIVE or DATABASE_URL required)",
+      "[reservationExpiryCron] HYPERDRIVE binding not configured",
     );
 
     consoleErrorSpy.mockRestore();
@@ -154,11 +157,14 @@ describe("reservationExpiryCron", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    // Use invalid database connection to trigger error
+    // Use HYPERDRIVE with invalid connection to trigger error
     const envWithInvalidDb: CronTriggerEnv = {
       ...mockEnv,
-      DATABASE_URL: "postgres://invalid:invalid@localhost:5432/nonexistent",
-    };
+      HYPERDRIVE: {
+        connectionString:
+          "postgres://invalid:invalid@localhost:5432/nonexistent",
+      },
+    } as CronTriggerEnv;
 
     await reservationExpiryCron.scheduled(mockEvent, envWithInvalidDb);
 

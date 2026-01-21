@@ -484,8 +484,13 @@ describe("spanIngestQueue", () => {
         }),
       };
 
+      // Include HYPERDRIVE to pass settings validation and reach the Effect program
       const environment = {
         ...createMockEnv(),
+        HYPERDRIVE: {
+          connectionString:
+            "postgresql://invalid:invalid@localhost:5432/nonexistent",
+        },
         REALTIME_SPANS_DURABLE_OBJECT: mockDurableObject,
       };
 

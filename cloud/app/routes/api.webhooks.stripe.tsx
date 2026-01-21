@@ -3,7 +3,8 @@ import { Effect, Layer } from "effect";
 import { Payments } from "@/payments";
 import { DrizzleORM } from "@/db/client";
 import { StripeError } from "@/errors";
-import { Settings, validateSettings } from "@/settings";
+import { Settings } from "@/settings";
+import { settingsLayer } from "@/server-entry";
 import Stripe from "stripe";
 
 /**
@@ -189,21 +190,19 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
         }).pipe(
           Effect.provide(
             Layer.unwrapEffect(
-              validateSettings().pipe(
-                Effect.orDie, // Settings validation failure is fatal
-                Effect.map((settings) =>
-                  Layer.mergeAll(
-                    Layer.succeed(Settings, settings),
-                    Payments.Live(settings.stripe).pipe(
-                      Layer.provide(
-                        DrizzleORM.layer({
-                          connectionString: settings.databaseUrl,
-                        }),
-                      ),
+              Effect.gen(function* () {
+                const settings = yield* Settings;
+                return Layer.mergeAll(
+                  Layer.succeed(Settings, settings),
+                  Payments.Live(settings.stripe).pipe(
+                    Layer.provide(
+                      DrizzleORM.layer({
+                        connectionString: settings.databaseUrl,
+                      }),
                     ),
                   ),
-                ),
-              ),
+                );
+              }).pipe(Effect.provide(settingsLayer)),
             ),
           ),
           Effect.catchAll((error) => {

@@ -25,6 +25,7 @@ clickhouse_password="${CLICKHOUSE_PASSWORD:-clickhouse}"
 clickhouse_database="${CLICKHOUSE_DATABASE:-mirascope_analytics}"
 clickhouse_migrate_port="${CLICKHOUSE_MIGRATE_NATIVE_PORT:-}"
 clickhouse_url_scheme="${clickhouse_url%%://*}"
+clickhouse_tls_enabled="${CLICKHOUSE_TLS_ENABLED:-false}"
 
 if [[ -n "${CLICKHOUSE_MIGRATE_DATABASE_URL:-}" ]]; then
   database_url="$CLICKHOUSE_MIGRATE_DATABASE_URL"
@@ -43,7 +44,10 @@ else
 
   migrate_port="$clickhouse_migrate_port"
   if [[ -z "$migrate_port" ]]; then
-    if [[ "$clickhouse_url_scheme" == "http" || "$clickhouse_url_scheme" == "https" ]]; then
+    if [[ "$clickhouse_tls_enabled" == "true" && -n "$port" && "$port" == "8443" ]]; then
+      # ClickHouse Cloud: Use HTTPS port for native protocol with TLS
+      migrate_port="$port"
+    elif [[ "$clickhouse_url_scheme" == "http" || "$clickhouse_url_scheme" == "https" ]]; then
       migrate_port="9000"
     elif [[ -n "$port" ]]; then
       migrate_port="$port"
@@ -52,10 +56,16 @@ else
     fi
   fi
 
+  # Build secure parameter for TLS connections
+  secure_param=""
+  if [[ "$clickhouse_tls_enabled" == "true" ]]; then
+    secure_param="&secure=true"
+  fi
+
   # URL-encode credentials to handle special characters (@, &, ?, :, etc.)
   encoded_user=$(printf %s "$clickhouse_user" | jq -sRr @uri)
   encoded_password=$(printf %s "$clickhouse_password" | jq -sRr @uri)
-  database_url="clickhouse://${host}:${migrate_port}/${clickhouse_database}?username=${encoded_user}&password=${encoded_password}&x-multi-statement=true&x-migrations-table=clickhouse_migrations&x-migrations-table-engine=MergeTree"
+  database_url="clickhouse://${host}:${migrate_port}/${clickhouse_database}?username=${encoded_user}&password=${encoded_password}${secure_param}&x-multi-statement=true&x-migrations-table=clickhouse_migrations&x-migrations-table-engine=MergeTree"
 fi
 
 # Global temp_dir for cleanup trap (must be global for EXIT trap to access)
