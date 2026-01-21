@@ -9,14 +9,8 @@ from openai import AsyncOpenAI, OpenAI
 
 from ...openai._utils.errors import OPENAI_ERROR_MAP
 from ...openai.completions.base_provider import BaseOpenAICompletionsProvider
+from .._utils import normalize_base_url
 from ..model_id import model_name as azure_model_name
-
-
-def _normalize_base_url(base_url: str) -> str:
-    normalized = base_url.rstrip("/")
-    if not normalized.endswith("/openai/v1"):
-        normalized = f"{normalized}/openai/v1"
-    return f"{normalized}/"
 
 
 class AzureOpenAIProvider(BaseOpenAICompletionsProvider):
@@ -52,7 +46,7 @@ class AzureOpenAIProvider(BaseOpenAICompletionsProvider):
                 "or pass the base_url parameter to register_provider()."
             )
 
-        normalized_base_url = _normalize_base_url(resolved_base_url)
+        normalized_base_url = normalize_base_url(resolved_base_url, suffix="openai/v1")
 
         self.client = OpenAI(
             api_key=resolved_api_key,
@@ -70,3 +64,7 @@ class AzureOpenAIProvider(BaseOpenAICompletionsProvider):
     def _model_name(self, model_id: str) -> str:
         """Extract the Azure deployment name from the model ID."""
         return azure_model_name(model_id)
+
+
+# Alias for the unified AzureProvider routing
+AzureOpenAIRoutedProvider = AzureOpenAIProvider

@@ -54,6 +54,9 @@ python/
 │   │   │   ├── base/
 │   │   │   ├── anthropic/
 │   │   │   ├── azure/
+│   │   │   │   ├── _utils.py
+│   │   │   │   ├── anthropic/
+│   │   │   │   └── openai/
 │   │   │   ├── google/
 │   │   │   ├── openai/
 │   │   │   │   └── completions/base_provider.py
