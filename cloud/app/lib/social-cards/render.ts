@@ -101,7 +101,7 @@ function createSocialCardElement(
         alignItems: "center",
         backgroundImage: `url(${backgroundDataUrl})`,
         backgroundSize: "cover",
-        backgroundPosition: "center bottom",
+        backgroundPosition: "center",
         padding: 60,
       },
       children: {
