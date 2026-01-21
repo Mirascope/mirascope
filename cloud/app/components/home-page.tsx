@@ -4,13 +4,14 @@ import { BookOpen } from "lucide-react";
 import { ButtonLink } from "@/app/components/ui/button-link";
 import homeStyles from "@/app/components/home-page.module.css";
 import { ResponsiveTextBlock } from "@/app/components/blocks/responsive-text-block";
+import { UnifiedDemo } from "@/app/components/landing/unified-demo";
 
 // Shared styling constants for logo and hero components
 // This ensures we maintain consistency and makes future updates easier
 const styleSystem = {
   // Base dimensions for different components
   logoFontSize: "clamp(1.75rem, 4.5vw, 3.5rem)", // Smaller than hero text
-  heroFontSize: "clamp(2.5rem, 8vw, 6rem)", // Larger than logo text
+  heroFontSize: "clamp(1.75rem, 5.5vw, 4.5rem)", // Responsive hero text
   lineHeightMultiplier: 0.9,
 
   // Spacing modifiers
@@ -20,7 +21,7 @@ const styleSystem = {
   logoToHeroSpacingMultiplier: 1,
 
   // Fine-tuning adjustment for vertical centering (positive = move up)
-  centeringAdjustment: "-8rem",
+  centeringAdjustment: "0rem",
 };
 
 // Derived styles for logo component
@@ -109,19 +110,16 @@ const LogoBanner = () => {
 function HeroBlock() {
   return (
     <div
-      className="relative h-screen"
+      className="relative min-h-screen"
       style={{ marginTop: "calc(var(--header-height-base) * -1)" }}
     >
-      {/* Container that centers the entire block in the viewport */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-        {/* Content wrapper with computed negative margin to center the hero text */}
-        <div
-          className="flex flex-col items-center"
-          style={{
-            /* Use the shared calculated offset to center the hero text */
-            marginTop: `calc(${logoStyles.centeringOffset} * -1)`,
-          }}
-        >
+      {/* Container that holds all hero content */}
+      <div
+        className="relative z-10 flex flex-col items-center justify-center px-4 pt-32 pb-8"
+        style={{ minHeight: "100vh" }}
+      >
+        {/* Content wrapper */}
+        <div className="flex flex-col items-center">
           <div
             style={{
               marginBottom: logoStyles.logoToHeroSpacing,
@@ -132,23 +130,25 @@ function HeroBlock() {
 
           <div className="text-center">
             <ResponsiveTextBlock
-              lines={["Every Frontier LLM", "One Unified Interface"]}
+              lines={["Build. Observe. Iterate. Ship."]}
               fontSize={styleSystem.heroFontSize}
               className="flex flex-col font-medium tracking-tight text-white"
-              lineClassName="font-handwriting text-shade"
+              lineClassName="font-handwriting"
               textShadow={true}
             />
           </div>
         </div>
 
-        {/* Subtitle with Claude endorsement */}
+        {/* Subtitle */}
         <div className="mt-6 text-center">
-          <p className="font-handwriting text-lg text-white/90 sm:text-2xl md:text-4xl">
-            From prototype to production. Instantly.
+          <p className="font-handwriting text-lg text-white/90 text-shade sm:text-2xl md:text-4xl">
+            The complete toolkit for AI engineers
           </p>
-          <p className="mt-2 font-handwriting text-sm text-white/70 italic sm:text-2xl md:text-4xl">
-            "You're absolutely right!" — Claude
-          </p>
+        </div>
+
+        {/* Interactive demo block */}
+        <div className="mt-8 w-full max-w-5xl px-4">
+          <UnifiedDemo />
         </div>
 
         <div className="mt-8 flex w-full max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
