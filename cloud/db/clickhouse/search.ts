@@ -137,6 +137,8 @@ export interface SpanSearchInput {
   sortBy?: "start_time" | "duration_ms" | "total_tokens";
   /** Sort direction. */
   sortOrder?: "asc" | "desc";
+  /** Filter for root spans only (no parent). */
+  rootSpansOnly?: boolean;
 }
 
 /** Input type for trace detail retrieval. */
@@ -846,6 +848,11 @@ function buildSearchWhereClause(input: SpanSearchInput): {
   if (input.maxDuration !== undefined) {
     const maxDurationKey = addParam("maxDuration", input.maxDuration);
     conditions.push(`s.duration_ms <= {${maxDurationKey}:Int64}`);
+  }
+
+  // Root spans only filter (no parent)
+  if (input.rootSpansOnly) {
+    conditions.push("s.parent_span_id IS NULL");
   }
 
   // Attribute filters

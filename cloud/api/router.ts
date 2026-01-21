@@ -1,5 +1,6 @@
 import { HttpApiBuilder } from "@effect/platform";
-import { Layer } from "effect";
+import { Effect, Layer } from "effect";
+import { Authentication } from "@/auth";
 import { checkHealthHandler } from "@/api/health.handlers";
 import {
   createTraceHandler,
@@ -102,9 +103,30 @@ const TracesHandlersLive = HttpApiBuilder.group(
   (handlers) =>
     handlers
       .handle("create", ({ payload }) => createTraceHandler(payload))
-      .handle("search", ({ payload }) => searchHandler(payload))
+      // API key route - extracts environmentId from apiKeyInfo
+      .handle("search", ({ payload }) =>
+        Effect.gen(function* () {
+          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          return yield* searchHandler(apiKeyInfo.environmentId, payload);
+        }),
+      )
+      // Session route - extracts environmentId from path
+      .handle("searchByEnv", ({ payload, path }) =>
+        searchHandler(path.environmentId, payload),
+      )
+      // API key route - extracts environmentId from apiKeyInfo
       .handle("getTraceDetail", ({ path }) =>
-        getTraceDetailHandler(path.traceId),
+        Effect.gen(function* () {
+          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          return yield* getTraceDetailHandler(
+            apiKeyInfo.environmentId,
+            path.traceId,
+          );
+        }),
+      )
+      // Session route - extracts environmentId from path
+      .handle("getTraceDetailByEnv", ({ path }) =>
+        getTraceDetailHandler(path.environmentId, path.traceId),
       )
       .handle("getAnalyticsSummary", ({ urlParams }) =>
         getAnalyticsSummaryHandler(urlParams),

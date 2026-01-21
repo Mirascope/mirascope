@@ -67,6 +67,7 @@ export const SearchRequestSchema = Schema.Struct({
     Schema.Literal("start_time", "duration_ms", "total_tokens"),
   ),
   sortOrder: Schema.optional(Schema.Literal("asc", "desc")),
+  rootSpansOnly: Schema.optional(Schema.Boolean),
 });
 
 export type SearchRequest = typeof SearchRequestSchema.Type;
