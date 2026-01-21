@@ -84,6 +84,7 @@ const SpanSearchResultSchema = Schema.Struct({
   inputTokens: Schema.NullOr(Schema.Number),
   outputTokens: Schema.NullOr(Schema.Number),
   totalTokens: Schema.NullOr(Schema.Number),
+  costUsd: Schema.NullOr(Schema.Number),
   functionId: Schema.NullOr(Schema.String),
   functionName: Schema.NullOr(Schema.String),
   /** Whether this span has child spans */
@@ -178,6 +179,8 @@ export const AnalyticsSummaryResponseSchema = Schema.Struct({
   p99DurationMs: Schema.NullOr(Schema.Number),
   errorRate: Schema.Number,
   totalTokens: Schema.Number,
+  totalInputTokens: Schema.Number,
+  totalOutputTokens: Schema.Number,
   totalCostUsd: Schema.Number,
   topModels: Schema.Array(TopModelSchema),
   topFunctions: Schema.Array(TopFunctionSchema),

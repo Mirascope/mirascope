@@ -30,6 +30,12 @@ class EnvironmentsGetAnalyticsResponse(UniversalBaseModel):
     ] = None
     error_rate: typing_extensions.Annotated[float, FieldMetadata(alias="errorRate")]
     total_tokens: typing_extensions.Annotated[float, FieldMetadata(alias="totalTokens")]
+    total_input_tokens: typing_extensions.Annotated[
+        float, FieldMetadata(alias="totalInputTokens")
+    ]
+    total_output_tokens: typing_extensions.Annotated[
+        float, FieldMetadata(alias="totalOutputTokens")
+    ]
     total_cost_usd: typing_extensions.Annotated[
         float, FieldMetadata(alias="totalCostUsd")
     ]

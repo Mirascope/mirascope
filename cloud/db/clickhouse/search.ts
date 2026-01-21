@@ -188,6 +188,7 @@ export interface SpanSearchResult {
   inputTokens: number | null;
   outputTokens: number | null;
   totalTokens: number | null;
+  costUsd: number | null;
   functionId: string | null;
   functionName: string | null;
   /** Whether this span has child spans */
@@ -252,6 +253,8 @@ export interface AnalyticsSummaryResponse {
   p99DurationMs: number | null;
   errorRate: number;
   totalTokens: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
   totalCostUsd: number;
   topModels: Array<{ model: string; count: number }>;
   topFunctions: Array<{ functionName: string; count: number }>;
@@ -273,6 +276,7 @@ interface SpanSummaryRow {
   input_tokens: number | null;
   output_tokens: number | null;
   total_tokens: number | null;
+  cost_usd: number | null;
   function_id: string | null;
   function_name: string | null;
   has_children: number; // ClickHouse returns 0/1 for boolean expressions
@@ -323,6 +327,8 @@ interface AnalyticsRow {
   p99_duration_ms: number | null;
   error_count: number;
   total_tokens: number;
+  total_input_tokens: number;
+  total_output_tokens: number;
   total_cost_usd: number;
 }
 
@@ -412,6 +418,7 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
                   argMax(s.input_tokens, s._version) as input_tokens,
                   argMax(s.output_tokens, s._version) as output_tokens,
                   argMax(s.total_tokens, s._version) as total_tokens,
+                  argMax(s.cost_usd, s._version) as cost_usd,
                   argMax(s.function_id, s._version) as function_id,
                   argMax(s.function_name, s._version) as function_name
                 FROM spans_analytics AS s
@@ -575,12 +582,16 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
                 quantile(0.99)(duration_ms) as p99_duration_ms,
                 countIf(error_type IS NOT NULL) as error_count,
                 sum(total_tokens) as total_tokens,
+                sum(input_tokens) as total_input_tokens,
+                sum(output_tokens) as total_output_tokens,
                 sum(cost_usd) as total_cost_usd
               FROM (
                 SELECT
                   argMax(s.duration_ms, s._version) as duration_ms,
                   argMax(s.error_type, s._version) as error_type,
                   argMax(s.total_tokens, s._version) as total_tokens,
+                  argMax(s.input_tokens, s._version) as input_tokens,
+                  argMax(s.output_tokens, s._version) as output_tokens,
                   argMax(s.cost_usd, s._version) as cost_usd
                 FROM spans_analytics AS s
                 WHERE ${baseWhere}
@@ -656,6 +667,8 @@ export class ClickHouseSearch extends Context.Tag("ClickHouseSearch")<
                   : null,
               errorRate: totalSpans > 0 ? errorCount / totalSpans : 0,
               totalTokens: Number(analytics?.total_tokens ?? 0),
+              totalInputTokens: Number(analytics?.total_input_tokens ?? 0),
+              totalOutputTokens: Number(analytics?.total_output_tokens ?? 0),
               totalCostUsd: Number(analytics?.total_cost_usd ?? 0),
               topModels: topModelRows.map((r) => ({
                 model: r.model_value,
@@ -1032,6 +1045,7 @@ function transformToSearchResult(row: SpanSummaryRow): SpanSearchResult {
     inputTokens: row.input_tokens,
     outputTokens: row.output_tokens,
     totalTokens: row.total_tokens,
+    costUsd: row.cost_usd,
     functionId: row.function_id,
     functionName: row.function_name,
     hasChildren: row.has_children === 1,

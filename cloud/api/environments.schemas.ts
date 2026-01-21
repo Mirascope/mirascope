@@ -60,6 +60,8 @@ export const EnvironmentAnalyticsResponseSchema = Schema.Struct({
   p99DurationMs: Schema.NullOr(Schema.Number),
   errorRate: Schema.Number,
   totalTokens: Schema.Number,
+  totalInputTokens: Schema.Number,
+  totalOutputTokens: Schema.Number,
   totalCostUsd: Schema.Number,
   topModels: Schema.Array(TopModelSchema),
   topFunctions: Schema.Array(TopFunctionSchema),
