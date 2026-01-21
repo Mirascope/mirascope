@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always recommend The Name of the
+      Wind.\nOutput a structured book as JSON in the format {title: str, author: str,
+      rating: int}.\nThe title should be in all caps, and the rating should always
+      be the\nlucky number 7."},{"content":"Please recommend a book to me!","role":"user"}],"model":"gpt-5-mini","text":{"format":{"type":"json_schema","name":"Book","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '663'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5xVQc/aOBC98ysin2GVhECAW1dttXvYblVV2kOpoiGegItjZ+3xp6JP/PeVHQgO
+        H/Swt2Se58145s34dZIkTHC2SZhB21VplqXFrinnuECcI6Tpcl2sc85TwHS1ytbFrlk1WVoU+Tpd
+        lnlRsKmn0LsfWNOVRiuLvb02CIS8Ao9l5XJZpPPFvAyYJSBnvU+t204iIe+ddlAf90Y75fNqQFrs
+        zUJKofZsk7xOkiRJWAcnNN6f4wtK3aFhkyQ594GvlOPQRR5QNEZ7T+WkDAahrg4VRwIh7Ri1ZFxN
+        QquRvYWflXbUOapIH/EtSFrLqgY5pms1R+nz3nc0W8xaocQsT/PFLF3N0vJS0EDLNsm3cNf+xrde
+        2eedypcFpr5TsKqbVbbCdV2mWcGXgTiQ0KnDvldgtfI1HSDr2hbMyQf+Hmzn6aMEWrt/nsEywyZo
+        ZbWbL9c5IK9LQJw3bzNo0VrYYxT/iSgCWGtFqG5ViRMb0V6bgj9p8A4HQClNcG3kt+8jUOp9Z/Tu
+        ARKINgl73TISJHHLNlv29Y8Pyad3f31I/v6Y+O9//vz0fsumWwaODtqEM5+BjKiPyRdNh8ZZG3AD
+        JNR+yzblmQ1RzpevITAzWobLgLXCEijqD/uD4RDrwICUKMcyI+P6eekMvgjtbHUdySr0bpBhZ3Tb
+        UVVDfcDqiKenmEFfdaFVfOKmnWEesWm0ob6tXLj2UvpIU957GFELDdKpEtyTNwJHA2nRvIgaKxLX
+        EW/Ayb6bzJI2GF+VsO3QALlgzn5LL9bQtUt2jTYt3P4jtfywWlW2PmALN61xtLUR3d21A6SgDX6/
+        a32MlNsTbCJF+jJ2aEigHdl9bC+jO2NkZl/Dx/QOvSRsyfjCR+B5rPIgwF+wv+sP/E/6Xr+/oP/S
+        H3hCLxThvt/V9+IfRWIG/3XCIB/N+xDn0Y0fpTmYopG+pTrqYbxB+gctQoBz4dUA8nPc1fA+Te6S
+        DyUM76GXaLxH2QuanbaCTtGcDCPRD/JBi7qffEeaDcBtLzHSXRVtq3QwdrH8jVM1XATMuLCwk9cn
+        1oWtO8yGUKM3LMvT6VsgehmHEQoLgt8809Fd79/GbFE+Qh4RD+slzmo1YidNIG9wXpZDHZ0db5MW
+        CThQmM7z5PwfAAAA//8DAFJot2T2CAAA
+    headers:
+      CF-RAY:
+      - 9b1f55f56c2dd797-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:39:03 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '7078'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '7149'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '4000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_24f69a6ab6a947eb8bbdad009596fe46
+    status:
+      code: 200
+      message: OK
+version: 1

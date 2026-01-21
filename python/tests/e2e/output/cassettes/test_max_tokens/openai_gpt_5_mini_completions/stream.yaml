@@ -42,13 +42,13 @@ interactions:
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: 'data: {"id":"chatcmpl-CpaLKsZmiiFPwrb0Ocw5FOVrMV89U","object":"chat.completion.chunk","created":1766410466,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"usage":null,"obfuscation":"wvNs5"}
+      string: 'data: {"id":"chatcmpl-CpZUONoQjqlZbx66sohNRxSYczm5H","object":"chat.completion.chunk","created":1766407184,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{"role":"assistant","content":"","refusal":null},"finish_reason":null}],"usage":null,"obfuscation":"CP9DW"}
 
 
-        data: {"id":"chatcmpl-CpaLKsZmiiFPwrb0Ocw5FOVrMV89U","object":"chat.completion.chunk","created":1766410466,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{},"finish_reason":"length"}],"usage":null,"obfuscation":"8A5UdbKK7L2PYtM"}
+        data: {"id":"chatcmpl-CpZUONoQjqlZbx66sohNRxSYczm5H","object":"chat.completion.chunk","created":1766407184,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[{"index":0,"delta":{},"finish_reason":"length"}],"usage":null,"obfuscation":"hLvuzTMygUx1PuB"}
 
 
-        data: {"id":"chatcmpl-CpaLKsZmiiFPwrb0Ocw5FOVrMV89U","object":"chat.completion.chunk","created":1766410466,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[],"usage":{"prompt_tokens":13,"completion_tokens":50,"total_tokens":63,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"completion_tokens_details":{"reasoning_tokens":50,"audio_tokens":0,"accepted_prediction_tokens":0,"rejected_prediction_tokens":0}},"obfuscation":"9iEYO"}
+        data: {"id":"chatcmpl-CpZUONoQjqlZbx66sohNRxSYczm5H","object":"chat.completion.chunk","created":1766407184,"model":"gpt-5-mini-2025-08-07","service_tier":"default","system_fingerprint":null,"choices":[],"usage":{"prompt_tokens":13,"completion_tokens":50,"total_tokens":63,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"completion_tokens_details":{"reasoning_tokens":50,"audio_tokens":0,"accepted_prediction_tokens":0,"rejected_prediction_tokens":0}},"obfuscation":"1hAFo"}
 
 
         data: [DONE]
@@ -57,13 +57,13 @@ interactions:
         '
     headers:
       CF-RAY:
-      - 9b1fff2768a4a72a-NRT
+      - 9b1faf08bfdfaeb8-NRT
       Connection:
       - keep-alive
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Mon, 22 Dec 2025 13:34:27 GMT
+      - Mon, 22 Dec 2025 12:39:46 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -81,13 +81,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '856'
+      - '1109'
       openai-project:
       - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '871'
+      - '1126'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -103,7 +103,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 0s
       x-request-id:
-      - req_32f2cc1b653e448486542c5f267cf80c
+      - req_7ebab075bb8b428db12fd845e0917c8c
     status:
       code: 200
       message: OK

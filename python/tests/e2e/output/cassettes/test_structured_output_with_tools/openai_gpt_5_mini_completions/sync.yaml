@@ -1,0 +1,226 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Please look up the book with ISBN
+      0-7653-1178-X and provide detailed info and a recommendation score"}],"model":"gpt-5-mini","response_format":{"type":"json_schema","json_schema":{"name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object","additionalProperties":false},"strict":true}},"tools":[{"type":"function","function":{"name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '866'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RTy27bMBC86yuIPVuFHpEd6xYU7SVtUQQNYLQOBJpayYwpkiCpoorhfy8k2aKc
+        hw4CscOZHc6Sx4AQ4CXkBNieOtZoEX7Wv+/KLt1V6b1o1hhF8d2v+LH+kn7bvESw6Blq94zMXVif
+        mGq0QMeVHGFmkDrsVePVcnkTZetsPQCNKlH0tFq7MAsbLnmYREkWRrdhtDqT94oztJCTPwEhhByH
+        f29TlvgPchItLpUGraU1Qj5tIgSMEn0FqLXcOiodLDzIlHQoe+eyFWIGOKVEwagQvvH4HWdrnxUV
+        onjRqjts7ruHr48/koefwnbr6Hsin2f9RulOD4aqVrIpoxk+1fNXzQgBSZuBW6MrdkodCi4r9UqA
+        EKCmbhuUrjcPxy1wu5NbyMkWonC1zNIwjle34WYLJ7iinoL31k+zXAxWraXibWBUSuVo73tI7OmM
+        nKbhVFxyuy8MUjucbR5xcGk4tIL2aoqgjWq0K5w64CCeJOeRg79oHo3j+Iw65ajwQJpegCvBokRH
+        +TDn6WoxyvZYeqq/YrQtuZoBweyQb+28pz0GwGXtVZY3H+p7gDHUDstCGyw5uz6z32awf4kfbZty
+        HhyDRfOXMywcR9NPpMSKtmJ8IGA767ApKi5rNNrw6ZUEp+A/AAAA//8DAC5RCs0nBAAA
+    headers:
+      CF-RAY:
+      - 9b1f911adf3aef1e-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:19:20 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1992'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2012'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999973'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_a62a71d26993401c8e95201d2f9b347c
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Please look up the book with ISBN
+      0-7653-1178-X and provide detailed info and a recommendation score"},{"role":"assistant","annotations":[],"tool_calls":[{"id":"call_zpoykXKyRFUN2RPlsy90M2nj","function":{"arguments":"{\"isbn\":
+      \"0-7653-1178-X\"}","name":"get_book_info"},"type":"function"}]},{"role":"tool","content":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25","tool_call_id":"call_zpoykXKyRFUN2RPlsy90M2nj"}],"model":"gpt-5-mini","response_format":{"type":"json_schema","json_schema":{"name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object","additionalProperties":false},"strict":true}},"tools":[{"type":"function","function":{"name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1227'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA+yQ0UvDMBDG3/dXHPfcSjfbbsubc84nnzYUtSBZeq4ZaVKaTJTh/y6pTkWZQ3wS
+        wi+E3N33HR/Z9gBQlsgARcWdqBsVnzY3J/fSXR6X6ex8MZlOx9naPcyvr0a8v8HIO8xyTcLtXEfC
+        1I0iJ41+HYuWuCO/tT/M8zTJxnm/G9SmJOVtq8bFWVxLLeNBMsjiZBQnwzdzZaQgiwxuewAA2+72
+        MXVJj8ggiXadmqzlK0L2LgLA1ijfQW6ttI5rh9HHUBjtSHfJtwU66RQVyAq8kNYtTasZLCqCmdRc
+        wVndyJYKjArkG1eZtlNOWq5Lo2HOdUmtNboTNHxFtkCWpamvNkslBfcfcvdE3BsHSZI/Fxq68xn4
+        qYBfD749/77yS+ADkffb9q45qAwEAoFAIBAIBP4dLwAAAP//7JkxbgMhEEX7PYVFnSJ2EseXsRCC
+        WXsUDGgYIqXYu0ewicGK3aYavfKzH2bpHoIgCIIgCMK/M5pggrlkU2V0KN4PgQkhcnO3zUEff5Ll
+        ap1nDJjPmsDkGKpJzhyTaukybTbHZrHLjZhWieIlseb4Aa12d9ivfaq78yF9Prz+5hzZ+CHabl92
+        T3dKtQM26PMgw5U19gyuf9zNuSkO4xBMw4h/j3Svex0fw6m3vL3vH27QA2shMTidCBza28H7MoL6
+        wvBo2fVntyOrDPSJFjQjUL0QB7MpfhX/Kn9lhoueMZyAEmGz//XOp2X6BgAA//8DANlZyAv/GAAA
+    headers:
+      CF-RAY:
+      - 9b1f912859caef1e-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:24:10 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '288835'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '288866'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999947'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_ecc24033d1ff4d22ad0ae1ac9ceaa638
+    status:
+      code: 200
+      message: OK
+version: 1
