@@ -21,9 +21,9 @@ describe("Logo", () => {
       );
 
       expect(html).toContain("Mirascope");
-      expect(html).toContain("logo.svg");
-      expect(html).toContain('width="64"');
-      expect(html).toContain('height="64"');
+      expect(html).toContain("logo-with-text.png");
+      expect(html).toContain('width="180"');
+      expect(html).toContain('height="38"');
       expect(html).toContain('alt="Mirascope"');
     }).pipe(Effect.runPromise);
   });

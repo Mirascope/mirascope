@@ -9,9 +9,9 @@ import { Img } from "@react-email/components";
 export function Logo() {
   return (
     <Img
-      src="https://mirascope.com/icons/logo.svg"
-      width="64"
-      height="64"
+      src="https://mirascope.com/icons/logo-with-text.png"
+      width="180"
+      height="38"
       alt="Mirascope"
       style={{
         display: "block",
