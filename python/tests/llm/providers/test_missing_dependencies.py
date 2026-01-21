@@ -216,6 +216,40 @@ class TestMissingDependencies:
         # Should not install a stub
         assert "test.real.module" not in sys.modules
 
+    def test_stub_module_if_missing_with_multiple_packages(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test stub_module_if_missing with multiple extras."""
+        import builtins
+
+        from mirascope import _stubs
+        from mirascope._stubs import stub_module_if_missing
+
+        monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "fake_package_a", ["fake_package_a"])
+        monkeypatch.setitem(_stubs.EXTRA_IMPORTS, "pytest", ["pytest"])
+
+        original_import = builtins.__import__
+
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+            if name == "fake_package_a":
+                raise ImportError(f"No module named '{name}'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        result = stub_module_if_missing(
+            "test.multi.module", ["fake_package_a", "pytest"]
+        )
+        assert result is True
+        assert "test.multi.module" not in sys.modules
+
+    def test_stub_module_if_missing_with_empty_sequence(self) -> None:
+        """Test stub_module_if_missing raises ValueError on empty package list."""
+        from mirascope._stubs import stub_module_if_missing
+
+        with pytest.raises(ValueError, match="Expected at least one extra name"):
+            stub_module_if_missing("test.module", [])
+
     def test_stub_module_if_missing_with_unknown_package(self) -> None:
         """Test stub_module_if_missing raises KeyError for unknown package."""
         from mirascope._stubs import stub_module_if_missing
@@ -347,6 +381,42 @@ class TestProviderStubs:
 
         # Should be importable without error
         assert OpenAIProvider is not None
+
+    def test_azure_provider_import_without_openai(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test that Azure provider imports without OpenAI installed."""
+        import builtins
+        import importlib
+
+        module_names = [
+            "mirascope.llm.providers.azure",
+            "mirascope.llm.providers.azure.openai",
+            "mirascope.llm.providers.azure.openai.provider",
+        ]
+        original_modules = {name: sys.modules.get(name) for name in module_names}
+        for name in module_names:
+            sys.modules.pop(name, None)
+
+        original_import = builtins.__import__
+
+        def mock_import(name: str, *args: Any, **kwargs: Any) -> ModuleType:  # noqa: ANN401
+            if name == "openai" or name.startswith("openai."):
+                raise ImportError(f"No module named '{name}'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        try:
+            azure_module = importlib.import_module("mirascope.llm.providers.azure")
+            assert "AzureOpenAIProvider" not in azure_module.__all__
+            assert azure_module.AzureProvider is not None
+        finally:
+            for name, module in original_modules.items():
+                if module is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = module
 
     def test_mlx_provider_is_importable(self) -> None:
         """Test that MLXProvider can be imported (will be real or stub)."""

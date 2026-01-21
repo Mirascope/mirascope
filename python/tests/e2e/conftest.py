@@ -5,6 +5,8 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import os
+import re
 import sys
 from collections.abc import Callable
 from copy import deepcopy
@@ -24,12 +26,14 @@ def _(value: llm.ToolExecutionError) -> str:
 
 SENSITIVE_HEADERS = [
     "authorization",  # OpenAI Bearer tokens
+    "api-key",  # Azure OpenAI API keys
     "x-api-key",  # Anthropic API keys
     "x-goog-api-key",  # Google/Gemini API keys
     "anthropic-organization-id",  # Anthropic org identifiers
     "cookie",  # Session cookies
 ]
 
+_DUMMY_AZURE_OPENAI_ENDPOINT = "https://dummy.openai.azure.com"
 
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
@@ -37,13 +41,28 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "google/gemini-2.5-flash",
     "openai/gpt-4o:completions",
     "openai/gpt-4o:responses",
+    "azure/gpt-5-mini",
 ]
 
-REASONING_MODEL_PREFIXES = ("openai/gpt-5",)
+REASONING_MODEL_PREFIXES = {
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
+    "o1",
+    "o1-mini",
+    "o3",
+    "o3-mini",
+    "o4-mini",
+}
 
 
 def _is_reasoning_model(model_id: llm.ModelId) -> bool:
-    return any(model_id.startswith(prefix) for prefix in REASONING_MODEL_PREFIXES)
+    model_name = model_id.split("/")[-1].split(":")[0]
+    return any(model_name.startswith(prefix) for prefix in REASONING_MODEL_PREFIXES)
+
+
+def _is_azure_model(model_id: llm.ModelId) -> bool:
+    return model_id.startswith("azure/")
 
 
 def is_reasoning_model(model_id: llm.ModelId) -> bool:
@@ -56,6 +75,9 @@ GPT5_MODEL_IDS: list[llm.ModelId] = [
 ]
 
 MAX_TOKENS_MODEL_IDS = [*E2E_MODEL_IDS, *GPT5_MODEL_IDS]
+MAX_TOKENS_MODEL_IDS = [
+    model_id for model_id in MAX_TOKENS_MODEL_IDS if not _is_azure_model(model_id)
+]
 PARAMS_MODEL_IDS = [
     model_id for model_id in MAX_TOKENS_MODEL_IDS if not _is_reasoning_model(model_id)
 ]
@@ -138,6 +160,13 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
             else:
                 request.headers[req_header] = "<filtered>"
 
+    if ".openai.azure.com" in request.uri:
+        request.uri = re.sub(
+            r"https://[^/]+\.openai\.azure\.com",
+            _DUMMY_AZURE_OPENAI_ENDPOINT,
+            request.uri,
+        )
+
     return request
 
 
@@ -189,6 +218,16 @@ class ModelIdRequest(pytest.FixtureRequest):
 def model_id(request: ModelIdRequest) -> llm.ModelId:
     """Get model_id from test parameters."""
     return request.param
+
+
+@pytest.fixture(autouse=True)
+def register_azure_provider(reset_provider_registry: None) -> None:
+    """Register Azure provider with dummy credentials for e2e tests."""
+    llm.register_provider(
+        "azure",
+        api_key=os.getenv("AZURE_OPENAI_API_KEY", "dummy-azure-openai-key"),
+        base_url=os.getenv("AZURE_OPENAI_ENDPOINT", f"{_DUMMY_AZURE_OPENAI_ENDPOINT}/"),
+    )
 
 
 class FormattingModeRequest(pytest.FixtureRequest):

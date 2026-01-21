@@ -1,7 +1,7 @@
 """Utilities for stubbing modules with missing optional dependencies."""
 
 import sys
-from collections.abc import MutableSequence
+from collections.abc import MutableSequence, Sequence
 from importlib.abc import Loader, MetaPathFinder
 from importlib.machinery import ModuleSpec
 from types import ModuleType
@@ -314,44 +314,56 @@ class _StubModule(ModuleType):
 
 def stub_module_if_missing(
     module_path: str,
-    package_name: str,
+    package_name: str | Sequence[str],
 ) -> bool:
-    """Check if all packages for an extra are installed; if not, install a stub module.
+    """Check if all packages for one or more extras are installed; if not, stub a module.
 
     This must be called BEFORE importing from the module.
 
     Args:
         module_path: Full module path to stub (e.g., 'mirascope.ops._internal.tracing')
-        package_name: The extra name (e.g., 'ops'). Must exist in EXTRA_IMPORTS.
+        package_name: The extra name (e.g., "ops") or a sequence of extra names.
+            If multiple extras are provided, the module is stubbed only when
+            none of the extras have all imports available.
 
     Returns:
-        True if all packages for the extra are available, False if stubbed.
+        True if at least one extra is fully available, False if stubbed.
 
     Raises:
         KeyError: If package_name is not found in EXTRA_IMPORTS mapping.
     """
-    if package_name not in EXTRA_IMPORTS:
+    package_names: tuple[str, ...]
+    if isinstance(package_name, str):
+        package_names = (package_name,)
+    else:
+        package_names = tuple(package_name)
+
+    if not package_names:
+        raise ValueError("Expected at least one extra name to check.")
+
+    unknown = [name for name in package_names if name not in EXTRA_IMPORTS]
+    if unknown:
+        unknown_names = ", ".join(unknown)
         raise KeyError(
-            f"Unknown extra '{package_name}'. "
+            f"Unknown extra '{unknown_names}'. "
             f"Available extras: {', '.join(EXTRA_IMPORTS.keys())}"
         )
 
-    imports_to_check = EXTRA_IMPORTS[package_name]
-
-    # Check if ALL imports for this extra are available
-    all_available = True
-    for import_name in imports_to_check:
-        try:
-            __import__(import_name)
-        except ImportError:
-            all_available = False
-            break
-
-    if all_available:
+    def _extra_available(extra_name: str) -> bool:
+        imports_to_check = EXTRA_IMPORTS[extra_name]
+        for import_name in imports_to_check:
+            try:
+                __import__(import_name)
+            except ImportError:
+                return False
         return True
 
+    for extra_name in package_names:
+        if _extra_available(extra_name):
+            return True
+
     # At least one import is missing, so stub the module
-    sys.modules[module_path] = _StubModule(module_path, package_name)
+    sys.modules[module_path] = _StubModule(module_path, package_names[0])
 
     # Register with the finder to handle nested imports
     _finder.register_stub(module_path)

@@ -1,0 +1,92 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":[{"text":"Describe the following
+      image in one sentence","type":"text"},{"type":"image_url","image_url":{"url":"https://en.wikipedia.org/static/images/icons/wikipedia.png","detail":"auto"}}]}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '251'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"protected_material_code":{"filtered":false,"detected":false},"protected_material_text":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}},"finish_reason":"stop","index":0,"logprobs":null,"message":{"annotations":[],"content":"A
+        spherical jigsaw-puzzle globe composed of interlocking pieces printed with
+        letters and glyphs from multiple writing systems, representing the Wikipedia
+        logo.","refusal":null,"role":"assistant"}}],"created":1766400457,"id":"chatcmpl-CpXjtFq7kA1pt14QhJGf5W57vjD73","model":"gpt-5-mini-2025-08-07","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_result":{"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"},"hate":{"filtered":false,"severity":"safe"},"self_harm":{"filtered":false,"severity":"safe"}}}],"system_fingerprint":null,"usage":{"completion_tokens":166,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":128,"rejected_prediction_tokens":0},"prompt_tokens":34,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":200}}'
+    headers:
+      Content-Length:
+      - '1312'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 22 Dec 2025 10:47:39 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      api-supported-versions:
+      - '1'
+      apim-request-id:
+      - 0563726f-df30-45eb-b134-8dbd0dcc7a18
+      azureml-model-session:
+      - d20251213093222-e9b3063849204677
+      request-id:
+      - 0563726f-df30-45eb-b134-8dbd0dcc7a18
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-envoy-upstream-service-time:
+      - '3003'
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-5-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '100'
+      x-ratelimit-limit-tokens:
+      - '100000'
+      x-ratelimit-remaining-requests:
+      - '94'
+      x-ratelimit-remaining-tokens:
+      - '79520'
+      x-request-id:
+      - 0c4f7bfe-b448-4348-be55-146502904ca5
+    status:
+      code: 200
+      message: OK
+version: 1

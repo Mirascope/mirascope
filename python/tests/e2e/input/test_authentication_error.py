@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Generator
 
 import pytest
@@ -11,7 +12,9 @@ from tests.e2e.conftest import E2E_MODEL_IDS
 
 # Filter out MLX models since they don't require API keys
 API_PROVIDER_MODEL_IDS = [
-    model_id for model_id in E2E_MODEL_IDS if not model_id.startswith("mlx-community/")
+    model_id
+    for model_id in E2E_MODEL_IDS
+    if not model_id.startswith(("mlx-community/", "azure/"))
 ]
 
 
@@ -22,6 +25,14 @@ def register_providers_with_invalid_keys() -> Generator[None, None, None]:
     anthropic_provider = llm.register_provider("anthropic", api_key="invalid-key-12345")
     llm.register_provider("openai", api_key="invalid-key-12345")
     llm.register_provider("google", api_key="invalid-key-12345")
+    llm.register_provider(
+        "azure",
+        api_key="invalid-key-12345",
+        base_url=os.getenv(
+            "AZURE_OPENAI_ENDPOINT",
+            "https://dummy.openai.azure.com/",
+        ),
+    )
 
     assert isinstance(anthropic_provider, llm.providers.AnthropicProvider)
     beta_provider = anthropic_provider._beta_provider  # pyright: ignore[reportPrivateUsage]
