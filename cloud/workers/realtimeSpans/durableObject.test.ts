@@ -31,7 +31,7 @@ import {
 describe("RealtimeSpansDurableObject", () => {
   it("upserts spans and checks existence", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     const upsertResponse = await durableObject.fetch(
       createUpsertRequest(createSpanBatch()),
@@ -47,7 +47,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("searches spans within time range", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     await durableObject.fetch(createUpsertRequest(createSpanBatch()));
 
@@ -70,7 +70,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("filters out spans outside time range", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -116,7 +116,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("returns trace detail spans", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     await durableObject.fetch(createUpsertRequest(createSpanBatch()));
 
@@ -134,7 +134,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("computes totalDurationMs with spans ending at different times", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Span-2 ends BEFORE span-1 to test the end <= maxEnd branch
@@ -174,7 +174,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("returns trace detail with resourceAttributes serialized", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     await durableObject.fetch(
       createUpsertRequest(
@@ -202,7 +202,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("returns null resourceAttributes when none are provided", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const now = Date.now();
 
     const payload: SpansBatchRequest = {
@@ -241,7 +241,7 @@ describe("RealtimeSpansDurableObject", () => {
 
   it("keeps long-running spans when endTime exceeds query range", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     const nowMs = Date.now();
     const payload = createSpanBatch({
@@ -276,7 +276,7 @@ describe("RealtimeSpansDurableObject", () => {
   describe("pending → final merge", () => {
     it("merges pending span with final update", async () => {
       const state = createState();
-      const durableObject = new RealtimeSpansDurableObject(state);
+      const durableObject = new RealtimeSpansDurableObject(state, {});
       const time = createTimeContext();
 
       // Send pending span (no endTime)
@@ -335,7 +335,7 @@ describe("RealtimeSpansDurableObject", () => {
 
     it("preserves earliest start time on merge", async () => {
       const state = createState();
-      const durableObject = new RealtimeSpansDurableObject(state);
+      const durableObject = new RealtimeSpansDurableObject(state, {});
       const time = createTimeContext();
 
       // First upsert with earlier start time
@@ -392,7 +392,7 @@ describe("RealtimeSpansDurableObject", () => {
 
     it("preserves existing fields when update omits them", async () => {
       const state = createState();
-      const durableObject = new RealtimeSpansDurableObject(state);
+      const durableObject = new RealtimeSpansDurableObject(state, {});
       const time = createTimeContext();
 
       // Initial span with all fields
@@ -473,7 +473,7 @@ describe("RealtimeSpansDurableObject", () => {
 
     it("replaces attributes when new ones are provided", async () => {
       const state = createState();
-      const durableObject = new RealtimeSpansDurableObject(state);
+      const durableObject = new RealtimeSpansDurableObject(state, {});
       const time = createTimeContext();
 
       // Initial span with old attributes
@@ -531,7 +531,7 @@ describe("RealtimeSpansDurableObject", () => {
 
     it("preserves largest endTime on out-of-order updates", async () => {
       const state = createState();
-      const durableObject = new RealtimeSpansDurableObject(state);
+      const durableObject = new RealtimeSpansDurableObject(state, {});
       const time = createTimeContext();
 
       // First update with later endTime
@@ -588,7 +588,7 @@ describe("RealtimeSpansDurableObject", () => {
 describe("edge cases", () => {
   it("returns 404 for unknown endpoints", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     const response = await durableObject.fetch(
       new Request("https://realtime-spans/unknown", { method: "GET" }),
@@ -599,7 +599,7 @@ describe("edge cases", () => {
 
   it("exists returns false for non-existent span", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     const response = await durableObject.fetch(
       createExistsRequest({ traceId: "missing-trace", spanId: "missing-span" }),
@@ -610,7 +610,7 @@ describe("edge cases", () => {
 
   it("exists returns false and deletes expired span", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     // Directly insert an expired span record into storage
     const expiredRecord = {
@@ -650,7 +650,7 @@ describe("edge cases", () => {
 
   it("pruneStorage deletes expired entries during upsert", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Directly insert an expired span record into storage
@@ -713,7 +713,7 @@ describe("edge cases", () => {
 
   it("filters by hasError when true", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -767,7 +767,7 @@ describe("edge cases", () => {
 
   it("filters by hasError when false", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -818,7 +818,7 @@ describe("edge cases", () => {
 
   it("filters by model", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -871,7 +871,7 @@ describe("edge cases", () => {
 
   it("filters by provider", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -923,7 +923,7 @@ describe("edge cases", () => {
 
   it("filters by functionId", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -975,7 +975,7 @@ describe("edge cases", () => {
 
   it("filters by functionName", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1027,7 +1027,7 @@ describe("edge cases", () => {
 
   it("filters by minTokens and maxTokens", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1081,7 +1081,7 @@ describe("edge cases", () => {
 
   it("filters out spans exceeding maxTokens", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1134,7 +1134,7 @@ describe("edge cases", () => {
 
   it("filters by minDuration and maxDuration", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1186,7 +1186,7 @@ describe("edge cases", () => {
 
   it("filters out spans exceeding maxDuration", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1237,7 +1237,7 @@ describe("edge cases", () => {
 
   it("sorts by duration_ms ascending", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1288,7 +1288,7 @@ describe("edge cases", () => {
 
   it("handles sorting spans with identical timestamps", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Two spans with IDENTICAL start times
@@ -1337,7 +1337,7 @@ describe("edge cases", () => {
 
   it("sorts by total_tokens descending", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1382,7 +1382,7 @@ describe("edge cases", () => {
 
   it("computes totalTokens from input+output when total_tokens not set", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1415,7 +1415,7 @@ describe("edge cases", () => {
 
   it("parses string-based token counts", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1450,7 +1450,7 @@ describe("edge cases", () => {
 
   it("computes totalTokens from input only when output_tokens not set", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1484,7 +1484,7 @@ describe("edge cases", () => {
 
   it("computes totalTokens from output only when input_tokens not set", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1518,7 +1518,7 @@ describe("edge cases", () => {
 
   it("sorts by total_tokens with null tokens using ascending order", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1566,7 +1566,7 @@ describe("edge cases", () => {
 
   it("sorts by total_tokens with null tokens using descending order", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1614,7 +1614,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with eq operator", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1668,7 +1668,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with numeric values", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1720,7 +1720,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with boolean values", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1772,7 +1772,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with exists operator", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1834,7 +1834,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with contains operator", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1888,7 +1888,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with neq operator", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1942,7 +1942,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with neq on missing attribute", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -1998,7 +1998,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with non-stringifiable value (object)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2079,7 +2079,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters with unknown operator", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2128,7 +2128,7 @@ describe("edge cases", () => {
 
   it("handles attribute filters on span with null attributes", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Create a span with explicitly null attributes
@@ -2184,7 +2184,7 @@ describe("edge cases", () => {
 
   it("handles attribute filter with null value", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2238,7 +2238,7 @@ describe("edge cases", () => {
 
   it("handles inputMessagesQuery filter", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2292,7 +2292,7 @@ describe("edge cases", () => {
 
   it("handles outputMessagesQuery filter", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2346,7 +2346,7 @@ describe("edge cases", () => {
 
   it("returns empty trace detail for non-existent trace", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
 
     const traceBody = await parseJson<{
       spans: unknown[];
@@ -2361,7 +2361,7 @@ describe("edge cases", () => {
 
   it("handles span without startTimeUnixNano (uses receivedAt)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const nowMs = Date.now();
 
     // Create a span without startTimeUnixNano - should fall back to receivedAt
@@ -2414,7 +2414,7 @@ describe("edge cases", () => {
 
   it("filters by traceId", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2464,7 +2464,7 @@ describe("edge cases", () => {
 
   it("filters by spanId", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2514,7 +2514,7 @@ describe("edge cases", () => {
 
   it("handles inputMessagesQuery with object value (returns null from toSearchString)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Object values in gen_ai.input_messages will cause toSearchString to return null
@@ -2573,7 +2573,7 @@ describe("edge cases", () => {
 
   it("merges resourceAttributes when updating span (null incoming preserves existing)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // First upsert with resourceAttributes
@@ -2642,7 +2642,7 @@ describe("edge cases", () => {
 
   it("extracts model from mirascope.response.model_id attribute (priority over gen_ai)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2676,7 +2676,7 @@ describe("edge cases", () => {
 
   it("extracts provider from mirascope.response.provider_id attribute (priority over gen_ai)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2712,7 +2712,7 @@ describe("edge cases", () => {
 
   it("extracts cost from mirascope.response.cost attribute (JSON string)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Cost in centicents: 50000 centicents = $5.00
@@ -2753,7 +2753,7 @@ describe("edge cases", () => {
 
   it("extracts cost from mirascope.response.cost attribute (object)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2793,7 +2793,7 @@ describe("edge cases", () => {
 
   it("handles mirascope.response.cost with invalid JSON (falls back to gen_ai.usage.cost)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2829,7 +2829,7 @@ describe("edge cases", () => {
 
   it("extracts tokens from mirascope.response.usage attribute (JSON string)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     const usageJson = JSON.stringify({
@@ -2876,7 +2876,7 @@ describe("edge cases", () => {
 
   it("falls back to gen_ai when mirascope.response.usage missing expected fields", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     // Usage object without token fields
@@ -2923,7 +2923,7 @@ describe("edge cases", () => {
 
   it("extracts tokens from mirascope.response.usage attribute (object, not JSON string)", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(
@@ -2966,7 +2966,7 @@ describe("edge cases", () => {
 
   it("falls back to gen_ai when mirascope.response.cost.total_cost is not a valid number", async () => {
     const state = createState();
-    const durableObject = new RealtimeSpansDurableObject(state);
+    const durableObject = new RealtimeSpansDurableObject(state, {});
     const time = createTimeContext();
 
     await durableObject.fetch(

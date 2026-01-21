@@ -22,6 +22,7 @@ export default [
         // Cloudflare Workers globals
         ExportedHandlerFetchHandler: "readonly",
         ExecutionContext: "readonly",
+        DurableObjectState: "readonly",
       },
     },
     plugins: {
