@@ -119,7 +119,6 @@ function createSocialCardElement(
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: 60,
-        position: "relative",
       },
       children: [
         {
@@ -127,12 +126,10 @@ function createSocialCardElement(
           props: {
             src: logoDataUrl,
             style: {
-              position: "absolute",
-              top: 40,
-              left: 40,
-              width: 96,
-              height: 78,
+              width: 576,
+              height: 131,
               objectFit: "contain",
+              padding: 10,
             },
           },
         },
@@ -148,6 +145,7 @@ function createSocialCardElement(
               maxWidth: "90%",
               textShadow:
                 "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
+              marginTop: 40,
             },
             children: title,
           },
