@@ -13,7 +13,7 @@
     <style>
       @font-face {
         font-family: 'Williams Handwriting';
-        src: url('public/fonts/Williams-Handwriting-Regular-v1.ttf') format('truetype');
+        src: url('../../fonts/Williams-Handwriting-Regular-v1.ttf') format('truetype');
       }
     </style>
     <clipPath id="tornPaperClip">
