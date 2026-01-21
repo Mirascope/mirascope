@@ -39,7 +39,7 @@ jobs:
         run: bun run clickhouse:migrate
 
       - name: Build for staging
-        run: bun run build
+        run: bun run build:staging
         env:
           CLOUDFLARE_ENV: staging
 
