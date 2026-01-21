@@ -5,7 +5,6 @@
  * RealtimeSpansDurableObject in isolation.
  */
 
-import type { DurableObjectState } from "@cloudflare/workers-types";
 import { Context, Effect, Layer } from "effect";
 import { RealtimeSpans } from "@/workers/realtimeSpans";
 
@@ -97,7 +96,7 @@ export const parseJson = async <T>(response: Response): Promise<T> =>
  * Creates a mock DurableObjectState with in-memory storage.
  * Returns both the state and storage for direct manipulation in tests.
  */
-export const createState = (): DurableObjectState & { storage: MockStorage } =>
+export const createState = () =>
   ({
     storage: new MockStorage(),
   }) as unknown as DurableObjectState & { storage: MockStorage };

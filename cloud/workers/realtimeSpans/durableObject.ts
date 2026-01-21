@@ -5,7 +5,7 @@
  * read endpoints for realtime search and trace detail.
  */
 
-import type { DurableObjectState } from "@cloudflare/workers-types";
+import { DurableObject } from "cloudflare:workers";
 import type { SpanInput, SpansBatchRequest } from "@/db/clickhouse/types";
 import {
   createSpanCacheKey,
@@ -834,13 +834,7 @@ const computeTraceStats = (
  * Note: The actual class exported to Cloudflare Workers is defined in
  * server-entry.ts to satisfy Cloudflare's class discovery requirements.
  */
-export class RealtimeSpansDurableObjectBase {
-  private readonly state: DurableObjectState;
-
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
-
+export class RealtimeSpansDurableObjectBase extends DurableObject {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
 
@@ -898,8 +892,7 @@ export class RealtimeSpansDurableObjectBase {
         resourceAttributes: payload.resourceAttributes,
       };
 
-      const existingRecord =
-        await this.state.storage.get<SpanRecord>(storageKey);
+      const existingRecord = await this.ctx.storage.get<SpanRecord>(storageKey);
       const mergedSpan = existingRecord
         ? mergeSpan(existingRecord.span, incomingSpan)
         : incomingSpan;
@@ -912,7 +905,7 @@ export class RealtimeSpansDurableObjectBase {
         sizeBytes,
       };
 
-      await this.state.storage.put(storageKey, record);
+      await this.ctx.storage.put(storageKey, record);
     }
 
     await this.pruneStorage();
@@ -968,17 +961,17 @@ export class RealtimeSpansDurableObjectBase {
   private async handleExists(input: RealtimeSpanExistsInput): Promise<boolean> {
     const spanKey = createSpanCacheKey(input.traceId, input.spanId);
     const storageKey = `span:${spanKey}`;
-    const record = await this.state.storage.get<SpanRecord>(storageKey);
+    const record = await this.ctx.storage.get<SpanRecord>(storageKey);
     if (!record) return false;
     if (record.expiresAt <= Date.now()) {
-      await this.state.storage.delete(storageKey);
+      await this.ctx.storage.delete(storageKey);
       return false;
     }
     return true;
   }
 
   private async loadEntries(prefix: string): Promise<StoredEntry[]> {
-    const entries = await this.state.storage.list<SpanRecord>({ prefix });
+    const entries = await this.ctx.storage.list<SpanRecord>({ prefix });
     return Array.from(entries.entries()).map(([key, record]) => ({
       key,
       record,
@@ -1001,7 +994,7 @@ export class RealtimeSpansDurableObjectBase {
     }
 
     if (expiredKeys.length > 0) {
-      await this.state.storage.delete(expiredKeys);
+      await this.ctx.storage.delete(expiredKeys);
     }
 
     let totalCount = activeEntries.length;
@@ -1029,7 +1022,7 @@ export class RealtimeSpansDurableObjectBase {
     }
 
     if (keysToDelete.length > 0) {
-      await this.state.storage.delete(keysToDelete);
+      await this.ctx.storage.delete(keysToDelete);
     }
     /* v8 ignore stop */
   }
