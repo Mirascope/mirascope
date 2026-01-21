@@ -1,0 +1,255 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather in Mumbai?","role":"user"}],"model":"gpt-4o-mini","stream":true,"tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '373'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","response":{"id":"resp_064b9b7cce149ce70069701571b6e881a1999b342e83c12fdc","object":"response","created_at":1768953201,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":0}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","response":{"id":"resp_064b9b7cce149ce70069701571b6e881a1999b342e83c12fdc","object":"response","created_at":1768953201,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":1}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","item":{"id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","type":"function_call","status":"in_progress","arguments":"","call_id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather"},"output_index":0,"sequence_number":2}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"{\"","item_id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","obfuscation":"O52rrCAyxie3Vt","output_index":0,"sequence_number":3}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"location","item_id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","obfuscation":"3lQuLm8t","output_index":0,"sequence_number":4}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\":\"","item_id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","obfuscation":"eN8s3iERKEPCG","output_index":0,"sequence_number":5}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"Mumbai","item_id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","obfuscation":"LaqcpIwR8Y","output_index":0,"sequence_number":6}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\"}","item_id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","obfuscation":"8p34XZJSuoHJzm","output_index":0,"sequence_number":7}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","arguments":"{\"location\":\"Mumbai\"}","item_id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","output_index":0,"sequence_number":8}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","item":{"id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","type":"function_call","status":"completed","arguments":"{\"location\":\"Mumbai\"}","call_id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather"},"output_index":0,"sequence_number":9}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","response":{"id":"resp_064b9b7cce149ce70069701571b6e881a1999b342e83c12fdc","object":"response","created_at":1768953201,"status":"completed","background":false,"completed_at":1768953202,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[{"id":"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8","type":"function_call","status":"completed","arguments":"{\"location\":\"Mumbai\"}","call_id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather"}],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":48,"input_tokens_details":{"cached_tokens":0},"output_tokens":15,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":63},"user":null,"metadata":{}},"sequence_number":10}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9c127da66b75d12a-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 23:53:21 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=4tARCdpmBxRKdOCoNGytMvqRmGGmc5v_nfl5rzVmt9c-1768953201-1.0.1.1-H2ZAKa6QvRCo5JEZX9BHr6QHEn2.ymbRjMM8SQK2Zb7A4miZnXlCcihSOZ.ZciapPDdd5V1gbdv5YSqdOkWoIhF9cvw9XCKR8ZTD1FLFIrE;
+        path=/; expires=Wed, 21-Jan-26 00:23:21 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=X3mdHprX0E9h38SF_nJfG.u2Y3x61ZnaPswjo5pGvUw-1768953201792-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '53'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '56'
+      x-request-id:
+      - req_85a9c6bb292648de986c1ee9fa247da3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in Mumbai?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Mumbai\\\"}\",\"call_id\":\"call_D3VTNzxwSAaUHBRiNLeJudFA\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_064b9b7cce149ce70069701572238c81a185bfb755531869f8\",\"status\":\"completed\"},{\"call_id\":\"call_D3VTNzxwSAaUHBRiNLeJudFA\",\"output\":\"Weather
+      in Mumbai: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"stream\":true,\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '700'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"resp_064b9b7cce149ce70069701572fd7081a19e769d451e8ac698\",\"object\":\"response\",\"created_at\":1768953203,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":0}\n\nevent:
+        response.in_progress\ndata: {\"type\":\"response.in_progress\",\"response\":{\"id\":\"resp_064b9b7cce149ce70069701572fd7081a19e769d451e8ac698\",\"object\":\"response\",\"created_at\":1768953203,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":1}\n\nevent:
+        response.output_item.added\ndata: {\"type\":\"response.output_item.added\",\"item\":{\"id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"type\":\"message\",\"status\":\"in_progress\",\"content\":[],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":2}\n\nevent:
+        response.content_part.added\ndata: {\"type\":\"response.content_part.added\",\"content_index\":0,\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"\"},\"sequence_number\":3}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"The\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"u3VE1vfT11K9M\",\"output_index\":0,\"sequence_number\":4}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        weather\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"t8JUO54X\",\"output_index\":0,\"sequence_number\":5}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        in\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"os3PGXcJbzNKP\",\"output_index\":0,\"sequence_number\":6}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        Mumbai\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"jehpsyEQF\",\"output_index\":0,\"sequence_number\":7}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        is\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"EyZVendsUXxoQ\",\"output_index\":0,\"sequence_number\":8}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        currently\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"ENBDKl\",\"output_index\":0,\"sequence_number\":9}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        \",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"keLXD8ef2G6YeTe\",\"output_index\":0,\"sequence_number\":10}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"72\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"6Xae6NV73sQYPk\",\"output_index\":0,\"sequence_number\":11}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"\xB0F\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"NV2DjbmDrrJ0VD\",\"output_index\":0,\"sequence_number\":12}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        and\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"h8A3v52bGDhA\",\"output_index\":0,\"sequence_number\":13}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        sunny\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"GOLi1SxiRh\",\"output_index\":0,\"sequence_number\":14}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\".\",\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"obfuscation\":\"P2om2pZbpzqHuUX\",\"output_index\":0,\"sequence_number\":15}\n\nevent:
+        response.output_text.done\ndata: {\"type\":\"response.output_text.done\",\"content_index\":0,\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"logprobs\":[],\"output_index\":0,\"sequence_number\":16,\"text\":\"The
+        weather in Mumbai is currently 72\xB0F and sunny.\"}\n\nevent: response.content_part.done\ndata:
+        {\"type\":\"response.content_part.done\",\"content_index\":0,\"item_id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in Mumbai is currently 72\xB0F and sunny.\"},\"sequence_number\":17}\n\nevent:
+        response.output_item.done\ndata: {\"type\":\"response.output_item.done\",\"item\":{\"id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in Mumbai is currently 72\xB0F and sunny.\"}],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":18}\n\nevent:
+        response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"resp_064b9b7cce149ce70069701572fd7081a19e769d451e8ac698\",\"object\":\"response\",\"created_at\":1768953203,\"status\":\"completed\",\"background\":false,\"completed_at\":1768953204,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[{\"id\":\"msg_064b9b7cce149ce70069701573e0b481a1a0b72288580a7dad\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in Mumbai is currently 72\xB0F and sunny.\"}],\"role\":\"assistant\"}],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"default\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":{\"input_tokens\":80,\"input_tokens_details\":{\"cached_tokens\":0},\"output_tokens\":14,\"output_tokens_details\":{\"reasoning_tokens\":0},\"total_tokens\":94},\"user\":null,\"metadata\":{}},\"sequence_number\":19}\n\n"
+    headers:
+      CF-RAY:
+      - 9c127daabedad12a-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 23:53:23 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '50'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '54'
+      x-request-id:
+      - req_45b928115608439da884d8c19b43df3b
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,260 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather in London?","role":"user"}],"model":"gpt-4o-mini","stream":true,"tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '373'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","response":{"id":"resp_026e24c5c958fe1f006970156dd7e08197b103fc639632a013","object":"response","created_at":1768953197,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":0}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","response":{"id":"resp_026e24c5c958fe1f006970156dd7e08197b103fc639632a013","object":"response","created_at":1768953197,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":1}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","item":{"id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","type":"function_call","status":"in_progress","arguments":"","call_id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather"},"output_index":0,"sequence_number":2}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"{\"","item_id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","obfuscation":"6lILZbVwU8VsMq","output_index":0,"sequence_number":3}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"location","item_id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","obfuscation":"0pbFXV7Y","output_index":0,"sequence_number":4}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\":\"","item_id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","obfuscation":"MU3JV9pKUfdQg","output_index":0,"sequence_number":5}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"London","item_id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","obfuscation":"NBVXbuAsby","output_index":0,"sequence_number":6}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\"}","item_id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","obfuscation":"AL5qtJFq3nLOC4","output_index":0,"sequence_number":7}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","arguments":"{\"location\":\"London\"}","item_id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","output_index":0,"sequence_number":8}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","item":{"id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","type":"function_call","status":"completed","arguments":"{\"location\":\"London\"}","call_id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather"},"output_index":0,"sequence_number":9}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","response":{"id":"resp_026e24c5c958fe1f006970156dd7e08197b103fc639632a013","object":"response","created_at":1768953197,"status":"completed","background":false,"completed_at":1768953198,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[{"id":"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac","type":"function_call","status":"completed","arguments":"{\"location\":\"London\"}","call_id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather"}],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":48,"input_tokens_details":{"cached_tokens":0},"output_tokens":15,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":63},"user":null,"metadata":{}},"sequence_number":10}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9c127d8e3dc9314f-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 23:53:17 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=Iex3Z.sf3rJSkCBEwpvBB6ga43Cg.DeJ7llJsFgHEvk-1768953197-1.0.1.1-lLT_vKHysB2Yf9GwXFZld.nTKguFxxZiDpP6Wak5UJOgQGdyxEZAV8PzbJ_MR35rgTY9GAPt.cyCtMCY6KEz23iqZhzk8wvXq2p01Mx3KNE;
+        path=/; expires=Wed, 21-Jan-26 00:23:17 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=aKx5mcxLRFiESlibUNorpzan.OlEHnG_r6Dxi7Ibv44-1768953197930-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '61'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '67'
+      x-request-id:
+      - req_1512ededbbad49dc902bb79340c9eaf9
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in London?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"London\\\"}\",\"call_id\":\"call_n6ENKpuZMXStFHYooHMIdkI1\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_026e24c5c958fe1f006970156e3a5c8197ad9612b03a4beeac\",\"status\":\"completed\"},{\"call_id\":\"call_n6ENKpuZMXStFHYooHMIdkI1\",\"output\":\"Weather
+      in London: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"stream\":true,\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '700'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"resp_026e24c5c958fe1f006970156e8aec8197a3c1744714cc8221\",\"object\":\"response\",\"created_at\":1768953198,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":0}\n\nevent:
+        response.in_progress\ndata: {\"type\":\"response.in_progress\",\"response\":{\"id\":\"resp_026e24c5c958fe1f006970156e8aec8197a3c1744714cc8221\",\"object\":\"response\",\"created_at\":1768953198,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":1}\n\nevent:
+        response.output_item.added\ndata: {\"type\":\"response.output_item.added\",\"item\":{\"id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"type\":\"message\",\"status\":\"in_progress\",\"content\":[],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":2}\n\nevent:
+        response.content_part.added\ndata: {\"type\":\"response.content_part.added\",\"content_index\":0,\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"\"},\"sequence_number\":3}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"The\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"JZt1FPpNclKQa\",\"output_index\":0,\"sequence_number\":4}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        weather\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"zgMt4u84\",\"output_index\":0,\"sequence_number\":5}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        in\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"InLY8diQcFKai\",\"output_index\":0,\"sequence_number\":6}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        London\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"yxBBROqLr\",\"output_index\":0,\"sequence_number\":7}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        is\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"41eE8XXuZ4Rma\",\"output_index\":0,\"sequence_number\":8}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        sunny\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"2cAGSyM25y\",\"output_index\":0,\"sequence_number\":9}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\",\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"G7DR3qADRQnB7YB\",\"output_index\":0,\"sequence_number\":10}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        with\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"SHCbOW7AU77\",\"output_index\":0,\"sequence_number\":11}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        a\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"QZt5MLYs7ooyih\",\"output_index\":0,\"sequence_number\":12}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        temperature\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"Nn4r\",\"output_index\":0,\"sequence_number\":13}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        of\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"3fvEiVNueGAjx\",\"output_index\":0,\"sequence_number\":14}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        \",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"BwxtrDoSEK3lQi9\",\"output_index\":0,\"sequence_number\":15}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"72\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"uBRrOonJrlKgBR\",\"output_index\":0,\"sequence_number\":16}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"\xB0F\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"aBhBRcsOuZwsKj\",\"output_index\":0,\"sequence_number\":17}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\".\",\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"obfuscation\":\"x2W4FVi9OWUhIP1\",\"output_index\":0,\"sequence_number\":18}\n\nevent:
+        response.output_text.done\ndata: {\"type\":\"response.output_text.done\",\"content_index\":0,\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"logprobs\":[],\"output_index\":0,\"sequence_number\":19,\"text\":\"The
+        weather in London is sunny, with a temperature of 72\xB0F.\"}\n\nevent: response.content_part.done\ndata:
+        {\"type\":\"response.content_part.done\",\"content_index\":0,\"item_id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in London is sunny, with a temperature of 72\xB0F.\"},\"sequence_number\":20}\n\nevent:
+        response.output_item.done\ndata: {\"type\":\"response.output_item.done\",\"item\":{\"id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in London is sunny, with a temperature of 72\xB0F.\"}],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":21}\n\nevent:
+        response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"resp_026e24c5c958fe1f006970156e8aec8197a3c1744714cc8221\",\"object\":\"response\",\"created_at\":1768953198,\"status\":\"completed\",\"background\":false,\"completed_at\":1768953199,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[{\"id\":\"msg_026e24c5c958fe1f006970156ed6ac8197af60c898b7aa3f70\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in London is sunny, with a temperature of 72\xB0F.\"}],\"role\":\"assistant\"}],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"default\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":{\"input_tokens\":80,\"input_tokens_details\":{\"cached_tokens\":0},\"output_tokens\":17,\"output_tokens_details\":{\"reasoning_tokens\":0},\"total_tokens\":97},\"user\":null,\"metadata\":{}},\"sequence_number\":22}\n\n"
+    headers:
+      CF-RAY:
+      - 9c127d928895314f-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 23:53:18 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '110'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '114'
+      x-request-id:
+      - req_0a7fa1e09daf4424a9ca621b39a0de4b
+    status:
+      code: 200
+      message: OK
+version: 1

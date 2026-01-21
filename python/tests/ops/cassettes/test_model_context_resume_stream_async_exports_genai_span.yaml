@@ -1,0 +1,260 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather in Cairo?","role":"user"}],"model":"gpt-4o-mini","stream":true,"tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '372'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","response":{"id":"resp_056c53717442541400697015749bc0819fa5c6662dadc9949b","object":"response","created_at":1768953204,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":0}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","response":{"id":"resp_056c53717442541400697015749bc0819fa5c6662dadc9949b","object":"response","created_at":1768953204,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":1}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","item":{"id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","type":"function_call","status":"in_progress","arguments":"","call_id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather"},"output_index":0,"sequence_number":2}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"{\"","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","obfuscation":"MOOC8tD3VISJU6","output_index":0,"sequence_number":3}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"location","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","obfuscation":"5TrzsjZH","output_index":0,"sequence_number":4}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\":\"","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","obfuscation":"pERsXbzPtIRuH","output_index":0,"sequence_number":5}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"C","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","obfuscation":"fFYYL52Qa0wJnGW","output_index":0,"sequence_number":6}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"airo","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","obfuscation":"EPyz6AYNNO7V","output_index":0,"sequence_number":7}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\"}","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","obfuscation":"XPfrCulwpbCKjc","output_index":0,"sequence_number":8}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","arguments":"{\"location\":\"Cairo\"}","item_id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","output_index":0,"sequence_number":9}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","item":{"id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","type":"function_call","status":"completed","arguments":"{\"location\":\"Cairo\"}","call_id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather"},"output_index":0,"sequence_number":10}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","response":{"id":"resp_056c53717442541400697015749bc0819fa5c6662dadc9949b","object":"response","created_at":1768953204,"status":"completed","background":false,"completed_at":1768953205,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[{"id":"fc_056c53717442541400697015756edc819f9d97daec7128e8d2","type":"function_call","status":"completed","arguments":"{\"location\":\"Cairo\"}","call_id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather"}],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":48,"input_tokens_details":{"cached_tokens":0},"output_tokens":16,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":64},"user":null,"metadata":{}},"sequence_number":11}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9c127db8780729a5-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 23:53:24 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=Ywq0V_tuOXoYgwPqJqCVZgSDx01qP7y89RQN2gA2NoM-1768953204-1.0.1.1-VyzGaXgMTUMatvhbXACcAFCjOdrxqmHe0MKvx7MRVF_ZMuYG8s2SJXlMeHJ0eRYZWmePMSS4OllfUdfNFN04pVU5FxVSeIR48Sl_9zBe8n0;
+        path=/; expires=Wed, 21-Jan-26 00:23:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=9HHbu_HTitj.tcVKmqeR_bPnLaoP4yuSOsz54XygOLc-1768953204694-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '46'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '50'
+      x-request-id:
+      - req_51f1f1707d44465a9b74cee6bfdd991f
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in Cairo?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Cairo\\\"}\",\"call_id\":\"call_eg35cztygTdIOnJ7l1Ux1wHT\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_056c53717442541400697015756edc819f9d97daec7128e8d2\",\"status\":\"completed\"},{\"call_id\":\"call_eg35cztygTdIOnJ7l1Ux1wHT\",\"output\":\"Weather
+      in Cairo: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"stream\":true,\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '697'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"resp_056c5371744254140069701575bee0819fa787007a949eb4cd\",\"object\":\"response\",\"created_at\":1768953205,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":0}\n\nevent:
+        response.in_progress\ndata: {\"type\":\"response.in_progress\",\"response\":{\"id\":\"resp_056c5371744254140069701575bee0819fa787007a949eb4cd\",\"object\":\"response\",\"created_at\":1768953205,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":1}\n\nevent:
+        response.output_item.added\ndata: {\"type\":\"response.output_item.added\",\"item\":{\"id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"type\":\"message\",\"status\":\"in_progress\",\"content\":[],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":2}\n\nevent:
+        response.content_part.added\ndata: {\"type\":\"response.content_part.added\",\"content_index\":0,\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"\"},\"sequence_number\":3}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"The\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"CETazh9l3ua8T\",\"output_index\":0,\"sequence_number\":4}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        weather\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"Zc8wBNuu\",\"output_index\":0,\"sequence_number\":5}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        in\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"pR303z07fNx95\",\"output_index\":0,\"sequence_number\":6}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        Cairo\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"9ud3vkFNJp\",\"output_index\":0,\"sequence_number\":7}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        is\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"d8oC3MPazIlb8\",\"output_index\":0,\"sequence_number\":8}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        currently\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"suWYBH\",\"output_index\":0,\"sequence_number\":9}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        \",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"DRaO6u81uzmc9Ap\",\"output_index\":0,\"sequence_number\":10}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"72\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"m2pIibwjmekhqV\",\"output_index\":0,\"sequence_number\":11}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"\xB0F\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"Zl6iIBu9j34DwW\",\"output_index\":0,\"sequence_number\":12}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        and\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"ZFI4ZEiq9jqe\",\"output_index\":0,\"sequence_number\":13}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        sunny\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"d0VFgvj4E1\",\"output_index\":0,\"sequence_number\":14}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\".\",\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"obfuscation\":\"myvK3SYAqN1HEZN\",\"output_index\":0,\"sequence_number\":15}\n\nevent:
+        response.output_text.done\ndata: {\"type\":\"response.output_text.done\",\"content_index\":0,\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"logprobs\":[],\"output_index\":0,\"sequence_number\":16,\"text\":\"The
+        weather in Cairo is currently 72\xB0F and sunny.\"}\n\nevent: response.content_part.done\ndata:
+        {\"type\":\"response.content_part.done\",\"content_index\":0,\"item_id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in Cairo is currently 72\xB0F and sunny.\"},\"sequence_number\":17}\n\nevent:
+        response.output_item.done\ndata: {\"type\":\"response.output_item.done\",\"item\":{\"id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in Cairo is currently 72\xB0F and sunny.\"}],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":18}\n\nevent:
+        response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"resp_056c5371744254140069701575bee0819fa787007a949eb4cd\",\"object\":\"response\",\"created_at\":1768953205,\"status\":\"completed\",\"background\":false,\"completed_at\":1768953206,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[{\"id\":\"msg_056c537174425414006970157658b0819fac3c0afe9ec8621a\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        weather in Cairo is currently 72\xB0F and sunny.\"}],\"role\":\"assistant\"}],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"default\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":{\"input_tokens\":81,\"input_tokens_details\":{\"cached_tokens\":0},\"output_tokens\":14,\"output_tokens_details\":{\"reasoning_tokens\":0},\"total_tokens\":95},\"user\":null,\"metadata\":{}},\"sequence_number\":19}\n\n"
+    headers:
+      CF-RAY:
+      - 9c127dbf9b3e29a5-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 23:53:25 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '131'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '138'
+      x-request-id:
+      - req_0608b5b8eaa54687bc0eed787e38ae91
+    status:
+      code: 200
+      message: OK
+version: 1
