@@ -27,6 +27,9 @@ class TracesSearchByEnvResponseSpansItem(UniversalBaseModel):
     total_tokens: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="totalTokens")
     ] = None
+    cost_usd: typing_extensions.Annotated[
+        typing.Optional[float], FieldMetadata(alias="costUsd")
+    ] = None
     function_id: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="functionId")
     ] = None
