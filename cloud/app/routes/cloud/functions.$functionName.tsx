@@ -22,12 +22,7 @@ import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
 import { DiffTool } from "@/app/components/blocks/diff-tool";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/app/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -378,52 +373,50 @@ function FunctionDetailPage() {
             )}
           </div>
 
-          {/* Tabs */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="flex min-h-0 flex-1 flex-col"
-          >
-            {/* Shared tabs row */}
-            <div className="relative z-10 shrink-0 px-6">
+          {/* Content area with tabs overlay */}
+          <div className="relative min-h-0 flex-1">
+            {/* Tab buttons - absolutely positioned */}
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="absolute left-6 top-0 z-10"
+            >
               <TabsList>
                 <TabsTrigger value="code">Code</TabsTrigger>
                 <TabsTrigger value="traces" disabled={isCompareMode}>
                   Traces
                 </TabsTrigger>
               </TabsList>
-            </div>
+            </Tabs>
 
-            {/* Code Tab */}
-            <TabsContent value="code" className="m-0 flex-1 overflow-hidden">
-              <div className="flex h-full gap-4 px-6 pt-2 pb-6">
-                {/* Code Block or Diff Tool */}
-                <div className="min-w-0 flex-1 overflow-auto">
-                  {isCompareMode && compareVersion ? (
-                    <DiffTool
-                      baseCode={compareVersion.code}
-                      newCode={fn.code}
-                      language="python"
-                      baseName={`v${compareVersion.version}`}
-                      newName={`v${fn.version}`}
-                    />
-                  ) : (
-                    <CodeBlock
-                      code={fn.code}
-                      language="python"
-                      showLineNumbers={true}
-                    />
-                  )}
+            {/* Code content */}
+            {activeTab === "code" && (
+              <div className="h-full overflow-hidden">
+                <div className="flex h-full gap-4 px-6 pt-12 pb-6">
+                  <div className="min-w-0 flex-1 overflow-auto">
+                    {isCompareMode && compareVersion ? (
+                      <DiffTool
+                        baseCode={compareVersion.code}
+                        newCode={fn.code}
+                        language="python"
+                        baseName={`v${compareVersion.version}`}
+                        newName={`v${fn.version}`}
+                      />
+                    ) : (
+                      <CodeBlock
+                        code={fn.code}
+                        language="python"
+                        showLineNumbers={true}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-            </TabsContent>
+            )}
 
-            {/* Traces Tab */}
-            <TabsContent value="traces" className="m-0 flex-1 overflow-visible">
-              <ResizablePanelGroup
-                direction="horizontal"
-                className="relative z-20 -mt-11 h-full"
-              >
+            {/* Traces content */}
+            {activeTab === "traces" && (
+              <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel
                   defaultSize={selectedSpan ? 70 : 100}
                   minSize={30}
@@ -462,7 +455,7 @@ function FunctionDetailPage() {
                       </div>
                     </ResizableHandle>
                     <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
-                      <div className="h-full pb-6 pr-6">
+                      <div className="h-full overflow-hidden pb-6 pr-6">
                         <SpanDetailPanel
                           span={selectedSpan}
                           functionData={fn}
@@ -473,8 +466,8 @@ function FunctionDetailPage() {
                   </>
                 )}
               </ResizablePanelGroup>
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </div>
       </CloudLayout>
     </Protected>

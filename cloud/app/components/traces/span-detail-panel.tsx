@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { AlertCircle, Code, FileCode, X } from "lucide-react";
+import { AlertCircle, Code, FileCode, Maximize2, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
 import { Button } from "@/app/components/ui/button";
 import { JsonView } from "@/app/components/json-view";
@@ -30,7 +31,8 @@ import {
 interface SpanDetailPanelProps {
   span: SpanDetail | SpanSearchResult | null;
   functionData?: FunctionResponse | null;
-  onClose: () => void;
+  onClose?: () => void;
+  mode?: "side-panel" | "full-view";
 }
 
 /** Type guard to check if span has detailed data (attributes field) */
@@ -557,6 +559,7 @@ export function SpanDetailPanel({
   span,
   functionData,
   onClose,
+  mode = "side-panel",
 }: SpanDetailPanelProps) {
   const [showFullCode, setShowFullCode] = useState(false);
 
@@ -602,14 +605,29 @@ export function SpanDetailPanel({
       {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-3">
         <h3 className="truncate text-lg font-semibold">{span.name}</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="h-8 w-8"
-        >
-          <X className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {mode === "side-panel" && (
+            <Link
+              to="/cloud/trace-view/$traceId/$spanId"
+              params={{ traceId: span.traceId, spanId: span.spanId }}
+            >
+              <Button variant="ghost" size="sm" className="h-8 gap-1.5 px-2">
+                <Maximize2 className="h-3.5 w-3.5" />
+                Full View
+              </Button>
+            </Link>
+          )}
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Content - single scrollable area */}
