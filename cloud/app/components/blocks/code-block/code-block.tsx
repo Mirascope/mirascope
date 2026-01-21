@@ -1,4 +1,6 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { CopyButton } from "@/app/components/blocks/copy-button";
+import { useAnalytics } from "@/app/contexts/analytics";
 import {
   highlightCode,
   stripHighlightMarkers,
@@ -6,7 +8,7 @@ import {
   initialHighlight,
 } from "@/app/lib/code-highlight";
 import { cn } from "@/app/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
 
 interface CodeBlockProps {
   code: string;
@@ -25,11 +27,37 @@ export function CodeBlock({
   showLineNumbers = true,
   onCopy,
 }: CodeBlockProps) {
+  const location = useLocation();
+  const analytics = useAnalytics();
+
   const [highlightedCode, setHighlightedCode] = useState<HighlightResult>(
     initialHighlight(code, language, meta),
   );
   const codeRef = useRef<HTMLDivElement>(null);
   const [isSmallBlock, setIsSmallBlock] = useState<boolean>(false);
+
+  // Create a stable identifier for this code block based on its content
+  const codeHash = useMemo(() => {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16).substring(0, 8);
+  }, [code]);
+
+  // Handle copy with analytics tracking
+  const handleCopy = (content: string) => {
+    const pagePath = location.pathname;
+    const itemId = `${pagePath}#${language}-${codeHash}`;
+    analytics.trackEvent("select_content", {
+      contentType: "code_snippet",
+      itemId,
+      language,
+    });
+    onCopy?.(content);
+  };
 
   // Calculate dynamic padding for line numbers
   const lineCount = code.split("\n").length;
@@ -90,7 +118,7 @@ export function CodeBlock({
             : "top-3 right-3",
         )}
       >
-        <CopyButton content={stripHighlightMarkers(code)} onCopy={onCopy} />
+        <CopyButton content={stripHighlightMarkers(code)} onCopy={handleCopy} />
       </div>
 
       <div className="highlight-container w-full overflow-auto">
