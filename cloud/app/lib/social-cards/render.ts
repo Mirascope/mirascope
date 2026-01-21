@@ -118,34 +118,38 @@ function createSocialCardElement(
         backgroundImage: `url(${backgroundDataUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: 60,
+        position: "relative",
       },
       children: [
+        // Logo positioned absolutely above the centered title
         {
           type: "img",
           props: {
             src: logoDataUrl,
             style: {
-              width: 576,
-              height: 131,
+              position: "absolute",
+              top: 50,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: Math.round(1281 * 0.3),
+              height: Math.round(294 * 0.3),
               objectFit: "contain",
-              padding: 10,
             },
           },
         },
+        // Title remains centered via flexbox
         {
           type: "div",
           props: {
             style: {
               fontFamily: "Williams Handwriting",
-              fontSize: 72,
+              fontSize: 68,
               color: "#ffffff",
               textAlign: "center",
               lineHeight: 1.3,
-              maxWidth: "90%",
+              maxWidth: "80%",
               textShadow:
                 "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
-              marginTop: 40,
             },
             children: title,
           },
