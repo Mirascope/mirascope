@@ -1,9 +1,12 @@
 """Provider registry for managing provider instances and scopes."""
 
+import os
+from collections.abc import Sequence
+from dataclasses import dataclass
 from functools import lru_cache
 from typing import overload
 
-from ..exceptions import NoRegisteredProviderError
+from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
 from .base import Provider
 from .google import GoogleProvider
@@ -27,16 +30,62 @@ def reset_provider_registry() -> None:
     provider_singleton.cache_clear()
 
 
-# Default auto-registration mapping for built-in providers
-# These providers will be automatically registered on first use
-DEFAULT_AUTO_REGISTER_SCOPES: dict[str, ProviderId] = {
-    "anthropic/": "anthropic",
-    "google/": "google",
-    "mlx-community/": "mlx",
-    "ollama/": "ollama",
-    "openai/": "openai",
-    "together/": "together",
+@dataclass(frozen=True)
+class ProviderDefault:
+    """Configuration for a provider in the auto-registration fallback chain.
+
+    When auto-registering a provider for a scope, the fallback chain is tried
+    in order. The first provider whose API key is available will be used.
+    """
+
+    provider_id: ProviderId
+    """The provider identifier."""
+
+    api_key_env_var: str | None
+    """Environment variable for the API key, or None if no key is required."""
+
+
+# Fallback chain for auto-registration: try providers in order until one has
+# its API key available. This enables automatic fallback to Mirascope Router
+# when direct provider keys are not set.
+DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
+    "anthropic/": [
+        ProviderDefault("anthropic", "ANTHROPIC_API_KEY"),
+        ProviderDefault("mirascope", "MIRASCOPE_API_KEY"),
+    ],
+    "google/": [
+        ProviderDefault("google", "GOOGLE_API_KEY"),
+        ProviderDefault("mirascope", "MIRASCOPE_API_KEY"),
+    ],
+    "openai/": [
+        ProviderDefault("openai", "OPENAI_API_KEY"),
+        ProviderDefault("mirascope", "MIRASCOPE_API_KEY"),
+    ],
+    "together/": [
+        ProviderDefault("together", "TOGETHER_API_KEY"),
+        # No Mirascope fallback for together
+    ],
+    "ollama/": [
+        ProviderDefault("ollama", None),  # No API key required
+    ],
+    "mlx-community/": [
+        ProviderDefault("mlx", None),  # No API key required
+    ],
 }
+
+
+def _has_api_key(default: ProviderDefault) -> bool:
+    """Check if the API key for a provider default is available.
+
+    Args:
+        default: The provider default configuration to check.
+
+    Returns:
+        True if the API key is available or not required, False otherwise.
+    """
+    if default.api_key_env_var is None:
+        return True  # Provider doesn't require API key
+    return os.environ.get(default.api_key_env_var) is not None
 
 
 @lru_cache(maxsize=256)
@@ -175,6 +224,10 @@ def get_provider_for_model(model_id: str) -> Provider:
     If no explicit registration is found, checks for auto-registration defaults
     and automatically registers the provider on first use.
 
+    When auto-registering, providers are tried in fallback order. For example,
+    if ANTHROPIC_API_KEY is not set but MIRASCOPE_API_KEY is, the Mirascope
+    Router will be used as a fallback for anthropic/ models.
+
     Args:
         model_id: The full model ID (e.g., "anthropic/claude-4-5-sonnet").
 
@@ -182,7 +235,8 @@ def get_provider_for_model(model_id: str) -> Provider:
         The provider instance registered for this model.
 
     Raises:
-        ValueError: If no provider is registered or available for this model.
+        NoRegisteredProviderError: If no provider scope matches the model_id.
+        MissingAPIKeyError: If no provider in the fallback chain has its API key set.
 
     Example:
         ```python
@@ -199,6 +253,11 @@ def get_provider_for_model(model_id: str) -> Provider:
         # Auto-registration on first use:
         provider = get_provider_for_model("openai/gpt-4")
         # Automatically loads and registers OpenAIProvider() for "openai/"
+
+        # Fallback to Mirascope Router if direct key missing:
+        # (with MIRASCOPE_API_KEY set but not ANTHROPIC_API_KEY)
+        provider = get_provider_for_model("anthropic/claude-4-5-sonnet")
+        # Returns MirascopeProvider registered for "anthropic/" scope
         ```
     """
     # Try explicit registry first (longest match wins)
@@ -209,17 +268,32 @@ def get_provider_for_model(model_id: str) -> Provider:
         best_scope = max(matching_scopes, key=len)
         return PROVIDER_REGISTRY[best_scope]
 
-    # Fall back to auto-registration
+    # Fall back to auto-registration with fallback chain
     matching_defaults = [
         scope for scope in DEFAULT_AUTO_REGISTER_SCOPES if model_id.startswith(scope)
     ]
     if matching_defaults:
         best_scope = max(matching_defaults, key=len)
-        provider_id = DEFAULT_AUTO_REGISTER_SCOPES[best_scope]
-        provider = provider_singleton(provider_id)
-        # Auto-register for future calls
-        PROVIDER_REGISTRY[best_scope] = provider
-        return provider
+        fallback_chain = DEFAULT_AUTO_REGISTER_SCOPES[best_scope]
 
-    # No provider found
+        # Try each provider in the fallback chain
+        for default in fallback_chain:
+            if _has_api_key(default):
+                provider = provider_singleton(default.provider_id)
+                # Register for just this scope (not all provider's default scopes)
+                PROVIDER_REGISTRY[best_scope] = provider
+                return provider
+
+        # No provider in chain has API key - raise helpful error
+        primary = fallback_chain[0]
+        has_mirascope_fallback = any(
+            d.provider_id == "mirascope" for d in fallback_chain
+        )
+        raise MissingAPIKeyError(
+            provider_id=primary.provider_id,
+            env_var=primary.api_key_env_var or "",
+            has_mirascope_fallback=has_mirascope_fallback,
+        )
+
+    # No matching scope at all
     raise NoRegisteredProviderError(model_id)

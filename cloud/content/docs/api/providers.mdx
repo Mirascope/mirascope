@@ -5827,6 +5827,10 @@ Uses longest prefix matching to find the most specific provider for the model.
 If no explicit registration is found, checks for auto-registration defaults
 and automatically registers the provider on first use.
 
+When auto-registering, providers are tried in fallback order. For example,
+if ANTHROPIC_API_KEY is not set but MIRASCOPE_API_KEY is, the Mirascope
+Router will be used as a fallback for anthropic/ models.
+
 <ParametersTable
   parameters={[
   {

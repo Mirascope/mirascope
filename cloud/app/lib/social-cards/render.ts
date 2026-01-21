@@ -21,6 +21,7 @@ export const CARD_HEIGHT = 630;
  * Cached assets loaded once at module level
  */
 let fontData: ArrayBuffer | null = null;
+let logoDataUrl: string | null = null;
 let backgroundDataUrl: string | null = null;
 
 /**
@@ -58,19 +59,33 @@ async function loadBackgroundImage(): Promise<string> {
   return backgroundDataUrl;
 }
 
+async function loadLogoImage(): Promise<string> {
+  if (!logoDataUrl) {
+    const imgPath = path.resolve(
+      process.cwd(),
+      "public/assets/social-cards/logo.png",
+    );
+    const buffer = await fs.readFile(imgPath);
+    logoDataUrl = `data:image/png;base64,${buffer.toString("base64")}`;
+  }
+  return logoDataUrl;
+}
+
 /**
  * Load all required assets (font and background)
  * Called once before generating multiple cards
  */
 export async function loadAssets(): Promise<{
   font: ArrayBuffer;
+  logo: string;
   background: string;
 }> {
-  const [font, background] = await Promise.all([
+  const [font, logo, background] = await Promise.all([
     loadFont(),
+    loadLogoImage(),
     loadBackgroundImage(),
   ]);
-  return { font, background };
+  return { font, logo, background };
 }
 
 /**
@@ -87,6 +102,7 @@ export async function loadAssets(): Promise<{
  */
 function createSocialCardElement(
   title: string,
+  logoDataUrl: string,
   backgroundDataUrl: string,
 ): Record<string, unknown> {
   return {
@@ -102,35 +118,58 @@ function createSocialCardElement(
         backgroundImage: `url(${backgroundDataUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: 60,
+        position: "relative",
       },
-      children: {
-        type: "div",
-        props: {
-          style: {
-            fontFamily: "Williams Handwriting",
-            fontSize: 72,
-            color: "#ffffff",
-            textAlign: "center",
-            lineHeight: 1.3,
-            maxWidth: "90%",
-            textShadow:
-              "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
+      children: [
+        // Logo positioned absolutely above the centered title
+        {
+          type: "img",
+          props: {
+            src: logoDataUrl,
+            style: {
+              position: "absolute",
+              top: 50,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: Math.round(1281 * 0.3),
+              height: Math.round(294 * 0.3),
+              objectFit: "contain",
+            },
           },
-          children: title,
         },
-      },
+        // Title remains centered via flexbox
+        {
+          type: "div",
+          props: {
+            style: {
+              fontFamily: "Williams Handwriting",
+              fontSize: 68,
+              color: "#ffffff",
+              textAlign: "center",
+              lineHeight: 1.3,
+              maxWidth: "80%",
+              textShadow:
+                "0 2px 6px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.2)",
+            },
+            children: title,
+          },
+        },
+      ],
     },
   };
 }
 
 export async function renderSocialCard(
   title: string,
-  assets: { font: ArrayBuffer; background: string },
+  assets: { font: ArrayBuffer; logo: string; background: string },
   quality = 85,
 ): Promise<Buffer> {
   // Create element as plain object (Satori accepts both React and plain objects)
-  const element = createSocialCardElement(title, assets.background);
+  const element = createSocialCardElement(
+    title,
+    assets.logo,
+    assets.background,
+  );
 
   // 1. Satori: Element -> SVG string
   // Note: Satori accepts both React elements and plain object representations

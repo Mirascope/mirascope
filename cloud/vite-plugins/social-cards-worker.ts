@@ -13,7 +13,8 @@ import { loadAssets, renderSocialCard } from "../app/lib/social-cards/render";
 /**
  * Cached assets loaded once per worker thread
  */
-let assets: { font: ArrayBuffer; background: string } | null = null;
+let assets: { font: ArrayBuffer; logo: string; background: string } | null =
+  null;
 
 /**
  * Task payload passed from main thread
