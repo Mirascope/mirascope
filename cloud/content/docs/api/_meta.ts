@@ -2,7 +2,7 @@
  * AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
  */
 
-import type { SectionSpec } from "@/app/lib/content/spec";
+import type { SectionSpec } from "../../../app/lib/content/spec";
 
 export const apiMeta: SectionSpec = {
   slug: "api",

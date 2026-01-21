@@ -22,6 +22,10 @@ import Piscina from "piscina";
 import type { SocialImagesOptions } from "../app/lib/social-cards/types";
 import ContentProcessor from "../app/lib/content/content-processor";
 import type { WorkerTask, WorkerResult } from "./social-cards-worker";
+import {
+  getStaticRouteTitle,
+  getStaticRoutes,
+} from "../app/lib/seo/static-route-head";
 
 /**
  * Default concurrency based on available CPU cores.
@@ -39,18 +43,6 @@ const DEFAULT_OPTIONS: Required<SocialImagesOptions> = {
   concurrency: DEFAULT_CONCURRENCY,
   quality: 85,
   verbose: false,
-};
-
-/**
- * Static page titles for non-content pages
- * These pages don't have content metadata, so titles are hardcoded
- */
-const DEFAULT_STATIC_TITLES: Record<string, string> = {
-  // todo(sebastian): manage this upstream in a tanstack router type-safe way
-  "/home": "Mirascope",
-  "/pricing": "Pricing",
-  "/docs": "Documentation",
-  "/blog": "Blog",
 };
 
 /**
@@ -77,8 +69,6 @@ export interface GenerationResults {
 export interface SocialCardGeneratorOptions extends SocialImagesOptions {
   /** ContentProcessor instance to use for route -> title mapping */
   processor: ContentProcessor;
-  /** Static page titles for non-content routes */
-  staticTitles?: Record<string, string>;
   /** Output directory for social cards */
   outputDir: string;
 }
@@ -100,7 +90,6 @@ export interface SocialCardGeneratorOptions extends SocialImagesOptions {
 export class SocialCardGenerator {
   private readonly config: Required<SocialImagesOptions>;
   private readonly processor: ContentProcessor;
-  private readonly staticTitles: Record<string, string>;
   private readonly outputDir: string;
 
   private titleLookup: Map<string, string> | null = null;
@@ -123,7 +112,6 @@ export class SocialCardGenerator {
     };
     this.processor = options.processor;
     this.outputDir = options.outputDir;
-    this.staticTitles = options.staticTitles ?? DEFAULT_STATIC_TITLES;
   }
 
   /**
@@ -153,9 +141,9 @@ export class SocialCardGenerator {
     // Ensure initialized (builds title lookup from processor)
     await this.initialize();
 
-    // Get all routes from processor content and static titles
+    // Get all routes from processor content and static route registry
     const contentRoutes = Array.from(this.titleLookup!.keys());
-    const staticRoutes = Object.keys(this.staticTitles);
+    const staticRoutes = getStaticRoutes();
     const allRoutes = [...new Set([...contentRoutes, ...staticRoutes])];
 
     if (allRoutes.length === 0) {
@@ -253,7 +241,7 @@ export class SocialCardGenerator {
   }
 
   /**
-   * Get the title for a route, checking content metadata first, then static titles.
+   * Get the title for a route, checking content metadata first, then static routes.
    */
   private getTitle(route: string): string | null {
     // Check content metadata first
@@ -262,13 +250,15 @@ export class SocialCardGenerator {
       return contentTitle;
     }
 
-    // Check static titles
-    if (this.staticTitles[route]) {
-      return this.staticTitles[route];
+    // Check static route registry (logs warning if not found)
+    const staticTitle = getStaticRouteTitle(route);
+    if (staticTitle) {
+      return staticTitle;
     }
 
-    // todo(sebastian): perhaps a generic title as fallback is better?
-    // Generate title from route path for unknown pages
+    console.warn(`[social-cards] No title specified for route: ${route}`);
+
+    // Fallback: generate title from route path for unknown pages
     // e.g., "/docs/v1/learn" -> "Docs V1 Learn"
     const parts = route.split("/").filter(Boolean);
     if (parts.length === 0) return "Mirascope";

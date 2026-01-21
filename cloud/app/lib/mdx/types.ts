@@ -1,10 +1,20 @@
-import type { TOCItem } from "@/app/lib/content/types";
-
 /**
  * MDX Type Definitions
  *
  * Core types for MDX processing pipeline
  */
+
+/**
+ * Table of contents item extracted from MDX headings
+ * NOTE: Defined here (not in content/types.ts) to avoid circular imports
+ * that would break vite.config.ts loading
+ */
+export type TOCItem = {
+  id: string;
+  content: string;
+  level: number;
+  children?: TOCItem[];
+};
 
 /**
  * Frontmatter extracted from MDX files
