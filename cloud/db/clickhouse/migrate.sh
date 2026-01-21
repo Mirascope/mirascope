@@ -91,6 +91,34 @@ prepare_migrations_directory() {
   echo "$temp_dir"
 }
 
+# Ensure the migrations table exists before running migrations
+# The golang-migrate tool expects to query this table but won't create it
+# in a non-default database automatically
+ensure_migrations_table() {
+  echo "Ensuring migrations table exists in ${clickhouse_database}..."
+
+  local create_table_sql="CREATE TABLE IF NOT EXISTS ${clickhouse_database}.clickhouse_migrations (
+    version Int64,
+    dirty UInt8,
+    sequence UInt64
+  ) ENGINE = MergeTree() ORDER BY sequence"
+
+  local curl_args=(
+    -s
+    --fail-with-body
+    -u "${clickhouse_user}:${clickhouse_password}"
+    --data-binary "$create_table_sql"
+  )
+
+  if [[ "$clickhouse_tls_enabled" == "true" ]]; then
+    curl_args+=(--ssl-reqd)
+  fi
+
+  if ! curl "${curl_args[@]}" "${clickhouse_url}/?database=${clickhouse_database}"; then
+    echo "Warning: Could not create migrations table via HTTP, will let migrate tool try" >&2
+  fi
+}
+
 run_migrate() {
   local action=$1
   local migrations_dir
@@ -136,6 +164,7 @@ case "$command" in
     echo "Running ClickHouse migrations..."
     echo "Database: $clickhouse_database"
     echo "Host: ${clickhouse_url#*://}"
+    ensure_migrations_table
     run_migrate up -verbose
     echo "Migrations complete."
     ;;
