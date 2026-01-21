@@ -879,11 +879,12 @@ def test_model_resume_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.call, Response.resume (Mirascope), Model.resume (GenAI)
+    assert len(spans) == 3
 
-    # Verify the second span (from resume) has correct attributes
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    # Verify the GenAI span (from Model.resume) has correct attributes
+    genai_span_dict = span_snapshot(spans[1])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -932,10 +933,11 @@ async def test_model_resume_async_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.call_async, AsyncResponse.resume (Mirascope), Model.resume_async (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    genai_span_dict = span_snapshot(spans[1])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -985,10 +987,12 @@ def test_model_resume_stream_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.stream, StreamResponse.resume (Mirascope), Model.resume_stream (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    # For streaming, GenAI span is at index 2 (finishes after stream consumed)
+    genai_span_dict = span_snapshot(spans[2])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -1038,10 +1042,12 @@ async def test_model_resume_stream_async_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.stream_async, AsyncStreamResponse.resume (Mirascope), Model.resume_stream_async (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    # For streaming, GenAI span is at index 2 (finishes after stream consumed)
+    genai_span_dict = span_snapshot(spans[2])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -1089,10 +1095,11 @@ def test_model_context_resume_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.context_call, ContextResponse.resume (Mirascope), Model.context_resume (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    genai_span_dict = span_snapshot(spans[1])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -1142,10 +1149,11 @@ async def test_model_context_resume_async_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.context_call_async, AsyncContextResponse.resume (Mirascope), Model.context_resume_async (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    genai_span_dict = span_snapshot(spans[1])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -1196,10 +1204,12 @@ def test_model_context_resume_stream_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.context_stream, ContextStreamResponse.resume (Mirascope), Model.context_resume_stream (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    # For streaming, GenAI span is at index 2 (finishes after stream consumed)
+    genai_span_dict = span_snapshot(spans[2])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -1250,10 +1260,12 @@ async def test_model_context_resume_stream_async_exports_genai_span(
     assert resumed_response.content
 
     spans = span_exporter.get_finished_spans()
-    assert len(spans) == 2
+    # 3 spans: Model.context_stream_async, AsyncContextStreamResponse.resume (Mirascope), Model.context_resume_stream_async (GenAI)
+    assert len(spans) == 3
 
-    second_span_dict = span_snapshot(spans[1])
-    assert second_span_dict == snapshot(
+    # For streaming, GenAI span is at index 2 (finishes after stream consumed)
+    genai_span_dict = span_snapshot(spans[2])
+    assert genai_span_dict == snapshot(
         {
             "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
@@ -1571,3 +1583,158 @@ async def test_model_context_resume_stream_async_records_error_on_exception(
     spans = span_exporter.get_finished_spans()
     assert len(spans) == 1
     assert spans[0].status.status_code.name == "ERROR"
+
+
+# Response.resume Mirascope span tests
+
+
+@pytest.mark.vcr()
+def test_response_resume_exports_mirascope_span(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test Mirascope instrumentation for Response.resume."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather for a location."""
+        return f"Weather in {location}: 72°F, sunny"
+
+    model = llm.Model(model_id="openai/gpt-4o-mini")
+    messages = [llm.messages.user("What's the weather in Paris?")]
+
+    response = model.call(messages, tools=[get_weather])
+    assert response.tool_calls
+
+    tool_outputs = response.execute_tools()
+    resumed = response.resume(tool_outputs)
+
+    assert resumed.content
+
+    spans = span_exporter.get_finished_spans()
+    # 3 spans: Model.call, Response.resume (Mirascope), Model.resume (GenAI)
+    assert len(spans) == 3
+
+    # Mirascope span is at index 2 (outer span finishes after inner GenAI span)
+    mirascope_span = spans[2]
+    assert "Response.resume" in mirascope_span.name
+    assert mirascope_span.attributes is not None
+    assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
+    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
+    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert "mirascope.trace.output" in mirascope_span.attributes
+    # Verify the pretty() output is captured
+    trace_output = mirascope_span.attributes.get("mirascope.trace.output")
+    assert isinstance(trace_output, str)
+    assert "assistant" in trace_output.lower() or "weather" in trace_output.lower()
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_async_response_resume_exports_mirascope_span(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test Mirascope instrumentation for AsyncResponse.resume."""
+
+    @llm.tool
+    async def get_weather(location: str) -> str:
+        """Get the current weather for a location."""
+        return f"Weather in {location}: 72°F, sunny"
+
+    model = llm.Model(model_id="openai/gpt-4o-mini")
+    messages = [llm.messages.user("What's the weather in Rome?")]
+
+    response = await model.call_async(messages, tools=[get_weather])
+    assert response.tool_calls
+
+    tool_outputs = await response.execute_tools()
+    resumed = await response.resume(tool_outputs)
+
+    assert resumed.content
+
+    spans = span_exporter.get_finished_spans()
+    # 3 spans: Model.call_async, AsyncResponse.resume (Mirascope), Model.resume_async (GenAI)
+    assert len(spans) == 3
+
+    # Mirascope span is at index 2 (outer span finishes after inner GenAI span)
+    mirascope_span = spans[2]
+    assert "AsyncResponse.resume" in mirascope_span.name
+    assert mirascope_span.attributes is not None
+    assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
+    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
+    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert "mirascope.trace.output" in mirascope_span.attributes
+
+
+@pytest.mark.vcr()
+def test_stream_response_resume_exports_mirascope_span(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test Mirascope instrumentation for StreamResponse.resume."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather for a location."""
+        return f"Weather in {location}: 72°F, sunny"
+
+    model = llm.Model(model_id="openai/gpt-4o-mini")
+    messages = [llm.messages.user("What's the weather in Madrid?")]
+
+    response = model.stream(messages, tools=[get_weather])
+    response.finish()
+    assert response.tool_calls
+
+    tool_outputs = response.execute_tools()
+    resumed = response.resume(tool_outputs)
+    resumed.finish()
+
+    assert resumed.content
+
+    spans = span_exporter.get_finished_spans()
+    # 3 spans: Model.stream, StreamResponse.resume (Mirascope), Model.resume_stream (GenAI)
+    assert len(spans) == 3
+
+    # For streaming, Mirascope span finishes first (at index 1), GenAI finishes after stream consumed (at index 2)
+    mirascope_span = spans[1]
+    assert "StreamResponse.resume" in mirascope_span.name
+    assert mirascope_span.attributes is not None
+    assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
+    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
+    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert "mirascope.trace.output" in mirascope_span.attributes
+
+
+@pytest.mark.vcr()
+def test_context_response_resume_exports_mirascope_span(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test Mirascope instrumentation for ContextResponse.resume."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather for a location."""
+        return f"Weather in {location}: 72°F, sunny"
+
+    model = llm.Model(model_id="openai/gpt-4o-mini")
+    messages = [llm.messages.user("What's the weather in Vienna?")]
+    ctx = llm.Context(deps=None)
+
+    response = model.context_call(messages, ctx=ctx, tools=[get_weather])
+    assert response.tool_calls
+
+    tool_outputs = response.execute_tools(ctx)
+    resumed = response.resume(ctx, tool_outputs)
+
+    assert resumed.content
+
+    spans = span_exporter.get_finished_spans()
+    # 3 spans: Model.context_call, ContextResponse.resume (Mirascope), Model.context_resume (GenAI)
+    assert len(spans) == 3
+
+    # Mirascope span is at index 2 (outer span finishes after inner GenAI span)
+    mirascope_span = spans[2]
+    assert "ContextResponse.resume" in mirascope_span.name
+    assert mirascope_span.attributes is not None
+    assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
+    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
+    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert "mirascope.trace.output" in mirascope_span.attributes
