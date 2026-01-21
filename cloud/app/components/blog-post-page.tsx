@@ -6,7 +6,6 @@ import LoadingContent from "@/app/components/blocks/loading-content";
 import { ContentTOC } from "@/app/components/content-toc";
 import type { BlogContent } from "@/app/lib/content/types";
 import ContentLayout from "@/app/components/content-layout";
-import { useEffect, useState } from "react";
 
 // Reusable component for "Back to Blog" button
 function BackToBlogLink() {
@@ -26,35 +25,6 @@ type BlogPostPageProps = {
 
 export function BlogPostPage({ content }: BlogPostPageProps) {
   const slug = content.meta.slug;
-
-  // todo(sebastian): disabled - did this work before?
-  const [, setOgImage] = useState<string | undefined>(undefined);
-
-  // Find the first available image in the blog post directory
-  useEffect(() => {
-    const findOgImage = async () => {
-      try {
-        // todo(sebastian): why assets? shouldn't this get the html?
-        const response = await fetch(`/assets/blog/${slug}/`);
-        if (response.ok) {
-          const text = await response.text();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(text, "text/html");
-          const links = Array.from(doc.querySelectorAll("a"))
-            .map((a) => a.getAttribute("href"))
-            .filter((href) => href && /\.(png|jpg|jpeg|gif)$/i.test(href));
-
-          if (links.length > 0) {
-            setOgImage(`/assets/blog/${slug}/${links[0]}`);
-          }
-        }
-      } catch (err) {
-        console.error("Error finding OG image:", err);
-      }
-    };
-
-    void findOgImage();
-  }, [slug]);
 
   // Extract metadata for easier access
   const { title, date, readTime, author, lastUpdated } = content.meta;

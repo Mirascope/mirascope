@@ -21,11 +21,11 @@ describe("render", () => {
       expect(font.byteLength).toBeGreaterThan(0);
     });
 
-    it("loads background image from public/assets/backgrounds/", async () => {
+    it("loads background image from public/assets/social-cards/", async () => {
       const { background } = await loadAssets();
 
       expect(typeof background).toBe("string");
-      expect(background).toMatch(/^data:image\/webp;base64,/);
+      expect(background).toMatch(/^data:image\/png;base64,/);
     });
 
     it("caches assets on subsequent calls", async () => {

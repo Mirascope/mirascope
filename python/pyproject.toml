@@ -1,7 +1,7 @@
 [project]
 name = "mirascope"
-version = "2.0.0-beta.0"
-description = "LLM abstractions that aren't obstructions"
+version = "2.0.0"
+description = "Every frontier LLM. One unified interface."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
@@ -20,9 +20,13 @@ keywords = [
     "llm",
     "llm tools",
     "prompt engineering",
+    "context engineering",
+    "openai",
+    "anthropic",
+    "gemini",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",

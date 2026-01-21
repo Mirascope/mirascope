@@ -13,6 +13,9 @@ from tests.utils import (
     snapshot_test,
 )
 
+# Include anthropic-beta/claude-sonnet-4-5 as it has strict support
+E2E_MODEL_IDS = [*E2E_MODEL_IDS, "anthropic-beta/claude-sonnet-4-5"]
+
 
 @llm.tool(strict=True)
 def get_current_weather(location: str, unit: str = "fahrenheit") -> str:
