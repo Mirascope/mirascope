@@ -125,6 +125,6 @@ function FunctionsPage() {
   );
 }
 
-export const Route = createFileRoute("/cloud/functions")({
+export const Route = createFileRoute("/cloud/functions/")({
   component: FunctionsPage,
 });

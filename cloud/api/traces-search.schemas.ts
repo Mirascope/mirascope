@@ -55,6 +55,7 @@ export const SearchRequestSchema = Schema.Struct({
   provider: Schema.optional(Schema.Array(Schema.String)),
   functionId: Schema.optional(Schema.String),
   functionName: Schema.optional(Schema.String),
+  spanNamePrefix: Schema.optional(Schema.String),
   hasError: Schema.optional(Schema.Boolean),
   minTokens: Schema.optional(Schema.Number),
   maxTokens: Schema.optional(Schema.Number),

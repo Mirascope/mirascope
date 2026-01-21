@@ -880,6 +880,9 @@
                   "functionName": {
                     "type": "string"
                   },
+                  "spanNamePrefix": {
+                    "type": "string"
+                  },
                   "hasError": {
                     "type": "boolean"
                   },
@@ -2106,6 +2109,9 @@
                     "type": "string"
                   },
                   "functionName": {
+                    "type": "string"
+                  },
+                  "spanNamePrefix": {
                     "type": "string"
                   },
                   "hasError": {
