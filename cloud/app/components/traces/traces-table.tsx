@@ -505,20 +505,20 @@ export function TracesTable({
 
   return (
     <div className="max-h-[calc(100vh-10rem)] overflow-auto rounded-lg border">
-      <Table className="table-fixed">
-        <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
+      <Table className="min-w-[900px] table-fixed">
+        <TableHeader className="sticky top-0 z-10 [&_th]:bg-background">
           <TableRow>
-            <TableHead className="w-[40%] min-w-[200px]">Name</TableHead>
+            <TableHead className="min-w-[200px]">Name</TableHead>
             <TableHead className="w-[100px]">Duration</TableHead>
-            <TableHead className="w-[220px]">Model</TableHead>
-            <TableHead className="w-[110px] whitespace-nowrap">
+            <TableHead className="w-[200px]">Model</TableHead>
+            <TableHead className="w-[100px] whitespace-nowrap">
               Input Tokens
             </TableHead>
             <TableHead className="w-[110px] whitespace-nowrap">
               Output Tokens
             </TableHead>
-            <TableHead className="w-[90px]">Cost</TableHead>
-            <TableHead className="w-[180px]">Timestamp</TableHead>
+            <TableHead className="w-[80px]">Cost</TableHead>
+            <TableHead className="w-[120px]">Timestamp</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
