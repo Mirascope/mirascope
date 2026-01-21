@@ -216,4 +216,48 @@ export class TracesApi extends HttpApiGroup.make("traces")
       })
       .addError(ClickHouseError, { status: ClickHouseError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.post(
+      "searchByEnv",
+      "/organizations/:organizationId/projects/:projectId/environments/:environmentId/traces/search",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+        }),
+      )
+      .setPayload(SearchRequestSchema)
+      .addSuccess(SearchResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  .add(
+    HttpApiEndpoint.get(
+      "getTraceDetailByEnv",
+      "/organizations/:organizationId/projects/:projectId/environments/:environmentId/traces/:traceId",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+          traceId: Schema.String,
+        }),
+      )
+      .addSuccess(TraceDetailResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, {
+        status: PermissionDeniedError.status,
+      })
+      .addError(ClickHouseError, { status: ClickHouseError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}

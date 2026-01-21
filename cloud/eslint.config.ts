@@ -52,6 +52,7 @@ export default [
       "**/coverage/",
       "**/.wrangler/",
       "**/docker/",
+      ".build-cache/",
     ],
   },
   prettier,

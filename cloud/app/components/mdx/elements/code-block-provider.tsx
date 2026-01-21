@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import { useProvider } from "@/app/components/mdx/elements/model-provider-provider";
-import { AnalyticsCodeBlock } from "./analytics-code-block";
+import { CodeBlock } from "@/app/components/blocks/code-block/code-block";
+
 interface ProviderCodeBlockProps {
   examplePath: string; // Path relative to public/examples
   language?: string;
@@ -82,7 +83,7 @@ export default function ProviderCodeBlock({
         </div>
       )}
       {currentProviderCode && (
-        <AnalyticsCodeBlock code={currentProviderCode} language={language} />
+        <CodeBlock code={currentProviderCode} language={language} />
       )}
     </>
   );

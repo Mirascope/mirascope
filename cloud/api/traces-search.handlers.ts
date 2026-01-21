@@ -4,15 +4,13 @@
  * Provides handlers for searching spans, retrieving trace details,
  * and getting analytics summaries from ClickHouse.
  *
- * ## Authentication
- *
- * All endpoints require API key authentication. The environment ID
- * is extracted from the API key scope.
+ * Handlers take explicit IDs as parameters. The route layer determines
+ * where to extract IDs from (API key or path parameters).
  *
  * @example
  * ```ts
  * // Handler usage (internal)
- * const result = yield* searchHandler({ startTime: "...", endTime: "..." });
+ * const result = yield* searchHandler("env-123", { startTime: "...", endTime: "..." });
  * ```
  */
 
@@ -42,11 +40,11 @@ export * from "@/api/traces-search.schemas";
 /**
  * Search spans with filters and pagination.
  *
- * Requires API key authentication. Uses the environment ID from the API key scope.
+ * Takes explicit environmentId. The route layer extracts this from
+ * either API key scope or path parameters.
  */
-export const searchHandler = (payload: SearchRequest) =>
+export const searchHandler = (environmentId: string, payload: SearchRequest) =>
   Effect.gen(function* () {
-    const { apiKeyInfo } = yield* Authentication.ApiKey;
     const searchService = yield* ClickHouseSearch;
     const realtimeOption = yield* Effect.serviceOption(RealtimeSpans);
 
@@ -69,7 +67,7 @@ export const searchHandler = (payload: SearchRequest) =>
         : undefined;
 
     const input: SpanSearchInput = {
-      environmentId: apiKeyInfo.environmentId,
+      environmentId,
       startTime: new Date(payload.startTime),
       endTime: new Date(payload.endTime),
       query: payload.query,
@@ -92,6 +90,7 @@ export const searchHandler = (payload: SearchRequest) =>
       offset: payload.offset,
       sortBy: payload.sortBy,
       sortOrder: payload.sortOrder,
+      rootSpansOnly: payload.rootSpansOnly,
     };
 
     // Skip realtime merge for paginated requests (offset > 0) to ensure
@@ -130,16 +129,16 @@ export const searchHandler = (payload: SearchRequest) =>
 /**
  * Get full trace detail with all spans.
  *
- * Requires API key authentication. Uses the environment ID from the API key scope.
+ * Takes explicit environmentId. The route layer extracts this from
+ * either API key scope or path parameters.
  */
-export const getTraceDetailHandler = (traceId: string) =>
+export const getTraceDetailHandler = (environmentId: string, traceId: string) =>
   Effect.gen(function* () {
-    const { apiKeyInfo } = yield* Authentication.ApiKey;
     const searchService = yield* ClickHouseSearch;
     const realtimeOption = yield* Effect.serviceOption(RealtimeSpans);
 
     const input: TraceDetailInput = {
-      environmentId: apiKeyInfo.environmentId,
+      environmentId,
       traceId,
     };
 

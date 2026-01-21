@@ -224,9 +224,12 @@ export const buildSearchSpan = (
   durationMs: 100,
   model: "gpt-4",
   provider: "openai",
+  inputTokens: 25,
+  outputTokens: 25,
   totalTokens: 50,
   functionId: null,
   functionName: null,
+  hasChildren: false,
   ...overrides,
 });
 
@@ -290,9 +293,12 @@ export const createSearchSpanResult = (
   durationMs: 100,
   model: null,
   provider: null,
+  inputTokens: null,
+  outputTokens: null,
   totalTokens: null,
   functionId: null,
   functionName: null,
+  hasChildren: false,
   ...overrides,
 });
 

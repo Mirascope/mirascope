@@ -2010,15 +2010,80 @@ content, typically following a tool call from the assistant.
     "description": "The name of the tool that created this output."
   },
   {
-    "name": "value",
+    "name": "result",
+    "type_info": {
+      "type_str": "JsonableCovariantT | str",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "JsonableCovariantT",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "JsonableCovariantT",
+          "doc_url": null
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The result of calling the tool.\n\nIf the tool executed successfully, this will be the tool output.\nIf the tool errored, this will be the error message, as a string.\n\nIn either case, the result should be passed back to the LLM (so it can\neither process the output, or re-try with awareness of the error.)"
+  },
+  {
+    "name": "error",
+    "type_info": {
+      "type_str": "ToolError | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": null
+      },
+      "parameters": [
+        {
+          "type_str": "ToolError",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ToolError",
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": null
+        }
+      ],
+      "doc_url": null
+    },
+    "description": "The error from calling the tool, if any."
+  },
+  {
+    "name": "output",
     "type_info": {
       "type_str": "JsonableCovariantT",
       "description": null,
       "kind": "simple",
       "symbol_name": "JsonableCovariantT",
       "doc_url": null
-    },
-    "description": "The output value from the tool call."
+    }
   }
 ]}
 />

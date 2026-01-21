@@ -135,7 +135,7 @@ class Format(Generic[FormattableT]):
             name=FORMAT_TOOL_NAME,
             description=description,
             parameters=parameters,
-            strict=True,
+            strict=None,  # Provider determines whether to use strict mode.
         )
 
 

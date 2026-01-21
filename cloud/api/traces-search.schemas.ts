@@ -67,6 +67,7 @@ export const SearchRequestSchema = Schema.Struct({
     Schema.Literal("start_time", "duration_ms", "total_tokens"),
   ),
   sortOrder: Schema.optional(Schema.Literal("asc", "desc")),
+  rootSpansOnly: Schema.optional(Schema.Boolean),
 });
 
 export type SearchRequest = typeof SearchRequestSchema.Type;
@@ -79,9 +80,13 @@ const SpanSearchResultSchema = Schema.Struct({
   durationMs: Schema.NullOr(Schema.Number),
   model: Schema.NullOr(Schema.String),
   provider: Schema.NullOr(Schema.String),
+  inputTokens: Schema.NullOr(Schema.Number),
+  outputTokens: Schema.NullOr(Schema.Number),
   totalTokens: Schema.NullOr(Schema.Number),
   functionId: Schema.NullOr(Schema.String),
   functionName: Schema.NullOr(Schema.String),
+  /** Whether this span has child spans */
+  hasChildren: Schema.Boolean,
 });
 
 export type SpanSearchResult = typeof SpanSearchResultSchema.Type;
