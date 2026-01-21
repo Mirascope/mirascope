@@ -37,6 +37,46 @@ describe("handleRedirect", () => {
         "https://mirascope.com/docs/v1/guides/getting-started/quickstart",
       );
     });
+
+    it("redirects /docs/mirascope (exact, no trailing slash) to /docs/v1", () => {
+      const response = handleRedirect(createRequest("/docs/mirascope"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs/v1",
+      );
+    });
+
+    it("redirects /docs/mirascope/learn (exact, no trailing slash) to /docs/v1/learn", () => {
+      const response = handleRedirect(createRequest("/docs/mirascope/learn"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs/v1/learn",
+      );
+    });
+
+    it("redirects /docs/mirascope/guides (exact, no trailing slash) to /docs/v1/guides", () => {
+      const response = handleRedirect(createRequest("/docs/mirascope/guides"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs/v1/guides",
+      );
+    });
+
+    it("redirects /docs/mirascope/api (exact, no trailing slash) to /docs/v1/api", () => {
+      const response = handleRedirect(createRequest("/docs/mirascope/api"));
+
+      expect(response).not.toBeNull();
+      expect(response!.status).toBe(301);
+      expect(response!.headers.get("Location")).toBe(
+        "https://mirascope.com/docs/v1/api",
+      );
+    });
   });
 
   describe("underscore path redirects", () => {
@@ -208,6 +248,15 @@ describe("handleRedirect", () => {
 
     it("returns null for cloud paths", () => {
       const response = handleRedirect(createRequest("/cloud/dashboard"));
+
+      expect(response).toBeNull();
+    });
+
+    it("does not match paths with similar prefixes (path boundary check)", () => {
+      // /docs/mirascope-v2/something should NOT match /docs/mirascope/
+      const response = handleRedirect(
+        createRequest("/docs/mirascope-v2/something"),
+      );
 
       expect(response).toBeNull();
     });
