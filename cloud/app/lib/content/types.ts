@@ -1,14 +1,10 @@
-import type { CompiledMDX } from "@/app/lib/mdx/types";
+// NOTE: Must use relative path instead of @/app alias because this file
+// is imported by vite.config.ts during Vite's config processing phase, before
+// the alias resolution is set up. Using the alias would cause module resolution errors.
+import type { CompiledMDX, TOCItem } from "../mdx/types";
 
-/**
- * Table of contents item extracted from MDX headings
- */
-export type TOCItem = {
-  id: string;
-  content: string;
-  level: number;
-  children?: TOCItem[];
-};
+// Re-export TOCItem for consumers who expect it from this module
+export type { TOCItem };
 
 /* ========== CONTENT TYPES =========== */
 
