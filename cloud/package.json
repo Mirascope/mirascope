@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "WRANGLER_ENV=local vite dev",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
+    "build:staging": "WRANGLER_ENV=staging bun run build",
     "postbuild": "pagefind --site dist/client --output-path dist/client/_pagefind --root-selector '[data-pagefind-body=\"true\"]' --",
     "preview": "vite preview",
     "deploy": "bun run build && wrangler deploy",

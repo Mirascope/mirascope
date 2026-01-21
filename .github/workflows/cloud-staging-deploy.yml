@@ -40,6 +40,8 @@ jobs:
 
       - name: Build for staging
         run: bun run build
+        env:
+          WRANGLER_ENV: staging
 
       - name: Deploy to Cloudflare Workers (Staging)
         uses: cloudflare/wrangler-action@v3
