@@ -61,6 +61,9 @@ async def test_model_context_call_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"Hello, Kai! How can I assist you today?"}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 25,
                 "gen_ai.usage.output_tokens": 12,
+                "mirascope.messages": '[{"role":"system","content":{"type":"text","text":"You are a concise assistant."}},{"role":"user","content":[{"type":"text","text":"Say hello to the user named Kai."}],"name":null}]',
+                "mirascope.response.content": '[{"type":"text","text":"Hello, Kai! How can I assist you today?"}]',
+                "mirascope.response.usage": '{"input_tokens":25,"output_tokens":12,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":37}',
             },
         }
     )
