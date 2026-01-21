@@ -1,0 +1,248 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1231'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01JyhGeYHGLUcMt3CTGUobP8","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":880,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":11,"service_tier":"standard"}}      }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01UMh1Lb3WbauXv7st7Q79WW","name":"__mirascope_formatted_output_tool__","input":{}}          }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"titl"}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"e\":
+        \""}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"TH"}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"E
+        NA"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ME"}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
+        OF THE WI"}   }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ND\""}
+        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
+        \"a"}           }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"uthor\":"}          }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
+        {\"fir"}           }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"st_na"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"me\":"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\"Patric"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"k\",\"las"}               }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"t_name\":\"Ro"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"thfu"}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ss\"}"}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
+        \"ratin"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"g\":
+        7}"}}
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0         }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":880,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":81}
+        }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"       }
+
+
+        '
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b0279c5ecfe9ce6-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Thu, 18 Dec 2025 23:35:18 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '1999000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:35:16Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:35:16Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:35:16Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2399000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:35:16Z'
+      request-id:
+      - req_011CWF2es6rnd7ZLWdrvYtPf
+      x-envoy-upstream-service-time:
+      - '1844'
+    status:
+      code: 200
+      message: OK
+version: 1

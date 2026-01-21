@@ -1,0 +1,1079 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.stream
+description: API documentation for mirascope.core.base.stream
+---
+
+# mirascope.core.base.stream
+
+## <ApiType type="Module" path="core/base/stream" symbolName="stream" /> stream
+
+This module contains the base classes for streaming responses from LLMs.
+
+## <ApiType type="Class" path="core/base/stream" symbolName="BaseStream" /> BaseStream
+
+A base class for streaming responses from LLMs.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[_BaseCallResponseT, _BaseCallResponseChunkT, _UserMessageParamT, _AssistantMessageParamT, _ToolMessageParamT, _MessageParamT, _BaseToolT, _ToolSchemaT, _BaseDynamicConfigT, _BaseCallParamsT, _FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_BaseCallResponseT", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"}, {"type_str": "_BaseCallResponseChunkT", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"}, {"type_str": "_UserMessageParamT", "description": null, "kind": "simple", "doc_identifier": "_UserMessageParamT"}, {"type_str": "_AssistantMessageParamT", "description": null, "kind": "simple", "doc_identifier": "_AssistantMessageParamT"}, {"type_str": "_ToolMessageParamT", "description": null, "kind": "simple", "doc_identifier": "_ToolMessageParamT"}, {"type_str": "_MessageParamT", "description": null, "kind": "simple", "doc_identifier": "_MessageParamT"}, {"type_str": "_BaseToolT", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#basetool"}, {"type_str": "_ToolSchemaT", "description": null, "kind": "simple", "doc_identifier": "_ToolSchemaT"}, {"type_str": "_BaseDynamicConfigT", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, {"type_str": "_BaseCallParamsT", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"}, {"type_str": "_FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />, <TypeLink type={{"type_str": "ABC", "description": null, "kind": "simple", "doc_identifier": "ABC"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None] | AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Generator",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Generator"
+          },
+          "parameters": [
+            {
+              "type_str": "tuple[_BaseCallResponseChunkT, _BaseToolT | None]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "tuple",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+              },
+              "parameters": [
+                {
+                  "type_str": "_BaseCallResponseChunkT",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"
+                },
+                {
+                  "type_str": "_BaseToolT | None",
+                  "description": null,
+                  "kind": "union",
+                  "base_type": {
+                    "type_str": "Union",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "_BaseToolT",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "/docs/v1/api/core/base/tool#basetool"
+                    },
+                    {
+                      "type_str": "None",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "https://docs.python.org/3/library/constants.html#None"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        },
+        {
+          "type_str": "AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncGenerator",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "AsyncGenerator"
+          },
+          "parameters": [
+            {
+              "type_str": "tuple[_BaseCallResponseChunkT, _BaseToolT | None]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "tuple",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+              },
+              "parameters": [
+                {
+                  "type_str": "_BaseCallResponseChunkT",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"
+                },
+                {
+                  "type_str": "_BaseToolT | None",
+                  "description": null,
+                  "kind": "union",
+                  "base_type": {
+                    "type_str": "Union",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "_BaseToolT",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "/docs/v1/api/core/base/tool#basetool"
+                    },
+                    {
+                      "type_str": "None",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "https://docs.python.org/3/library/constants.html#None"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "metadata",
+    "type_info": {
+      "type_str": "Metadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/metadata#metadata"
+    }
+  },
+  {
+    "name": "tool_types",
+    "type_info": {
+      "type_str": "list[type[_BaseToolT]] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[type[_BaseToolT]]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "type[_BaseToolT]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "type",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/functions.html#type"
+              },
+              "parameters": [
+                {
+                  "type_str": "_BaseToolT",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/tool#basetool"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "call_response_type",
+    "type_info": {
+      "type_str": "type[_BaseCallResponseT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseCallResponseT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"
+        }
+      ]
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "prompt_template",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "fn_args",
+    "type_info": {
+      "type_str": "dict[str, Any] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, Any]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "dict",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "Any",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "dynamic_config",
+    "type_info": {
+      "type_str": "_BaseDynamicConfigT",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"
+    }
+  },
+  {
+    "name": "messages",
+    "type_info": {
+      "type_str": "list[_MessageParamT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "_MessageParamT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_MessageParamT"
+        }
+      ]
+    }
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "_BaseCallParamsT",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"
+    }
+  },
+  {
+    "name": "call_kwargs",
+    "type_info": {
+      "type_str": "BaseCallKwargs[_ToolSchemaT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "BaseCallKwargs",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "BaseCallKwargs"
+      },
+      "parameters": [
+        {
+          "type_str": "_ToolSchemaT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_ToolSchemaT"
+        }
+      ]
+    }
+  },
+  {
+    "name": "user_message_param",
+    "type_info": {
+      "type_str": "_UserMessageParamT | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "_UserMessageParamT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_UserMessageParamT"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "message_param",
+    "type_info": {
+      "type_str": "_AssistantMessageParamT",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "_AssistantMessageParamT"
+    }
+  },
+  {
+    "name": "input_tokens",
+    "type_info": {
+      "type_str": "int | float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "cached_tokens",
+    "type_info": {
+      "type_str": "int | float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "output_tokens",
+    "type_info": {
+      "type_str": "int | float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[_FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[_FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "_FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "start_time",
+    "type_info": {
+      "type_str": "float",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#float"
+    }
+  },
+  {
+    "name": "end_time",
+    "type_info": {
+      "type_str": "float",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#float"
+    }
+  },
+  {
+    "name": "provider",
+    "type_info": {
+      "type_str": "Provider",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#provider"
+    }
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    },
+    "description": "Returns metadata needed for cost calculation."
+  },
+  {
+    "name": "cost",
+    "type_info": {
+      "type_str": "float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Calculate the cost of this streaming API call."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/base/stream" symbolName="tool_message_params" /> tool_message_params
+
+Returns the tool message parameters for tool call results.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tools_and_outputs",
+    "type_info": {
+      "type_str": "list[tuple[_BaseToolT, JsonableType]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "tuple[_BaseToolT, JsonableType]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "_BaseToolT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            },
+            {
+              "type_str": "JsonableType",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/types#jsonabletype"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The list of tools and their outputs from which the tool\nmessage parameters should be constructed."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[_ToolMessageParamT]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "_ToolMessageParamT",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "_ToolMessageParamT"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "_BaseCallResponseT",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Function" path="core/base/stream" symbolName="stream_factory" /> stream_factory
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "TCallResponse",
+    "type_info": {
+      "type_str": "type[_BaseCallResponseT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseCallResponseT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"
+        }
+      ]
+    }
+  },
+  {
+    "name": "TStream",
+    "type_info": {
+      "type_str": "type[BaseStream]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseStream",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/stream#basestream"
+        }
+      ]
+    }
+  },
+  {
+    "name": "setup_call",
+    "type_info": {
+      "type_str": "SameSyncAndAsyncClientSetupCall[_SameSyncAndAsyncClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT] | SetupCall[_SyncBaseClientT, _AsyncBaseClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "SameSyncAndAsyncClientSetupCall[_SameSyncAndAsyncClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SameSyncAndAsyncClientSetupCall",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "SameSyncAndAsyncClientSetupCall"
+          },
+          "parameters": [
+            {
+              "type_str": "_SameSyncAndAsyncClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_SameSyncAndAsyncClientT"
+            },
+            {
+              "type_str": "_BaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"
+            },
+            {
+              "type_str": "_AsyncBaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncBaseDynamicConfigT"
+            },
+            {
+              "type_str": "_BaseCallParamsT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"
+            },
+            {
+              "type_str": "_ResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseT"
+            },
+            {
+              "type_str": "_ResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseChunkT"
+            },
+            {
+              "type_str": "_AsyncResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseT"
+            },
+            {
+              "type_str": "_AsyncResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseChunkT"
+            },
+            {
+              "type_str": "_BaseToolT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            }
+          ]
+        },
+        {
+          "type_str": "SetupCall[_SyncBaseClientT, _AsyncBaseClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SetupCall",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "SetupCall"
+          },
+          "parameters": [
+            {
+              "type_str": "_SyncBaseClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_SyncBaseClientT"
+            },
+            {
+              "type_str": "_AsyncBaseClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncBaseClientT"
+            },
+            {
+              "type_str": "_BaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"
+            },
+            {
+              "type_str": "_AsyncBaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncBaseDynamicConfigT"
+            },
+            {
+              "type_str": "_BaseCallParamsT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"
+            },
+            {
+              "type_str": "_ResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseT"
+            },
+            {
+              "type_str": "_ResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseChunkT"
+            },
+            {
+              "type_str": "_AsyncResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseT"
+            },
+            {
+              "type_str": "_AsyncResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseChunkT"
+            },
+            {
+              "type_str": "_BaseToolT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "handle_stream",
+    "type_info": {
+      "type_str": "HandleStream[_ResponseChunkT, _BaseCallResponseChunkT, _BaseToolT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "HandleStream",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "HandleStream"
+      },
+      "parameters": [
+        {
+          "type_str": "_ResponseChunkT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_ResponseChunkT"
+        },
+        {
+          "type_str": "_BaseCallResponseChunkT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"
+        },
+        {
+          "type_str": "_BaseToolT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  },
+  {
+    "name": "handle_stream_async",
+    "type_info": {
+      "type_str": "HandleStreamAsync[_AsyncResponseChunkT, _BaseCallResponseChunkT, _BaseToolT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "HandleStreamAsync",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "HandleStreamAsync"
+      },
+      "parameters": [
+        {
+          "type_str": "_AsyncResponseChunkT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_AsyncResponseChunkT"
+        },
+        {
+          "type_str": "_BaseCallResponseChunkT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"
+        },
+        {
+          "type_str": "_BaseToolT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+

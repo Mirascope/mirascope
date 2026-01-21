@@ -1,0 +1,154 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 3,
+      using the custom addition tool??"}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "Perform computation on integers.", "name": "customAdditionImplementation",
+      "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
+      "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":
+      {"responseMimeType": "application/json", "responseSchema": {"description": "A
+      simple response for testing.", "properties": {"integer_a": {"title": "Integer
+      A", "type": "INTEGER"}, "integer_b": {"title": "Integer B", "type": "INTEGER"},
+      "answer": {"title": "Answer", "type": "INTEGER"}}, "property_ordering": ["integer_a",
+      "integer_b", "answer"], "required": ["integer_a", "integer_b", "answer"], "title":
+      "IntegerAdditionResponse", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '884'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21U2ZKqSBB9768weJoJ5o4gojhvyCIgm7LZTswDS4koUFAsgh3974N2973acYmA
+        oM45WZkkleftZTTCQj+PksivQYX9M/p3QEajt/vzxsG8Bnk9EF/QABY+qn9pP663h/dBcmjysE5g
+        zvlp+hT8yed+BgYcC5uqhhkbRclNLWdFCrIhn39bYX99j/JRXP1mt4EJBpj6rr9FDPjkG/z+tH5/
+        jsLqI2ziY20lce7XDbpXKRSswEFCYHeqPMk7/9CPD7RvLc8ixS4Vpz/oejIlZkva3lFa0+w1b8wt
+        7QAIqtuW5nRz6iuJOxtK0nYGQ5JEU+oy0DouvEwIMnSV6eUyx/2ijKcrYofUS4rUsjWOUSucHIcy
+        qxAGdLXOWeRr+20erAim9PJAPSxDB8JZERC9iC6lemn5IxHReuTgZcAWzYYxx0aKI5lOJSPk1q6z
+        L5rm6gDgWoLKyFWjd65uWmeKsuU2TQ7tXizVcOVF3dFzdVzsoeBldpIEdEcwR+16Fd0Lf6p8rUun
+        qXk6eSlYvuo93AvMXJrN23hH4xLRe0y2CIjVMt4vWutwpa11RF0zF20W8ljlN16vcmMhDiQ6fXVU
+        XvS2BSFSHnC2jWqrCS7B2TbO69exyxnCYsoXC62i7LFuHq7nsH+NM10qSj61tR2JmD1bIDwr59sd
+        PU5msmpTHDsZW+2iaHsQaUoeahOcB+FMtStSh7quE9GZixnYG44+k0mnqZTFlnZlcVIGPJ1ppRTh
+        VoR3W846ncMpI1JIUfiw2QiI28umtqPtsdKfrnNWAWpHsDNZw+UOXrfItXcTA1fEPdjox7qxlv5B
+        NJ2g6Rz9AgE4SRekwjNn9KaRwF15UTlViKxqdVqvyIkkmScTSeuiQHWi2BHyOHUmREauuyILLHRU
+        gvysb/fo+Mp35HXqrNcnE3pS0ymLMhcbIjxpczatFHtBslkLeD+31TY/xA1nVdL4usBefjcB//06
+        /RiC6f20ZzAC6Zf853hghyRPquMW+NUwmoPMsg3z54hiSR6BboCJb3oNVJUf3/fVbvuOYpADNJhN
+        NPryiFE4mMQf1Z9/f+S8FXcvC2tukRqo/cGc/J9zjxUIZkVtwzPIOdjczYmhP9I+eNkTTzKffA1r
+        P32iJtNP33jct+KHrEn6aHIP/jc0yE+Tur99lC3s7AejGhI8lfXVxZeHZn9ZzLcSp8TLZ7s//oAL
+        UJV8tDoG2dDMH9SPocThBm0CLvekGAJVAfMKyNFNN2nIpR9RK6Xc5WVdmWRk6j3rYC/vL/8DmGfl
+        5eoFAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 23:40:10 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3049
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 3,
+      using the custom addition tool??"}], "role": "user"}, {"parts": [{"functionCall":
+      {"args": {"b": 3, "a": 2}, "name": "customAdditionImplementation"}, "thoughtSignature":
+      "EpAECo0EAXLI2nxafy_f5aSBkF3ABJUyfNNi406B5TX3MuuZMW_CBTbeELVvqP4QjysHCkOJivxO8110uqNIeMxCcw201cVJ4ww7-apqg4G0XrLwlrLqvOhdvEjUU3Pscob5sKnAraMZRnbG08qWnbLfBcUoo6pb0yFrwqLwvDh0d5NdU-qbApuQ8P_Ol-rI5lHOcCKVUZpuuzUeeVSEL8IsuNxVNPSk33TIvlifvZFqLcGWdxhWVN-FyoEWmTiib5x08hMzzFVwDjsaMxl4lPjjWleBYNyoZE87H67vgX5-H0yW8m9b0GBgZ9vSfz5SKd3zmVrQ9I_LDQWyLC_EgbH5lYULDFWRp0F3WeURuLTLi-Ho6RgntY_VCOE94Dp9Ms3T_NPfzkcyYgmNHpqDlTMX1r8ZApr-mq7RX5_i6ILT3CA2_Sv9pvyedMJncM2-Dec6LTs1NoNNN0dkCg8oyOUN6I1UusJ9R5VIF2qbD5mMqHd-Sd-xRCSjkc48F3rJJDcuQErCZIPMX5T_Jyjz7AJeLx0A6IM-IxozRrVTX2O-JFZeQNhtuSBafFPUbuxUNwoeejHwrLokCOyPOioXqwLCLEdSsGjKG12HHPjPrHKpprtiJTdrWCL6EdOnNVFAeSrhJbnkNRZrhYDx1z4UKKjPoWHuxJ9qnFu0cjM7AlsJT91AmveDanTLvnfguCSsH_z9"}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "customAdditionImplementation",
+      "response": {"output": "13"}}}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "Perform computation on integers.", "name": "customAdditionImplementation",
+      "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
+      "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":
+      {"responseMimeType": "application/json", "responseSchema": {"description": "A
+      simple response for testing.", "properties": {"integer_a": {"title": "Integer
+      A", "type": "INTEGER"}, "integer_b": {"title": "Integer B", "type": "INTEGER"},
+      "answer": {"title": "Answer", "type": "INTEGER"}}, "property_ordering": ["integer_a",
+      "integer_b", "answer"], "required": ["integer_a", "integer_b", "answer"], "title":
+      "IntegerAdditionResponse", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1855'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQX0+DMBTF3/kUTZ9ZskFMnI+bPuxh2VSiJrIs3bjDRmix7WSG8N295d+KkgDN
+        uafn3vurPELokYmEJ8yApnfkHRVCquZra1IYEAYLvYRiwZS5etuncs5oMXCxl2gVC0JiyjElBbVn
+        MYqBPxYPVgw7kQldgrLKLIxFTaiTWw/nnX+dRskMbKtcJpD19ro30BMXXH88AdNSWNtztNnSocpF
+        AheUp17foImmZ81SWINhyIUN29NCybwwkfwEsZTnhktwc9umORxHhjDo6kYalo3vzqf+v2B9j215
+        5gJ22OOWLOPmx64SPbxF1CFh/szVs2j+O6+j0oJ6AaV5SySFHBlNwgkOgS98cyibWKpAF1JoWCXW
+        F25mCwbLxfp0KL+M3qr560o+HqlXe7+52CB1SAIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 23:40:12 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2081
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,16 @@
+# Cloud-specific Ignores
+.wrangler
+.tanstack
+.dev.vars
+.env.local
+.build-cache/
+tsconfig.tsbuildinfo
+!app/lib
+coverage
+dist
+
+docker/data
+!docker/data/
+docker/data/postgres/
+docker/data/clickhouse/*
+!docker/data/clickhouse/.gitkeep

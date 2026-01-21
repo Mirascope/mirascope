@@ -1,0 +1,3 @@
+[codespell]
+skip = .git,*.lock,bun.lockb,node_modules,coverage,dist,cassettes,mlx_lm_cassettes,snapshots,htmlcov,./cloud/docker/data,./cloud/docker/data/**,test_caching.py,./cloud/db/clickhouse/search.test.ts
+ignore-words-list = afterAll,ROUGE,Rouge,rouge,ue,aiport,Appen,buyed,AKS,EHR,therefrom,OpenIn,Thq

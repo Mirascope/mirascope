@@ -1,0 +1,110 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"The Name of the
+      Wind, Rating 7"}],"model":"claude-haiku-4-5","system":[{"type":"text","text":"Return
+      book as XML: <book><title>Mistborn</title><rating>7</rating></book>","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '267'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQzU7DMBCEXyXyOVETaFUURT2AEAckDggVqRSlbrw0ps46tddQVOXd2ZSWX3Hy
+        ar7x2LM70VgFRuSiMjIoSGqp1yEZJqPkJD0ZZWmaiVhoxYbGr8o0u73Ec32txrMzuXkOF1fTGSxf
+        p+yhtxZ6F3gvV8CCs6YXpPfak0RiqbJIwFP+sDv6CbY92R+5WCwW28bMsVhau57MMYoK0mRgcldD
+        dCMbiOxTRDzfa1TF4IPtbU6SxtVkXAwOE4cMDimcKrrHWHiybelAeov8FqAqKTgUB+BhEwAr/hQG
+        Y2IR9j3yndDYBirJrgG9yIcp95BVDWXFUaQtlj8Nn5yx+o8d7/b50NbQgJOmHDV//V80q3/TLhY2
+        0HfpdMxtwL3oCkrS4Lhnv3wlnRJd9w5ZFM5l7gEAAA==
+    headers:
+      CF-RAY:
+      - 9bd82a063ac975da-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 13 Jan 2026 22:00:02 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '4000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '4000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-13T22:00:02Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '800000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '800000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-13T22:00:02Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-13T22:00:02Z'
+      anthropic-ratelimit-tokens-limit:
+      - '4800000'
+      anthropic-ratelimit-tokens-remaining:
+      - '4800000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-13T22:00:02Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CX68RUfkpWrKfpsbHfitC
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '625'
+    status:
+      code: 200
+      message: OK
+version: 1

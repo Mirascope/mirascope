@@ -1,0 +1,122 @@
+/* Base code styles */
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Code blocks use different fonts based on mode */
+code,
+pre,
+.shiki,
+.shiki code,
+.mono-enabled code,
+.mono-enabled pre,
+.mono-enabled .shiki,
+.mono-enabled .shiki code {
+  font-family:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace !important;
+  /* Font size is defined in .shiki */
+}
+.shiki {
+  margin: 0 !important;
+  padding: 0.75rem !important;
+  width: 100% !important;
+  overflow-x: auto !important;
+  position: relative !important;
+}
+
+.shiki .line {
+  display: inline-block !important;
+  line-height: 1.5 !important;
+  min-height: 1.5em !important;
+  padding-right: 1rem;
+  padding-left: 1rem !important;
+  margin-left: -1rem !important;
+  margin-right: -0.75rem !important;
+  width: calc(
+    100% + 1.75rem
+  ) !important; /* Full width + left margin + right margin */
+}
+
+/* Ensure the code doesn't get additional styling */
+.shiki code {
+  background: transparent !important;
+  padding: 0 !important;
+  counter-reset: step;
+  counter-increment: step 0;
+}
+.has-diff {
+  /* Line numbers */
+  & .show-line-numbers .shiki .line::before {
+    content: counter(step);
+    counter-increment: step;
+    margin-right: 1rem;
+    display: inline-block;
+    text-align: right;
+    color: rgba(115, 138, 148, 0.4);
+  }
+}
+.show-line-numbers .shiki .line::before {
+  content: counter(step);
+  counter-increment: step;
+  margin-right: var(--line-number-padding, 1rem);
+  width: 1rem;
+  display: inline-block;
+  text-align: right;
+  color: rgba(115, 138, 148, 0.4);
+}
+
+.show-line-numbers .has-diff.shiki .line::before {
+  margin-right: 2rem;
+}
+
+.shiki .line.diff.add span:first-child::before,
+.shiki .line.diff.remove span:first-child::before {
+  margin-left: -1rem;
+  display: inline-flex;
+  width: 1rem;
+}
+
+.shiki .highlighted {
+  background-color: rgba(124, 58, 237, 0.108) !important;
+}
+.shiki .line.diff.add {
+  background-color: #409b4533 !important;
+}
+
+.shiki .line.diff.add span:first-child::before {
+  color: var(--color-primary) !important;
+  --shiki-dark: var(--color-primary) !important;
+  content: "+";
+}
+.shiki .line.diff.remove {
+  background-color: color-mix(
+    in oklch,
+    var(--color-destructive) 20%,
+    transparent
+  );
+}
+
+.shiki .line.diff.remove span:first-child::before {
+  color: var(--color-destructive) !important;
+  --shiki-dark: var(--color-destructive) !important;
+  content: "-";
+}
+
+html.dark .shiki .highlighted {
+  background-color: rgba(138, 92, 246, 0.209) !important; /* Dark mode purple */
+}
+
+html.dark .shiki {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+html.dark .shiki,
+html.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  /* Optional, if you also want font styles */
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}

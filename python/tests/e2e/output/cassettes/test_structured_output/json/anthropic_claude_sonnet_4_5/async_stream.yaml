@@ -1,0 +1,207 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\":
+      {\n      \"description\": \"The author of a book.\",\n      \"properties\":
+      {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
+      \"string\"\n        },\n        \"last_name\": {\n          \"title\": \"Last
+      Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1324'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01UnBzNrrMitygVGgAUTtgtQ","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":328,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}       }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"```"}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"json\n{\n  \"title\":"}             }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        \"THE"}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        NAME"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        OF THE WIND\",\n  \""}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"author\":
+        {\n    \"first_"} }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"name\":
+        \"Patrick\",\n    \""}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"last_name\":
+        \"Rothf"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"uss\"\n  },\n  \""}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"rating\":
+        7\n}\n```"}     }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0             }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":328,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":63}  }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"        }
+
+
+        '
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b0279934b757536-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Thu, 18 Dec 2025 23:35:10 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:35:08Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:35:08Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:35:08Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:35:08Z'
+      request-id:
+      - req_011CWF2eGU1pwaQ2gymxMQ7p
+      x-envoy-upstream-service-time:
+      - '1967'
+    status:
+      code: 200
+      message: OK
+version: 1

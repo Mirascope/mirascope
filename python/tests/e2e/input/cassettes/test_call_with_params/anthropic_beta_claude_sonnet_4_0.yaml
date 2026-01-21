@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: '{"max_tokens":500,"messages":[{"role":"user","content":"What is 4200 +
+      42?"}],"model":"claude-sonnet-4-0","stop_sequences":["4242"],"temperature":0.7,"thinking":{"type":"disabled"},"top_k":50,"top_p":0.3}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '204'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WPQUvEMBCF/0rJ1RbakLpswZt4VtiLiISYDNtgm3STiayU/ncnhSJV9pTM+97M
+        vJnZ6A0MrGN6UMlAFb1zgJWoeM3bum0EK5k1xMd4lnXTHl+5PRxPLy492ufr5enjdC9G8uD3BNkF
+        MaozkBD8kAUVo42oHJKkvUOgX/c2b36Eaybr0zHB67q4KwQvHgq2vJcsop9kAEWpCK9VhEsCp/OK
+        fZ3bBSc5rQm6mVk3JZToP8FF1jUHSqB0D1LTRLTeyb2h3jhhc4ttvXk+TD2MENQg2/G//5c2/V+6
+        lMwn3KXjdA+EL6tBooWwnqucUcGwZfkBzLomb6cBAAA=
+    headers:
+      CF-RAY:
+      - 9bb01018af090999-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 01:11:53 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-09T01:11:51Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-09T01:11:52Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-09T01:11:49Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-09T01:11:51Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWvv1AyHf2hEt5fFwpgbM
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '3095'
+    status:
+      code: 200
+      message: OK
+version: 1

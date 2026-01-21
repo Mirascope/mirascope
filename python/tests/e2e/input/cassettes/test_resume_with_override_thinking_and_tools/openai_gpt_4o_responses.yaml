@@ -1,0 +1,571 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '422'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VV2XKjOBR9z1eo/DI9TTret67qB7wDwWAbYzvTUx3ZCBAGgSXhha78+wiytJPK
+        +MEFuss593Dv1e8bAEo7SBzsQI5Y6Tv4R5wA8Lv4z20x4YhwYXg9EocJpPyP7/Pv99WzcOHonAeV
+        JoiivxjgPgIsjSJIL99/kp/k69c+DHdpCDkmXmGtVircByO8jQnc7TCYptEW0a9fc29jDy+3gMWF
+        Y8oQBSdIOPs0jhRxdwBYPuQCGQLGKcSez92YniB1AEWHFDF+BxTxuINhWOR5dJAL05D/ggl+BD7M
+        I92U7DiOCWAJ2mEX584XIPKICMxuweMujpKUo18u3j7eCUQEhDQwQlxQ5DldyN+S3IKTj3e+QCUI
+        Obk5T3cLMAOPREQDhYMwjvcMhHiP8jNBL6GIoddSMXHQGcRu8fKxYnBChSqvMJgUJAUIQzmG0Klg
+        SJHgj26vaKAz2oki3lXzhfwQAX8/vugImB+noQM8fMw/QEEAEnYSsA4WIvLwcveTlG4/9IAIErqL
+        NuA0RVe2p9v/b5xXuUR/hO+67sVOhLx5Y12R/YArnCD12CfBebg4FpV9MDy9e3/6vI4F9gjkKS3g
+        +1Qfyut7pUYubksyUtdaaNAilrLScH9mNKNR34mNppW0V23PTx6ss601mtFwVa2QYLD2JCmJ9JO+
+        DGxTPjed0XY9WszMgdmotw+HTq/XOVND6yhr6lkeatfCbtBQh/IgkafyRd9tGB2QQbCqLmbWfC96
+        5CGolZsiTdiglnP04rlZjmyi6Z3GfHSQ5mdDhpkbhD0/c49Uccz1Nlb50j9oXbNX1kJ5Qf2d28mg
+        Jz/ArnUMeqm3QdvNOVEnXahP1ZFySOTqJa5lnicNM6mGl5X+5r6zpa0xmvvjkTq+r09sq2G2fIdW
+        Od1OfOIZmu9sSBDUfUOXy/XZcju24rjbk3DEDtFkODPN7Tatk1O7nCg2WvXZRfLsitnndZfQyfjC
+        TpYhmWlVVSp83lqOD0en3w81pS73PUnbD23r0jutlEam1cmxXL3omRnZgTT32hv1Xh2NN3Kqr8r7
+        s2oYTrQ8bLotpz1yDIMNt4dywtbVzTR0gmOlQadRpujmacYe6oFTH4zd6VTq2oZJHuL5Rp1kxB3J
+        dL9v1Dd80pr26omPbNbFerAy5tPySRvIvXOLzbemnA0CXkHZdOyfspkCDxuIuw/msbZWTUoTU512
+        3fl4FFqXmpykl5ndcfWhr9I+30jaxHKjuXz2s36jMe/x+VbD/JBVyy462KrUa0vnwc5vyJ48gyu/
+        T4xjq2y2x1s2aWV2gmxJMyW1UjtHCpmMOupGGk4qdhabQzYcLgau1l4epPIybmYZNlK/5Y0q1TSd
+        rE98Ve9tkrTPx904CrS4F9fGR+veHpNL68EpL7wGjrLKj9LNZxPz759pKdE4LKYjih0Uvrq/jVPJ
+        xQQzf44gi/M5LC0sw3wb3lKx3sRx5YO/jhiDXpFXz/MCDxFExXXl/FnQ+Sr9wv6+e8bMyRW0Smke
+        qSMOxfUG3zZCKaFie3Ar3iPSj9Piems2n2GvbsN39mr7xc5jDsN3plr1hfJ1XjYQqDi8viavblAh
+        EAwxv+RFWcO1dbXCBMA7Wq8q3lyJ/bqSPlCsd25e5H7+AjaiDD9L7aFIiPmtdtf85oaQ+QVgSWyO
+        JCYMKU7u49uOByE29bbpZm3FzO6/iSaNSzdPN/8B6cLb0CgIAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 01:19:01 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1911
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"What is the 100th fibonacci number?","role":"user"},{"call_id":"google_unknown_tool_id","name":"compute_fib","arguments":"{\"n\":
+      100}","type":"function_call"},{"call_id":"google_unknown_tool_id","output":"218922995834555169026","type":"function_call_output"}],"model":"gpt-4o","tools":[{"type":"function","name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '555'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//fFVNb+M4DL3nVwg+7QBJYbt2Yve6wB4Hc5jbYGHQFp1oK0taiSoaDPrf
+        F5birzTdW8yPR4p8j/m9YywRPHlhiUVnmpTXWdrWWVU/51la1Wl6rI9peaqOWX3sqqxO2wxPFccT
+        78uSl1Ak+xFCt/9gRxOMVg6jvbMIhLyB0Zedjqc6z8oiDz5HQN6NOZ0ejERCHpNa6F7PVns19tWD
+        dBjNQkqhzskL+71jjLHEwBXtmM/xDaU2aJMdYx+x8AT5sDRaq8dM5aUMBqGmhIYjgZBu63VkfUdC
+        q419gPdGezKeGtKv+NlJWsumA7mFGzRHOfZ9NnQo9CFP8+KQVof0eBtmgExe2K/wzvjaeU+DO//P
+        mqqyjms6tcABi4J3UNX4HJADCl0NBhx0Ds64OL7aR3B2WhGqpal1YxvYaR74TnN2CAClNME0w19/
+        b5xSn43V7QNPAHphyc8LsixN6cL+Eq1W0HWCKT+0aJlwLM+qfZ3n+7ou99VzsS/Lcp8d632aH5+S
+        Ge7j9muukFgtQ9fgnHAEimLwGBiCEgMWpES5XSVZHzlpLL4J7V0z0b4JS5pXbaweDDUddBdsXvH6
+        pc/iOF6h1TrCIjitNpzHvteWVkHj4vwwgJ2wZwk46JGujeAjcC9wQ3iH9k102JCYJNSDl3FliSNt
+        cf1MwsGgBfLBnD2lN2tYza2zXtsBlu8VJUJcnOut4ze0rXaCrpGIXPhhkW6c9EWLLq7Gk05mh/ss
+        i6lM71WQ6EJajq6zwtzGmvypB+MJGV2QqUdE+iM7CMXxHfm3pwVFwYCTKjxh04t2cY78GJDQutXL
+        43INWhK4tY9wd4bxBYIiDb9vJLN6m1CE53jf7sk8TzUSGv/1wiLfCDVUnb9W+kqAczGOB+SPdcPz
+        0b0Xdzzzu7u6iSMrwvkPiXcSIm2alb7T2WjWXLJedTBtigsHrZz+D3y4UzPRhNoc3KrYf7avrvjM
+        kyA0viSmG0re3/G8eOR4hDur9Cto0gRycWZpNXPdu60sByTgQDDif+w+/gMAAP//AwBXZsX7nwcA
+        AA==
+    headers:
+      CF-RAY:
+      - 9bb01aa5bc4da36e-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 01:19:02 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=JZ.ONmol9cAqjsEIFNS8QBnhjuWPL0chCN0hDMAJV9s-1767921542-1.0.1.1-mnD2406FKToUULND7IzFjg7zZ3tBQr_rORMD80J3pHT.yLdXtmKMCe7rBzIO5P8lGo1iM4YqJ67ZyFNYx4ftEv89N_a8aLmridcjuhYIERw;
+        path=/; expires=Fri, 09-Jan-26 01:49:02 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=sXV7keewolblXWc.cz.BQuN5Lt7C51xTHEMQ7CAtpDg-1767921542760-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '640'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '642'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799699'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 22ms
+      x-request-id:
+      - req_cef15ce7c21644f68aea75cf13b52709
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21T23KiQBB99ysonrJlkgUCxmxVHgAvYLwlKItubaUGGUYMDJcZFEzl33fAmGg2
+        PlDSp7tPc/r0a4Pj+BXAXuABCgn/i/vDIhz3Wj8rLMYUYsqAY4gFE5DRz9zD7/XkP0vxc7yiQYx1
+        EIZnxe84BhFkcdY/SnIKn/3A5S+/JoEMkW+Kq3IWFgXhC/B29v523o+n6zhHa2oFCAOaZzW9npua
+        6gxNCZf7YjxFSVu7tRYdq7NQ2uNpXNji3hFHNy2/o3m22XJXq+n8Rk1H4WgpDLauvHjC0TzNl6my
+        l3rF1thJgxGSddcSe/3+crqVLTBP5J2NNl5zp3lpYSStctM2e3IZ6d1Fs7mW52DeniwX4KeX0lUZ
+        peZOERTQ1Klpx6IJitulK/82fJTZSMKP1JEM6tBshUhpb2JvqPXDx9gOrLt0LNr2EMF1UA7EpOMP
+        Cmy2iOYDo2sFu0yemA/9tvMUbtWBqnYK1VTKB+2GAqsXPmiD8UDYNtvGePLiqKVB92k3yfVFKcD1
+        sK87yHl0O7OW2DLU+3u+8Z3ifz/V5rM4rNWNYg+Gx/SPdfB+gAOyfoKAxNUeeWs2mX4snw+wBwsW
+        Fr7kjyAhANV9R1VfDkEMM+ZajzuajVsxt12QH9cHzmq4eiw+rypHkALmcvDhKD7JmPvoLH6BWI/z
+        2uWKcqA9OYozXLx9x2lMQXgOSdLlf31Jh7EG4em1nBwSEwiEAS2rj5p1ndnJCTCCs7GOKjZOxD5a
+        +nxEpTqLWu3DAmyYkeCgNIIR0/JKulau/BCQdc3HZ5AkMSbQ9Ooc5Q4BVxJ706vnlJLpHck3gbrj
+        G2+Nf9yU16cuBAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:26:11 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=928
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"What is the 100th fibonacci number?","role":"user"},{"call_id":"google_unknown_tool_id","name":"compute_fib","arguments":"{\"n\":
+      100}","type":"function_call"},{"call_id":"google_unknown_tool_id","output":"218922995834555169026","type":"function_call_output"}],"model":"gpt-4o","tools":[{"type":"function","name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '555'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFXBbus2ELz7KwidWsAOKFlWpFwL9Fj00NtDIayolc0XimTJZRDjIf9e
+        iLRkyUlu1g53uNydWf/aMZbJPnthmUNvW16iEB1iATUfqg45r5qKN0N9HMqqrvPmCLxr8jKvygqO
+        HCue7ScK0/1EQTON0R5TXDgEwr6FCcufq+fm2DTPecQ8AQU/5QgzWoWEfUrqQLyenQl6qmsA5TGF
+        pVJSn7MX9mvHGGOZhSu6Kb/HN1TGost2jH2ki2fKh6uLiKJzZsrUQakYkHpOaHskkMpvUU8uCJJG
+        b+IjvLcmkA3UknnFzyAZo1oBaks3mh7VVPfZ0qE0h4IX5YHXB17dmhkpsxf2I74zvXaZ0+jP34+p
+        rMSzmMbUVaI8ibLoCgFdc0zMkYWuFiMPeg9nvAPfzSOCwmhCfS9qXdiGdu4HvtOSHQ+A1oZg7uGP
+        fzegMmfrTPcFEoleWPbPBVnOOV3Yn7IzGoSQTIexQ8ekZ0Ve75ui2DfNaV8fy/3pdNrnVbPnRfWU
+        LXQft1/LDZkzKlYN3ktPoCkdng7GQ5kFB0qh2o6SXEiatA7fpAm+nWXfxiEto7bOjJZaAeKC7Ste
+        v8UcTu2VRq9POARv9EbzOAzG0erQNLgwjuBm7sUCHgakayv7iXiQuBG8R/cmBbYkZwsNEFQaWebJ
+        OFw/k3C06IBCDOdP/BaNo7lVNhg3wv17JYl4LvX1VvEbus54SdckxF6G8W7d1OmLkSKNJpDJFsB/
+        tsV8zRB0tOhdtD164aS9tTX7w4w2EDK6INNfCem3/CB1j+/Y//50Z9Ew4uyKQNgOsruDkz5GJHR+
+        9fI0XIuOJG7jE91DYHqBpCTDvzaWWb1NasJz2m+PYl66mgSN/wXpsN8YNd66fK38lUHfy6k9oP5e
+        F7ws3UdzpzW/e7g38+RkXP8x8cFCZGy78jdfgnatJRe0gHlSvfTQqfn/IMQ9tQhN6s3Crcv95/hq
+        iy86iUbr74l8I8nHPV6UXwFf8S4u/Y6aDIG6gzmvF60Hv7XliAQ9EEz8H7uP/wEAAP//AwBzIjeB
+        nwcAAA==
+    headers:
+      CF-RAY:
+      - 9bb1dc962c2fe2c1-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 06:26:12 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=PiYThuTX4hAuFED4RBorfe8cDIjMvG9xjhxmRdhFIko-1767939972-1.0.1.1-oqMW.uyQKcwaDzhCdQGCKRvZMy.a.KeQjsVfuBjpNr3DyLkfCkEhe1pNPgneoDVgMVNjYwjlSSsha_ixQeEuu6Ga_ELg3nWg6_m9ny9DDh4;
+        path=/; expires=Fri, 09-Jan-26 06:56:12 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=OH3a409P1mKsubUGp_nbfQo6nIAPvT.HjbVUEL7Uc1U-1767939972994-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1024'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1026'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799699'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 22ms
+      x-request-id:
+      - req_496dc6806cee462cb2893bc02de04c77
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21T23KiQBB99ysonnbLTUQUL1uVB0WMukG5xQtbW1sjDDiKM8gMJJjKv++AMdFs
+        fKCkT3ef5vTpl4ogiB7APvIBg1T8KfzmEUF4KZ8FRjCDmHHgHOLBGCTsI/f0e7n4z1OCFHsMEayC
+        KLoqfsMx2EMe5/33ccrg3wCtxR+fk0AS0i+Ki3IerkvSJ+D16v31up/INiQNN8xGIQYsTUp6NR33
+        e8uHsYyP2SOBz3AmbVu9VXeTT9z2bjoZ5mtLwyklTsi2xrGdxXK3U11JBxi32oY59qVHZyYnwWhQ
+        Y+pquBjsJrN64qA2bKxbZtNs7wcNtd42M9eluguyXjfbD4x8Xu9OV+lUaUC47dkjyXuuynNzAvFy
+        F6VZx32YH7WQLdxMt4bmzLW8AyFaWrsfHr0jtnZMTZQ8mJJldNCcrkdzs1Gzq/EsPx6CUTJOdvq2
+        U1UWc+OoRXqk0nyFJtnT0rQnkjltPPXv+z1fN3xqDd2aa6cILUabjfJr3G80ayutNVXBIp0Fw+ag
+        ivPpsuu1dtLqULVUBFvm3Z1Y+UrxPx9qiwmJSnX3xIfROf19HWKAMKIbCwJKij2KtjMz3pcvIuzD
+        Zx6WPuXrkFIQln31oq8QQgwT7lpfOJtN8LjbvtHvtyfOYrhyLDEtKnXIAHc5eHeUGCfcfcwhO4hV
+        kpYuV5QT7cVRXOH19hvOCAPRNSTLP/7rSwecFUWX13JxSFwgECGWFx/laEvn4gQ4wdVYZxUrF2Kf
+        LX09olKcRan2aQFzmFB0UjqEe67ljXyr3AQRoJuST0wgjQmmcOwXOXUlJgCsm2rHlg6MGuRgbyUz
+        FCuvlX/xcuo/LgQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 15 Jan 2026 07:44:23 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=768
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"What is the 100th fibonacci number?","role":"user"},{"call_id":"google_unknown_tool_id","name":"compute_fib","arguments":"{\"n\":
+      100}","type":"function_call"},{"call_id":"google_unknown_tool_id","output":"218922995834555169026","type":"function_call_output"}],"model":"gpt-4o","tools":[{"type":"function","name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '554'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.14.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.14.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//fFVNb9s4EL37VxA8dYE6kGRLkXxdYI9FD3srFsKYHNlsKJIlh0GMIv99
+        IcqSJcfpzZ6Px+G896jfG8a4kvzAuMfg2qwqdg3Wz/t9kZdSdllWNVXdgHyuRCXqvNnVWZd34rls
+        hCx3eZ3xrwOEPf5EQROMNQHHuPAIhLKFIZc/V/W+2mXVLuUCAcUw9AjbO42Ecmw6gng5eRvNMFcH
+        OuAYVlorc+IH9nvDGGPcwQX90C/xFbV16PmGsffx4Any4dHovR06TdQ6BTqPvyIacWkdGtB04QeW
+        PWUpp8wE1kokUDosO5UJ5KMgZc0q3sNbayO5SC3ZF/yYJGt1K0Cv4XorUQ93Ojna7u22yIr9Nqu3
+        WXVddILkB/Yj7WDcxMxhH05/oFBUXZ0oLHeYlVDLYwG7shAJOaHQxWHCwRDghLfEZ1ylpLCG0NyG
+        Wg62gp32gW80d6cCMMYSTDv88d8qqe3JeXt8kElAB8b/PSPLs4zO7B91tAaEUMzE/oieqcCKvG6K
+        omnKercvyzKvmqyonvgM9H79NWNzb3WaF0JQgcDQWDwUpiLuwIPWqNckko+jUp3HgEbgAzE5j6/K
+        xtBOPmkTczP/ztveUStAnLF9wcunOY/DzpU1ywqPEKxZmQS7znpaFA1sxr4HP2HPngnQIV1aJQfg
+        TuHKIQH9qxLYkpo810HUI488kPW43ABh79ADxRTOr5e/8nWdrLO+h9v/hU5S3bjy68Sv6I82qLRK
+        3qNUsb95fSThbJUYWYtk+ZwIH70yHdNFk3x7U7LEILxy17Xyv23vIiGjMzLzSF1f8q0yEt9Q/vV0
+        QzHQ42SVSNh26nhLDtLpkdCHxc1Hch16UriOD3B3geEGikaFflv5aHE3ZQhP44N4r/N5q6PW8VdU
+        HuXKvenU+d/CdBykVMN6QH9fDjy/0veOH78Lm7tzeSCv0vdiUMyduci6duH5bA66pZR8NAImoqQK
+        cNTT9yOmt2vWmTKrR7jef/0YX7zss0ySz+StMVsp8v5tz+tHiUe4s0k/gyZLoBfIWTFLPYa1K3sk
+        kEAw4L9v3v8HAAD//wMAm7g2gM8HAAA=
+    headers:
+      CF-RAY:
+      - 9be3bf621c6a21ab-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Jan 2026 07:44:24 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=dSLy6fhwoef8jC51qWk3EXBZtxfzS2BsQoTvoU9K5q0-1768463064-1.0.1.1-8qlZztxEY6QBcAhvXZrTHzMxId.t7CSgQxDNQx8inV2DRXhjZ.jB74bvOEGQoMWVPGDru1uVviiM9vEXTwyWT1tO8oZhIYy0XDedFYk6C_A;
+        path=/; expires=Thu, 15-Jan-26 08:14:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=V5K0i_KmWtD8OsbmAeO8DILZYd7JsF98Oun31GetSRA-1768463064085-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '636'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '640'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799699'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 22ms
+      x-request-id:
+      - req_d9135da2d15147cfbafa242eee456986
+    status:
+      code: 200
+      message: OK
+version: 1

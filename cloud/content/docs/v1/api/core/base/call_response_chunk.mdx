@@ -1,0 +1,353 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.call_response_chunk
+description: API documentation for mirascope.core.base.call_response_chunk
+---
+
+# mirascope.core.base.call_response_chunk
+
+This module contains the `BaseCallResponseChunk` class.
+
+<Info title="Usage">
+
+[Streams](/docs/v1/learn/streams#handling-streamed-responses)
+
+</Info>
+
+## <ApiType type="Class" path="core/base/call_response_chunk" symbolName="BaseCallResponseChunk" /> BaseCallResponseChunk
+
+A base abstract interface for LLM streaming response chunks.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />, <TypeLink type={{"type_str": "Generic[_ChunkT, _FinishReasonT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_ChunkT", "description": null, "kind": "simple", "doc_identifier": "_ChunkT"}, {"type_str": "_FinishReasonT", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />, <TypeLink type={{"type_str": "ABC", "description": null, "kind": "simple", "doc_identifier": "ABC"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "chunk",
+    "type_info": {
+      "type_str": "_ChunkT",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "_ChunkT"
+    }
+  },
+  {
+    "name": "model_config",
+    "type_info": {
+      "type_str": "ConfigDict(extra='allow', arbitrary_types_allowed=True)",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Should return the string content of the response chunk.\n\nIf there are multiple choices in a chunk, this method should select the 0th\nchoice and return it's string content.\n\nIf there is no string content (e.g. when using tools), this method must return\nthe empty string."
+  },
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[_FinishReasonT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[_FinishReasonT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "_FinishReasonT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Should return the finish reasons of the response.\n\nIf there is no finish reason, this method must return None."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Should return the name of the response model."
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Should return the id of the response."
+  },
+  {
+    "name": "usage",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+    },
+    "description": "Should return the usage of the response.\n\nIf there is no usage, this method must return None."
+  },
+  {
+    "name": "input_tokens",
+    "type_info": {
+      "type_str": "int | float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Should return the number of input tokens.\n\nIf there is no input_tokens, this method must return None."
+  },
+  {
+    "name": "cached_tokens",
+    "type_info": {
+      "type_str": "int | float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Should return the number of cached tokens.\n\nIf there is no cached_tokens, this method must return None."
+  },
+  {
+    "name": "output_tokens",
+    "type_info": {
+      "type_str": "int | float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "int",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#int"
+        },
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Should return the number of output tokens.\n\nIf there is no output_tokens, this method must return None."
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    },
+    "description": "Get metadata required for cost calculation."
+  },
+  {
+    "name": "common_finish_reasons",
+    "type_info": {
+      "type_str": "list[FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Provider-agnostic finish reasons."
+  },
+  {
+    "name": "common_usage",
+    "type_info": {
+      "type_str": "Usage | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Usage",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#usage"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Provider-agnostic usage info."
+  }
+]}
+/>
+
+

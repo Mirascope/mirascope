@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend a book to me!"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Always recommend The Name
+      of the Wind.\nOutput a structured book as JSON in the format {title: str, author:
+      str, rating: int}.\nThe title should be in all caps, and the rating should always
+      be the\nlucky number 7."}], "role": "user"}, "generationConfig": {"responseMimeType":
+      "application/json"}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '426'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WRX0/CMBTF3/cpmj6D0SmQ+GYEFRL+iIuQOB8adtkaSru0dwZd9t1tt2yUsIfm
+        5pyze29/LQNC6I7JhCcMwdBH8mUVQsr6dJ6SCBKt0UpWzJnGc7b5Sq+2EYST+4mWsSQkpshRQGyF
+        mEZvE7J4mk/I8oW4ejNdjGPaa3KswEzpJrhiqPnuQNYKs31hTBfSDLlMXWgUy4p6g6uu/u6d19VK
+        gNvlqBIQbbxqA3TPJTfZGphR0sU+ouWKdi6XCZysfBu0A+rWtDAshTkgs+BYh4fmWh1zjNQB5LMq
+        anDDsGnmcb7w71sfFTJxYd0Nhr2rvmZsp3LhP4D3NvaSTHD8dTeJJtuIeiDwcq2WROABo5Z/kWZo
+        oqtsTayB+Ana8IZWCkfLrx/eDPp7wUxWz6MaTK6kgWniMtuZSNkuPLwuN/A3mq4Gs5/w4V3RoAr+
+        AQUxfpaBAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 05:59:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1019
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

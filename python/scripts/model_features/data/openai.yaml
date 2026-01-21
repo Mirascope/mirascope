@@ -1,0 +1,4296 @@
+provider: openai
+known_features:
+- audio_input
+- completions_api
+- json_object
+- reasoning
+- responses_api
+- structured_output
+models:
+  babbage-002:
+    owned_by: system
+    deprecated: false
+    created: '2023-08-21T09:16:55'
+    discovered_at: '2025-12-09T10:41:37.925970'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.020515'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:46:27.799760'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.933540'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.092128'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:46:27.996633'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''babbage-002'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.182445'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  chatgpt-4o-latest:
+    owned_by: system
+    deprecated: false
+    created: '2024-08-12T19:12:11'
+    discovered_at: '2025-12-09T10:41:37.926149'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-10T18:06:51.742883'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:06.473021'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:41.374791'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:06.008803'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:05.714541'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:06.680776'
+  chatgpt-image-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-16T14:47:59'
+    discovered_at: '2025-12-18T11:37:47.379035'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:57.886841'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-18T11:38:57.735856'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''The server had an error while processing your request.
+          Sorry about that!'', ''type'': ''server_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:57.985875'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:58.324006'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:38:58.220657'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''chatgpt-image-latest'' was not
+          found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:58.425424'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  codex-mini-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-05-07T20:00:57'
+    discovered_at: '2025-12-09T10:41:37.926447'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.362304'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:52:27.008507'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.647171'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:52:28.479558'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:26.829530'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.438434'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  computer-use-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-19T16:47:57'
+    discovered_at: '2025-12-09T10:41:37.926250'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.844283'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:54:27.207908'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:26.590774'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.917433'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:54:26.753792'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Computer model computer-use-preview should be used with
+          ''truncation=auto'', found ''truncation=disabled''.", ''type'': ''invalid_request_error'', ''param'': ''truncation'',
+          ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.288743'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  computer-use-preview-2025-03-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-07T11:50:21'
+    discovered_at: '2025-12-09T10:41:37.926292'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.381159'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:01.168040'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:51.878541'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.451918'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:43:01.375378'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Computer model computer-use-preview-2025-03-11 should
+          be used with ''truncation=auto'', found ''truncation=disabled''.", ''type'': ''invalid_request_error'', ''param'':
+          ''truncation'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.540031'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  dall-e-2:
+    owned_by: system
+    deprecated: false
+    created: '2023-10-31T17:22:57'
+    discovered_at: '2025-12-09T10:41:37.926000'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.413799'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:53:01.308112'
+        error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
+          ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.464217'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.487632'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:53:01.153394'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''dall-e-2'' was not found.", ''type'':
+          ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.561418'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  dall-e-3:
+    owned_by: system
+    deprecated: false
+    created: '2023-10-31T13:46:29'
+    discovered_at: '2025-12-09T10:41:37.925991'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:18.908190'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:46:31.212669'
+        error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
+          ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:57.606930'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:18.981779'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:46:31.385994'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''dall-e-3'' was not found.", ''type'':
+          ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.056330'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  davinci-002:
+    owned_by: system
+    deprecated: false
+    created: '2023-08-21T09:11:41'
+    discovered_at: '2025-12-09T10:41:37.925962'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.599476'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:46.027358'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:13.654022'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.672390'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:46.180768'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''davinci-002'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.745505'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-3.5-turbo:
+    owned_by: openai
+    deprecated: false
+    created: '2023-02-28T10:56:42'
+    discovered_at: '2025-12-09T10:41:37.925915'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:35.166342'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:34.712123'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:26.242136'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:34.925967'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:34.302855'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:35.364137'
+  gpt-3.5-turbo-0125:
+    owned_by: system
+    deprecated: false
+    created: '2024-01-23T14:19:18'
+    discovered_at: '2025-12-09T10:41:37.926080'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:57.939775'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:56.372181'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:58.458794'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:57.615644'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:57.399811'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:57.780818'
+  gpt-3.5-turbo-1106:
+    owned_by: system
+    deprecated: false
+    created: '2023-11-02T14:15:48'
+    discovered_at: '2025-12-09T10:41:37.926014'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:05.451102'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:43:03.824772'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:14.946133'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:05.160201'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:43:04.961216'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:05.298961'
+  gpt-3.5-turbo-16k:
+    owned_by: openai-internal
+    deprecated: false
+    created: '2023-05-10T15:35:02'
+    discovered_at: '2025-12-09T10:41:37.926787'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-10T18:06:53.417634'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:18.402420'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:30.748398'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:18.041309'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:54:17.854700'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found gpt-3.5-turbo-16k'', ''type'': ''invalid_request_error'',
+          ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:18.595441'
+  gpt-3.5-turbo-instruct:
+    owned_by: system
+    deprecated: false
+    created: '2023-08-24T11:23:47'
+    discovered_at: '2025-12-09T10:41:37.925976'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:56:18.574710'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:49:30.445860'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:11.794193'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:56:18.691945'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:56:18.470808'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_ebe7aa4f5cfd42f8b286fb0bf694e4fb in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:56:18.765861'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-3.5-turbo-instruct-0914:
+    owned_by: system
+    deprecated: false
+    created: '2023-09-07T14:34:32'
+    discovered_at: '2025-12-09T10:41:37.925984'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.223271'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:46:44.027344'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.525721'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.297917'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:48:36.952299'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_dea971d4732444c8aca0678912609b48 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.376490'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4:
+    owned_by: openai
+    deprecated: false
+    created: '2023-06-27T09:13:31'
+    discovered_at: '2025-12-09T10:41:37.925901'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:43.056028'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:42.660813'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:29.890937'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:42.858531'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:41.991367'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:43.241677'
+  gpt-4-0125-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-01-23T11:20:12'
+    discovered_at: '2025-12-09T10:41:37.926064'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:44.036991'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:41.918727'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:26.460704'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:43.745596'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:43.539718'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:43.892649'
+  gpt-4-0613:
+    owned_by: openai
+    deprecated: false
+    created: '2023-06-12T09:54:56'
+    discovered_at: '2025-12-09T10:41:37.925821'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:54.538501'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:52.293402'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:30.138872'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:54.188574'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:53.967470'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:54.363825'
+  gpt-4-1106-preview:
+    owned_by: system
+    deprecated: false
+    created: '2023-11-02T13:33:26'
+    discovered_at: '2025-12-09T10:41:37.926007'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:18.063040'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:15.613462'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:05.730580'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:17.756167'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:17.562260'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:17.918678'
+  gpt-4-turbo:
+    owned_by: system
+    deprecated: false
+    created: '2024-04-05T16:57:21'
+    discovered_at: '2025-12-09T10:41:37.926088'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:57.245323'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:55.137251'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:55.088247'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:56.910151'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:56.692074'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:57.076841'
+  gpt-4-turbo-2024-04-09:
+    owned_by: system
+    deprecated: false
+    created: '2024-04-08T11:41:17'
+    discovered_at: '2025-12-09T10:41:37.926104'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:27.934396'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:25.918194'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:09.141419'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:27.645162'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:27.484567'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:27.772680'
+  gpt-4-turbo-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-01-23T11:22:57'
+    discovered_at: '2025-12-09T10:41:37.926072'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:51:23.224346'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:51:22.846019'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:03.252647'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:51:23.045181'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:51:21.711004'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:51:23.407163'
+  gpt-4.1:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-10T13:22:22'
+    discovered_at: '2025-12-09T10:41:37.926401'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:25.225345'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:23.590837'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:00.465010'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:24.664934'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:24.530972'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:42:25.093809'
+  gpt-4.1-2025-04-14:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-10T13:09:06'
+    discovered_at: '2025-12-09T10:41:37.926394'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-10T18:06:52.048125'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:03.242872'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:59.029113'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:02.786781'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:02.525936'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:54:03.697803'
+  gpt-4.1-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-10T13:49:33'
+    discovered_at: '2025-12-09T10:41:37.926415'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:37.135893'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:36.748404'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:26.870534'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:36.930067'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:36.360300'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:52:37.656813'
+  gpt-4.1-mini-2025-04-14:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-10T13:39:07'
+    discovered_at: '2025-12-09T10:41:37.926408'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-10T18:06:53.617985'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:16.917510'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:43.167685'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:16.401557'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:16.097920'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:54:17.636053'
+  gpt-4.1-nano:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-10T14:48:27'
+    discovered_at: '2025-12-09T10:41:37.926432'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:53:00.494789'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:53:00.138576'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:07.672388'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:53:00.304243'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:59.754037'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:53:00.943146'
+  gpt-4.1-nano-2025-04-14:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-10T14:37:05'
+    discovered_at: '2025-12-09T10:41:37.926423'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:50:51.452096'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:50:51.093485'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:59.674843'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:50:51.274230'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:50:50.611471'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:50:51.900187'
+  gpt-4o:
+    owned_by: system
+    deprecated: false
+    created: '2024-05-10T11:50:49'
+    discovered_at: '2025-12-09T10:41:37.926112'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:59.847777'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:57.936968'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:11.384626'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:59.055623'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:58.879085'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:48:59.678058'
+  gpt-4o-2024-05-13:
+    owned_by: system
+    deprecated: false
+    created: '2024-05-10T12:08:52'
+    discovered_at: '2025-12-09T10:41:37.926119'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:02.320025'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:43:59.757002'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:57.519489'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:01.962815'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:01.744936'
+      structured_output:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:02.114839'
+  gpt-4o-2024-08-06:
+    owned_by: system
+    deprecated: false
+    created: '2024-08-04T16:38:39'
+    discovered_at: '2025-12-09T10:41:37.926142'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:46:31.070541'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:46:28.639431'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:09.638528'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:46:30.231446'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:46:30.065633'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:46:30.890229'
+  gpt-4o-2024-11-20:
+    owned_by: system
+    deprecated: false
+    created: '2025-02-11T19:39:03'
+    discovered_at: '2025-12-09T10:41:37.926285'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-10T18:06:53.177278'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:09.558161'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:04.605244'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:09.021317'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:08.724238'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:54:10.299016'
+  gpt-4o-audio-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-09-27T11:07:23'
+    discovered_at: '2025-12-09T10:41:37.926157'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.607198'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:42:36.811896'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:08.235502'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.694501'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:36.973302'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.766476'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-audio-preview-2024-12-17:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-12T12:10:39'
+    discovered_at: '2025-12-09T10:41:37.926193'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.858633'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:52:29.030491'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:26.329398'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.930020'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:28.836961'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:01.036160'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-audio-preview-2025-06-03:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-02T16:54:58'
+    discovered_at: '2025-12-09T10:41:37.926471'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:28.025086'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:44:55.506459'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:58.665160'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:28.115231'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:55.795078'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:28.191605'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini:
+    owned_by: system
+    deprecated: false
+    created: '2024-07-16T16:32:21'
+    discovered_at: '2025-12-09T10:41:37.926134'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:32.615298'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:32.263880'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:12.547052'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:32.437967'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:31.603289'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:52:33.322988'
+  gpt-4o-mini-2024-07-18:
+    owned_by: system
+    deprecated: false
+    created: '2024-07-16T16:31:57'
+    discovered_at: '2025-12-09T10:41:37.926126'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:58.316623'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:57.908676'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:02.788804'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:58.081940'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:57.349018'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:52:58.853225'
+  gpt-4o-mini-audio-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-16T14:17:04'
+    discovered_at: '2025-12-09T10:41:37.926243'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.069722'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:48:40.513255'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:19.285302'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.142610'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:40.736527'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.212567'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-audio-preview-2024-12-17:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-13T10:52:00'
+    discovered_at: '2025-12-09T10:41:37.926209'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.723751'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:52:43.885704'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:40.947063'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.800123'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:43.660683'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.879821'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-realtime-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-16T14:16:20'
+    discovered_at: '2025-12-09T10:41:37.926231'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.190641'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:45.578194'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:19.194538'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.259360'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:45.773037'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.332207'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-realtime-preview-2024-12-17:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-13T09:56:41'
+    discovered_at: '2025-12-09T10:41:37.926201'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:01.106647'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:09.892359'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.235640'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:01.177415'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:10.061960'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:01.249387'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-search-preview:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-07T15:46:01'
+    discovered_at: '2025-12-09T10:41:37.926320'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:09.516025'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:43:07.632670'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:52.370661'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.396032'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:07.808765'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found gpt-4o-mini-search-preview'', ''type'':
+          ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:43:09.363046'
+  gpt-4o-mini-search-preview-2025-03-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-07T15:40:58'
+    discovered_at: '2025-12-09T10:41:37.926313'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-10T18:06:52.360691'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:54:21.732283'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:14.091448'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:20.428502'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:54:20.278594'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found gpt-4o-mini-search-preview-2025-03-11'',
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:54:23.715484'
+  gpt-4o-mini-transcribe:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-15T12:56:36'
+    discovered_at: '2025-12-09T10:41:37.926337'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.816941'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:49:29.338855'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:57.682010'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.885623'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:49:29.529738'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.956625'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-transcribe-2025-03-20:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:22:25'
+    discovered_at: '2025-12-18T11:37:47.379429'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.106264'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:29.012314'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.201727'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.582914'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:29.475818'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:29.675042'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-transcribe-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:20:07'
+    discovered_at: '2025-12-18T11:37:47.379423'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.171746'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:59.055730'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.280047'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.643637'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:59.517023'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.740600'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-tts:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-19T10:05:59'
+    discovered_at: '2025-12-09T10:41:37.926357'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.469122'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:10.293001'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:07.774325'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.542508'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:10.449925'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.615853'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-tts-2025-03-20:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:25:31'
+    discovered_at: '2025-12-18T11:37:47.379092'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.000727'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:27.903542'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.089564'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.687434'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:28.445135'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:28.809614'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-mini-tts-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:27:17'
+    discovered_at: '2025-12-18T11:37:47.379101'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:06.572017'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:06.475417'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:06.658367'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:06.994241'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:06.902734'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:07.285187'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-realtime-preview:
+    owned_by: system
+    deprecated: false
+    created: '2024-09-29T18:33:18'
+    discovered_at: '2025-12-09T10:41:37.926164'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.370823'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:54.619329'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:59.836124'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.440615'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:54.777909'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-4o-realtime-preview'' was
+          not found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:10.510594'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-realtime-preview-2024-12-17:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-11T11:30:30'
+    discovered_at: '2025-12-09T10:41:37.926186'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.955574'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:45:21.130222'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.269361'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.028051'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:45:21.316529'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-4o-realtime-preview-2024-12-17''
+          was not found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.100596'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-realtime-preview-2025-06-03:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-02T16:43:58'
+    discovered_at: '2025-12-09T10:41:37.926463'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.015388'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:46:31.717295'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:26.981049'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.088480'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:46:31.899026'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-4o-realtime-preview-2025-06-03''
+          was not found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.175754'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-search-preview:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-07T15:05:20'
+    discovered_at: '2025-12-09T10:41:37.926306'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:49:17.534404'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:49:02.372969'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:39:03.110010'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.109582'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:49:02.561625'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found gpt-4o-search-preview'', ''type'': ''invalid_request_error'',
+          ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:49:17.341263'
+  gpt-4o-search-preview-2025-03-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-07T14:56:10'
+    discovered_at: '2025-12-09T10:41:37.926299'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:51:15.923327'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:51:15.670214'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:39:20.246029'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.634829'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:51:09.740267'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found gpt-4o-search-preview-2025-03-11'',
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:51:19.461857'
+  gpt-4o-transcribe:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-15T12:54:23'
+    discovered_at: '2025-12-09T10:41:37.926330'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.504619'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:54:13.764079'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.139911'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.576409'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:54:13.431804'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.836614'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-4o-transcribe-diarize:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-24T14:01:27'
+    discovered_at: '2025-12-09T10:41:37.926501'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.129354'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:42:47.548684'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''The server had an error while processing your request.
+          Sorry about that!'', ''type'': ''server_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:11.698292'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.203186'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:47.706430'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.316845'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-05T13:29:37'
+    discovered_at: '2025-12-09T10:41:37.926542'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:45:05.578457'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:58.669433'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:37:49.336758'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:45:04.335985'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:45:00.473618'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:45:05.384083'
+  gpt-5-2025-08-07:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-01T12:09:20'
+    discovered_at: '2025-12-09T10:41:37.926535'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:20.910120'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:19.259984'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:00.902919'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:52:20.671001'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:18.121316'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:52:21.913758'
+  gpt-5-chat-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-01T11:35:06'
+    discovered_at: '2025-12-09T10:41:37.926528'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:21.234045'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:19.300127'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:03.762258'
+      reasoning:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:20.584756'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:20.429136'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:44:21.068209'
+  gpt-5-codex:
+    owned_by: system
+    deprecated: false
+    created: '2025-09-10T11:10:18'
+    discovered_at: '2025-12-09T10:41:37.926683'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.702981'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:52:39.018024'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:04.185568'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:52:40.255490'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:38.813332'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.773807'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-05T13:32:08'
+    discovered_at: '2025-12-09T10:41:37.926557'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:08.857228'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:03.622827'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:13.539600'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:44:07.329800'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:05.585751'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:44:08.676730'
+  gpt-5-mini-2025-08-07:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-05T13:31:07'
+    discovered_at: '2025-12-09T10:41:37.926549'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:50:56.940735'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:50:54.304578'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:32.940244'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:50:56.727021'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:50:53.520985'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:50:58.016536'
+  gpt-5-nano:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-05T13:39:44'
+    discovered_at: '2025-12-09T10:41:37.926627'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:52:54.569769'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:51.668559'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:31.425941'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:52:54.295222'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:51.024134'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:52:55.284128'
+  gpt-5-nano-2025-08-07:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-05T13:38:23'
+    discovered_at: '2025-12-09T10:41:37.926564'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:22.853913'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:16.565646'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:04.256039'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:42:21.606318'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:19.045178'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:42:22.669350'
+  gpt-5-pro:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-02T22:37:02'
+    discovered_at: '2025-12-09T10:41:37.926707'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.909186'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:15.538687'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.685476'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: error
+        tested_at: '2025-12-09T10:43:59.082888'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Unsupported value: ''medium'' is not supported with the
+          ''gpt-5-pro'' model. Supported values are: ''high''.", ''type'': ''invalid_request_error'', ''param'': ''reasoning.effort'',
+          ''code'': ''unsupported_value''}}'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:43:58.905663'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.997170'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5-pro-2025-10-06:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-02T22:35:07'
+    discovered_at: '2025-12-09T10:41:37.926699'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.196873'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:52:15.115426'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:31.621664'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: error
+        tested_at: '2025-12-09T10:52:15.296497'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Unsupported value: ''medium'' is not supported with the
+          ''gpt-5-pro-2025-10-06'' model. Supported values are: ''high''.", ''type'': ''invalid_request_error'', ''param'':
+          ''reasoning.effort'', ''code'': ''unsupported_value''}}'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:14.911501'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.268483'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5-search-api:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-03T11:03:49'
+    discovered_at: '2025-12-09T10:41:37.926730'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:35.216017'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:30.657885'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:30.374571'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:53:59.974981'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:32.537437'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_c80c9bb74a574ea78eee1dd8bc39e277 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:42:34.957651'
+  gpt-5-search-api-2025-10-14:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-09T14:06:00'
+    discovered_at: '2025-12-09T10:41:37.926765'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:51:08.250468'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:51:07.952038'
+      json_object:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:25.806854'
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.725528'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:51:05.736085'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_bdd3a83ff13d4fd1a5207a55f13cd07d in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:51:09.524111'
+  gpt-5.1:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-10T10:51:13'
+    discovered_at: '2025-12-09T10:41:37.925941'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.030467'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:48:38.173605'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''Could not finish the message because max_tokens or model
+          output limit was reached. Please try again with higher max_tokens.'', ''type'': ''invalid_request_error'', ''param'':
+          None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.166695'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:48:40.223820'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:39.145868'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.117981'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.1-2025-11-13:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-10T10:45:53'
+    discovered_at: '2025-12-09T10:41:37.925933'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.515838'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:52:46.188593'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''Could not finish the message because max_tokens or model
+          output limit was reached. Please try again with higher max_tokens.'', ''type'': ''invalid_request_error'', ''param'':
+          None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.189374'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:52:47.423188'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:45.633799'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.618153'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.1-chat-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-07T12:39:11'
+    discovered_at: '2025-12-09T10:41:37.926780'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:49:28.637816'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:49:25.094583'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:42.368726'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:49:27.637050'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:49:26.432403'
+      structured_output:
+        status: error
+        tested_at: '2025-12-09T10:49:28.452116'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''Could not finish the message because max_tokens or model
+          output limit was reached. Please try again with higher max_tokens.'', ''type'': ''invalid_request_error'', ''param'':
+          None, ''code'': None}}'
+  gpt-5.1-codex:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-12T14:57:01'
+    discovered_at: '2025-12-09T10:41:37.925948'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.257554'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:10.678799'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:03.364500'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:43:12.846051'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:43:11.855563'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.331682'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.1-codex-max:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-20T12:45:32'
+    discovered_at: '2025-12-09T10:41:37.925924'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.401412'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:46:32.220801'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:07.875839'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:46:37.530621'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:46:34.851885'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.499253'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.1-codex-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-12T20:11:49'
+    discovered_at: '2025-12-09T10:41:37.925955'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.044906'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:52:24.300194'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:26.688960'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:52:25.273541'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:52:24.057081'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.134526'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.2:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T12:44:11'
+    discovered_at: '2025-12-18T11:37:47.379399'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-18T11:39:21.521389'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-18T11:39:21.160408'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:39:22.620129'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:39:24.504007'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:39:23.437482'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-18T11:39:25.403941'
+  gpt-5.2-2025-12-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T12:43:48'
+    discovered_at: '2025-12-18T11:37:47.379392'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:20.690971'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:20.197033'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:21.623438'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:38:23.636515'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:22.601374'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-18T11:38:24.603857'
+  gpt-5.2-chat-latest:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T21:25:52'
+    discovered_at: '2025-12-18T11:37:47.379417'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-18T11:38:44.270313'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:44.005942'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:48.823558'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:38:50.692076'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:49.646490'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-18T11:38:51.674348'
+  gpt-5.2-pro:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T21:19:43'
+    discovered_at: '2025-12-18T11:37:47.379411'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.443654'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:38:33.348882'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.534710'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:38:40.732699'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:38:37.014653'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:40.857478'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-5.2-pro-2025-12-11:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-09T21:19:19'
+    discovered_at: '2025-12-18T11:37:47.379405'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:39:10.516910'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:39:10.383069'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:10.628848'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-18T11:39:19.633595'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-18T11:39:13.443309'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:39:19.818504'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-audio:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-27T17:00:49'
+    discovered_at: '2025-12-09T10:41:37.926676'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.923944'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:44:12.937636'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:03.469347'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.998328'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:13.565490'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''There was an issue with your request. Please check your
+          inputs and try again'', ''type'': ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:20.071150'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-audio-2025-08-28:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-26T17:55:46'
+    discovered_at: '2025-12-09T10:41:37.926636'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:56:18.853310'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:44:18.238032'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:25.536834'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:56:18.931775'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:18.815509'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''There was an issue with your request. Please check your
+          inputs and try again'', ''type'': ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:56:19.024319'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-audio-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-03T10:20:27'
+    discovered_at: '2025-12-09T10:41:37.926714'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.572130'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:42:36.035524'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:20.346446'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.660399'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:36.591997'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''There was an issue with your request. Please check your
+          inputs and try again'', ''type'': ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.730007'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-audio-mini-2025-10-06:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-03T10:22:17'
+    discovered_at: '2025-12-09T10:41:37.926722'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.451634'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:44:14.385857'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:05.782190'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.559387'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:14.932290'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''There was an issue with your request. Please check your
+          inputs and try again'', ''type'': ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:24.633201'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-audio-mini-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-14T16:53:28'
+    discovered_at: '2025-12-18T11:37:47.379116'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:15.490590'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-18T11:38:15.325113'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''This model requires that either input content or output
+          modality contain audio.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''invalid_value''}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:15.596294'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:16.353886'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:38:16.262374'
+        error_message: 'Error code: 400 - {''error'': {''message'': ''There was an issue with your request. Please check your
+          inputs and try again'', ''type'': ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:16.448747'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-image-1:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-24T10:50:30'
+    discovered_at: '2025-12-09T10:41:37.926440'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.842511'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:05.783742'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:05.905292'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.936027'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:05.946844'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.008630'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-image-1-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-09-25T17:17:01'
+    discovered_at: '2025-12-09T10:41:37.926691'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.519315'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:46.468587'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:19.920431'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.616423'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:46.659674'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found gpt-image-1-mini'', ''type'': ''invalid_request_error'',
+          ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.700186'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-image-1.5:
+    owned_by: system
+    deprecated: false
+    created: '2025-11-24T16:30:20'
+    discovered_at: '2025-12-18T11:37:47.379383'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.325525'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-18T11:38:10.227982'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''The server had an error while processing your request.
+          Sorry about that!'', ''type'': ''server_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.416636'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.736691'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:38:10.643960'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-image-1.5'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:38:10.824481'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-realtime:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-26T22:15:01'
+    discovered_at: '2025-12-09T10:41:37.926658'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.189863'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:42:44.187141'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.136187'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.262507'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:44.321715'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-realtime'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.336900'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-realtime-2025-08-28:
+    owned_by: system
+    deprecated: false
+    created: '2025-08-26T22:16:13'
+    discovered_at: '2025-12-09T10:41:37.926666'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.806392'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:53:01.908274'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.109341'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.879506'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:53:01.721384'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''gpt-realtime-2025-08-28'' was
+          not found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:27.952227'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-realtime-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-03T11:45:33'
+    discovered_at: '2025-12-09T10:41:37.926737'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:53:59.769007'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:09.008903'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:31.530963'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:53:59.836752'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:12.645946'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_c84d3449c37d43c79e7f8cbb35e917e0 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:53:59.905415'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-realtime-mini-2025-10-06:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-03T11:46:15'
+    discovered_at: '2025-12-09T10:41:37.926744'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.905855'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:42:37.197473'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:52.041771'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.996191'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:40.893006'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_b7d9b54af6a64bddbde11741c0fa1a76 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:15.069593'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  gpt-realtime-mini-2025-12-15:
+    owned_by: system
+    deprecated: false
+    created: '2025-12-12T23:46:47'
+    discovered_at: '2025-12-18T11:37:47.379108'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-18T11:37:49.776408'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-18T11:37:49.689506'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:49.857740'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-18T11:37:56.865274'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-18T11:37:56.744784'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_2b9695293dad44a8b47c7bd5adfe57e5 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-18T11:37:56.944407'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o1:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-16T11:03:36'
+    discovered_at: '2025-12-09T10:41:37.926223'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:48:51.309813'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:41.962717'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:02.395306'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:48:50.262529'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:48:48.149173'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:48:51.144070'
+  o1-2024-12-17:
+    owned_by: system
+    deprecated: false
+    created: '2024-12-15T21:29:36'
+    discovered_at: '2025-12-09T10:41:37.926216'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:44:54.332687'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:48.080329'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:19.086319'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:44:53.303758'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:49.697053'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:44:54.147621'
+  o1-pro:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-17T15:49:51'
+    discovered_at: '2025-12-09T10:41:37.926350'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:06.751968'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:21.410528'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:24.712633'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:44:45.109565'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:44:30.466699'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:06.824046'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o1-pro-2025-03-19:
+    owned_by: system
+    deprecated: false
+    created: '2025-03-17T15:45:04'
+    discovered_at: '2025-12-09T10:41:37.926344'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.462814'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:45:32.707604'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:51.782287'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:46:27.522661'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:45:51.567889'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.535527'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o3:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-09T12:01:48'
+    discovered_at: '2025-12-09T10:41:37.926380'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:42:53.278010'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:48.578573'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:05.600750'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:42:51.202143'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:49.838104'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:42:52.132409'
+  o3-2025-04-16:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-08T10:28:21'
+    discovered_at: '2025-12-09T10:41:37.926364'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:49:24.400517'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:49:18.898645'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:01.308527'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:49:23.158698'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:49:21.391293'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:49:24.206891'
+  o3-deep-research:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-13T11:42:01'
+    discovered_at: '2025-12-09T10:41:37.926493'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.080033'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:49:28.799295'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:11.489605'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.151689'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:49:29.016131'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Deep research models require at least one of ''web_search_preview'',
+          ''mcp'', or ''file_search'' tools.", ''type'': ''invalid_request_error'', ''param'': ''tools'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:13.240287'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o3-deep-research-2025-06-26:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-25T08:26:59'
+    discovered_at: '2025-12-09T10:41:37.926507'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:18.669408'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:42:28.052445'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.026747'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:18.743096'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:29.025529'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Deep research models require at least one of ''web_search_preview'',
+          ''mcp'', or ''file_search'' tools.", ''type'': ''invalid_request_error'', ''param'': ''tools'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:18.833265'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o3-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-01-17T12:39:43'
+    discovered_at: '2025-12-09T10:41:37.926257'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:43:00.737880'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:53.844009'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:17.258709'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:42:59.367286'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:42:56.704236'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:43:00.558833'
+  o3-mini-2025-01-31:
+    owned_by: system
+    deprecated: false
+    created: '2025-01-27T12:36:40'
+    discovered_at: '2025-12-09T10:41:37.926265'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:45:32.539064'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:45:22.107443'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:25.556497'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:45:31.586612'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:45:26.684748'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:45:32.366355'
+  o3-pro:
+    owned_by: system
+    deprecated: false
+    created: '2025-05-28T16:35:49'
+    discovered_at: '2025-12-09T10:41:37.926454'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.610393'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:45:06.181167'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:01.420741'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:45:20.846347'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:45:13.811955'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.681490'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o3-pro-2025-06-10:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-05T16:39:21'
+    discovered_at: '2025-12-09T10:41:37.926479'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:03.795628'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:51:31.747731'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.330064'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:51:40.861872'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:51:31.545004'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:03.865711'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o4-mini:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-09T12:02:31'
+    discovered_at: '2025-12-09T10:41:37.926386'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:51:02.925846'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:51:00.613421'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:53.565087'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:51:02.745969'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:50:59.901559'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:51:03.813757'
+  o4-mini-2025-04-16:
+    owned_by: system
+    deprecated: false
+    created: '2025-04-08T10:31:46'
+    discovered_at: '2025-12-09T10:41:37.926373'
+    features:
+      audio_input:
+        status: not_supported
+        tested_at: '2025-12-09T10:46:43.747582'
+      completions_api:
+        status: supported
+        tested_at: '2025-12-09T10:46:38.350620'
+      json_object:
+        status: supported
+        tested_at: '2025-12-18T11:38:55.923282'
+      reasoning:
+        status: supported
+        tested_at: '2025-12-09T10:46:42.656320'
+      responses_api:
+        status: supported
+        tested_at: '2025-12-09T10:46:40.201050'
+      structured_output:
+        status: supported
+        tested_at: '2025-12-09T10:46:43.586792'
+  o4-mini-deep-research:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-11T16:44:45'
+    discovered_at: '2025-12-09T10:41:37.926486'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.689939'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:45:05.736705'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:31.713542'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.762304'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:45:05.907923'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Deep research models require at least one of ''web_search_preview'',
+          ''mcp'', or ''file_search'' tools.", ''type'': ''invalid_request_error'', ''param'': ''tools'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:19.852200'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  o4-mini-deep-research-2025-06-26:
+    owned_by: system
+    deprecated: false
+    created: '2025-06-25T08:42:01'
+    discovered_at: '2025-12-09T10:41:37.926521'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.403404'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:42:41.095996'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This model is only supported in v1/responses and not
+          in v1/chat/completions.'', ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:09.741496'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.476610'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:41.269938'
+        error_message: 'Error code: 400 - {''error'': {''message'': "Deep research models require at least one of ''web_search_preview'',
+          ''mcp'', or ''file_search'' tools.", ''type'': ''invalid_request_error'', ''param'': ''tools'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:26.550773'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  omni-moderation-2024-09-26:
+    owned_by: system
+    deprecated: false
+    created: '2024-11-27T11:07:46'
+    discovered_at: '2025-12-09T10:41:37.926178'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.800325'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:52:44.522297'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:13.755437'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.876625'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:52:44.297692'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''omni-moderation-2024-09-26'' was
+          not found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:25.949344'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  omni-moderation-latest:
+    owned_by: system
+    deprecated: false
+    created: '2024-11-15T08:47:45'
+    discovered_at: '2025-12-09T10:41:37.926171'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:23.822253'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:41:38.078470'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:33.045336'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:23.896658'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:15.805635'
+        error_message: 'Error code: 500 - {''error'': {''message'': ''An error occurred while processing your request. You
+          can retry your request, or contact us through our help center at help.openai.com if the error persists. Please include
+          the request ID req_8bbd32b0f1b945fd9d33e0f0c49b4fc6 in your message.'', ''type'': ''server_error'', ''param'': None,
+          ''code'': ''server_error''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:23.970910'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  sora-2:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-05T16:56:55'
+    discovered_at: '2025-12-09T10:41:37.926752'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:03.937374'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:43:03.197782'
+        error_message: 'Error code: 503 - {''error'': {''message'': ''No available capacity was found for the model'', ''type'':
+          ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.870367'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.023517'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:03.363568'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found sora-2'', ''type'': ''invalid_request_error'',
+          ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.095247'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  sora-2-pro:
+    owned_by: system
+    deprecated: false
+    created: '2025-10-05T16:57:43'
+    discovered_at: '2025-12-09T10:41:37.926759'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.284863'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:43:15.121885'
+        error_message: 'Error code: 503 - {''error'': {''message'': ''No available capacity was found for the model'', ''type'':
+          ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:37:59.788518'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.358329'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:15.297045'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''Model not found sora-2-pro'', ''type'': ''invalid_request_error'',
+          ''param'': ''model'', ''code'': None}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.429404'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  text-embedding-3-large:
+    owned_by: system
+    deprecated: false
+    created: '2024-01-22T11:53:00'
+    discovered_at: '2025-12-09T10:41:37.926056'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.800373'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:44:55.016192'
+        error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
+          ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:01.426585'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.871798'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:55.176203'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''text-embedding-3-large'' was not
+          found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:11.941958'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  text-embedding-3-small:
+    owned_by: system
+    deprecated: false
+    created: '2024-01-22T10:43:17'
+    discovered_at: '2025-12-09T10:41:37.926048'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.166625'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: error
+        tested_at: '2025-12-09T10:43:06.152249'
+        error_message: 'Error code: 403 - {''error'': {''message'': ''You are not allowed to sample from this model'', ''type'':
+          ''invalid_request_error'', ''param'': None, ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:08.148202'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.239475'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:43:06.301100'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''text-embedding-3-small'' was not
+          found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:04.309905'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  text-embedding-ada-002:
+    owned_by: openai-internal
+    deprecated: false
+    created: '2022-12-16T11:01:39'
+    discovered_at: '2025-12-09T10:41:37.926809'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.302149'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:54:00.561575'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:03.861594'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.372577'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:54:00.213704'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''text-embedding-ada-002'' was not
+          found.", ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:00.633438'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  tts-1:
+    owned_by: openai-internal
+    deprecated: false
+    created: '2023-04-19T14:49:11'
+    discovered_at: '2025-12-09T10:41:37.926794'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.370106'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:43:13.176339'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:55.210489'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.442364'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:43:13.322525'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''tts-1'' was not found.", ''type'':
+          ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.513746'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  tts-1-1106:
+    owned_by: system
+    deprecated: false
+    created: '2023-11-03T16:14:01'
+    discovered_at: '2025-12-09T10:41:37.926030'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.249506'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:49:29.902514'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:38:05.685208'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.321576'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:49:30.102537'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''tts-1-1106'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:12.392236'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  tts-1-hd:
+    owned_by: system
+    deprecated: false
+    created: '2023-11-03T14:13:35'
+    discovered_at: '2025-12-09T10:41:37.926020'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:06.896974'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:13.802699'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:04.081068'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:06.967435'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:13.960546'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''tts-1-hd'' was not found.", ''type'':
+          ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:07.038882'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  tts-1-hd-1106:
+    owned_by: system
+    deprecated: false
+    created: '2023-11-03T16:18:53'
+    discovered_at: '2025-12-09T10:41:37.926040'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.689382'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:42:35.671770'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:03.981445'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.760297'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:42:35.821052'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''tts-1-hd-1106'' was not found.",
+          ''type'': ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:14.833534'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+  whisper-1:
+    owned_by: openai-internal
+    deprecated: false
+    created: '2023-02-27T13:13:04'
+    discovered_at: '2025-12-09T10:41:37.926801'
+    features:
+      audio_input:
+        status: skipped
+        tested_at: '2025-12-09T10:54:28.267070'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      completions_api:
+        status: unavailable
+        tested_at: '2025-12-09T10:44:46.917352'
+        error_message: 'Error code: 404 - {''error'': {''message'': ''This is not a chat model and thus not supported in the
+          v1/chat/completions endpoint. Did you mean to use v1/completions?'', ''type'': ''invalid_request_error'', ''param'':
+          ''model'', ''code'': None}}'
+      json_object:
+        status: skipped
+        tested_at: '2025-12-18T11:39:20.026420'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+      reasoning:
+        status: skipped
+        tested_at: '2025-12-09T10:54:28.340712'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - responses_api
+      responses_api:
+        status: error
+        tested_at: '2025-12-09T10:44:47.083020'
+        error_message: 'Error code: 400 - {''error'': {''message'': "The requested model, ''whisper-1'' was not found.", ''type'':
+          ''invalid_request_error'', ''param'': ''model'', ''code'': ''model_not_found''}}'
+      structured_output:
+        status: skipped
+        tested_at: '2025-12-09T10:54:28.415136'
+        metadata:
+          reason: unmet_dependencies
+          failed_dependencies:
+          - completions_api
+last_discovery: '2026-01-08T23:03:01.901516'

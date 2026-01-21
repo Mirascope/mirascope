@@ -1,0 +1,322 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.retries.fallback
+description: API documentation for mirascope.retries.fallback
+---
+
+# mirascope.retries.fallback
+
+## <ApiType type="Module" path="retries/fallback" symbolName="fallback" /> fallback
+
+The `fallback` module provides a fallback retry strategy.
+
+## <ApiType type="Class" path="retries/fallback" symbolName="FallbackDecorator" /> FallbackDecorator
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}} />
+
+
+## <ApiType type="Class" path="retries/fallback" symbolName="Fallback" /> Fallback
+
+The override arguments to use for this fallback attempt.
+
+**Bases:** 
+<TypeLink type={{"type_str": "TypedDict", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.TypedDict"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "catch",
+    "type_info": {
+      "type_str": "Required[type[Exception] | tuple[type[Exception]]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Required",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Required"
+      },
+      "parameters": [
+        {
+          "type_str": "type[Exception] | tuple[type[Exception]]",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "type[Exception]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "type",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/functions.html#type"
+              },
+              "parameters": [
+                {
+                  "type_str": "Exception",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "Exception"
+                }
+              ]
+            },
+            {
+              "type_str": "tuple[type[Exception]]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "tuple",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+              },
+              "parameters": [
+                {
+                  "type_str": "type[Exception]",
+                  "description": null,
+                  "kind": "generic",
+                  "base_type": {
+                    "type_str": "type",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/functions.html#type"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "Exception",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_identifier": "Exception"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "provider",
+    "type_info": {
+      "type_str": "Required[Provider]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Required",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Required"
+      },
+      "parameters": [
+        {
+          "type_str": "Provider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#provider"
+        }
+      ]
+    }
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "Required[str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Required",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Required"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ]
+    }
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "NotRequired[CommonCallParams]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "CommonCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "CommonCallParams"
+        }
+      ]
+    }
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "NotRequired[Any]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "Any",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="retries/fallback" symbolName="FallbackError" /> FallbackError
+
+An error raised when all fallbacks fail.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Exception", "description": null, "kind": "simple", "doc_identifier": "Exception"}} />
+
+
+## <ApiType type="Function" path="retries/fallback" symbolName="fallback" /> fallback
+
+A decorator that retries the function call with a fallback strategy.
+
+This must use the provider-agnostic `llm.call` decorator.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "catch",
+    "type_info": {
+      "type_str": "type[Exception] | tuple[type[Exception]]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "type[Exception]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/functions.html#type"
+          },
+          "parameters": [
+            {
+              "type_str": "Exception",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Exception"
+            }
+          ]
+        },
+        {
+          "type_str": "tuple[type[Exception]]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "type[Exception]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "type",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/functions.html#type"
+              },
+              "parameters": [
+                {
+                  "type_str": "Exception",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "Exception"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The exception(s) to catch for the original call."
+  },
+  {
+    "name": "fallbacks",
+    "type_info": {
+      "type_str": "list[Fallback]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "Fallback",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/retries/fallback#fallback"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "FallbackDecorator",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/retries/fallback#fallbackdecorator"
+  },
+  "description": "The decorated function."
+}}
+/>
+
+
+

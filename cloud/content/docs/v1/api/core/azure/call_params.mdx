@@ -1,0 +1,491 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.azure.call_params
+description: API documentation for mirascope.core.azure.call_params
+---
+
+# mirascope.core.azure.call_params
+
+## <ApiType type="Module" path="core/azure/call_params" symbolName="call_params" /> call_params
+
+<Info title="Usage">
+
+[Calls](/docs/v1/learn/calls#provider-specific-parameters)
+
+</Info>
+
+## <ApiType type="Attribute" path="core/azure/call_params" symbolName="ResponseFormatJSON" /> ResponseFormatJSON
+
+**Type:** <TypeLink type={{"type_str": "TypeAlias", "description": null, "kind": "simple", "doc_identifier": "TypeAlias"}} />
+
+
+## <ApiType type="Class" path="core/azure/call_params" symbolName="AzureCallParams" /> AzureCallParams
+
+The parameters to use when calling the Azure API.
+
+[Azure API Reference](https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/ai/azure-ai-inference)
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "frequency_penalty",
+    "type_info": {
+      "type_str": "NotRequired[float | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "float | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "float",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/functions.html#float"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "max_tokens",
+    "type_info": {
+      "type_str": "NotRequired[int | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "int | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "int",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/functions.html#int"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "model_extras",
+    "type_info": {
+      "type_str": "NotRequired[dict[str, Any] | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "dict[str, Any] | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "dict[str, Any]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "dict",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+              },
+              "parameters": [
+                {
+                  "type_str": "str",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+                },
+                {
+                  "type_str": "Any",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+                }
+              ]
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "presence_penalty",
+    "type_info": {
+      "type_str": "NotRequired[float | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "float | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "float",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/functions.html#float"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "response_format",
+    "type_info": {
+      "type_str": "NotRequired[ResponseFormatJSON | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "ResponseFormatJSON | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "ResponseFormatJSON",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/azure/call_params#responseformatjson"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "seed",
+    "type_info": {
+      "type_str": "NotRequired[int | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "int | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "int",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/functions.html#int"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "stop",
+    "type_info": {
+      "type_str": "NotRequired[list[str] | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "list[str] | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "list[str]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "list",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+              },
+              "parameters": [
+                {
+                  "type_str": "str",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+                }
+              ]
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "temperature",
+    "type_info": {
+      "type_str": "NotRequired[float | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "float | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "float",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/functions.html#float"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "tool_choice",
+    "type_info": {
+      "type_str": "NotRequired[str | ChatCompletionsToolChoicePreset | ChatCompletionsNamedToolChoice | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "str | ChatCompletionsToolChoicePreset | ChatCompletionsNamedToolChoice | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "ChatCompletionsToolChoicePreset",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "ChatCompletionsToolChoicePreset"
+            },
+            {
+              "type_str": "ChatCompletionsNamedToolChoice",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "ChatCompletionsNamedToolChoice"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "top_p",
+    "type_info": {
+      "type_str": "NotRequired[float | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "NotRequired",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.NotRequired"
+      },
+      "parameters": [
+        {
+          "type_str": "float | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "float",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/functions.html#float"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+

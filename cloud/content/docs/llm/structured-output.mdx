@@ -1,0 +1,105 @@
+---
+title: Structured Output
+description: Learn how to get structured, validated responses from LLMs using Pydantic models.
+---
+
+# Structured Output
+
+By default, LLMs output free-form text. Mirascope lets you constrain responses to structured data that matches a predefined type. Pass the type as the `format` parameter, then call `response.parse()` to get the result:
+
+<CodeExample file="python/examples/structured_output/primitives.py" />
+
+Supported types include `str`, `int`, `float`, `bool`, `list`, `dict`, `Enum`, `Literal`, and Pydantic `BaseModel` classes.
+
+## Pydantic Models
+
+For complex structures, define a Pydantic `BaseModel`:
+
+<CodeExample file="python/examples/structured_output/basemodel.py" />
+
+See the [Pydantic documentation](https://docs.pydantic.dev/latest/) for details on defining models, field types, and validators.
+
+## Generic Collections
+
+Generic collections like `list[Book]` and `dict[str, Book]` work with BaseModel classes:
+
+<CodeExample file="python/examples/structured_output/generic_collection.py" />
+
+## Validation Errors
+
+Pydantic validates the response. If the LLM returns invalid data, `parse()` raises `pydantic.ValidationError`:
+
+```python
+try:
+    book = response.parse()
+except pydantic.ValidationError as e:
+    print(f"Invalid response: {e}")
+```
+
+<Note>
+When validation fails, consider retrying with error feedback. See [Reliability](/docs/llm/reliability) for retry patterns.
+</Note>
+
+## Formatting Modes
+
+Mirascope supports multiple strategies for extracting structured output. By default, it chooses strict mode if supported by your provider, or tool mode otherwise. Use `llm.format()` to force a specific mode:
+
+<CodeExample file="python/examples/structured_output/explicit_mode.py" />
+
+### Mode Reference
+
+| Mode | Description |
+| --- | --- |
+| `"strict"` | Provider guarantees JSON matches schema. Most reliable, but not all providers support it. |
+| `"tool"` | Uses a hidden tool call to extract structured data. Works with all providers that support tools. |
+| `"json"` | Requests JSON output and modifies prompt with schema. No strict guarantees. |
+| `"parser"` | Custom parsing with `@llm.output_parser`. For non-JSON formats like XML. |
+
+<Note title="Mode Compatibility" collapsible={true} defaultOpen={false}>
+- `"strict"` may raise `llm.FormattingModeNotSupportedError` if the provider doesn't support it
+- `"strict"` + tools may raise `llm.FeatureNotSupportedError` for certain models (e.g. older Gemini models)
+- `"tool"` mode works wherever tools are supported, by adding a hidden tool named `__mirascope_formatted_output_tool__`. Mirascope hides the tool and automatically converts the tool call into text output.
+</Note>
+
+## Structured Output with Tools
+
+Structured output works alongside tool calling. The LLM can use tools, then return structured data as its final response:
+
+<CodeExample file="python/examples/structured_output/with_tools.py" />
+
+<Note>
+In `"tool"` mode, Mirascope distinguishes between your tools and the hidden format tool automatically.
+</Note>
+
+## Advanced Model Features
+
+The class name, docstring, and field descriptions all become part of the schema sent to the LLM. Use these to guide the model's output:
+
+<CodeExample file="python/examples/structured_output/advanced_model_features.py" />
+
+Models can also be nested, as shown with the `Author` class above.
+
+## Custom Formatting Instructions
+
+Add a `formatting_instructions` classmethod to your format class to control how Mirascope prompts the LLM:
+
+<CodeExample file="python/examples/structured_output/custom_instructions.py" />
+
+<Note title="When Instructions Are Used" collapsible={true} defaultOpen={false}>
+Mirascope auto-generates formatting instructions for `"tool"` and `"json"` modes. Custom instructions override this behavior. In `"strict"` mode, instructions are typically not needed since the provider enforces the schema.
+</Note>
+
+## Custom Output Parsers
+
+For non-JSON formats (XML, CSV, custom text), use `@llm.output_parser` to define custom parsing logic:
+
+<CodeExample file="python/examples/structured_output/output_parser.py" />
+
+The parser receives the full response and can extract data however you need. The `formatting_instructions` are added to the system prompt to guide the LLM.
+
+
+## Next Steps
+
+- [Streaming](/docs/llm/streaming) — Stream responses with structured output
+- [Reliability](/docs/llm/reliability) — Retry on validation errors
+- [Tools](/docs/llm/tools) — Combine tools with structured output

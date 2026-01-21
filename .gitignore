@@ -2,9 +2,6 @@
 .python-version
 .python-versions
 
-# Claude
-CLAUDE.md
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -131,6 +128,9 @@ celerybeat.pid
 
 # Environments
 .env
+.env.local
+.env.staging
+.env.production
 .venv
 env/
 venv/
@@ -175,3 +175,9 @@ cython_debug/
 
 #sqlite
 database.db
+
+node_modules
+
+# Generated responsive images
+cloud/public/assets/**/*-medium.webp
+cloud/public/assets/**/*-small.webp

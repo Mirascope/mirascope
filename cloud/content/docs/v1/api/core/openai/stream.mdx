@@ -1,0 +1,121 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.openai.stream
+description: API documentation for mirascope.core.openai.stream
+---
+
+# mirascope.core.openai.stream
+
+## <ApiType type="Module" path="core/openai/stream" symbolName="stream" /> stream
+
+The `OpenAIStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/v1/learn/streams)
+
+</Info>
+
+## <ApiType type="Attribute" path="core/openai/stream" symbolName="FinishReason" /> FinishReason
+
+**Type:** <TypeLink type={{"type_str": "Choice.__annotations__['finish_reason']", "description": null, "kind": "generic", "base_type": {"type_str": "Choice.__annotations__", "description": null, "kind": "simple", "doc_identifier": "Choice.__annotations__"}, "parameters": [{"type_str": "'finish_reason'", "description": null, "kind": "simple", "doc_identifier": "'finish_reason'"}]}} />
+
+
+## <ApiType type="Class" path="core/openai/stream" symbolName="OpenAIStream" /> OpenAIStream
+
+A class for convenience around streaming OpenAI LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.openai import openai_call
+
+
+@openai_call("gpt-4o-mini", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")  # returns `OpenAIStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[OpenAICallResponse, OpenAICallResponseChunk, ChatCompletionUserMessageParam, ChatCompletionAssistantMessageParam, ChatCompletionToolMessageParam, ChatCompletionMessageParam, OpenAITool, ChatCompletionToolParam, OpenAIDynamicConfig, OpenAICallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/stream#basestream"}, "parameters": [{"type_str": "OpenAICallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response#openaicallresponse"}, {"type_str": "OpenAICallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#openaicallresponsechunk"}, {"type_str": "ChatCompletionUserMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionUserMessageParam"}, {"type_str": "ChatCompletionAssistantMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionAssistantMessageParam"}, {"type_str": "ChatCompletionToolMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionToolMessageParam"}, {"type_str": "ChatCompletionMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionMessageParam"}, {"type_str": "OpenAITool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/tool#openaitool"}, {"type_str": "ChatCompletionToolParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionToolParam"}, {"type_str": "OpenAIDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/dynamic_config#openaidynamicconfig"}, {"type_str": "OpenAICallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_params#openaicallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "audio_id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/openai/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed OpenAIStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "OpenAICallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/openai/call_response#openaicallresponse"
+  }
+}}
+/>
+
+
+
+

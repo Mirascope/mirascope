@@ -1,9 +1,39 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:docs.anthropic.com)",
       "Bash(ls:*)",
-      "Bash(rg:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(gh pr view:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(file:*)",
+      "Bash(which:*)",
+      "Bash(pwd:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(bun run ci:*)",
+      "Bash(bun run lint:*)",
+      "Bash(bun run typecheck:*)",
+      "Bash(uv run pyright:*)",
+      "Bash(uv run ruff:*)",
+      "mcp__ide__getDiagnostics",
+      "WebFetch(domain:platform.openai.com)",
+      "WebFetch(domain:ai.google.dev)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:mirascope.com)",
+      "Bash(mkdir:*)",
+      "Bash(bun run test:coverage:*)",
+      "Bash(bun run test:*)",
+      "Bash(uv run pytest:*)",
+      "Bash(uv run rg:*)",
+      "Bash(bun run lint:eslint:*)"
     ],
     "deny": []
   }

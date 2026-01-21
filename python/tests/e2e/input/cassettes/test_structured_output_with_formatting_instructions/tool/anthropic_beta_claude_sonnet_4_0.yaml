@@ -1,0 +1,118 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      a book to me!"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
+      recommend The Name of the Wind.\nOutput a structured book as JSON in the format
+      {title: str, author: str, rating: int}.\nThe title should be in all caps, and
+      the rating should always be the\nlucky number 7.","cache_control":{"type":"ephemeral"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '954'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VRYU/CMBD9K6SfIYHJXNw3RQgmgMRgMDGmabZjK9va0V4FQ/bfvc5Mg8ZvvXvv
+        7r17PbNKp1CymCWlcCkMrFYKcDAeBMMgHIajMeszmRJe2YwPR4vFMlL7oy4iKMLDzdWdfs7WO+Lg
+        Rw2eBdaKDKhhdOkbwlppUSikVqIVAr3i13PHR61L7ix0Kr52pDM6mv1VON9MTmY/DSanw8tsu/U6
+        SlR+jvNKGmETXQPfaVMJREi5dlg75O1S7lcqKllMahJbN5v5tLe6XU57j7Oef28fVvfEEw5zbQhf
+        CzQyKXpPGvOds9bfIVCqjMVR07z1mUVdcwOCYrp03wIWDg5UQkrKlWWfuTYL0m+NkK8ClGXxOAoo
+        DJHkwBPahVIrfskYdjjB6X9YN+sFoM6hAiNKHlZ/+T/oKP+NNn32HdtX6zqic8C8ywQ4SvC5+B9M
+        hUlZ03wCtEmoxzICAAA=
+    headers:
+      CF-RAY:
+      - 9c11fde39cbcddb8-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 20 Jan 2026 22:26:10 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-20T22:26:10Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-20T22:26:10Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-20T22:26:08Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-20T22:26:10Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXKR5LzcXmSeR6kVMGbGH
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '2067'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,118 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      recommend the most popular book by Patrick Rothfuss","role":"user"}],"model":"gpt-4o","tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1137'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//nFbbbuM2EH33V7DsPjpZ2fH9LUU37QLbNFikuwWqQBhRI5sJJWrJkZsg
+        8L8XpGxZkq0suk9R5nI4c+bQw9cBY1wmfMW4QVtEAeAViNl0OU+CeCbSIJgt0uVslowns0QsRsvp
+        Ih6LyWi5WKbTZZCOZnzoIHT8iIIOMDq3WNmFQSBMInC+0Xw2Gs2n42ngfZaASutyhM4KhYRJlRSD
+        eFobXeaurhSUxcoslZL5mq/Y64AxxngBL2hcfoJbVLpAwweM7XwwGqOdLy+V8gaZH06JEiSQyra9
+        lkwpSOq8Zc/gOdIlFSVFpJ/w1Elaq0iAasNlOkHlKlsXdDHRF+NgPLkIFhfBgS4PyVfsH99J1U89
+        iVT0z+FqMZpM/BymC4HJdBYH8XwO04o6D0IvBXqYMvcN+fKO7j7avRPMuswwJ+9/DTlJUhjyVcjv
+        f//Abq//+MD+vGHu++vH219DPgw5lLTRJuSr15Cn0liKcsiqnDsgI8WTD1PQ9HzWtElLa0O+G4bc
+        AMl8HfLVfHcsxVUdVYRUn39P7h5vgmz7OPv25fbj3eh2/NvLp+X2mOHQXXgUZdKAFbrAKNUmA3IS
+        rMeoVRRxn7MbMPbgB1KAAaVQtedJpqykVxjcSl3a6KDuqrB63oXRWUGRALHB6Alfmj6DYHXeEi6m
+        qTbUCHJjKbMMzCGz1rGFFOklkgnmJFOJLU1bNFspMCJ5uAcplIr4/nppg80mCLMCDVDpzaPLYG99
+        pmNlFV31/w01+biKtX3FWzSxtpJczTzDRJbZ8f5VPG60FHhE7ypzP7r/O7jjCfb0CvWcwRw7VhhZ
+        eOOK8b8sMtpIyxwQI83wmQwIYgkQMJmzX7R+YlUZ7g8DlsocFDto4DLMr1nsgv6VtGHAKhlfsvsN
+        Mn9xmN3oUiUsRocHSjEBhf3pxxRbJzmtZkhobGNOlQgLNCSxbXecuGI6xoaZ3/uPYce7J9KSceJt
+        OHfNyP39P0V/ZzB1+T+/f5dgat9fV3G9OBV7pzidsd1owwiti2VFaQpt0Q4ZbXBPf4Pz+UlLh4Y/
+        V2f1dCxzwjW2Sx2cKZob/FZKg0mtwtY551g613FtemhAQ5JI1zKou+ZY6214INlR2x33dc9EOkw6
+        mVZlMZ0y8FK+7HLSK6rq56L+vT/jbRJ+4wLZrQscngnrldqJTHx8vUu+c+on+PFDB2+U0Df4Lidv
+        FN7yPPTp9PpUNY3K94+ujvct5XxX0R3oQSfCk+XfeW6rdHYo6SJSel0YHbsDg9pYNNeNKXMBBwkm
+        0kKsDu++0sK6sS1k3np2jebB8NTReMy9Hl8OYoPJMTNora3uc+4qOOc4h1tv8j5o0gTq6BwHQb2t
+        Stte3RkSuEXj8HeD3X8AAAD//wMAH4otB4gLAAA=
+    headers:
+      CF-RAY:
+      - 992cba41ab387537-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 22 Oct 2025 23:20:52 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2714'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2721'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799613'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 29ms
+      x-request-id:
+      - req_e61eaba7e2b04068aae2484309b65077
+    status:
+      code: 200
+      message: OK
+version: 1

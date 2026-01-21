@@ -1,0 +1,139 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.llm.context
+description: API documentation for mirascope.llm.context
+---
+
+# mirascope.llm.context
+
+## <ApiType type="Alias" path="llm/context" symbolName="context" /> context
+
+Context manager for LLM API calls.
+
+This method only allows setting overrides (provider, model, client, call_params)
+and does not allow structural overrides (stream, tools, response_model, etc.).
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "provider",
+    "type_info": {
+      "type_str": "Provider | LocalProvider",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Provider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#provider"
+        },
+        {
+          "type_str": "LocalProvider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#localprovider"
+        }
+      ]
+    },
+    "description": "The provider to use for the LLM API call."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "The model to use for the LLM API call."
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "Any | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Any",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The client to use for the LLM API call."
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "CommonCallParams | Any | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "CommonCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "CommonCallParams"
+        },
+        {
+          "type_str": "Any",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The call parameters for the LLM API call."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "LLMContext",
+    "description": null,
+    "kind": "simple",
+    "doc_identifier": "LLMContext"
+  }
+}}
+/>
+
+
+**Alias to:** `mirascope.llm._context.context`
+

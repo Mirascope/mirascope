@@ -1,0 +1,128 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
+      "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
+      500, "stopSequences": ["4242"], "seed": 42, "thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 200}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '278'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WRQU/CQBCF7/0Vm70KphQQws2oBw9G1IaA1sPGDm1ju1O60wRC+O9OtxS2cQ/N
+        ZN7bebNfj54Q8kfpOIsVgZEL8cUdIY7222ioCTSx0LW4WaqKrt72HJ2aLQT75pIMUWwzHQtKQZi6
+        ELgVk8D3BUdyMRAHrIWKrV4IwgS4qBaRjnRji/QND5sEkR7aE2npxJwu9ffgulyFOTTJBcaQd/ZT
+        Z5C8TWbSd1AGdWP7CF+X8qLyqrDntu91AXa0rI1K4AVIMSZ1gSHLCouSQvwF/YC1xTQat8Mcqj19
+        HJx1QlJ5/2rgD/7NNY+cmuUubudP8CNVntHBon5ah9IBQf21OhKeA0xSinWSUn/F2dQ7E2shrqAy
+        WUsrgYL5DYPb6XCbK5PaPFmBKVEbeI4bz3r0mShV+/fzYLYjs7zb7FbZ21x6J+8PSV8rh28CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 01:14:07 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=907
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
+      "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
+      500, "stopSequences": ["4242"], "seed": 42, "thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 0}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '276'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WRT0+DQBDF73yKyV4FgxRj7NU/iSbGqkRNpIdNd6Ckyy5hp1rT9Ls7LKWlcQ/w
+        Mu/tzPBjGwCIhTSqUpLQiSl8cQVg65+dZw2hITaGEhcb2dIx25/tSHOEcNNdEpmFojIKaIng1jXY
+        AtIkjoFHsgjhB4HHg1Q+UgPZElm009zkhht14dycgZe5ifrjLTGauDvoeXjcs7UauyVqq1AP8d0Q
+        ELxY5ZavKJ01Xewte56Jg8tb44bLcTAM8K3F2skSn5AkE5MHLqJpbd1QZldobuzaE7uY9M1GgE/8
+        Sbr3yZLUJ1Z6Ff5r6255aKXH4Ef/hL9R6op+PfS7z0yMONDpVgMI/54HeyQ9pXdsXdXjKLFmQFFy
+        fhkVWrql7yhadI01Dh9Ul1GP16Usoo97ibqm1Sz+niXpy0IEu+APrlJBf1sCAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:25:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=729
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

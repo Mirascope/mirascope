@@ -1,0 +1,280 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.llm.call_response
+description: API documentation for mirascope.llm.call_response
+---
+
+# mirascope.llm.call_response
+
+The CallResponse class for the LLM provider.
+
+## <ApiType type="Class" path="llm/call_response" symbolName="CallResponse" /> CallResponse
+
+A provider-agnostic CallResponse class.
+
+We rely on _response having `common_` methods or properties for normalization.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseCallResponse[Any, BaseTool, Any, BaseDynamicConfig[Any, Any, Any], BaseMessageParam, BaseCallParams, BaseMessageParam, BaseMessageParamConverter]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"}, "parameters": [{"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}, {"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#basetool"}, {"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}, {"type_str": "BaseDynamicConfig[Any, Any, Any]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}, {"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}, {"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}]}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}, {"type_str": "BaseCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}, {"type_str": "BaseMessageParamConverter", "description": null, "kind": "simple", "doc_identifier": "BaseMessageParamConverter"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "usage",
+    "type_info": {
+      "type_str": "Usage | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Usage",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#usage"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the usage of the chat completion."
+  },
+  {
+    "name": "message_param",
+    "type_info": {
+      "type_str": "BaseMessageParam",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+    }
+  },
+  {
+    "name": "common_messages",
+    "type_info": {
+      "type_str": "list[BaseMessageParam]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseMessageParam",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+        }
+      ]
+    }
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "list[Tool] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[Tool]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "Tool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/llm/tool#tool"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "tool",
+    "type_info": {
+      "type_str": "Tool | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Tool",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/llm/tool#tool"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="llm/call_response" symbolName="tool_message_params" /> tool_message_params
+
+Returns the tool message parameters for tool call results.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tools_and_outputs",
+    "type_info": {
+      "type_str": "Sequence[tuple[BaseTool, str]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Sequence",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "Sequence"
+      },
+      "parameters": [
+        {
+          "type_str": "tuple[BaseTool, str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "BaseTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The sequence of tools and their outputs from which the tool\nmessage parameters should be constructed."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[BaseMessageParam]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "BaseMessageParam",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+      }
+    ]
+  }
+}}
+/>
+
+
+

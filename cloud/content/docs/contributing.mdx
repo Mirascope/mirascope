@@ -1,0 +1,274 @@
+---
+title: Contributing
+description: How to contribute to Mirascope
+---
+
+# Contributing
+
+Thank you for your interest in contributing to Mirascope! We welcome contributions from the community and are excited to have you join us.
+
+Mirascope is a monorepo with two main areas for contribution: the **Python SDK** and the **Cloud Application**. See [STRUCTURE.md](https://github.com/Mirascope/mirascope/blob/main/STRUCTURE.md) for a detailed breakdown of the codebase organization.
+
+## Development Workflow
+
+### 1. Find or Create an Issue
+
+Search [GitHub Issues](https://github.com/Mirascope/mirascope/issues) for existing work or create a new issue to discuss your idea.
+
+- Look for `good first issue` labels if you're new
+- Create an issue before starting significant work
+
+### 2. Fork and Clone
+
+```bash
+git clone https://github.com/<your-username>/mirascope.git
+cd mirascope
+git remote add upstream https://github.com/Mirascope/mirascope.git
+```
+
+### 3. Create a Branch
+
+```bash
+git checkout main
+git pull upstream main
+git checkout -b feat/my-feature-name
+```
+
+### 4. Make Your Changes
+
+- **Keep changes focused**: One logical change per PR
+- **Follow existing patterns**: Look at similar code in the codebase
+- **Add tests**: All new code requires tests
+- **Update documentation**: If your change affects user-facing behavior
+
+### 5. Commit with Conventional Commits
+
+```bash
+git commit -m "feat(llm): add Document content type tests"
+git commit -m "fix(cloud): resolve session expiration bug"
+git commit -m "docs: update contributing guide"
+```
+
+### 6. Submit a Pull Request
+
+```bash
+git push origin feat/my-feature-name
+```
+
+When opening your PR:
+
+- Use a title following [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+- Describe what your PR does and why
+- Link the related issue
+- Check the box to allow maintainer edits
+
+---
+
+## Python SDK
+
+### Prerequisites
+
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) package manager
+
+### Install uv
+
+<TabbedSection>
+<Tab value="macOS/Linux">
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+</Tab>
+<Tab value="Windows">
+```powershell
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+</Tab>
+</TabbedSection>
+
+### Setup
+
+```bash
+cd python
+
+# Create virtual environment and install dependencies
+uv sync --all-extras --dev
+
+# Install pre-commit hooks
+uv run pre-commit install --install-hooks
+
+# Verify setup
+uv run pytest tests/ -x
+```
+
+### Running Tests
+
+```bash
+uv run pytest tests/                              # Run all tests
+uv run pytest tests/llm/content/test_thought.py   # Run specific file
+uv run pytest tests/ --cov=mirascope --cov-report=html  # With coverage
+```
+
+### Formatting and Linting
+
+```bash
+uv run ruff format .    # Format code
+uv run ruff check .     # Lint code
+uv run pyright .        # Type check
+```
+
+### PR Checklist
+
+- [ ] Tests pass: `uv run pytest tests/`
+- [ ] 100% coverage for new code
+- [ ] Type check passes: `uv run pyright .`
+- [ ] Linting passes: `uv run ruff check .`
+- [ ] Code formatted: `uv run ruff format .`
+- [ ] Conventional commit messages
+
+---
+
+## Cloud Application
+
+The cloud application is a full-stack TypeScript application using Effect, React, and Cloudflare Workers.
+
+### Prerequisites
+
+- Node.js 18+
+- [Bun](https://bun.sh/) runtime
+- Docker (for local database)
+
+### Install Bun
+
+<TabbedSection>
+<Tab value="macOS/Linux">
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+</Tab>
+<Tab value="Windows">
+```powershell
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+</Tab>
+</TabbedSection>
+
+### Setup
+
+```bash
+cd cloud
+
+# Install dependencies
+bun install
+
+# Start local database (requires Docker)
+docker compose up -d
+
+# Run database migrations
+bun run db:migrate
+
+# Start dev server
+bun run dev
+```
+
+### Running Tests
+
+<Warning>
+Always use `bun run test` (not `bun test`) to run tests through vitest with proper configuration.
+</Warning>
+
+```bash
+bun run test                    # Run all tests
+bun run test db/users.test.ts   # Run specific file
+bun run test:coverage           # With coverage (required: 100%)
+```
+
+### Type Checking and Linting
+
+```bash
+bun run typecheck      # TypeScript type checking
+bun run lint:eslint    # ESLint
+```
+
+### Key Technologies
+
+- **[Effect](https://effect.website/)**: Functional programming with type-safe error handling
+- **TanStack Router**: File-based routing for React
+- **TanStack Query + Effect Query**: Data fetching with React Query
+- **Drizzle ORM**: Type-safe database access
+
+### Testing Patterns
+
+The cloud application uses Effect-native testing:
+
+```typescript
+import { describe, it, expect, TestProjectFixture } from "@/tests/db";
+
+describe("MyService", () => {
+  it.effect("should create a resource", () =>
+    Effect.gen(function* () {
+      const { org, owner } = yield* TestProjectFixture;
+      const db = yield* Database;
+
+      const result = yield* db.organizations.projects.create({
+        userId: owner.id,
+        organizationId: org.id,
+        data: { name: "New Project" },
+      });
+
+      expect(result.name).toBe("New Project");
+    }),
+  );
+});
+```
+
+### PR Checklist
+
+- [ ] Tests pass: `bun run test`
+- [ ] 100% coverage for new code
+- [ ] Type check passes: `bun run typecheck`
+- [ ] Linting passes: `bun run lint:eslint`
+- [ ] Conventional commit messages
+
+---
+
+## Code Quality
+
+### Coverage
+
+Both the Python SDK and Cloud application require **100% test coverage** for new code.
+
+### Type Safety
+
+We place high value on type safety:
+
+- All public functions must have complete type annotations
+- Avoid `# type: ignore` or `// @ts-ignore` unless absolutely necessary
+- Prefer specific types over `Any` or `unknown`
+
+### Docstrings (Python)
+
+Use Google-style docstrings:
+
+```python
+def create_tool(fn: Callable[..., T], *, strict: bool = False) -> Tool[T]:
+    """Creates a tool from a function.
+
+    Args:
+        fn: The function to convert to a tool.
+        strict: Whether to use strict mode for tool calling.
+
+    Returns:
+        A Tool instance wrapping the function.
+    """
+```
+
+---
+
+## Getting Help
+
+- **Questions**: Open a [GitHub Discussion](https://github.com/Mirascope/mirascope/discussions)
+- **Bugs**: File a [GitHub Issue](https://github.com/Mirascope/mirascope/issues)
+- **Chat**: Join our community on [Discord](/discord-invite)
+
+Thank you for contributing to Mirascope!

@@ -1,0 +1,270 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.llm.call
+description: API documentation for mirascope.llm.call
+---
+
+# mirascope.llm.call
+
+## <ApiType type="Alias" path="llm/call" symbolName="call" /> call
+
+A decorator for making provider-agnostic LLM API calls with a typed function.
+
+<Info title="Usage">
+
+[Calls](/docs/v1/learn/calls)
+
+</Info>
+
+
+This decorator enables writing provider-agnostic code by wrapping a typed function 
+that can call any supported LLM provider's API. It parses the prompt template of 
+the wrapped function as messages and templates the input arguments into each message's 
+template.
+
+Example:
+
+```python
+from ..llm import call
+
+
+@call(provider="openai", model="gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+response = recommend_book("fantasy")
+print(response.content)
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "provider",
+    "type_info": {
+      "type_str": "Provider | LocalProvider",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Provider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#provider"
+        },
+        {
+          "type_str": "LocalProvider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#localprovider"
+        }
+      ]
+    },
+    "description": "The LLM provider to use\n(e.g., \"openai\", \"anthropic\")."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "The model to use for the specified provider (e.g., \"gpt-4o-mini\")."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "description": "Whether to stream the response from the API call.  "
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "list[BaseTool | Callable]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseTool | Callable",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "BaseTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            },
+            {
+              "type_str": "Callable",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The tools available for the LLM to use."
+  },
+  {
+    "name": "response_model",
+    "type_info": {
+      "type_str": "BaseModel | BaseType",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseModel",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"
+        },
+        {
+          "type_str": "BaseType",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "BaseType"
+        }
+      ]
+    },
+    "description": "The response model into which the response\nshould be structured."
+  },
+  {
+    "name": "output_parser",
+    "type_info": {
+      "type_str": "Callable[[CallResponse | ResponseModelT], Any]",
+      "description": null,
+      "kind": "callable",
+      "base_type": {
+        "type_str": "Callable",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+      },
+      "parameters": [
+        {
+          "type_str": "[CallResponse | ResponseModelT]",
+          "description": null,
+          "kind": "tuple",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "CallResponse | ResponseModelT",
+              "description": null,
+              "kind": "union",
+              "base_type": {
+                "type_str": "Union",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+              },
+              "parameters": [
+                {
+                  "type_str": "CallResponse",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+                },
+                {
+                  "type_str": "ResponseModelT",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "ResponseModelT"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type_str": "Any",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+        }
+      ]
+    },
+    "description": "A function for\nparsing the call response whose value will be returned in place of the\noriginal call response."
+  },
+  {
+    "name": "json_mode",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "description": "Whether to use JSON Mode."
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "object",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#object"
+    },
+    "description": "An optional custom client to use in place of the default client."
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "CommonCallParams",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "CommonCallParams"
+    },
+    "description": "Provider-specific parameters to use in the API call."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Callable",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+  },
+  "description": "A decorator that transforms a typed function into a\nprovider-agnostic LLM API call that returns standardized response types\nregardless of the underlying provider used."
+}}
+/>
+
+
+**Alias to:** `mirascope.llm._call.call`
+

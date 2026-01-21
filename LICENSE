@@ -1,6 +1,14 @@
 MIT License
 
-Copyright (c) 2023 Mirascope, Inc.
+Copyright (c) 2026 Mirascope, Inc.
+
+---
+
+**Note on License Structure**: This repository uses a multi-license structure. Unless
+otherwise specified in a subdirectory's LICENSE file, all code in this repository is
+licensed under the MIT License. Subdirectories may contain their own LICENSE files
+that take precedence for files within those directories. For example, the `cloud/`
+directory has its own proprietary license.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

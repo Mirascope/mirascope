@@ -23,5 +23,18 @@
   },
   "[markdown]": {
     "editor.formatOnSave": false
-  }
+  },
+  "python.testing.pytestArgs": [
+    "python"
+  ],
+  "search.exclude": {
+    "**/cassettes": true,
+    "**/mlx_lm_cassettes": true,
+    "**/snapshots": true,
+    "**/api/_generated": true,
+  },
+  "css.validate": false,
+  "tailwindCSS.files.exclude": [
+    "**/app/components/ui/**",
+  ]
 }

@@ -1,0 +1,127 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is 2+2?
+      Think step by step."}],"model":"claude-sonnet-4-20250514","thinking":{"type":"enabled","budget_tokens":6400}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '180'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      CF-RAY:
+      - 9bb041b36a8f7590-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 01:45:47 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-09T01:45:42Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-09T01:45:47Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-09T01:45:41Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-09T01:45:42Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWvxawpSvEAUVjx5ft43a
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '6107'
+    status:
+      code: 200
+      message: OK
+version: 1

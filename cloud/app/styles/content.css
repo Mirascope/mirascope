@@ -1,0 +1,172 @@
+/* Font family for MDX content */
+.mdx-content {
+  font-family: var(--font-sans);
+}
+
+/* Table container with horizontal scrolling */
+.mdx-content .table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* Blog post headers styling - base styles */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+  /* todo(sebastian): this ported style suppresses the correct font weight for headings */
+  /* font-weight: 500 !important; */
+  margin-top: 1.5em !important;
+  margin-bottom: 0.8em !important;
+}
+
+/* Hide the first h1 heading in blog content since it's already shown in the page header */
+.blog-content > h1:first-of-type {
+  display: none !important;
+}
+
+/* Badge container for docs and usage info */
+.badge-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.badge-container a {
+  display: inline-block;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+/* Remove top margin from first child and bottom margin from last child in callouts */
+.callout-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.callout-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Word highlighting */
+.word {
+  background-color: rgba(200, 200, 255, 0.15);
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.2rem;
+}
+
+/* Pagefind search result highlighting */
+mark,
+.search-results mark,
+[data-pagefind-body] mark {
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: 0;
+}
+
+/* Fade-in animation for search results */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Headings and links use handwriting font */
+h1 {
+  font-family: var(--font-handwriting) !important;
+  @apply text-4xl;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-handwriting) !important;
+}
+
+/* Additional list styling */
+.mdx-content ul li:last-child,
+.mdx-content ol li:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Fix for ordered lists with double-digit numbers */
+.mdx-content ol {
+  padding-left: 2rem !important; /* Increase padding to accommodate double digits */
+}
+
+/* Ensure proper indentation for nested lists */
+.mdx-content ol ol {
+  padding-left: 2rem !important;
+}
+
+/* Code block styling */
+.mdx-content pre {
+  padding: 0.5rem !important;
+  overflow-x: auto !important;
+}
+
+/* Code block styling */
+.mdx-content pre.shiki {
+  background-color: var(--color-code-background) !important;
+}
+
+/* Hide scrollbar but maintain scrolling functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Global scrollbar styling */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-muted) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-muted);
+  border-radius: 6px;
+  max-width: 6px;
+  min-width: 6px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Override hover behavior */
+::-webkit-scrollbar:hover {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary);
+  max-width: 6px;
+  min-width: 6px;
+}
+
+/* Extra styling to override browser defaults */
+* {
+  scrollbar-width: thin;
+}

@@ -1,0 +1,632 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.tool
+description: API documentation for mirascope.core.base.tool
+---
+
+# mirascope.core.base.tool
+
+## <ApiType type="Module" path="core/base/tool" symbolName="tool" /> tool
+
+This module defines the base class for tools used in LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/v1/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/base/tool" symbolName="ToolConfig" /> ToolConfig
+
+A base class for tool configurations.
+
+**Bases:** 
+<TypeLink type={{"type_str": "TypedDict", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.TypedDict"}} />
+
+
+## <ApiType type="Class" path="core/base/tool" symbolName="GenerateJsonSchemaNoTitles" /> GenerateJsonSchemaNoTitles
+
+**Bases:** 
+<TypeLink type={{"type_str": "GenerateJsonSchema", "description": null, "kind": "simple", "doc_identifier": "GenerateJsonSchema"}} />
+
+## <ApiType type="Function" path="core/base/tool" symbolName="generate" /> generate
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "schema",
+    "type_info": {
+      "type_str": "CoreSchema",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "CoreSchema"
+    }
+  },
+  {
+    "name": "mode",
+    "type_info": {
+      "type_str": "JsonSchemaMode",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "JsonSchemaMode"
+    },
+    "default": "'validation'"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "JsonSchemaValue",
+    "description": null,
+    "kind": "simple",
+    "doc_identifier": "JsonSchemaValue"
+  }
+}}
+/>
+
+
+
+## <ApiType type="Class" path="core/base/tool" symbolName="BaseTool" /> BaseTool
+
+A class for defining tools for LLM calls.
+
+Example:
+
+```python
+from mirascope.core import BaseTool
+from pydantic import Field
+
+
+class FormatBook(BaseTool):
+    """Returns a nicely formatted book recommendation."""
+
+    title: str = Field(..., description="The title of the book.")
+    author: str = Field(..., description="The author of the book.")
+
+    def call(self) -> str:
+        return f"{self.title} by {self.author}"
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />, <TypeLink type={{"type_str": "ABC", "description": null, "kind": "simple", "doc_identifier": "ABC"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_config",
+    "type_info": {
+      "type_str": "ToolConfig",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/tool#toolconfig"
+    }
+  },
+  {
+    "name": "model_config",
+    "type_info": {
+      "type_str": "ConfigDict(arbitrary_types_allowed=True)",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ConfigDict(arbitrary_types_allowed=True)"
+    }
+  },
+  {
+    "name": "delta",
+    "type_info": {
+      "type_str": "SkipJsonSchema[str | None]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipJsonSchema",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+      },
+      "parameters": [
+        {
+          "type_str": "str | None",
+          "description": null,
+          "kind": "union",
+          "base_type": {
+            "type_str": "Union",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            },
+            {
+              "type_str": "None",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/constants.html#None"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "dict[str, Any]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "dict",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "Any",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+        }
+      ]
+    },
+    "description": "The arguments of the tool as a dictionary."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/base/tool" symbolName="call" /> call
+
+The method to call the tool.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "args",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+    },
+    "default": "()"
+  },
+  {
+    "name": "kwargs",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+    },
+    "default": "{}"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Any",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/tool" symbolName="type_from_fn" /> type_from_fn
+
+Returns this tool type converted from a function.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "type[_BaseToolT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseToolT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  },
+  {
+    "name": "fn",
+    "type_info": {
+      "type_str": "Callable",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+    },
+    "description": "The function to convert into this tool type."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "type[_BaseToolT]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "type",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#type"
+    },
+    "parameters": [
+      {
+        "type_str": "_BaseToolT",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/v1/api/core/base/tool#basetool"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/tool" symbolName="type_from_base_model_type" /> type_from_base_model_type
+
+Returns this tool type converted from a given base tool type.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "type[_BaseToolT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseToolT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  },
+  {
+    "name": "tool_type",
+    "type_info": {
+      "type_str": "type[BaseModel]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseModel",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"
+        }
+      ]
+    },
+    "description": "The tool type to convert into this tool type. This can be a\ncustom `BaseTool` or `BaseModel` definition."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "type[_BaseToolT]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "type",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#type"
+    },
+    "parameters": [
+      {
+        "type_str": "_BaseToolT",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/v1/api/core/base/tool#basetool"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/tool" symbolName="type_from_base_type" /> type_from_base_type
+
+Returns this tool type converted from a base type.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "type[_BaseToolT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseToolT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  },
+  {
+    "name": "base_type",
+    "type_info": {
+      "type_str": "type[_utils.BaseType]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_utils.BaseType",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_utils.BaseType"
+        }
+      ]
+    },
+    "description": "The base type (e.g. `int`) to convert into this tool type."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "type[_BaseToolT]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "type",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#type"
+    },
+    "parameters": [
+      {
+        "type_str": "_BaseToolT",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/v1/api/core/base/tool#basetool"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/tool" symbolName="tool_schema" /> tool_schema
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Any",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/tool" symbolName="model_json_schema" /> model_json_schema
+
+Returns the generated JSON schema for the class.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "by_alias",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    },
+    "default": "True"
+  },
+  {
+    "name": "ref_template",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "default": "DEFAULT_REF_TEMPLATE"
+  },
+  {
+    "name": "schema_generator",
+    "type_info": {
+      "type_str": "type[GenerateJsonSchema]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "GenerateJsonSchema",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "GenerateJsonSchema"
+        }
+      ]
+    },
+    "default": "GenerateJsonSchemaNoTitles"
+  },
+  {
+    "name": "mode",
+    "type_info": {
+      "type_str": "JsonSchemaMode",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "JsonSchemaMode"
+    },
+    "default": "'validation'"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "dict[str, Any]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "dict",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"
+    },
+    "parameters": [
+      {
+        "type_str": "str",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+      },
+      {
+        "type_str": "Any",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/base/tool" symbolName="warn_for_unsupported_configurations" /> warn_for_unsupported_configurations
+
+Warns when a specific provider does not support provided config options.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "None",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/constants.html#None"
+  }
+}}
+/>
+
+
+
+

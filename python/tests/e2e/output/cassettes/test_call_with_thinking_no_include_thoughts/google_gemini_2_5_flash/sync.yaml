@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '267'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61WbW/bNhD+7l9x0KfEcTRLtKsoQD8MewG2YVnXuluAeUDpiLaISqQjUnW8IP+9
+        d6QsS466DMUMRFB4b889d0fd4wgguOMqkxm3wgTX8BeeADy6J8m0skJZFByO8HDLK3vU9b/Hzjuq
+        WPFARsFCw1qqDGwuQNXlSlSg17CtZCkMrEShdzCbTlHMLVAsLhUsgyRdBsANcDD1ythKqs0EdgIQ
+        KZi9saLkVt7xotjDXS7uPjauDaB1xdVGmHCplioKAcbjm0ZWCGMokIIkvR6Pl4qA3mgPhixtLo03
+        d4FegIP/NxJJErvTl5ncSNtgcQBiB2BxzD1JQVojinULgE7I3qPwaugcKZMtI2YYQ+g9jL/TtbLw
+        GqIxxWS9pFfC7oRQcDV1PtP/KXMq51pWxoLPeafrIoOcfxJgNQaFxOU/G8QSTT0Y1kHzo64wSMPS
+        h5sPJ6jQ6QugyKasERAG58D6tQAqQWPY2rhU+XYreOWi7TTs+N5cN6zCSemMpa6HnbQ5Fe1MhJtw
+        gm+3520S9EMLI9p+9LwQH+mUlCN6xBMIQ2ebhvBtUdBEWGfGKwGbSuAoVr5TcTZCeKcnoPRhaNaV
+        Lj01a12VzqSdo/AL2IXKniG/TdI+8j9RXYjMcd0bKg/Ph4uSdAIxPRi6wiMHixfS7sOjKw8g6sxZ
+        S8/BuVyTL+p9l5cbb7yBqKE+SSNXklzCan9Iu94SMHNf2TO0O4ddLu9yNzrbbaUfIGIhC/uxGv9K
+        t04LQR6RfwZn0UVykb6OkvMJzAcMv4EERyqew1uYDUmjiCbuFYrZoJiRmKE4mvblVM1u5iexj9MM
+        F0Ax4vEpr/EQr1ggU5dUK9f5hvzHlCK5upoc+epRcUoZukZ9hoFS1ry4v8h3YXxk9BS7h8ZeKDn7
+        ypKzwZKn4ewEP/vXkjNf8nSg5Kwt+XxGRRuSupIzEs8HxcRYnKI4HhS7foq/aO0KRdbR1fOGYf+h
+        YeKmYZj7DFBDfMVn1t0nNN5u0N0tnaTu/qz89cRQF6vgXbtLngWdT/9T+/735LgwVLoQtA2UOhPF
+        Qf3poBDghiBN/lZwoxWpvVv89iZopbg+iAc8no4OAZzroDZ8I34VluPqwtsFJcDWKLd2oT8K5ZhB
+        CZt6Z51NpydPXqWNgtWWFz1ZnCTx5Jln8z3GlUV3CersR5imuxHdAvTD7SLoUGH7wA5cjDqUBTbX
+        9Sa3fZBRmrBRw5on8g+8nKVnbCNK5PAyDueX64Kb3EUMKmG2WhnxU0Y6SZ3ec375/udM7O+tebO5
+        /yf/5fdg9DT6DLxbxPcGCgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 17 Jan 2026 02:11:58 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=11877
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,78 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in Book format for a final response.\nA
+      book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"], "mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1174'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
+        NAME OF THE WIND\",\"author\": {\"last_name\": \"Rothfuss\",\"first_name\":
+        \"Patrick\"},\"rating\": 7}},\"thoughtSignature\": \"CiQBcsjafI1qklZ7TuK2cKchOdyJ2xPZagf/RetqL/hkKOJh1CwKcgFyyNp8asKcRf62dr/Qc3oRpPaDISSu1m967dbl19cuTDCLIKUgkSQUN7mEIZxdsBxAbMUZNyOv7As5yOXA3mdFvrVWPwnXmO5MRTExMEbtv7GILdbFAfqG4IRNeXgQu9bgMvQAub70A1pv0R2MI9FNsQrsAQFyyNp8NFrDsaNzkRK0oJFTH7hZ8kSxTQN5FUyAINo8HpV4Xewtpzz96H4AnqCFXvWCikDYs9K+5dsrkIdsy03/ueH7F8eNgn92bm0m6JeEgybNsmnR3hiVu5frjX4iL5cNoVR3tlAHK1lqcIbir6tI0FaUpnWaqPSh5Mx0OQWAt/GFNMr12lkrsxBaQd9RbK/iwCQeP3A7dAtsCWOGMa0LP+jxyqxXhC+jPawK5bqE032WGA0PF96H0Q19LpKEbpxSWz5pA3rXs/0iFzY50raI5f+EEuZbSd8EdOyBlqbzaR1kBNn0r8Ln5umuCsABAXLI2nzAEZUNewIwbxXGf+vs4zCwG5HJ5Z0z86S7yI3OFSaqvueHFw7KenJhHxeGF46eh7EsYxTGKtW+8DZXAPISkjuV3QraOvkNHu6D4CWkYDeYAPH5G9TxkkbRt34kTJtKg3idWtwNVAEWoENms2a3MGWOw1+JsxqGCf6VdmIV1h+lzEZXOCpaUjGiZnoIGDcIiGB6F7Fqx5jgnumH2hANUH5amt1+Ck4OMhvXnRX+DYGtyUe+b9wnxSkSRhGHCvUBAXLI2nxj+kRUy5Kl8ji2JQZmPUvXoTjAZQioEy1R066xpkMXQnD3PnB9Y4EoyhRoA66dx8HEho0si4ooE5KidSbSwdm9W3/42jdEjBBlkP/wfJiw3YYr5YlTsxt0CTAAtbzNOUZKLRhbAEOGaBatq2ZIQldwijFzwKFPqJI5DsAPUU4L26/oN5v7w3P9WzkiNTNXItUPbw7oor2p0E7DPHaAWv8agCNDg/xAJ4WfV8dklKUCfIlirgnrU2+CLI8xQQ8pjkAXj0AoGMQXxFjzOArjAYF5CgCc1VzllZUaQ7XE4V2FMogXRsn6tuwxnhiplIjGLZsKtwEBcsjafD5vSQo9/8hVrB+mUuR5jufZ5hyUZou9ep/67cRnRhQbpnF3du6ogZJXq/oWF5I4hgun7HSNK9KgR1y6X47SxCCsvI6Cz3UtpYnnMkcrDxnq/2wICM5f8Pamj+o/aTf+CIfn2nuPpo/oNUKSMsmDIT+hIDtwJz7muKoIMrWpWrm4WvQOXbu0rxsN/GHWROsQ8e7mROY6KzVkW3sA2m3oLqmYmoYT7P29PO7kvOcIdyp9U60KSgFyyNp86Goxt0TjogGYJmES3ddDDOPrhlF1H79wii9MGGCtjtqvTIFF3YBm3hWi89H7IwPYFxPFyhSu7Zf/4AjTgCLBL8HxMDfx\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 497,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 231},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"0ZpgabP6OIGgqtsP4pLCyA8\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 06:06:11 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1566
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

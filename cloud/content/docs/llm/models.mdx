@@ -1,0 +1,70 @@
+---
+title: Models
+description: Learn how to use the llm.Model class to send messages and get responses from LLMs.
+---
+
+# Models
+
+The `llm.Model` class provides a unified interface for calling any supported LLM provider. Create a model with `llm.use_model()`, then call it with content:
+
+<CodeExample file="python/examples/models/basic.py" />
+
+## Calling Models
+
+The `model.call()` method accepts flexible content types:
+
+<CodeExample file="python/examples/models/call_patterns.py" />
+
+When you pass a string or content parts, Mirascope automatically wraps them in a user message. For multi-turn conversations or system prompts, pass a sequence of messages.
+
+## Model ID Format
+
+Models are specified using the format `"model-scope/model-name"`. Generally the scope will be the model's provider, as in the following examples:
+
+- `"openai/gpt-5"`
+- `"anthropic/claude-sonnet-4-5"`
+- `"google/gemini-3-pro"`
+
+## Creating Models
+
+You can create a model directly via `llm.Model`, or by using the `llm.use_model()` function. We recommend `llm.use_model()` because it allows you to override the model at runtime using `llm.model()` as a context manager:
+
+<CodeExample file="python/examples/models/override.py" />
+
+If you want to hardcode a model and prevent context overrides, instantiate `llm.Model` directly:
+
+```python
+model = llm.Model("openai/gpt-4o")
+```
+
+## Model Parameters
+
+Configure model behavior by passing parameters to `llm.use_model()` or `llm.Model`:
+
+<CodeExample file="python/examples/models/with_params.py" />
+
+### Parameters Reference
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `temperature` | `float` | Controls randomness in the output (0.0 to 1.0). Lower values produce more focused, deterministic responses; higher values lead to more diverse or creative results. |
+| `max_tokens` | `int` | Maximum number of tokens to generate in the response. |
+| `top_p` | `float` | Nucleus sampling parameter (0.0 to 1.0). Tokens are selected from most to least probable until their cumulative probability reaches this value. Lower values produce less random responses. |
+| `top_k` | `int` | Limits token selection to the k most probable tokens (typically 1 to 100). Combined with `top_p` and `temperature` for final token selection. |
+| `seed` | `int` | Random seed for reproducibility. When set, the model makes a best effort to produce the same response for repeated requests. |
+| `stop_sequences` | `list[str]` | Sequences that stop generation when encountered. The model will stop producing output if any of these strings appear in the response. |
+| `thinking` | `ThinkingConfig` | Configuration for extended reasoning. See [Thinking](/docs/llm/thinking). |
+
+<Note>
+Not every provider supports every parameter. Unsupported parameters are logged and ignored.
+</Note>
+
+For the full list of `Model` properties and methods, see the [API Reference](/docs/api/models#model).
+
+## Next Steps
+
+Now that you can call models, learn about:
+
+- [Responses](/docs/llm/responses) — Working with LLM responses
+- [Streaming](/docs/llm/streaming) — Streaming response content
+- [Tools](/docs/llm/tools) — Enabling LLMs to call functions

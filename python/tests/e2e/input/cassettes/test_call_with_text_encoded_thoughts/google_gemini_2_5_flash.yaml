@@ -1,0 +1,152 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Is the first fibonacci number to end
+      with the digits 57 prime?"}], "role": "user"}, {"parts": [{"text": "**Thinking:**
+      Let me see... I have instantenously remembered this table of fibonacci\nnumbers
+      with their prime factorizations. That''s sure convenient! Let\nme see if it
+      has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
+      : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12 : 144 = 24 x 32\n13
+      : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987 = 3 x 7 x 47\n17
+      : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
+      11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
+      we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},
+      {"text": "Yes."}], "role": "model"}, {"parts": [{"text": "Please tell me what
+      the number is."}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always answer with extreme concision, giving the answer and no added context."}],
+      "role": "user"}, "generationConfig": {"thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 0}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1203'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQzU7DMBCE73mKaM8tQoFQxI2/AwdEgQhVQj0szSa1cOzU3qJAlXfHTprUhRwc
+        a2c89ny7KI5hhSoXOTJZuIrf3SSOd93qNa2YFDthGLlhjYYP3v7bBXtnYWr8IUguL9IZBFo77peT
+        Q6LRkry90jnJwd4OBiiEEnb9Qmi18rbX7GkOoypUTo0bn0bDBV00bC2W9EiMrhuODaA2uqo505+k
+        bvW263aezPq0gMWRId3LrBnl8dGzZPIv1965W4UMGQX4XEmUgr99k+x+kUEAgv88a0DR/ZfRHkrP
+        6Y2MFT2QkiqHaJqcpNNCol13kWDI1lpZesi9p5E3JX5siuti8bNhO2++TJM8ryBqo1/sw/PkBwIA
+        AA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 00:50:14 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=570
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Is the first fibonacci number to end
+      with the digits 57 prime?"}], "role": "user"}, {"parts": [{"text": "**Thinking:**
+      Let me see... I have instantenously remembered this table of fibonacci\nnumbers
+      with their prime factorizations. That''s sure convenient! Let\nme see if it
+      has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
+      : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12 : 144 = 24 x 32\n13
+      : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987 = 3 x 7 x 47\n17
+      : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
+      11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
+      we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},
+      {"text": "Yes."}], "role": "model"}, {"parts": [{"text": "Please tell me what
+      the number is."}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always answer with extreme concision, giving the answer and no added context."}],
+      "role": "user"}, "generationConfig": {"thinkingConfig": {"thinking_budget":
+      1600}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1179'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQQU+EMBCF7/0VpOfFGBQWvBk1cWOMGyXGaDw0doBqaZHOJmsI/90WFrZoD00z
+        73Vm3teRIKAfTHHBGYKhF8GbrQRBN9xO0wpBoRWmki02rMWjdzyd97YWhL37RKM0idfU0/r5/b46
+        dmy1BGevNQc52fvJQAuhhKkegRmtnO0pf9jSWRWKw96WT8k0YGhNd4aVcA/IbDY2J6BNq+sGc/0F
+        6krvhmzn0Xrs5rFYGOKDjBqZXH7N0tW/vubaThXSZ+ThsyGZFPjjkuQ3Lzn1QOCftSYUxCNGsdK7
+        ssLliklCDshGis/QGjHiKqG2AMPoJA4LyUw1DKQtmEYrAxvuPPw1K1nxqW+zu803mm0YnklzmVLS
+        k18Qn6izJQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:25:57 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=997
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

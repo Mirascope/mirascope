@@ -16,51 +16,122 @@
 
 ---
 
-Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Google (Gemini/Vertex)](https://googleapis.github.io/python-genai/), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Bedrock](https://aws.amazon.com/bedrock/).
+## Mirascope 
 
-Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
+Welcome to Mirascope, which allows you to use any frontier LLM with one unified interface.
 
-## 30 Second Quickstart
+## Quick Start
 
-Install Mirascope, specifying the provider(s) you intend to use, and set your API key:
+Install Mirascope:
 
 ```bash
-pip install "mirascope[openai]"
-export OPENAI_API_KEY=XXXXX
+uv add "mirascope[all]"
 ```
 
-Make your first call to an LLM to extract the title and author of a book from unstructured text:
+### Call LLMs with a Decorator
 
 ```python
 from mirascope import llm
+
+
+@llm.call("anthropic/claude-sonnet-4-5")
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book."
+
+
+response = recommend_book("fantasy")
+print(response.text())
+```
+
+### Get Structured Output
+
+```python
 from pydantic import BaseModel
+from mirascope import llm
+
 
 class Book(BaseModel):
     title: str
     author: str
 
-@llm.call(provider="openai", model="gpt-4o-mini", response_model=Book)
-def extract_book(text: str) -> str:
-    return f"Extract {text}"
 
-book = extract_book("The Name of the Wind by Patrick Rothfuss")
-assert isinstance(book, Book)
-print(book)
-# Output: title='The Name of the Wind' author='Patrick Rothfuss'
+@llm.call("anthropic/claude-sonnet-4-5", format=Book)
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book."
+
+
+book = recommend_book("fantasy").parse()
+print(f"{book.title} by {book.author}")
 ```
 
-## Tutorials
+### Build an Agent with Tools
 
-Check out our [quickstart tutorial](https://mirascope.com/docs/mirascope/getting-started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
+```python
+from pydantic import BaseModel
+from mirascope import llm
 
-## Usage
 
-For a complete guide on how to use all of the various features Mirascope has to offer, read through our [Learn](https://mirascope.com/learn) documentation.
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@llm.tool
+def get_available_books(genre: str) -> list[Book]:
+    """Get available books in the library by genre."""
+    return [Book(title="The Name of the Wind", author="Patrick Rothfuss")]
+
+
+@llm.call("anthropic/claude-sonnet-4-5", tools=[get_available_books], format=Book)
+def librarian(request: str):
+    return f"You are a librarian. Help the user: {request}"
+
+
+response = librarian("I want a fantasy book")
+while response.tool_calls:
+    response = response.resume(response.execute_tools())
+book = response.parse()
+print(f"Recommending: {book.title} by {book.author}")
+```
+
+For streaming, async, multi-turn conversations, and more, see the [full documentation](https://mirascope.com/docs).
+
+## Monorepo Structure
+
+This project is structured as a monorepo, that conceptually divides into four parts:
+
+- `python/` contains the Python implementation, and examples (in `python/examples`)
+- `typescript/` contains the Typescript implementation, and examples (in `typescript/examples`)
+- `cloud/` contains the full-stack cloud application (React frontend + Cloudflare Workers backend)
+- `docs/` contains the unified cross-language documentation (in `docs/content`), as well as configuration needed to build the docs
+
+For detailed information about the codebase structure, architecture, and design decisions, see [`STRUCTURE.md`](STRUCTURE.md).
+
+## Developing the site
+
+Use `bun run cloud:dev` to launch the dev server.
+
+Note that [Bun](http://bun.sh/) must be installed.
+
+## CI and local testing
+
+We currently have four CI jobs:
+- codespell: Checks for common misspellings including python, typescript, and docs repos
+- python-lint: Linting and typechecking for Python code
+- typescript-lint: Linting and typechecking for Typescript code
+- cloudflare docs build: Builds and previews the documentation site
+
+You can run `bun run ci` in the root directory to run all CI checks locally. If adding new checks to GitHub CI, please also add it to the ci script in root `package.json` as well.
 
 ## Versioning
 
 Mirascope uses [Semantic Versioning](https://semver.org/).
 
-## Licence
+## License
 
-This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE).
+This repository uses a multi-license structure:
+
+- **Default**: All code is licensed under the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE) unless otherwise specified.
+- **Cloud Directory**: The `cloud/` directory is licensed under a proprietary license. See [`cloud/LICENSE`](cloud/LICENSE) for details.
+
+Subdirectories may contain their own LICENSE files that take precedence for files within those directories.

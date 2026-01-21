@@ -1,0 +1,123 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always answer with extreme concision,
+      giving the answer and no added context."},{"content":"Is the first fibonacci
+      number to end with the digits 57 prime?","role":"user"},{"content":"**Thinking:**
+      Let me see... I have instantenously remembered this table of fibonacci\nnumbers
+      with their prime factorizations. That''s sure convenient! Let\nme see if it
+      has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
+      : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12 : 144 = 24 x 32\n13
+      : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987 = 3 x 7 x 47\n17
+      : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
+      11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
+      we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''","role":"assistant"},{"content":"Yes.","role":"assistant"},{"content":"Please
+      tell me what the number is.","role":"user"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1078'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RU246jMAx971egPE9XKW2B9ldGK2QS08lOiFHiVFON+u8rQqEwlzfwsQ/2OTaf
+        mywTRotzJjyGvpZtLptdeziV+bHRh0bK4lTIo1Rl0xRVtTvtT7LM27ZEqXOodKvFy0BBzT9UPNGQ
+        CzjGlUdg1DUM2K4sytPuVO2OCQsMHMNQo6jrLTI+yBpQ7xdP0Q19tWADjmFjrXEXcc4+N1mWZaKH
+        G/qhXuMVLfXoxSbL7uOHJ8ovny4Sit7TUOmitSlg3FRQa2QwNqzRwD4qNuRW8Q4+aorcR66Z3vE7
+        yES2VmDXdB1ptEPfl563B9rmMj9sZbWVxUPMRCnO2Wuac5x29qkLl99tqpryeBhsqiS08qD3hcKq
+        2SmVmBML33pMPBgCXPAJ/OZHAhU5RvdsatnYinbSAz94rk4J4BwxTBq+/l2Bli69p+YHJBGdM5FX
+        xbEUM3J/PM3JwpNNDUAIJjA4HpOHxJQkevBgLdq1K+zjuF69x6uhGOppg+uk9+xa76nruVag3rB+
+        x9uvmMdBKUNumeERArnV+mLbkudF0uBB7DrwE/e8zQFa5Ftt9EDcGlztbkB/NQprNtM1tBDtqL4I
+        TB6XYzJ2PXrgmMK7P/IRTSo/OmvJd/B8X7ib8kZdHx1f0TcUDN/GndImds8rHJV+I6NGayKTmIGn
+        2YKprxcrIOdgv+zRR6fgIazQJkBjp19GTKs8D2Dc6ib3Rf7yHVhc+jxnclA/K+Vq1q+3vv8p/hPt
+        7P5vzEwMdtnwcdYwhrXdHTJoYBj475v7fwAAAP//AwDRSWKcwgUAAA==
+    headers:
+      CF-RAY:
+      - 9baff07d9af7f8e5-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 09 Jan 2026 00:50:17 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=Y05tZWRq7tm7TyVtDsec8zYfK9FigXo4FihH4BmgBGI-1767919817-1.0.1.1-.RRWiwz9PP8T7d8obTq.bwNcWJc8XVsiI13tywDTXfbvuR.vbKYKrGBZ28s8MbftvSksy8n5ljcbSi_Awavveh3SPha_cRFZh52MCiz3jUM;
+        path=/; expires=Fri, 09-Jan-26 01:20:17 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=gGdjo_yDHHbAS1ttGVF.Y41HincPgLgVzHSMhlLGtoI-1767919817002-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1259'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1263'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799619'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 28ms
+      x-request-id:
+      - req_541179d0ba7e4ef5bd93c6fec7f705ed
+    status:
+      code: 200
+      message: OK
+version: 1

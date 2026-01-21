@@ -1,0 +1,44 @@
+[run]
+# Exclude modules from coverage tracking until they have full test coverage
+# Remove items from this list as we add comprehensive tests for each module
+# Goal: When this exclude list is empty, we have 100% coverage across the entire codebase
+omit =
+    # NOTE: MLX modules are excluded because the `mlx` package is macOS-only (Apple Silicon).
+    # CI runs on Linux where `mlx` is not available, so these modules cannot be tested there.
+    # TODO: Add a macOS CI job to run MLX tests and restore coverage for these modules.
+    mirascope/llm/providers/mlx/*
+
+    # Exclude Fern generated code
+    mirascope/api/_generated/*
+
+    # Exclude other top-level modules for now
+    mirascope/graphs/*
+    
+    # Exclude examples, tests, and scripts from coverage
+    examples/*
+    tests/*
+    scripts/*
+
+[report]
+# Show lines that weren't covered
+show_missing = True
+
+# Fail if coverage is below 100% for tracked files
+fail_under = 100
+
+# Exclude patterns from coverage analysis
+exclude_also =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+    if TYPE_CHECKING:
+    @overload
+
+[html]
+directory = htmlcov

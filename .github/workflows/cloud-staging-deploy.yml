@@ -1,0 +1,71 @@
+name: Deploy Cloud to Staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/**'
+      - '.github/workflows/cloud-staging-deploy.yml'
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloud
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run database migrations
+        run: bun run db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: Run ClickHouse migrations
+        env:
+          CLICKHOUSE_URL: ${{ secrets.STAGING_CLICKHOUSE_HOST }}
+          CLICKHOUSE_USER: ${{ secrets.STAGING_CLICKHOUSE_USER }}
+          CLICKHOUSE_PASSWORD: ${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}
+          CLICKHOUSE_DATABASE: staging
+          CLICKHOUSE_TLS_ENABLED: true
+          CLICKHOUSE_MIGRATE_NATIVE_PORT: 9440
+        run: bun run clickhouse:migrate
+
+      - name: Build for staging
+        run: bun run build
+        env:
+          WRANGLER_ENV: staging
+
+      - name: Deploy to Cloudflare Workers (Staging)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloud
+          command: deploy --env staging --config wrangler.jsonc
+          postCommands: |
+            echo "Setting staging worker secrets..."
+            echo "${{ secrets.STAGING_GITHUB_CLIENT_SECRET }}" | bunx wrangler secret put GITHUB_CLIENT_SECRET --env staging
+            echo "${{ secrets.STAGING_GOOGLE_CLIENT_SECRET }}" | bunx wrangler secret put GOOGLE_CLIENT_SECRET --env staging
+            echo "${{ secrets.STAGING_RESEND_API_KEY }}" | bunx wrangler secret put RESEND_API_KEY --env staging
+            echo "${{ secrets.STAGING_RESEND_AUDIENCE_SEGMENT_ID }}" | bunx wrangler secret put RESEND_AUDIENCE_SEGMENT_ID --env staging
+            echo "${{ secrets.STAGING_STRIPE_SECRET_KEY }}" | bunx wrangler secret put STRIPE_SECRET_KEY --env staging
+            echo "${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}" | bunx wrangler secret put STRIPE_WEBHOOK_SECRET --env staging
+            echo "${{ secrets.STAGING_ANTHROPIC_API_KEY }}" | bunx wrangler secret put ANTHROPIC_API_KEY --env staging
+            echo "${{ secrets.STAGING_GEMINI_API_KEY }}" | bunx wrangler secret put GEMINI_API_KEY --env staging
+            echo "${{ secrets.STAGING_OPENAI_API_KEY }}" | bunx wrangler secret put OPENAI_API_KEY --env staging
+            echo "${{ secrets.STAGING_CLICKHOUSE_PASSWORD }}" | bunx wrangler secret put CLICKHOUSE_PASSWORD --env staging
+            echo "${{ secrets.STAGING_POSTHOG_API_KEY }}" | bunx wrangler secret put POSTHOG_API_KEY --env staging
+            echo "${{ secrets.STAGING_POSTHOG_HOST }}" | bunx wrangler secret put POSTHOG_HOST --env staging
+            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" | bunx wrangler secret put GOOGLE_ANALYTICS_MEASUREMENT_ID --env staging
+            echo "${{ secrets.STAGING_GOOGLE_ANALYTICS_API_SECRET }}" | bunx wrangler secret put GOOGLE_ANALYTICS_API_SECRET --env staging
+
+      - name: Deployment complete
+        run: echo "✅ Successfully deployed to staging at https://staging.mirascope.com"

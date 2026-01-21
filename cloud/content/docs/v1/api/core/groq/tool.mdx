@@ -1,0 +1,154 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.groq.tool
+description: API documentation for mirascope.core.groq.tool
+---
+
+# mirascope.core.groq.tool
+
+The `GroqTool` class for easy tool usage with Groq LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/v1/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/groq/tool" symbolName="GroqTool" /> GroqTool
+
+A class for defining tools for Groq LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.groq import groq_call
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+@groq_call("llama-3.1-8b-instant", tools=[format_book])
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+response = recommend_book("fantasy")
+if tool := response.tool:  # returns an `GroqTool` instance
+    print(tool.call())
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#basetool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "SkipJsonSchema[ChatCompletionMessageToolCall]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipJsonSchema",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+      },
+      "parameters": [
+        {
+          "type_str": "ChatCompletionMessageToolCall",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ChatCompletionMessageToolCall"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/groq/tool" symbolName="tool_schema" /> tool_schema
+
+Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+Example:
+```python
+from mirascope.core.groq import GroqTool
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+tool_type = GroqTool.type_from_fn(format_book)
+print(tool_type.tool_schema())  # prints the Groq-specific tool schema
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ChatCompletionToolParam",
+    "description": null,
+    "kind": "simple",
+    "doc_identifier": "ChatCompletionToolParam"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/groq/tool" symbolName="from_tool_call" /> from_tool_call
+
+Constructs an `GroqTool` instance from a `tool_call`.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "ChatCompletionMessageToolCall",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ChatCompletionMessageToolCall"
+    },
+    "description": "The Groq tool call from which to construct this tool instance."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "GroqTool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/groq/tool#groqtool"
+  }
+}}
+/>
+
+
+

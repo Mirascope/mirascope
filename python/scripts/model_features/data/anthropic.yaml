@@ -1,0 +1,115 @@
+provider: anthropic
+known_features:
+- strict_structured_output
+models:
+  claude-3-5-haiku-20241022:
+    owned_by: anthropic
+    deprecated: false
+    created: '2024-10-22T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171109'
+    metadata:
+      display_name: Claude Haiku 3.5
+    features:
+      strict_structured_output:
+        status: not_supported
+        tested_at: '2025-12-15T15:40:26.327219'
+  claude-3-7-sonnet-20250219:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-02-24T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171107'
+    metadata:
+      display_name: Claude Sonnet 3.7
+    features:
+      strict_structured_output:
+        status: not_supported
+        tested_at: '2025-12-15T15:40:26.476450'
+  claude-3-haiku-20240307:
+    owned_by: anthropic
+    deprecated: false
+    created: '2024-03-07T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171111'
+    metadata:
+      display_name: Claude Haiku 3
+    features:
+      strict_structured_output:
+        status: not_supported
+        tested_at: '2025-12-15T15:40:34.423533'
+  claude-3-opus-20240229:
+    owned_by: anthropic
+    deprecated: false
+    created: '2024-02-29T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171113'
+    metadata:
+      display_name: Claude Opus 3
+    features:
+      strict_structured_output:
+        status: not_supported
+        tested_at: '2025-12-15T15:40:26.629485'
+  claude-haiku-4-5-20251001:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-10-15T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171093'
+    metadata:
+      display_name: Claude Haiku 4.5
+    features:
+      strict_structured_output:
+        status: supported
+        tested_at: '2025-12-15T15:40:30.229932'
+  claude-opus-4-1-20250805:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-08-05T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171100'
+    metadata:
+      display_name: Claude Opus 4.1
+    features:
+      strict_structured_output:
+        status: supported
+        tested_at: '2025-12-15T15:40:28.530823'
+  claude-opus-4-20250514:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-05-22T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171102'
+    metadata:
+      display_name: Claude Opus 4
+    features:
+      strict_structured_output:
+        status: not_supported
+        tested_at: '2025-12-15T15:40:28.734486'
+  claude-opus-4-5-20251101:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-11-24T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.170973'
+    metadata:
+      display_name: Claude Opus 4.5
+    features:
+      strict_structured_output:
+        status: supported
+        tested_at: '2025-12-15T15:40:26.176222'
+  claude-sonnet-4-20250514:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-05-22T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171104'
+    metadata:
+      display_name: Claude Sonnet 4
+    features:
+      strict_structured_output:
+        status: not_supported
+        tested_at: '2025-12-15T15:40:30.393233'
+  claude-sonnet-4-5-20250929:
+    owned_by: anthropic
+    deprecated: false
+    created: '2025-09-29T00:00:00+00:00'
+    discovered_at: '2025-12-15T14:07:54.171097'
+    metadata:
+      display_name: Claude Sonnet 4.5
+    features:
+      strict_structured_output:
+        status: supported
+        tested_at: '2025-12-15T15:40:34.228188'
+last_discovery: '2026-01-08T23:03:02.705418'

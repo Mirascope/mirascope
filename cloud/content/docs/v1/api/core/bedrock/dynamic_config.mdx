@@ -1,0 +1,38 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.bedrock.dynamic_config
+description: API documentation for mirascope.core.bedrock.dynamic_config
+---
+
+# mirascope.core.bedrock.dynamic_config
+
+## <ApiType type="Module" path="core/bedrock/dynamic_config" symbolName="dynamic_config" /> dynamic_config
+
+This module defines the function return type for functions as LLM calls.
+
+## <ApiType type="Attribute" path="core/bedrock/dynamic_config" symbolName="AsyncBedrockDynamicConfig" /> AsyncBedrockDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[InternalBedrockMessageParam | BaseMessageParam, BedrockCallParams, AsyncBedrockRuntimeClient]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "InternalBedrockMessageParam | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "InternalBedrockMessageParam", "description": null, "kind": "simple", "doc_identifier": "InternalBedrockMessageParam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}]}, {"type_str": "BedrockCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/call_params#bedrockcallparams"}, {"type_str": "AsyncBedrockRuntimeClient", "description": null, "kind": "simple", "doc_identifier": "AsyncBedrockRuntimeClient"}]}} />
+
+
+## <ApiType type="Attribute" path="core/bedrock/dynamic_config" symbolName="BedrockDynamicConfig" /> BedrockDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[InternalBedrockMessageParam | BaseMessageParam, BedrockCallParams, BedrockRuntimeClient]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "InternalBedrockMessageParam | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "InternalBedrockMessageParam", "description": null, "kind": "simple", "doc_identifier": "InternalBedrockMessageParam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}]}, {"type_str": "BedrockCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/bedrock/call_params#bedrockcallparams"}, {"type_str": "BedrockRuntimeClient", "description": null, "kind": "simple", "doc_identifier": "BedrockRuntimeClient"}]}} />
+
+The function return type for functions wrapped with the `bedrock_call` decorator.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.bedrock import BedrockDynamicConfig, bedrock_call
+
+
+@bedrock_call("anthropic.claude-3-haiku-20240307-v1:0")
+@prompt_template("Recommend a {capitalized_genre} book")
+def recommend_book(genre: str) -> BedrockDynamicConfig:
+    return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
+```
+
+
+

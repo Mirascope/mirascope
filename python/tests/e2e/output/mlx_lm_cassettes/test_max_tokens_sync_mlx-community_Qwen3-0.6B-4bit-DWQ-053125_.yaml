@@ -1,0 +1,254 @@
+interactions:
+  450f20496b80fcc347652dad70c0cf19c930e9d291f7dc544811b89f22e21a7f:
+  - finish_reason: null
+    generation_tokens: 1
+    prompt_tokens: 15
+    text: <think>
+    token: 151667
+  - finish_reason: null
+    generation_tokens: 2
+    prompt_tokens: 15
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    generation_tokens: 3
+    prompt_tokens: 15
+    text: Okay
+    token: 32313
+  - finish_reason: null
+    generation_tokens: 4
+    prompt_tokens: 15
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 5
+    prompt_tokens: 15
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 6
+    prompt_tokens: 15
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    generation_tokens: 7
+    prompt_tokens: 15
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 8
+    prompt_tokens: 15
+    text: ' asking'
+    token: 10161
+  - finish_reason: null
+    generation_tokens: 9
+    prompt_tokens: 15
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 10
+    prompt_tokens: 15
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    generation_tokens: 11
+    prompt_tokens: 15
+    text: ' list'
+    token: 1140
+  - finish_reason: null
+    generation_tokens: 12
+    prompt_tokens: 15
+    text: ' all'
+    token: 678
+  - finish_reason: null
+    generation_tokens: 13
+    prompt_tokens: 15
+    text: ' U'
+    token: 547
+  - finish_reason: null
+    generation_tokens: 14
+    prompt_tokens: 15
+    text: .S
+    token: 808
+  - finish_reason: null
+    generation_tokens: 15
+    prompt_tokens: 15
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 16
+    prompt_tokens: 15
+    text: ' states'
+    token: 5302
+  - finish_reason: null
+    generation_tokens: 17
+    prompt_tokens: 15
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 18
+    prompt_tokens: 15
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    generation_tokens: 19
+    prompt_tokens: 15
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 20
+    prompt_tokens: 15
+    text: ' start'
+    token: 1191
+  - finish_reason: null
+    generation_tokens: 21
+    prompt_tokens: 15
+    text: ' by'
+    token: 553
+  - finish_reason: null
+    generation_tokens: 22
+    prompt_tokens: 15
+    text: ' recalling'
+    token: 88646
+  - finish_reason: null
+    generation_tokens: 23
+    prompt_tokens: 15
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 24
+    prompt_tokens: 15
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    generation_tokens: 25
+    prompt_tokens: 15
+    text: ' states'
+    token: 5302
+  - finish_reason: null
+    generation_tokens: 26
+    prompt_tokens: 15
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 27
+    prompt_tokens: 15
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 28
+    prompt_tokens: 15
+    text: ' know'
+    token: 1414
+  - finish_reason: null
+    generation_tokens: 29
+    prompt_tokens: 15
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 30
+    prompt_tokens: 15
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 31
+    prompt_tokens: 15
+    text: ' United'
+    token: 3639
+  - finish_reason: null
+    generation_tokens: 32
+    prompt_tokens: 15
+    text: ' States'
+    token: 4180
+  - finish_reason: null
+    generation_tokens: 33
+    prompt_tokens: 15
+    text: ' has'
+    token: 702
+  - finish_reason: null
+    generation_tokens: 34
+    prompt_tokens: 15
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 35
+    prompt_tokens: 15
+    text: ' 5'
+    token: 20
+  - finish_reason: null
+    generation_tokens: 36
+    prompt_tokens: 15
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 37
+    prompt_tokens: 15
+    text: ' states'
+    token: 5302
+  - finish_reason: null
+    generation_tokens: 38
+    prompt_tokens: 15
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 39
+    prompt_tokens: 15
+    text: ' so'
+    token: 773
+  - finish_reason: null
+    generation_tokens: 40
+    prompt_tokens: 15
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 41
+    prompt_tokens: 15
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    generation_tokens: 42
+    prompt_tokens: 15
+    text: ' list'
+    token: 1140
+  - finish_reason: null
+    generation_tokens: 43
+    prompt_tokens: 15
+    text: ' them'
+    token: 1105
+  - finish_reason: null
+    generation_tokens: 44
+    prompt_tokens: 15
+    text: ' all'
+    token: 678
+  - finish_reason: null
+    generation_tokens: 45
+    prompt_tokens: 15
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 46
+    prompt_tokens: 15
+    text: ' First'
+    token: 5512
+  - finish_reason: null
+    generation_tokens: 47
+    prompt_tokens: 15
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 48
+    prompt_tokens: 15
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 49
+    prompt_tokens: 15
+    text: '''ll'
+    token: 3278
+  - finish_reason: length
+    generation_tokens: 50
+    prompt_tokens: 15
+    text: ' start'
+    token: 1191

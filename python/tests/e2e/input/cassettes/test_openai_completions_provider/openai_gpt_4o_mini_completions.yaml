@@ -1,0 +1,104 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Say hello"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '74'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLBbtQwEL3nKwafNyhZ2ux2LxyWQ6EgUBGVEKoirz1JTB2PsSfQVbX/
+        XiVpNyktEhcf5s17fm9m7hIAYbTYgFCNZNV6m27b4iq7+JB/v7os3n35eNt83X7Tn7cXN7/sp0ux
+        6Bm0+4mKH1mvFbXeIhtyI6wCSsZeNV8Vp6frbFUsB6Aljban1Z7TE0pb40y6zJYnabZK8/UDuyGj
+        MIoN/EgAAO6Gt/fpNN6KDWSLx0qLMcoaxebYBCAC2b4iZIwmsnQsFhOoyDG6wfo5Wkuv4Jz+gJIO
+        3sNIgD11wKTl/u2cGLDqouzNu87aGSCdI5Z9+MHy9QNyOJq0VPtAu/gXVVTGmdiUAWUk1xuKTF4M
+        6CEBuB6G0T3JJ3yg1nPJdIPDd2ejmpg28BxjYmmncr5evKBVamRpbJyNUiipGtQTc5q77LShGZDM
+        Ej/38pL2mNq4+n/kJ0Ap9Iy69AG1UU/zTm0B+/P8V9txwoNhETH8NgpLNhj6LWisZGfHoxFxHxnb
+        sjKuxuCDGS+n8mWeV2+y5VlV7ERySO4BAAD//wMAyrZpA0cDAAA=
+    headers:
+      CF-RAY:
+      - 9ad0deb2fb6e0b15-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 12 Dec 2025 23:06:02 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '351'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '497'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999995'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_7f673971b0c6415c821dae875300a59d
+    status:
+      code: 200
+      message: OK
+version: 1

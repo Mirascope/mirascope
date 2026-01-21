@@ -1,0 +1,94 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.anthropic.stream
+description: API documentation for mirascope.core.anthropic.stream
+---
+
+# mirascope.core.anthropic.stream
+
+## <ApiType type="Module" path="core/anthropic/stream" symbolName="stream" /> stream
+
+The `AnthropicStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/v1/learn/streams)
+
+</Info>
+
+## <ApiType type="Attribute" path="core/anthropic/stream" symbolName="FinishReason" /> FinishReason
+
+**Type:** <TypeLink type={{"type_str": "Message.__annotations__['stop_reason']", "description": null, "kind": "generic", "base_type": {"type_str": "Message.__annotations__", "description": null, "kind": "simple", "doc_identifier": "Message.__annotations__"}, "parameters": [{"type_str": "'stop_reason'", "description": null, "kind": "simple", "doc_identifier": "'stop_reason'"}]}} />
+
+
+## <ApiType type="Class" path="core/anthropic/stream" symbolName="AnthropicStream" /> AnthropicStream
+
+A class for convenience around streaming Anthropic LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.anthropic import anthropic_call
+
+
+@anthropic_call("claude-3-5-sonnet-20240620", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")  # returns `AnthropicStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[AnthropicCallResponse, AnthropicCallResponseChunk, MessageParam, MessageParam, MessageParam, MessageParam, AnthropicTool, ToolParam, AsyncAnthropicDynamicConfig | AnthropicDynamicConfig, AnthropicCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/stream#basestream"}, "parameters": [{"type_str": "AnthropicCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_response#anthropiccallresponse"}, {"type_str": "AnthropicCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_response_chunk#anthropiccallresponsechunk"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "AnthropicTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/tool#anthropictool"}, {"type_str": "ToolParam", "description": null, "kind": "simple", "doc_identifier": "ToolParam"}, {"type_str": "AsyncAnthropicDynamicConfig | AnthropicDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncAnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/dynamic_config#asyncanthropicdynamicconfig"}, {"type_str": "AnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/dynamic_config#anthropicdynamicconfig"}]}, {"type_str": "AnthropicCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_params#anthropiccallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    },
+    "description": "Get metadata required for cost calculation."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/anthropic/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed AnthropicStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AnthropicCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/anthropic/call_response#anthropiccallresponse"
+  }
+}}
+/>
+
+
+
+

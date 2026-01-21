@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '75'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: http://localhost:3000/router/v2/google/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"To
+        find the sum of 4200 + 42, you can add them together:\\n\\n4200\\n+ 42\\n-----\\n4242\\n\\nSo,
+        4200 + 4\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 49,\"totalTokenCount\": 85,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 23},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"vbVcaeCuFejSz7IPqbnIkAo\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"2 = **4242**.\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 57,\"totalTokenCount\": 93,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 23},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"vbVcaeCuFejSz7IPqbnIkAo\"}\r\n\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=5
+      alt-svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      content-disposition:
+      - attachment
+      content-type:
+      - text/event-stream
+      date:
+      - Tue, 06 Jan 2026 07:11:57 GMT
+      server:
+      - scaffolding on HTTPServer2
+      server-timing:
+      - gfet4t7; dur=1099
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin, X-Origin, Referer
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

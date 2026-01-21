@@ -1,0 +1,349 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.structured_stream
+description: API documentation for mirascope.core.base.structured_stream
+---
+
+# mirascope.core.base.structured_stream
+
+## <ApiType type="Module" path="core/base/structured_stream" symbolName="structured_stream" /> structured_stream
+
+This module defines the base class for structured streams.
+
+## <ApiType type="Class" path="core/base/structured_stream" symbolName="BaseStructuredStream" /> BaseStructuredStream
+
+A base class for streaming structured outputs from LLMs.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Generic[_ResponseModelT]", "description": null, "kind": "generic", "base_type": {"type_str": "Generic", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Generic"}, "parameters": [{"type_str": "_ResponseModelT", "description": null, "kind": "simple", "doc_identifier": "_ResponseModelT"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "BaseStream",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/stream#basestream"
+    }
+  },
+  {
+    "name": "response_model",
+    "type_info": {
+      "type_str": "type[_ResponseModelT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_ResponseModelT",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "_ResponseModelT"
+        }
+      ]
+    }
+  },
+  {
+    "name": "constructed_response_model",
+    "type_info": {
+      "type_str": "_ResponseModelT",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "_ResponseModelT"
+    }
+  },
+  {
+    "name": "fields_from_call_args",
+    "type_info": {
+      "type_str": "fields_from_call_args",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "fields_from_call_args"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Function" path="core/base/structured_stream" symbolName="structured_stream_factory" /> structured_stream_factory
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "TCallResponse",
+    "type_info": {
+      "type_str": "type[_BaseCallResponseT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseCallResponseT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"
+        }
+      ]
+    }
+  },
+  {
+    "name": "TCallResponseChunk",
+    "type_info": {
+      "type_str": "type[_BaseCallResponseChunkT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseCallResponseChunkT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"
+        }
+      ]
+    }
+  },
+  {
+    "name": "TStream",
+    "type_info": {
+      "type_str": "type[BaseStream]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseStream",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/stream#basestream"
+        }
+      ]
+    }
+  },
+  {
+    "name": "TToolType",
+    "type_info": {
+      "type_str": "type[_BaseToolT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "type",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/functions.html#type"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseToolT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  },
+  {
+    "name": "setup_call",
+    "type_info": {
+      "type_str": "SameSyncAndAsyncClientSetupCall[_SameSyncAndAsyncClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT] | SetupCall[_SyncBaseClientT, _AsyncBaseClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "SameSyncAndAsyncClientSetupCall[_SameSyncAndAsyncClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SameSyncAndAsyncClientSetupCall",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "SameSyncAndAsyncClientSetupCall"
+          },
+          "parameters": [
+            {
+              "type_str": "_SameSyncAndAsyncClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_SameSyncAndAsyncClientT"
+            },
+            {
+              "type_str": "_BaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"
+            },
+            {
+              "type_str": "_AsyncBaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncBaseDynamicConfigT"
+            },
+            {
+              "type_str": "_BaseCallParamsT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"
+            },
+            {
+              "type_str": "_ResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseT"
+            },
+            {
+              "type_str": "_ResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseChunkT"
+            },
+            {
+              "type_str": "_AsyncResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseT"
+            },
+            {
+              "type_str": "_AsyncResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseChunkT"
+            },
+            {
+              "type_str": "_BaseToolT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            }
+          ]
+        },
+        {
+          "type_str": "SetupCall[_SyncBaseClientT, _AsyncBaseClientT, _BaseDynamicConfigT, _AsyncBaseDynamicConfigT, _BaseCallParamsT, _ResponseT, _ResponseChunkT, _AsyncResponseT, _AsyncResponseChunkT, _BaseToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SetupCall",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "SetupCall"
+          },
+          "parameters": [
+            {
+              "type_str": "_SyncBaseClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_SyncBaseClientT"
+            },
+            {
+              "type_str": "_AsyncBaseClientT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncBaseClientT"
+            },
+            {
+              "type_str": "_BaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"
+            },
+            {
+              "type_str": "_AsyncBaseDynamicConfigT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncBaseDynamicConfigT"
+            },
+            {
+              "type_str": "_BaseCallParamsT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/call_params#basecallparams"
+            },
+            {
+              "type_str": "_ResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseT"
+            },
+            {
+              "type_str": "_ResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseChunkT"
+            },
+            {
+              "type_str": "_AsyncResponseT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseT"
+            },
+            {
+              "type_str": "_AsyncResponseChunkT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_AsyncResponseChunkT"
+            },
+            {
+              "type_str": "_BaseToolT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "get_json_output",
+    "type_info": {
+      "type_str": "GetJsonOutput[_BaseCallResponseChunkT]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "GetJsonOutput",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "GetJsonOutput"
+      },
+      "parameters": [
+        {
+          "type_str": "_BaseCallResponseChunkT",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+

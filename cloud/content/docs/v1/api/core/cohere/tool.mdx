@@ -1,0 +1,168 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.cohere.tool
+description: API documentation for mirascope.core.cohere.tool
+---
+
+# mirascope.core.cohere.tool
+
+The `CohereTool` class for easy tool usage with Cohere LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/v1/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/cohere/tool" symbolName="CohereTool" /> CohereTool
+
+A class for defining tools for Cohere LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.cohere import cohere_call
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+@cohere_call("command-r-plus", tools=[format_book])
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+response = recommend_book("fantasy")
+if tool := response.tool:  # returns an `CohereTool` instance
+    print(tool.call())
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#basetool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "SkipValidation[SkipJsonSchema[ToolCall]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipValidation",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.SkipValidation"
+      },
+      "parameters": [
+        {
+          "type_str": "SkipJsonSchema[ToolCall]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "SkipJsonSchema",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+          },
+          "parameters": [
+            {
+              "type_str": "ToolCall",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "ToolCall"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/cohere/tool" symbolName="tool_schema" /> tool_schema
+
+Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+Example:
+```python
+from mirascope.core.cohere import CohereTool
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+tool_type = CohereTool.type_from_fn(format_book)
+print(tool_type.tool_schema())  # prints the Cohere-specific tool schema
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Tool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/llm/tool#tool"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/cohere/tool" symbolName="from_tool_call" /> from_tool_call
+
+Constructs an `CohereTool` instance from a `tool_call`.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "ToolCall",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ToolCall"
+    },
+    "description": "The Cohere tool call from which to construct this tool instance."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "CohereTool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/cohere/tool#coheretool"
+  }
+}}
+/>
+
+
+

@@ -1,0 +1,136 @@
+---
+title: Responses
+description: Learn how to work with LLM responses in Mirascope.
+---
+
+# Responses
+
+When you call an LLM, you get back an `llm.Response`. This object contains everything about the interaction: the generated content, the full message history, token usage, and metadata about the model that produced it.
+
+<CodeExample file="python/examples/responses/basic.py" />
+
+## Accessing Content
+
+The LLM's output is available through several properties:
+
+
+### Content Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `content` | `Sequence[llm.AssistantContentPart]` | All content parts in generation order |
+| `texts` | `Sequence[llm.Text]` | Only the text portions of the response |
+| `tool_calls` | `Sequence[llm.ToolCall]` | Tool calls the LLM wants executed  |
+| `thoughts` | `Sequence[llm.Thought]` | Reasoning from the model's thinking process |
+| `messages` | `Sequence[llm.Message]` | All of the messages in the response's history (including the final assistant message) |
+| `usage` | `llm.Usage` | Token usage for this response |
+
+It's often useful to combine a response's content into a single string. `response.text()` returns all text content joined together, ideal for displaying to users. 
+
+`response.pretty()` includes stringified representations of all content types (text, thoughts, tool calls), which is helpful for debugging.
+
+<CodeExample file="python/examples/responses/content_access.py" lines="3-" />
+
+### Content Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `text(sep="\n")` | `str` | All text content joined by separator |
+| `pretty()` | `str` | Human-readable representation of all content |
+
+<Note>
+`tool_calls` and `thoughts` are populated only when relevant. See [Tools](/docs/llm/tools) and [Thinking](/docs/llm/thinking) for details.
+</Note>
+
+## Continuing Conversations
+
+The `messages` property contains the complete conversation history, including all input messages and the assistant's response. Use `response.resume()` to continue the conversation—it appends your new content to this history and calls the LLM again:
+
+<CodeExample file="python/examples/responses/resume.py" lines="3-" />
+
+The `resume()` method preserves the response's model, parameters, tools, and format settings. You can override the model at call time using `with llm.model(...)`:
+
+```python
+with llm.model("anthropic/claude-sonnet-4-5"):
+    followup = response.resume("Please answer this follow-up question...")
+```
+
+## Response Metadata
+
+Every response includes metadata about how it was generated:
+
+<CodeExample file="python/examples/responses/metadata.py" lines="3-" />
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `provider_id` | `llm.ProviderId` | The provider (e.g., `"openai"`, `"anthropic"`) |
+| `model_id` | `llm.ModelId` | The full model identifier |
+| `params` | `llm.Params` | Parameters used for generation |
+| `model` | `llm.Model` | A `Model` instance that can be used for continuing from this response. (Respects the model context manager.) |
+| `usage` | `llm.Usage` | Token usage of this response. |
+| `finish_reason` | `llm.FinishReason | None` | Information on why the response finished. |
+| `raw` | `Any` | The unprocessed provider response |
+
+The `raw` property gives you access to the original response object from the provider's SDK, in case you want to peek below Mirascope's abstraction layer to the provider's raw output.
+
+### Token Usage
+
+Access token consumption through `response.usage`:
+
+<CodeExample file="python/examples/responses/usage.py" lines="3-" />
+
+<Note title="Usage Properties" collapsible={true} defaultOpen={false}>
+| Property | Type | Description |
+| --- | --- | --- |
+| `input_tokens` | `int` | Tokens in the prompt (includes cached tokens) |
+| `output_tokens` | `int` | Tokens generated (includes reasoning tokens) |
+| `total_tokens` | `int` | Sum of input and output tokens |
+| `cache_read_tokens` | `int` | Tokens read from cache |
+| `cache_write_tokens` | `int` | Tokens written to cache |
+| `reasoning_tokens` | `int` | Tokens used for thinking/reasoning |
+
+Not all providers report all usage fields. Unsupported fields default to 0.
+</Note>
+
+### Finish Reason
+
+The `finish_reason` property indicates why the LLM stopped generating. It's `None` when the response completes normally:
+
+<CodeExample file="python/examples/responses/finish_reason.py" lines="3-" />
+
+| Finish Reason | Description |
+| --- | --- |
+| `None` | Response completed normally |
+| `MAX_TOKENS` | Hit the token limit before completing |
+| `REFUSAL` | Model refused to respond |
+| `CONTEXT_LENGTH_EXCEEDED` | Input exceeded context window |
+
+## Response Variants
+
+Mirascope has several response types for different calling patterns:
+
+**Standard:** `Response`, `AsyncResponse`
+
+**Streaming:** `StreamResponse`, `AsyncStreamResponse`
+
+**Context-aware:** `ContextResponse`, `AsyncContextResponse`, `ContextStreamResponse`, `AsyncContextStreamResponse`
+
+All variants share the same core properties. Retrieving data via `response.content`, `response.messages`, etc. works the same for all of them.
+
+- **Streaming:** The response content gets populated by iterating through the stream. See [Streaming](/docs/llm/streaming).
+- **Async:** Methods like `resume()` are async. See [Async](/docs/llm/async).
+- **Context:** Methods like `resume()` require a context argument. See [Context](/docs/llm/context).
+
+Sometimes you'll want to write a function that can accept any response, whether it is a regular `Response`, a `StreamResponse`, an `AsyncResponse`, et cetera. If so, you can use the type alias `llm.AnyResponse`, which will have all of the core properties shared by every response class.
+
+## Structured Output
+
+When the response was generated with a `format` parameter, use `response.parse()` to extract structured data. See [Structured Output](/docs/llm/structured-output) for the full guide on structured output.
+
+## Next Steps
+
+Now that you understand responses, explore:
+
+- [Streaming](/docs/llm/streaming) — Process responses as they're generated
+- [Tools](/docs/llm/tools) — Let LLMs call your functions
+- [Structured Output](/docs/llm/structured-output) — Extract structured data from responses

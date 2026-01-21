@@ -1,0 +1,2519 @@
+interactions:
+  000a8dfadc7aab462ed3c57d61b405ff89af1e45f8ec4c6a061560071481ae11:
+  - finish_reason: null
+    generation_tokens: 1
+    prompt_tokens: 20
+    text: <think>
+    token: 151667
+  - finish_reason: null
+    generation_tokens: 2
+    prompt_tokens: 20
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    generation_tokens: 3
+    prompt_tokens: 20
+    text: Okay
+    token: 32313
+  - finish_reason: null
+    generation_tokens: 4
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 5
+    prompt_tokens: 20
+    text: ' let'
+    token: 1077
+  - finish_reason: null
+    generation_tokens: 6
+    prompt_tokens: 20
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    generation_tokens: 7
+    prompt_tokens: 20
+    text: ' see'
+    token: 1490
+  - finish_reason: null
+    generation_tokens: 8
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 9
+    prompt_tokens: 20
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 10
+    prompt_tokens: 20
+    text: ' need'
+    token: 1184
+  - finish_reason: null
+    generation_tokens: 11
+    prompt_tokens: 20
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    generation_tokens: 12
+    prompt_tokens: 20
+    text: ' add'
+    token: 912
+  - finish_reason: null
+    generation_tokens: 13
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 14
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 15
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 16
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 17
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 18
+    prompt_tokens: 20
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    generation_tokens: 19
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 20
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 21
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 22
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 23
+    prompt_tokens: 20
+    text: ' Hmm'
+    token: 88190
+  - finish_reason: null
+    generation_tokens: 24
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 25
+    prompt_tokens: 20
+    text: ' how'
+    token: 1246
+  - finish_reason: null
+    generation_tokens: 26
+    prompt_tokens: 20
+    text: ' do'
+    token: 653
+  - finish_reason: null
+    generation_tokens: 27
+    prompt_tokens: 20
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 28
+    prompt_tokens: 20
+    text: ' do'
+    token: 653
+  - finish_reason: null
+    generation_tokens: 29
+    prompt_tokens: 20
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 30
+    prompt_tokens: 20
+    text: '?'
+    token: 30
+  - finish_reason: null
+    generation_tokens: 31
+    prompt_tokens: 20
+    text: ' Well'
+    token: 8325
+  - finish_reason: null
+    generation_tokens: 32
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 33
+    prompt_tokens: 20
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    generation_tokens: 34
+    prompt_tokens: 20
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 35
+    prompt_tokens: 20
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    generation_tokens: 36
+    prompt_tokens: 20
+    text: ' think'
+    token: 1744
+  - finish_reason: null
+    generation_tokens: 37
+    prompt_tokens: 20
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    generation_tokens: 38
+    prompt_tokens: 20
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    generation_tokens: 39
+    prompt_tokens: 20
+    text: ' as'
+    token: 438
+  - finish_reason: null
+    generation_tokens: 40
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 41
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 42
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 43
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 44
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 45
+    prompt_tokens: 20
+    text: ' plus'
+    token: 5519
+  - finish_reason: null
+    generation_tokens: 46
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 47
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 48
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 49
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 50
+    prompt_tokens: 20
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    generation_tokens: 51
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 52
+    prompt_tokens: 20
+    text: ' break'
+    token: 1438
+  - finish_reason: null
+    generation_tokens: 53
+    prompt_tokens: 20
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    generation_tokens: 54
+    prompt_tokens: 20
+    text: ' down'
+    token: 1495
+  - finish_reason: null
+    generation_tokens: 55
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 56
+    prompt_tokens: 20
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    generation_tokens: 57
+    prompt_tokens: 20
+    text: First
+    token: 5338
+  - finish_reason: null
+    generation_tokens: 58
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 59
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 60
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 61
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 62
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 63
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 64
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 65
+    prompt_tokens: 20
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    generation_tokens: 66
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 67
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 68
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 69
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 70
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 71
+    prompt_tokens: 20
+    text: ' plus'
+    token: 5519
+  - finish_reason: null
+    generation_tokens: 72
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 73
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 74
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 75
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 76
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 77
+    prompt_tokens: 20
+    text: ' And'
+    token: 1597
+  - finish_reason: null
+    generation_tokens: 78
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 79
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 80
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 81
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 82
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 83
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 84
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 85
+    prompt_tokens: 20
+    text: ' plus'
+    token: 5519
+  - finish_reason: null
+    generation_tokens: 86
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 87
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 88
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 89
+    prompt_tokens: 20
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    generation_tokens: 90
+    prompt_tokens: 20
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    generation_tokens: 91
+    prompt_tokens: 20
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 92
+    prompt_tokens: 20
+    text: ' add'
+    token: 912
+  - finish_reason: null
+    generation_tokens: 93
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 94
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 95
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 96
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 97
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 98
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 99
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 100
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 101
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 102
+    prompt_tokens: 20
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    generation_tokens: 103
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 104
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 105
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 106
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 107
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 108
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 109
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 110
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 111
+    prompt_tokens: 20
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 112
+    prompt_tokens: 20
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    generation_tokens: 113
+    prompt_tokens: 20
+    text: ' give'
+    token: 2968
+  - finish_reason: null
+    generation_tokens: 114
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 115
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 116
+    prompt_tokens: 20
+    text: ' same'
+    token: 1852
+  - finish_reason: null
+    generation_tokens: 117
+    prompt_tokens: 20
+    text: ' result'
+    token: 1102
+  - finish_reason: null
+    generation_tokens: 118
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 119
+    prompt_tokens: 20
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    generation_tokens: 120
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 121
+    prompt_tokens: 20
+    text: ' check'
+    token: 1779
+  - finish_reason: null
+    generation_tokens: 122
+    prompt_tokens: 20
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 123
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 124
+    prompt_tokens: 20
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    generation_tokens: 125
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 126
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 127
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 128
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 129
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 130
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 131
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 132
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 133
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 134
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 135
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 136
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 137
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 138
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 139
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 140
+    prompt_tokens: 20
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    generation_tokens: 141
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 142
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 143
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 144
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 145
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 146
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 147
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 148
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 149
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 150
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 151
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 152
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 153
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 154
+    prompt_tokens: 20
+    text: ' Adding'
+    token: 30370
+  - finish_reason: null
+    generation_tokens: 155
+    prompt_tokens: 20
+    text: ' those'
+    token: 1846
+  - finish_reason: null
+    generation_tokens: 156
+    prompt_tokens: 20
+    text: ' together'
+    token: 3786
+  - finish_reason: null
+    generation_tokens: 157
+    prompt_tokens: 20
+    text: ':'
+    token: 25
+  - finish_reason: null
+    generation_tokens: 158
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 159
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 160
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 161
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 162
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 163
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 164
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 165
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 166
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 167
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 168
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 169
+    prompt_tokens: 20
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    generation_tokens: 170
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 171
+    prompt_tokens: 20
+    text: ' do'
+    token: 653
+  - finish_reason: null
+    generation_tokens: 172
+    prompt_tokens: 20
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 173
+    prompt_tokens: 20
+    text: ' addition'
+    token: 5256
+  - finish_reason: null
+    generation_tokens: 174
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 175
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 176
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 177
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 178
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 179
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 180
+    prompt_tokens: 20
+    text: ' plus'
+    token: 5519
+  - finish_reason: null
+    generation_tokens: 181
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 182
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 183
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 184
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 185
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 186
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 187
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 188
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 189
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 190
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 191
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 192
+    prompt_tokens: 20
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    generation_tokens: 193
+    prompt_tokens: 20
+    text: ' then'
+    token: 1221
+  - finish_reason: null
+    generation_tokens: 194
+    prompt_tokens: 20
+    text: ' adding'
+    token: 7842
+  - finish_reason: null
+    generation_tokens: 195
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 196
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 197
+    prompt_tokens: 20
+    text: ' more'
+    token: 803
+  - finish_reason: null
+    generation_tokens: 198
+    prompt_tokens: 20
+    text: ' makes'
+    token: 3643
+  - finish_reason: null
+    generation_tokens: 199
+    prompt_tokens: 20
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    generation_tokens: 200
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 201
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 202
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 203
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 204
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 205
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 206
+    prompt_tokens: 20
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    generation_tokens: 207
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 208
+    prompt_tokens: 20
+    text: ' total'
+    token: 2790
+  - finish_reason: null
+    generation_tokens: 209
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 210
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 211
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 212
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 213
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 214
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 215
+    prompt_tokens: 20
+    text: '?
+
+
+      '
+    token: 1939
+  - finish_reason: null
+    generation_tokens: 216
+    prompt_tokens: 20
+    text: Wait
+    token: 14190
+  - finish_reason: null
+    generation_tokens: 217
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 218
+    prompt_tokens: 20
+    text: ' but'
+    token: 714
+  - finish_reason: null
+    generation_tokens: 219
+    prompt_tokens: 20
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    generation_tokens: 220
+    prompt_tokens: 20
+    text: ' there'
+    token: 1052
+  - finish_reason: null
+    generation_tokens: 221
+    prompt_tokens: 20
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    generation_tokens: 222
+    prompt_tokens: 20
+    text: ' another'
+    token: 2441
+  - finish_reason: null
+    generation_tokens: 223
+    prompt_tokens: 20
+    text: ' way'
+    token: 1616
+  - finish_reason: null
+    generation_tokens: 224
+    prompt_tokens: 20
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    generation_tokens: 225
+    prompt_tokens: 20
+    text: ' do'
+    token: 653
+  - finish_reason: null
+    generation_tokens: 226
+    prompt_tokens: 20
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    generation_tokens: 227
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 228
+    prompt_tokens: 20
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    generation_tokens: 229
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 230
+    prompt_tokens: 20
+    text: ' try'
+    token: 1430
+  - finish_reason: null
+    generation_tokens: 231
+    prompt_tokens: 20
+    text: ' adding'
+    token: 7842
+  - finish_reason: null
+    generation_tokens: 232
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 233
+    prompt_tokens: 20
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    generation_tokens: 234
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 235
+    prompt_tokens: 20
+    text: ' by'
+    token: 553
+  - finish_reason: null
+    generation_tokens: 236
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 237
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 238
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 239
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 240
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 241
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 242
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 243
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 244
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 245
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 246
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 247
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 248
+    prompt_tokens: 20
+    text: ' Starting'
+    token: 27657
+  - finish_reason: null
+    generation_tokens: 249
+    prompt_tokens: 20
+    text: ' from'
+    token: 504
+  - finish_reason: null
+    generation_tokens: 250
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 251
+    prompt_tokens: 20
+    text: ' right'
+    token: 1290
+  - finish_reason: null
+    generation_tokens: 252
+    prompt_tokens: 20
+    text: most
+    token: 3562
+  - finish_reason: null
+    generation_tokens: 253
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 254
+    prompt_tokens: 20
+    text: ':'
+    token: 25
+  - finish_reason: null
+    generation_tokens: 255
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 256
+    prompt_tokens: 20
+    text: ' 0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 257
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 258
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 259
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 260
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 261
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 262
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 263
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 264
+    prompt_tokens: 20
+    text: ' Then'
+    token: 5005
+  - finish_reason: null
+    generation_tokens: 265
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 266
+    prompt_tokens: 20
+    text: ' 0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 267
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 268
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 269
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 270
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 271
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 272
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 273
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 274
+    prompt_tokens: 20
+    text: ' Then'
+    token: 5005
+  - finish_reason: null
+    generation_tokens: 275
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 276
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 277
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 278
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 279
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 280
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 281
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 282
+    prompt_tokens: 20
+    text: ' 6'
+    token: 21
+  - finish_reason: null
+    generation_tokens: 283
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 284
+    prompt_tokens: 20
+    text: ' Then'
+    token: 5005
+  - finish_reason: null
+    generation_tokens: 285
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 286
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 287
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 288
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 289
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 290
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 291
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 292
+    prompt_tokens: 20
+    text: ' 6'
+    token: 21
+  - finish_reason: null
+    generation_tokens: 293
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 294
+    prompt_tokens: 20
+    text: ' Wait'
+    token: 13824
+  - finish_reason: null
+    generation_tokens: 295
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 296
+    prompt_tokens: 20
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 297
+    prompt_tokens: 20
+    text: ' gives'
+    token: 6696
+  - finish_reason: null
+    generation_tokens: 298
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 299
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 300
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 301
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 302
+    prompt_tokens: 20
+    text: '6'
+    token: 21
+  - finish_reason: null
+    generation_tokens: 303
+    prompt_tokens: 20
+    text: '?'
+    token: 30
+  - finish_reason: null
+    generation_tokens: 304
+    prompt_tokens: 20
+    text: ' But'
+    token: 1988
+  - finish_reason: null
+    generation_tokens: 305
+    prompt_tokens: 20
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    generation_tokens: 306
+    prompt_tokens: 20
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    generation_tokens: 307
+    prompt_tokens: 20
+    text: '''t'
+    token: 944
+  - finish_reason: null
+    generation_tokens: 308
+    prompt_tokens: 20
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    generation_tokens: 309
+    prompt_tokens: 20
+    text: ' right'
+    token: 1290
+  - finish_reason: null
+    generation_tokens: 310
+    prompt_tokens: 20
+    text: ' because'
+    token: 1576
+  - finish_reason: null
+    generation_tokens: 311
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 312
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 313
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 314
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 315
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 316
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 317
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 318
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 319
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 320
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 321
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 322
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 323
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 324
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 325
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 326
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 327
+    prompt_tokens: 20
+    text: ' There'
+    token: 2619
+  - finish_reason: null
+    generation_tokens: 328
+    prompt_tokens: 20
+    text: ' must'
+    token: 1969
+  - finish_reason: null
+    generation_tokens: 329
+    prompt_tokens: 20
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    generation_tokens: 330
+    prompt_tokens: 20
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    generation_tokens: 331
+    prompt_tokens: 20
+    text: ' mistake'
+    token: 16523
+  - finish_reason: null
+    generation_tokens: 332
+    prompt_tokens: 20
+    text: ' here'
+    token: 1588
+  - finish_reason: null
+    generation_tokens: 333
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 334
+    prompt_tokens: 20
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    generation_tokens: 335
+    prompt_tokens: 20
+    text: Oh
+    token: 11908
+  - finish_reason: null
+    generation_tokens: 336
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 337
+    prompt_tokens: 20
+    text: ' right'
+    token: 1290
+  - finish_reason: null
+    generation_tokens: 338
+    prompt_tokens: 20
+    text: '!'
+    token: 0
+  - finish_reason: null
+    generation_tokens: 339
+    prompt_tokens: 20
+    text: ' When'
+    token: 3197
+  - finish_reason: null
+    generation_tokens: 340
+    prompt_tokens: 20
+    text: ' adding'
+    token: 7842
+  - finish_reason: null
+    generation_tokens: 341
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 342
+    prompt_tokens: 20
+    text: ' you'
+    token: 498
+  - finish_reason: null
+    generation_tokens: 343
+    prompt_tokens: 20
+    text: ' have'
+    token: 614
+  - finish_reason: null
+    generation_tokens: 344
+    prompt_tokens: 20
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    generation_tokens: 345
+    prompt_tokens: 20
+    text: ' align'
+    token: 5285
+  - finish_reason: null
+    generation_tokens: 346
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 347
+    prompt_tokens: 20
+    text: ' digits'
+    token: 18509
+  - finish_reason: null
+    generation_tokens: 348
+    prompt_tokens: 20
+    text: ' properly'
+    token: 10277
+  - finish_reason: null
+    generation_tokens: 349
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 350
+    prompt_tokens: 20
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    generation_tokens: 351
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 352
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 353
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 354
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 355
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 356
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 357
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 358
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 359
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 360
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 361
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 362
+    prompt_tokens: 20
+    text: ' 0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 363
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 364
+    prompt_tokens: 20
+    text: ' 0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 365
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 366
+    prompt_tokens: 20
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    generation_tokens: 367
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 368
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 369
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 370
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 371
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 372
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 373
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 374
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 375
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 376
+    prompt_tokens: 20
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    generation_tokens: 377
+    prompt_tokens: 20
+    text: ' adding'
+    token: 7842
+  - finish_reason: null
+    generation_tokens: 378
+    prompt_tokens: 20
+    text: ' them'
+    token: 1105
+  - finish_reason: null
+    generation_tokens: 379
+    prompt_tokens: 20
+    text: ':
+
+
+      '
+    token: 1447
+  - finish_reason: null
+    generation_tokens: 380
+    prompt_tokens: 20
+    text: First
+    token: 5338
+  - finish_reason: null
+    generation_tokens: 381
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 382
+    prompt_tokens: 20
+    text: ':'
+    token: 25
+  - finish_reason: null
+    generation_tokens: 383
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 384
+    prompt_tokens: 20
+    text: ' 0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 385
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 386
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 387
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 388
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 389
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 390
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 391
+    prompt_tokens: 20
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    generation_tokens: 392
+    prompt_tokens: 20
+    text: Second
+    token: 15666
+  - finish_reason: null
+    generation_tokens: 393
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 394
+    prompt_tokens: 20
+    text: ':'
+    token: 25
+  - finish_reason: null
+    generation_tokens: 395
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 396
+    prompt_tokens: 20
+    text: ' 0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 397
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 398
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 399
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 400
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 401
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 402
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 403
+    prompt_tokens: 20
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    generation_tokens: 404
+    prompt_tokens: 20
+    text: Third
+    token: 36975
+  - finish_reason: null
+    generation_tokens: 405
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 406
+    prompt_tokens: 20
+    text: ':'
+    token: 25
+  - finish_reason: null
+    generation_tokens: 407
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 408
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 409
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 410
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 411
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 412
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 413
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 414
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 415
+    prompt_tokens: 20
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    generation_tokens: 416
+    prompt_tokens: 20
+    text: Fourth
+    token: 88603
+  - finish_reason: null
+    generation_tokens: 417
+    prompt_tokens: 20
+    text: ' digit'
+    token: 15723
+  - finish_reason: null
+    generation_tokens: 418
+    prompt_tokens: 20
+    text: ':'
+    token: 25
+  - finish_reason: null
+    generation_tokens: 419
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 420
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 421
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 422
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 423
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 424
+    prompt_tokens: 20
+    text: ' ='
+    token: 284
+  - finish_reason: null
+    generation_tokens: 425
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 426
+    prompt_tokens: 20
+    text: ' 8'
+    token: 23
+  - finish_reason: null
+    generation_tokens: 427
+    prompt_tokens: 20
+    text: '
+
+
+      '
+    token: 271
+  - finish_reason: null
+    generation_tokens: 428
+    prompt_tokens: 20
+    text: So
+    token: 4416
+  - finish_reason: null
+    generation_tokens: 429
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 430
+    prompt_tokens: 20
+    text: ' result'
+    token: 1102
+  - finish_reason: null
+    generation_tokens: 431
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 432
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 433
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 434
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 435
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 436
+    prompt_tokens: 20
+    text: '2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 437
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 438
+    prompt_tokens: 20
+    text: ' That'
+    token: 2938
+  - finish_reason: null
+    generation_tokens: 439
+    prompt_tokens: 20
+    text: ' matches'
+    token: 9071
+  - finish_reason: null
+    generation_tokens: 440
+    prompt_tokens: 20
+    text: ' my'
+    token: 847
+  - finish_reason: null
+    generation_tokens: 441
+    prompt_tokens: 20
+    text: ' previous'
+    token: 3681
+  - finish_reason: null
+    generation_tokens: 442
+    prompt_tokens: 20
+    text: ' calculation'
+    token: 21937
+  - finish_reason: null
+    generation_tokens: 443
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 444
+    prompt_tokens: 20
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    generation_tokens: 445
+    prompt_tokens: 20
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    generation_tokens: 446
+    prompt_tokens: 20
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 447
+    prompt_tokens: 20
+    text: ' confused'
+    token: 21815
+  - finish_reason: null
+    generation_tokens: 448
+    prompt_tokens: 20
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    generation_tokens: 449
+    prompt_tokens: 20
+    text: ' digits'
+    token: 18509
+  - finish_reason: null
+    generation_tokens: 450
+    prompt_tokens: 20
+    text: ' when'
+    token: 979
+  - finish_reason: null
+    generation_tokens: 451
+    prompt_tokens: 20
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    generation_tokens: 452
+    prompt_tokens: 20
+    text: ' thought'
+    token: 3381
+  - finish_reason: null
+    generation_tokens: 453
+    prompt_tokens: 20
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    generation_tokens: 454
+    prompt_tokens: 20
+    text: ' it'
+    token: 432
+  - finish_reason: null
+    generation_tokens: 455
+    prompt_tokens: 20
+    text: ' as'
+    token: 438
+  - finish_reason: null
+    generation_tokens: 456
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 457
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 458
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 459
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 460
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 461
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 462
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 463
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 464
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 465
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 466
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 467
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 468
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 469
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 470
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 471
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 472
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 473
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 474
+    prompt_tokens: 20
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    generation_tokens: 475
+    prompt_tokens: 20
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    generation_tokens: 476
+    prompt_tokens: 20
+    text: ' check'
+    token: 1779
+  - finish_reason: null
+    generation_tokens: 477
+    prompt_tokens: 20
+    text: ' again'
+    token: 1549
+  - finish_reason: null
+    generation_tokens: 478
+    prompt_tokens: 20
+    text: .
+    token: 13
+  - finish_reason: null
+    generation_tokens: 479
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 480
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 481
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 482
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 483
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 484
+    prompt_tokens: 20
+    text: ' +'
+    token: 488
+  - finish_reason: null
+    generation_tokens: 485
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 486
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 487
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 488
+    prompt_tokens: 20
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    generation_tokens: 489
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 490
+    prompt_tokens: 20
+    text: ' 4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 491
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 492
+    prompt_tokens: 20
+    text: '4'
+    token: 19
+  - finish_reason: null
+    generation_tokens: 493
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 494
+    prompt_tokens: 20
+    text: ','
+    token: 11
+  - finish_reason: null
+    generation_tokens: 495
+    prompt_tokens: 20
+    text: ' plus'
+    token: 5519
+  - finish_reason: null
+    generation_tokens: 496
+    prompt_tokens: 20
+    text: ''
+    token: 220
+  - finish_reason: null
+    generation_tokens: 497
+    prompt_tokens: 20
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    generation_tokens: 498
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: null
+    generation_tokens: 499
+    prompt_tokens: 20
+    text: '0'
+    token: 15
+  - finish_reason: length
+    generation_tokens: 500
+    prompt_tokens: 20
+    text: ' is'
+    token: 374

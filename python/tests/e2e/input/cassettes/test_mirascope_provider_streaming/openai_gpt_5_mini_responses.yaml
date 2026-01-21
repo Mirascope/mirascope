@@ -1,0 +1,150 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What is 4200 + 42?","role":"user"}],"model":"gpt-5-mini","stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '93'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: http://localhost:3000/router/v2/openai/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_02cbfd68e4ae57b500695cb5ba52148195a70b7e27d42bac70","object":"response","created_at":1767683514,"status":"in_progress","background":false,"completed_at":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-5-mini-2025-08-07","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_02cbfd68e4ae57b500695cb5ba52148195a70b7e27d42bac70","object":"response","created_at":1767683514,"status":"in_progress","background":false,"completed_at":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-5-mini-2025-08-07","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"rs_02cbfd68e4ae57b500695cb5baa70881958fc5f6be59e1512b","type":"reasoning","summary":[]}}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":3,"output_index":0,"item":{"id":"rs_02cbfd68e4ae57b500695cb5baa70881958fc5f6be59e1512b","type":"reasoning","summary":[]}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":4,"output_index":1,"item":{"id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","type":"message","status":"in_progress","content":[],"role":"assistant"}}
+
+
+        event: response.content_part.added
+
+        data: {"type":"response.content_part.added","sequence_number":5,"item_id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","output_index":1,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":""}}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":6,"item_id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","output_index":1,"content_index":0,"delta":"424","logprobs":[],"obfuscation":"PrD7L1olzdTEz"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":7,"item_id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","output_index":1,"content_index":0,"delta":"2","logprobs":[],"obfuscation":"0VvkHZzMB7neVqi"}
+
+
+        event: response.output_text.done
+
+        data: {"type":"response.output_text.done","sequence_number":8,"item_id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","output_index":1,"content_index":0,"text":"4242","logprobs":[]}
+
+
+        event: response.content_part.done
+
+        data: {"type":"response.content_part.done","sequence_number":9,"item_id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","output_index":1,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":"4242"}}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":10,"output_index":1,"item":{"id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","type":"message","status":"completed","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"4242"}],"role":"assistant"}}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","sequence_number":11,"response":{"id":"resp_02cbfd68e4ae57b500695cb5ba52148195a70b7e27d42bac70","object":"response","created_at":1767683514,"status":"completed","background":false,"completed_at":1767683515,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-5-mini-2025-08-07","output":[{"id":"rs_02cbfd68e4ae57b500695cb5baa70881958fc5f6be59e1512b","type":"reasoning","summary":[]},{"id":"msg_02cbfd68e4ae57b500695cb5baff7c8195976581ed7c4d5108","type":"message","status":"completed","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"4242"}],"role":"assistant"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":15,"input_tokens_details":{"cached_tokens":0},"output_tokens":8,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":23},"user":null,"metadata":{}}}
+
+
+        '
+    headers:
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      cf-ray:
+      - 9b99676c2eea6b8d-LAX
+      content-type:
+      - text/event-stream; charset=utf-8
+      date:
+      - Tue, 06 Jan 2026 07:11:54 GMT
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '68'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      server:
+      - cloudflare
+      set-cookie:
+      - __cf_bm=Olqb1QVdATlPspuSe1rwsr79o58iNwZT4YXvYjdQ.5w-1767683514-1.0.1.1-Bg3lpn5TaDH1bDbGAya15Id6j1.bmn87CRbwoh6VS4YmOJfj6kGioZP8YZfN343Aa3xVndzt2KE8xFuq6Lpiy0id_Z4ozBWkO5QUvFCpf5o;
+        path=/; expires=Tue, 06-Jan-26 07:41:54 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=DQTR4eqgVU8p3rfshqJ1Yizvboyg2Zw6r8iKzOjnlyg-1767683514401-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      transfer-encoding:
+      - chunked
+      x-content-type-options:
+      - nosniff
+      x-envoy-upstream-service-time:
+      - '72'
+      x-request-id:
+      - req_006e91f2986b4d3eaab67cd5088749ce
+    status:
+      code: 200
+      message: OK
+version: 1

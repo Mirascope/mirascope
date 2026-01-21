@@ -1,0 +1,71 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"description": "A book with a rating.
+      The title should be in all caps!", "properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"description": "The author of a book.", "properties":
+      {"first_name": {"title": "First Name", "type": "STRING"}, "last_name": {"title":
+      "Last Name", "type": "STRING"}}, "property_ordering": ["first_name", "last_name"],
+      "required": ["first_name", "last_name"], "title": "Author", "type": "OBJECT"},
+      "rating": {"description": "For testing purposes, the rating should be 7", "title":
+      "Rating", "type": "INTEGER"}}, "property_ordering": ["title", "author", "rating"],
+      "required": ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '884'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"title\\\":\\\"THE
+        NAME OF THE WIND\\\",\\\"author\\\":{\\\"first_name\\\":\\\"Patrick\\\",\\\"last_name\\\":\\\"Rothfuss\\\"},\\\"rating\\\":7}\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        11,\"candidatesTokenCount\": 29,\"totalTokenCount\": 252,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 11}],\"thoughtsTokenCount\": 212},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"zZpgadTzFa7pz7IP27C9-Ac\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 06:06:06 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2676
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,123 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-5","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\":
+      {\n      \"description\": \"The author of a book.\",\n      \"properties\":
+      {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
+      \"string\"\n        },\n        \"last_name\": {\n          \"title\": \"Last
+      Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1310'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WR3U4CMRCFX2Uz10uCKAh7ZwLGn4DGEPxbU5rdga3sTtd2aiRk390WIYrGq07O
+        +aY9M91ApXMsIYGslC7HltVEyK2TVrfVaXe67UFnADGo3BOVXYr2UW/2NHNTx7p/da1H9disHx+G
+        U8/wusZAobVyiV4wugyCtFZZlsReyjQx+ip53ux5xo/gbI8E5vP5q4+Q0ialKEqBFZeYQuLL6cUo
+        mpyNR9HNeRTq+8vJMIX4i5OOC20CuG0M0kIZy4Jkteu/lWxUttq1BKKUB8Cd5mLhrE0hAM3uZiNZ
+        0TIQpyk1KfmE0LzEYFnXwqD0aX1upFywMwQ7w+KbQ8r8gOTKMga33UmyAUW1Y8F6hWQhOe70/VJk
+        VqDI/F2sNIlDor33vZ3/5+17wwNYF1ihkaXoVn/5b/eo+O02MWjHP6XesR8HzbvKULBC4wcNP5lL
+        k0PTfAKrPWUNPAIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b0277ba1bea8e8e-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 18 Dec 2025 23:33:55 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:33:54Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:33:55Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:33:52Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:33:54Z'
+      request-id:
+      - req_011CWF2YgkbeF7AGs6Mi9xik
+      x-envoy-upstream-service-time:
+      - '3018'
+    status:
+      code: 200
+      message: OK
+version: 1

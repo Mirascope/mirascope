@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Answer this question:
+      What is 2 + 2?"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
+      simple response for testing.","title":"IntegerAdditionResponse","properties":{"integer_a":{"type":"integer","title":"Integer
+      A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '510'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WQwU7DMAyGX2XyuZXasiKtD8ABaYgLB8RQFBKv7WiTkjh0U9V3x5ko00Cckvz/
+        F/u3J+itxg4qUJ0MGlNvjUFK12mZFllRZptiAwm0mone1yLL7x/1cW+Kh/F0l+8PW/UUDuP2mRk6
+        DRgp9F7WyIKzXRSk960naYglZQ0h36qXaeEJj9E5HxVMO2gZqdEJuYNqVSSri/L2o0jjR3TxuZ5h
+        fk3Akx2EQ8nxuQoaLSg4A9+Gx4+ARnE7E7ougXBOWE1ceQgkyL6j8VAVtzccUaoGheJa1Fojrols
+        8dnW/3nL39gAhwZ7dLITZf+Xv7h589udE7CBruKVPA66z1ahoBYdDxr3qqXTMM9fnvBj38oBAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b026f2d288c76c1-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 18 Dec 2025 23:28:05 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:28:04Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:28:05Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:28:02Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:28:04Z'
+      request-id:
+      - req_011CWF26sNLiwnkvji8VociS
+      x-envoy-upstream-service-time:
+      - '3540'
+    status:
+      code: 200
+      message: OK
+version: 1

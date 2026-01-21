@@ -1,0 +1,339 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.message_param
+description: API documentation for mirascope.core.base.message_param
+---
+
+# mirascope.core.base.message_param
+
+## `BaseMessageParam`
+## <ApiType type="Class" path="core/base/message_param" symbolName="BaseMessageParam" /> BaseMessageParam
+
+A base class for message parameters.
+
+<Info title="Usage">
+
+[Prompts](/docs/v1/learn/prompts#prompt-templates-messages)
+
+</Info>
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "role",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "str | Sequence[TextPart | ImagePart | ImageURLPart | AudioPart | AudioURLPart | CacheControlPart | DocumentPart | ToolCallPart | ToolResultPart]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "Sequence[TextPart | ImagePart | ImageURLPart | AudioPart | AudioURLPart | CacheControlPart | DocumentPart | ToolCallPart | ToolResultPart]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Sequence",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "Sequence"
+          },
+          "parameters": [
+            {
+              "type_str": "TextPart | ImagePart | ImageURLPart | AudioPart | AudioURLPart | CacheControlPart | DocumentPart | ToolCallPart | ToolResultPart",
+              "description": null,
+              "kind": "union",
+              "base_type": {
+                "type_str": "Union",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+              },
+              "parameters": [
+                {
+                  "type_str": "TextPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/message_param#textpart"
+                },
+                {
+                  "type_str": "ImagePart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/message_param#imagepart"
+                },
+                {
+                  "type_str": "ImageURLPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "ImageURLPart"
+                },
+                {
+                  "type_str": "AudioPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/message_param#audiopart"
+                },
+                {
+                  "type_str": "AudioURLPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "AudioURLPart"
+                },
+                {
+                  "type_str": "CacheControlPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "CacheControlPart"
+                },
+                {
+                  "type_str": "DocumentPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "DocumentPart"
+                },
+                {
+                  "type_str": "ToolCallPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "ToolCallPart"
+                },
+                {
+                  "type_str": "ToolResultPart",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "ToolResultPart"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## `TextPart`
+## <ApiType type="Class" path="core/base/message_param" symbolName="TextPart" /> TextPart
+
+A content part for text.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['text']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Literal"
+      },
+      "parameters": [
+        {
+          "type_str": "'text'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'text'"
+        }
+      ]
+    }
+  },
+  {
+    "name": "text",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  }
+]}
+/>
+
+
+## `ImagePart`
+## <ApiType type="Class" path="core/base/message_param" symbolName="ImagePart" /> ImagePart
+
+A content part for images.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['image']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Literal"
+      },
+      "parameters": [
+        {
+          "type_str": "'image'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'image'"
+        }
+      ]
+    }
+  },
+  {
+    "name": "media_type",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "image",
+    "type_info": {
+      "type_str": "bytes",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#bytes"
+    }
+  },
+  {
+    "name": "detail",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+
+## `AudioPart`
+## <ApiType type="Class" path="core/base/message_param" symbolName="AudioPart" /> AudioPart
+
+A content part for audio.
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "type",
+    "type_info": {
+      "type_str": "Literal['audio']",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Literal",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Literal"
+      },
+      "parameters": [
+        {
+          "type_str": "'audio'",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "'audio'"
+        }
+      ]
+    }
+  },
+  {
+    "name": "media_type",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "audio",
+    "type_info": {
+      "type_str": "bytes | str",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "bytes",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#bytes"
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+

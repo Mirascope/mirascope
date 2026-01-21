@@ -1,0 +1,137 @@
+---
+title: LLM Instrumentation
+description: Automatically trace all LLM calls with OpenTelemetry GenAI semantic conventions.
+---
+
+# LLM Instrumentation
+
+The `ops.instrument_llm()` function enables automatic tracing for all `llm.Model` calls without modifying your code. It follows [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) for standardized observability.
+
+## Basic Instrumentation
+
+<CodeExample file="python/examples/ops/instrument_llm.py" />
+
+Once instrumented, every `Model.call()`, `Model.stream()`, and their async variants will automatically create spans.
+
+<Note>
+You must call `ops.configure()` before `ops.instrument_llm()`. See [Configuration](/docs/ops/configuration) for setup instructions.
+</Note>
+
+## What Gets Captured
+
+Instrumented calls automatically record:
+
+| Attribute | Description |
+| --- | --- |
+| `gen_ai.operation.name` | Operation type (e.g., "chat") |
+| `gen_ai.provider.name` | Provider ID (e.g., "openai") |
+| `gen_ai.request.model` | Model ID (e.g., "gpt-4o-mini") |
+| `gen_ai.response.model` | Actual model used in response |
+| `gen_ai.input_messages` | JSON-encoded input messages |
+| `gen_ai.output_messages` | JSON-encoded output messages |
+| `gen_ai.usage.input_tokens` | Input token count |
+| `gen_ai.usage.output_tokens` | Output token count |
+| `gen_ai.request.temperature` | Temperature parameter |
+| `gen_ai.request.max_tokens` | Max tokens parameter |
+| `gen_ai.tool.definitions` | Tool definitions (if using tools) |
+
+## Combining with @ops.trace
+
+Instrumentation works alongside `@ops.trace`:
+
+```python
+from mirascope import llm, ops
+
+# After configuring (see Configuration docs)
+ops.instrument_llm()
+
+@ops.trace
+@llm.call("openai/gpt-4o-mini")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+# Creates two nested spans:
+# 1. recommend_book (from @ops.trace)
+#    └── chat gpt-4o-mini (from instrumentation)
+response = recommend_book("fantasy")
+```
+
+This gives you both high-level function tracing and detailed LLM call information.
+
+## Direct Model Usage
+
+Instrumentation also works with direct `Model` usage:
+
+```python
+from mirascope import llm, ops
+
+# After configuring (see Configuration docs)
+ops.instrument_llm()
+
+model = llm.model("anthropic/claude-3-5-sonnet-latest")
+response = model.call("What is the meaning of life?")
+# Automatically traced!
+```
+
+## Streaming Support
+
+Streaming calls are fully instrumented:
+
+```python
+from mirascope import llm, ops
+
+# After configuring (see Configuration docs)
+ops.instrument_llm()
+
+model = llm.model("openai/gpt-4o-mini")
+stream = model.stream("Tell me a story")
+
+for chunk in stream:
+    print(chunk.text, end="", flush=True)
+# Span is completed when stream finishes
+```
+
+The span captures:
+
+- Request attributes at stream start
+- Response attributes (including token usage) when stream completes
+- Errors if the stream fails
+
+## Disabling Instrumentation
+
+Disable instrumentation when no longer needed:
+
+```python
+from mirascope import ops
+
+ops.instrument_llm()  # Enable
+
+# ... do traced work ...
+
+ops.uninstrument_llm()  # Disable
+```
+
+This is useful for testing or when you want to control instrumentation scope.
+
+## Use Cases
+
+### Cost Tracking
+
+With token usage captured in spans and sent to Mirascope Cloud, you can:
+
+- Calculate costs per request
+- Track usage trends over time
+- Set up alerts for unusual consumption
+
+### Latency Analysis
+
+Span timing data enables:
+
+- P50/P95/P99 latency analysis
+- Identifying slow providers or models
+- Performance regression detection
+
+## Next Steps
+
+- [Context Propagation](/docs/ops/context-propagation) — Distributed tracing across services
+- [Configuration](/docs/ops/configuration) — Setup options

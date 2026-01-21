@@ -1,0 +1,124 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What is 4200 + 42?","role":"user"}],"model":"gpt-5-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '79'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: http://localhost:3000/router/v2/openai/v1/responses
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_0024f5b14c683a8c00695cb5b36d088197ad2fcd00269413e9\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1767683507,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"billing\": {\n    \"payer\":
+        \"developer\"\n  },\n  \"completed_at\": 1767683508,\n  \"error\": null,\n
+        \ \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-5-mini-2025-08-07\",\n
+        \ \"output\": [\n    {\n      \"id\": \"rs_0024f5b14c683a8c00695cb5b3c13481979337a73e4da67821\",\n
+        \     \"type\": \"reasoning\",\n      \"summary\": []\n    },\n    {\n      \"id\":
+        \"msg_0024f5b14c683a8c00695cb5b4356c8197a76a5b6db4380e03\",\n      \"type\":
+        \"message\",\n      \"status\": \"completed\",\n      \"content\": [\n        {\n
+        \         \"type\": \"output_text\",\n          \"annotations\": [],\n          \"logprobs\":
+        [],\n          \"text\": \"4242\"\n        }\n      ],\n      \"role\": \"assistant\"\n
+        \   }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\":
+        null,\n  \"prompt_cache_key\": null,\n  \"prompt_cache_retention\": null,\n
+        \ \"reasoning\": {\n    \"effort\": \"medium\",\n    \"summary\": null\n  },\n
+        \ \"safety_identifier\": null,\n  \"service_tier\": \"default\",\n  \"store\":
+        true,\n  \"temperature\": 1.0,\n  \"text\": {\n    \"format\": {\n      \"type\":
+        \"text\"\n    },\n    \"verbosity\": \"medium\"\n  },\n  \"tool_choice\":
+        \"auto\",\n  \"tools\": [],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\":
+        \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 15,\n    \"input_tokens_details\":
+        {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 8,\n    \"output_tokens_details\":
+        {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 23\n  },\n
+        \ \"user\": null,\n  \"metadata\": {}\n}"
+    headers:
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      cf-ray:
+      - 9b99674129b86b8d-LAX
+      content-type:
+      - application/json
+      date:
+      - Tue, 06 Jan 2026 07:11:48 GMT
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1227'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      server:
+      - cloudflare
+      set-cookie:
+      - __cf_bm=p8Sv48ZjY6cfR.PgkMZkLXde9X2fyCgHaWJG66p5jdA-1767683508-1.0.1.1-DE4bMjFBMDOlXyE.akVCFoOLsNeqeSyXUG7nmalzHbHREW5k_vJV6EB9HzBdI2DoTc2XNJqJcQeJqCKyKzl9.q1gjzshA4EbI9ILW0ivpL4;
+        path=/; expires=Tue, 06-Jan-26 07:41:48 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=S8gtOHDb.m9bv8EoGFFVG9z61Fho20nHY8MkeK6JUmQ-1767683508670-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      transfer-encoding:
+      - chunked
+      x-content-type-options:
+      - nosniff
+      x-envoy-upstream-service-time:
+      - '1229'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '4000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_4349904d2d7448b0955cd7206d259549
+    status:
+      code: 200
+      message: OK
+version: 1

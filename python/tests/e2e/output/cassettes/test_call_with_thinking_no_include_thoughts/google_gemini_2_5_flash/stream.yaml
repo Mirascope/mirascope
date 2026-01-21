@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '267'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"3\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"candidatesTokenCount\": 1,\"totalTokenCount\": 2845,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 30}],\"thoughtsTokenCount\": 2814},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"EfBqaaZ017Kq2w-CrOEp\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Sat, 17 Jan 2026 02:12:43 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=11044
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

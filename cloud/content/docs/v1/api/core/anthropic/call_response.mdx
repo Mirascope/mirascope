@@ -1,0 +1,411 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.anthropic.call_response
+description: API documentation for mirascope.core.anthropic.call_response
+---
+
+# mirascope.core.anthropic.call_response
+
+This module contains the `AnthropicCallResponse` class.
+
+<Info title="Usage">
+
+[Calls](/docs/v1/learn/calls#handling-responses)
+
+</Info>
+
+## <ApiType type="Class" path="core/anthropic/call_response" symbolName="AnthropicCallResponse" /> AnthropicCallResponse
+
+A convenience wrapper around the Anthropic `Message` response.
+
+When calling the Anthropic API using a function decorated with `anthropic_call`, the
+response will be an `AnthropicCallResponse` instance with properties that allow for
+more convenience access to commonly used attributes.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.anthropic import anthropic_call
+
+
+@anthropic_call("claude-3-5-sonnet-20240620")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+response = recommend_book("fantasy")  # response is an `AnthropicCallResponse` instance
+print(response.content)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseCallResponse[Message, AnthropicTool, ToolParam, AsyncAnthropicDynamicConfig | AnthropicDynamicConfig, MessageParam, AnthropicCallParams, MessageParam, AnthropicMessageParamConverter]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"}, "parameters": [{"type_str": "Message", "description": null, "kind": "simple", "doc_identifier": "Message"}, {"type_str": "AnthropicTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/tool#anthropictool"}, {"type_str": "ToolParam", "description": null, "kind": "simple", "doc_identifier": "ToolParam"}, {"type_str": "AsyncAnthropicDynamicConfig | AnthropicDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncAnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/dynamic_config#asyncanthropicdynamicconfig"}, {"type_str": "AnthropicDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/dynamic_config#anthropicdynamicconfig"}]}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "AnthropicCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/anthropic/call_params#anthropiccallparams"}, {"type_str": "MessageParam", "description": null, "kind": "simple", "doc_identifier": "MessageParam"}, {"type_str": "AnthropicMessageParamConverter", "description": null, "kind": "simple", "doc_identifier": "AnthropicMessageParamConverter"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the string text of the 0th text block."
+  },
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ]
+    },
+    "description": "Returns the finish reasons of the response."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the name of the response model."
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the id of the response."
+  },
+  {
+    "name": "usage",
+    "type_info": {
+      "type_str": "Usage",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#usage"
+    },
+    "description": "Returns the usage of the message."
+  },
+  {
+    "name": "input_tokens",
+    "type_info": {
+      "type_str": "int",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#int"
+    },
+    "description": "Returns the number of input tokens."
+  },
+  {
+    "name": "cached_tokens",
+    "type_info": {
+      "type_str": "int",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#int"
+    },
+    "description": "Returns the number of cached tokens."
+  },
+  {
+    "name": "output_tokens",
+    "type_info": {
+      "type_str": "int",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#int"
+    },
+    "description": "Returns the number of output tokens."
+  },
+  {
+    "name": "message_param",
+    "type_info": {
+      "type_str": "SerializeAsAny[MessageParam]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SerializeAsAny",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "SerializeAsAny"
+      },
+      "parameters": [
+        {
+          "type_str": "MessageParam",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "MessageParam"
+        }
+      ]
+    },
+    "description": "Returns the assistants's response as a message parameter."
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "list[AnthropicTool] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[AnthropicTool]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "AnthropicTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/anthropic/tool#anthropictool"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns any available tool calls as their `AnthropicTool` definition."
+  },
+  {
+    "name": "tool",
+    "type_info": {
+      "type_str": "AnthropicTool | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "AnthropicTool",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/anthropic/tool#anthropictool"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the 0th tool for the 0th choice message."
+  },
+  {
+    "name": "common_finish_reasons",
+    "type_info": {
+      "type_str": "list[types.FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[types.FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "types.FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "types.FinishReason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Provider-agnostic finish reasons."
+  },
+  {
+    "name": "common_message_param",
+    "type_info": {
+      "type_str": "BaseMessageParam",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+    }
+  },
+  {
+    "name": "common_user_message_param",
+    "type_info": {
+      "type_str": "BaseMessageParam | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseMessageParam",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    },
+    "description": "Get metadata required for cost calculation."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/anthropic/call_response" symbolName="tool_message_params" /> tool_message_params
+
+Returns the tool message parameters for tool call results.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tools_and_outputs",
+    "type_info": {
+      "type_str": "Sequence[tuple[AnthropicTool, str]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Sequence",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "Sequence"
+      },
+      "parameters": [
+        {
+          "type_str": "tuple[AnthropicTool, str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "AnthropicTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/anthropic/tool#anthropictool"
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The sequence of tools and their outputs from which the tool\nmessage parameters should be constructed."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[MessageParam]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "MessageParam",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "MessageParam"
+      }
+    ]
+  },
+  "description": "The list of constructed `MessageParam` parameters."
+}}
+/>
+
+
+

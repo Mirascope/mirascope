@@ -1,0 +1,3 @@
+# Intentionally empty to use the default prettier config
+# todo(sebastian): add a prettier config when timing for reformatting is appropriate
+{}

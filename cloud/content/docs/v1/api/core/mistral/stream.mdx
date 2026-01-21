@@ -1,0 +1,85 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.mistral.stream
+description: API documentation for mirascope.core.mistral.stream
+---
+
+# mirascope.core.mistral.stream
+
+The `MistralStream` class for convenience around streaming LLM calls.
+
+<Info title="Usage">
+
+[Streams](/docs/v1/learn/streams)
+
+</Info>
+
+## <ApiType type="Class" path="core/mistral/stream" symbolName="MistralStream" /> MistralStream
+
+A class for convenience around streaming Mistral LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.mistral import mistral_call
+
+
+@mistral_call("mistral-large-latest", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+stream = recommend_book("fantasy")  # returns `MistralStream` instance
+for chunk, _ in stream:
+    print(chunk.content, end="", flush=True)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseStream[MistralCallResponse, MistralCallResponseChunk, UserMessage, AssistantMessage, ToolMessage, AssistantMessage | SystemMessage | ToolMessage | UserMessage, MistralTool, dict[str, Any], MistralDynamicConfig, MistralCallParams, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseStream", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/stream#basestream"}, "parameters": [{"type_str": "MistralCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/mistral/call_response#mistralcallresponse"}, {"type_str": "MistralCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/mistral/call_response_chunk#mistralcallresponsechunk"}, {"type_str": "UserMessage", "description": null, "kind": "simple", "doc_identifier": "UserMessage"}, {"type_str": "AssistantMessage", "description": null, "kind": "simple", "doc_identifier": "AssistantMessage"}, {"type_str": "ToolMessage", "description": null, "kind": "simple", "doc_identifier": "ToolMessage"}, {"type_str": "AssistantMessage | SystemMessage | ToolMessage | UserMessage", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AssistantMessage", "description": null, "kind": "simple", "doc_identifier": "AssistantMessage"}, {"type_str": "SystemMessage", "description": null, "kind": "simple", "doc_identifier": "SystemMessage"}, {"type_str": "ToolMessage", "description": null, "kind": "simple", "doc_identifier": "ToolMessage"}, {"type_str": "UserMessage", "description": null, "kind": "simple", "doc_identifier": "UserMessage"}]}, {"type_str": "MistralTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/mistral/tool#mistraltool"}, {"type_str": "dict[str, Any]", "description": null, "kind": "generic", "base_type": {"type_str": "dict", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/stdtypes.html#dict"}, "parameters": [{"type_str": "str", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"}, {"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}]}, {"type_str": "MistralDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/mistral/dynamic_config#mistraldynamicconfig"}, {"type_str": "MistralCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/mistral/call_params#mistralcallparams"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/mistral/stream" symbolName="construct_call_response" /> construct_call_response
+
+Constructs the call response from a consumed MistralStream.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "MistralCallResponse",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/mistral/call_response#mistralcallresponse"
+  }
+}}
+/>
+
+
+

@@ -1,0 +1,116 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      a book to me!"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Always
+      recommend The Name of the Wind.\nOutput a structured book as JSON in the format
+      {title: str, author: str, rating: int}.\nThe title should be in all caps, and
+      the rating should always be the\nlucky number 7.","cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '407'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WRXUvDMBSG/0o51x10ujntnbovEaeMgYiVENqzNixNuuRkKKX/3WRzfuJVDu/z
+        5OMlLdS6QAkp5JK7AntWK4XUG/ROkpNhMuwPIAZReF7bkiX92ewad1WzfZrdzteri+WY86tp6R16
+        azBYaC0v0QdGyxBwa4UlrshHuVaEfkqf26NP+BrIfkmhzVQUZUCCJGaQ+nE1n0SLy7tJdD+Nwvx4
+        sxhnEB887qjS5iA+cDIi30RLTdXaWfspGU5ClUEaZaqD7iUGS7phBrnv6i9FVTByRsEHsLh1qHL/
+        OuWkjMHtC6UtCNU4YqQ3qCykZyNfiOcVstwfRUIr9lNIjtzj4j923BvOx6bCGg2XbFj/9b9ov/pN
+        uxi0o+/R6blvg2YncmQk0Pie4RcKbground23sZ89gEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b027094de9d76c1-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 18 Dec 2025 23:29:02 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:29:01Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:29:02Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:28:59Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:29:01Z'
+      request-id:
+      - req_011CWF2B7QJpeMGzTAc7adae
+      x-envoy-upstream-service-time:
+      - '2459'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,38 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.openai.dynamic_config
+description: API documentation for mirascope.core.openai.dynamic_config
+---
+
+# mirascope.core.openai.dynamic_config
+
+## <ApiType type="Module" path="core/openai/dynamic_config" symbolName="dynamic_config" /> dynamic_config
+
+This module defines the function return type for functions as LLM calls.
+
+## <ApiType type="Attribute" path="core/openai/dynamic_config" symbolName="AsyncOpenAIDynamicConfig" /> AsyncOpenAIDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[ChatCompletionMessageParam | BaseMessageParam, OpenAICallParams, AsyncOpenAI | AsyncAzureOpenAI]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "ChatCompletionMessageParam | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ChatCompletionMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionMessageParam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}]}, {"type_str": "OpenAICallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_params#openaicallparams"}, {"type_str": "AsyncOpenAI | AsyncAzureOpenAI", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncOpenAI", "description": null, "kind": "simple", "doc_identifier": "AsyncOpenAI"}, {"type_str": "AsyncAzureOpenAI", "description": null, "kind": "simple", "doc_identifier": "AsyncAzureOpenAI"}]}]}} />
+
+
+## <ApiType type="Attribute" path="core/openai/dynamic_config" symbolName="OpenAIDynamicConfig" /> OpenAIDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[ChatCompletionMessageParam | BaseMessageParam, OpenAICallParams, OpenAI | AzureOpenAI]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "ChatCompletionMessageParam | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ChatCompletionMessageParam", "description": null, "kind": "simple", "doc_identifier": "ChatCompletionMessageParam"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}]}, {"type_str": "OpenAICallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_params#openaicallparams"}, {"type_str": "OpenAI | AzureOpenAI", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "OpenAI", "description": null, "kind": "simple", "doc_identifier": "OpenAI"}, {"type_str": "AzureOpenAI", "description": null, "kind": "simple", "doc_identifier": "AzureOpenAI"}]}]}} />
+
+The function return type for functions wrapped with the `openai_call` decorator.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.openai import OpenAIDynamicConfig, openai_call
+
+
+@openai_call("gpt-4o-mini")
+@prompt_template("Recommend a {capitalized_genre} book")
+def recommend_book(genre: str) -> OpenAIDynamicConfig:
+    return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
+```
+
+
+

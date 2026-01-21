@@ -1,0 +1,166 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
+      "thinkingConfig": {"include_thoughts": true, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '636'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Processing
+        the Input**\\n\\nI'm currently focused on the initial request. I've dissected
+        the prompt and the accompanying JSON schema. I'm prioritizing understanding
+        the expected output format, specifically the required object structure with
+        its `integer_a` property. This groundwork is crucial for a correct response.
+        I'm ready to move into actually calculating now.\\n\\n\\n\",\"thought\": true}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\":
+        13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Calculating the
+        Response**\\n\\nI've completed mapping the request to the schema. I've determined
+        that the first operand, `integer_a`, is 2, and the second operand, `integer_b`,
+        is also 2. The anticipated `answer` is 4. I've constructed a JSON object using
+        these values and validated it against the provided constraints. Now, the final
+        JSON string is ready for output.\\n\\n\\n\",\"thought\": true}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\":
+        13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n  \\\"integer_a\\\":
+        2,\\n  \\\"integer_b\\\": 2,\\n  \"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 13,\"candidatesTokenCount\": 23,\"totalTokenCount\":
+        344,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\":
+        308},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\\"answer\\\":
+        4\\n}\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 30,\"totalTokenCount\": 351,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 308},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\",\"thoughtSignature\":
+        \"EtQJCtEJAXLI2nzH9trCt5to1cviPu9JBRUBQMEwcy3a2wA+jIWeKl5kBxrJ+4paEEwxiH+53rrhoolvYf8xPzwg6qOVPE+FbKUfQwzChwDwsc2A8E2/6otQNRiszLsQxUbBI/hg5rK6jWEYe942JPCsnjTmKZ1cW/dE3G/VCFyZHxRXz4b/lAZup8QyAxgzBDnEqCEl9QE/B6Dn26oj7uOYf026hW8NAZX27YG8YBrMDugAi9yxzGdTWRGpnkQuclYQCjGn7ExeIzmMSwKNe+rAJ2hlKvhMJTfZfhBMY1bVxs5gZJ+xYDZruOJRuuTq1lxNzdcaxcsQAfKt7AFW9BrQ9O660TE7s9qMRMsxZ7xn0NhXB4btQl9z6MYhgYpceDcT5m+JSWo/EUa31OGWZdLs0kxaMZTRdjJ5dHCbLsPlg9m3E3CXIps+g5snyFqup51py+lLPxndoekhw7O5g1N3IfxP3fngKc8D/93BP9OJR7io1z6h061ENyqCG266ROhx1dErKWTj9EQiSbZOJ6kuJnr3wERTCO9B/m8BsRdVk0C7E9bkTcauG5qpn226MdBl9MAWFpjCAuJThvpdaJXXHpv38VXhb9u+GArj+K2IJlDcIloxGdrmdh0QnE+ocSX4MB41QYi/hQkI+7sOs+akncsblx+sI2u4klZB6JWZ2ArezkXuBAp3LjsHS9WKb0z05xkr91V9kDLmd8qvWWNU0o4pksotkNHX6jRWdPUmt1M1LG34wMBwS4/u4ftYREzcYBWHVMRcCwM9pyVUA2WUrp5qEtB60REv0OWl2EQVqiWrVpLDByshqdOs28qaQC9xpmwpAXTUGBxML7FBYQCHlnRV+GVCxLUGG58jFFfYgP3Dl/kotE3kWjmbh+ND+ePWc7cQQMFe+1l3/F4vNiZF5uFAqqFcvio6BRKCtPXBqqGr1G8USySiteOkugJhiQ7LwP1kIzokFI65pRvBC11ZU5SiJH8UX7i9JJ6O0wvbfcBzf+7FxO2R8+SCcEiftThCUzzS88cQ3S2u+9hUrb1jDEhCOAKXTyisAsbyt8bVBvp0WklERcVdjl/EJUAG3jeSSVIDsMaiY7l+WDC1ulrjCp2PQ14tm9waocxQL2yPJZF4DCgYLyN64wRXjY9x1kwfPCZ2vIMhXfgwgZfpNi98qIu22RAGBtbTIpX8pjYoY9d0F2gNztUOxAO4xCD3VdgsXVow8itAttKrgIyz8va+9Gg0/IvfSYjLgu3fKvOlHuQXyKUkHwCh+jTYWNTbiZwvLMMBa0YV+T35vD1AXCLbEw/FrDgO3g1VYhQ6/NifNAoN2QYNHLGHoT5Qh6/MjFCRH8g4lQQSPqKW6Y0vhaWeSc5lr06zTYI1bhYund8WcSlWAOpa+5WW++jZJN9zeYUrURKxMMAhOosRBuATIRg/knIB9Yp/d4CtwwoT/3evz1QcY07DtzKzEvTRXHTm7GBLVoDimVMkaSqUpz9HG2tKyMoovfPc9AgKUBGIdCRFzmZz3SOiQfMQJjniQeMka731co9Urj1HquYcni3M6aFoUKe45p0hGWQQm8mHTG58APll0pmfK2P2VQrDLG5ndR/XpzbH5P0d5Y6a5hsjg3qqC4H4wL2pOnQDcs8PrYt2SZe8vVed\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 30,\"totalTokenCount\": 351,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 308},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"Z1Fgaev5IJXwqtsPw5KsuA8\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 00:52:55 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2829
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
+      "thinkingConfig": {"thinking_level": "HIGH"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '611'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"integer_a\\\":2,\\\"integer_b\\\":2,\\\"answer\\\":4}\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 13,\"candidatesTokenCount\":
+        17,\"totalTokenCount\": 357,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        13}],\"thoughtsTokenCount\": 327},\"modelVersion\": \"gemini-3-pro-preview\",\"responseId\":
+        \"kZ9gadyLEpOtqtsPg-ToqAw\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"\",\"thoughtSignature\": \"Ev8JCvwJAXLI2nwRY6QLzSUYvJ/1oerm1DQW8ayycF8z5vkIZ4W+JBuKqkI+VvUKAskmNYwKRdk+c0tBERaWsUaJ4YU8mzbtF2jP0WKe/xqnxVr32uXhGrv+59DSB1IcuG5XDUavSVjPXlwZLxzUHIPr5tE5VLyWtSOf/P1moTBa5TZRzRy1tQouR37BV4wPdJfEF9FYHyjOVRflv50zcCtgiVBnZge7bYEW6NExDE7dSclZj4i96T4P/iuv2LUSGkwu2j06RHwH36pw3CSqnlQ689qesDAzFNiHOHtwBVCcgkKY4vuwYS/86Z+Kcqe+Cr67zLmRX8kfHMBZYApbaVnxeP8/E4egwtqHnpEMMYq54sKTiD47HLkstV0CGe93Kozr0q+lxeybOxm4t/hC+dUOqkZGURSY3NSulgk8qjzHylPwAaZ7+dlLsNNM08tq0wnZVrPpQd4Vj8IXhIw58xUqcXe5OEbvV004E5NQ4hftp698gYtDOy/QRRzbnHtDxTcbFCiE5Q0XHtVR7vOCQqDFXMmRO66WKzRA2b10ysCNiXPvOGPrdcNH5xzh+G09P5pIc+5168LjITk244trJiASzgHVpvQ5nmQmtnFukc3c1zOFwF6l6jitBmiLIfMK7r+D//2/xAtaAOaxUwhXjtTVtbW6RochBvc/t+PGnUUpon+ElCciC9wCsKSE/Hhwv2EPa4XAVWRmLYHLpRIcPgQvXpr2ICcAfVsrqcEfnzQj7FhFqJwh/ItxD8dwisEY8LdwX6JyTkhlDefPaP3dXWatTg+I9xzfXSTor0iPuazdYHO08p7O6SHe6amjzbYqs5lKztSZxx/JXa7vJRK4dcT8vjByhGI8gLM3Yx6DI0Tt5oEWzM6cYxqfnGMGGG02MI08yoOPLfgl0ft3Sh5eFnG/y4CEFcXA+Sgd2PE7Q6lztGWQaUJ0bC4PaWlb4Vguh3gh2pL8dItDKPIDvkE6DIZO+s2c3fC5hMpb2OPMDAaA9JmyWPbtvj4fVJ8gaoug2paKg81U7Oy6+Ki9IujUCP8dBPdeGGFhxVajxbOdZnD1IYeYvZrB8U57qDeAU3yVj7S8mYDxmfIpXdoZzXz/UkBTY6ED+sq4oVyiUEuro035O+IXfw2DR16zUHc5YNXLbknVgoMoG509uTYWpRbSkSlgx+JMUmOBT3b2ScfcXWgxywdj3cvbYeBPmaLxD/mMGD+h5esl0qOxhc8o75PmxIIDhilYV/bxPoo4L0CDhRHZHbf3ie4Nn8uv+ZekvlONM04bDceqnG7Z1J/aS9JUPLbViUh9l/60YVtYK3MUNGCewfFifL1HO0zQfYv2/lMsS6p/YRg7gI8W78zEwntWKOfbf3IKRAJPThgOLNvTD7neNyE2LCoeV0ngVWAz3Qbh4zQpnr3qymjgshqUFMovGD1dqXtDhKdoIjmeyKAjY78xVP3sR5AveemIpkp6kuc5bWpUojjUqu4RScX1nsgYe0t0r4hXb0XjatE0apfl4Hwz94APw4FiBBdyiguRobrxOF/UeNF1rqgD3QCKaQo6rdY4y63RaKxDLYJPOIpmLgyHvoZXSRiQ9wP3SaD4a2n7vpMVjsHh3ukMIGQZdLgSEYLGpEMzonIF0jrnVXOD1DowD48TWnuGbkbzNEiH/YYRtYUgYjqJ/10f5cZ+kQsz24kCxwXHwfLugxf9MOU05STHVQ==\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 17,\"totalTokenCount\": 357,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 327},\"modelVersion\":
+        \"gemini-3-pro-preview\",\"responseId\": \"kZ9gadyLEpOtqtsPg-ToqAw\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 06:26:25 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=4931
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

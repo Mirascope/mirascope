@@ -1,0 +1,174 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"This should fail with NotFoundError","role":"user"}],"model":"this-model-does-not-exist-12345"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '117'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"The requested model 'this-model-does-not-exist-12345'
+        does not exist.\",\n    \"type\": \"invalid_request_error\",\n    \"param\":
+        \"model\",\n    \"code\": \"model_not_found\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 9b5db9d5c8ce75f2-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '197'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 30 Dec 2025 01:22:24 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=ZUR56GA70Qa5.s4uaBFdQ7zYEng8gL.D5u3JjmV18aQ-1767057744-1.0.1.1-MKihm3VXH7raxjcYU.jzA433fXsBMtrgQQmhdBQGTK8cx_GRRqbeGYPey.AB4AAosCLD.mAjkaNVQiQ1fyUR21Zs3e1etnbCBpP7pTrf.dI;
+        path=/; expires=Tue, 30-Dec-25 01:52:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=gjqijpoO1W.PSI2_.GSOF8LffQsRtjNttXoqDUeUBIA-1767057744826-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '83'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '86'
+      x-request-id:
+      - req_4034503e497442ed887b172915a0b39a
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: '{"input":[{"content":"This should fail with NotFoundError","role":"user"}],"model":"this-model-does-not-exist-12345"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '117'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"The requested model 'this-model-does-not-exist-12345'
+        does not exist.\",\n    \"type\": \"invalid_request_error\",\n    \"param\":
+        \"model\",\n    \"code\": \"model_not_found\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 9b5dbf177e5fc366-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '197'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 30 Dec 2025 01:26:00 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=jZvdXTZ83mUsVk9WLv6y1.x7uG0cw9A9A69WP5.iPLY-1767057960-1.0.1.1-PJb3OAbZmia0AHAaVhFvu4LmY2DH8iaGAwZMIkvqmRTefL.kj4pXC_Se.C3pPfAyTMVaOxWfJZGQDcnx6A97RlBQUuq_9Yt12gP2KRBMgLg;
+        path=/; expires=Tue, 30-Dec-25 01:56:00 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=isSyQyT3eXwpAbktximwUyCBBPI4MAPoh4MAe.DUt0w-1767057960111-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '78'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '81'
+      x-request-id:
+      - req_0c352b03afe84ba8bcfd579b036fa7ec
+    status:
+      code: 400
+      message: Bad Request
+version: 1

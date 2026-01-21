@@ -1,0 +1,394 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"List all U.S. states.","role":"user"}],"max_output_tokens":50,"model":"gpt-4o","stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '115'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_0cca8afa69cc6ca90068f966c4826c8193ae5b3f5ad5030e49","object":"response","created_at":1761175236,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":50,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_0cca8afa69cc6ca90068f966c4826c8193ae5b3f5ad5030e49","object":"response","created_at":1761175236,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":50,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","type":"message","status":"in_progress","content":[],"role":"assistant"}}
+
+
+        event: response.content_part.added
+
+        data: {"type":"response.content_part.added","sequence_number":3,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":""}}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"Sure","logprobs":[],"obfuscation":"MBnKLz2xHFiT"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"!","logprobs":[],"obfuscation":"6S541R6gPfGPvue"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":6,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Here","logprobs":[],"obfuscation":"u4Dx3cTU1bn"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":7,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        is","logprobs":[],"obfuscation":"mGBJwgQ23RAuQ"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":8,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        a","logprobs":[],"obfuscation":"Lt4VU85STAJfYk"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":9,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        list","logprobs":[],"obfuscation":"4hdyjRlcTY8"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":10,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        of","logprobs":[],"obfuscation":"8uS1QuHLnKNTQ"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":11,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        all","logprobs":[],"obfuscation":"u4xWufKqxnmx"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":12,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        ","logprobs":[],"obfuscation":"7hLPjzFQbminan5"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":13,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"50","logprobs":[],"obfuscation":"xICQz0PlMImk1S"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":14,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        U","logprobs":[],"obfuscation":"HlNJrXouLnVa7x"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":15,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".S","logprobs":[],"obfuscation":"HnG0RH2diTit1n"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":16,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"QlzyA5aDLPmBruU"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":17,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        states","logprobs":[],"obfuscation":"qu09gCC6H"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":18,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":":\n\n","logprobs":[],"obfuscation":"1pKrIS85WYPpv"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":19,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"1","logprobs":[],"obfuscation":"WKBzZAQZkYYgUUI"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":20,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"lx2T2CYALR2rE8N"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":21,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Alabama","logprobs":[],"obfuscation":"0PfhIeVT"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":22,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"VjkcakIq87kmNdF"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":23,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"2","logprobs":[],"obfuscation":"D6gbtwC9FJXrVVs"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":24,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"MphIBdkKfdpR8Uh"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":25,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Alaska","logprobs":[],"obfuscation":"gXOxSfnCQ"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":26,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"7rXNG0nWMvKZnMO"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":27,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"3","logprobs":[],"obfuscation":"TXjKKyPxDZ5STSu"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":28,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"i8CXjOHJd1UeZQs"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":29,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Arizona","logprobs":[],"obfuscation":"45RKmrR2"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":30,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"XbDmCx6d3vKCPcI"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":31,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"4","logprobs":[],"obfuscation":"gGwkyhwpi154oNU"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":32,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"p9Z3cKHJ6i7kVku"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":33,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Arkansas","logprobs":[],"obfuscation":"4IDwVLF"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":34,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"jvOXfpQGfbuukgt"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":35,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"5","logprobs":[],"obfuscation":"JPXoGMeXqNmBfwm"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":36,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"RhOkJqsBhoEm2tP"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":37,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        California","logprobs":[],"obfuscation":"jUIRz"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":38,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"tNmSCmoTEUafmiL"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":39,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"6","logprobs":[],"obfuscation":"FdNSTT0asHox7OQ"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":40,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"U1TO2dNc3EWZajm"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":41,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Colorado","logprobs":[],"obfuscation":"fV9FmOm"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":42,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"igVCEHOR0XbKlDW"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":43,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"7","logprobs":[],"obfuscation":"WfGaQvKSccaLHA0"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":44,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"UKOjeoyAIpOGLp6"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":45,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Connecticut","logprobs":[],"obfuscation":"AjfP"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":46,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"IIW9AbP9LTmwJD2"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":47,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"8","logprobs":[],"obfuscation":"LjxbAoIDmNnlWEF"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":48,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"yU4a6PrsoP80CPh"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":49,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Delaware","logprobs":[],"obfuscation":"p6yRyfV"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":50,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"\n","logprobs":[],"obfuscation":"VuCCF3bzfUTPlUb"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":51,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"9","logprobs":[],"obfuscation":"uB95qpNyncVfQ5R"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":52,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"TCWdYIyHDbU7Jf6"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":53,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"delta":"
+        Florida","logprobs":[],"obfuscation":"yMY6RLHO"}
+
+
+        event: response.output_text.done
+
+        data: {"type":"response.output_text.done","sequence_number":54,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"text":"Sure!
+        Here is a list of all 50 U.S. states:\n\n1. Alabama\n2. Alaska\n3. Arizona\n4.
+        Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida","logprobs":[]}
+
+
+        event: response.content_part.done
+
+        data: {"type":"response.content_part.done","sequence_number":55,"item_id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","output_index":0,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":"Sure!
+        Here is a list of all 50 U.S. states:\n\n1. Alabama\n2. Alaska\n3. Arizona\n4.
+        Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida"}}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":56,"output_index":0,"item":{"id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","type":"message","status":"incomplete","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"Sure!
+        Here is a list of all 50 U.S. states:\n\n1. Alabama\n2. Alaska\n3. Arizona\n4.
+        Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida"}],"role":"assistant"}}
+
+
+        event: response.incomplete
+
+        data: {"type":"response.incomplete","sequence_number":57,"response":{"id":"resp_0cca8afa69cc6ca90068f966c4826c8193ae5b3f5ad5030e49","object":"response","created_at":1761175236,"status":"incomplete","background":false,"error":null,"incomplete_details":{"reason":"max_output_tokens"},"instructions":null,"max_output_tokens":50,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"msg_0cca8afa69cc6ca90068f966c522fc8193beb0e249411c3551","type":"message","status":"incomplete","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"Sure!
+        Here is a list of all 50 U.S. states:\n\n1. Alabama\n2. Alaska\n3. Arizona\n4.
+        Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida"}],"role":"assistant"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":14,"input_tokens_details":{"cached_tokens":0},"output_tokens":50,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":64},"user":null,"metadata":{}}}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 992cb9ebb8b77537-SEA
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 22 Oct 2025 23:20:36 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '218'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '230'
+      x-request-id:
+      - req_232cead988624872b749e8f15f6e7a00
+    status:
+      code: 200
+      message: OK
+version: 1

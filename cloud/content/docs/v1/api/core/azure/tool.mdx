@@ -1,0 +1,186 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.azure.tool
+description: API documentation for mirascope.core.azure.tool
+---
+
+# mirascope.core.azure.tool
+
+## <ApiType type="Module" path="core/azure/tool" symbolName="tool" /> tool
+
+The `AzureTool` class for easy tool usage with Azure LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/v1/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/azure/tool" symbolName="GenerateAzureStrictToolJsonSchema" /> GenerateAzureStrictToolJsonSchema
+
+**Bases:** 
+<TypeLink type={{"type_str": "GenerateJsonSchemaNoTitles", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#generatejsonschemanotitles"}} />
+
+
+## <ApiType type="Class" path="core/azure/tool" symbolName="AzureToolConfig" /> AzureToolConfig
+
+A tool configuration for Azure-specific features.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#toolconfig"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "strict",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/azure/tool" symbolName="AzureTool" /> AzureTool
+
+A class for defining tools for Azure LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.azure import azure_call
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+@azure_call("gpt-4o-mini", tools=[format_book])
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+response = recommend_book("fantasy")
+if tool := response.tool:  # returns an `AzureTool` instance
+    print(tool.call())
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#basetool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "SkipJsonSchema[ChatCompletionsToolCall]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipJsonSchema",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+      },
+      "parameters": [
+        {
+          "type_str": "ChatCompletionsToolCall",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ChatCompletionsToolCall"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/azure/tool" symbolName="tool_schema" /> tool_schema
+
+Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+Example:
+```python
+from mirascope.core.azure import AzureTool
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+tool_type = AzureTool.type_from_fn(format_book)
+print(tool_type.tool_schema())  # prints the Azure-specific tool schema
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ChatCompletionsToolDefinition",
+    "description": null,
+    "kind": "simple",
+    "doc_identifier": "ChatCompletionsToolDefinition"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/azure/tool" symbolName="from_tool_call" /> from_tool_call
+
+Constructs an `AzureTool` instance from a `tool_call`.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "ChatCompletionsToolCall",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ChatCompletionsToolCall"
+    },
+    "description": "The Azure tool call from which to construct this tool instance."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "AzureTool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/azure/tool#azuretool"
+  }
+}}
+/>
+
+
+
+

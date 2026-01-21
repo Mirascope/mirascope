@@ -1,0 +1,838 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.llm.override
+description: API documentation for mirascope.llm.override
+---
+
+# mirascope.llm.override
+
+## <ApiType type="Alias" path="llm/override" symbolName="override" /> override
+
+Overrides the provider-specific call with the specified provider.
+
+This function creates a new function that wraps the original function
+and temporarily sets a context with the specified overrides when called.
+It supports both setting overrides (provider, model, client, call_params)
+and structural overrides (stream, tools, response_model, output_parser).
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "provider_agnostic_call",
+    "type_info": {
+      "type_str": "Callable[_P, Awaitable[_R]] | Callable[_P, _R]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Callable[_P, Awaitable[_R]]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "_P",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/toolkit#p"
+            },
+            {
+              "type_str": "Awaitable[_R]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "Awaitable",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "Awaitable"
+              },
+              "parameters": [
+                {
+                  "type_str": "_R",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "_R"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type_str": "Callable[_P, _R]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "_P",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/toolkit#p"
+            },
+            {
+              "type_str": "_R",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_R"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The provider-agnostic call to override."
+  },
+  {
+    "name": "provider",
+    "type_info": {
+      "type_str": "Provider | LocalProvider | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Provider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#provider"
+        },
+        {
+          "type_str": "LocalProvider",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#localprovider"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The provider to override with."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The model to override with."
+  },
+  {
+    "name": "stream",
+    "type_info": {
+      "type_str": "bool | StreamConfig | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "bool",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+        },
+        {
+          "type_str": "StreamConfig",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "StreamConfig"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "Whether to stream the response."
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "list[type[BaseTool] | Callable] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[type[BaseTool] | Callable]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "type[BaseTool] | Callable",
+              "description": null,
+              "kind": "union",
+              "base_type": {
+                "type_str": "Union",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+              },
+              "parameters": [
+                {
+                  "type_str": "type[BaseTool]",
+                  "description": null,
+                  "kind": "generic",
+                  "base_type": {
+                    "type_str": "type",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "https://docs.python.org/3/library/functions.html#type"
+                  },
+                  "parameters": [
+                    {
+                      "type_str": "BaseTool",
+                      "description": null,
+                      "kind": "simple",
+                      "doc_url": "/docs/v1/api/core/base/tool#basetool"
+                    }
+                  ]
+                },
+                {
+                  "type_str": "Callable",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The tools to use for the LLM API call."
+  },
+  {
+    "name": "response_model",
+    "type_info": {
+      "type_str": "type[_ResponseModelT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "type[_ResponseModelT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/functions.html#type"
+          },
+          "parameters": [
+            {
+              "type_str": "_ResponseModelT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ResponseModelT"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The response model to structure the response into."
+  },
+  {
+    "name": "output_parser",
+    "type_info": {
+      "type_str": "Callable[[Any], _ParsedOutputT] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Callable[[Any], _ParsedOutputT]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "[Any]",
+              "description": null,
+              "kind": "tuple",
+              "base_type": {
+                "type_str": "tuple",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+              },
+              "parameters": [
+                {
+                  "type_str": "Any",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+                }
+              ]
+            },
+            {
+              "type_str": "_ParsedOutputT",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_ParsedOutputT"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "A function to parse the response."
+  },
+  {
+    "name": "json_mode",
+    "type_info": {
+      "type_str": "bool | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "bool",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "Whether to use JSON mode."
+  },
+  {
+    "name": "client",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+    },
+    "default": "None",
+    "description": "The client to override with."
+  },
+  {
+    "name": "call_params",
+    "type_info": {
+      "type_str": "CommonCallParams | AnthropicCallParams | AzureCallParams | BedrockCallParams | CohereCallParams | GeminiCallParams | GoogleCallParams | GroqCallParams | MistralCallParams | OpenAICallParams | VertexCallParams | XAICallParams | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "CommonCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "CommonCallParams"
+        },
+        {
+          "type_str": "AnthropicCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/anthropic/call_params#anthropiccallparams"
+        },
+        {
+          "type_str": "AzureCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/azure/call_params#azurecallparams"
+        },
+        {
+          "type_str": "BedrockCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/bedrock/call_params#bedrockcallparams"
+        },
+        {
+          "type_str": "CohereCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/cohere/call_params#coherecallparams"
+        },
+        {
+          "type_str": "GeminiCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "GeminiCallParams"
+        },
+        {
+          "type_str": "GoogleCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/google/call_params#googlecallparams"
+        },
+        {
+          "type_str": "GroqCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/groq/call_params#groqcallparams"
+        },
+        {
+          "type_str": "MistralCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/mistral/call_params#mistralcallparams"
+        },
+        {
+          "type_str": "OpenAICallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/openai/call_params#openaicallparams"
+        },
+        {
+          "type_str": "VertexCallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "VertexCallParams"
+        },
+        {
+          "type_str": "XAICallParams",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/xai/call_params#xaicallparams"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "default": "None",
+    "description": "The call params to override with."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Callable[_P, Awaitable[_R] | Awaitable[CallResponse] | Awaitable[Stream] | Awaitable[_ResponseModelT] | Awaitable[_ParsedOutputT] | Awaitable[AsyncIterable[_ResponseModelT]] | Awaitable[_ResponseModelT | CallResponse] | Awaitable[_ParsedOutputT | CallResponse] | _R | CallResponse | Stream | _ResponseModelT | _ParsedOutputT | Iterable[_ResponseModelT] | _ResponseModelT | CallResponse | _ParsedOutputT | CallResponse]",
+    "description": null,
+    "kind": "callable",
+    "base_type": {
+      "type_str": "Callable",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+    },
+    "parameters": [
+      {
+        "type_str": "_P",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "/docs/v1/api/core/base/toolkit#p"
+      },
+      {
+        "type_str": "Awaitable[_R] | Awaitable[CallResponse] | Awaitable[Stream] | Awaitable[_ResponseModelT] | Awaitable[_ParsedOutputT] | Awaitable[AsyncIterable[_ResponseModelT]] | Awaitable[_ResponseModelT | CallResponse] | Awaitable[_ParsedOutputT | CallResponse] | _R | CallResponse | Stream | _ResponseModelT | _ParsedOutputT | Iterable[_ResponseModelT] | _ResponseModelT | CallResponse | _ParsedOutputT | CallResponse",
+        "description": null,
+        "kind": "union",
+        "base_type": {
+          "type_str": "Union",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+        },
+        "parameters": [
+          {
+            "type_str": "Awaitable[_R]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "_R",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "_R"
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[CallResponse]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "CallResponse",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[Stream]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "Stream",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "/docs/v1/api/llm/stream#stream"
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[_ResponseModelT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "_ResponseModelT",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "_ResponseModelT"
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[_ParsedOutputT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "_ParsedOutputT",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "_ParsedOutputT"
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[AsyncIterable[_ResponseModelT]]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "AsyncIterable[_ResponseModelT]",
+                "description": null,
+                "kind": "generic",
+                "base_type": {
+                  "type_str": "AsyncIterable",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "AsyncIterable"
+                },
+                "parameters": [
+                  {
+                    "type_str": "_ResponseModelT",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_identifier": "_ResponseModelT"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[_ResponseModelT | CallResponse]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "_ResponseModelT | CallResponse",
+                "description": null,
+                "kind": "union",
+                "base_type": {
+                  "type_str": "Union",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+                },
+                "parameters": [
+                  {
+                    "type_str": "_ResponseModelT",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_identifier": "_ResponseModelT"
+                  },
+                  {
+                    "type_str": "CallResponse",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type_str": "Awaitable[_ParsedOutputT | CallResponse]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Awaitable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Awaitable"
+            },
+            "parameters": [
+              {
+                "type_str": "_ParsedOutputT | CallResponse",
+                "description": null,
+                "kind": "union",
+                "base_type": {
+                  "type_str": "Union",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+                },
+                "parameters": [
+                  {
+                    "type_str": "_ParsedOutputT",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_identifier": "_ParsedOutputT"
+                  },
+                  {
+                    "type_str": "CallResponse",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type_str": "_R",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "_R"
+          },
+          {
+            "type_str": "CallResponse",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+          },
+          {
+            "type_str": "Stream",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/llm/stream#stream"
+          },
+          {
+            "type_str": "_ResponseModelT",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "_ResponseModelT"
+          },
+          {
+            "type_str": "_ParsedOutputT",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "_ParsedOutputT"
+          },
+          {
+            "type_str": "Iterable[_ResponseModelT]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Iterable",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Iterable"
+            },
+            "parameters": [
+              {
+                "type_str": "_ResponseModelT",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "_ResponseModelT"
+              }
+            ]
+          },
+          {
+            "type_str": "_ResponseModelT",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "_ResponseModelT"
+          },
+          {
+            "type_str": "CallResponse",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+          },
+          {
+            "type_str": "_ParsedOutputT",
+            "description": null,
+            "kind": "simple",
+            "doc_identifier": "_ParsedOutputT"
+          },
+          {
+            "type_str": "CallResponse",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/llm/call_response#callresponse"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "The overridden function with appropriate return type."
+}}
+/>
+
+
+**Alias to:** `mirascope.llm._override.override`
+

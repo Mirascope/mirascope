@@ -1,0 +1,426 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Use
+      parallel tool calling.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}],"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '602'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - beta.messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01PVhp9YjmGgLyFcYQoaa16p","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":6,"service_tier":"standard"}}            }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}      }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"I''ll
+        retrieve the secrets for"}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        both passwords using"}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        parallel"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        tool calls"}    }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"."}              }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0          }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"toolu_011bPS5j9gFZsM7URe1242DY","name":"secret_retrieval_tool","input":{}}    }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":""}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"pas"}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"sword\":"}
+        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"
+        \"mellon"}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"\"}"}}
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":1     }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":2,"content_block":{"type":"tool_use","id":"toolu_01Q2suTpa6uBzfa9JB9FjSa3","name":"secret_retrieval_tool","input":{}}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":""}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"{\"password"}      }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"\":
+        \"radia"}           }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"nce\"}"}       }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":2             }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":111}}
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9c11c22adb1931b0-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 21:45:23 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-20T21:45:22Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-20T21:45:22Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-20T21:45:22Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-20T21:45:22Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXKMy2UsC7zJmgigW33Z5
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1481'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"type":"text","text":"I''ll
+      retrieve the secrets for both passwords using parallel tool calls."},{"type":"tool_use","id":"toolu_011bPS5j9gFZsM7URe1242DY","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_01Q2suTpa6uBzfa9JB9FjSa3","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_011bPS5j9gFZsM7URe1242DY","content":"Welcome
+      to Moria!","cache_control":null},{"type":"tool_result","tool_use_id":"toolu_01Q2suTpa6uBzfa9JB9FjSa3","content":"Life
+      before Death","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Use
+      parallel tool calling.","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}],"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1258'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.76.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - beta.messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_011g3endJAjPmTzR3KC6YQcA","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":604,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":8,"service_tier":"standard"}}             }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}             }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Here
+        are the secrets associated with each passwor"}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"d:\n\n-"}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        Passwor"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"d
+        \""}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"mellon\":
+        \"Welcome to M"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"oria!\""}           }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n-
+        Password \"radiance\": \""}           }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Life
+        before Death\""}}
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0           }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":604,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":38}               }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"  }
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9c11c23b491f31b0-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Tue, 20 Jan 2026 21:45:26 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-20T21:45:25Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-20T21:45:25Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-20T21:45:25Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-20T21:45:25Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CXKMyDh4Uapd5uwRWuYEV
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1766'
+    status:
+      code: 200
+      message: OK
+version: 1

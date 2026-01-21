@@ -1,0 +1,251 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.merge_decorators
+description: API documentation for mirascope.core.base.merge_decorators
+---
+
+# mirascope.core.base.merge_decorators
+
+## <ApiType type="Function" path="core/base/merge_decorators" symbolName="merge_decorators" /> merge_decorators
+
+Combines multiple decorators into a single decorator factory.
+
+This function allows you to merge multiple decorators into a single decorator factory.
+The decorators are applied in the order they are passed to the function.
+All function metadata (e.g. docstrings, function name) is preserved through the decoration chain.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "decorator",
+    "type_info": {
+      "type_str": "Callable[[Callable[_P, _R]], Callable[_WP, _WR]]",
+      "description": null,
+      "kind": "callable",
+      "base_type": {
+        "type_str": "Callable",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+      },
+      "parameters": [
+        {
+          "type_str": "[Callable[_P, _R]]",
+          "description": null,
+          "kind": "tuple",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "Callable[_P, _R]",
+              "description": null,
+              "kind": "callable",
+              "base_type": {
+                "type_str": "Callable",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+              },
+              "parameters": [
+                {
+                  "type_str": "_P",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/toolkit#p"
+                },
+                {
+                  "type_str": "_R",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_identifier": "_R"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type_str": "Callable[_WP, _WR]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "_WP",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_WP"
+            },
+            {
+              "type_str": "_WR",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "_WR"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The base decorator that determines the type signature of the decorated function."
+  },
+  {
+    "name": "additional_decorators",
+    "type_info": {
+      "type_str": "Callable[[Callable], Callable]",
+      "description": null,
+      "kind": "callable",
+      "base_type": {
+        "type_str": "Callable",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+      },
+      "parameters": [
+        {
+          "type_str": "[Callable]",
+          "description": null,
+          "kind": "tuple",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "Callable",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+            }
+          ]
+        },
+        {
+          "type_str": "Callable",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+        }
+      ]
+    },
+    "default": "()"
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Callable[[], Callable[[Callable[_P, _R]], Callable[_WP, _WR]]]",
+    "description": null,
+    "kind": "callable",
+    "base_type": {
+      "type_str": "Callable",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+    },
+    "parameters": [
+      {
+        "type_str": "[]",
+        "description": null,
+        "kind": "tuple",
+        "base_type": {
+          "type_str": "tuple",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+        },
+        "parameters": []
+      },
+      {
+        "type_str": "Callable[[Callable[_P, _R]], Callable[_WP, _WR]]",
+        "description": null,
+        "kind": "callable",
+        "base_type": {
+          "type_str": "Callable",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+        },
+        "parameters": [
+          {
+            "type_str": "[Callable[_P, _R]]",
+            "description": null,
+            "kind": "tuple",
+            "base_type": {
+              "type_str": "tuple",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+            },
+            "parameters": [
+              {
+                "type_str": "Callable[_P, _R]",
+                "description": null,
+                "kind": "callable",
+                "base_type": {
+                  "type_str": "Callable",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+                },
+                "parameters": [
+                  {
+                    "type_str": "_P",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_url": "/docs/v1/api/core/base/toolkit#p"
+                  },
+                  {
+                    "type_str": "_R",
+                    "description": null,
+                    "kind": "simple",
+                    "doc_identifier": "_R"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type_str": "Callable[_WP, _WR]",
+            "description": null,
+            "kind": "callable",
+            "base_type": {
+              "type_str": "Callable",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+            },
+            "parameters": [
+              {
+                "type_str": "_WP",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "_WP"
+              },
+              {
+                "type_str": "_WR",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "_WR"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "description": "A decorator factory function that applies all decorators in the specified order."
+}}
+/>
+
+

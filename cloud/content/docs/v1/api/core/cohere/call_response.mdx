@@ -1,0 +1,511 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.cohere.call_response
+description: API documentation for mirascope.core.cohere.call_response
+---
+
+# mirascope.core.cohere.call_response
+
+This module contains the `CohereCallResponse` class.
+
+<Info title="Usage">
+
+[Calls](/docs/v1/learn/calls#handling-responses)
+
+</Info>
+
+## <ApiType type="Class" path="core/cohere/call_response" symbolName="CohereCallResponse" /> CohereCallResponse
+
+A convenience wrapper around the Cohere `ChatCompletion` response.
+
+When calling the Cohere API using a function decorated with `cohere_call`, the
+response will be an `CohereCallResponse` instance with properties that allow for
+more convenience access to commonly used attributes.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.cohere import cohere_call
+
+
+@cohere_call("command-r-plus")
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
+
+
+response = recommend_book("fantasy")  # response is an `CohereCallResponse` instance
+print(response.content)
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseCallResponse[SkipValidation[NonStreamedChatResponse], CohereTool, SkipValidation[Tool], AsyncCohereDynamicConfig | CohereDynamicConfig, SkipValidation[ChatMessage], CohereCallParams, SkipValidation[ChatMessage], CohereMessageParamConverter]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponse", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response#basecallresponse"}, "parameters": [{"type_str": "SkipValidation[NonStreamedChatResponse]", "description": null, "kind": "generic", "base_type": {"type_str": "SkipValidation", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.SkipValidation"}, "parameters": [{"type_str": "NonStreamedChatResponse", "description": null, "kind": "simple", "doc_identifier": "NonStreamedChatResponse"}]}, {"type_str": "CohereTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/cohere/tool#coheretool"}, {"type_str": "SkipValidation[Tool]", "description": null, "kind": "generic", "base_type": {"type_str": "SkipValidation", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.SkipValidation"}, "parameters": [{"type_str": "Tool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/llm/tool#tool"}]}, {"type_str": "AsyncCohereDynamicConfig | CohereDynamicConfig", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "AsyncCohereDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/cohere/dynamic_config#asynccoheredynamicconfig"}, {"type_str": "CohereDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/cohere/dynamic_config#coheredynamicconfig"}]}, {"type_str": "SkipValidation[ChatMessage]", "description": null, "kind": "generic", "base_type": {"type_str": "SkipValidation", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.SkipValidation"}, "parameters": [{"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}]}, {"type_str": "CohereCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/cohere/call_params#coherecallparams"}, {"type_str": "SkipValidation[ChatMessage]", "description": null, "kind": "generic", "base_type": {"type_str": "SkipValidation", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/functional_validators/#pydantic.functional_validators.SkipValidation"}, "parameters": [{"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}]}, {"type_str": "CohereMessageParamConverter", "description": null, "kind": "simple", "doc_identifier": "CohereMessageParamConverter"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "content",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the content of the chat completion for the 0th choice."
+  },
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the finish reasons of the response."
+  },
+  {
+    "name": "model",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    },
+    "description": "Returns the name of the response model.\n\nCohere does not return model, so we return the model provided by the user."
+  },
+  {
+    "name": "id",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the id of the response."
+  },
+  {
+    "name": "usage",
+    "type_info": {
+      "type_str": "ApiMetaBilledUnits | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ApiMetaBilledUnits",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ApiMetaBilledUnits"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the usage of the response."
+  },
+  {
+    "name": "input_tokens",
+    "type_info": {
+      "type_str": "float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the number of input tokens."
+  },
+  {
+    "name": "cached_tokens",
+    "type_info": {
+      "type_str": "float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the number of cached tokens."
+  },
+  {
+    "name": "output_tokens",
+    "type_info": {
+      "type_str": "float | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "float",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#float"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the number of output tokens."
+  },
+  {
+    "name": "message_param",
+    "type_info": {
+      "type_str": "ChatMessage",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ChatMessage"
+    },
+    "description": "Returns the assistant's response as a message parameter."
+  },
+  {
+    "name": "tools",
+    "type_info": {
+      "type_str": "list[CohereTool] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[CohereTool]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "CohereTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/cohere/tool#coheretool"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the tools for the 0th choice message."
+  },
+  {
+    "name": "tool",
+    "type_info": {
+      "type_str": "CohereTool | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "CohereTool",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/cohere/tool#coheretool"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    },
+    "description": "Returns the 0th tool for the 0th choice message."
+  },
+  {
+    "name": "common_finish_reasons",
+    "type_info": {
+      "type_str": "list[FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "common_message_param",
+    "type_info": {
+      "type_str": "BaseMessageParam",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+    }
+  },
+  {
+    "name": "common_user_message_param",
+    "type_info": {
+      "type_str": "BaseMessageParam | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "BaseMessageParam",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    },
+    "description": "Get metadata required for cost calculation."
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/cohere/call_response" symbolName="tool_message_params" /> tool_message_params
+
+Returns the tool message parameters for tool call results.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tools_and_outputs",
+    "type_info": {
+      "type_str": "Sequence[tuple[CohereTool, str]]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "Sequence",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "Sequence"
+      },
+      "parameters": [
+        {
+          "type_str": "tuple[CohereTool, str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "tuple",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#tuple"
+          },
+          "parameters": [
+            {
+              "type_str": "CohereTool",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/cohere/tool#coheretool"
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ]
+        }
+      ]
+    },
+    "description": "The sequence of tools and their outputs from which the tool\nmessage parameters should be constructed."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[ToolResult]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "ToolResult",
+        "description": null,
+        "kind": "simple",
+        "doc_identifier": "ToolResult"
+      }
+    ]
+  },
+  "description": "The list of constructed `ToolResult` parameters."
+}}
+/>
+
+
+

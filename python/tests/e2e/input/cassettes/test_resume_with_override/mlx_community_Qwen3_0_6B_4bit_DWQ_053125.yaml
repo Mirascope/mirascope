@@ -1,0 +1,292 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQ0U/CMBDG3/dXNH0GIpgZ45ugMUiMqIuBGB9Oe9sauna2N4UQ/ne7jUHRPTSX
+        +759d/fbRozxT9BCCiB0/Iq9+Q5j2+atNaMJNXmha/lmCZaO3vbbBrW3EK7rn/iUQcGAKbAZ+ldn
+        FfiiMAJVj5EFqVGwjw27MyZTOOBByu5Qv/eOs61RWAc3EZ191xl4KrV0+TOCM7q2vSSPc35QpRa4
+        9u2zqBvQRPPK+a0ekMBTgMOtvLSmKCkxK9QTUzUU4jYrYHYiD4d7nQyBOpXiUe9frLvxQ6UKYQac
+        /Y2gJG3qQ5LbRcIDDnSyVcchCnBxyk2V5fRnw/OLaA+sZfiK1skWVoaFx9cfDeJ+qsDlzTxu0ZVG
+        O5yK2jNfXl/CcrYYi1n6RW7+fT9Z/TxlPNpFv4RxkWpNAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 12 Dec 2025 20:51:09 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1107
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQW0/DMAyF3/srojxv00YZIN64aRriMkEFSIgHj3ptII2rxJU2pv130pZuqehD
+        ZPmcHtvfNhJCfoJJVQqMTp6Ld98RYtu8tUaG0bAXupZvlmD54G2/bVB7C+O6/knOBRQChAaboX9N
+        VoEvCkpRDwRbUAZTsdyIGVGmcSSDlN2+/hgcZlvSWAc3EZ191xnkShnl8icER6a2PSePC7lXlUlx
+        7dvjqBvQRMvK+a3ukcFTgP2tsrRUlJzQN5orqhoK0zYrYNaTJ5M/nYlB96R4Oh78i3XXfqjSIcyA
+        s78RtOJNfUhy85bIgAP3tuo4RAEuyTlVWc79DeP4OPoD1jJ8QetUCyvDwuMbHo2mw5UGlzfzpEVX
+        knE4T2vP8uThElaz27uzL/tzOl/E9DrbXJCMdtEvlZBbjE0CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 18:22:39 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2466
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQW0/DMAyF3/srojxvE0UqEzxyEZrGZUCZkBCaPOqlEWlSElfamPbfSdu1y6AP
+        keVzemx/24gx/gk6kxkQOn7B3n2HsW3z1prRhJq80LV8swRLB2/7bYPaWwjX9U98wqBgwBRYgf7V
+        ogJfFCZDNWBkQWrM2HLDbo0RCkc8SNn19cfgMNsahXVwE9HZd52Br6SWLn9GcEbXtpf0ccZ7VeoM
+        1759EnUDmmheOb/VPRJ4CtDfyktripJS84X6ylQNhaTNCpgdyXG818kQqGPpbDz4F+uu/VCpQpgB
+        Z38jKEmb+pD05i3lAQc62qrjEAW4OOWmEjn92TCJoz2wluEcrZMtLIGFxzc8HSXDlQKXN/O4RVca
+        7XCS1R7z/XAJSz29O1+8/owns8XUxuJJ8GgX/QJ+9AhzTQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Dec 2025 18:23:30 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1286
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQT0vDQBDF7/kUy57b0qRW0ZtakYJ/iqYiiIexmSaLm910dwItId/dTdK0G8xh
+        Gea9vJn5VQFjfAMqEQkQWn7DvlyHsap9G00rQkVO6FuuWYChs7f7Kq92FsJ98xNfMsgZMAkmRfeq
+        tARX5DpBOWJkQChM2M+BPWqdSpxwL6U+1d+j82yjJTbBbURvr3sD3wolbPaGYLVqbO/x64qfVKES
+        3Lv2NOgHtNG8tG6rZyRwFOB0Ky+MzguK9S+qe122FOZdlsdsIIfhUSdNIAdSdDkb/Yu1CzdUSB+m
+        x9ndCFLQoTkkfviMuceBBlv1HAIPF6dMl2lGww2ji6vgCKxj+IHGig5WirnDN44m8/FWgs3aedyg
+        LbSyuEwaz3T9sgDchXfXh6cd2ZUqxjNxu+FBHfwBchDcA00CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 17 Dec 2025 23:59:13 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1864
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQQWvDMAyF7/kVxuemrM3KYLfRjlHoWOnCGIwdtFpNTBw7sxVoCf3vc5KmdVgO
+        Rui9PElfEzHG96CFFEDo+CP78h3Gmu5tNaMJNXlhaPlmBZZu3v5rgtpbCI/tT3zNoGTAFNgM/auz
+        GnxRGoFqwsiC1CjYz4m9GJMpnPIg5Xytvye32dYobIO7iMF+Hgz8ILV0+Q7BGd3a3tO3Lb+qUgs8
+        +vZdNAzoonnt/FavSOApwPVWXllTVpSaAvXS1B2FRZ8VMBvJs9lFJ0OgRlJy/zD5F+tWfqhUIcyA
+        s78RlKRTe0j6/JnygAONtho4RAEuTrmps5zGGybJLLoA6xl+oHWyh5Vh6fHF8+kiPihweTePW3SV
+        0Q7XovVsit0KDvNiKU6bX3JbXcWJfNrz6Bz9AY0nBLpNAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 18 Dec 2025 00:00:46 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2219
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

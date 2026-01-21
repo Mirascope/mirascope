@@ -1,0 +1,118 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Respond only with valid JSON that
+      matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\": {\n      \"description\":
+      \"The author of a book.\",\n      \"properties\": {\n        \"first_name\":
+      {\n          \"title\": \"First Name\",\n          \"type\": \"string\"\n        },\n        \"last_name\":
+      {\n          \"title\": \"Last Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"},{"content":"Please recommend the most
+      popular book by Patrick Rothfuss","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1278'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFTLbtswELznKwie40JSZFv2rUBTtIemRVGgh7gQ1tTKZkyRArk0YgT+
+        94KULEt53Kid2dG+X24Y47Lia8YturZMxHyRzVdpllfLXORpkiyKerVYiHqViqJIV/NVkdcISb1I
+        i6rC4o7fBgmzfUJBFxmjHXZ2YREIqxICli4XabqcZ/kyYo6AvAs+wjStQsKqc9qCOOys8TrEVYNy
+        2JmlUlLv+Jq93DDGGG/hhDb4V3hEZVq0/IaxcySjtSZg2isVDVJf/lJWSCCVm6KOrBckjZ7YG3gu
+        jafWU0nmgG9BMkaVAtRUrjEVqhDZrqVZbmZZkuWzpJgli75cUZKv2WPMpMtn6ETjdh82okqyPIuN
+        KOZZUeTLIkmroq6TPCpHFTq1GHXQOdjhFfio4hEURhPqa1DjwCayl3rgMw3ekQBaG4JLDR//TUBl
+        dq0123eQKLRm/GWjGdtwkqRww9dsw/98u2cPn3/cs59fWXj//f7wZcNvOx542hsbiNExmGppHZUa
+        mt7/F5CV4tC7BIaCCeG3oX3tndvwQDj3yhZI6l1gLDf6zIdYz/1rCJ9bo2JJwDnpCDR15ECMJN6C
+        BaVQTeeErO9GurV4lMa78rI1ZZyAYY5aa5qWSgFij+UBT2PMIjijJwuBdW0sjUih575pwF48h/1w
+        UCOdSlmhJllLnOyKQ3uUAkuSl/2qwauu29yRsThOgrBp0QL5aE4/Jb01drWPrDa2gev3aJqenNFl
+        fz664vWBH9FujZN06ka5kr65rndXzr2Roqu/J8MH4DpjnExbjiYvGYztOFTrtYhzG5OVDrbqcot8
+        3KAhD6knpyBbFrdvgdGBGdKNLayunskk19cnpruQr4H3dIcp+EiaDIG6gnfZfCiid9O2N0hQAUHQ
+        P9+c/wMAAP//AwD9SZH7HAYAAA==
+    headers:
+      CF-RAY:
+      - 992cba30fbbc7537-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 22 Oct 2025 23:20:49 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2149'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2153'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799703'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 22ms
+      x-request-id:
+      - req_bb85f2a98ef449a3b73261eb65c839a7
+    status:
+      code: 200
+      message: OK
+version: 1

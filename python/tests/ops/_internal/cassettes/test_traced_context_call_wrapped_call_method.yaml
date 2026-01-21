@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"As a librarian, Recommend a historical book.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '106'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xVTW/jOAy991cQvixQpIWT5vu2h8ViDrt76AA9zAwMWqZtTWTRkKhMg0H/+0Jy
+        7CQ77d4SPurp8VGkf94BZLrK9pA58n2R15unbbUqSe2W9Uo95fl6t6jzTYmrZb7cznebcrFYqfnT
+        drFZVjXVmM0iBZffSclIw9bTEFeOUKgqMGLzzXq53u62qzxhXlCCj2cUd70hoWo4VKI6NI6Djbpq
+        NJ6GsDZG2ybbw887AICsxxO5eL6iIxnuyWV3AG8pmZzjiNlgTApoO95SVCSojb9FvbigRLO9iXf4
+        WnCQPkghfKBfQWE2hUJzS9dxRSYqa3p5WPJDp61+WOSL5UO+eZhvz54l3mwPX1I5Q1FTOzrf/E83
+        qppSN7a4Knfr9Yby5WKj6CkxJxY59ZR4yHts6AJ8ZHsCFVshexF1LeyGdjSFXmU6nRLQWhYcjfzy
+        7QY03PSOy3eQRLSH7BM4Utx1ZCu4v/+afW4JXtB10gLX8I+05OA5WL+HiPzRawXPwu4U0d87clrh
+        bx7+jM8O/tKNS0q+ZlCe4JPHkgy8aHMg59ne3z/C51Z7iD5QelvQai8cSQxYdPH0kUC1jq1WhjxI
+        S/Cdg7M03FjHXDvebD38aBk6PlIFteMu5bvg0MAzB2lBGIIr0YIiK+Q8aJty/mYnLaCt4IW8QEny
+        g8jCfDdfpeh8t8mjWsehadOJpJN8VCGtIwJtK33UVUDjZ5cigV57w+4svXdcx7kCz0qjmYEKRqK8
+        WbqlZ6MlFa9atA15KNOFAlhykGiiRMO60dgZdHiIvmkBywJszQnQAnlPVjQacIQVlEFS1DbYxOx0
+        V5KHBgzzAVAAoddHFjTQcUdWojWjr+e+nB6z6c28nX9NzyhzbNLTRO+1F7QyJMfElJT16NAYMrdD
+        Ky4M+6V3dNQcfDGusCJN4jTUveOul0Khaqk40OlDzFGcIc32OsMRerY3+4vqmp1cJcXpDF2HbuSe
+        1pnHmuRU6CoS15puVpsnd9SKCtHjOqwxmGEus+gbXZcp1PXkUEIKzx/zczTN31lZza7Dy/+ruU95
+        g69nxUdyJXstp2HbVDp0lzU8ON2yVkNrgnA2AZc1kAn3xdVyyKdgf63RBavwbGxWaY+lGb8ZIS25
+        qQBtb1b2fD37NX71HZjKTA2sLgfzm1L/+yWY55v3kPeIp/Z/xC3x6V9RL54mE4O/7XdHghUKRv63
+        u7d/AQAA//8DAAQhz73EBwAA
+    headers:
+      CF-RAY:
+      - 9a7be7e9a959d4af-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 02 Dec 2025 15:37:33 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=HBT7FSMI3KxNBIGl7q.8xqcWQSXqMH4ghGvuEs8WBH8-1764689853-1.0.1.1-xlMS4K2SVMKIOQBXKRRC6zG5tnDP5HiQFiJ.wo13fuLg2CYCRPONByProAi3rzkMptRZauLGY5HkZRJ7qQtr7d9Gbs6kDWKHpYG6FwpR8.8;
+        path=/; expires=Tue, 02-Dec-25 16:07:33 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=wwZl1FCPNBYUDAUqRV9i2h3nH3hv1JZpji7_y8rRPIQ-1764689853232-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2843'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2846'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999965'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_dd14018e03244797a0cccd127d4d70e1
+    status:
+      code: 200
+      message: OK
+version: 1

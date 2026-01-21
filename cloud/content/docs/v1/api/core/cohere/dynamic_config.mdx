@@ -1,0 +1,38 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.cohere.dynamic_config
+description: API documentation for mirascope.core.cohere.dynamic_config
+---
+
+# mirascope.core.cohere.dynamic_config
+
+## <ApiType type="Module" path="core/cohere/dynamic_config" symbolName="dynamic_config" /> dynamic_config
+
+This module defines the function return type for functions as LLM calls.
+
+## <ApiType type="Attribute" path="core/cohere/dynamic_config" symbolName="AsyncCohereDynamicConfig" /> AsyncCohereDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[ChatMessage | BaseMessageParam, CohereCallParams, AsyncClient]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "ChatMessage | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}]}, {"type_str": "CohereCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/cohere/call_params#coherecallparams"}, {"type_str": "AsyncClient", "description": null, "kind": "simple", "doc_identifier": "AsyncClient"}]}} />
+
+
+## <ApiType type="Attribute" path="core/cohere/dynamic_config" symbolName="CohereDynamicConfig" /> CohereDynamicConfig
+
+**Type:** <TypeLink type={{"type_str": "BaseDynamicConfig[ChatMessage | BaseMessageParam, CohereCallParams, Client]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseDynamicConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/dynamic_config#basedynamicconfig"}, "parameters": [{"type_str": "ChatMessage | BaseMessageParam", "description": null, "kind": "union", "base_type": {"type_str": "Union", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"}, "parameters": [{"type_str": "ChatMessage", "description": null, "kind": "simple", "doc_identifier": "ChatMessage"}, {"type_str": "BaseMessageParam", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/message_param#basemessageparam"}]}, {"type_str": "CohereCallParams", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/cohere/call_params#coherecallparams"}, {"type_str": "Client", "description": null, "kind": "simple", "doc_identifier": "Client"}]}} />
+
+The function return type for functions wrapped with the `cohere_call` decorator.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.cohere import CohereDynamicConfig, cohere_call
+
+
+@cohere_call("command-r-plus")
+@prompt_template("Recommend a {capitalized_genre} book")
+def recommend_book(genre: str) -> CohereDynamicConfig:
+    return {"computed_fields": {"capitalized_genre": genre.capitalize()}}
+```
+
+
+

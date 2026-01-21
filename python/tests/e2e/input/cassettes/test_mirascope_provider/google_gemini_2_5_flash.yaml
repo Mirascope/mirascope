@@ -1,0 +1,66 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '75'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: http://localhost:3000/router/v2/google/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: "{\n  \"candidates\": [\n    {\n      \"content\": {\n        \"parts\":
+        [\n          {\n            \"text\": \"To find the sum of 4200 and 42, you
+        can add them:\\n\\n4200\\n+  42\\n-----\\n4242\\n\\nSo, 4200 + 42 = **4242**.\"\n
+        \         }\n        ],\n        \"role\": \"model\"\n      },\n      \"finishReason\":
+        \"STOP\",\n      \"index\": 0\n    }\n  ],\n  \"usageMetadata\": {\n    \"promptTokenCount\":
+        13,\n    \"candidatesTokenCount\": 56,\n    \"totalTokenCount\": 107,\n    \"promptTokensDetails\":
+        [\n      {\n        \"modality\": \"TEXT\",\n        \"tokenCount\": 13\n
+        \     }\n    ],\n    \"thoughtsTokenCount\": 38\n  },\n  \"modelVersion\":
+        \"gemini-2.5-flash\",\n  \"responseId\": \"trVcae7UNO-hz7IP8PSGqQ8\"\n}\n"
+    headers:
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=5
+      alt-svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      content-type:
+      - application/json; charset=UTF-8
+      date:
+      - Tue, 06 Jan 2026 07:11:50 GMT
+      server:
+      - scaffolding on HTTPServer2
+      server-timing:
+      - gfet4t7; dur=889
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin, X-Origin, Referer
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

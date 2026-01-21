@@ -1,0 +1,220 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather in Vienna?","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '359'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xU247jNgx9z1cIep4s7FzsOK9FUWCxi/ap2KKzMBiZTtSRJVWiZicd5N8LyfEl
+        mZl9s3nII14O+bpgjMuG7xl36G2dlWtYQbld7RoBUORZVlRltl2jWG1WYpdXm8Nm1TZiW6yywzrf
+        Vhv+ECnM4R8UNNAY7bG3C4dA2NQQsbwsdlVR5VWRME9AwccYYTqrkLDpgw4gno7OBB3zakF57M1S
+        KamPfM9eF4wxxi2c0cX4Bp9RGYuOLxi79A8PlO8+jc6ZGKmDUsnQOvw3oBbn2qIGRWe+Z9mnLGFS
+        D2R1gwRS+Xmk1J5cECSNvrF38FKbQDZQTeYJ34JkjKoFqFu6zjSoYk1HS8uNWXZSy+UqW22WWbnM
+        d9duJ16+Z3+nRvTtGAfZip+M8dDCLo2xbYqybMVWlFm1Xq8ScSKhs8VEE3SqKuU4wR9NLYHgjqFD
+        TQl/feTKCIgcj3z/yP+UqDU88svkH6nrPuv0eWx/fTk+dT7/7/evnzdY2r9+qb5Uu29ThIYuZXdE
+        qn8g0KkfOmOXBWPfU3csOFAK1W2HyYVeRtahRy3wnUlbh8/SBF8PIu5zG4djneks1QLECesnPH+I
+        OSTUsfC5h0PwRt8oGNvWOJo5xQaHrgM3cI+C9tAinWvZROJW4o18PbpnKbAmOSxEC0ERv+6ZcTjv
+        AGFn0QGFZM6vxRO+0JRZa1wH0/9MF8mvb/k142d0B+NlaiXvsJGhmxaxH8LJSJGiIZDhI+Dfavhe
+        ftPoG/TCSXttK/8NidEJmQjOoSZ2VQNrjWPABuV9+rl0RjCKpkNC52c192O16EjirZ2xUdt39liC
+        JJVe+jK4PNw5XGv05KIcZuBl/L5MMTweJ+mwGbt1n8Jo/D6LgqaREQX1x7yI8aDeJXM94Yu751OS
+        6bRH/dytGhlbK3O0zhwidTYa7VxYLuixVbyRHg5qOPXBwxEn1Ul9cy83u4e39tkRfp3uiDhhMwVm
+        N/q8P8N58R7wHu+4sh9RkyFQE1hsRt0Hf7uiHRI0QBDpL4vL/wAAAP//AwA/BhENeQcAAA==
+    headers:
+      CF-RAY:
+      - 9c1404239a00dc36-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Jan 2026 04:19:57 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=a9G4qHgzl5Abp8bB5PBvC.L6UgqvOL3uUOrYqOHy5HM-1768969197-1.0.1.1-DWsIMsnl68CxfmXCNW7am5QYM.ZHkAZR1exD0PYFUHn3PqF1V0fY065.jgCXTpO5KTOoZeYL1jft1igyp0rJn7fu1DQVmCVojb_O6XeBSjM;
+        path=/; expires=Wed, 21-Jan-26 04:49:57 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=BufM7BfzNEUsh7aC4O_H6CjY_dBehfiNkIoL6kLDurk-1768969197042-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '890'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '893'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999735'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_ef1ca2c4f61b4a8f8ffee99dd9042380
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in Vienna?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Vienna\\\"}\",\"call_id\":\"call_gfExgkms1zOMJ4e7pYC9L98X\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_073a2a7528dcaa6100697053ecbfa88194bfd677fc5c709332\",\"status\":\"completed\"},{\"call_id\":\"call_gfExgkms1zOMJ4e7pYC9L98X\",\"output\":\"Weather
+      in Vienna: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '686'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFXBcuM2DL37Kzg8xxnJcSzLH9BeethDp5dtRwOJkM2GIrkkmK5nx//e
+        IWVRkpPcbDzgEQTeo35tGONS8BPjDr1tiuoFdlC97o6iAziURXGoq+L1BYUocX8s633blmW5L/Cl
+        rl6xLo/8KVKY9l/saKIx2uMY7xwCoWggYmV1ONaHuqyrhHkCCj7WdGawCgnFWNRC93Z2JujYVw/K
+        4xiWSkl95if2a8MYY9zCFV2sF/iOylh0fMPYbTx4onw4uk4oOmdipQ5KpUDv8EdA3V0bixoUXfmJ
+        Fc9FwqSeyBqBBFL5ZaXUnlzoSBq9ig/wszGBbKCGzBt+BMkY1XSg1nSDEajinc6WtnuzHaSW212x
+        22+LapunnXj5iX1PgxjHkRc5+PPXe+xBVMe4x7o9lLu2rHFX7/Z7Me4rsdDVYuJB7+G8AL5aWAI7
+        own13NSysRXtNBT8Sbk6JYDWhmAa5Pd/VqAyZ+tM+wmSiE6M/3lB9h8CXdAxqdlfErUGJj2rdn+H
+        omiL3xhowXzQ+vrMM8Pt/iuTcmdUahS8l55A05gcE1MSt+BAKVTrFZILo06tQ4+6w0+kZB2+SxN8
+        M7mkSSvL27fODJaaDroLNm94/RJzGIctjV5mOARv9Moi2PfG0SIprjEMA7iJOzvGQ490baSIxL3E
+        lT88unfZYUNyclwPQY0L5J6Mw+UECAeLDiikcHm//H1R98564waY/y8EkvLGkd87fkfXGi/TKPmA
+        QoZhdvq4hIuR3bi1QIZnwH80yXRMH3Ry7Sxhgb5z0t7Hyn9HYnRB1gXnUFMWV28cA6ZMl7T6PNdr
+        GBLzGam5J89gFM2AhM4v7jyu1aIjiet4kvx4wkM8XkHSKNE/ppSnh4T7HT25KIcFeJuFP9fw+PpJ
+        h2Ll3mULObjwHgchZERBfVteIr/Yj8YfvxGbh+NTk+nbEfXzYDUytllYv8hBuxSWCzqPigvpoVXT
+        tySkJyyrTurVg3wsnz7GF698Fk1ynZgLi5U+H9/58uUz4DPebNmvqMkQqBms91n3wa8tOiCBAIJI
+        f9vc/gcAAP//AwCAAuSt2gcAAA==
+    headers:
+      CF-RAY:
+      - 9c14042a1ca0dc36-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Jan 2026 04:19:59 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2147'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2150'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999702'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_afce9a930c6049d3969624a02965d694
+    status:
+      code: 200
+      message: OK
+version: 1

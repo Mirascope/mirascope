@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in Book format for a final response.\nA
+      book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"allowedFunctionNames": ["__mirascope_formatted_output_tool__"], "mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1174'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+        D+CtzURBCAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:05:33 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1772
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

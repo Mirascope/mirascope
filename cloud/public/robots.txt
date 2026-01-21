@@ -1,0 +1,5 @@
+# robots.txt for development (overwritten by vite build)
+User-agent: *
+Allow: /
+
+Sitemap: https://mirascope.com/sitemap.xml

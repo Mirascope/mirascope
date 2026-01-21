@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"This should fail
+      with AuthenticationError"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '131'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper:
+      - beta.messages.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: '{"type":"error","error":{"type":"authentication_error","message":"invalid
+        x-api-key"},"request_id":"req_011CWdN9pQjsMGioSTihLhYk"}'
+    headers:
+      CF-RAY:
+      - 9b63afad9d305ea8-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '130'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 30 Dec 2025 18:44:02 GMT
+      Server:
+      - cloudflare
+      X-Robots-Tag:
+      - none
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWdN9pQjsMGioSTihLhYk
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '36'
+      x-should-retry:
+      - 'false'
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

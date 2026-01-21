@@ -1,0 +1,100 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.llm.call_response_chunk
+description: API documentation for mirascope.llm.call_response_chunk
+---
+
+# mirascope.llm.call_response_chunk
+
+Call response chunk module.
+
+## <ApiType type="Class" path="llm/call_response_chunk" symbolName="CallResponseChunk" /> CallResponseChunk
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseCallResponseChunk[Any, FinishReason]", "description": null, "kind": "generic", "base_type": {"type_str": "BaseCallResponseChunk", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/call_response_chunk#basecallresponsechunk"}, "parameters": [{"type_str": "Any", "description": null, "kind": "simple", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"}, {"type_str": "FinishReason", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "finish_reasons",
+    "type_info": {
+      "type_str": "list[FinishReason] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[FinishReason]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "FinishReason",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/openai/call_response_chunk#finishreason"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "usage",
+    "type_info": {
+      "type_str": "Usage | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Usage",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/types#usage"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  },
+  {
+    "name": "cost_metadata",
+    "type_info": {
+      "type_str": "CostMetadata",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/core/base/types#costmetadata"
+    },
+    "description": "Get metadata required for cost calculation."
+  }
+]}
+/>
+
+

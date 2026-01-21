@@ -1,0 +1,173 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.bedrock.tool
+description: API documentation for mirascope.core.bedrock.tool
+---
+
+# mirascope.core.bedrock.tool
+
+## <ApiType type="Module" path="core/bedrock/tool" symbolName="tool" /> tool
+
+The `BedrockTool` class for easy tool usage with Bedrock LLM calls.
+
+<Info title="Usage">
+
+[Tools](/docs/v1/learn/tools)
+
+</Info>
+
+## <ApiType type="Class" path="core/bedrock/tool" symbolName="GenerateBedrockStrictToolJsonSchema" /> GenerateBedrockStrictToolJsonSchema
+
+**Bases:** 
+<TypeLink type={{"type_str": "GenerateJsonSchemaNoTitles", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#generatejsonschemanotitles"}} />
+
+
+## <ApiType type="Class" path="core/bedrock/tool" symbolName="BedrockToolConfig" /> BedrockToolConfig
+
+A tool configuration for Bedrock-specific features.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ToolConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#toolconfig"}} />
+
+
+## <ApiType type="Class" path="core/bedrock/tool" symbolName="BedrockTool" /> BedrockTool
+
+A class for defining tools for Bedrock LLM calls.
+
+Example:
+
+```python
+from mirascope.core import prompt_template
+from mirascope.core.bedrock import bedrock_call
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+@bedrock_call("anthropic.claude-3-haiku-20240307-v1:0", tools=[format_book])
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str):
+    ...
+
+
+response = recommend_book("fantasy")
+if tool := response.tool:  # returns an `BedrockTool` instance
+    print(tool.call())
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseTool", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/core/base/tool#basetool"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "SkipJsonSchema[ToolUseBlockContentTypeDef]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "SkipJsonSchema",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.pydantic.dev/latest/api/json_schema/#pydantic.json_schema.SkipJsonSchema"
+      },
+      "parameters": [
+        {
+          "type_str": "ToolUseBlockContentTypeDef",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "ToolUseBlockContentTypeDef"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/bedrock/tool" symbolName="tool_schema" /> tool_schema
+
+Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
+
+Example:
+```python
+from mirascope.core.bedrock import BedrockTool
+
+
+def format_book(title: str, author: str) -> str:
+    return f"{title} by {author}"
+
+
+tool_type = BedrockTool.type_from_fn(format_book)
+print(tool_type.tool_schema())  # prints the Bedrock-specific tool schema
+```
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ToolTypeDef",
+    "description": null,
+    "kind": "simple",
+    "doc_identifier": "ToolTypeDef"
+  }
+}}
+/>
+
+
+## <ApiType type="Function" path="core/bedrock/tool" symbolName="from_tool_call" /> from_tool_call
+
+Constructs an `BedrockTool` instance from a `tool_call`.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "cls",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  },
+  {
+    "name": "tool_call",
+    "type_info": {
+      "type_str": "ToolUseBlockContentTypeDef",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ToolUseBlockContentTypeDef"
+    },
+    "description": "The Bedrock tool call from which to construct this tool instance."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "BedrockTool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "/docs/v1/api/core/bedrock/tool#bedrocktool"
+  }
+}}
+/>
+
+
+
+

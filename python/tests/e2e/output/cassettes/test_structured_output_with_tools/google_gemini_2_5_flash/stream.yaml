@@ -1,0 +1,156 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in BookSummary format for a
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1113'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}},\"thoughtSignature\":
+        \"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\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 1206,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 988},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"dJdgaff2FritmtkPwPqViQM\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 05:51:53 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=5082
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}, {"parts":
+      [{"functionCall": {"args": {"isbn": "0-7653-1178-X"}, "name": "get_book_info"},
+      "thoughtSignature": "CiQBcsjafPrIwF8KmpvwZ8url_bgIsgRYdFZI39eYsi23Su1NmsKfAFyyNp83kajRnJRF16gcODzKvJtoFMYc6zXxRL32UrkFyjZT8GfotqP9bJAAqAg4zSJKJH0Ku7RQUNmmmN7z4Ly8sOHQygZJB8pq6p0M1JG1VdmGHnVhNNEzDvtkjRyimkf8XwZU7pZC2lgnfTUFO2sKRX2W7yb83kckd0KvQEBcsjafNrLK71ke68ZxpATXt1l6xjf9Y85ick65hM0ADa3jWhD5KOdxJbt9eT36wXqdBtWTHj3RVhbl8BBSh4K_d1pN1Qf4AljjxA2n5NOqfDAaJkXmnJJywvBf0x0po3yjj-bJpizUAq5lEETgq8n0mOpoBeNtdxc4WHmNVAjHyZpvVsUOqUnjVQe_Li0RoTJgUOj5Mj4EW-tD6XPX4Y8u_XBt0o3omvT4e_Aoh8Ug0YpYH8Hfd-UVceIn2wK6QEBcsjafIvRJofw10FUJDdKKWPw2eP15RPSrL8h9zuHvTWvqXZUD9_Si_PLQUqAFBMV0b6yjy-w5fi77cUqWbW1PG6hyFe-l2KGwCi5uFyrDr_n0xO-pn39_rf5vO74gaU-Ll3XdhG-oAQtGWDaoSEFfZNNYEfdz3qGokKlKYrND5I0Re6e48NncngHFfthOx98lWaT3zeJs2kw_qQm932oMmxmr3brtZFW-8jJJ_fQfrA3TxGNzLXO6hPvLRWUKON49jQJYiDOjMSECXTI0fJTXMpam88QaIGRBO1gDtPCrTljeYm-BTAIUQrwAQFyyNp8I8O8dCtVRjKZtNwBaDNhas1M92czlkE8EtzqcK_gKVDAXhiUCcl0zqDwrKH9R1aW-_mxvvNp_8OZj78UCYqzRsfEGSs2EMM56zPJMCOTvqG6NHeqp-w3SN8E5dPt0spm-9RCj23u-Bt_DMuYRe547Yuc0PJj8CdXYTXWhnCWZNbyj_T2LrkBhVmLz266Xqmn1DxqndsEaLh43C2WlbA8b006g2ObxYReS6dOeD3K2aukAIOp-Jx0T7YE4UgIh36D09HM2BzZKW0Tg4LyN0GqmDX7rPtZpgwvyy0iYULfK7nurCotRJRTvdWQzwrxAQFyyNp81Tso3_YL4G5S4sb79JEwql3zCWBhNXzIdhawuYRz3ImyriwU-adf9enQBYZr6rOhuDjEdHZhiTENKMhcj9ENOYaIN2xsbTasNWhdYhPMll9Uddo19UI4q7Py9ocVmUNLYMwylZfT2tQbFwz9lggeWeU5F8QGX-P4xIGC3duVZr2re4dgCkT3ztGb0fLgpU4PqmA3kYtOvdsl4WwN5teVPMTDdkTSKaYBXfnY_1QLlqPMPiNrAtFxRyQ21X3RjKVxlslsSrnX3UmbiYDcCrEra-wImilwsAnYog0WhuTGRaFMBd1TlGFGazCZiEAKyQEBcsjafMJ1bPadcEpADGOaRAGvXsl2ADcQekO8IZHSkKpuTiSrqXCs7qfcHWxlTsu-CE8YDlnFMdyQMgmnqutlBGVnkxnKeKTfGSCLrp9vTAPvTXr1S-MAIMyMKaYTGA413jO4uQOcJ5RuIlLx4A7ycLuyZ1rPLYKTr91OaYWG_Ut4Esk1tBxvEMnilzK-pEQ1VfS-GAA0getzawC3oNE8dJg88qV84z7cAoB3tF4_AMqdfVl2_T6rdHskSAp7r77Hw7FitwX1JZQK0gEBcsjafDCoCS9O5s6U2r61HJB6TOeaBQmS6Wl7p4EtFy15dle0VJSiwTjaFXs-_YxKomknY8tlvt7k3TKLljOgwmsDv0brtJT3-phQFeBdts2ZmxJti45JzuJ5wyUAJo9zoHupAUgAZUuj8xciqh_9d1si4IvrtFqDu73x9NUCS0Pd02IF6kLsHosiivN9VI2E-M6eb8PMLYboGzpJnKRsFZ2XNgUoqP4hjYoSWzzyEs1bFxwt3XAV4P9avUzWsVAo9KMdUg_3B3UuC6oZpV73GI8K0wEBcsjafLhYoh_vSo_VtuexUJd1keOsVGVyr6JVvRipMBmdAlS7K_KixnJcpFpQvVJGLq4o-6-apdMqGUCn2jhXykn92sd-spik94nRj0Nl-rIBpi18-Kkr04enHxEW7uXxkKD58osNUrsnG0n0pnCTR1CwSubUbokyCeWi64MyFhkGFX4hhSLy9oI2bs7aakvB2urb18wSUH0YgNVZpBlPYs3fQUwDkCr_rfOZS0FgbuIchuV4rhjDR7g2TXogECkWGa-z3YYrItID0iHWJIZkDmOlCnUBcsjafIv4YA3x-5YTYIfUOeaNjYzVRQLJwMPsecFVJl6jri8agFjnshZ0ear60Scde0QO_q0ZHjxwfJJT-APM_28gX2JdpZlI2Ygkr7Vb9g1L3s6rNwQ1N-5vzJpmJeuaHTA6_vmc2Odwl23uVgqp6UImDzgKYgFyyNp8MPK08kTzG9SMyMpfnRgAXmBmZFO_lkLxNe7eKM7zbLHs1zwy5ztvH_oVl5K5Odfkf74uAUX_Tk1gNp9N0lJgEq4wiCiO99gAIKKxua5n5MQjVXSpGa1aiqVQiaatCk4BcsjafCaKD7k5DkDxrNgno6O-LJxef5MwlE3A76t0CwlbsbyHyOmKDkBAdkiWIeeKcwdOIRYiP3fiKOVPVkxOFGtUCJoeYVSD7_4LTNMKJAFyyNp8PyBqVb8Z8NQ_I37SuNdTXvOXfyl2alad73uzN2YDswpuAXLI2nxki5khrHg1-LNdj6Cp-Br8usNtbpAfZutsoHtvBwQFoEOwNIiMo6dw-hwKZMYvZsWFaH1rgFqojfUSULBadX58-4Ot_e3zkDAENXOAocszVgpoLhCv404XgUKx82yi-3Wt5PAOyhmlackK1QEBcsjafK3wcWLVW0VNIHNdLlz3v14MRoHyZ8d4eyLI_WW4qfqHZbU-fn41XGRswRJMGJnlgUdFLXbCR45kfgjoA1lQ2ykjTGQ1gchzh47RQ2e0_BnL9_UYpz6BNpBB09dZE4GM2Ho6mXS8ZPLempfMkAw5FZzSYMbET1N41gwT8QLt4vQYT5r5vYjpy_lpXi5M4Wq4RTPhm4hUdUOPoxPZ3-H_qyKuZy40LGgeBW-OZNbUCexSN2GrLBhueIEmVfx2Y4PGZHg6bzKI9HI7sv7pXWiSS4gKgAIBcsjafPpyg6Xf5B4gFMROK45MdR791OlxZmG5EF0W_lSO4YR4N17GcA2vNCRfwyAO4kP89gB5oi14SBGKUYggKfIebkhcewsDIjd5m2CTE4s-iWLyJDgNrMcmmqRuTW3025PgarvuTf-KJfw2MaCRluOLY9rb6nvF0mQKAPM2AdbgPKKxE2P0q5OxkJFQA-5_HZJ5e7YVxWS7zWa9ltcSAuXNgp0QJOg8EqEMwXOdq727-3J_U4CEJC86tszOKdN182G9lfotuTk617UbXMJmjzfwlOqxv2WoGglvycavk4GrKoqiicSkkLAAEEGjry2PEowFEeyP30YA83V8NVUuCvwBAXLI2nz3qaWT3WKQFQkzO4cYfzUCE6fiOIr87O2l3YKNRBp-rsTemHWMSI29BXCZ0eUCSvJXGC9vqUiFlYzgSNBLGJyOWBQgQBRSlVUFogfpQbttc9-MCaGb18IiYDzXv9vhTosoa5SvlYOWVAkm_HREDeQOk78aTJATJ7SyUz2QMhAcSjCOzklDk3230pw4LLSoe7jU4Ve8sbTQEFm-23JGXm8Pm5Oj9PqECzC4qKqMujCiO0VVyD_-yXWaHLZ3r7mfqqD9GXgYA4Es1YLGgJqKrd53Qs-bHJQ7l_vsZtGiBoDynGM2MYr8NLW26wiv8oYgUZGCV2XLQQF_CucBAXLI2nwaZWfNCSMkmknLLsXcFt5CRlQV-1UJhKfBEqmuh3MBBxiRzXHWXY0XpH50NoVxYDt-hu2nJrM_CilO3XZTXSXS55rJ6WbE8E9T2zUQr4z1rJtQKU_JFqmB89PkzhgNGsr_g_kRmL0plRJf-Swvt0jDlBTCyRFh0VdJn4c3qAnFpz3t_-DbPNFpDl9VGpSW_TQ5HWUdMxo2DY3_TfHlEjK0JyDDVPACc7-aRDQvQ_ep3TX-nzp73E68vzMFnw_jq9OrSiJJdtL26RQv5p-DK4LQztY6lscr_aZLbGsZna2WNEKsCu4BAXLI2nxmMzDNgQhn6nprASFvt5BVwiIQNf7wbhXcC2eyl_za-YYLagKXYnD5P8OP1vctrjJtgs3MQodXztYHJFrWvzneXnlirx-1pE-9BYq60Qwae1ew217JGK5W0-NeA2-AU3qz3RBCuPoy01m6SOw6hfGOqabgYDZ8CYNe_QFXLKTAj15_ZBTSUxloGfsAXM16z1tWDaqkEzxcQN1A6WuG75vsu7nRbP-Zf6UAXd-2l0PnzLSP3kguY_rFZ3qYVEZcT4sTf89oxacuU1NX-h1ckd6OhSFvrPw1_jczVAXeSXlAIJPFoEDw0AEjtQrNAQFyyNp8PScJr30IFbfbeCTlo6znqv8onsTDWn03-GTW5RJkodDqKqGhJK23nd0XgdeZ5sAenIzxy93rNDPbfReOjj6lNJefFV7_tK3qcEhjdd5rNEczhVSKuY6RyukA4Bp5kp6rX2IbufWhuWq-9_QdbTbOA028Dfm28GnPjM1l2ZMtli016E4ESEg404IFAQ01FmMqSxbKZ6OmOGCmdaRsApYUKmHa7LtTxWNIOt2lVZD0M9s52_9B9AxMyE7ThJRoP33QvS0B4t3r7y0KpwIBcsjafKlUY65Mnz-LUlNH4LPAeThW4uZvI1iD7sCK9MsTAWRq03lDUpqGz683SX3IPWvwnir74_CBsZMRLxiAwC9WRhUZAH39RbuaEpV4RK9QpAFtcGp_9IZTUQsyDnS3TIFdQNcI4AQSigZifgvRzNSqlv9bVYBLjHHuYSnHQNyLspLOk3fo5wwEP5Ozfo84NH0QAdozMdixegRaBLdJ97D4LBW-tUy0QxTNFIM6EX1jDqGau9kpk9WcqkYmxSb58ksGYsIYQGumf72FBe0kCuLqu3C7yTKXU5buzD-43EuZ-0dqufO1t_qEGBQ4PcyAGc7w1CO4rH8TOE-ClXs-BDqrDddIRIlF8utsk8rduRE1Mn1bZC01AIMHB-84ZqD_oFEEoCrICsEBAXLI2nwOmhVnpGVqZ7hB2dO0G1yIYhLgq4W7nWJ5MUbI3g3SKTDRC2LEQMgd7-XntN3xd-80emSjIQTM3WE3k3usnPC3bTeutD7FIgyg78aUEnpaCfOyVOg-h9as1FALvfKM739p3Y7CZ2ApirKnh6vT8lrZPT3JjnsKZwKbAsO5P2lynk6w9IgWcEjUopbUhHCOMnyEfFxp6XfjRw6xQYGNSPn-QJNWAR0QbpFftDkmWrxTdPEv0qRwWwSMpNQaiQrwAQFyyNp8F6cn8gQg_sdEhg67f0KXzMB8L1JjdoC4JKioLm8ieKRa6G5_ADR4f2pegQrPemEBbll69fkxdF_fP2IcU0T_NVt1XvP4f41mzBoAu0OWLqDXQmChFlnNABWFK9zQd6FpweY-MoUdt6iLz24_a43QWl9modGwJ8ojvZ_RknPxuOYrfgj_30D3udiZvBIQe4XvpVXpJS813aj6M36GDjz6EA1xBW16-6AbEwCY0fOll84wOeM7Pf10C_ULdI5XDgaZV4V8r5irdq5nIvVw-Zxjt0fyfrhL1p0le6HzCrY39UyiogLWMQPcWdMIqAqJAgFyyNp8PydSHUh3EWpZW2_7oi2E18RGcZ4UgFphRBz-HkvTypUxn0yjwzDKaY8ByIBUlJg5oXhpCwpEo9Ry4A14jTG9DhR830jdBo5tJgvQYKeHRQzhje9sZ1UQ8KoCxa9iPjnCUgLFuaZsNa5rPNWElj-K2bG6IhMY5w9kiUgKvbYtPmVfHkMLLRwoQf9MqzdttLv8Z-GplcWALv9KtXoX0S-dKyjQpTsdxv-33x6IbWsN7Cp5hJF1yVaaLCQCniDaGjQzhTfK2WsPg8ZuxNns074OdLwMPQ4EsyAnY0rLLjyHrTa2ZbOxcFCY_r6ichJlQkRgVlNzjUxivoIWz9d6y5ri1YBlg2oKpAEBcsjafOdb1NmyIIQCsvMCr4e87u72Sy1s8FOcuNxX4pNyTvsBx6dzMoSxL6sm_VbJS4CR8lgSXNbsac1qs3b0Xy8q2EeCwHPR-f5Vht0j8t1o6UasvJ2JLr9czIVltUteE4PsoGggOJQH30yJycN8oQ_6HtrUzPYBqthiQQxO37HSqTgRWV5BKjojdoGdRSgxNy48cZFo95Qzy1hKR77sIMA3bg=="}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "get_book_info",
+      "response": {"output": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson,
+      Pages: 544, Published: 2006-07-25"}}}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in BookSummary format for a
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '7776'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"publication_year\":
+        2006,\"pages\": 544,\"title\": \"Mistborn: The Final Empire\",\"author\":
+        \"Brandon Sanderson\"}},\"thoughtSignature\": \"CiQBcsjafM1yzrSyo+fPAiFugScvwvVMFP2fPdQMuXoIBl/I+YsKbQFyyNp8STOmWzZ4z/utfTJED3FSAgADYVmk2jFkG5avwcpEdJC2O6PshEIz8CV62M77ldQcpjifGBquieINnsQPH+k0lRa6m3qKqZUeXYTnGGxlbt9rPo/GhAOMPFUwkWDlPiibw2JLznGtx6wKrAEBcsjafAGrTIPUekfGfNmu5d8XT8re8xDbtLOmAzdd6+xFNiBYxbQqobRE7BnBc/J33Euv0ZpUW3fntMPhG3D3NQvHQ9kYJNKGjLkcEwGgTNNWuPWPReLRa4ALM17DEZdKEhMLvhp1fhm+ZoYSPoK1py79xaQcOpbsZXUk0Go560wfGLzjGb0kKh8N8JpH5xBTMJe+ISxs5hGCaqaD2i0B1TXqsFV1wclEnDdFCqoBAXLI2nyFauTkl3PpIij5TpZ4OidzNUyYqkPAvFc8XwQJA6xyM1DxyC98w20OBBZjaN8budcmtj2coVpAzSGnq+KZJ3uomIDWXTjxkJYZPNwXE6irS7ABXK+RvWjOkn6+ESgXHcah1lUwck2HmqsWyuw5x7meY9miOF4h9stKdy5cQ4KSbSpMfr/OiIp49A1n+ouY7WJpdYpSk6MwiV8n5x9zgqEO9aVuA44KmQEBcsjafJa77jAwjlMuJ9Ihml8imNjDj7ssM5Vd+dhyIJUMhPMYEoSpwatokf0Tzac4TL/UAkprWu53MJdngyogfagKJ1iXXzt9YxX/IsvE0n7mH/qltsaa0XgALs6A2fv7DvGNkg3u8qWvoar7w3UguGkFTySfwif5Fiqf8frx7pIhh9clAif5BtHLKZBw/YI1muotz1FQHUUK7gEBcsjafACkzqpSefo2optuRV/4TesQx3ef6JOMSraan12M9TwEj4827Vr6tp/VJSwOF3I6yVKC4PbfcOiFvyURH8kJ7c4SzJkZ9gjGubqGisSW1/+FwDcWEAeFEpANosncgirtl/Xl4DXBcdNaFcki7AUTFEO3pKh0TX3KSmxZXFCk3NCEv00rcczHrn5GHNGhIzYPmqZc/pN+D5gEvQrrD8G4g8rdzbsAYS+YZU5zIm7KF6AYCrh7ueWQjScV7PZsP2Acu4c683A/oTg0ud38A3mIU7FGpIM+0NSfMQcHNK0gU4yFbB7u74PeiWvICoECAXLI2nybIsckJGKz9eHVvuhBTLvyzLFSLTZSVXIJN6oiCWA2hr5VfkZmMHfUdLOFGnl+nRSWiOK57N5Rpt/dBsZ4qOqBpbdFfuRxFdvYjFwp1fd66V5Ye0U2QMB0g+yTOfZ+wqMXDylC7wVDtTvihAllUMt6U80Pa7RByaiiWikYzf6dWsish0LmNeMAgfPNxqi8qxEXk56ng038IDLHPX+Xajptb0xUY8grQIkF2rb00Ga1c3rx+2DF+W8pWVowuI0T1+CexFjylQydaBDwwpWTO/+3Yxkq8G3C4qA1iclNDzhFQh0dOTC56gqdDpkksRngPW5c9g3dY6VINP8/rzIKwwEBcsjafAZRFFjNO1fwpApdeHZDTltIsIz5k17++PMGopCcXFuoBp9J7EWN1Om5ytJUyK+zOiHa9NT3Of5XadXcIT1yYlSbC8AwnQfjF4mdi9FWyYhnQ6QiOSJASjuNHhsaPRA/Kok5q0m82rw56wHrbZenXMy6gbUA9hlDEx6WtaXIkurtf3iBqCSp7vZw8BavG6HAINq9AGUqUasGOE7zJODQiYJKh0ZlLjWkhwZult1ybLX+vyPCjNZYbx4tkP9CG1Y=\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        1256,\"candidatesTokenCount\": 49,\"totalTokenCount\": 1605,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 1256}],\"thoughtsTokenCount\": 300},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"eZdgac68H6PnqtsPv9ypkQw\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 09 Jan 2026 05:51:55 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2035
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

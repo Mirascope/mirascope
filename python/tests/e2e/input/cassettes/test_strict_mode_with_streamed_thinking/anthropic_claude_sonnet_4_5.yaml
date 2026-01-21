@@ -1,0 +1,348 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Answer this question:
+      What is 2 + 2?"}],"model":"claude-sonnet-4-5","output_format":{"schema":{"type":"object","description":"A
+      simple response for testing.","title":"IntegerAdditionResponse","properties":{"integer_a":{"type":"integer","title":"Integer
+      A"},"integer_b":{"type":"integer","title":"Integer B"},"answer":{"type":"integer","title":"Answer"}},"additionalProperties":false,"required":["integer_a","integer_b","answer"]},"type":"json_schema"},"thinking":{"type":"enabled","budget_tokens":6400},"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-beta:
+      - structured-outputs-2025-11-13
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '575'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper-method:
+      - stream
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - beta.messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages?beta=true
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01YRFyc8Vb6WNHYTta3JGFQJ","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":293,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":8,"service_tier":"standard"}}
+        }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"thinking","thinking":"","signature":""}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"The
+        user is asking me to answer \""}    }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"What"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        is 2 + 2?\""} }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        and I"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        need to respon"}      }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"d
+        with JSON"}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        that matches the given"}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        schema."}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"\n\nThe"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        schema requires"}    }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":":\n-
+        integer_a: an"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        integer\n- integer_b: an"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        integer  "}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"\n-
+        answer: an integer\n\nFor"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        the question"}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        \"What is 2 + "}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"2?\":\n-
+        integer_a"}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        = 2\n- integer_b"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        = 2\n- answer = "}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"4"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"\n\nI"}          }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        need to return"}   }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        vali"}     }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"d
+        JSON on"}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        a single line without markdown"}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        or"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        bac"}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"kticks."}               }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":""}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"signature_delta","signature":"Eo4ECkYICxgCKkCzGEyrWBGBRfXysUznxzhrNuf7jCKeBd8BzOKVGiBWmhpk+atVtOG5vNNDUkuAnFmHRf5n9YdtQTBXVHoNfjdrEgzqGXQv/n0URthiz/YaDPhy3osMp+A0udKrfiIwlWvKVjzh33NulT66ng+X9jnbl9df1pqyFUBx+mDeFxI7kJLwhl+GMD4bkBkKLzlyKvUCUxcGgMNkUnTMV+hYfolrpInZW5dTeCEgoOIsdVlE5HVnJEgOisAZZAdXeoO9VeAmWTyH08yu2yhqGz//nCaNG5IoArl5R8n9N4NJFTc9EpfN2IixznnVvmEEL/tHsNB3HcjkFpSSUmer4kF5XwyXIq4vWYcJh6yo7CBnZc60AVaW0R9yFhm5d0kS66d/I5IWALHUD34SGQ9Q67l6RqzFeRV5QU8sXan+QVVLxFQPqlFvOY/Sbeu9x4p8jZJLGJg4biZ57PCbwSoIPMtvTrlJA4sp7KIE/c3uHLKD94BnpMRUeZWIwB55NI8WNa0jb3it/3oT7ifsJgz7ndZgu1xLKt4eGTH7mqwqaMU3upLq/1kPDVKxIRkZmJxSyrXMjHAuSroZ07NHvjHenDsboioSBGomX5d/5OAYCjUpxKgZIy5pcTbHuhmczfzET2ToZ3QX5XCFavvKrqmfIpNiVA4YGzEhjFN7R9C7waUfCG7jJ3jIW0wdXBgB"}             }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0      }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":1,"content_block":{"type":"text","text":""}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"{\""}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"integer_a\":
+        2, \""}       }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"integer_b\":
+        2, \""}   }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"answer\":
+        4}"}              }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":1        }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":293,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":146}  }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop" }
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9baff43c4ab05802-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Fri, 09 Jan 2026 00:52:50 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2026-01-09T00:52:48Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2026-01-09T00:52:48Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2026-01-09T00:52:48Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2026-01-09T00:52:48Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CWvtZ41FBuBxadnzta95v
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1806'
+    status:
+      code: 200
+      message: OK
+version: 1

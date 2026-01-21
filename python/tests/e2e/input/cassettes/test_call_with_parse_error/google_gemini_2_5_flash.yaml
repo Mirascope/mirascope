@@ -1,0 +1,129 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Find out the secret and report back."}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond with a single
+      word: the passphrase."}], "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '224'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUU+DMBSF3/sryH3ejE6Jm69qzEymqMSYGGPquIO60pL2YlDCf7fAYJ3y0DT3
+        HM7t+WoWBLDmKhEJJ7RwEby6SRDU3dlqWhEqcsIwcsOCG9p7+6/27s5CWLU/wROuDRJ4YjPe3yb7
+        SKMltv5cJygHezMYYCOUsNkjcqtVFxvfRzCqQiVYufExGxZ00VBanuIKibtyfKwAhdF5QbHeorrU
+        ZVfuZNGHeSwO9Z1Mmrg8VOZhOPmXa6/cViF9SB4/V5JLQd9tk/j6JQYPBB0+ayDBPGBAmS7TjP48
+        cX4ash2zHuMzGit6XinmjuB0dhRON5LbrNsIBm2hlcVl0npm1e0X/7ixd2ef6c/5Mlro92j7sALW
+        sF+gR4ltJwIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 20 Jan 2026 05:30:03 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=9110
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Find out the secret and report back."}],
+      "role": "user"}, {"parts": [{"text": "Secret"}], "role": "model"}, {"parts":
+      [{"text": "Your response could not be parsed: Incorrect passphrase. The correct
+      passphrase is ''cake''\n\nPlease ensure your response matches the expected format."}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond with a single
+      word: the passphrase."}], "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '466'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.58.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/1WQzU7DMBCE736KyGeKKAVBOfJzKAhRQYQoiMOq3iRWHTuKN6gQ5d2xkzp1crCs
+        ncms52tZkvAtaCEFEFp+k3y5SZK0/ek1owk1OSGM3LCCmo7e4Wuju7MQ7v1PLnuHPJK68f59cgys
+        jULvLo1AFexdMPBMammLVwRrtLe9pS9rPqpSC9y78RkLC/po3ljI8RkJXDUYC/CqNmVFqdmhvjNN
+        X+1iOYRFJCb6/CCTIVAT5TpIUaq9dzuligFF7FxFUJJ+fY/04SPlEQaaPipwYBEuToVp8oKmD1zM
+        2YHXgPAdaysHVjmWjt7s/PRylimwRb+P12groy2uhPcsbh9/YJttnj6b4u9qta5ws+SsY/9D2NGP
+        HgIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 20 Jan 2026 05:30:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=732
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,266 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '422'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VU23LiOBB95ytUfpnZmAGbQCBTNQ9cQiATAoRLgM1WImzZFtbFSHK4pPLvI5uQ
+        QJbhgQL16T5Hp1v9mgHAcCBzsQsVksZP8K8+AeA1/U5inCnElA7sj/RhBIX6xO4+rwe/NUShdZJk
+        tJBA3ySAQMaUQrEB3AN0A1TAYz9QIBLcQVL+fGSP7OysDokTE6gw8zUCAduyVACaeM4ZdBwM7mI6
+        R+LsLEF3Q7jJpqhYIgFWkCl5MomlSTkwDKDSSqQSEGtqj4sVFG4OtEHI+CpJfVfqxcxRmDMAXyAm
+        cE5QFjy7yIMxUU8wwjmH0yhW6MnD8+dEwq5uhBzsYQcSsgEukthnyAWaRQOwBFEsIi5RIgMBzHQ+
+        gMKPqfYW4J3wZ/b8jkeAnbgCWKH0mjkw4FmgebR0hjSJ4sDlSZWE/O9SgW4zkEilRDpHG6VL6UYQ
+        F8wRWMbYCXcYTCOCco/MyH5p6q5ruq9KxOgg9pb9+yTs7dTNJUdj9B5nkKJkUg6kfuHVIO2VPJGc
+        pOtjfZMvgbej/2+n7zHQPYIqFil9PW7XqpPbdoFtzLqcevE2vr9fe9sSrbw0Z/3Kwl8QelPxbubL
+        xYiotl0pwpYKe+agZvt2MZx2HpTsldWwez6eXTZMPsl7k2Vw3RuPvTzd3FmCzOn9g1VeR9Nt0Lsc
+        eQ+WwqOp41hsXbN79nV4kb/Km3e/W9vCYD27HQ/oknjRbJMvd3/f+OHqsmWzUTAd2KyPx8WwHw5v
+        6bLqdq9m1W54Lgbdl3KZdOej7q3nz8jLZjSOAyKvWNO54pY0Ka40q+2LaWTaS6s48UwtrijrdLSY
+        cqluBKl7bmMr3YoJRaNybo4XdV5QpnA6QX/aH/drleuWi2pr6qyGUacrVr9+GZlTjv/36bYhOEnd
+        pdxFZA//aIfhYYZlcI+g5EkfjcGw2/tovoGZi9b62PqC7+iNAf20biepC3zEkND7y/18u8lT+C7/
+        ye04E3GpLCNOMjtIQb3v4MdEGXoP0UgNeYhYncfpviuVdrQH6/Eobpff44orSI5DhUL2f3VlQ7Ni
+        crg3D1aqNggSrDbJpYZXk+HBE9AER7L2LmYOzN6P9LHEUvIsUrd3DRgjIfHOaR9R7eWPQq70wyNQ
+        BimfIZCMOJOo7SYY3HR96MFG8+mCUD3qVmUZ8GrHyLxl/gDqJf1KOAYAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 01:19:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1449
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"thinking_budget":
+      6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '396'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21T23KiQBB99ysonrKVC3gByVblwQsmRImCqCRbW6nBGWAMzBBmSNRU/n0HjIlm
+        4wMlfbr7NKdPv9UkSV4CAjEEHDH5t/RHRCTprXqWGCUcES6AfUgEM5Dzr9zd7+3gv0gJC7LkmJIe
+        SJKj4g+cgBSJuOifZgVHjyEO5LPvSSCP2A/FZbkI11X1G/B+9P5+3E/mMS2imE9xRAAv8oq+V1jd
+        jj+yGmRtGk+eMvOs52GuGFn/dAQc9bU9cJp2eulPgti2/DpsUWXQwfm6c/9Klv156Ns9bWFcd1vP
+        bjBoBrnhrDbqqde+c5Xt3VTr9tu3LNZTTEz1prXKGhNaQKu9hXjuoHi1cOfZ4u6hjdvd6AVOnVU6
+        In3Df8qx45mmUeAtHGvD06BfjDCqF0HqvnihybbKfGlt9J47GVI2DbazwX0vGMVJa616lx6qj2eD
+        xkgbtVo24V4QeNb1wrAGnc6m0EzegHO9uUbOjacGXa24mdAHt4k53Or6OrS3lhLNhhRif+37U8XF
+        Gg+H7q2S2PptMhyONefqSq79pPjfL7XlnCaVuimFKNmnf65DDjHBLHYRYLTcozz1xpPP5cuYQLQW
+        YfVbvo0YA1HV1y77ShEiKBeuhdLebNJSuO2E/brYcZbDVWPJRVlpIw6Ey8Gno+QsF+7jHn1CpEeL
+        yuWatqM9OIojvN7+wDnlIDmGGo2z//qyvmDFyeG1HBySEAgkmG/Kj/JM3zs4AUFwNNZexdqB2HtL
+        H4+olWdRqb1bwBzlDO+UjpCwIj5vXGjnYQJYXPHJOWIZJQxZsMyJs8sIoMfYDHT4zNmEU/Sgdwy5
+        9l77BzKCaq0uBAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:26:14 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1105
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 162eb945-ae6c-4c60-a8a0-84b2980e8266
+      user-agent:
+      - unknown/None; hf_hub/0.36.0; python/3.10.16
+    method: GET
+    uri: https://huggingface.co/api/models/mlx-community/Qwen3-0.6B-4bit-DWQ-053125/revision/main
+  response:
+    body:
+      string: '{"_id":"683bcf03a60efc804bd567cc","id":"mlx-community/Qwen3-0.6B-4bit-DWQ-053125","private":false,"pipeline_tag":"text-generation","library_name":"mlx","tags":["mlx","safetensors","qwen3","text-generation","conversational","base_model:Qwen/Qwen3-0.6B","base_model:quantized:Qwen/Qwen3-0.6B","license:apache-2.0","4-bit","region:us"],"downloads":62,"likes":1,"modelId":"mlx-community/Qwen3-0.6B-4bit-DWQ-053125","author":"mlx-community","sha":"771f12e6ef2f618c14cb21c4f766c1a5d06ca57f","lastModified":"2025-06-01T03:54:55.000Z","gated":false,"disabled":false,"widgetData":[{"text":"Hi,
+        what can you help me with?"},{"text":"What is 84 * 3 / 2?"},{"text":"Tell
+        me an interesting fact about the universe!"},{"text":"Explain quantum computing
+        in simple terms."}],"model-index":null,"config":{"architectures":["Qwen3ForCausalLM"],"model_type":"qwen3","quantization_config":{"bits":4},"tokenizer_config":{"bos_token":null,"chat_template":"{%-
+        if tools %}\n    {{- ''<|im_start|>system\\n'' }}\n    {%- if messages[0].role
+        == ''system'' %}\n        {{- messages[0].content + ''\\n\\n'' }}\n    {%-
+        endif %}\n    {{- \"# Tools\\n\\nYou may call one or more functions to assist
+        with the user query.\\n\\nYou are provided with function signatures within
+        <tools></tools> XML tags:\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{-
+        \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\\n\\nFor
+        each function call, return a json object with function name and arguments
+        within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>,
+        \\\"arguments\\\": <args-json-object>}\\n</tool_call><|im_end|>\\n\" }}\n{%-
+        else %}\n    {%- if messages[0].role == ''system'' %}\n        {{- ''<|im_start|>system\\n''
+        + messages[0].content + ''<|im_end|>\\n'' }}\n    {%- endif %}\n{%- endif
+        %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length
+        - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length
+        - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool and message.role == \"user\"
+        and message.content is string and not(message.content.startswith(''<tool_response>'')
+        and message.content.endswith(''</tool_response>'')) %}\n        {%- set ns.multi_step_tool
+        = false %}\n        {%- set ns.last_query_index = index %}\n    {%- endif
+        %}\n{%- endfor %}\n{%- for message in messages %}\n    {%- if message.content
+        is string %}\n        {%- set content = message.content %}\n    {%- else %}\n        {%-
+        set content = '''' %}\n    {%- endif %}\n    {%- if (message.role == \"user\")
+        or (message.role == \"system\" and not loop.first) %}\n        {{- ''<|im_start|>''
+        + message.role + ''\\n'' + content + ''<|im_end|>'' + ''\\n'' }}\n    {%-
+        elif message.role == \"assistant\" %}\n        {%- set reasoning_content =
+        '''' %}\n        {%- if message.reasoning_content is string %}\n            {%-
+        set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%-
+        if ''</think>'' in content %}\n                {%- set reasoning_content =
+        content.split(''</think>'')[0].rstrip(''\\n'').split(''<think>'')[-1].lstrip(''\\n'')
+        %}\n                {%- set content = content.split(''</think>'')[-1].lstrip(''\\n'')
+        %}\n            {%- endif %}\n        {%- endif %}\n        {%- if loop.index0
+        > ns.last_query_index %}\n            {%- if loop.last or (not loop.last and
+        reasoning_content) %}\n                {{- ''<|im_start|>'' + message.role
+        + ''\\n<think>\\n'' + reasoning_content.strip(''\\n'') + ''\\n</think>\\n\\n''
+        + content.lstrip(''\\n'') }}\n            {%- else %}\n                {{-
+        ''<|im_start|>'' + message.role + ''\\n'' + content }}\n            {%- endif
+        %}\n        {%- else %}\n            {{- ''<|im_start|>'' + message.role +
+        ''\\n'' + content }}\n        {%- endif %}\n        {%- if message.tool_calls
+        %}\n            {%- for tool_call in message.tool_calls %}\n                {%-
+        if (loop.first and content) or (not loop.first) %}\n                    {{-
+        ''\\n'' }}\n                {%- endif %}\n                {%- if tool_call.function
+        %}\n                    {%- set tool_call = tool_call.function %}\n                {%-
+        endif %}\n                {{- ''<tool_call>\\n{\"name\": \"'' }}\n                {{-
+        tool_call.name }}\n                {{- ''\", \"arguments\": '' }}\n                {%-
+        if tool_call.arguments is string %}\n                    {{- tool_call.arguments
+        }}\n                {%- else %}\n                    {{- tool_call.arguments
+        | tojson }}\n                {%- endif %}\n                {{- ''}\\n</tool_call>''
+        }}\n            {%- endfor %}\n        {%- endif %}\n        {{- ''<|im_end|>\\n''
+        }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.first or
+        (messages[loop.index0 - 1].role != \"tool\") %}\n            {{- ''<|im_start|>user''
+        }}\n        {%- endif %}\n        {{- ''\\n<tool_response>\\n'' }}\n        {{-
+        content }}\n        {{- ''\\n</tool_response>'' }}\n        {%- if loop.last
+        or (messages[loop.index0 + 1].role != \"tool\") %}\n            {{- ''<|im_end|>\\n''
+        }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt
+        %}\n    {{- ''<|im_start|>assistant\\n'' }}\n    {%- if enable_thinking is
+        defined and enable_thinking is false %}\n        {{- ''<think>\\n\\n</think>\\n\\n''
+        }}\n    {%- endif %}\n{%- endif %}","eos_token":"<|im_end|>","pad_token":"<|endoftext|>","unk_token":null}},"cardData":{"library_name":"mlx","license":"apache-2.0","license_link":"https://huggingface.co/Qwen/Qwen3-0.6B/blob/main/LICENSE","pipeline_tag":"text-generation","base_model":"Qwen/Qwen3-0.6B","tags":["mlx"]},"siblings":[{"rfilename":".gitattributes"},{"rfilename":"README.md"},{"rfilename":"added_tokens.json"},{"rfilename":"config.json"},{"rfilename":"generation_config.json"},{"rfilename":"merges.txt"},{"rfilename":"model.safetensors"},{"rfilename":"model.safetensors.index.json"},{"rfilename":"special_tokens_map.json"},{"rfilename":"tokenizer.json"},{"rfilename":"tokenizer_config.json"},{"rfilename":"vocab.json"}],"spaces":[],"createdAt":"2025-06-01T03:54:43.000Z","usedStorage":346873202}'
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Access-Control-Max-Age:
+      - '86400'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '6040'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 09 Jan 2026 06:26:14 GMT
+      ETag:
+      - W/"1798-py/CZ/4jrEKj/NE2tcPPy+CY5rY"
+      RateLimit:
+      - '"api";r=499;t=56'
+      RateLimit-Policy:
+      - '"fixed window";"api";q=500;w=300'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 7e9b06f0eb97ea1897f375ba6acd2a88.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - he2uQjzPlfF-cAZIY7kK2yUNYtXOVf8iUy8fJaBdL5hdlDILKQPQiQ==
+      X-Amz-Cf-Pop:
+      - SEA900-P6
+      X-Cache:
+      - Miss from cloudfront
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-69609f86-307215981dc50b7b60875c70;162eb945-ae6c-4c60-a8a0-84b2980e8266
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 200
+      message: OK
+version: 1

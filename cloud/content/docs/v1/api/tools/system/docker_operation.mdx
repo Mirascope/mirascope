@@ -1,0 +1,328 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.tools.system._docker_operation
+description: API documentation for mirascope.tools.system._docker_operation
+---
+
+# mirascope.tools.system._docker_operation
+
+## <ApiType type="Module" path="tools/system/docker_operation" symbolName="_docker_operation" /> _docker_operation
+
+## <ApiType type="Class" path="tools/system/docker_operation" symbolName="DockerOperationToolKitConfig" /> DockerOperationToolKitConfig
+
+Configuration for `DockerOperationToolKit` toolkit
+
+**Bases:** 
+<TypeLink type={{"type_str": "_ConfigurableToolConfig", "description": null, "kind": "simple", "doc_identifier": "_ConfigurableToolConfig"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "docker_image",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "max_memory",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "allow_network",
+    "type_info": {
+      "type_str": "bool",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="tools/system/docker_operation" symbolName="DockerOperation" /> DockerOperation
+
+Base class for Docker operations.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ConfigurableTool[DockerOperationToolKitConfig]", "description": null, "kind": "generic", "base_type": {"type_str": "ConfigurableTool", "description": null, "kind": "simple", "doc_identifier": "ConfigurableTool"}, "parameters": [{"type_str": "DockerOperationToolKitConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/tools/system/docker_operation#dockeroperationtoolkitconfig"}]}} />, <TypeLink type={{"type_str": "ABC", "description": null, "kind": "simple", "doc_identifier": "ABC"}} />
+
+
+## <ApiType type="Class" path="tools/system/docker_operation" symbolName="DockerContainer" /> DockerContainer
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "config",
+    "type_info": {
+      "type_str": "DockerOperationToolKitConfig",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/tools/system/docker_operation#dockeroperationtoolkitconfig"
+    }
+  },
+  {
+    "name": "container",
+    "type_info": {
+      "type_str": "Container",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "Container"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="tools/system/docker_operation" symbolName="DockerOperationToolKit" /> DockerOperationToolKit
+
+ToolKit for executing Python code and shell commands in a Docker container.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ConfigurableToolKit[DockerOperationToolKitConfig]", "description": null, "kind": "generic", "base_type": {"type_str": "ConfigurableToolKit", "description": null, "kind": "simple", "doc_identifier": "ConfigurableToolKit"}, "parameters": [{"type_str": "DockerOperationToolKitConfig", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/tools/system/docker_operation#dockeroperationtoolkitconfig"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "config",
+    "type_info": {
+      "type_str": "DockerOperationToolKitConfig",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/tools/system/docker_operation#dockeroperationtoolkitconfig"
+    }
+  },
+  {
+    "name": "docker_container",
+    "type_info": {
+      "type_str": "DockerContainer",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "/docs/v1/api/tools/system/docker_operation#dockercontainer"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="tools/system/docker_operation" symbolName="create_tools" /> create_tools
+
+The method to create the tools.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[type[BaseTool]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "type[BaseTool]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "type",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#type"
+        },
+        "parameters": [
+          {
+            "type_str": "BaseTool",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/core/base/tool#basetool"
+          }
+        ]
+      }
+    ]
+  }
+}}
+/>
+
+
+## <ApiType type="Class" path="tools/system/docker_operation" symbolName="ExecutePython" /> ExecutePython
+
+Tool for executing Python code in a Docker container.
+
+**Bases:** 
+<TypeLink type={{"type_str": "DockerOperation", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/tools/system/docker_operation#dockeroperation"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "code",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "requirements",
+    "type_info": {
+      "type_str": "list[str] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "list[str]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "list",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+          },
+          "parameters": [
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ]
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="tools/system/docker_operation" symbolName="call" /> call
+
+Executes Python code in a Docker container.
+
+docker_image: \{self.__config__.docker_image\}
+allow_network: \{self.__config__.allow_network\}
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  },
+  "description": "Output of the code execution"
+}}
+/>
+
+
+
+## <ApiType type="Class" path="tools/system/docker_operation" symbolName="ExecuteShell" /> ExecuteShell
+
+Tool for executing shell commands in a Docker container.
+
+**Bases:** 
+<TypeLink type={{"type_str": "DockerOperation", "description": null, "kind": "simple", "doc_url": "/docs/v1/api/tools/system/docker_operation#dockeroperation"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "command",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="tools/system/docker_operation" symbolName="call" /> call
+
+Executes shell commands in a Docker container.
+
+docker_image: \{self.__config__.docker_image\}
+allow_network: \{self.__config__.allow_network\}
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  },
+  "description": "Output of the command execution"
+}}
+/>
+
+
+
+
+

@@ -1,0 +1,185 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
+      "thinkingConfig": {"include_thoughts": true, "thinking_budget": 6400}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '636'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+        C0W9DLLa06+nfwHxjWERswwAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 00:52:48 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=6810
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Answer this question: What is 2 + 2?"}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A simple response for testing.", "properties":
+      {"integer_a": {"title": "Integer A", "type": "INTEGER"}, "integer_b": {"title":
+      "Integer B", "type": "INTEGER"}, "answer": {"title": "Answer", "type": "INTEGER"}},
+      "property_ordering": ["integer_a", "integer_b", "answer"], "required": ["integer_a",
+      "integer_b", "answer"], "title": "IntegerAdditionResponse", "type": "OBJECT"},
+      "thinkingConfig": {"thinking_level": "HIGH"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '611'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VV2Y6jWBZ8z69I+ZVqYXZoqR8wYMAGs2OgazRiuSw2+45L9e/jzJqsyupGAl3i
+        BGcJiRPfXl5fd3FYJ0USjmDY/fn69xN5ff32/nyLNfUI6vEZ+ICeYBv24y/uj+vbp/OTMoL17aPd
+        t6/1113xzJGB/r/h1yeEfvkMRb+gsB4W0L+941/r77sv/0iYN1OWj1aR1eE49eAtuTAYEjcIEusp
+        MlqvfHWMVXy40LI46mszubR2F7exlfqUypKp4gVqFmj3xO+xtEDBip9v8+XQapIkDAq3D9uGbknv
+        jhcmfjwVe3hg1DbOiciN4oTRCXcQsFQ5X1U6388qEXiaGMYTMgjHodAwZ6aoxfeJkYD1g7mi6xxe
+        mGkRE9rxcG6rCy49bsN8anN2qjFYHQjBlE+YRk1JlOVYmUGJICdDOnIDQE55nfCIZTA4i6G6it0T
+        pt0/7BxtObx2LqWmOpxOsALTK12eaY+YHnkfrERRI3TbH8wITR9OqVEjBp99kVCDQDE0u/H0qziz
+        9JWJFYg2xeRwhYrLXTswWs6Z1yFCz+4YwCElFaV17yxoWZQgvlSP8NpyjqeeWcpXqSSD8VvUrwIe
+        O743Bvqoi5diOpNtwaNGAdMGbl4kEr2FyR0sV9DMs4eWAoRIWZpfhxw/Q1MlBYvG8elVJMYwwdaI
+        PQQ6ZVgCA/P6fRTJY30yOYNYbFvO+hxTMuzKUNojOJSdX5mWVd9vgw+JqILfhmWDQXFke6qLScnl
+        lVwPt0ekiKTm3NRKARFVR1DHeCne3BKdQ+CN0pA7m8aDDYlnocwnxDekzT71WUCQk5DRpeR0ibMO
+        /txuxJqRy/YorQyum0sjgsPhjpKTNkHOrS/gBTH90pUNwcVLlbK9Bh2VVGeJHoHIeg9oDr1L8S3E
+        VslKWOkQoB0gZpTVs71cH+F12trVFxslZpl6ziMi5oijg8VYWg2F4ioECm+si5hpu9QubNlyHxZz
+        kDCNNJ4ync4Ykq+dPcUuYq0bRuCwzRmd3aoElqL3zaNhDF3IkPPZFDJSJX0rb8BM0D0ZeCZSXx00
+        o1l8FQGJuJ1RMSQZbQc/xPmOFB7+Ve5OJBQURKC3zOOMULzh3x6umir5FVEkeT0CZaNwmFxlILhh
+        4Hi3thPgSVp57BHX9dmzkMWHrNFitzpTTClfIH11gFNw9NExPSiQ86VDg8QK7Xx2Rwdp8PuxHWTf
+        u0HsVuE6LDPCrIkzTm/BqbnpF1xDMH8FzCxMkSvg4ylV80Z3oMHQ9dudgGXzWnWVaDowDPaRn7GI
+        uMzpHUECAx0f8SZS6KgezkTn9rDIxh5CitSyXLBcI9OiFASPd/TY2uf1NMSdrSU87Tvb0eJCCG5U
+        l3AkuWtyzPaUSozEXEiLXkF5Ng7ps7kUpH4tkcWeWC1SVAnDCXboJlbUjeGomehhP9v3tOYHzatt
+        X7qFjAx6xMD2PqEtXaeEI2VXEtcbEhRZmOoIIQAPELHLkYiJeo9epmQM3FXuD7l82uYEf1AVgxyy
+        8yGWopn966/dp3X5/ef5P7+26K5vyvetWTUJKD/o3z8Iu7SoiyE3QTg09RvNsjX95xJ+7usErE94
+        //JR4D31bhrCDKjg+ReHY/jTJXZt31TtaDd3UHPN9O4fCPYj2Se7+S2OUv+Pj80Ylr+FMHT/5V95
+        B/5ZtSg/+9Ani3oOGZbFuL1NYgue/clOngV+a+tDiZdPgn3YzT9apN/Gf5fsh4ou6Ifih1wZqJ4C
+        /oH98WzxeYO5AMt70V0PhrapByAnb7zbicnCpI45iiur8a4vQ4h3rLp7+f7yP7SVHQaNBwAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 06:26:20 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=4947
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

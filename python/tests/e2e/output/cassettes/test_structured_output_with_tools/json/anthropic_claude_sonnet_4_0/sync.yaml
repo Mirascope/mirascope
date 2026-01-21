@@ -1,0 +1,238 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
+      the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\":
+      {\n      \"title\": \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\":
+      {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
+      \"BookSummary\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1128'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3VRy07DMBD8lcgXLglK2qaPHDkABVFRkCgSQpabLIlVxw6xXRWq/Du7laJSUE9e
+        78zOrMd7VpsCFMtYroQvILJGa3DRKBrEgzROkxELmSwQr23J42S8leVqud49Xj8NX3bG3wjxkBLH
+        fTVALLBWlICN1ihqCGuldUI7bOVGO8Aqe9v3fAc7Qg5HxuYXSgXKmE3gm8BVEKyplvrDtLVw0ugA
+        q2D+fLUI4mgyTodRkkym0esl68KjpDGKewv94nT3uPotzFaLu++y9KaeJeI+WcqFXiFLi5rmSnCc
+        /Dj50bBuPC61Z9KuNeInjqzr3kNmnWl4CwJDOzU+ABY+PegctbVXKmT+kAwJkjJ3ZgPasiydjTAa
+        kVfAc9SiZ/JTRtzjCBfnsH6WDKCpoIZWKJ7W//lHNKn+ol3IjHe/W1PczkK7lTlwJ6HFh9J/FqIt
+        MIQfj/PEiEACAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b027a720e04b9df-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 18 Dec 2025 23:35:45 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:35:44Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:35:45Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:35:43Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:35:44Z'
+      request-id:
+      - req_011CWF2gtt59L7MqjMUvB5sT
+      x-envoy-upstream-service-time:
+      - '1902'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
+      the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"},{"role":"assistant","content":[{"citations":null,"text":"I''ll look
+      up the book information for ISBN 0-7653-1178-X.","type":"text"},{"id":"toolu_01He9WNJzgguom91aK1QiNnW","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01He9WNJzgguom91aK1QiNnW","content":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25","cache_control":{"type":"ephemeral"}}]}],"model":"claude-sonnet-4-0","system":[{"type":"text","text":"Respond
+      only with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\":
+      {\n      \"title\": \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\":
+      {\n      \"title\": \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
+      \"BookSummary\",\n  \"type\": \"object\"\n}","cache_control":{"type":"ephemeral"}}],"tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1618'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.75.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/3WRTU+EMBCG/wrpmU2AgEaOa9TD6l70YsSQLkyWapmy7XSzK+G/O7DiZzy1eZ+n
+        075pL1pTgxa5qLT0NSycQQRapIskSrIoi1MRClUzb922jOLV/rBbbdfubUmP5gYuN/HL+fqWHTp2
+        MFrgnNwCB9boMZDOKUcSiaPKIAHv8qd+9gkOI5mWXPQFBkEhSJGGQuS8vePDG2MxDx4aCK4VSh1c
+        tZ2yzMOTLT01xp70pZVYGwzueQHLXT6tjl/lRilL0znyG60qScpgeQQ5jUii6KzAQQzPoXBkutKC
+        5DH8NsC6JG9RfAAHOw9YcQn0WofCT73zXijsPJVkXgGdyM+TmIvLqoGy4lnTZT+NaOaM6//YfHa8
+        ALoGWrBSl1n71/+icfObDqEwnr5H6QXXAbtXFZSkwHLR8bdqaWsxDO9F36tpHgIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 9b027a7eefcbb9df-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 18 Dec 2025 23:35:48 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-12-18T23:35:47Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-12-18T23:35:48Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-12-18T23:35:45Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-12-18T23:35:47Z'
+      request-id:
+      - req_011CWF2h3eRETsDYSRmueF1A
+      x-envoy-upstream-service-time:
+      - '2969'
+    status:
+      code: 200
+      message: OK
+version: 1

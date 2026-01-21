@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    // Environment setup & latest features
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+
+    // TypeScript-first: assume bundler usage
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+
+    // Output configuration for library
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    // Enable features for runtime type access
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Stricter flags for library quality
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
+}

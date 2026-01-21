@@ -1,0 +1,222 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Respond with a single word: the
+      passphrase."},{"content":"Find out the secret and report back.","role":"user"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '170'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//fFTRcqMwDHzPVzB+bm4gSQnJH/QbOjeMsEXqq7FcW84008m/32ACgWt6
+        b6CV1tKu7K9VlgmtxDETHoOrc4S2LDYVwLbZK3XI8/JQtsVG4fNul1fF4bkpc7V9bsrNDtuyPWzF
+        U09BzR+UPNKQDTjEpUdgVDX0WLEvq6ra53mZsMDAMfQ1kjpnkFENRQ3I95OnaPu+WjABh7A2RtuT
+        OGZfqyzLMuHggr6vV3hGQw69WGXZdTh4pHx4NHpPfaWNxqRA6/EjopWX2qEFwxdxzPJfecK0Hclq
+        hQzahHmltoF9lKzJLuIdfNYU2UWumd7xO8hEppZglnQdKTT9TCfH6x2tN/lmt86rdV7ehE6U4pi9
+        Jg0GJSYPu3D6j4VQNVVv4aEstzsJxb5qVdkURWJOLHxxmHgwBDjhHfjJqwRKsoz23tS8sQXtqAd+
+        8lSdEsBaYhg1fP29AA2dnKfmAZKIjpl4sR9RB836jGLCr7evqUR4MqkNCEEHBstDcp+YkoQDD8ag
+        WXrDPg4L6DwGtBIf7IjzeNYUQz2uf50MmWx1njrHtQT5hvU7Xn7EPPZSarLzDI8QyC52H9uWPM+S
+        epNi14EfuaerEKBFvtRa9cStxsXiB/RnLbFmPV6lFqIZ7BGByeNcAcbOoQeOKVzchr/ZcOusJd/B
+        /X9mf8obJL91fEbfUNBJStGh0rG7X+HBhDfScnAtMokJuG+DYHL1bEfyKejmPfpoJdyEFUoHaMz4
+        3sS069MA2i4u7ebw9D0+ewmmMZOB6l6YL0b99y3YPYo/op3M/4mZicHcwe12UjCGpdkdMihg6Omv
+        q+tfAAAA//8DAOrr7zz9BQAA
+    headers:
+      CF-RAY:
+      - 9c0c2d8d2c35757d-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 20 Jan 2026 05:30:06 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=SnkKSih1_niDndarlwrrzUF.yadxaVaNb1yLCskgHUQ-1768887006-1.0.1.1-mWo.fifcXQSc5tH5.JQ5tvcZTAHVjPFEskigEN7cLTItVda7A3JAQhwuoad244ywyePI8AvbSfES0MF8WthzpPZIKFPaCGj4TvmD04dxwwk;
+        path=/; expires=Tue, 20-Jan-26 06:00:06 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=oSHgUAPvLv0XM7eVWNA3F6ag4O4dlCzpl2BussrLRtc-1768887006892-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '541'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '545'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799952'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_2b6fe45ee58c40e0b9c114cdeee215c5
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Respond with a single word: the
+      passphrase."},{"content":"Find out the secret and report back.","role":"user"},{"id":"msg_0eaf6128aa3b7dd900696f12dea8b8819596634ca178fd6b11","content":[{"annotations":[],"text":"Inquisitive","type":"output_text","logprobs":[]}],"role":"assistant","status":"completed","type":"message"},{"content":"Your
+      response could not be parsed: Incorrect passphrase. The correct passphrase is
+      ''cake''\n\nPlease ensure your response matches the expected format.","role":"user"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '556'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xUwY6jMAy99ytQztNV2mmB9rqfMVohQ0wn2xBnE6eaatR/XxEKhZ3O3sDPfrHf
+        c/K5yjKhlThmwmNwlURo8822BHitC6UOUuaHvN1sVbup97LcHPZloeRevu5R1VgcdoV46Smo/o0N
+        jzRkAw7xxiMwqgp6bFPkZVkWUhYJCwwcQ1/TUOcMMqqhqIbmfPIUbd9XCybgENbGaHsSx+xzlWVZ
+        Jhxc0ff1Ci9oyKEXqyy7DQePlE+PRu+pr7TRmBRoPf6JaJtr5dCC4as4ZvKHTJi2I1mlkEGbMK/U
+        NrCPDWuyi3gHHxVFdpErpjN+BZnIVA2YJV1HCk0/08nxekfrrdzu1rJcy/wudKIUx+wtaTAoMXnY
+        hdN/LCzq7WBh83pQudrJHA8qh11iTix8dZh4MAQ44QP4zqsENmQZ7aOpeWML2lEP/OCpOiWAtcQw
+        avj2awEaOjlP9RMkER0z8RPOKCbgdv+acoUnk86HEHRgsDwk94kpSTjwYAyapSns47B5zmNA2+CT
+        5XAeL5piqMa9r5ITk5/OU+e4aqB5x+qM128xj72Gmuw8wyMEsoulx7Ylz7Ok3p3YdeBH7ukOBGiR
+        r5VWPXGrcbHxAf1FN1ixHu9QC9EMvojA5HGuAGPn0APHFN7ch7/rf++sJd/B43/me8obJL93fEFf
+        U9BJStGh0rF73N3BhHfSzeBaZBIT8FgDweSq2XLIKejmPfpoG7gLK5QOUJvxoYlpyacBtF3c1rx8
+        +RqfPQHTmMlA9SiUi1H/fQS2z+LPaCfzv2NmYjAPsJCTgjEsze6QQQFDT39b3f4CAAD//wMAPOjM
+        0/YFAAA=
+    headers:
+      CF-RAY:
+      - 9c0c2d921844757d-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 20 Jan 2026 05:30:07 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '537'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '541'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799913'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 6ms
+      x-request-id:
+      - req_5bc7960bff924c1198f1996c0e07128e
+    status:
+      code: 200
+      message: OK
+version: 1

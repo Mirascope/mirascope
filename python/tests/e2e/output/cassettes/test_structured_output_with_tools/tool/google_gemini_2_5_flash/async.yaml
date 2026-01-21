@@ -1,0 +1,187 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in BookSummary format for a
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1113'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/22V2Y6jRhSG7/spWr5K5OkYg9lyh7FZzGrAeImiUbFvrgKq8Daad4/bnZ7pnoQL
+        BOf/z8JB+urb0/PzKAYwKRNAUjz68/mve+T5+dvj/qohSFJI7sJ76B5sQU9+et+ubx+e75ZsgDEp
+        EZRB03xK/leH4Jje46M8JV8jhOqvJczQ6MuvNtDn+H/S70qJI/hagHrhOZZ5mU554WU3+sX3/dP7
+        98/lR6RAQ14Qv8whIEP/mEduN6q0M3Uanh0+NTSlQ13AJLLGZYMdikZdg35D3+yEOlqXFdnbZ4FE
+        kqbkxoLVoY+DGeuUs8liJk9OoSmthDkrjFftrPbSGY/IYIRoE1+KqMek9AS1CpSbMmwkr0+b25hB
+        mgQFHfHOdmCTTasnh07z6ladm+y4a5tiohfJmVUCQ5aWYt3Dua+cXGeuV66hLfNZBJF668eojEwu
+        8GMs4wVPrnm00qitKFk6nCq9IOyu4g4DyWItUmVzn25Mij0PApOqHjNuJHG3OlC6ALbekq72Ds7w
+        whiOYA2BnZtMILoLb5L7jcXIfVIwonOGTHzXC+iq+5AXaEz5dJIWp23mUBuLocg+pqgu72MnMKNj
+        JAiRLRqaZWR51cKeOU9ir92hFePddsRY1hTNlLS7XcOT22qT2KpWMrtrCUfCvU6N86gS96c07jCt
+        uw5zJew6J04nyapn7MKL77rdwuStfVZwy+wyTIOztw+0te311S0z+IhWutbO9c5bBCjAsynPeyGU
+        ndNZu6xxThU3a8mVXAztbm5snF3EXcWmEmQXpAl2IscajmGza4VojeEQDWkFVNvttcrZurbDX5VQ
+        ohWM7Umpbrl8fwtNsLwKliaiWp6MN/haw4QrRCqutejWRAOQ9CEbW4fDSpktNqiObAHL9NThPRGG
+        pV9PMgvYzm136vTjwTEEWWiSGJti53drR5xqtlfntb+Mu7M5tx258QP7INLQN3fH87JornQloa2x
+        NfQNCpftKR8nxy1y8JUBcr5Ws9l0KGjL0yfDJc44dd3TvRnSp4L027wUrNhTgeSmYc1uxgmYgQ10
+        TTafyXR6G2R6J5EIplPBu072+T6yKpNRuRN34nnZPq5v5NRoy0gULuDSGXO8dArXr/rTfL6Yq0eu
+        DSxKXm+P1qQiQhjWeFDG+RBcJqdc4gJm4BTQia5j2tvcO1xUIM/RpoBjUM+u/RpJwm2YGW1yGqub
+        bQSETcomuRjbU9Y2imZoJqUpYFbTLodoG+8afX7mF0xzlBsCu3SuLorDNE/aTknpikwqrl53U6j4
+        xMvGixbZh4uAqFK4aU4rlHlVtVfOQBknHBcrxdt+JMxPuvz9kyyjHjUPkhxRkjbv9h/oGWUlLHHh
+        pQCjB7/8wHF/cG9UwiS93MPUL34rxRjkj7rWa93nPIVpf0d28vxO2uf4jtrf8O9/vPV8He4x1mh4
+        zbRSAu6IBz9gOmp7dGxJgOoUymh4IH4qiG99PxwJnwz0u04QAc0naTblvvynMF7c25bNx7PiwzFy
+        3xBoSnJ9/apguQs+4P/e4PNc73t8+rDud4B/nnEqCk//LvztH4Rpj8u3Zefp8b7OF/oP9iVrAC4e
+        HUd9ilsEcaonr57iUOQgA5nCVsWN111kLC70Go2evj/9A1s3+BsuBwAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 05:56:21 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=4544
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}, {"parts":
+      [{"functionCall": {"args": {"isbn": "0-7653-1178-X"}, "name": "get_book_info"},
+      "thoughtSignature": "CpUGAXLI2nwO7eKHFqoqT3dCH6fuNV9KkkarU2zNd0mMxJtYNw8tbAHFgKD5InSsT45Oi4_D4C_vVLAJ8B58-Jp4kRe47otuKVoUcxhbrstiR8GjTFzFuUARrelz-3oHAn8Io7OWu5dUpIdZqHRkpGBL5-qplh_Ihdw5FTKCAE9krnBSFvPOBIjPKHEg4bnoGzr-oibL6TScsCsD7tygbJH0W9AMIn1Fr88Xy9XsaAM5MtjfBS2lL05wu83eGR3-lA9XJZ0I8aWRE2jYOsfsDKumaQnaNgL3T9PDR_gSlM3Crdh39Own3cumahnPGYV782s0S2dehvWfO0UM30tYc00qgrcOTLbmb88bN9KHMKfgjpnr3w_cRpXoJ3RzXtKEk023i2PWQnvPpH_cMjJC5Xpt6tVYI0-gbj9Yvecqs2IPO3yt5QgtOqACGRKXVxSPPqDL7MYfh6Efxu1TwRYTHQNRrjzfK7b2FqpNgIqRDToTs4177RVnCOvwHxQsg0hzME6i6cnNqBKUOXb6y9lj8CPaedsObOMumVlXp8bQsnubuejaGNPrHjOWPNO7yFVA2FssN_iGW6gYzVLaEy8MH9okC_-Usyknd6h90ckHbzlbuaAIuf-MZZJF4DUokbN8sC21O7R9nViSk_fMaNOzXvqImZOK8C8ldcsL9qSqQO91HNRkgkSEcqwLBNOClSTNZ92nSLXmwEhly2jAoWKWKIUoVEpvg-dmWoOsy3aCgQGf41uh2MRI_uxcf6GQr2rLV2vhtrWgi8McRGaAPeVk5U-da4aUnPL5g4C2ezuC2XAtbne18Ry_YgYbMjL3G6v6v77CNmQztvlHEb98xaxqKBsEOhPSjrvBBDBGm6pTM0CQWmM_jt8VVksuF-guTx_vgA6T3u6Faq9POLNWgRZxGaCBoUhn-ak4yrQoA8zu4Kpdv-GUWba8Ue5dg9cN15NKhlul_iL8s5HHxZbWcXlIBw7D3lmCltnqeBGDhZ1gdpqFe2jt_j6kQq1nFStRf-DpoNZx8o0i8zHOp8igjjpy6Kof68mDJFRW"}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "get_book_info",
+      "response": {"output": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson,
+      Pages: 544, Published: 2006-07-25"}}}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in BookSummary format for a
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '2504'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.57.0 gl-python/3.10.16
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 09 Jan 2026 05:56:23 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2154
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

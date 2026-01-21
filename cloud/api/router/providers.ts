@@ -1,0 +1,195 @@
+/**
+ * @fileoverview Centralized provider registry and configuration.
+ *
+ * Consolidates all provider-specific configuration including:
+ * - API proxy settings (base URLs, auth headers)
+ * - Provider ID mappings for pricing lookups
+ * - Environment variable mappings
+ * - Helper functions for provider operations
+ */
+
+import {
+  OpenAICostCalculator,
+  AnthropicCostCalculator,
+  GoogleCostCalculator,
+  type BaseCostCalculator,
+} from "@/api/router/cost-calculator";
+import type { SettingsConfig } from "@/settings";
+
+/**
+ * Configuration for AI provider proxying.
+ */
+export interface ProxyConfig {
+  /** Base URL of the provider API */
+  baseUrl: string;
+  /** Header name for authentication (e.g., "Authorization", "x-api-key") */
+  authHeader: string;
+  /** Format for the auth header value (e.g., "Bearer {key}" or just "{key}") */
+  authFormat: (key: string) => string;
+}
+
+/**
+ * Provider configurations for proxying.
+ * Defines base URLs, authentication patterns, and models.dev IDs for each provider.
+ */
+export const PROVIDER_CONFIGS: Record<
+  "anthropic" | "google" | "openai",
+  ProxyConfig & { modelsDotDevIds: string[] }
+> = {
+  anthropic: {
+    baseUrl: "https://api.anthropic.com",
+    authHeader: "x-api-key",
+    authFormat: (key: string) => key,
+    modelsDotDevIds: ["anthropic"],
+  },
+  google: {
+    baseUrl: "https://generativelanguage.googleapis.com",
+    authHeader: "x-goog-api-key",
+    authFormat: (key: string) => key,
+    modelsDotDevIds: ["google", "google-ai-studio"],
+  },
+  openai: {
+    baseUrl: "https://api.openai.com",
+    authHeader: "Authorization",
+    authFormat: (key: string) => `Bearer ${key}`,
+    modelsDotDevIds: ["openai"],
+  },
+};
+
+/**
+ * Supported provider names.
+ */
+export type ProviderName = keyof typeof PROVIDER_CONFIGS;
+
+/**
+ * Returns list of supported provider names.
+ */
+export function getSupportedProviders(): ProviderName[] {
+  return Object.keys(PROVIDER_CONFIGS) as ProviderName[];
+}
+
+/**
+ * Checks if a provider is supported.
+ */
+export function isValidProvider(provider: string): provider is ProviderName {
+  return provider in PROVIDER_CONFIGS;
+}
+
+/**
+ * Gets provider configuration for proxying.
+ *
+ * @param provider - The provider name
+ * @returns Provider config without API key, or null if provider not found
+ */
+export function getProviderConfig(
+  provider: string,
+): Omit<ProxyConfig, "apiKey"> | null {
+  if (!isValidProvider(provider)) {
+    return null;
+  }
+  return PROVIDER_CONFIGS[provider];
+}
+
+/**
+ * Gets the API key for a provider from Settings.
+ *
+ * @param provider - The provider name
+ * @param settings - The validated settings configuration
+ * @returns The API key (guaranteed to exist by Settings validation)
+ */
+export function getProviderApiKey(
+  provider: ProviderName,
+  settings: SettingsConfig,
+): string {
+  switch (provider) {
+    case "openai":
+      return settings.router.openaiApiKey;
+    case "anthropic":
+      return settings.router.anthropicApiKey;
+    case "google":
+      return settings.router.geminiApiKey;
+    /* v8 ignore next 4 */
+    default: {
+      const exhaustiveCheck: never = provider;
+      throw new Error(`Unsupported provider: ${exhaustiveCheck as string}`);
+    }
+  }
+}
+
+/**
+ * Gets the provider IDs used in models.dev for a given provider.
+ *
+ * @param provider - The provider name
+ * @returns Array of provider IDs
+ */
+export function getModelsDotDevProviderIds(provider: ProviderName): string[] {
+  return PROVIDER_CONFIGS[provider].modelsDotDevIds;
+}
+
+/**
+ * Gets the cost calculator for a specific provider.
+ *
+ * @param provider - The provider name
+ * @returns Cost calculator instance for the provider
+ */
+export function getCostCalculator(provider: ProviderName): BaseCostCalculator {
+  switch (provider) {
+    case "openai":
+      return new OpenAICostCalculator();
+    case "anthropic":
+      return new AnthropicCostCalculator();
+    case "google":
+      return new GoogleCostCalculator();
+    /* v8 ignore next 4 */
+    default: {
+      const exhaustiveCheck: never = provider;
+      throw new Error(`Unsupported provider: ${exhaustiveCheck as string}`);
+    }
+  }
+}
+
+/**
+ * Extracts the model ID from a request based on the provider.
+ *
+ * Different providers pass the model ID in different ways:
+ * - OpenAI/Anthropic: In the request body's "model" field
+ * - Google: In the URL path as /models/{model}:generateContent
+ *
+ * @param provider - The provider name
+ * @param request - The incoming HTTP request
+ * @param parsedBody - The parsed request body (if available)
+ * @returns The model ID or null if not found
+ *
+ * @example
+ * ```ts
+ * // OpenAI/Anthropic
+ * const modelId = extractModelId("openai", request, { model: "gpt-4" });
+ * // Returns: "gpt-4"
+ *
+ * // Google
+ * const modelId = extractModelId("google", request, null);
+ * // Returns: "gemini-2.5-flash" (extracted from URL)
+ * ```
+ */
+export function extractModelId(
+  provider: ProviderName,
+  request: Request,
+  parsedBody: unknown,
+): string | null {
+  if (provider === "google") {
+    // For Google, model comes from URL path
+    const url = new URL(request.url);
+    const match = url.pathname.match(
+      /\/models\/([^/:]+)(?::(?:generate|streamGenerate)Content)?/,
+    );
+    return match ? match[1] : null;
+  }
+
+  // For OpenAI/Anthropic, model comes from request body
+  if (typeof parsedBody === "object" && parsedBody !== null) {
+    const model = (parsedBody as { model?: string }).model;
+    return typeof model === "string" ? model : null;
+  }
+
+  return null;
+}

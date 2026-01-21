@@ -1,0 +1,443 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.core.base.toolkit
+description: API documentation for mirascope.core.base.toolkit
+---
+
+# mirascope.core.base.toolkit
+
+## <ApiType type="Module" path="core/base/toolkit" symbolName="toolkit" /> toolkit
+
+The module for defining the toolkit class for LLM call tools.
+
+<Info title="Usage">
+
+[Tools](/docs/v1/learn/tools#toolkit)
+
+</Info>
+
+## <ApiType type="Attribute" path="core/base/toolkit" symbolName="P" /> P
+
+**Type:** <TypeLink type={{"type_str": "ParamSpec('P')", "description": null, "kind": "simple", "doc_identifier": "ParamSpec('P')"}} />
+
+
+## <ApiType type="Function" path="core/base/toolkit" symbolName="is_toolkit_tool" /> is_toolkit_tool
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "method",
+    "type_info": {
+      "type_str": "Callable[..., Any] | BaseTool",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Callable[..., Any]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "...",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "..."
+            },
+            {
+              "type_str": "Any",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/typing.html#typing.Any"
+            }
+          ]
+        },
+        {
+          "type_str": "BaseTool",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "/docs/v1/api/core/base/tool#basetool"
+        }
+      ]
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "bool",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/functions.html#bool"
+  }
+}}
+/>
+
+
+## <ApiType type="Class" path="core/base/toolkit" symbolName="ToolKitToolMethod" /> ToolKitToolMethod
+
+**Bases:** 
+<TypeLink type={{"type_str": "NamedTuple", "description": null, "kind": "simple", "doc_identifier": "NamedTuple"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "method",
+    "type_info": {
+      "type_str": "Callable[..., str]",
+      "description": null,
+      "kind": "callable",
+      "base_type": {
+        "type_str": "Callable",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+      },
+      "parameters": [
+        {
+          "type_str": "...",
+          "description": null,
+          "kind": "simple",
+          "doc_identifier": "..."
+        },
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ]
+    }
+  },
+  {
+    "name": "template_vars",
+    "type_info": {
+      "type_str": "list[str]",
+      "description": null,
+      "kind": "generic",
+      "base_type": {
+        "type_str": "list",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        }
+      ]
+    }
+  },
+  {
+    "name": "template",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="core/base/toolkit" symbolName="BaseToolKit" /> BaseToolKit
+
+A class for defining tools for LLM call tools.
+
+The class should have methods decorated with `@toolkit_tool` to create tools.
+
+Example:
+```python
+from mirascope.core.base import BaseToolKit, toolkit_tool
+from mirascope.core import openai
+
+class BookRecommendationToolKit(BaseToolKit):
+    '''A toolkit for recommending books.'''
+
+    __namespace__: ClassVar[str | None] = 'book_tools'
+    reading_level: Literal["beginner", "advanced"]
+
+    @toolkit_tool
+    def format_book(self, title: str, author: str) -> str:
+        '''Returns the title and author of a book nicely formatted.
+
+        Reading level: {self.reading_level}
+        '''
+        return f"{title} by {author}"
+
+@openai.call(model="gpt-4o")
+def recommend_book(genre: str, reading_level: Literal["beginner", "advanced"]):
+    '''Recommend a {genre} book.'''
+    toolkit = BookRecommendationToolKit(reading_level=reading_level)
+    return {"tools": toolkit.create_tools()}
+
+response = recommend_book("fantasy", "beginner")
+if tool := response.tool:
+    output = tool.call()
+    print(output)
+    #> The Name of the Wind by Patrick Rothfuss
+else:
+    print(response.content)
+    #> Sure! I would recommend...
+```
+
+**Bases:** 
+<TypeLink type={{"type_str": "BaseModel", "description": null, "kind": "simple", "doc_url": "https://docs.pydantic.dev/latest/api/base_model/"}} />, <TypeLink type={{"type_str": "ABC", "description": null, "kind": "simple", "doc_identifier": "ABC"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "model_config",
+    "type_info": {
+      "type_str": "ConfigDict(arbitrary_types_allowed=True)",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": "ConfigDict(arbitrary_types_allowed=True)"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="core/base/toolkit" symbolName="create_tools" /> create_tools
+
+The method to create the tools.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "list[type[BaseTool]]",
+    "description": null,
+    "kind": "generic",
+    "base_type": {
+      "type_str": "list",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#list"
+    },
+    "parameters": [
+      {
+        "type_str": "type[BaseTool]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "type",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#type"
+        },
+        "parameters": [
+          {
+            "type_str": "BaseTool",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/core/base/tool#basetool"
+          }
+        ]
+      }
+    ]
+  }
+}}
+/>
+
+
+
+## <ApiType type="Function" path="core/base/toolkit" symbolName="toolkit_tool" /> toolkit_tool
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "method",
+    "type_info": {
+      "type_str": "Callable[Concatenate[_BaseToolKitT, P], str] | type[_BaseToolT]",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "Callable[Concatenate[_BaseToolKitT, P], str]",
+          "description": null,
+          "kind": "callable",
+          "base_type": {
+            "type_str": "Callable",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+          },
+          "parameters": [
+            {
+              "type_str": "Concatenate[_BaseToolKitT, P]",
+              "description": null,
+              "kind": "generic",
+              "base_type": {
+                "type_str": "Concatenate",
+                "description": null,
+                "kind": "simple",
+                "doc_identifier": "Concatenate"
+              },
+              "parameters": [
+                {
+                  "type_str": "_BaseToolKitT",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/toolkit#basetoolkit"
+                },
+                {
+                  "type_str": "P",
+                  "description": null,
+                  "kind": "simple",
+                  "doc_url": "/docs/v1/api/core/base/toolkit#p"
+                }
+              ]
+            },
+            {
+              "type_str": "str",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+            }
+          ]
+        },
+        {
+          "type_str": "type[_BaseToolT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "type",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/functions.html#type"
+          },
+          "parameters": [
+            {
+              "type_str": "_BaseToolT",
+              "description": null,
+              "kind": "simple",
+              "doc_url": "/docs/v1/api/core/base/tool#basetool"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "Callable[Concatenate[_BaseToolKitT, P], str] | type[_BaseToolT]",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "Callable[Concatenate[_BaseToolKitT, P], str]",
+        "description": null,
+        "kind": "callable",
+        "base_type": {
+          "type_str": "Callable",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/typing.html#typing.Callable"
+        },
+        "parameters": [
+          {
+            "type_str": "Concatenate[_BaseToolKitT, P]",
+            "description": null,
+            "kind": "generic",
+            "base_type": {
+              "type_str": "Concatenate",
+              "description": null,
+              "kind": "simple",
+              "doc_identifier": "Concatenate"
+            },
+            "parameters": [
+              {
+                "type_str": "_BaseToolKitT",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "/docs/v1/api/core/base/toolkit#basetoolkit"
+              },
+              {
+                "type_str": "P",
+                "description": null,
+                "kind": "simple",
+                "doc_url": "/docs/v1/api/core/base/toolkit#p"
+              }
+            ]
+          },
+          {
+            "type_str": "str",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+          }
+        ]
+      },
+      {
+        "type_str": "type[_BaseToolT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "type",
+          "description": null,
+          "kind": "simple",
+          "doc_url": "https://docs.python.org/3/library/functions.html#type"
+        },
+        "parameters": [
+          {
+            "type_str": "_BaseToolT",
+            "description": null,
+            "kind": "simple",
+            "doc_url": "/docs/v1/api/core/base/tool#basetool"
+          }
+        ]
+      }
+    ]
+  }
+}}
+/>
+
+
+
