@@ -72,8 +72,8 @@ def get_current_temperature(
 
 | Value | Behavior |
 | --- | --- |
-| `None` (default) | Uses the provider default (generally strict if well supported) |
-| `True` | Uses strict schema validation, if supported |
+| `None` (default) | Uses strict if the provider supports it |
+| `True` | Must use strict schema validation; raises `llm.FeatureNotSupportedError` if unsupported |
 | `False` | Disables strict mode even if the provider supports it |
 
 When strict mode is enabled, the provider guarantees the LLM's tool call arguments will match the schema exactly.

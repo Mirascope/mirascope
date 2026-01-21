@@ -8,7 +8,7 @@ interactions:
       a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
       testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
       author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
-      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"cache_control":{"type":"ephemeral"}}]}'
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"},"strict":false,"cache_control":{"type":"ephemeral"}}]}'
     headers:
       accept:
       - application/json
@@ -21,13 +21,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1217'
+      - '1232'
       content-type:
       - application/json
       host:
       - api.anthropic.com
       user-agent:
-      - AsyncAnthropic/Python 0.75.0
+      - AsyncAnthropic/Python 0.76.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -39,11 +41,11 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.75.0
+      - 0.76.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -55,18 +57,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAA/3VRXU/DMAz8K1OeN2kfFKa+TWwDBAw0IY0PoSikbhutTUrijMHU/45TKNNAvMV3
-        Z5992bHSJFCwmMlC+AR6zmgN2DvqDfvDqB8NjliXqYT40mW8Pzgb5qPTzSxVD5Ph26WeT5cf2zWQ
-        Bt8rCCpwTmQBsKYIgHBOORQaCZJGI9Arftq1ejSm4N5B6xJqTz7j1Rzt9mo0f3xZZffpeOSXMpKk
-        0qIMfZyXygonTQU8NbYUiJBw47HyyJuhPIzUVLKY3BQ229ydzzqLyfWsczPvhPfqYjElnfCYGxuE
-        qbIO+bfJrUCr5JoEhdijS4N56p1jNR0pUOmMxSd1/dxlDk3FLQjK8PC0hnDw6kFLGqF9UXSZb4Ii
-        z2ZLWnoN2rE4Oh5RUkLmwCXNQmU0P1T0W57o5D+u7Q0GUOVQghUFj8q/+j07yH+zdOJPpl/QeEDn
-        gN0oCRwVUGgsfG8ibMLq+hMvRb1BTwIAAA==
+        H4sIAAAAAAAA/3VRXU8CMRD8K6TPkHDA+XFvGjFKAhqD8GBM09wtXMO1PbpbEyD3392eIkHjW3dm
+        dmd3ehDGFVCJTOSVCgX00FkL1Bv1Bv1B2k+TkegKXTBvcC37ydDvcY5XcGtmSk/LV53uJpOaNbSr
+        IaoAUa2BAe+qCChEjaQsMZQ7S8Cv7O1w1JNzlQwIR5dYB/a5HM/M7fV+OLi/GIwWyfVyOy7XC1ZZ
+        ZWKflEZ7hbmrQa6cN4oICukC1YFkO1TGkZZLkbGbpnab+cO4M7uZjjtP9534Xj7O7linApXOR+FK
+        eyT5bfKsyOt8w4JKndAXR+UqIIqGj1Sk7Vpkl03z3hVIrpYeFGd4flpLIGwD2JxH2FBVXRHaoNiz
+        3ZKX3oBFkaUXQ05K5SXInGeRdlaeK/pHnuniP+7YGw2gLsGAV5VMzV/9iU3K3yyf+JPpF3SV8Dng
+        P3QOkjRwaCJ+b6F8IZrmE38nI1dPAgAA
     headers:
-      CF-Cache-Status:
-      - DYNAMIC
       CF-RAY:
-      - 9b0278854e3b308c-SEA
+      - 9c11f58aeb49a34b-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -74,15 +74,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Dec 2025 23:34:26 GMT
+      - Tue, 20 Jan 2026 22:20:29 GMT
       Server:
       - cloudflare
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
       - chunked
-      Vary:
-      - accept-encoding
       X-Robots-Tag:
       - none
       anthropic-organization-id:
@@ -92,29 +88,33 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-12-18T23:34:25Z'
+      - '2026-01-20T22:20:28Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-12-18T23:34:26Z'
+      - '2026-01-20T22:20:29Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-12-18T23:34:24Z'
+      - '2026-01-20T22:20:26Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-12-18T23:34:25Z'
+      - '2026-01-20T22:20:28Z'
+      cf-cache-status:
+      - DYNAMIC
       request-id:
-      - req_011CWF2b5kWYPKyYyCj3fdZm
+      - req_011CXKQe9MBZMMZZ7eu6NA24
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1381'
+      - '2406'
     status:
       code: 200
       message: OK

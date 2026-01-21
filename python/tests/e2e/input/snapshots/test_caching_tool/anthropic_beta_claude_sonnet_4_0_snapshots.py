@@ -6,10 +6,10 @@ test_snapshot = snapshot(
         "usage1": {
             "input_tokens": 4749,
             "output_tokens": 38,
-            "cache_read_tokens": 4602,
-            "cache_write_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_write_tokens": 4602,
             "reasoning_tokens": 0,
-            "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=0), cache_creation_input_tokens=0, cache_read_input_tokens=4602, input_tokens=147, output_tokens=38, server_tool_use=None, service_tier='standard')",
+            "raw": "BetaUsage(cache_creation=BetaCacheCreation(ephemeral_1h_input_tokens=0, ephemeral_5m_input_tokens=4602), cache_creation_input_tokens=4602, cache_read_input_tokens=0, input_tokens=147, output_tokens=38, server_tool_use=None, service_tier='standard')",
             "total_tokens": 4787,
         },
         "response2": "**ToolCall (star_wars_tool):** {}",

@@ -32,7 +32,6 @@ from ..model_info import MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
 from .encode import (
     DEFAULT_MAX_TOKENS,
     FORMAT_TOOL_NAME,
-    convert_tool_to_tool_param,
     encode_content,
     process_params,
 )
@@ -135,9 +134,29 @@ def _beta_encode_messages(
     return encoded_messages
 
 
-def _beta_convert_tool_to_tool_param(tool: AnyToolSchema) -> BetaToolParam:
-    """Convert a single Mirascope tool to Beta Anthropic tool format."""
-    return cast(BetaToolParam, convert_tool_to_tool_param(tool))
+def _beta_convert_tool_to_tool_param(
+    tool: AnyToolSchema, model_supports_strict: bool
+) -> BetaToolParam:
+    """Convert a single Mirascope tool to Beta Anthropic tool format.
+
+    If the tool has strict=True (or None, and the model supports strict), the schema
+    is modified to be compatible with Anthropic's strict structured outputs beta
+    by adding additionalProperties: false to all object schemas, and strict=True
+    is passed to the API.
+    """
+    schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    schema_dict["type"] = "object"
+
+    strict = model_supports_strict if tool.strict is None else tool.strict
+    if strict:
+        _base_utils.ensure_additional_properties_false(schema_dict)
+
+    return BetaToolParam(
+        name=tool.name,
+        description=tool.description,
+        input_schema=schema_dict,
+        strict=strict,
+    )
 
 
 def beta_encode_request(
@@ -167,7 +186,26 @@ def beta_encode_request(
     )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-    anthropic_tools = [_beta_convert_tool_to_tool_param(tool) for tool in tools]
+
+    model_supports_strict = (
+        model_name(model_id) not in MODELS_WITHOUT_STRICT_STRUCTURED_OUTPUTS
+    )
+    # Check for strict tools on models that don't support them
+    if _base_utils.has_strict_tools(tools) and not model_supports_strict:
+        raise FeatureNotSupportedError(
+            feature="strict tools",
+            provider_id="anthropic",
+            model_id=model_id,
+            message="Strict tools require a model that supports structured outputs. "
+            "Use a newer model like claude-sonnet-4-5 or set strict=False on your tools.",
+        )
+
+    anthropic_tools = [
+        _beta_convert_tool_to_tool_param(
+            tool, model_supports_strict=model_supports_strict
+        )
+        for tool in tools
+    ]
     format = resolve_format(format, default_mode=DEFAULT_FORMAT_MODE)
 
     if format is not None:
@@ -183,7 +221,11 @@ def beta_encode_request(
 
         if format.mode == "tool":
             format_tool_schema = format.create_tool_schema()
-            anthropic_tools.append(_beta_convert_tool_to_tool_param(format_tool_schema))
+            anthropic_tools.append(
+                _beta_convert_tool_to_tool_param(
+                    format_tool_schema, model_supports_strict=model_supports_strict
+                )
+            )
             if tools:
                 kwargs["tool_choice"] = {"type": "any"}
             else:
