@@ -13,6 +13,7 @@ from opentelemetry.util.types import AttributeValue
 from ...api.client import get_async_client, get_sync_client
 from ...llm.context import Context, DepsT
 from ...llm.responses.root_response import RootResponse
+from .instrumentation.llm.serialize import attach_mirascope_response_attributes
 from .protocols import (
     AsyncContextFunction,
     AsyncFunction,
@@ -50,6 +51,7 @@ def record_result_to_span(span: Span, result: object) -> None:
         output: str | int | float | bool = result
     elif isinstance(result, RootResponse):
         output = result.pretty()
+        attach_mirascope_response_attributes(span, result)
     else:
         try:
             output = json_dumps(result)

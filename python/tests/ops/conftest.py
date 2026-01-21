@@ -21,7 +21,7 @@ from mirascope.api.settings import (
     _default_settings,  # pyright: ignore[reportPrivateUsage]
 )
 from mirascope.ops._internal import configuration
-from mirascope.ops._internal.instrumentation import llm
+from mirascope.ops._internal.instrumentation.llm import model
 from mirascope.ops._internal.propagation import (
     ENV_PROPAGATOR_FORMAT,
     ENV_PROPAGATOR_SET_GLOBAL,
@@ -78,7 +78,7 @@ def reset_configuration() -> None:
 def reset_llm_instrumentation() -> None:
     """Reset llm instrumentation module state."""
     configuration.set_tracer(None)
-    llm.llm._unwrap_model_call()  # pyright: ignore[reportPrivateUsage]
+    model.unwrap_model_call()
 
 
 @pytest.fixture(autouse=True)
