@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "CLOUDFLARE_ENV=local vite dev",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' CLOUDFLARE_ENV=production vite build",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
     "build:staging": "CLOUDFLARE_ENV=staging bun run build",
+    "build:production": "CLOUDFLARE_ENV=production bun run build",
     "postbuild": "pagefind --site dist/client --output-path dist/client/_pagefind --root-selector '[data-pagefind-body=\"true\"]' --",
     "preview": "vite preview",
     "deploy": "bun run build && wrangler deploy",
