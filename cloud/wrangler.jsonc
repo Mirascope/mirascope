@@ -134,6 +134,7 @@
         {
           "binding": "HYPERDRIVE",
           "id": "ebf5361da856472dbdf2efedf8260bc8",
+          "localConnectionString": "postgres://postgres:postgres@localhost:1234/stopgap",
         },
       ],
       "triggers": {
