@@ -42,6 +42,7 @@ jobs:
         run: bun run build:staging
         env:
           CLOUDFLARE_ENV: staging
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ vars.STAGING_VITE_STRIPE_PUBLISHABLE_KEY }}
 
       - name: Deploy to Cloudflare Workers (Staging)
         uses: cloudflare/wrangler-action@v3
