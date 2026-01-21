@@ -105,25 +105,172 @@ const toNumberOrNull = (value: unknown): number | null => {
 /**
  * Computes total tokens from attributes.
  *
- * Uses total_tokens if available, otherwise sums input and output tokens.
+ * Priority:
+ * 1. mirascope.response.usage.total_tokens
+ * 2. gen_ai.usage.total_tokens
+ * 3. Sum of input and output tokens
  */
 const getTotalTokens = (
   attributes: Record<string, unknown> | null,
 ): number | null => {
-  const total = toNumberOrNull(
+  // Try Mirascope total first
+  const mirascopeTotal = getMirascopeUsageField(attributes, "total_tokens");
+  if (mirascopeTotal !== null) return mirascopeTotal;
+
+  // Try gen_ai total
+  const genAiTotal = toNumberOrNull(
     getAttributeValue(attributes, "gen_ai.usage.total_tokens"),
   );
-  if (total !== null) return total;
+  if (genAiTotal !== null) return genAiTotal;
 
-  const input = toNumberOrNull(
-    getAttributeValue(attributes, "gen_ai.usage.input_tokens"),
-  );
-  const output = toNumberOrNull(
-    getAttributeValue(attributes, "gen_ai.usage.output_tokens"),
-  );
+  // Fall back to summing input and output (using the new helper functions)
+  const input = getInputTokens(attributes);
+  const output = getOutputTokens(attributes);
 
   if (input === null && output === null) return null;
   return (input ?? 0) + (output ?? 0);
+};
+
+/**
+ * Parse mirascope.response.usage JSON and extract a field.
+ */
+const getMirascopeUsageField = (
+  attributes: Record<string, unknown> | null,
+  field: string,
+): number | null => {
+  if (!attributes) return null;
+  const usageRaw = getAttributeValue(attributes, "mirascope.response.usage");
+  if (usageRaw == null) return null;
+
+  try {
+    const parsed: unknown =
+      typeof usageRaw === "string" ? JSON.parse(usageRaw) : usageRaw;
+    if (parsed && typeof parsed === "object" && field in parsed) {
+      return toNumberOrNull((parsed as Record<string, unknown>)[field]);
+    }
+  } catch {
+    // Invalid JSON
+  }
+  return null;
+};
+
+/**
+ * Extract input tokens from attributes.
+ *
+ * Priority:
+ * 1. mirascope.response.usage.input_tokens
+ * 2. gen_ai.usage.input_tokens
+ */
+const getInputTokens = (
+  attributes: Record<string, unknown> | null,
+): number | null => {
+  const mirascopeTokens = getMirascopeUsageField(attributes, "input_tokens");
+  if (mirascopeTokens !== null) return mirascopeTokens;
+  return toNumberOrNull(
+    getAttributeValue(attributes, "gen_ai.usage.input_tokens"),
+  );
+};
+
+/**
+ * Extract output tokens from attributes.
+ *
+ * Priority:
+ * 1. mirascope.response.usage.output_tokens
+ * 2. gen_ai.usage.output_tokens
+ */
+const getOutputTokens = (
+  attributes: Record<string, unknown> | null,
+): number | null => {
+  const mirascopeTokens = getMirascopeUsageField(attributes, "output_tokens");
+  if (mirascopeTokens !== null) return mirascopeTokens;
+  return toNumberOrNull(
+    getAttributeValue(attributes, "gen_ai.usage.output_tokens"),
+  );
+};
+
+/**
+ * Extract model from attributes.
+ *
+ * Priority:
+ * 1. mirascope.response.model_id
+ * 2. gen_ai.request.model
+ */
+const getModel = (
+  attributes: Record<string, unknown> | null,
+): string | null => {
+  if (!attributes) return null;
+  const mirascopeModel = getAttributeValue(
+    attributes,
+    "mirascope.response.model_id",
+  );
+  if (mirascopeModel != null && typeof mirascopeModel === "string") {
+    return mirascopeModel;
+  }
+  const genAiModel = getAttributeValue(attributes, "gen_ai.request.model");
+  return typeof genAiModel === "string" ? genAiModel : null;
+};
+
+/**
+ * Extract provider from attributes.
+ *
+ * Priority:
+ * 1. mirascope.response.provider_id
+ * 2. gen_ai.system
+ */
+const getProvider = (
+  attributes: Record<string, unknown> | null,
+): string | null => {
+  if (!attributes) return null;
+  const mirascopeProvider = getAttributeValue(
+    attributes,
+    "mirascope.response.provider_id",
+  );
+  if (mirascopeProvider != null && typeof mirascopeProvider === "string") {
+    return mirascopeProvider;
+  }
+  const genAiProvider = getAttributeValue(attributes, "gen_ai.system");
+  return typeof genAiProvider === "string" ? genAiProvider : null;
+};
+
+/**
+ * Extract cost in USD from attributes.
+ *
+ * Priority:
+ * 1. mirascope.response.cost (JSON with total_cost in centicents)
+ * 2. gen_ai.usage.cost (direct USD value)
+ */
+const getCostUsd = (
+  attributes: Record<string, unknown> | null,
+): number | null => {
+  if (!attributes) return null;
+
+  // Try mirascope.response.cost first (JSON string with centicents)
+  const mirascpeCostRaw = getAttributeValue(
+    attributes,
+    "mirascope.response.cost",
+  );
+  if (mirascpeCostRaw != null) {
+    try {
+      const parsed: unknown =
+        typeof mirascpeCostRaw === "string"
+          ? JSON.parse(mirascpeCostRaw)
+          : mirascpeCostRaw;
+      if (parsed && typeof parsed === "object" && "total_cost" in parsed) {
+        const totalCenticents = toNumberOrNull(
+          (parsed as Record<string, unknown>).total_cost,
+        );
+        if (totalCenticents !== null) {
+          // Convert centicents to USD (1 centicent = $0.0001)
+          return totalCenticents / 10000;
+        }
+      }
+    } catch {
+      // Invalid JSON, fall through to gen_ai.usage.cost
+    }
+  }
+
+  // Fallback to gen_ai.usage.cost (already in USD)
+  return toNumberOrNull(getAttributeValue(attributes, "gen_ai.usage.cost"));
 };
 
 // =============================================================================
@@ -180,22 +327,13 @@ export const transformSpanForClickHouse = ({
     kind: span.kind ?? null,
     status_code: status?.code ?? null,
     status_message: status?.message ?? null,
-    // LLM-specific attributes
-    model: getAttributeValue(attributes, "gen_ai.request.model") as
-      | string
-      | null,
-    provider: getAttributeValue(attributes, "gen_ai.system") as string | null,
-    input_tokens: getAttributeValue(attributes, "gen_ai.usage.input_tokens") as
-      | number
-      | null,
-    output_tokens: getAttributeValue(
-      attributes,
-      "gen_ai.usage.output_tokens",
-    ) as number | null,
+    // LLM-specific attributes (prefer Mirascope, fallback to gen_ai)
+    model: getModel(attributes),
+    provider: getProvider(attributes),
+    input_tokens: getInputTokens(attributes),
+    output_tokens: getOutputTokens(attributes),
     total_tokens: getTotalTokens(attributes),
-    cost_usd: getAttributeValue(attributes, "gen_ai.usage.cost") as
-      | number
-      | null,
+    cost_usd: getCostUsd(attributes),
     function_id: getAttributeValue(attributes, "mirascope.function_id") as
       | string
       | null,

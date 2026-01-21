@@ -644,6 +644,7 @@
                           "inputTokens",
                           "outputTokens",
                           "totalTokens",
+                          "costUsd",
                           "functionId",
                           "functionName",
                           "hasChildren"
@@ -712,6 +713,16 @@
                             ]
                           },
                           "totalTokens": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "costUsd": {
                             "anyOf": [
                               {
                                 "type": "number"
@@ -1418,6 +1429,8 @@
                     "p99DurationMs",
                     "errorRate",
                     "totalTokens",
+                    "totalInputTokens",
+                    "totalOutputTokens",
                     "totalCostUsd",
                     "topModels",
                     "topFunctions"
@@ -1470,6 +1483,12 @@
                       "type": "number"
                     },
                     "totalTokens": {
+                      "type": "number"
+                    },
+                    "totalInputTokens": {
+                      "type": "number"
+                    },
+                    "totalOutputTokens": {
                       "type": "number"
                     },
                     "totalCostUsd": {
@@ -1865,6 +1884,7 @@
                           "inputTokens",
                           "outputTokens",
                           "totalTokens",
+                          "costUsd",
                           "functionId",
                           "functionName",
                           "hasChildren"
@@ -1933,6 +1953,16 @@
                             ]
                           },
                           "totalTokens": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "costUsd": {
                             "anyOf": [
                               {
                                 "type": "number"
@@ -7426,6 +7456,8 @@
                     "p99DurationMs",
                     "errorRate",
                     "totalTokens",
+                    "totalInputTokens",
+                    "totalOutputTokens",
                     "totalCostUsd",
                     "topModels",
                     "topFunctions"
@@ -7478,6 +7510,12 @@
                       "type": "number"
                     },
                     "totalTokens": {
+                      "type": "number"
+                    },
+                    "totalInputTokens": {
+                      "type": "number"
+                    },
+                    "totalOutputTokens": {
                       "type": "number"
                     },
                     "totalCostUsd": {

@@ -117,6 +117,39 @@ const toNumberOrNull = (value: unknown): number | null => {
 };
 
 /**
+ * Parse mirascope.response.usage JSON and extract a field.
+ *
+ * @param attributes - Span attributes (may be null/undefined)
+ * @param field - Field name to extract from usage object
+ * @returns Numeric value or null if not found/invalid
+ */
+const getMirascopeUsageField = (
+  attributes: Record<string, unknown> | null | undefined,
+  field: string,
+): number | null => {
+  const usageRaw = getAttributeValue(
+    attributes ?? null,
+    "mirascope.response.usage",
+  );
+  if (usageRaw == null) return null;
+  try {
+    const parsed: unknown =
+      typeof usageRaw === "string" ? JSON.parse(usageRaw) : usageRaw;
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed) &&
+      field in parsed
+    ) {
+      return toNumberOrNull((parsed as Record<string, unknown>)[field]);
+    }
+  } catch {
+    // Invalid JSON
+  }
+  return null;
+};
+
+/**
  * Extracts the start time of a span as a Date.
  *
  * Falls back to receivedAt if startTimeUnixNano is not set.
@@ -161,39 +194,97 @@ const computeDurationMs = (span: CachedSpan): number | null => {
   /* v8 ignore stop */
 };
 
-/** Extracts the model name from span attributes. */
-const getModel = (span: CachedSpan): string | null =>
-  (getAttributeValue(span.attributes, "gen_ai.request.model") as
-    | string
-    | null) ?? null;
+/**
+ * Extracts the model name from span attributes.
+ *
+ * Priority: mirascope.response.model_id → gen_ai.request.model
+ */
+const getModel = (span: CachedSpan): string | null => {
+  const mirascopeModel = getAttributeValue(
+    span.attributes,
+    "mirascope.response.model_id",
+  );
+  if (mirascopeModel != null && typeof mirascopeModel === "string") {
+    return mirascopeModel;
+  }
+  return (
+    (getAttributeValue(span.attributes, "gen_ai.request.model") as
+      | string
+      | null) ?? null
+  );
+};
 
-/** Extracts the provider name from span attributes. */
-const getProvider = (span: CachedSpan): string | null =>
-  (getAttributeValue(span.attributes, "gen_ai.system") as string | null) ??
-  null;
+/**
+ * Extracts the provider name from span attributes.
+ *
+ * Priority: mirascope.response.provider_id → gen_ai.system
+ */
+const getProvider = (span: CachedSpan): string | null => {
+  const mirascopeProvider = getAttributeValue(
+    span.attributes,
+    "mirascope.response.provider_id",
+  );
+  if (mirascopeProvider != null && typeof mirascopeProvider === "string") {
+    return mirascopeProvider;
+  }
+  return (
+    (getAttributeValue(span.attributes, "gen_ai.system") as string | null) ??
+    null
+  );
+};
 
-/** Extracts the input token count from span attributes. */
-const getInputTokens = (span: CachedSpan): number | null =>
-  toNumberOrNull(
+/**
+ * Extracts the input token count from span attributes.
+ *
+ * Priority: mirascope.response.usage.input_tokens → gen_ai.usage.input_tokens
+ */
+const getInputTokens = (span: CachedSpan): number | null => {
+  const mirascopeTokens = getMirascopeUsageField(
+    span.attributes,
+    "input_tokens",
+  );
+  if (mirascopeTokens !== null) return mirascopeTokens;
+  return toNumberOrNull(
     getAttributeValue(span.attributes, "gen_ai.usage.input_tokens"),
   );
+};
 
-/** Extracts the output token count from span attributes. */
-const getOutputTokens = (span: CachedSpan): number | null =>
-  toNumberOrNull(
+/**
+ * Extracts the output token count from span attributes.
+ *
+ * Priority: mirascope.response.usage.output_tokens → gen_ai.usage.output_tokens
+ */
+const getOutputTokens = (span: CachedSpan): number | null => {
+  const mirascopeTokens = getMirascopeUsageField(
+    span.attributes,
+    "output_tokens",
+  );
+  if (mirascopeTokens !== null) return mirascopeTokens;
+  return toNumberOrNull(
     getAttributeValue(span.attributes, "gen_ai.usage.output_tokens"),
   );
+};
 
 /**
  * Computes the total token count from span attributes.
  *
- * Uses total_tokens if available, otherwise sums input and output tokens.
+ * Priority: mirascope.response.usage.total_tokens → gen_ai.usage.total_tokens → sum
  */
 const getTotalTokens = (span: CachedSpan): number | null => {
+  // Try mirascope first
+  const mirascopeTotal = getMirascopeUsageField(
+    span.attributes,
+    "total_tokens",
+  );
+  if (mirascopeTotal !== null) return mirascopeTotal;
+
+  // Try gen_ai total
   const total = toNumberOrNull(
     getAttributeValue(span.attributes, "gen_ai.usage.total_tokens"),
   );
   if (total !== null) return total;
+
+  // Fall back to summing input and output
   const input = getInputTokens(span);
   const output = getOutputTokens(span);
   if (input === null && output === null) return null;
@@ -228,9 +319,46 @@ const getErrorMessage = (span: CachedSpan): string | null =>
   (getAttributeValue(span.attributes, "exception.message") as string | null) ??
   null;
 
-/** Extracts the cost in USD from span attributes. */
-const getCostUsd = (span: CachedSpan): number | null =>
-  toNumberOrNull(getAttributeValue(span.attributes, "gen_ai.usage.cost"));
+/**
+ * Extracts the cost in USD from span attributes.
+ *
+ * Priority: mirascope.response.cost.total_cost (centicents) → gen_ai.usage.cost (USD)
+ */
+const getCostUsd = (span: CachedSpan): number | null => {
+  // Try mirascope.response.cost first (JSON with centicents)
+  const mirascpeCostRaw = getAttributeValue(
+    span.attributes,
+    "mirascope.response.cost",
+  );
+  if (mirascpeCostRaw != null) {
+    try {
+      const parsed: unknown =
+        typeof mirascpeCostRaw === "string"
+          ? JSON.parse(mirascpeCostRaw)
+          : mirascpeCostRaw;
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        !Array.isArray(parsed) &&
+        "total_cost" in parsed
+      ) {
+        const totalCenticents = toNumberOrNull(
+          (parsed as Record<string, unknown>).total_cost,
+        );
+        if (totalCenticents !== null) {
+          // Convert centicents to USD (1 centicent = $0.0001)
+          return totalCenticents / 10000;
+        }
+      }
+    } catch {
+      // Invalid JSON, fall through to gen_ai.usage.cost
+    }
+  }
+  // Fallback to gen_ai.usage.cost (already in USD)
+  return toNumberOrNull(
+    getAttributeValue(span.attributes, "gen_ai.usage.cost"),
+  );
+};
 
 /**
  * Converts a value to a string for search matching.
@@ -543,6 +671,7 @@ const buildSearchResult = (span: CachedSpan): SpanSearchResult => {
     inputTokens: getInputTokens(span),
     outputTokens: getOutputTokens(span),
     totalTokens: getTotalTokens(span),
+    costUsd: getCostUsd(span),
     functionId: getFunctionId(span),
     functionName: getFunctionName(span),
     // Note: hasChildren is not computed in realtime cache - use ClickHouse search for accurate value

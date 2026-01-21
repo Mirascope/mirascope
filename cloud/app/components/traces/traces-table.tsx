@@ -9,14 +9,114 @@ import {
   TableRow,
 } from "@/app/components/ui/table";
 import { TruncatedText } from "@/app/components/ui/truncated-text";
-import { cn } from "@/app/lib/utils";
+import { cn, safeParseJSON } from "@/app/lib/utils";
 import {
   formatDuration,
   formatTimestamp,
   formatTokens,
+  formatCost,
 } from "@/app/lib/traces/formatting";
 import type { SpanSearchResult, SpanDetail } from "@/api/traces-search.schemas";
 import { buildSpanTree, type SpanNode } from "@/app/lib/traces/types";
+
+// =============================================================================
+// Attribute extraction helpers for mirascope.response.* fallback
+// =============================================================================
+
+/** Extract a numeric field from mirascope.response.usage JSON */
+function getMirascopeUsageField(
+  attrs: Record<string, unknown> | null,
+  field: string,
+): number | null {
+  if (!attrs) return null;
+  const usageRaw = attrs["mirascope.response.usage"];
+  if (usageRaw == null) return null;
+  try {
+    const parsed: unknown =
+      typeof usageRaw === "string" ? JSON.parse(usageRaw) : usageRaw;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      const value = (parsed as Record<string, unknown>)[field];
+      return typeof value === "number" ? value : null;
+    }
+  } catch {
+    // Invalid JSON
+  }
+  return null;
+}
+
+/** Extract model from attributes (mirascope first, then gen_ai) */
+function extractModel(attrs: Record<string, unknown> | null): string | null {
+  if (!attrs) return null;
+  const mirascopeModel = attrs["mirascope.response.model_id"];
+  if (typeof mirascopeModel === "string") return mirascopeModel;
+  const genAiModel = attrs["gen_ai.request.model"];
+  if (typeof genAiModel === "string") return genAiModel;
+  return null;
+}
+
+/** Extract input tokens from attributes */
+function extractInputTokens(
+  attrs: Record<string, unknown> | null,
+): number | null {
+  const mirascopeTokens = getMirascopeUsageField(attrs, "input_tokens");
+  if (mirascopeTokens !== null) return mirascopeTokens;
+  if (!attrs) return null;
+  const genAiTokens = attrs["gen_ai.usage.input_tokens"];
+  return typeof genAiTokens === "number" ? genAiTokens : null;
+}
+
+/** Extract output tokens from attributes */
+function extractOutputTokens(
+  attrs: Record<string, unknown> | null,
+): number | null {
+  const mirascopeTokens = getMirascopeUsageField(attrs, "output_tokens");
+  if (mirascopeTokens !== null) return mirascopeTokens;
+  if (!attrs) return null;
+  const genAiTokens = attrs["gen_ai.usage.output_tokens"];
+  return typeof genAiTokens === "number" ? genAiTokens : null;
+}
+
+/** Extract cost from attributes (mirascope centicents or gen_ai USD) */
+function extractCostUsd(attrs: Record<string, unknown> | null): number | null {
+  if (!attrs) return null;
+  // Try mirascope.response.cost first (JSON with centicents)
+  const costRaw = attrs["mirascope.response.cost"];
+  if (costRaw != null) {
+    try {
+      const parsed: unknown =
+        typeof costRaw === "string" ? JSON.parse(costRaw) : costRaw;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        const totalCost = (parsed as Record<string, unknown>).total_cost;
+        if (typeof totalCost === "number") {
+          return totalCost / 10000; // Convert centicents to USD
+        }
+      }
+    } catch {
+      // Invalid JSON
+    }
+  }
+  // Fallback to gen_ai.usage.cost
+  const genAiCost = attrs["gen_ai.usage.cost"];
+  return typeof genAiCost === "number" ? genAiCost : null;
+}
+
+/** Parse attributes JSON string and extract display values with fallbacks */
+function getDisplayValues(
+  span: SpanDetail | SpanSearchResult,
+  attrs: Record<string, unknown> | null,
+): {
+  model: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  costUsd: number | null;
+} {
+  return {
+    model: span.model ?? extractModel(attrs),
+    inputTokens: span.inputTokens ?? extractInputTokens(attrs),
+    outputTokens: span.outputTokens ?? extractOutputTokens(attrs),
+    costUsd: span.costUsd ?? extractCostUsd(attrs),
+  };
+}
 
 /**
  * Recursively finds a node in the span tree by spanId.
@@ -75,6 +175,11 @@ function SpanRow({
   const isExpanded = expandedSpans.has(span.spanId);
   const isSelected = selectedSpanId === span.spanId;
 
+  // Extract display values with fallback from raw attributes
+  const rawAttrs = "attributes" in span ? safeParseJSON(span.attributes) : null;
+  const attrs = rawAttrs && !Array.isArray(rawAttrs) ? rawAttrs : null;
+  const displayValues = getDisplayValues(span, attrs);
+
   return (
     <>
       <TableRow
@@ -114,13 +219,20 @@ function SpanRow({
           {formatDuration(span.durationMs)}
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {span.model ? <TruncatedText>{span.model}</TruncatedText> : "-"}
+          {displayValues.model ? (
+            <TruncatedText>{displayValues.model}</TruncatedText>
+          ) : (
+            "-"
+          )}
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {formatTokens(span.inputTokens)}
+          {formatTokens(displayValues.inputTokens)}
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {formatTokens(span.outputTokens)}
+          {formatTokens(displayValues.outputTokens)}
+        </TableCell>
+        <TableCell className="text-muted-foreground">
+          {formatCost(displayValues.costUsd)}
         </TableCell>
         <TableCell className="whitespace-nowrap text-muted-foreground">
           {formatTimestamp(span.startTime)}
@@ -157,6 +269,8 @@ interface RootSpanRowProps {
   /** Called when clicking child spans */
   onChildSpanClick?: (span: SpanDetail) => void;
   selectedSpanId?: string | null;
+  /** Cached SpanDetail for fallback attribute extraction */
+  cachedDetail?: SpanDetail;
 }
 
 function RootSpanRow({
@@ -171,11 +285,17 @@ function RootSpanRow({
   onRootSpanClick,
   onChildSpanClick,
   selectedSpanId,
+  cachedDetail,
 }: RootSpanRowProps) {
   // Hide chevron if either API or cache confirms no children
   // Cache takes precedence when available (source of truth from actual data)
   const showChevron = span.hasChildren !== false && hasChildren !== false;
   const isSelected = selectedSpanId === span.spanId;
+
+  // Extract display values with fallback from cached SpanDetail attributes
+  const rawAttrs = cachedDetail ? safeParseJSON(cachedDetail.attributes) : null;
+  const attrs = rawAttrs && !Array.isArray(rawAttrs) ? rawAttrs : null;
+  const displayValues = getDisplayValues(span, attrs);
 
   return (
     <>
@@ -218,13 +338,20 @@ function RootSpanRow({
           {formatDuration(span.durationMs)}
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {span.model ? <TruncatedText>{span.model}</TruncatedText> : "-"}
+          {displayValues.model ? (
+            <TruncatedText>{displayValues.model}</TruncatedText>
+          ) : (
+            "-"
+          )}
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {formatTokens(span.inputTokens)}
+          {formatTokens(displayValues.inputTokens)}
         </TableCell>
         <TableCell className="text-muted-foreground">
-          {formatTokens(span.outputTokens)}
+          {formatTokens(displayValues.outputTokens)}
+        </TableCell>
+        <TableCell className="text-muted-foreground">
+          {formatCost(displayValues.costUsd)}
         </TableCell>
         <TableCell className="whitespace-nowrap text-muted-foreground">
           {formatTimestamp(span.startTime)}
@@ -377,9 +504,9 @@ export function TracesTable({
   }
 
   return (
-    <div className="rounded-lg border">
+    <div className="max-h-[calc(100vh-10rem)] overflow-auto rounded-lg border">
       <Table className="table-fixed">
-        <TableHeader>
+        <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
           <TableRow>
             <TableHead className="w-[40%] min-w-[200px]">Name</TableHead>
             <TableHead className="w-[100px]">Duration</TableHead>
@@ -390,6 +517,7 @@ export function TracesTable({
             <TableHead className="w-[110px] whitespace-nowrap">
               Output Tokens
             </TableHead>
+            <TableHead className="w-[90px]">Cost</TableHead>
             <TableHead className="w-[180px]">Timestamp</TableHead>
           </TableRow>
         </TableHeader>
@@ -413,6 +541,7 @@ export function TracesTable({
                 onRootSpanClick={handleRowSpanClick}
                 onChildSpanClick={onSpanClick}
                 selectedSpanId={selectedSpanId}
+                cachedDetail={getFullSpanDetail(span)}
               />
             );
           })}
