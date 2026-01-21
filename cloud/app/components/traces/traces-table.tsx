@@ -18,10 +18,26 @@ import {
 import type { SpanSearchResult, SpanDetail } from "@/api/traces-search.schemas";
 import { buildSpanTree, type SpanNode } from "@/app/lib/traces/types";
 
+/**
+ * Recursively finds a node in the span tree by spanId.
+ */
+function findNodeInTree(nodes: SpanNode[], spanId: string): SpanNode | null {
+  for (const node of nodes) {
+    if (node.span.spanId === spanId) {
+      return node;
+    }
+    const found = findNodeInTree(node.children, spanId);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
+
 interface TraceDetailCache {
   traceId: string;
   spans: readonly SpanDetail[];
-  hasChildren: boolean;
+  tree: SpanNode[];
 }
 
 interface TracesTableProps {
@@ -239,46 +255,49 @@ export function TracesTable({
   onSpanClick,
   selectedSpanId,
 }: TracesTableProps) {
-  const [expandedTraces, setExpandedTraces] = useState<Set<string>>(new Set());
+  // Track which top-level rows are expanded (by spanId)
+  const [expandedRowSpans, setExpandedRowSpans] = useState<Set<string>>(
+    new Set(),
+  );
+  // Track which nested spans are expanded (by spanId)
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
 
-  // Cache for trace details - persists across re-renders
+  // Cache for trace details - persists across re-renders (keyed by traceId)
   const traceDetailsCacheRef = useRef<Map<string, TraceDetailCache>>(new Map());
-  // Track which trace we're currently fetching (for loading indicator)
-  const [fetchingTraceId, setFetchingTraceId] = useState<string | null>(null);
+  // Track which span we're currently fetching details for (for loading indicator)
+  const [fetchingSpanId, setFetchingSpanId] = useState<string | null>(null);
 
   // Add incoming trace detail to cache
   useEffect(() => {
     if (traceDetail && traceDetail.traceId) {
       const tree = buildSpanTree(traceDetail.spans);
-      const hasChildren = tree.length > 0 && tree[0].children.length > 0;
 
       traceDetailsCacheRef.current.set(traceDetail.traceId, {
         traceId: traceDetail.traceId,
         spans: traceDetail.spans,
-        hasChildren,
+        tree,
       });
 
       // Clear fetching state when this trace's data arrives
-      if (fetchingTraceId === traceDetail.traceId) {
-        setFetchingTraceId(null);
+      if (fetchingSpanId) {
+        setFetchingSpanId(null);
       }
     }
-  }, [traceDetail, fetchingTraceId]);
+  }, [traceDetail, fetchingSpanId]);
 
-  const toggleTrace = (traceId: string) => {
-    const newExpanded = new Set(expandedTraces);
-    if (newExpanded.has(traceId)) {
-      newExpanded.delete(traceId);
+  const toggleRowSpan = (traceId: string, spanId: string) => {
+    const newExpanded = new Set(expandedRowSpans);
+    if (newExpanded.has(spanId)) {
+      newExpanded.delete(spanId);
     } else {
-      newExpanded.add(traceId);
-      // Only fetch if not already in cache
+      newExpanded.add(spanId);
+      // Only fetch if trace not already in cache
       if (!traceDetailsCacheRef.current.has(traceId)) {
-        setFetchingTraceId(traceId);
+        setFetchingSpanId(spanId);
         onTraceSelect?.(traceId);
       }
     }
-    setExpandedTraces(newExpanded);
+    setExpandedRowSpans(newExpanded);
   };
 
   const toggleSpan = (spanId: string) => {
@@ -291,20 +310,28 @@ export function TracesTable({
     setExpandedSpans(newExpanded);
   };
 
-  // Build child nodes from cached trace detail
-  const getChildNodes = (traceId: string): SpanNode[] => {
+  // Build child nodes from cached trace detail for a specific span
+  const getChildNodes = (traceId: string, spanId: string): SpanNode[] => {
     const cached = traceDetailsCacheRef.current.get(traceId);
     if (!cached) {
       return [];
     }
-    const tree = buildSpanTree(cached.spans);
-    return tree.length > 0 ? tree[0].children : [];
+    // Find the specific span in the tree and return its children
+    const node = findNodeInTree(cached.tree, spanId);
+    return node?.children ?? [];
   };
 
-  // Check if a trace has children (undefined if not yet fetched)
-  const getHasChildren = (traceId: string): boolean | undefined => {
+  // Check if a specific span has children (undefined if not yet fetched)
+  const getHasChildren = (
+    traceId: string,
+    spanId: string,
+  ): boolean | undefined => {
     const cached = traceDetailsCacheRef.current.get(traceId);
-    return cached?.hasChildren;
+    if (!cached) {
+      return undefined;
+    }
+    const node = findNodeInTree(cached.tree, spanId);
+    return node ? node.children.length > 0 : false;
   };
 
   // Get full SpanDetail for a root span from cache (if available)
@@ -316,19 +343,19 @@ export function TracesTable({
     return cached.spans.find((s) => s.spanId === rootSpan.spanId);
   };
 
-  // Handle click on root span - use full SpanDetail if cached, otherwise fetch
-  const handleRootSpanClick = (rootSpan: SpanSearchResult) => {
-    const fullSpan = getFullSpanDetail(rootSpan);
+  // Handle click on row span - use full SpanDetail if cached, otherwise fetch
+  const handleRowSpanClick = (rowSpan: SpanSearchResult) => {
+    const fullSpan = getFullSpanDetail(rowSpan);
     if (fullSpan) {
       onSpanClick?.(fullSpan);
       return;
     }
     // Not cached - trigger fetch and pass the summary for now
-    if (!traceDetailsCacheRef.current.has(rootSpan.traceId)) {
-      setFetchingTraceId(rootSpan.traceId);
-      onTraceSelect?.(rootSpan.traceId);
+    if (!traceDetailsCacheRef.current.has(rowSpan.traceId)) {
+      setFetchingSpanId(rowSpan.spanId);
+      onTraceSelect?.(rowSpan.traceId);
     }
-    onSpanClick?.(rootSpan);
+    onSpanClick?.(rowSpan);
   };
 
   // Loading state - only show full loader on initial load (no existing data)
@@ -368,9 +395,9 @@ export function TracesTable({
         </TableHeader>
         <TableBody>
           {spans.map((span) => {
-            const isExpanded = expandedTraces.has(span.traceId);
+            const isExpanded = expandedRowSpans.has(span.spanId);
             const isLoadingThis =
-              fetchingTraceId === span.traceId && isLoadingDetail;
+              fetchingSpanId === span.spanId && isLoadingDetail;
 
             return (
               <RootSpanRow
@@ -378,12 +405,12 @@ export function TracesTable({
                 span={span}
                 isExpanded={isExpanded}
                 isLoading={!!isLoadingThis}
-                onToggle={() => toggleTrace(span.traceId)}
-                childNodes={getChildNodes(span.traceId)}
+                onToggle={() => toggleRowSpan(span.traceId, span.spanId)}
+                childNodes={getChildNodes(span.traceId, span.spanId)}
                 expandedSpans={expandedSpans}
                 onToggleChild={toggleSpan}
-                hasChildren={getHasChildren(span.traceId)}
-                onRootSpanClick={handleRootSpanClick}
+                hasChildren={getHasChildren(span.traceId, span.spanId)}
+                onRootSpanClick={handleRowSpanClick}
                 onChildSpanClick={onSpanClick}
                 selectedSpanId={selectedSpanId}
               />
