@@ -7664,6 +7664,45 @@ Example:
     ```
 
 
+## <ApiType type="Class" slug="missing-a-p-i-key-error" symbolName="MissingAPIKeyError" /> MissingAPIKeyError
+
+Raised when no API key is available for a provider.
+
+This error is raised during auto-registration when the required API key
+environment variable is not set. If a Mirascope fallback is available,
+the error message will suggest using MIRASCOPE_API_KEY as an alternative.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Error", "description": null, "kind": "simple", "symbol_name": "Error", "doc_url": "/docs/api/exceptions#error"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "provider_id",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The provider that requires an API key."
+  },
+  {
+    "name": "env_var",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "str",
+      "doc_url": null
+    },
+    "description": "The environment variable that should contain the API key."
+  }
+]}
+/>
+
+
 ## <ApiType type="Class" slug="model" symbolName="Model" /> Model
 
 The unified LLM interface that delegates to provider-specific clients.
