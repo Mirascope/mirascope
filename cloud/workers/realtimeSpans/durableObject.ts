@@ -540,9 +540,13 @@ const buildSearchResult = (span: CachedSpan): SpanSearchResult => {
     durationMs: computeDurationMs(span),
     model: getModel(span),
     provider: getProvider(span),
+    inputTokens: getInputTokens(span),
+    outputTokens: getOutputTokens(span),
     totalTokens: getTotalTokens(span),
     functionId: getFunctionId(span),
     functionName: getFunctionName(span),
+    // Note: hasChildren is not computed in realtime cache - use ClickHouse search for accurate value
+    hasChildren: false,
   };
 };
 

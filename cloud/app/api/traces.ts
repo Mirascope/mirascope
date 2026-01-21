@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Effect } from "effect";
 import { ApiClient, eq } from "@/app/api/client";
 import type { SearchRequest } from "@/api/traces-search.schemas";
@@ -33,6 +33,8 @@ export const useTracesSearch = (
           });
         }),
     }),
+    // Keep showing previous data while fetching new data (prevents flash on refresh)
+    placeholderData: keepPreviousData,
     enabled: enabled && !!organizationId && !!projectId && !!environmentId,
   });
 };

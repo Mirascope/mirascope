@@ -20,8 +20,12 @@ from mirascope import llm, ops
 from mirascope.api.client import create_export_client
 from mirascope.ops._internal.exporters import MirascopeOTLPExporter
 
+os.environ["MIRASCOPE_API_KEY"] = "mk_O-znVN2LXoE5TAR4_N42IE9s0PWaJkELyHvqHxwRbzU"
+
 BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v2")
-API_KEY = os.getenv("MIRASCOPE_API_KEY")
+API_KEY = os.getenv(
+    "MIRASCOPE_API_KEY", "mk_O-znVN2LXoE5TAR4_N42IE9s0PWaJkELyHvqHxwRbzU"
+)
 
 if not API_KEY:
     print("ERROR: MIRASCOPE_API_KEY environment variable is required")
@@ -30,6 +34,13 @@ if not API_KEY:
 
 print(f"Using base URL: {BASE_URL}")
 print(f"Using API key: {API_KEY[:10]}...")
+
+llm.register_provider(
+    "mirascope",
+    scope=["openai", "anthropic", "google"],
+    base_url="http://localhost:3000/router/v2",
+    api_key=API_KEY,
+)
 
 client = create_export_client(base_url=BASE_URL, api_key=API_KEY)
 

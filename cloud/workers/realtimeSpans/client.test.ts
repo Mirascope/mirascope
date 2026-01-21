@@ -22,13 +22,32 @@ interface MockFetchOptions {
   json?: () => Promise<unknown>;
   throwOnFetch?: Error;
   throwOnJson?: Error;
+  /** Throws synchronously from stub.fetch() instead of returning a promise */
+  throwSyncOnFetch?: unknown;
+}
+
+interface MockNamespaceOptions {
+  fetchOptions?: MockFetchOptions;
+  /** Throws synchronously from namespace.get() */
+  throwOnGet?: unknown;
 }
 
 const createMockNamespace = (
-  fetchOptions: MockFetchOptions = {},
+  options: MockFetchOptions | MockNamespaceOptions = {},
 ): DurableObjectNamespace => {
+  // Support both old signature and new signature
+  const fetchOptions: MockFetchOptions =
+    "fetchOptions" in options
+      ? (options.fetchOptions ?? {})
+      : (options as MockFetchOptions);
+  const throwOnGet = "throwOnGet" in options ? options.throwOnGet : undefined;
+
   const mockStub = {
     fetch: vi.fn().mockImplementation(() => {
+      if (fetchOptions.throwSyncOnFetch) {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error -- testing non-Error throws
+        throw fetchOptions.throwSyncOnFetch;
+      }
       if (fetchOptions.throwOnFetch) {
         return Promise.reject(fetchOptions.throwOnFetch);
       }
@@ -42,7 +61,13 @@ const createMockNamespace = (
 
   return {
     idFromName: vi.fn().mockReturnValue({ toString: () => "test-id" }),
-    get: vi.fn().mockReturnValue(mockStub),
+    get: vi.fn().mockImplementation(() => {
+      if (throwOnGet) {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error -- testing non-Error throws
+        throw throwOnGet;
+      }
+      return mockStub;
+    }),
   } as unknown as DurableObjectNamespace;
 };
 
@@ -298,6 +323,126 @@ describe("RealtimeSpans client", () => {
 
         expect(error.message).toContain("500");
       });
+
+      it("fails when stub.fetch throws synchronously", async () => {
+        const namespace = createMockNamespace({
+          fetchOptions: {
+            throwSyncOnFetch: new Error("Sync stub error"),
+          },
+        });
+        const layer = RealtimeSpans.Live(namespace);
+
+        const program = Effect.gen(function* () {
+          const service = yield* RealtimeSpans;
+          yield* service.upsert({
+            environmentId: "test-env",
+            projectId: "test-project",
+            organizationId: "test-org",
+            receivedAt: Date.now(),
+            serviceName: null,
+            serviceVersion: null,
+            resourceAttributes: null,
+            spans: [],
+          });
+        });
+
+        const error = await Effect.runPromise(
+          program.pipe(Effect.provide(layer), Effect.flip),
+        );
+
+        expect(error.message).toContain(
+          "RealtimeSpansDurableObject stub error",
+        );
+        expect(error.message).toContain("Sync stub error");
+      });
+
+      it("fails when namespace.get throws synchronously", async () => {
+        const namespace = createMockNamespace({
+          throwOnGet: new Error("Get stub error"),
+        });
+        const layer = RealtimeSpans.Live(namespace);
+
+        const program = Effect.gen(function* () {
+          const service = yield* RealtimeSpans;
+          yield* service.upsert({
+            environmentId: "test-env",
+            projectId: "test-project",
+            organizationId: "test-org",
+            receivedAt: Date.now(),
+            serviceName: null,
+            serviceVersion: null,
+            resourceAttributes: null,
+            spans: [],
+          });
+        });
+
+        const error = await Effect.runPromise(
+          program.pipe(Effect.provide(layer), Effect.flip),
+        );
+
+        expect(error.message).toContain("Failed to get Durable Object stub");
+        expect(error.message).toContain("Get stub error");
+      });
+
+      it("fails when stub.fetch throws synchronously with non-Error", async () => {
+        const namespace = createMockNamespace({
+          fetchOptions: {
+            throwSyncOnFetch: "sync string error",
+          },
+        });
+        const layer = RealtimeSpans.Live(namespace);
+
+        const program = Effect.gen(function* () {
+          const service = yield* RealtimeSpans;
+          yield* service.upsert({
+            environmentId: "test-env",
+            projectId: "test-project",
+            organizationId: "test-org",
+            receivedAt: Date.now(),
+            serviceName: null,
+            serviceVersion: null,
+            resourceAttributes: null,
+            spans: [],
+          });
+        });
+
+        const error = await Effect.runPromise(
+          program.pipe(Effect.provide(layer), Effect.flip),
+        );
+
+        expect(error.message).toContain(
+          "RealtimeSpansDurableObject stub error",
+        );
+        expect(error.message).toContain("sync string error");
+      });
+
+      it("fails when namespace.get throws synchronously with non-Error", async () => {
+        const namespace = createMockNamespace({
+          throwOnGet: "get string error",
+        });
+        const layer = RealtimeSpans.Live(namespace);
+
+        const program = Effect.gen(function* () {
+          const service = yield* RealtimeSpans;
+          yield* service.upsert({
+            environmentId: "test-env",
+            projectId: "test-project",
+            organizationId: "test-org",
+            receivedAt: Date.now(),
+            serviceName: null,
+            serviceVersion: null,
+            resourceAttributes: null,
+            spans: [],
+          });
+        });
+
+        const error = await Effect.runPromise(
+          program.pipe(Effect.provide(layer), Effect.flip),
+        );
+
+        expect(error.message).toContain("Failed to get Durable Object stub");
+        expect(error.message).toContain("get string error");
+      });
     });
 
     describe("search", () => {
@@ -434,6 +579,60 @@ describe("RealtimeSpans client", () => {
         );
 
         expect(error.message).toContain("parse error");
+      });
+
+      it("fails when stub.fetch throws synchronously", async () => {
+        const namespace = createMockNamespace({
+          fetchOptions: {
+            throwSyncOnFetch: new Error("Sync fetch error"),
+          },
+        });
+        const layer = RealtimeSpans.Live(namespace);
+
+        const program = Effect.gen(function* () {
+          const service = yield* RealtimeSpans;
+          return yield* service.search({
+            environmentId: "test-env",
+            startTime: new Date(),
+            endTime: new Date(),
+          });
+        });
+
+        const error = await Effect.runPromise(
+          program.pipe(Effect.provide(layer), Effect.flip),
+        );
+
+        expect(error.message).toContain(
+          "RealtimeSpansDurableObject stub error",
+        );
+        expect(error.message).toContain("Sync fetch error");
+      });
+
+      it("fails when stub.fetch throws synchronously with non-Error", async () => {
+        const namespace = createMockNamespace({
+          fetchOptions: {
+            throwSyncOnFetch: "sync search string error",
+          },
+        });
+        const layer = RealtimeSpans.Live(namespace);
+
+        const program = Effect.gen(function* () {
+          const service = yield* RealtimeSpans;
+          return yield* service.search({
+            environmentId: "test-env",
+            startTime: new Date(),
+            endTime: new Date(),
+          });
+        });
+
+        const error = await Effect.runPromise(
+          program.pipe(Effect.provide(layer), Effect.flip),
+        );
+
+        expect(error.message).toContain(
+          "RealtimeSpansDurableObject stub error",
+        );
+        expect(error.message).toContain("sync search string error");
       });
     });
 

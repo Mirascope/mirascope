@@ -80,20 +80,25 @@ export const createFunctionHandler = (payload: CreateFunctionRequest) =>
 
 /**
  * Handler for retrieving a specific function by ID.
- * Returns the function if accessible to the authenticated user and API key.
+ * IDs are provided by the router from either API key context or path params.
  */
-export const getFunctionHandler = (id: string) =>
+export const getFunctionHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+  functionId: string,
+) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user } = yield* Authentication;
 
     const result =
       yield* db.organizations.projects.environments.functions.findById({
         userId: user.id,
-        organizationId: apiKeyInfo.organizationId,
-        projectId: apiKeyInfo.projectId,
-        environmentId: apiKeyInfo.environmentId,
-        functionId: id,
+        organizationId,
+        projectId,
+        environmentId,
+        functionId,
       });
 
     return toFunction(result);
@@ -101,37 +106,47 @@ export const getFunctionHandler = (id: string) =>
 
 /**
  * Handler for deleting a function by ID.
- * Removes the function if accessible to the authenticated user and API key.
+ * IDs are provided by the router from either API key context or path params.
  */
-export const deleteFunctionHandler = (id: string) =>
+export const deleteFunctionHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+  functionId: string,
+) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user } = yield* Authentication;
 
     yield* db.organizations.projects.environments.functions.delete({
       userId: user.id,
-      organizationId: apiKeyInfo.organizationId,
-      projectId: apiKeyInfo.projectId,
-      environmentId: apiKeyInfo.environmentId,
-      functionId: id,
+      organizationId,
+      projectId,
+      environmentId,
+      functionId,
     });
   });
 
 /**
  * Handler for finding a function by its content hash.
- * Returns the function if a matching hash is found and accessible to the authenticated user and API key.
+ * IDs are provided by the router from either API key context or path params.
  */
-export const findByHashHandler = (hash: string) =>
+export const findByHashHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+  hash: string,
+) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user } = yield* Authentication;
 
     const result =
       yield* db.organizations.projects.environments.functions.findByHash({
         userId: user.id,
-        organizationId: apiKeyInfo.organizationId,
-        projectId: apiKeyInfo.projectId,
-        environmentId: apiKeyInfo.environmentId,
+        organizationId,
+        projectId,
+        environmentId,
         hash,
       });
 

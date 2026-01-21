@@ -73,54 +73,80 @@ const fetchJson = <T>(
   path: string,
   init: RequestInit,
 ): Effect.Effect<T, Error> =>
-  Effect.gen(function* () {
-    const response = yield* Effect.tryPromise({
-      try: () => stub.fetch(buildUrl(path), init),
-      catch: (error) =>
-        new Error(
-          `RealtimeSpansDurableObject request failed: ${error instanceof Error ? error.message : String(error)}`,
-        ),
-    });
-
-    if (!response.ok) {
-      return yield* Effect.fail(
-        new Error(
-          `RealtimeSpansDurableObject request failed: ${response.status}`,
-        ),
-      );
-    }
-
-    return yield* Effect.tryPromise({
-      try: (): Promise<T> => response.json(),
-      catch: (error) =>
-        new Error(
-          `RealtimeSpansDurableObject JSON parse failed: ${error instanceof Error ? error.message : String(error)}`,
-        ),
-    });
-  });
+  Effect.try({
+    try: () => {
+      // Wrap in try-catch to handle any synchronous errors from stub operations
+      const fetchPromise = stub.fetch(buildUrl(path), init);
+      return fetchPromise;
+    },
+    catch: (error) =>
+      new Error(
+        `RealtimeSpansDurableObject stub error: ${error instanceof Error ? error.message : String(error)}`,
+      ),
+  }).pipe(
+    Effect.flatMap((fetchPromise) =>
+      Effect.tryPromise({
+        try: () => fetchPromise,
+        catch: (error) =>
+          new Error(
+            `RealtimeSpansDurableObject request failed: ${error instanceof Error ? error.message : String(error)}`,
+          ),
+      }),
+    ),
+    Effect.flatMap((response) => {
+      if (!response.ok) {
+        return Effect.fail(
+          new Error(
+            `RealtimeSpansDurableObject request failed: ${response.status}`,
+          ),
+        );
+      }
+      return Effect.tryPromise({
+        try: (): Promise<T> => response.json(),
+        catch: (error) =>
+          new Error(
+            `RealtimeSpansDurableObject JSON parse failed: ${error instanceof Error ? error.message : String(error)}`,
+          ),
+      });
+    }),
+  );
 
 const fetchNoContent = (
   stub: DurableObjectStub,
   path: string,
   init: RequestInit,
 ): Effect.Effect<void, Error> =>
-  Effect.gen(function* () {
-    const response = yield* Effect.tryPromise({
-      try: () => stub.fetch(buildUrl(path), init),
-      catch: (error) =>
-        new Error(
-          `RealtimeSpansDurableObject request failed: ${error instanceof Error ? error.message : String(error)}`,
-        ),
-    });
-
-    if (!response.ok) {
-      return yield* Effect.fail(
-        new Error(
-          `RealtimeSpansDurableObject request failed: ${response.status}`,
-        ),
-      );
-    }
-  });
+  Effect.try({
+    try: () => {
+      // Wrap in try-catch to handle any synchronous errors from stub operations
+      const fetchPromise = stub.fetch(buildUrl(path), init);
+      return fetchPromise;
+    },
+    catch: (error) =>
+      new Error(
+        `RealtimeSpansDurableObject stub error: ${error instanceof Error ? error.message : String(error)}`,
+      ),
+  }).pipe(
+    Effect.flatMap((fetchPromise) =>
+      Effect.tryPromise({
+        try: () => fetchPromise,
+        catch: (error) =>
+          new Error(
+            `RealtimeSpansDurableObject request failed: ${error instanceof Error ? error.message : String(error)}`,
+          ),
+      }),
+    ),
+    Effect.flatMap((response) => {
+      if (!response.ok) {
+        return Effect.fail(
+          new Error(
+            `RealtimeSpansDurableObject request failed: ${response.status}`,
+          ),
+        );
+      }
+      return Effect.void;
+    }),
+  );
 
 /**
  * RealtimeSpans service interface.
@@ -150,38 +176,57 @@ export class RealtimeSpans extends Context.Tag("RealtimeSpans")<
    * @param namespace - Cloudflare Durable Object namespace binding
    */
   static Live(namespace: DurableObjectNamespace): Layer.Layer<RealtimeSpans> {
+    // Helper to safely get stub and handle any errors
+    const safeGetStub = (environmentId: string) =>
+      Effect.try({
+        try: () => getStub(namespace, environmentId),
+        catch: (error) =>
+          new Error(
+            `Failed to get Durable Object stub: ${error instanceof Error ? error.message : String(error)}`,
+          ),
+      });
+
     return Layer.succeed(RealtimeSpans, {
-      upsert: (request: SpansBatchRequest) => {
-        const stub = getStub(namespace, request.environmentId);
-        return fetchNoContent(stub, "/upsert", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(request),
-        });
-      },
-      search: (input: SpanSearchInput) => {
-        const stub = getStub(namespace, input.environmentId);
-        return fetchJson<SearchResponse>(stub, "/search", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(input),
-        });
-      },
-      getTraceDetail: (input: TraceDetailInput) => {
-        const stub = getStub(namespace, input.environmentId);
-        const traceId = encodeURIComponent(input.traceId);
-        return fetchJson<TraceDetailResponse>(stub, `/trace/${traceId}`, {
-          method: "GET",
-        });
-      },
-      exists: (input: RealtimeSpanExistsInput) => {
-        const stub = getStub(namespace, input.environmentId);
-        return fetchJson<{ exists: boolean }>(stub, "/exists", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(input),
-        }).pipe(Effect.map((result) => result.exists));
-      },
+      upsert: (request: SpansBatchRequest) =>
+        safeGetStub(request.environmentId).pipe(
+          Effect.flatMap((stub) =>
+            fetchNoContent(stub, "/upsert", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(request),
+            }),
+          ),
+        ),
+      search: (input: SpanSearchInput) =>
+        safeGetStub(input.environmentId).pipe(
+          Effect.flatMap((stub) =>
+            fetchJson<SearchResponse>(stub, "/search", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(input),
+            }),
+          ),
+        ),
+      getTraceDetail: (input: TraceDetailInput) =>
+        safeGetStub(input.environmentId).pipe(
+          Effect.flatMap((stub) => {
+            const traceId = encodeURIComponent(input.traceId);
+            return fetchJson<TraceDetailResponse>(stub, `/trace/${traceId}`, {
+              method: "GET",
+            });
+          }),
+        ),
+      exists: (input: RealtimeSpanExistsInput) =>
+        safeGetStub(input.environmentId).pipe(
+          Effect.flatMap((stub) =>
+            fetchJson<{ exists: boolean }>(stub, "/exists", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(input),
+            }),
+          ),
+          Effect.map((result) => result.exists),
+        ),
     });
   }
 }

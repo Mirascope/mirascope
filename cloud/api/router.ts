@@ -346,9 +346,51 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
     handlers
       .handle("list", () => listFunctionsHandler())
       .handle("create", ({ payload }) => createFunctionHandler(payload))
-      .handle("get", ({ path }) => getFunctionHandler(path.id))
-      .handle("delete", ({ path }) => deleteFunctionHandler(path.id))
-      .handle("findByHash", ({ path }) => findByHashHandler(path.hash)),
+      // API key route - extracts IDs from apiKeyInfo
+      .handle("get", ({ path }) =>
+        Effect.gen(function* () {
+          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          return yield* getFunctionHandler(
+            apiKeyInfo.organizationId,
+            apiKeyInfo.projectId,
+            apiKeyInfo.environmentId,
+            path.id,
+          );
+        }),
+      )
+      // API key route - extracts IDs from apiKeyInfo
+      .handle("delete", ({ path }) =>
+        Effect.gen(function* () {
+          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          return yield* deleteFunctionHandler(
+            apiKeyInfo.organizationId,
+            apiKeyInfo.projectId,
+            apiKeyInfo.environmentId,
+            path.id,
+          );
+        }),
+      )
+      // API key route - extracts IDs from apiKeyInfo
+      .handle("findByHash", ({ path }) =>
+        Effect.gen(function* () {
+          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          return yield* findByHashHandler(
+            apiKeyInfo.organizationId,
+            apiKeyInfo.projectId,
+            apiKeyInfo.environmentId,
+            path.hash,
+          );
+        }),
+      )
+      // Session route - extracts IDs from path
+      .handle("getByEnv", ({ path }) =>
+        getFunctionHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
+          path.functionId,
+        ),
+      ),
 );
 
 const AnnotationsHandlersLive = HttpApiBuilder.group(
