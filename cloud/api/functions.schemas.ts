@@ -145,4 +145,23 @@ export class FunctionsApi extends HttpApiGroup.make("functions")
       .addError(NotFoundError, { status: NotFoundError.status })
       .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
       .addError(DatabaseError, { status: DatabaseError.status }),
+  )
+  // Session-authenticated route - list all functions in an environment
+  .add(
+    HttpApiEndpoint.get(
+      "listByEnv",
+      "/organizations/:organizationId/projects/:projectId/environments/:environmentId/functions",
+    )
+      .setPath(
+        Schema.Struct({
+          organizationId: Schema.String,
+          projectId: Schema.String,
+          environmentId: Schema.String,
+        }),
+      )
+      .addSuccess(ListFunctionsResponseSchema)
+      .addError(UnauthorizedError, { status: UnauthorizedError.status })
+      .addError(NotFoundError, { status: NotFoundError.status })
+      .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+      .addError(DatabaseError, { status: DatabaseError.status }),
   ) {}

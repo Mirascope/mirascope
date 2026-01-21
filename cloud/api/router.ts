@@ -344,7 +344,17 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
   "functions",
   (handlers) =>
     handlers
-      .handle("list", () => listFunctionsHandler())
+      // API key route - extracts IDs from apiKeyInfo
+      .handle("list", () =>
+        Effect.gen(function* () {
+          const { apiKeyInfo } = yield* Authentication.ApiKey;
+          return yield* listFunctionsHandler(
+            apiKeyInfo.organizationId,
+            apiKeyInfo.projectId,
+            apiKeyInfo.environmentId,
+          );
+        }),
+      )
       .handle("create", ({ payload }) => createFunctionHandler(payload))
       // API key route - extracts IDs from apiKeyInfo
       .handle("get", ({ path }) =>
@@ -389,6 +399,14 @@ const FunctionsHandlersLive = HttpApiBuilder.group(
           path.projectId,
           path.environmentId,
           path.functionId,
+        ),
+      )
+      // Session route - list all functions in an environment
+      .handle("listByEnv", ({ path }) =>
+        listFunctionsHandler(
+          path.organizationId,
+          path.projectId,
+          path.environmentId,
         ),
       ),
 );

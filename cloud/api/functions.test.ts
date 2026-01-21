@@ -287,6 +287,26 @@ describe.sequential("Functions API", (it) => {
       }),
   );
 
+  it.effect(
+    "GET /organizations/:orgId/projects/:projId/environments/:envId/functions - lists functions by env (session auth)",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+
+        // Use session-authenticated client to list functions via listByEnv endpoint
+        const result = yield* client.functions.listByEnv({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          },
+        });
+
+        expect(result.total).toBeGreaterThanOrEqual(1);
+        expect(result.functions.length).toBeGreaterThanOrEqual(1);
+      }),
+  );
+
   it.effect("Dispose API key client", () =>
     Effect.gen(function* () {
       if (disposeApiKeyClient) {

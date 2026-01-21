@@ -15,19 +15,23 @@ export const toFunction = (fn: PublicFunction) => ({
 
 /**
  * Handler for listing all functions in an environment.
- * Returns all functions accessible to the authenticated user and API key.
+ * IDs are provided by the router from either API key context or path params.
  */
-export const listFunctionsHandler = () =>
+export const listFunctionsHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+) =>
   Effect.gen(function* () {
     const db = yield* Database;
-    const { user, apiKeyInfo } = yield* Authentication.ApiKey;
+    const { user } = yield* Authentication;
 
     const results =
       yield* db.organizations.projects.environments.functions.findAll({
         userId: user.id,
-        organizationId: apiKeyInfo.organizationId,
-        projectId: apiKeyInfo.projectId,
-        environmentId: apiKeyInfo.environmentId,
+        organizationId,
+        projectId,
+        environmentId,
       });
 
     return {
