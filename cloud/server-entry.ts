@@ -22,6 +22,7 @@ import {
   validateSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
+import { handleRedirect } from "@/redirects";
 
 /**
  * ExecutionContext service tag for Effect dependency injection.
@@ -240,6 +241,12 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (
       context.waitUntil(scheduled(event, environment));
       return new Response("Ran data retention cron");
     }
+  }
+
+  // Handle programmatic redirects
+  const redirectResponse = handleRedirect(request);
+  if (redirectResponse) {
+    return redirectResponse;
   }
 
   return fetchHandler(request);
