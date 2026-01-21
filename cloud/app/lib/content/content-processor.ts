@@ -21,10 +21,10 @@ import {
   type DevMeta,
 } from "./types";
 import { parseFrontmatter } from "./frontmatter";
-// NOTE: Must use relative path instead of @/content alias because this file
+// NOTE: Must use relative path instead of @/../content alias because this file
 // is imported by vite.config.ts during Vite's config processing phase, before
 // the alias resolution is set up. Using the alias would cause module resolution errors.
-import { getDocInfoByPath } from "../../../content/docs/_meta";
+import { getDocInfoByPath } from "../../../../content/docs/_meta";
 
 /**
  * Path representation for consistent handling across the application

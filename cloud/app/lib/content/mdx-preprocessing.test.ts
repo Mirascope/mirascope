@@ -2,13 +2,11 @@ import { describe, test, expect, vi, beforeEach } from "vitest";
 import { preprocessMdx } from "./mdx-preprocessing";
 
 // Mock fs/promises
+const mockReadFile = vi.fn();
 vi.mock("fs/promises", () => ({
-  readFile: vi.fn(),
+  readFile: (...args: unknown[]): Promise<string> =>
+    mockReadFile(...args) as Promise<string>,
 }));
-
-import { readFile } from "fs/promises";
-
-const mockedReadFile = vi.mocked(readFile);
 
 describe("preprocessMdx", () => {
   beforeEach(() => {
@@ -27,11 +25,9 @@ author: "Test Author"
 
 This is the actual content.`;
 
-    mockedReadFile.mockResolvedValue(mdxWithFrontmatter);
+    mockReadFile.mockResolvedValue(mdxWithFrontmatter);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     // Frontmatter should be extracted to the frontmatter object
     expect(result.frontmatter).toEqual({
@@ -76,11 +72,9 @@ Content for section two.
 
 Nested content.`;
 
-    mockedReadFile.mockResolvedValue(mdxWithFrontmatter);
+    mockReadFile.mockResolvedValue(mdxWithFrontmatter);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     // Table of contents should be extracted from the headings
     expect(result.tableOfContents).toHaveLength(4);
@@ -116,11 +110,9 @@ Nested content.`;
 
 No frontmatter here, just markdown.`;
 
-    mockedReadFile.mockResolvedValue(mdxWithoutFrontmatter);
+    mockReadFile.mockResolvedValue(mdxWithoutFrontmatter);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     expect(result.frontmatter).toEqual({});
     expect(result.content).toBe(mdxWithoutFrontmatter);
@@ -137,11 +129,9 @@ title: "Complete Example"
 
 Content.`;
 
-    mockedReadFile.mockResolvedValue(mdx);
+    mockReadFile.mockResolvedValue(mdx);
 
-    const result = await preprocessMdx(
-      "/fake/path/cloud/content/docs/test.mdx",
-    );
+    const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
 
     // Verify the shape of PreprocessedMDX
     expect(result).toHaveProperty("frontmatter");
@@ -152,5 +142,82 @@ Content.`;
     expect(typeof result.frontmatter).toBe("object");
     expect(Array.isArray(result.tableOfContents)).toBe(true);
     expect(typeof result.content).toBe("string");
+  });
+
+  describe("path traversal security", () => {
+    test("rejects paths with more than one directory traversal", async () => {
+      const mdx = `<CodeExample file="../../../../etc/passwd" />`;
+
+      mockReadFile.mockResolvedValue(mdx);
+
+      await expect(
+        preprocessMdx("/fake/path/content/docs/test.mdx"),
+      ).rejects.toThrow("too many directory traversals");
+    });
+
+    test("rejects paths with multiple .. components in different parts", async () => {
+      const mdx = `<CodeExample file="../something/../other" />`;
+
+      mockReadFile.mockResolvedValue(mdx);
+
+      await expect(
+        preprocessMdx("/fake/path/content/docs/test.mdx"),
+      ).rejects.toThrow("too many directory traversals");
+    });
+
+    test("rejects @/ paths with more than one directory traversal", async () => {
+      const mdx = `<CodeExample file="@/../../../../etc/passwd" />`;
+
+      mockReadFile.mockResolvedValue(mdx);
+
+      await expect(
+        preprocessMdx("/fake/path/content/docs/test.mdx"),
+      ).rejects.toThrow("too many directory traversals");
+    });
+
+    test("boundary check provides defense-in-depth", async () => {
+      // The count check (max 1 ..) is the primary defense
+      // The boundary check ensures resolved paths stay within allowed directories
+      // This test verifies that paths attempting to escape are rejected
+      // (In practice, the count check catches 2+ .. before boundary check runs)
+      const mdx = `<CodeExample file="../../etc/passwd" />`;
+
+      mockReadFile.mockResolvedValue(mdx);
+
+      // Should be rejected (by count check for 2+ ..)
+      await expect(
+        preprocessMdx("/fake/path/content/docs/test.mdx"),
+      ).rejects.toThrow("directory traversals");
+    });
+
+    test("allows single directory traversal within boundaries", async () => {
+      const mdx = `<CodeExample file="../cloud/app/file.ts" />`;
+      const exampleContent = "const x = 1;";
+
+      // Mock readFile for both the MDX file and the example file
+      mockReadFile
+        .mockResolvedValueOnce(mdx)
+        .mockResolvedValueOnce(exampleContent);
+
+      const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
+
+      // Should successfully process with single ..
+      expect(result.content).toContain("```typescript");
+      expect(result.content).toContain(exampleContent);
+    });
+
+    test("allows @/ paths without traversal", async () => {
+      const mdx = `<CodeExample file="@/app/file.ts" />`;
+      const exampleContent = "const x = 1;";
+
+      mockReadFile
+        .mockResolvedValueOnce(mdx)
+        .mockResolvedValueOnce(exampleContent);
+
+      const result = await preprocessMdx("/fake/path/content/docs/test.mdx");
+
+      expect(result.content).toContain("```typescript");
+      expect(result.content).toContain(exampleContent);
+    });
   });
 });

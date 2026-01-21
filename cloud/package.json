@@ -24,7 +24,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "generate:openapi": "bun run api/generate-openapi.ts",
-    "generate:api-docs": "bun run api2mdx/generate-api-docs.ts --source-path ../python --package mirascope.llm --output content/docs/api --api-root /docs/api",
+    "generate:api-docs": "bun run api2mdx/generate-api-docs.ts --source-path ../python --package mirascope.llm --output ../content/docs/api --api-root /docs/api",
     "generate:social-cards-test": "bun run scripts/generate-test-social-cards.ts",
     "email:dev": "email dev --dir ./emails/templates --port 3333",
     "test": "vitest run",

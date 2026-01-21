@@ -9,7 +9,7 @@ import type {
   SidebarGroup,
   SidebarSection,
 } from "@/app/components/blocks/navigation/sidebar";
-import { docsSpec } from "@/content/docs/_meta";
+import { docsSpec } from "@/../content/docs/_meta";
 
 interface DocsSidebarProps {
   selectedProvider?: Provider;

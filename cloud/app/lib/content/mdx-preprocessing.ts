@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-import { join, resolve } from "path";
+import { join, resolve, normalize } from "path";
 // NOTE: All imports in this file must use relative paths.
 // Vite plugins cannot resolve path aliases such as "@/app/...",
 // so using aliases here will cause module resolution failures.
@@ -17,13 +17,71 @@ export interface PreprocessMdxOptions {
 }
 
 function resolveExampleBasePath(filePath: string): string {
-  // Find the cloud/ directory and resolve to project root (parent of cloud/)
+  // Find the cloud/ or content/ directory and resolve to project root (parent of both)
   const cloudIndex = filePath.indexOf("/cloud/");
   if (cloudIndex !== -1) {
     return filePath.slice(0, cloudIndex + 1); // Include trailing slash after removing "cloud/"
   }
 
+  const contentIndex = filePath.indexOf("/content/");
+  if (contentIndex !== -1) {
+    return filePath.slice(0, contentIndex + 1); // Include trailing slash after removing "content/"
+  }
+
   throw new Error(`Could not resolve example base path for: ${filePath}`);
+}
+
+/**
+ * Validates and resolves a file path with security checks to prevent directory traversal.
+ * Ensures the resolved path stays within the basePath or at most one level up.
+ *
+ * @param basePath - The base directory to resolve paths from
+ * @param filePath - The file path to resolve (may contain .. components)
+ * @returns The resolved and validated absolute path
+ * @throws Error if the path escapes beyond allowed boundaries
+ */
+function resolveSecurePath(basePath: string, filePath: string): string {
+  // Count the number of actual .. directory traversal components
+  // Split by path separators and count standalone ".." entries
+  const pathParts = filePath.split(/[/\\]/);
+  const parentDirCount = pathParts.filter((part) => part === "..").length;
+
+  // Allow at most one directory traversal up
+  if (parentDirCount > 1) {
+    throw new Error(
+      `Path contains too many directory traversals (${parentDirCount}): ${filePath}. Maximum allowed is 1.`,
+    );
+  }
+
+  // Resolve the path to get the absolute path
+  const resolvedPath = resolve(basePath, filePath);
+  const normalizedBasePath = normalize(resolve(basePath));
+  const normalizedResolvedPath = normalize(resolvedPath);
+
+  // Ensure the resolved path doesn't escape beyond the basePath
+  // Allow at most one level up from basePath
+  const basePathParent = resolve(normalizedBasePath, "..");
+  const normalizedBasePathParent = normalize(basePathParent);
+
+  // Check if resolved path is within basePath or its parent
+  // Use path comparison that works on both Unix and Windows
+  const isWithinBasePath =
+    normalizedResolvedPath === normalizedBasePath ||
+    normalizedResolvedPath.startsWith(normalizedBasePath + "/") ||
+    normalizedResolvedPath.startsWith(normalizedBasePath + "\\");
+
+  const isWithinBasePathParent =
+    normalizedResolvedPath === normalizedBasePathParent ||
+    normalizedResolvedPath.startsWith(normalizedBasePathParent + "/") ||
+    normalizedResolvedPath.startsWith(normalizedBasePathParent + "\\");
+
+  if (!isWithinBasePath && !isWithinBasePathParent) {
+    throw new Error(
+      `Path traversal detected: resolved path "${normalizedResolvedPath}" escapes beyond allowed boundaries (base: "${normalizedBasePath}")`,
+    );
+  }
+
+  return normalizedResolvedPath;
 }
 
 /**
@@ -53,9 +111,10 @@ async function processCodeExamples(filePath: string): Promise<string> {
     matches.map(async ({ file, lines, lang, highlight }) => {
       try {
         // Resolve @/ paths relative to basePath
+        // @/ resolves to cloud/ from the project root, so prepend "cloud" when resolving @/ paths
         const resolvedPath = file.startsWith("@/")
-          ? join(basePath, file.slice(2))
-          : resolve(basePath, file);
+          ? resolveSecurePath(basePath, join("cloud", file.slice(2)))
+          : resolveSecurePath(basePath, file);
 
         const exampleContent = await readFile(resolvedPath, "utf-8");
 
