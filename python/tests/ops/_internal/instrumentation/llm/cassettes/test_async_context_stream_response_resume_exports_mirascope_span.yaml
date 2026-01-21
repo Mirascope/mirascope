@@ -1,0 +1,260 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather in Brussels?","role":"user"}],"model":"gpt-4o-mini","stream":true,"tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '375'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","response":{"id":"resp_051b24e6ef2b4f6b00697062dd13fc8195999c5c55a28825ed","object":"response","created_at":1768973021,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":0}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","response":{"id":"resp_051b24e6ef2b4f6b00697062dd13fc8195999c5c55a28825ed","object":"response","created_at":1768973021,"status":"in_progress","background":false,"completed_at":null,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}},"sequence_number":1}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","item":{"id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","type":"function_call","status":"in_progress","arguments":"","call_id":"call_mUJm9lBkFcan8vPRT1uRDM3K","name":"get_weather"},"output_index":0,"sequence_number":2}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"{\"","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","obfuscation":"d2XmdjrbA2IGMd","output_index":0,"sequence_number":3}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"location","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","obfuscation":"rBtKISE5","output_index":0,"sequence_number":4}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\":\"","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","obfuscation":"Dxe9T3EL0rzmn","output_index":0,"sequence_number":5}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"Br","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","obfuscation":"hcU32JD0iBaCbr","output_index":0,"sequence_number":6}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"ussels","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","obfuscation":"FvWVyK8DER","output_index":0,"sequence_number":7}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","delta":"\"}","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","obfuscation":"wno48qkKWdrB6v","output_index":0,"sequence_number":8}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","arguments":"{\"location\":\"Brussels\"}","item_id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","output_index":0,"sequence_number":9}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","item":{"id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","type":"function_call","status":"completed","arguments":"{\"location\":\"Brussels\"}","call_id":"call_mUJm9lBkFcan8vPRT1uRDM3K","name":"get_weather"},"output_index":0,"sequence_number":10}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","response":{"id":"resp_051b24e6ef2b4f6b00697062dd13fc8195999c5c55a28825ed","object":"response","created_at":1768973021,"status":"completed","background":false,"completed_at":1768973021,"error":null,"frequency_penalty":0.0,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini-2024-07-18","output":[{"id":"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312","type":"function_call","status":"completed","arguments":"{\"location\":\"Brussels\"}","call_id":"call_mUJm9lBkFcan8vPRT1uRDM3K","name":"get_weather"}],"parallel_tool_calls":true,"presence_penalty":0.0,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"Get
+        the current weather for a location.","name":"get_weather","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":48,"input_tokens_details":{"cached_tokens":0},"output_tokens":16,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":64},"user":null,"metadata":{}},"sequence_number":11}
+
+
+        '
+    headers:
+      CF-RAY:
+      - 9c1461857b88163f-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 21 Jan 2026 05:23:41 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=Z_qKmJJlLLd1YZQB.mdK4FHPXYdmLarVTRuD9DXgCOc-1768973021-1.0.1.1-omqiWcH6Iw8yXs3QFYFBUgGkloo6qAKp4StbeZxUZ4LnpxMreI_dlV12Nj3BdQnan252tWtNgUF9GaA83wECbw4w_WZTWIqlUYzgH_ETau0;
+        path=/; expires=Wed, 21-Jan-26 05:53:41 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=yGVHfLiPNfKqe0tItuMWsiacpPf6V2VbPIsbEcac1ZE-1768973021161-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '69'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '72'
+      x-request-id:
+      - req_b42a8bde43664efd90347f46184dc782
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in Brussels?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Brussels\\\"}\",\"call_id\":\"call_mUJm9lBkFcan8vPRT1uRDM3K\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_051b24e6ef2b4f6b00697062dd7c088195b49ae612211ac312\",\"status\":\"completed\"},{\"call_id\":\"call_mUJm9lBkFcan8vPRT1uRDM3K\",\"output\":\"Weather
+      in Brussels: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"stream\":true,\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '706'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "event: response.created\ndata: {\"type\":\"response.created\",\"response\":{\"id\":\"resp_051b24e6ef2b4f6b00697062ddc4b8819598287ad4ea6dc272\",\"object\":\"response\",\"created_at\":1768973021,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":0}\n\nevent:
+        response.in_progress\ndata: {\"type\":\"response.in_progress\",\"response\":{\"id\":\"resp_051b24e6ef2b4f6b00697062ddc4b8819598287ad4ea6dc272\",\"object\":\"response\",\"created_at\":1768973021,\"status\":\"in_progress\",\"background\":false,\"completed_at\":null,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"auto\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":null,\"user\":null,\"metadata\":{}},\"sequence_number\":1}\n\nevent:
+        response.output_item.added\ndata: {\"type\":\"response.output_item.added\",\"item\":{\"id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"type\":\"message\",\"status\":\"in_progress\",\"content\":[],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":2}\n\nevent:
+        response.content_part.added\ndata: {\"type\":\"response.content_part.added\",\"content_index\":0,\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"\"},\"sequence_number\":3}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"The\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"Sgf5iSeOvKQZd\",\"output_index\":0,\"sequence_number\":4}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        current\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"fn8QhZjD\",\"output_index\":0,\"sequence_number\":5}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        weather\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"mnPPuH4a\",\"output_index\":0,\"sequence_number\":6}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        in\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"NGlKqMDFVAZvL\",\"output_index\":0,\"sequence_number\":7}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        Brussels\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"MmJASnZ\",\"output_index\":0,\"sequence_number\":8}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        is\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"qcSdG07qVtqHg\",\"output_index\":0,\"sequence_number\":9}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        \",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"B8vgE84SoXXZPcX\",\"output_index\":0,\"sequence_number\":10}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"72\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"ivmlCFfyAUiepi\",\"output_index\":0,\"sequence_number\":11}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"\xB0F\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"LmrxHiiWeVbzmF\",\"output_index\":0,\"sequence_number\":12}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        and\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"56Ue6FL326jZ\",\"output_index\":0,\"sequence_number\":13}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\"
+        sunny\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"iUQjQzR6GJ\",\"output_index\":0,\"sequence_number\":14}\n\nevent:
+        response.output_text.delta\ndata: {\"type\":\"response.output_text.delta\",\"content_index\":0,\"delta\":\".\",\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"obfuscation\":\"zlpremIjrOdQHfU\",\"output_index\":0,\"sequence_number\":15}\n\nevent:
+        response.output_text.done\ndata: {\"type\":\"response.output_text.done\",\"content_index\":0,\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"logprobs\":[],\"output_index\":0,\"sequence_number\":16,\"text\":\"The
+        current weather in Brussels is 72\xB0F and sunny.\"}\n\nevent: response.content_part.done\ndata:
+        {\"type\":\"response.content_part.done\",\"content_index\":0,\"item_id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"output_index\":0,\"part\":{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        current weather in Brussels is 72\xB0F and sunny.\"},\"sequence_number\":17}\n\nevent:
+        response.output_item.done\ndata: {\"type\":\"response.output_item.done\",\"item\":{\"id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        current weather in Brussels is 72\xB0F and sunny.\"}],\"role\":\"assistant\"},\"output_index\":0,\"sequence_number\":18}\n\nevent:
+        response.completed\ndata: {\"type\":\"response.completed\",\"response\":{\"id\":\"resp_051b24e6ef2b4f6b00697062ddc4b8819598287ad4ea6dc272\",\"object\":\"response\",\"created_at\":1768973021,\"status\":\"completed\",\"background\":false,\"completed_at\":1768973022,\"error\":null,\"frequency_penalty\":0.0,\"incomplete_details\":null,\"instructions\":null,\"max_output_tokens\":null,\"max_tool_calls\":null,\"model\":\"gpt-4o-mini-2024-07-18\",\"output\":[{\"id\":\"msg_051b24e6ef2b4f6b00697062de89ec8195861f987f5258688f\",\"type\":\"message\",\"status\":\"completed\",\"content\":[{\"type\":\"output_text\",\"annotations\":[],\"logprobs\":[],\"text\":\"The
+        current weather in Brussels is 72\xB0F and sunny.\"}],\"role\":\"assistant\"}],\"parallel_tool_calls\":true,\"presence_penalty\":0.0,\"previous_response_id\":null,\"prompt_cache_key\":null,\"prompt_cache_retention\":null,\"reasoning\":{\"effort\":null,\"summary\":null},\"safety_identifier\":null,\"service_tier\":\"default\",\"store\":true,\"temperature\":1.0,\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"tool_choice\":\"auto\",\"tools\":[{\"type\":\"function\",\"description\":\"Get
+        the current weather for a location.\",\"name\":\"get_weather\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}],\"top_logprobs\":0,\"top_p\":1.0,\"truncation\":\"disabled\",\"usage\":{\"input_tokens\":81,\"input_tokens_details\":{\"cached_tokens\":0},\"output_tokens\":14,\"output_tokens_details\":{\"reasoning_tokens\":0},\"total_tokens\":95},\"user\":null,\"metadata\":{}},\"sequence_number\":19}\n\n"
+    headers:
+      CF-RAY:
+      - 9c146189beb1163f-LAX
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 21 Jan 2026 05:23:41 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '144'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '147'
+      x-request-id:
+      - req_052018dc528b4e41873c4b36acd0f5ed
+    status:
+      code: 200
+      message: OK
+version: 1

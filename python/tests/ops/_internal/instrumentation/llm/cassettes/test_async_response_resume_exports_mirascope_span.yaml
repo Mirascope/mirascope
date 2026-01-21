@@ -1,0 +1,688 @@
+interactions:
+- request:
+    body: '{"resourceSpans":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"test-service"}}]},"scopeSpans":[{"scope":{"name":"test-instrumentation","version":"1.0.0"},"spans":[{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde0","name":"test-span-0","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null},{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde1","name":"test-span-1","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null},{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde2","name":"test-span-2","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null}]}]}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '982'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: POST
+    uri: http://localhost:3000/traces
+  response:
+    body:
+      string: "<!DOCTYPE html><html><head><meta charSet=\"utf-8\"/><meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"image\"
+        href=\"/assets/branding/mirascope-logo.svg\"/><title>Mirascope</title><link
+        rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/icons/apple-touch-icon.png\"/><link
+        rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/icons/favicon-32x32.png\"/><link
+        rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/icons/favicon-16x16.png\"/><link
+        rel=\"manifest\" href=\"/manifest.json\" color=\"#fffff\"/><link rel=\"icon\"
+        href=\"/icons/favicon.ico\"/><link rel=\"stylesheet\" href=\"/app/styles/globals.css\"/></head><body><div
+        class=\"flex min-h-screen flex-col\"><header class=\"fixed top-0 right-0 left-0
+        z-[100] flex w-full flex-col items-center justify-center py-2 px-3 md:px-6
+        mb-2 font-handwriting bg-background\"><nav class=\"mx-auto flex w-full flex-row
+        items-center space-x-2\"><a href=\"/\" class=\"relative z-10 flex items-center
+        flex-shrink-0 px-1 mr-2 visible\"><div><div class=\"flex shrink-0 flex-row
+        items-center justify-start\"><div class=\"mr-2 shrink-0\"><img src=\"/assets/branding/mirascope-logo.svg\"
+        alt=\"Mirascope Frog Logo\" class=\"h-[var(--text-xl)] w-auto\"/></div><div
+        class=\"flex items-center transition-all duration-[100ms] ease-in-out opacity-100
+        w-auto overflow-visible pointer-events-auto translate-x-0\"><span class=\"text-xl
+        font-handwriting mb-0 drop-shadow-md text-mirple\">Mirascope</span></div></div></div></a><div
+        class=\"z-20 hidden items-center gap-6 lg:flex relative ml-6 transition-opacity
+        duration-300 ease-in-out opacity-100\"><a href=\"/docs\" class=\"relative
+        flex cursor-pointer items-center px-2 py-2 text-xl font-medium nav-text\">Docs</a><a
+        href=\"/blog\" class=\"relative flex cursor-pointer items-center px-2 py-2
+        text-xl font-medium nav-text\">Blog</a><a href=\"/pricing\" class=\"relative
+        flex cursor-pointer items-center px-2 py-2 text-xl font-medium nav-text\">Pricing</a><a
+        href=\"/cloud\" class=\"relative flex cursor-pointer items-center px-2 py-2
+        text-xl font-medium nav-text\">Cloud</a></div><div class=\"grow\"></div><div
+        class=\"search-container relative flex items-center transition-all duration-[400ms]
+        ease-in-out delay-[0ms] w-9 xl:w-36 flex-shrink-0\"><div class=\"search-input-container
+        h-9 rounded-full relative flex items-center overflow-visible w-full border-border
+        bg-background/20 hover:bg-primary/10 hover:border-primary/80 border\" data-testid=\"search-input\"><svg
+        xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0
+        0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"
+        stroke-linejoin=\"round\" class=\"lucide lucide-search transition-all duration-[400ms]
+        ease-in-out delay-[0ms] nav-icon mx-auto xl:absolute xl:left-3\" aria-hidden=\"true\"><path
+        d=\"m21 21-4.34-4.34\"></path><circle cx=\"11\" cy=\"11\" r=\"8\"></circle></svg><input
+        readOnly=\"\" type=\"text\" placeholder=\"Search...\" class=\"cursor-pointer
+        overflow-visible bg-transparent py-0 outline-none !text-[16px] leading-normal
+        h-auto min-h-full transition-all duration-[400ms] ease-in-out delay-[0ms]
+        text-foreground placeholder:text-foreground w-0 opacity-0 xl:w-28 xl:pr-3
+        xl:pl-10 xl:opacity-80\" value=\"\"/><kbd class=\"absolute top-1/2 right-3
+        h-5 -translate-y-1/2 items-center gap-1 rounded border px-1.5 font-mono text-[10px]
+        hidden lg:flex transition-all duration-[300ms] ease-in-out delay-[200ms] opacity-0
+        translate-x-4 scale-90 pointer-events-none border-border bg-muted text-foreground\"><span
+        class=\"text-xs\">\u2318</span>K</kbd></div><div class=\"search-results overflow-hidden
+        rounded-lg shadow-2xl [text-shadow:none] bg-background border-border border
+        transition-opacity duration-300 ease-in-out font-sans pointer-events-none
+        opacity-0 w-full absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0\"><div
+        class=\"text-muted-foreground font-handwriting p-4 text-center\">Type to search</div><div
+        class=\"border-border bg-muted/40 text-muted-foreground flex items-center
+        justify-between border-t p-2 text-xs font-handwriting\"><div class=\"flex
+        items-center gap-2 px-2\"><kbd class=\"border-border rounded border px-1.5
+        py-0.5 text-[12px]\"><span class=\"pr-1 text-xs\">\u2318</span><span>K</span></kbd><span>to
+        search</span></div><div class=\"flex items-center gap-2 px-2\"><kbd class=\"border-border
+        rounded border px-1.5 py-0.5 text-[10px]\">Esc</kbd><span>to close</span></div></div></div></div><div
+        class=\"flex items-center gap-2 md:gap-3 flex-shrink-0 justify-end\"><div
+        class=\"hidden items-center gap-3 lg:flex\"><a href=\"https://github.com/Mirascope/mirascope\"
+        target=\"_blank\" rel=\"noopener noreferrer\" class=\"flex flex-col px-2 py-1
+        nav-text\"><div class=\"flex items-center gap-1 text-base font-medium\"><svg
+        xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0
+        0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"
+        stroke-linejoin=\"round\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2
+        6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8
+        0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68
+        1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg><span>mirascope</span></div><div
+        class=\"mt-0.5 flex items-center gap-2 text-xs opacity-80\"><div class=\"flex
+        items-center gap-0.5\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\"
+        height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path
+        d=\"M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1
+        0 2.82z\"></path><line x1=\"7\" y1=\"7\" x2=\"7.01\" y2=\"7\"></line></svg>v1.25.7</div><div
+        class=\"flex items-center gap-0.5\"><svg xmlns=\"http://www.w3.org/2000/svg\"
+        width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon
+        points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02
+        7 14.14 2 9.27 8.91 8.26 12 2\"></polygon></svg>1.3k</div></div></a></div><div
+        class=\"hidden items-center gap-3 lg:flex\"><a href=\"/discord-invite\" target=\"_blank\"
+        rel=\"noopener noreferrer\" class=\"flex flex-col px-2 py-1 nav-text\"><div
+        class=\"flex items-center text-base font-medium\"><span>Join our</span></div><div
+        class=\"mt-0.5 flex items-center\"><div class=\"h-2.5 w-full discord-logo\"
+        role=\"img\" aria-label=\"Discord\"></div></div></a></div><button class=\"rounded-md
+        p-2 cursor-pointer transition-colors duration-300 ease-in-out focus:outline-none
+        focus:ring-2 focus:ring-primary nav-icon hover:text-primary\" aria-label=\"Select
+        theme\" type=\"button\" id=\"radix-_R_1qj6_\" aria-haspopup=\"menu\" aria-expanded=\"false\"
+        data-state=\"closed\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\"
+        height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide
+        lucide-monitor\" aria-hidden=\"true\"><rect width=\"20\" height=\"14\" x=\"2\"
+        y=\"3\" rx=\"2\"></rect><line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\"></line><line
+        x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\"></line></svg></button><button class=\"p-2
+        lg:hidden nav-icon\" aria-label=\"Toggle mobile navigation\"><svg xmlns=\"http://www.w3.org/2000/svg\"
+        width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide
+        lucide-menu\" aria-hidden=\"true\"><path d=\"M4 5h16\"></path><path d=\"M4
+        12h16\"></path><path d=\"M4 19h16\"></path></svg></button></div></nav></header><div
+        class=\"mx-auto w-full max-w-7xl grow pt-(--header-height)\"><main class=\"grow\"><div
+        class=\"space-y-2 p-2\"><div class=\"text-gray-600 dark:text-gray-400\"><p>The
+        page you are looking for does not exist.</p></div><p class=\"flex items-center
+        gap-2 flex-wrap\"><button class=\"bg-emerald-500 text-white px-2 py-1 rounded-sm
+        uppercase font-black text-sm\">Go back</button><a href=\"/\" class=\"bg-cyan-600
+        text-white px-2 py-1 rounded-sm uppercase font-black text-sm\">Start Over</a></p></div></main></div><div
+        class=\"\"><footer class=\"relative z-50 mt-auto w-full px-4 pt-4 pb-3 sm:px-6
+        md:px-12 bg-background\"><div class=\"mx-auto flex max-w-5xl flex-col-reverse
+        items-center justify-between md:flex-row md:items-center\"><div class=\"mt-4
+        text-center text-sm sm:text-base md:mt-0 md:text-left font-handwriting\"><p>\xA9
+        <!-- -->2026<!-- --> Mirascope. All rights reserved.</p><p>Mirascope\xAE is
+        a registered trademark of Mirascope, Inc. in the U.S.</p></div><div class=\"flex
+        gap-4 sm:gap-8\"><a href=\"/privacy\" class=\"text-sm sm:text-base nav-text\"><span
+        class=\"text-sm sm:text-base font-handwriting\">Privacy Policy</span></a><a
+        href=\"/terms/use\" class=\"text-sm sm:text-base nav-text\"><span class=\"text-sm
+        sm:text-base font-handwriting\">Terms of Use</span></a></div></div></footer></div><section
+        aria-label=\"Notifications alt+T\" tabindex=\"-1\" aria-live=\"polite\" aria-relevant=\"additions
+        text\" aria-atomic=\"false\"></section><div></div><script class=\"$tsr\" id=\"$tsr-stream-barrier\">(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrated=!0,this.c()},e(){this.streamEnded=!0,this.c()},c(){this.hydrated&&this.streamEnded&&(delete
+        self.$_TSR,delete self.$R.tsr)},p(e){this.initialized?e():this.buffer.push(e)},buffer:[]};\n;$_TSR.router=($R=>$R[0]={manifest:$R[1]={routes:$R[2]={__root__:$R[3]={assets:$R[4]=[$R[5]={tag:\"script\",attrs:$R[6]={type:\"module\",async:!0},children:\"import
+        { injectIntoGlobalHook } from \\\"/@react-refresh\\\";\\ninjectIntoGlobalHook(window);\\nwindow.$RefreshReg$
+        = () => {};\\nwindow.$RefreshSig$ = () => (type) => type;;;import('/@id/virtual:tanstack-start-client-entry')\"}]}}},matches:$R[7]=[$R[8]={i:\"__root__/\",u:1768969191389,s:\"success\",ssr:!0}],lastMatchId:\"__root__/\"})($R[\"tsr\"]);$_TSR.e();document.currentScript.remove()</script><script
+        type=\"module\" async=\"\">import { injectIntoGlobalHook } from \"/@react-refresh\";\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$
+        = () => {};\nwindow.$RefreshSig$ = () => (type) => type;;;import('/@id/virtual:tanstack-start-client-entry')</script></div></body></html>"
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 21 Jan 2026 04:19:51 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-type:
+      - text/html; charset=utf-8
+      transfer-encoding:
+      - chunked
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"resourceSpans":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"test-service"}}]},"scopeSpans":[{"scope":{"name":"test-instrumentation","version":"1.0.0"},"spans":[{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde0","name":"test-span-0","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null},{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde1","name":"test-span-1","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null},{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde2","name":"test-span-2","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null}]}]}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '982'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: POST
+    uri: http://localhost:3000/traces
+  response:
+    body:
+      string: "<!DOCTYPE html><html><head><meta charSet=\"utf-8\"/><meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"image\"
+        href=\"/assets/branding/mirascope-logo.svg\"/><title>Mirascope</title><link
+        rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/icons/apple-touch-icon.png\"/><link
+        rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/icons/favicon-32x32.png\"/><link
+        rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/icons/favicon-16x16.png\"/><link
+        rel=\"manifest\" href=\"/manifest.json\" color=\"#fffff\"/><link rel=\"icon\"
+        href=\"/icons/favicon.ico\"/><link rel=\"stylesheet\" href=\"/app/styles/globals.css\"/></head><body><div
+        class=\"flex min-h-screen flex-col\"><header class=\"fixed top-0 right-0 left-0
+        z-[100] flex w-full flex-col items-center justify-center py-2 px-3 md:px-6
+        mb-2 font-handwriting bg-background\"><nav class=\"mx-auto flex w-full flex-row
+        items-center space-x-2\"><a href=\"/\" class=\"relative z-10 flex items-center
+        flex-shrink-0 px-1 mr-2 visible\"><div><div class=\"flex shrink-0 flex-row
+        items-center justify-start\"><div class=\"mr-2 shrink-0\"><img src=\"/assets/branding/mirascope-logo.svg\"
+        alt=\"Mirascope Frog Logo\" class=\"h-[var(--text-xl)] w-auto\"/></div><div
+        class=\"flex items-center transition-all duration-[100ms] ease-in-out opacity-100
+        w-auto overflow-visible pointer-events-auto translate-x-0\"><span class=\"text-xl
+        font-handwriting mb-0 drop-shadow-md text-mirple\">Mirascope</span></div></div></div></a><div
+        class=\"z-20 hidden items-center gap-6 lg:flex relative ml-6 transition-opacity
+        duration-300 ease-in-out opacity-100\"><a href=\"/docs\" class=\"relative
+        flex cursor-pointer items-center px-2 py-2 text-xl font-medium nav-text\">Docs</a><a
+        href=\"/blog\" class=\"relative flex cursor-pointer items-center px-2 py-2
+        text-xl font-medium nav-text\">Blog</a><a href=\"/pricing\" class=\"relative
+        flex cursor-pointer items-center px-2 py-2 text-xl font-medium nav-text\">Pricing</a><a
+        href=\"/cloud\" class=\"relative flex cursor-pointer items-center px-2 py-2
+        text-xl font-medium nav-text\">Cloud</a></div><div class=\"grow\"></div><div
+        class=\"search-container relative flex items-center transition-all duration-[400ms]
+        ease-in-out delay-[0ms] w-9 xl:w-36 flex-shrink-0\"><div class=\"search-input-container
+        h-9 rounded-full relative flex items-center overflow-visible w-full border-border
+        bg-background/20 hover:bg-primary/10 hover:border-primary/80 border\" data-testid=\"search-input\"><svg
+        xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0
+        0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"
+        stroke-linejoin=\"round\" class=\"lucide lucide-search transition-all duration-[400ms]
+        ease-in-out delay-[0ms] nav-icon mx-auto xl:absolute xl:left-3\" aria-hidden=\"true\"><path
+        d=\"m21 21-4.34-4.34\"></path><circle cx=\"11\" cy=\"11\" r=\"8\"></circle></svg><input
+        readOnly=\"\" type=\"text\" placeholder=\"Search...\" class=\"cursor-pointer
+        overflow-visible bg-transparent py-0 outline-none !text-[16px] leading-normal
+        h-auto min-h-full transition-all duration-[400ms] ease-in-out delay-[0ms]
+        text-foreground placeholder:text-foreground w-0 opacity-0 xl:w-28 xl:pr-3
+        xl:pl-10 xl:opacity-80\" value=\"\"/><kbd class=\"absolute top-1/2 right-3
+        h-5 -translate-y-1/2 items-center gap-1 rounded border px-1.5 font-mono text-[10px]
+        hidden lg:flex transition-all duration-[300ms] ease-in-out delay-[200ms] opacity-0
+        translate-x-4 scale-90 pointer-events-none border-border bg-muted text-foreground\"><span
+        class=\"text-xs\">\u2318</span>K</kbd></div><div class=\"search-results overflow-hidden
+        rounded-lg shadow-2xl [text-shadow:none] bg-background border-border border
+        transition-opacity duration-300 ease-in-out font-sans pointer-events-none
+        opacity-0 w-full absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0\"><div
+        class=\"text-muted-foreground font-handwriting p-4 text-center\">Type to search</div><div
+        class=\"border-border bg-muted/40 text-muted-foreground flex items-center
+        justify-between border-t p-2 text-xs font-handwriting\"><div class=\"flex
+        items-center gap-2 px-2\"><kbd class=\"border-border rounded border px-1.5
+        py-0.5 text-[12px]\"><span class=\"pr-1 text-xs\">\u2318</span><span>K</span></kbd><span>to
+        search</span></div><div class=\"flex items-center gap-2 px-2\"><kbd class=\"border-border
+        rounded border px-1.5 py-0.5 text-[10px]\">Esc</kbd><span>to close</span></div></div></div></div><div
+        class=\"flex items-center gap-2 md:gap-3 flex-shrink-0 justify-end\"><div
+        class=\"hidden items-center gap-3 lg:flex\"><a href=\"https://github.com/Mirascope/mirascope\"
+        target=\"_blank\" rel=\"noopener noreferrer\" class=\"flex flex-col px-2 py-1
+        nav-text\"><div class=\"flex items-center gap-1 text-base font-medium\"><svg
+        xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0
+        0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"
+        stroke-linejoin=\"round\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2
+        6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8
+        0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68
+        1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg><span>mirascope</span></div><div
+        class=\"mt-0.5 flex items-center gap-2 text-xs opacity-80\"><div class=\"flex
+        items-center gap-0.5\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\"
+        height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path
+        d=\"M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1
+        0 2.82z\"></path><line x1=\"7\" y1=\"7\" x2=\"7.01\" y2=\"7\"></line></svg>v1.25.7</div><div
+        class=\"flex items-center gap-0.5\"><svg xmlns=\"http://www.w3.org/2000/svg\"
+        width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon
+        points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02
+        7 14.14 2 9.27 8.91 8.26 12 2\"></polygon></svg>1.3k</div></div></a></div><div
+        class=\"hidden items-center gap-3 lg:flex\"><a href=\"/discord-invite\" target=\"_blank\"
+        rel=\"noopener noreferrer\" class=\"flex flex-col px-2 py-1 nav-text\"><div
+        class=\"flex items-center text-base font-medium\"><span>Join our</span></div><div
+        class=\"mt-0.5 flex items-center\"><div class=\"h-2.5 w-full discord-logo\"
+        role=\"img\" aria-label=\"Discord\"></div></div></a></div><button class=\"rounded-md
+        p-2 cursor-pointer transition-colors duration-300 ease-in-out focus:outline-none
+        focus:ring-2 focus:ring-primary nav-icon hover:text-primary\" aria-label=\"Select
+        theme\" type=\"button\" id=\"radix-_R_1qj6_\" aria-haspopup=\"menu\" aria-expanded=\"false\"
+        data-state=\"closed\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\"
+        height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide
+        lucide-monitor\" aria-hidden=\"true\"><rect width=\"20\" height=\"14\" x=\"2\"
+        y=\"3\" rx=\"2\"></rect><line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\"></line><line
+        x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\"></line></svg></button><button class=\"p-2
+        lg:hidden nav-icon\" aria-label=\"Toggle mobile navigation\"><svg xmlns=\"http://www.w3.org/2000/svg\"
+        width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide
+        lucide-menu\" aria-hidden=\"true\"><path d=\"M4 5h16\"></path><path d=\"M4
+        12h16\"></path><path d=\"M4 19h16\"></path></svg></button></div></nav></header><div
+        class=\"mx-auto w-full max-w-7xl grow pt-(--header-height)\"><main class=\"grow\"><div
+        class=\"space-y-2 p-2\"><div class=\"text-gray-600 dark:text-gray-400\"><p>The
+        page you are looking for does not exist.</p></div><p class=\"flex items-center
+        gap-2 flex-wrap\"><button class=\"bg-emerald-500 text-white px-2 py-1 rounded-sm
+        uppercase font-black text-sm\">Go back</button><a href=\"/\" class=\"bg-cyan-600
+        text-white px-2 py-1 rounded-sm uppercase font-black text-sm\">Start Over</a></p></div></main></div><div
+        class=\"\"><footer class=\"relative z-50 mt-auto w-full px-4 pt-4 pb-3 sm:px-6
+        md:px-12 bg-background\"><div class=\"mx-auto flex max-w-5xl flex-col-reverse
+        items-center justify-between md:flex-row md:items-center\"><div class=\"mt-4
+        text-center text-sm sm:text-base md:mt-0 md:text-left font-handwriting\"><p>\xA9
+        <!-- -->2026<!-- --> Mirascope. All rights reserved.</p><p>Mirascope\xAE is
+        a registered trademark of Mirascope, Inc. in the U.S.</p></div><div class=\"flex
+        gap-4 sm:gap-8\"><a href=\"/privacy\" class=\"text-sm sm:text-base nav-text\"><span
+        class=\"text-sm sm:text-base font-handwriting\">Privacy Policy</span></a><a
+        href=\"/terms/use\" class=\"text-sm sm:text-base nav-text\"><span class=\"text-sm
+        sm:text-base font-handwriting\">Terms of Use</span></a></div></div></footer></div><section
+        aria-label=\"Notifications alt+T\" tabindex=\"-1\" aria-live=\"polite\" aria-relevant=\"additions
+        text\" aria-atomic=\"false\"></section><div></div><script class=\"$tsr\" id=\"$tsr-stream-barrier\">(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrated=!0,this.c()},e(){this.streamEnded=!0,this.c()},c(){this.hydrated&&this.streamEnded&&(delete
+        self.$_TSR,delete self.$R.tsr)},p(e){this.initialized?e():this.buffer.push(e)},buffer:[]};\n;$_TSR.router=($R=>$R[0]={manifest:$R[1]={routes:$R[2]={__root__:$R[3]={assets:$R[4]=[$R[5]={tag:\"script\",attrs:$R[6]={type:\"module\",async:!0},children:\"import
+        { injectIntoGlobalHook } from \\\"/@react-refresh\\\";\\ninjectIntoGlobalHook(window);\\nwindow.$RefreshReg$
+        = () => {};\\nwindow.$RefreshSig$ = () => (type) => type;;;import('/@id/virtual:tanstack-start-client-entry')\"}]}}},matches:$R[7]=[$R[8]={i:\"__root__/\",u:1768969191522,s:\"success\",ssr:!0}],lastMatchId:\"__root__/\"})($R[\"tsr\"]);$_TSR.e();document.currentScript.remove()</script><script
+        type=\"module\" async=\"\">import { injectIntoGlobalHook } from \"/@react-refresh\";\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$
+        = () => {};\nwindow.$RefreshSig$ = () => (type) => type;;;import('/@id/virtual:tanstack-start-client-entry')</script></div></body></html>"
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 21 Jan 2026 04:19:51 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-type:
+      - text/html; charset=utf-8
+      transfer-encoding:
+      - chunked
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"input":[{"content":"What''s the weather in Rome?","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '357'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xU247bNhB991cQfF4HknxZ248JiiZoH9oCLQpkA2FMjmxmKZIlh7sxFv73gpR1
+        sXc3b9KcmcO5nJmXGWNcSb5j3GNwdVE12xUuAKtFVTVYFcV6e1+sFnhfCbnZlFBAs8dm0SwBl1A1
+        m5LfJQq7/46CehprAnZ24REIZQ0JK+/Xm+16W27LjAUCiiHFCNs6jYSyC9qDeDx4G03KqwEdsDMr
+        rZU58B17mTHGGHdwQp/iJT6htg49nzF27h7uKd98Gr23KdJErbOh8fhfRCNOtUMDmk58x4oPRcaU
+        6clqiQRKh2mkMoF8FKSsubK38KO2kVykmuwjvgbJWl0L0Nd0rZWoU00HR/OlnbfKqHlVVMt5cT8v
+        N5duZ16+Y19zI7p2DINsxE/GuIFqmca4FyirdVOIlVyW631HnEno5DDTRJOryjmO8HtTyyD4Q2zR
+        UMZfHri2AhLHA9898L9siw/8PHon4rrLOX/++fzbY/y4/Fcdqi+rT/+Uz/Hz399P+MsYYaDNuR2Q
+        6mcEOnYjZ+w8Y+xb7o0DD1qjvu4v+diJyHkMaAS+MWfn8UnZGOpewl1uw2ict62jWoA4Yv2Ip3cx
+        j4QmlT318AjBmiv9YtNYTxOn1N7YtuB77kHOARqkU61kIm4UXok3oH9SAmtS/To0EDXxy5ZZj9MO
+        ELYOPVDM5vJSPOEPGjNrrG9h/J+oIvt1Lb9k/IR+b4PKreQtShXbcQ27IRytEjkaIlk+AOG1gm/F
+        N45eYhBeuUtb+a9IjI7IRPQeDbGLGlhjPQPW6+7Dz6UzgEk0LRL6MKm5G6tDTwqv7YwNyr6xpxIU
+        6fzS773L3Y3DpcZAPslhAp6H7/MYw9NpUh7l0K3bFAbjt0kUSKkSCvqPaRHDOb1J5nLAZzfP5yTz
+        YU/6uVk1sq7W9uC83SfqYjC6qbB8NEOruFQB9ro/9DHAAUfVKXN1LZebu9f2yQl+Ge+IOKIcA4sr
+        fd4e4XL1FvAW77Cy71GTJdAjuF4Muo/hekVbJJBAkOjPs/P/AAAA//8DAAMEcjN3BwAA
+    headers:
+      CF-RAY:
+      - 9c1404045bc1d88e-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Jan 2026 04:19:51 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=dwuGuAMpye6nDbpuETcXnq0IddUtap4GEJ8NJYZO7UE-1768969191-1.0.1.1-T_TR9oYelhj8UqPpmgiPtHPXI8e4h6NsG1uwJDbHoN8gs7LCoji0CaTcOsZ0Z3sfHZT5rRWoAii.FwKYheZw6pOizKs1nOs1BtMUFRbh5ug;
+        path=/; expires=Wed, 21-Jan-26 04:49:51 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=3jS4bG9rdAeHCc_pIPLkM9i49pcGXjOK.8ea0p9fe5g-1768969191761-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '537'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '540'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999735'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_e5cc8945b15d4a22a3ef6385068764a4
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"resourceSpans":[{"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"test-service"}}]},"scopeSpans":[{"scope":{"name":"test-instrumentation","version":"1.0.0"},"spans":[{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde0","name":"test-span-0","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null},{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde1","name":"test-span-1","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null},{"traceId":"123456789abcdef0123456789abcdef0","spanId":"1234567890abcde2","name":"test-span-2","kind":0.0,"startTimeUnixNano":"1000000000000000000","endTimeUnixNano":"1000000001000000000","status":{"code":1.0,"message":""},"parentSpanId":null,"attributes":null}]}]}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '982'
+      content-type:
+      - application/json
+      host:
+      - localhost:3000
+      user-agent:
+      - python-httpx/0.28.1
+      x-fern-language:
+      - Python
+    method: POST
+    uri: http://localhost:3000/traces
+  response:
+    body:
+      string: "<!DOCTYPE html><html><head><meta charSet=\"utf-8\"/><meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"image\"
+        href=\"/assets/branding/mirascope-logo.svg\"/><title>Mirascope</title><link
+        rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/icons/apple-touch-icon.png\"/><link
+        rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/icons/favicon-32x32.png\"/><link
+        rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/icons/favicon-16x16.png\"/><link
+        rel=\"manifest\" href=\"/manifest.json\" color=\"#fffff\"/><link rel=\"icon\"
+        href=\"/icons/favicon.ico\"/><link rel=\"stylesheet\" href=\"/app/styles/globals.css\"/></head><body><div
+        class=\"flex min-h-screen flex-col\"><header class=\"fixed top-0 right-0 left-0
+        z-[100] flex w-full flex-col items-center justify-center py-2 px-3 md:px-6
+        mb-2 font-handwriting bg-background\"><nav class=\"mx-auto flex w-full flex-row
+        items-center space-x-2\"><a href=\"/\" class=\"relative z-10 flex items-center
+        flex-shrink-0 px-1 mr-2 visible\"><div><div class=\"flex shrink-0 flex-row
+        items-center justify-start\"><div class=\"mr-2 shrink-0\"><img src=\"/assets/branding/mirascope-logo.svg\"
+        alt=\"Mirascope Frog Logo\" class=\"h-[var(--text-xl)] w-auto\"/></div><div
+        class=\"flex items-center transition-all duration-[100ms] ease-in-out opacity-100
+        w-auto overflow-visible pointer-events-auto translate-x-0\"><span class=\"text-xl
+        font-handwriting mb-0 drop-shadow-md text-mirple\">Mirascope</span></div></div></div></a><div
+        class=\"z-20 hidden items-center gap-6 lg:flex relative ml-6 transition-opacity
+        duration-300 ease-in-out opacity-100\"><a href=\"/docs\" class=\"relative
+        flex cursor-pointer items-center px-2 py-2 text-xl font-medium nav-text\">Docs</a><a
+        href=\"/blog\" class=\"relative flex cursor-pointer items-center px-2 py-2
+        text-xl font-medium nav-text\">Blog</a><a href=\"/pricing\" class=\"relative
+        flex cursor-pointer items-center px-2 py-2 text-xl font-medium nav-text\">Pricing</a><a
+        href=\"/cloud\" class=\"relative flex cursor-pointer items-center px-2 py-2
+        text-xl font-medium nav-text\">Cloud</a></div><div class=\"grow\"></div><div
+        class=\"search-container relative flex items-center transition-all duration-[400ms]
+        ease-in-out delay-[0ms] w-9 xl:w-36 flex-shrink-0\"><div class=\"search-input-container
+        h-9 rounded-full relative flex items-center overflow-visible w-full border-border
+        bg-background/20 hover:bg-primary/10 hover:border-primary/80 border\" data-testid=\"search-input\"><svg
+        xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0
+        0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"
+        stroke-linejoin=\"round\" class=\"lucide lucide-search transition-all duration-[400ms]
+        ease-in-out delay-[0ms] nav-icon mx-auto xl:absolute xl:left-3\" aria-hidden=\"true\"><path
+        d=\"m21 21-4.34-4.34\"></path><circle cx=\"11\" cy=\"11\" r=\"8\"></circle></svg><input
+        readOnly=\"\" type=\"text\" placeholder=\"Search...\" class=\"cursor-pointer
+        overflow-visible bg-transparent py-0 outline-none !text-[16px] leading-normal
+        h-auto min-h-full transition-all duration-[400ms] ease-in-out delay-[0ms]
+        text-foreground placeholder:text-foreground w-0 opacity-0 xl:w-28 xl:pr-3
+        xl:pl-10 xl:opacity-80\" value=\"\"/><kbd class=\"absolute top-1/2 right-3
+        h-5 -translate-y-1/2 items-center gap-1 rounded border px-1.5 font-mono text-[10px]
+        hidden lg:flex transition-all duration-[300ms] ease-in-out delay-[200ms] opacity-0
+        translate-x-4 scale-90 pointer-events-none border-border bg-muted text-foreground\"><span
+        class=\"text-xs\">\u2318</span>K</kbd></div><div class=\"search-results overflow-hidden
+        rounded-lg shadow-2xl [text-shadow:none] bg-background border-border border
+        transition-opacity duration-300 ease-in-out font-sans pointer-events-none
+        opacity-0 w-full absolute top-full z-50 mt-2 right-0 lg:right-auto lg:left-0\"><div
+        class=\"text-muted-foreground font-handwriting p-4 text-center\">Type to search</div><div
+        class=\"border-border bg-muted/40 text-muted-foreground flex items-center
+        justify-between border-t p-2 text-xs font-handwriting\"><div class=\"flex
+        items-center gap-2 px-2\"><kbd class=\"border-border rounded border px-1.5
+        py-0.5 text-[12px]\"><span class=\"pr-1 text-xs\">\u2318</span><span>K</span></kbd><span>to
+        search</span></div><div class=\"flex items-center gap-2 px-2\"><kbd class=\"border-border
+        rounded border px-1.5 py-0.5 text-[10px]\">Esc</kbd><span>to close</span></div></div></div></div><div
+        class=\"flex items-center gap-2 md:gap-3 flex-shrink-0 justify-end\"><div
+        class=\"hidden items-center gap-3 lg:flex\"><a href=\"https://github.com/Mirascope/mirascope\"
+        target=\"_blank\" rel=\"noopener noreferrer\" class=\"flex flex-col px-2 py-1
+        nav-text\"><div class=\"flex items-center gap-1 text-base font-medium\"><svg
+        xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0
+        0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"
+        stroke-linejoin=\"round\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2
+        6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8
+        0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68
+        1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg><span>mirascope</span></div><div
+        class=\"mt-0.5 flex items-center gap-2 text-xs opacity-80\"><div class=\"flex
+        items-center gap-0.5\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\"
+        height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path
+        d=\"M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1
+        0 2.82z\"></path><line x1=\"7\" y1=\"7\" x2=\"7.01\" y2=\"7\"></line></svg>v1.25.7</div><div
+        class=\"flex items-center gap-0.5\"><svg xmlns=\"http://www.w3.org/2000/svg\"
+        width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon
+        points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02
+        7 14.14 2 9.27 8.91 8.26 12 2\"></polygon></svg>1.3k</div></div></a></div><div
+        class=\"hidden items-center gap-3 lg:flex\"><a href=\"/discord-invite\" target=\"_blank\"
+        rel=\"noopener noreferrer\" class=\"flex flex-col px-2 py-1 nav-text\"><div
+        class=\"flex items-center text-base font-medium\"><span>Join our</span></div><div
+        class=\"mt-0.5 flex items-center\"><div class=\"h-2.5 w-full discord-logo\"
+        role=\"img\" aria-label=\"Discord\"></div></div></a></div><button class=\"rounded-md
+        p-2 cursor-pointer transition-colors duration-300 ease-in-out focus:outline-none
+        focus:ring-2 focus:ring-primary nav-icon hover:text-primary\" aria-label=\"Select
+        theme\" type=\"button\" id=\"radix-_R_1qj6_\" aria-haspopup=\"menu\" aria-expanded=\"false\"
+        data-state=\"closed\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\"
+        height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide
+        lucide-monitor\" aria-hidden=\"true\"><rect width=\"20\" height=\"14\" x=\"2\"
+        y=\"3\" rx=\"2\"></rect><line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\"></line><line
+        x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\"></line></svg></button><button class=\"p-2
+        lg:hidden nav-icon\" aria-label=\"Toggle mobile navigation\"><svg xmlns=\"http://www.w3.org/2000/svg\"
+        width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"
+        stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide
+        lucide-menu\" aria-hidden=\"true\"><path d=\"M4 5h16\"></path><path d=\"M4
+        12h16\"></path><path d=\"M4 19h16\"></path></svg></button></div></nav></header><div
+        class=\"mx-auto w-full max-w-7xl grow pt-(--header-height)\"><main class=\"grow\"><div
+        class=\"space-y-2 p-2\"><div class=\"text-gray-600 dark:text-gray-400\"><p>The
+        page you are looking for does not exist.</p></div><p class=\"flex items-center
+        gap-2 flex-wrap\"><button class=\"bg-emerald-500 text-white px-2 py-1 rounded-sm
+        uppercase font-black text-sm\">Go back</button><a href=\"/\" class=\"bg-cyan-600
+        text-white px-2 py-1 rounded-sm uppercase font-black text-sm\">Start Over</a></p></div></main></div><div
+        class=\"\"><footer class=\"relative z-50 mt-auto w-full px-4 pt-4 pb-3 sm:px-6
+        md:px-12 bg-background\"><div class=\"mx-auto flex max-w-5xl flex-col-reverse
+        items-center justify-between md:flex-row md:items-center\"><div class=\"mt-4
+        text-center text-sm sm:text-base md:mt-0 md:text-left font-handwriting\"><p>\xA9
+        <!-- -->2026<!-- --> Mirascope. All rights reserved.</p><p>Mirascope\xAE is
+        a registered trademark of Mirascope, Inc. in the U.S.</p></div><div class=\"flex
+        gap-4 sm:gap-8\"><a href=\"/privacy\" class=\"text-sm sm:text-base nav-text\"><span
+        class=\"text-sm sm:text-base font-handwriting\">Privacy Policy</span></a><a
+        href=\"/terms/use\" class=\"text-sm sm:text-base nav-text\"><span class=\"text-sm
+        sm:text-base font-handwriting\">Terms of Use</span></a></div></div></footer></div><section
+        aria-label=\"Notifications alt+T\" tabindex=\"-1\" aria-live=\"polite\" aria-relevant=\"additions
+        text\" aria-atomic=\"false\"></section><div></div><script class=\"$tsr\" id=\"$tsr-stream-barrier\">(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrated=!0,this.c()},e(){this.streamEnded=!0,this.c()},c(){this.hydrated&&this.streamEnded&&(delete
+        self.$_TSR,delete self.$R.tsr)},p(e){this.initialized?e():this.buffer.push(e)},buffer:[]};\n;$_TSR.router=($R=>$R[0]={manifest:$R[1]={routes:$R[2]={__root__:$R[3]={assets:$R[4]=[$R[5]={tag:\"script\",attrs:$R[6]={type:\"module\",async:!0},children:\"import
+        { injectIntoGlobalHook } from \\\"/@react-refresh\\\";\\ninjectIntoGlobalHook(window);\\nwindow.$RefreshReg$
+        = () => {};\\nwindow.$RefreshSig$ = () => (type) => type;;;import('/@id/virtual:tanstack-start-client-entry')\"}]}}},matches:$R[7]=[$R[8]={i:\"__root__/\",u:1768969191747,s:\"success\",ssr:!0}],lastMatchId:\"__root__/\"})($R[\"tsr\"]);$_TSR.e();document.currentScript.remove()</script><script
+        type=\"module\" async=\"\">import { injectIntoGlobalHook } from \"/@react-refresh\";\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$
+        = () => {};\nwindow.$RefreshSig$ = () => (type) => type;;;import('/@id/virtual:tanstack-start-client-entry')</script></div></body></html>"
+    headers:
+      Connection:
+      - keep-alive
+      Date:
+      - Wed, 21 Jan 2026 04:19:51 GMT
+      Keep-Alive:
+      - timeout=5
+      Vary:
+      - Origin
+      content-type:
+      - text/html; charset=utf-8
+      transfer-encoding:
+      - chunked
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in Rome?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Rome\\\"}\",\"call_id\":\"call_QwKkuB4Xig2I5CV1wuHUjyeE\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_02f95e3ae2322fe200697053e78a2481a0bced26f0c5d416b8\",\"status\":\"completed\"},{\"call_id\":\"call_QwKkuB4Xig2I5CV1wuHUjyeE\",\"output\":\"Weather
+      in Rome: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":true}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '680'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RVy47bMAy85ysEnTcL23E3cT6gvfRQFL21hcHIdKKuLKkStW1Q5N8Lye/s7i3h
+        kCM+hvS/DWNcNvzIuENv66xoqw+4Ayx2RdFikWVP1T77sMPDPoPDIYcM2lNWYglPVQklVjv+ECnM
+        6RcKGmmM9tjbhUMgbGqIWL5/OlRPVV4VCfMEFHyMEaazCgmbPugE4vnsTNAxrxaUx94slZL6zI/s
+        34YxxriFK7oY3+ALKmPR8Q1jt/7hkfLu6V1C0TkTI3VQKhlah78DanGtLWpQdOVHlj1mCZN6JKsb
+        JJDKLyOl9uSCIGn0yt7B39oEsoFqMs/4GiRjVC1Arek606CKNZ0tbUuz7aSW2yIrym223+aHoduJ
+        lx/Z99SIvh3TIDt/fn+O1a7s51i1eSNEW7RtvsvxJBJzYqGrxcSD3sMZZ+C9gSVQGE2o56SWia1o
+        x6bgX5qikwNobQjGRn7/uQKVOVtnTm8giejI+LcLsj8IdEHHpGZfTYdMeiaCc6hJXdm++BGy7JR9
+        ZKAb5oPW10c+Md2GXxM5d0alhMF76Qk09c7RMTlxCw6UQrUeJbnQ69U69KgFviEp6/BFmuDrcVvq
+        NLpJBdaZzlItQFywfsbru5jD2HRp9NLDIXijV6uCbWscLZziOEPXgRu5p83x0CJda9lE4lbiak88
+        uhcpsCY5bl4LQfWD5J6Mw2UHCDuLDigkcz4UPwxsyKw1roP5/0Ioya9v+ZDxC7qT8TK1knfYyNDN
+        G98P4WKk6KcWyPAJ8K+XZXymDTpt7yzlBr1w0g5t5Z+QGF1wVNIkstY4BkwZkTT7OMdr6BLzGake
+        nGcwiqZDQucXNfdjtehI4tqepN+/cGePJUjqJfp5dHm4cxhq9OSiHBbgbRb+HMPjFZQOm9UWL1OY
+        jIsd5NA0MqKgviyLmC73/QHovxWbu+dTkukbEvVzt2pkbL04AdlktEthuaCnVvFGejip8ZsS0imb
+        VCf16jAfsofX9sW1n0STtq6ZA7OVPu/vfV6+BbzFO63se9RkCNQMVuWk++DXK9ohQQMEkf62uf0H
+        AAD//wMAKLVNduIHAAA=
+    headers:
+      CF-RAY:
+      - 9c140408f955d88e-LAX
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Jan 2026 04:19:53 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1077'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1080'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999703'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_6b52901187884a3d8c841b34b34aa088
+    status:
+      code: 200
+      message: OK
+version: 1

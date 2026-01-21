@@ -31,8 +31,7 @@ from mirascope.ops._internal.propagation import (
     ENV_PROPAGATOR_SET_GLOBAL,
 )
 from mirascope.ops.exceptions import ConfigurationError
-
-from .conftest import (
+from tests.ops.conftest import (
     PROPAGATOR_FORMATS,
     TRACEPARENT_PATTERN,
     VALID_SPAN_ID,
