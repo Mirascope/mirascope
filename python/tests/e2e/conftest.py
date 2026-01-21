@@ -39,6 +39,27 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "openai/gpt-4o:responses",
 ]
 
+REASONING_MODEL_PREFIXES = ("openai/gpt-5",)
+
+
+def _is_reasoning_model(model_id: llm.ModelId) -> bool:
+    return any(model_id.startswith(prefix) for prefix in REASONING_MODEL_PREFIXES)
+
+
+def is_reasoning_model(model_id: llm.ModelId) -> bool:
+    """Return True when the model uses OpenAI reasoning-style behavior."""
+    return _is_reasoning_model(model_id)
+
+
+GPT5_MODEL_IDS: list[llm.ModelId] = [
+    "openai/gpt-5-mini:completions",
+]
+
+MAX_TOKENS_MODEL_IDS = [*E2E_MODEL_IDS, *GPT5_MODEL_IDS]
+PARAMS_MODEL_IDS = [
+    model_id for model_id in MAX_TOKENS_MODEL_IDS if not _is_reasoning_model(model_id)
+]
+
 # NOTE: MLX is only available on macOS (Apple Silicon)
 if sys.platform == "darwin":
     from .mlx_lm_cassette import (

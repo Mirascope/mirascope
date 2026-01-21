@@ -20,6 +20,7 @@ from ...model_info import (
     MODELS_WITHOUT_AUDIO_SUPPORT,
     MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
     MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
+    NON_REASONING_MODELS,
 )
 
 if TYPE_CHECKING:
@@ -41,6 +42,7 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
     parallel_tool_calls: bool | Omit
     temperature: float | Omit
     max_tokens: int | Omit
+    max_completion_tokens: int | Omit
     top_p: float | Omit
     seed: int | Omit
     stop: str | list[str] | Omit
@@ -297,23 +299,28 @@ def encode_request(
         )
     base_model_name = model_name(model_id, None)
 
+    is_reasoning_model = base_model_name not in NON_REASONING_MODELS
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
-        {
-            "model": base_model_name,
-        }
+        {"model": base_model_name}
     )
     encode_thoughts_as_text = False
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
         provider_id="openai",
-        unsupported_params=["top_k"],
+        unsupported_params=[
+            "top_k",
+            *(["temperature", "top_p"] if is_reasoning_model else []),
+        ],
     ) as param_accessor:
-        if param_accessor.temperature is not None:
+        if not is_reasoning_model and param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
         if param_accessor.max_tokens is not None:
-            kwargs["max_tokens"] = param_accessor.max_tokens
-        if param_accessor.top_p is not None:
+            if is_reasoning_model:
+                kwargs["max_completion_tokens"] = param_accessor.max_tokens
+            else:
+                kwargs["max_tokens"] = param_accessor.max_tokens
+        if not is_reasoning_model and param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
 
         if param_accessor.seed is not None:

@@ -8,7 +8,7 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS
+from tests.e2e.conftest import E2E_MODEL_IDS, is_reasoning_model
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -34,7 +34,9 @@ def test_refusal_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     with snapshot_test(snapshot) as snap:
         response = fentanyl_request()
         snap.set_response(response)
-        if model_id.split("/")[0] in SCOPES_WITH_FORMAL_REFUSAL:
+        if model_id.split("/")[
+            0
+        ] in SCOPES_WITH_FORMAL_REFUSAL and not is_reasoning_model(model_id):
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
@@ -53,7 +55,9 @@ async def test_refusal_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     with snapshot_test(snapshot) as snap:
         response = await fentanyl_request()
         snap.set_response(response)
-        if model_id.split("/")[0] in SCOPES_WITH_FORMAL_REFUSAL:
+        if model_id.split("/")[
+            0
+        ] in SCOPES_WITH_FORMAL_REFUSAL and not is_reasoning_model(model_id):
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
@@ -72,7 +76,9 @@ def test_refusal_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
         response = fentanyl_request.stream()
         response.finish()
         snap.set_response(response)
-        if model_id.split("/")[0] in SCOPES_WITH_FORMAL_REFUSAL:
+        if model_id.split("/")[
+            0
+        ] in SCOPES_WITH_FORMAL_REFUSAL and not is_reasoning_model(model_id):
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
@@ -92,7 +98,9 @@ async def test_refusal_async_stream(model_id: llm.ModelId, snapshot: Snapshot) -
         response = await fentanyl_request.stream()
         await response.finish()
         snap.set_response(response)
-        if model_id.split("/")[0] in SCOPES_WITH_FORMAL_REFUSAL:
+        if model_id.split("/")[
+            0
+        ] in SCOPES_WITH_FORMAL_REFUSAL and not is_reasoning_model(model_id):
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
