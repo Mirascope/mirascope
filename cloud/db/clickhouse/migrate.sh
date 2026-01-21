@@ -139,7 +139,7 @@ case "$command" in
     echo "Running ClickHouse migrations..."
     echo "Database: $clickhouse_database"
     echo "Host: ${clickhouse_url#*://}"
-    run_migrate up -verbose
+    run_migrate up
     echo "Migrations complete."
     ;;
   *)
