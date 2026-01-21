@@ -30,3 +30,16 @@ export function formatTokens(tokens: number | null): string {
   if (tokens === null) return "-";
   return tokens.toLocaleString();
 }
+
+/**
+ * Format a cost in USD to a human-readable string.
+ * Shows 4 decimal places for small values, 2 for larger values.
+ * Returns "-" for null values.
+ */
+export function formatCost(costUsd: number | null): string {
+  if (costUsd === null) return "-";
+  if (costUsd === 0) return "$0.00";
+  // Show 4 decimal places for small values (< $0.01)
+  if (costUsd < 0.01) return `$${costUsd.toFixed(4)}`;
+  return `$${costUsd.toFixed(2)}`;
+}

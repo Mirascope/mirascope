@@ -1,8 +1,20 @@
 import { useState, type ReactNode } from "react";
-import { AlertCircle, Code, FileCode, Maximize2, X } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronRight,
+  Code,
+  FileCode,
+  Maximize2,
+  X,
+} from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert";
 import { Button } from "@/app/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/app/components/ui/collapsible";
 import { JsonView } from "@/app/components/json-view";
 import { CodeBlock } from "@/app/components/ai-elements/code-block";
 import { safeParseJSON } from "@/app/lib/utils";
@@ -98,6 +110,124 @@ function extractTraceOutput(
     return safeParseJSON(traceOutput) ?? traceOutput;
   }
   return traceOutput;
+}
+
+/** Mirascope usage breakdown type */
+type MirascopeUsage = {
+  input_tokens: number;
+  output_tokens: number;
+  cache_read_tokens: number;
+  cache_write_tokens: number;
+  reasoning_tokens: number;
+  total_tokens: number;
+};
+
+/** Mirascope cost breakdown type (values in centicents) */
+type MirascpeCost = {
+  input_cost: number;
+  output_cost: number;
+  cache_read_cost: number | null;
+  cache_write_cost: number | null;
+  total_cost: number;
+};
+
+/** Extract Mirascope response messages (input messages) */
+function extractMirascopeMessages(
+  attributes: Record<string, unknown> | null,
+): unknown[] | null {
+  if (!attributes) return null;
+  const value = attributes["mirascope.response.messages"];
+  if (value === undefined || value === null) return null;
+
+  if (typeof value === "string") {
+    const parsed = safeParseJSON(value);
+    if (Array.isArray(parsed)) return parsed;
+  }
+  if (Array.isArray(value)) return value as unknown[];
+  return null;
+}
+
+/** Extract Mirascope response content (assistant response) */
+function extractMirascopeContent(
+  attributes: Record<string, unknown> | null,
+): unknown[] | null {
+  if (!attributes) return null;
+  const value = attributes["mirascope.response.content"];
+  if (value === undefined || value === null) return null;
+
+  if (typeof value === "string") {
+    const parsed = safeParseJSON(value);
+    if (Array.isArray(parsed)) return parsed;
+  }
+  if (Array.isArray(value)) return value as unknown[];
+  return null;
+}
+
+/** Extract Mirascope response usage breakdown */
+function extractMirascopeUsage(
+  attributes: Record<string, unknown> | null,
+): MirascopeUsage | null {
+  if (!attributes) return null;
+  const value = attributes["mirascope.response.usage"];
+  if (value === undefined || value === null) return null;
+
+  const parsed = typeof value === "string" ? safeParseJSON(value) : value;
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    const p = parsed as Record<string, unknown>;
+    return {
+      input_tokens: typeof p.input_tokens === "number" ? p.input_tokens : 0,
+      output_tokens: typeof p.output_tokens === "number" ? p.output_tokens : 0,
+      cache_read_tokens:
+        typeof p.cache_read_tokens === "number" ? p.cache_read_tokens : 0,
+      cache_write_tokens:
+        typeof p.cache_write_tokens === "number" ? p.cache_write_tokens : 0,
+      reasoning_tokens:
+        typeof p.reasoning_tokens === "number" ? p.reasoning_tokens : 0,
+      total_tokens: typeof p.total_tokens === "number" ? p.total_tokens : 0,
+    };
+  }
+  return null;
+}
+
+/** Extract Mirascope response cost breakdown (centicents) */
+function extractMirascpeCost(
+  attributes: Record<string, unknown> | null,
+): MirascpeCost | null {
+  if (!attributes) return null;
+  const value = attributes["mirascope.response.cost"];
+  if (value === undefined || value === null) return null;
+
+  const parsed = typeof value === "string" ? safeParseJSON(value) : value;
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    const p = parsed as Record<string, unknown>;
+    return {
+      input_cost: typeof p.input_cost === "number" ? p.input_cost : 0,
+      output_cost: typeof p.output_cost === "number" ? p.output_cost : 0,
+      cache_read_cost:
+        typeof p.cache_read_cost === "number" ? p.cache_read_cost : null,
+      cache_write_cost:
+        typeof p.cache_write_cost === "number" ? p.cache_write_cost : null,
+      total_cost: typeof p.total_cost === "number" ? p.total_cost : 0,
+    };
+  }
+  return null;
+}
+
+/** Check if span has Mirascope response attributes */
+function hasMirascopeResponse(
+  attributes: Record<string, unknown> | null,
+): boolean {
+  if (!attributes) return false;
+  return (
+    attributes["mirascope.response.messages"] != null ||
+    attributes["mirascope.response.content"] != null
+  );
+}
+
+/** Convert centicents to USD string */
+function centicentsToUsd(centicents: number | null): string {
+  if (centicents === null) return "$0.000000";
+  return `$${(centicents / 10000).toFixed(6)}`;
 }
 
 /** Check if this is a GenAI/LLM span (has actual gen_ai content) */
@@ -346,13 +476,46 @@ function renderPart(part: unknown, idx: number): ReactNode {
     );
   }
 
-  // Reasoning part
+  // Reasoning part (Gen AI format)
   if (p.type === "reasoning" && typeof p.content === "string") {
     return (
       <Reasoning key={idx} defaultOpen={false}>
         <ReasoningTrigger />
         <ReasoningContent>{p.content}</ReasoningContent>
       </Reasoning>
+    );
+  }
+
+  // Thought part (Mirascope format - maps to Reasoning component)
+  const pThought = part as { type?: string; thought?: string };
+  if (pThought.type === "thought" && typeof pThought.thought === "string") {
+    return (
+      <Reasoning key={idx} defaultOpen={false}>
+        <ReasoningTrigger />
+        <ReasoningContent>{pThought.thought}</ReasoningContent>
+      </Reasoning>
+    );
+  }
+
+  // Tool output part (Mirascope format - maps to Tool response)
+  const pToolOutput = part as {
+    type?: string;
+    id?: string;
+    name?: string;
+    result?: unknown;
+  };
+  if (pToolOutput.type === "tool_output") {
+    return (
+      <Tool key={idx} defaultOpen={false}>
+        <ToolHeader
+          title={pToolOutput.name ?? "Tool Output"}
+          type="tool-result"
+          state="output-available"
+        />
+        <ToolContent>
+          <ToolOutput output={pToolOutput.result} errorText={undefined} />
+        </ToolContent>
+      </Tool>
     );
   }
 
@@ -365,6 +528,7 @@ function combineMessagesWithToolResponses(messages: unknown[]): unknown[] {
   // First pass: collect all tool responses by ID from:
   // 1. role: "tool" messages (legacy format)
   // 2. tool_call_response parts in any message (OTEL Gen AI spec format)
+  // 3. tool_output parts in user messages (Mirascope format)
   const toolResponsesById: Map<string, unknown> = new Map();
   const toolResponsesByName: Map<string, unknown> = new Map();
 
@@ -393,15 +557,18 @@ function combineMessagesWithToolResponses(messages: unknown[]): unknown[] {
     }
 
     // Handle tool_call_response parts in any message (OTEL Gen AI spec format)
-    if (Array.isArray(m.parts)) {
-      for (const part of m.parts) {
+    // and tool_output parts in user messages (Mirascope format)
+    const extractToolOutputsFromParts = (parts: unknown[]) => {
+      for (const part of parts) {
         if (!part || typeof part !== "object") continue;
         const p = part as {
           type?: string;
           id?: string;
           tool_call_id?: string;
+          name?: string;
           response?: unknown;
           content?: unknown;
+          result?: unknown;
         };
         if (p.type === "tool_call_response") {
           const toolId = p.id ?? p.tool_call_id;
@@ -410,7 +577,26 @@ function combineMessagesWithToolResponses(messages: unknown[]): unknown[] {
             toolResponsesById.set(toolId, responseContent);
           }
         }
+        // Mirascope format: tool_output in user messages
+        if (p.type === "tool_output") {
+          const toolId = p.id ?? p.tool_call_id;
+          const toolName = p.name;
+          const responseContent = p.result ?? p.content;
+          if (toolId) {
+            toolResponsesById.set(toolId, responseContent);
+          } else if (toolName) {
+            toolResponsesByName.set(toolName, responseContent);
+          }
+        }
       }
+    };
+
+    if (Array.isArray(m.parts)) {
+      extractToolOutputsFromParts(m.parts);
+    }
+    // Also check content array (Mirascope uses content array for user messages with tool outputs)
+    if (Array.isArray(m.content)) {
+      extractToolOutputsFromParts(m.content);
     }
   }
 
@@ -419,8 +605,17 @@ function combineMessagesWithToolResponses(messages: unknown[]): unknown[] {
     return messages;
   }
 
-  // Second pass: inject tool responses into tool calls and filter out tool_call_response parts
+  // Second pass: inject tool responses into tool calls and filter out extracted tool response parts
   const result: unknown[] = [];
+
+  // Helper to filter out tool response parts that have been extracted
+  const filterToolResponseParts = (parts: unknown[]): unknown[] =>
+    parts.filter((part) => {
+      if (!part || typeof part !== "object") return true;
+      const p = part as { type?: string };
+      // Filter out both OTEL format and Mirascope format tool responses
+      return p.type !== "tool_call_response" && p.type !== "tool_output";
+    });
 
   for (const msg of messages) {
     if (!msg || typeof msg !== "object") {
@@ -434,14 +629,9 @@ function combineMessagesWithToolResponses(messages: unknown[]): unknown[] {
 
     // For messages with parts array
     if (m.parts && Array.isArray(m.parts)) {
-      // Filter out tool_call_response parts (they've been extracted for merging)
-      const filteredParts = m.parts.filter((part) => {
-        if (!part || typeof part !== "object") return true;
-        const p = part as { type?: string };
-        return p.type !== "tool_call_response";
-      });
+      const filteredParts = filterToolResponseParts(m.parts);
 
-      // Skip message if all parts were tool_call_response
+      // Skip message if all parts were tool response parts
       if (filteredParts.length === 0) continue;
 
       // Inject tool responses into tool_call parts
@@ -482,6 +672,49 @@ function combineMessagesWithToolResponses(messages: unknown[]): unknown[] {
       });
 
       result.push({ ...m, parts: newParts });
+    } else if (Array.isArray(m.content)) {
+      // Handle content array (Mirascope format)
+      const filteredContent = filterToolResponseParts(m.content);
+
+      // Skip message if all content was tool response parts
+      if (filteredContent.length === 0) continue;
+
+      // Inject tool responses into tool_call parts in content
+      const newContent = filteredContent.map((part) => {
+        if (!part || typeof part !== "object") return part;
+        const p = part as {
+          type?: string;
+          id?: string;
+          tool_call_id?: string;
+          name?: string;
+        };
+
+        if (p.type === "tool_call") {
+          const toolId = p.id ?? p.tool_call_id;
+          const toolName = p.name;
+
+          let responseContent: unknown = undefined;
+          if (toolId && toolResponsesById.has(toolId)) {
+            responseContent = toolResponsesById.get(toolId);
+          } else if (toolName && toolResponsesByName.has(toolName)) {
+            responseContent = toolResponsesByName.get(toolName);
+          }
+
+          if (responseContent !== undefined) {
+            return {
+              _combined: true,
+              call: part,
+              response: {
+                type: "tool_call_response",
+                response: responseContent,
+              },
+            };
+          }
+        }
+        return part;
+      });
+
+      result.push({ ...m, content: newContent });
     } else {
       result.push(msg);
     }
@@ -525,8 +758,15 @@ function MessageCard({ message }: { message: unknown }) {
       return processedParts.map((part, idx) => renderPart(part, idx));
     }
 
-    // Object content (fallback)
-    if (content && typeof content === "object") {
+    // Single object content (Mirascope format for system messages)
+    // Check if it's a renderable part type before falling back to JsonView
+    if (content && typeof content === "object" && !Array.isArray(content)) {
+      const c = content as { type?: string; text?: string };
+      // If it has a type field, try to render it as a part
+      if (c.type) {
+        return renderPart(content, 0);
+      }
+      // Otherwise fall back to JsonView
       return <JsonView value={content} />;
     }
 
@@ -572,8 +812,29 @@ export function SpanDetailPanel({
     hasDetailedData && span.events ? safeParseJSON(span.events) : null;
 
   // Determine span type and extract appropriate data
-  const isLlmSpan = isGenAiSpan(attrs);
-  // Try both old and new attribute key formats
+  const isLlmSpan = isGenAiSpan(attrs) || hasMirascopeResponse(attrs);
+
+  // Extract Mirascope response attributes (preferred)
+  const mirascopeMessages = extractMirascopeMessages(attrs);
+  const mirascopeContent = extractMirascopeContent(attrs);
+  const mirascopeUsage = extractMirascopeUsage(attrs);
+  const mirascpeCost = extractMirascpeCost(attrs);
+  const hasMirascopeData =
+    mirascopeMessages !== null || mirascopeContent !== null;
+
+  // Fallback model/provider extraction from raw attributes
+  const modelFromAttrs =
+    (attrs?.["mirascope.response.model_id"] as string | undefined) ??
+    (attrs?.["gen_ai.request.model"] as string | undefined);
+  const displayModel = span.model || modelFromAttrs || null;
+
+  const providerFromAttrs =
+    (attrs?.["mirascope.response.provider_id"] as string | undefined) ??
+    (attrs?.["gen_ai.system"] as string | undefined);
+  const displayProvider =
+    (hasDetailedData ? span.provider : null) || providerFromAttrs || null;
+
+  // Try both old and new attribute key formats (fallback)
   const genAiInputMessages =
     extractGenAiMessages(attrs, "gen_ai.input.messages") ??
     extractGenAiMessages(attrs, "gen_ai.input_messages");
@@ -696,37 +957,116 @@ export function SpanDetailPanel({
           </Section>
         )}
 
-        {/* LLM Metrics (if model exists) */}
-        {span.model && (
+        {/* LLM Metrics (if any LLM-related data exists) */}
+        {(displayModel ||
+          mirascopeUsage ||
+          mirascpeCost ||
+          span.inputTokens !== null ||
+          span.outputTokens !== null ||
+          span.costUsd !== null) && (
           <Section title="LLM Details">
-            <dl className="grid grid-cols-2 gap-2 text-sm">
-              <dt className="text-muted-foreground">Model</dt>
-              <dd>{span.model}</dd>
-              {hasDetailedData && span.provider && (
-                <>
-                  <dt className="text-muted-foreground">Provider</dt>
-                  <dd>{span.provider}</dd>
-                </>
+            <div className="space-y-2">
+              {(displayModel || displayProvider) && (
+                <dl className="grid grid-cols-2 gap-2 text-sm">
+                  {displayModel && (
+                    <>
+                      <dt className="text-muted-foreground">Model</dt>
+                      <dd>{displayModel}</dd>
+                    </>
+                  )}
+                  {displayProvider && (
+                    <>
+                      <dt className="text-muted-foreground">Provider</dt>
+                      <dd>{displayProvider}</dd>
+                    </>
+                  )}
+                </dl>
               )}
-              {hasDetailedData && span.inputTokens !== null && (
-                <>
-                  <dt className="text-muted-foreground">Input Tokens</dt>
-                  <dd>{span.inputTokens.toLocaleString()}</dd>
-                </>
+
+              {/* Usage Breakdown - collapsible, prefer Mirascope usage */}
+              {mirascopeUsage ? (
+                <Collapsible>
+                  <dl className="grid grid-cols-2 gap-2 text-sm">
+                    <dt className="text-muted-foreground">
+                      <CollapsibleTrigger className="flex items-center gap-1 hover:text-foreground">
+                        <ChevronRight className="h-3 w-3 transition-transform duration-200 [[data-state=open]>&]:rotate-90" />
+                        <span>Usage</span>
+                      </CollapsibleTrigger>
+                    </dt>
+                    <dd>
+                      {mirascopeUsage.input_tokens.toLocaleString()} in /{" "}
+                      {mirascopeUsage.output_tokens.toLocaleString()} out
+                    </dd>
+                  </dl>
+                  <CollapsibleContent>
+                    <dl className="ml-4 mt-1 grid grid-cols-2 gap-1 text-sm">
+                      <dt className="text-muted-foreground">Input Tokens</dt>
+                      <dd>{mirascopeUsage.input_tokens.toLocaleString()}</dd>
+                      <dt className="text-muted-foreground">Output Tokens</dt>
+                      <dd>{mirascopeUsage.output_tokens.toLocaleString()}</dd>
+                      <dt className="text-muted-foreground">Cache Read</dt>
+                      <dd>
+                        {mirascopeUsage.cache_read_tokens.toLocaleString()}
+                      </dd>
+                      <dt className="text-muted-foreground">Cache Write</dt>
+                      <dd>
+                        {mirascopeUsage.cache_write_tokens.toLocaleString()}
+                      </dd>
+                      <dt className="text-muted-foreground">Reasoning</dt>
+                      <dd>
+                        {mirascopeUsage.reasoning_tokens.toLocaleString()}
+                      </dd>
+                    </dl>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : (
+                hasDetailedData &&
+                (span.inputTokens !== null || span.outputTokens !== null) && (
+                  <dl className="grid grid-cols-2 gap-2 text-sm">
+                    <dt className="text-muted-foreground">Usage</dt>
+                    <dd>
+                      {span.inputTokens?.toLocaleString() ?? 0} in /{" "}
+                      {span.outputTokens?.toLocaleString() ?? 0} out
+                    </dd>
+                  </dl>
+                )
               )}
-              {hasDetailedData && span.outputTokens !== null && (
-                <>
-                  <dt className="text-muted-foreground">Output Tokens</dt>
-                  <dd>{span.outputTokens.toLocaleString()}</dd>
-                </>
+
+              {/* Cost Breakdown - collapsible, prefer Mirascope cost */}
+              {mirascpeCost ? (
+                <Collapsible>
+                  <dl className="grid grid-cols-2 gap-2 text-sm">
+                    <dt className="text-muted-foreground">
+                      <CollapsibleTrigger className="flex items-center gap-1 hover:text-foreground">
+                        <ChevronRight className="h-3 w-3 transition-transform duration-200 [[data-state=open]>&]:rotate-90" />
+                        <span>Cost</span>
+                      </CollapsibleTrigger>
+                    </dt>
+                    <dd>{centicentsToUsd(mirascpeCost.total_cost)}</dd>
+                  </dl>
+                  <CollapsibleContent>
+                    <dl className="ml-4 mt-1 grid grid-cols-2 gap-1 text-sm">
+                      <dt className="text-muted-foreground">Input</dt>
+                      <dd>{centicentsToUsd(mirascpeCost.input_cost)}</dd>
+                      <dt className="text-muted-foreground">Output</dt>
+                      <dd>{centicentsToUsd(mirascpeCost.output_cost)}</dd>
+                      <dt className="text-muted-foreground">Cache Read</dt>
+                      <dd>{centicentsToUsd(mirascpeCost.cache_read_cost)}</dd>
+                      <dt className="text-muted-foreground">Cache Write</dt>
+                      <dd>{centicentsToUsd(mirascpeCost.cache_write_cost)}</dd>
+                    </dl>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : (
+                hasDetailedData &&
+                span.costUsd !== null && (
+                  <dl className="grid grid-cols-2 gap-2 text-sm">
+                    <dt className="text-muted-foreground">Cost</dt>
+                    <dd>${span.costUsd.toFixed(6)}</dd>
+                  </dl>
+                )
               )}
-              {hasDetailedData && span.costUsd !== null && (
-                <>
-                  <dt className="text-muted-foreground">Cost</dt>
-                  <dd>${span.costUsd.toFixed(6)}</dd>
-                </>
-              )}
-            </dl>
+            </div>
           </Section>
         )}
 
@@ -741,14 +1081,32 @@ export function SpanDetailPanel({
 
         {/* Combined Messages (for LLM spans) - chat-like view */}
         {isLlmSpan &&
-          (genAiSystemInstructions ||
+          (hasMirascopeData ||
+            genAiSystemInstructions ||
             (genAiInputMessages && genAiInputMessages.length > 0) ||
             (genAiOutputMessages && genAiOutputMessages.length > 0)) && (
             <Section title="Messages">
               <div className="rounded-lg border bg-muted/30 p-4">
                 <div className="space-y-3">
-                  {/* Combine all messages to match tool calls with responses */}
+                  {/* Prefer Mirascope response attributes, fallback to Gen AI */}
                   {(() => {
+                    if (hasMirascopeData) {
+                      // Use Mirascope format: messages + content as assistant response
+                      const allMessages = [
+                        ...(mirascopeMessages ?? []),
+                        // Add assistant message with content
+                        ...(mirascopeContent && mirascopeContent.length > 0
+                          ? [{ role: "assistant", content: mirascopeContent }]
+                          : []),
+                      ];
+                      const combined =
+                        combineMessagesWithToolResponses(allMessages);
+                      return combined.map((msg, idx) => (
+                        <MessageCard key={idx} message={msg} />
+                      ));
+                    }
+
+                    // Fallback to Gen AI format
                     const allMessages = [
                       // System instructions as first message
                       ...(genAiSystemInstructions

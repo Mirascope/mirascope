@@ -2639,6 +2639,370 @@ describe("edge cases", () => {
       "service.region": "us-west",
     });
   });
+
+  it("extracts model from mirascope.response.model_id attribute (priority over gen_ai)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-mirascope-model",
+              spanId: "span-mirascope-model",
+              name: "mirascope-model-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                "mirascope.response.model_id": "claude-sonnet-4-20250514",
+                "gen_ai.request.model": "fallback-model",
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{ model: string | null }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-mirascope-model")));
+
+    // mirascope.response.model_id takes priority over gen_ai.request.model
+    expect(traceBody.spans[0]?.model).toBe("claude-sonnet-4-20250514");
+  });
+
+  it("extracts provider from mirascope.response.provider_id attribute (priority over gen_ai)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-mirascope-provider",
+              spanId: "span-mirascope-provider",
+              name: "mirascope-provider-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                "mirascope.response.provider_id": "anthropic",
+                "gen_ai.system": "fallback-provider",
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{ provider: string | null }>;
+    }>(
+      await durableObject.fetch(createTraceRequest("trace-mirascope-provider")),
+    );
+
+    // mirascope.response.provider_id takes priority over gen_ai.system
+    expect(traceBody.spans[0]?.provider).toBe("anthropic");
+  });
+
+  it("extracts cost from mirascope.response.cost attribute (JSON string)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    // Cost in centicents: 50000 centicents = $5.00
+    const costJson = JSON.stringify({
+      input_cost: 25000,
+      output_cost: 20000,
+      cache_read_cost: 5000,
+      total_cost: 50000,
+    });
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-mirascope-cost",
+              spanId: "span-mirascope-cost",
+              name: "mirascope-cost-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                "mirascope.response.cost": costJson,
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{ costUsd: number | null }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-mirascope-cost")));
+
+    // 50000 centicents / 10000 = $5.00
+    expect(traceBody.spans[0]?.costUsd).toBe(5.0);
+  });
+
+  it("extracts cost from mirascope.response.cost attribute (object)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-mirascope-cost-obj",
+              spanId: "span-mirascope-cost-obj",
+              name: "mirascope-cost-obj-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                // Cost as object instead of JSON string: 10000 centicents = $1.00
+                "mirascope.response.cost": {
+                  input_cost: 5000,
+                  output_cost: 3000,
+                  total_cost: 10000,
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{ costUsd: number | null }>;
+    }>(
+      await durableObject.fetch(createTraceRequest("trace-mirascope-cost-obj")),
+    );
+
+    // 10000 centicents / 10000 = $1.00
+    expect(traceBody.spans[0]?.costUsd).toBe(1.0);
+  });
+
+  it("handles mirascope.response.cost with invalid JSON (falls back to gen_ai.usage.cost)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-invalid-cost",
+              spanId: "span-invalid-cost",
+              name: "invalid-cost-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                // Invalid JSON string
+                "mirascope.response.cost": "not-valid-json{",
+                // Fallback cost in USD
+                "gen_ai.usage.cost": 2.5,
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{ costUsd: number | null }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-invalid-cost")));
+
+    // Should fall back to gen_ai.usage.cost
+    expect(traceBody.spans[0]?.costUsd).toBe(2.5);
+  });
+
+  it("extracts tokens from mirascope.response.usage attribute (JSON string)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    const usageJson = JSON.stringify({
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
+    });
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-mirascope-usage",
+              spanId: "span-mirascope-usage",
+              name: "mirascope-usage-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                "mirascope.response.usage": usageJson,
+                // gen_ai fallbacks should be ignored
+                "gen_ai.usage.input_tokens": 999,
+                "gen_ai.usage.output_tokens": 999,
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{
+        inputTokens: number | null;
+        outputTokens: number | null;
+        totalTokens: number | null;
+      }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-mirascope-usage")));
+
+    expect(traceBody.spans[0]?.inputTokens).toBe(100);
+    expect(traceBody.spans[0]?.outputTokens).toBe(50);
+    expect(traceBody.spans[0]?.totalTokens).toBe(150);
+  });
+
+  it("falls back to gen_ai when mirascope.response.usage missing expected fields", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    // Usage object without token fields
+    const usageJson = JSON.stringify({
+      some_other_field: "value",
+    });
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-missing-fields",
+              spanId: "span-missing-fields",
+              name: "missing-fields-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                "mirascope.response.usage": usageJson,
+                // Should fall back to gen_ai values
+                "gen_ai.usage.input_tokens": 42,
+                "gen_ai.usage.output_tokens": 18,
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{
+        inputTokens: number | null;
+        outputTokens: number | null;
+        totalTokens: number | null;
+      }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-missing-fields")));
+
+    // Should fall back to gen_ai values since mirascope.response.usage doesn't have the fields
+    expect(traceBody.spans[0]?.inputTokens).toBe(42);
+    expect(traceBody.spans[0]?.outputTokens).toBe(18);
+    expect(traceBody.spans[0]?.totalTokens).toBe(60);
+  });
+
+  it("extracts tokens from mirascope.response.usage attribute (object, not JSON string)", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-usage-object",
+              spanId: "span-usage-object",
+              name: "usage-object-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                // Usage as object instead of JSON string
+                "mirascope.response.usage": {
+                  input_tokens: 200,
+                  output_tokens: 100,
+                  total_tokens: 300,
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{
+        inputTokens: number | null;
+        outputTokens: number | null;
+        totalTokens: number | null;
+      }>;
+    }>(await durableObject.fetch(createTraceRequest("trace-usage-object")));
+
+    expect(traceBody.spans[0]?.inputTokens).toBe(200);
+    expect(traceBody.spans[0]?.outputTokens).toBe(100);
+    expect(traceBody.spans[0]?.totalTokens).toBe(300);
+  });
+
+  it("falls back to gen_ai when mirascope.response.cost.total_cost is not a valid number", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state);
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-invalid-total-cost",
+              spanId: "span-invalid-total-cost",
+              name: "invalid-total-cost-span",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+              attributes: {
+                // total_cost is not a valid number
+                "mirascope.response.cost": JSON.stringify({
+                  total_cost: "not-a-number",
+                }),
+                // Should fall back to gen_ai.usage.cost
+                "gen_ai.usage.cost": 1.5,
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    const traceBody = await parseJson<{
+      spans: Array<{ costUsd: number | null }>;
+    }>(
+      await durableObject.fetch(createTraceRequest("trace-invalid-total-cost")),
+    );
+
+    // Should fall back to gen_ai.usage.cost
+    expect(traceBody.spans[0]?.costUsd).toBe(1.5);
+  });
 });
 
 describe("RealtimeSpans global layer", () => {
