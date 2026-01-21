@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
-import inspect
 from collections.abc import Awaitable, Callable
-from typing import Any, cast
+from typing import cast
 
 from openai.lib.azure import AsyncAzureADTokenProvider, AzureADTokenProvider
+
+from .. import _utils as azure_utils
+
+is_awaitable_str = azure_utils.is_awaitable_str
+wrap_async_token_provider = azure_utils.wrap_async_token_provider
+wrap_sync_token_provider = azure_utils.wrap_sync_token_provider
 
 
 def coerce_sync_token_provider(
@@ -26,21 +31,8 @@ def coerce_sync_token_provider(
     if api_key is None or isinstance(api_key, str):
         return api_key
 
-    provider = api_key
-
-    def token_provider() -> str:
-        token = provider()
-        if is_awaitable_str(token):
-            raise ValueError(
-                "Async Azure token provider is not supported for sync clients."
-            )
-        if not token or not isinstance(token, str):
-            raise ValueError(
-                f"Expected Azure token provider to return a string but it returned {token}",
-            )
-        return token
-
-    return token_provider
+    provider = cast(Callable[[], str | Awaitable[str]], api_key)
+    return wrap_sync_token_provider(provider)
 
 
 def coerce_async_token_provider(
@@ -60,21 +52,5 @@ def coerce_async_token_provider(
     if api_key is None or isinstance(api_key, str):
         return api_key
 
-    provider = api_key
-
-    async def token_provider() -> str:
-        token = provider()
-        if is_awaitable_str(token):
-            token = await cast(Awaitable[str], token)
-        if not token or not isinstance(cast(Any, token), str):
-            raise ValueError(
-                f"Expected Azure token provider to return a string but it returned {token}",
-            )
-        return str(token)
-
-    return token_provider
-
-
-def is_awaitable_str(value: object) -> bool:
-    """Return True when the value is awaitable."""
-    return inspect.isawaitable(value)
+    provider = cast(Callable[[], str | Awaitable[str]], api_key)
+    return wrap_async_token_provider(provider)

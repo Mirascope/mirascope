@@ -168,13 +168,28 @@ def test_azure_model_name() -> None:
     assert azure_model_name("gpt-5-mini") == "gpt-5-mini"
 
 
-def test_azure_provider_initialization() -> None:
+def test_azure_provider_initialization(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test AzureProvider initialization."""
+    from mirascope.llm.messages import user
+    from mirascope.llm.providers.azure.openai.provider import AzureOpenAIRoutedProvider
+
     provider = AzureProvider(
         api_key="test-key", base_url="https://example.openai.azure.com"
     )
     assert provider.id == "azure"
     assert provider.default_scope == "azure/"
+    assert provider.client is None
+
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider,
+        "call",
+        lambda *args, **kwargs: {"ok": True},
+    )
+    result = provider.call(model_id="azure/gpt-4o", messages=[user("hello")])
+
+    assert result == {"ok": True}
     assert provider.client is not None
     assert (
         str(provider.client.base_url) == "https://example.openai.azure.com/openai/v1/"
@@ -211,3 +226,137 @@ def test_azure_provider_missing_openai_raises_import_error(
 
     with pytest.raises(ImportError, match="openai"):
         provider.call(model_id="azure/gpt-4o", messages=[user("hello")])
+
+
+def test_azure_provider_delegates_sync_methods(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test AzureProvider delegates sync methods to the routed provider."""
+    from mirascope.llm.context import Context
+    from mirascope.llm.messages import user
+    from mirascope.llm.providers.azure.openai.provider import AzureOpenAIRoutedProvider
+
+    provider = AzureProvider(
+        api_key="test-key", base_url="https://example.openai.azure.com"
+    )
+
+    call_result = {"call": True}
+    context_call_result = {"context_call": True}
+
+    class DummyStreamResponse:
+        def __init__(self) -> None:
+            self._chunk_iterator = iter(())
+
+    stream_result = DummyStreamResponse()
+    context_stream_result = DummyStreamResponse()
+
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider, "call", lambda *args, **kwargs: call_result
+    )
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider,
+        "context_call",
+        lambda *args, **kwargs: context_call_result,
+    )
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider, "stream", lambda *args, **kwargs: stream_result
+    )
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider,
+        "context_stream",
+        lambda *args, **kwargs: context_stream_result,
+    )
+
+    ctx = Context(deps={})
+    assert (
+        provider.call(model_id="azure/gpt-4o", messages=[user("hello")]) == call_result
+    )
+    assert (
+        provider.context_call(
+            ctx=ctx, model_id="azure/gpt-4o", messages=[user("hello")]
+        )
+        == context_call_result
+    )
+    assert (
+        provider.stream(model_id="azure/gpt-4o", messages=[user("hello")])
+        is stream_result
+    )
+    assert (
+        provider.context_stream(
+            ctx=ctx, model_id="azure/gpt-4o", messages=[user("hello")]
+        )
+        is context_stream_result
+    )
+
+
+@pytest.mark.asyncio
+async def test_azure_provider_delegates_async_methods(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test AzureProvider delegates async methods to the routed provider."""
+    from mirascope.llm.context import Context
+    from mirascope.llm.messages import user
+    from mirascope.llm.providers.azure.openai.provider import AzureOpenAIRoutedProvider
+
+    provider = AzureProvider(
+        api_key="test-key", base_url="https://example.openai.azure.com"
+    )
+
+    call_async_result = {"call_async": True}
+    context_call_async_result = {"context_call_async": True}
+
+    async def empty_stream() -> object:
+        if False:
+            yield None
+
+    class DummyAsyncStreamResponse:
+        def __init__(self) -> None:
+            self._chunk_iterator = empty_stream()
+
+    stream_async_result = DummyAsyncStreamResponse()
+    context_stream_async_result = DummyAsyncStreamResponse()
+
+    async def call_async(*args: object, **kwargs: object) -> object:
+        return call_async_result
+
+    async def context_call_async(*args: object, **kwargs: object) -> object:
+        return context_call_async_result
+
+    async def stream_async(*args: object, **kwargs: object) -> object:
+        return stream_async_result
+
+    async def context_stream_async(*args: object, **kwargs: object) -> object:
+        return context_stream_async_result
+
+    monkeypatch.setattr(AzureOpenAIRoutedProvider, "call_async", call_async)
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider, "context_call_async", context_call_async
+    )
+    monkeypatch.setattr(AzureOpenAIRoutedProvider, "stream_async", stream_async)
+    monkeypatch.setattr(
+        AzureOpenAIRoutedProvider,
+        "context_stream_async",
+        context_stream_async,
+    )
+
+    ctx = Context(deps={})
+    assert (
+        await provider.call_async(model_id="azure/gpt-4o", messages=[user("hello")])
+        == call_async_result
+    )
+    assert (
+        await provider.context_call_async(
+            ctx=ctx, model_id="azure/gpt-4o", messages=[user("hello")]
+        )
+        == context_call_async_result
+    )
+    assert (
+        await provider.stream_async(model_id="azure/gpt-4o", messages=[user("hello")])
+        is stream_async_result
+    )
+    assert (
+        await provider.context_stream_async(
+            ctx=ctx, model_id="azure/gpt-4o", messages=[user("hello")]
+        )
+        is context_stream_async_result
+    )

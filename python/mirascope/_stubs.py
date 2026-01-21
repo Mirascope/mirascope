@@ -39,7 +39,7 @@ EXTRA_IMPORTS: dict[str, list[str]] = {
 # END GENERATED
 
 
-def _make_import_error(package_name: str, name: str) -> ImportError:
+def make_import_error(package_name: str, name: str) -> ImportError:
     """Create an ImportError with a helpful installation message.
 
     Args:
@@ -54,6 +54,10 @@ def _make_import_error(package_name: str, name: str) -> ImportError:
         f"Install them with: `uv add 'mirascope[{package_name}]'`. "
         "Or use `uv add 'mirascope[all]'` to support all optional features."
     )
+
+
+def _make_import_error(package_name: str, name: str) -> ImportError:
+    return make_import_error(package_name, name)
 
 
 class _StubMeta(type):

@@ -10,15 +10,9 @@ from openai.lib.azure import AsyncAzureADTokenProvider, AzureADTokenProvider
 
 from ...openai._utils.errors import OPENAI_ERROR_MAP
 from ...openai.completions.base_provider import BaseOpenAICompletionsProvider
+from .._utils import normalize_base_url
 from ..model_id import model_name as azure_model_name
 from ._utils import coerce_async_token_provider, coerce_sync_token_provider
-
-
-def _normalize_base_url(base_url: str) -> str:
-    normalized = base_url.rstrip("/")
-    if not normalized.endswith("/openai/v1"):
-        normalized = f"{normalized}/openai/v1"
-    return f"{normalized}/"
 
 
 class AzureOpenAIProvider(BaseOpenAICompletionsProvider):
@@ -54,7 +48,7 @@ class AzureOpenAIProvider(BaseOpenAICompletionsProvider):
                 "or pass the base_url parameter to register_provider()."
             )
 
-        normalized_base_url = _normalize_base_url(resolved_base_url)
+        normalized_base_url = normalize_base_url(resolved_base_url, suffix="openai/v1")
 
         sync_api_key = coerce_sync_token_provider(resolved_api_key)
         async_api_key = coerce_async_token_provider(resolved_api_key)

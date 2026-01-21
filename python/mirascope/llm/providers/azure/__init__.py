@@ -14,3 +14,10 @@ except ImportError:
     pass
 else:
     __all__.append("AzureOpenAIProvider")
+
+try:
+    from .anthropic import AzureAnthropicProvider
+except ImportError:
+    pass
+else:
+    __all__.append("AzureAnthropicProvider")
