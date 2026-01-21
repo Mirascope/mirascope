@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is running CI
 
 on:
   push:
-    branches: [main, v2, "release/*"]
+    branches: [main, "release/*"]
   pull_request:
 
 concurrency:
