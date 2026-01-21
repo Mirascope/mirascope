@@ -37,7 +37,7 @@ export default defineConfig(() => {
       viteMDX(),
       viteImages({
         viteEnvironments: ["client"],
-        skipPatterns: [/\/social-cards\/background\.png/],
+        skipPatterns: [/\/social-cards\//],
       }),
       cloudflare({ viteEnvironment: { name: "ssr" } }),
       tanstackStart({
