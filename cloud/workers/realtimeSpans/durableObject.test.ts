@@ -2512,6 +2512,167 @@ describe("edge cases", () => {
     expect(searchBody.spans[0]?.spanId).toBe("span-target");
   });
 
+  it("filters by spanNamePrefix with exact match", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state, {});
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-prefix",
+              spanId: "span-librarian",
+              name: "librarian",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+            {
+              traceId: "trace-prefix",
+              spanId: "span-librarian-call",
+              name: "librarian.call",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+            {
+              traceId: "trace-prefix",
+              spanId: "span-chat",
+              name: "chat anthropic/claude",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+          ],
+        }),
+      ),
+    );
+
+    const searchResponse = await durableObject.fetch(
+      new Request("https://realtime-spans/search", {
+        method: "POST",
+        body: JSON.stringify({
+          environmentId: DEFAULT_ENV_ID,
+          startTime: new Date(time.nowMs - 60_000).toISOString(),
+          endTime: new Date(time.nowMs + 60_000).toISOString(),
+          spanNamePrefix: "librarian",
+        }),
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    const searchBody = await parseJson<{
+      spans: Array<{ spanId: string; name: string }>;
+      total: number;
+    }>(searchResponse);
+
+    expect(searchBody.total).toBe(2);
+    const spanIds = searchBody.spans.map((s) => s.spanId).sort();
+    expect(spanIds).toEqual(["span-librarian", "span-librarian-call"]);
+  });
+
+  it("filters by rootSpansOnly excluding child spans", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state, {});
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-root",
+              spanId: "span-root",
+              name: "root-span",
+              parentSpanId: null,
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+            {
+              traceId: "trace-root",
+              spanId: "span-child",
+              name: "child-span",
+              parentSpanId: "span-root",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+          ],
+        }),
+      ),
+    );
+
+    const searchResponse = await durableObject.fetch(
+      new Request("https://realtime-spans/search", {
+        method: "POST",
+        body: JSON.stringify({
+          environmentId: DEFAULT_ENV_ID,
+          startTime: new Date(time.nowMs - 60_000).toISOString(),
+          endTime: new Date(time.nowMs + 60_000).toISOString(),
+          rootSpansOnly: true,
+        }),
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    const searchBody = await parseJson<{
+      spans: Array<{ spanId: string }>;
+      total: number;
+    }>(searchResponse);
+
+    expect(searchBody.total).toBe(1);
+    expect(searchBody.spans[0]?.spanId).toBe("span-root");
+  });
+
+  it("includes child spans when rootSpansOnly is false", async () => {
+    const state = createState();
+    const durableObject = new RealtimeSpansDurableObject(state, {});
+    const time = createTimeContext();
+
+    await durableObject.fetch(
+      createUpsertRequest(
+        createSpanBatch({
+          receivedAt: time.nowMs,
+          spans: [
+            {
+              traceId: "trace-all",
+              spanId: "span-root-2",
+              name: "root-span",
+              parentSpanId: null,
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+            {
+              traceId: "trace-all",
+              spanId: "span-child-2",
+              name: "child-span",
+              parentSpanId: "span-root-2",
+              startTimeUnixNano: time.startNano,
+              endTimeUnixNano: time.endNano(100),
+            },
+          ],
+        }),
+      ),
+    );
+
+    const searchResponse = await durableObject.fetch(
+      new Request("https://realtime-spans/search", {
+        method: "POST",
+        body: JSON.stringify({
+          environmentId: DEFAULT_ENV_ID,
+          startTime: new Date(time.nowMs - 60_000).toISOString(),
+          endTime: new Date(time.nowMs + 60_000).toISOString(),
+          rootSpansOnly: false,
+        }),
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    const searchBody = await parseJson<{
+      spans: Array<{ spanId: string }>;
+      total: number;
+    }>(searchResponse);
+
+    expect(searchBody.total).toBe(2);
+  });
+
   it("handles inputMessagesQuery with object value (returns null from toSearchString)", async () => {
     const state = createState();
     const durableObject = new RealtimeSpansDurableObject(state, {});

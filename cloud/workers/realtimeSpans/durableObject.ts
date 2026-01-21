@@ -611,6 +611,14 @@ const matchesSearchFilters = (
     return false;
   }
 
+  // spanNamePrefix filter - match exact name or name with method suffix (e.g., "librarian.call")
+  if (input.spanNamePrefix) {
+    const prefix = input.spanNamePrefix;
+    if (span.name !== prefix && !span.name.startsWith(`${prefix}.`)) {
+      return false;
+    }
+  }
+
   if (input.hasError === true && !getErrorType(span)) return false;
   if (input.hasError === false && getErrorType(span)) return false;
   const totalTokens = getTotalTokens(span);
@@ -647,6 +655,11 @@ const matchesSearchFilters = (
         return false;
       }
     }
+  }
+
+  // rootSpansOnly filter - only return spans with no parent
+  if (input.rootSpansOnly && span.parentSpanId !== null) {
+    return false;
   }
 
   return true;
