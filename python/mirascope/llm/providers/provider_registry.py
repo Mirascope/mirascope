@@ -8,6 +8,7 @@ from typing import overload
 
 from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
+from .azure import AzureProvider
 from .base import Provider
 from .google import GoogleProvider
 from .mirascope import MirascopeProvider
@@ -52,6 +53,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     "anthropic/": [
         ProviderDefault("anthropic", "ANTHROPIC_API_KEY"),
         ProviderDefault("mirascope", "MIRASCOPE_API_KEY"),
+    ],
+    "azure/openai/": [
+        ProviderDefault("azure", "AZURE_OPENAI_API_KEY"),
     ],
     "google/": [
         ProviderDefault("google", "GOOGLE_API_KEY"),
@@ -108,6 +112,8 @@ def provider_singleton(
     match provider_id:
         case "anthropic":
             return AnthropicProvider(api_key=api_key, base_url=base_url)
+        case "azure":
+            return AzureProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "mirascope":

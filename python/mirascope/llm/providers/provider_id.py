@@ -5,6 +5,7 @@ from typing import Literal, TypeAlias, get_args
 KnownProviderId: TypeAlias = Literal[
     "anthropic",  # Anthropic provider via AnthropicProvider
     "anthropic-beta",  # Anthropic beta provider via AnthropicBetaProvider
+    "azure",  # Azure OpenAI provider via AzureProvider
     "google",  # Google provider via GoogleProvider
     "mirascope",  # Mirascope Router provider via MirascopeProvider
     "mlx",  # Local inference powered by `mlx-lm`, via MLXProvider
@@ -17,6 +18,7 @@ KNOWN_PROVIDER_IDS = get_args(KnownProviderId)
 ProviderId = KnownProviderId | str
 
 OpenAICompletionsCompatibleProviderId: TypeAlias = Literal[
+    "azure",  # Azure OpenAI (OpenAI-compatible)
     "ollama",  # Ollama (OpenAI-compatible)
     "openai",  # OpenAI via OpenAIProvider (routes to completions)
     "openai:completions",  # OpenAI Completions API directly

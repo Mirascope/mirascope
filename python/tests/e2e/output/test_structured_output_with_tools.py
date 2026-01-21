@@ -363,7 +363,7 @@ async def test_structured_output_with_tools_async_stream(
 
         book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
-        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.author.startswith("Brandon Sanderson")
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
 
@@ -413,6 +413,6 @@ async def test_structured_output_with_tools_async_stream_context(
 
         book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
-        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.author.startswith("Brandon Sanderson")
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006

@@ -20,6 +20,7 @@ def test_prepare_message_multiple_user_text_parts() -> None:
     ]
     assert encode_request(
         model_id="openai/gpt-4o",
+        model_name="gpt-4o",
         messages=messages,
         format=None,
         tools=Toolkit(None),
@@ -67,6 +68,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
     ]
     assert encode_request(
         model_id="openai/gpt-4o",
+        model_name="gpt-4o",
         messages=messages,
         format=None,
         tools=Toolkit(None),
@@ -117,6 +119,7 @@ def test_strict_unsupported_legacy_model() -> None:
     with pytest.raises(llm.FeatureNotSupportedError):
         encode_request(
             model_id="openai/gpt-4",
+            model_name="gpt-4",
             messages=messages,
             format=format,
             tools=Toolkit(None),
