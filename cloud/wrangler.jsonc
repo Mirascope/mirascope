@@ -10,28 +10,29 @@
   "triggers": {
     "crons": ["*/5 * * * *", "0 10 * * *"],
   },
-  "queues": {
-    "producers": [
-      { "queue": "router-metering-local", "binding": "ROUTER_METERING_QUEUE" },
-      { "queue": "spans-ingest-local", "binding": "SPANS_INGEST_QUEUE" },
-    ],
-    "consumers": [
-      {
-        "queue": "router-metering-local",
-        "max_batch_size": 10,
-        "max_batch_timeout": 5,
-        "max_retries": 5,
-        "dead_letter_queue": "router-metering-dlq-local",
-      },
-      {
-        "queue": "spans-ingest-local",
-        "max_batch_size": 50,
-        "max_batch_timeout": 5,
-        "max_retries": 5,
-        "dead_letter_queue": "spans-ingest-dlq-local",
-      },
-    ],
-  },
+  // TODO: figure out why this causes staging deployment failure
+  // "queues": {
+  //   "producers": [
+  //     { "queue": "router-metering-local", "binding": "ROUTER_METERING_QUEUE" },
+  //     { "queue": "spans-ingest-local", "binding": "SPANS_INGEST_QUEUE" },
+  //   ],
+  //   "consumers": [
+  //     {
+  //       "queue": "router-metering-local",
+  //       "max_batch_size": 10,
+  //       "max_batch_timeout": 5,
+  //       "max_retries": 5,
+  //       "dead_letter_queue": "router-metering-dlq-local",
+  //     },
+  //     {
+  //       "queue": "spans-ingest-local",
+  //       "max_batch_size": 50,
+  //       "max_batch_timeout": 5,
+  //       "max_retries": 5,
+  //       "dead_letter_queue": "spans-ingest-dlq-local",
+  //     },
+  //   ],
+  // },
   "ratelimits": [
     {
       "name": "RATE_LIMITER_FREE",

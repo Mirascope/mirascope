@@ -654,10 +654,23 @@ function processAuthenticatedUser(
       );
     }
 
+    // 2. In non-production environments, restrict signups to @mirascope.com emails
+    if (
+      settings.env !== "production" &&
+      !userInfo.email.toLowerCase().endsWith("@mirascope.com")
+    ) {
+      return yield* Effect.fail(
+        new AuthenticationFailedError({
+          message:
+            "Signups in non-production environments are restricted to @mirascope.com emails",
+        }),
+      );
+    }
+
     const db = yield* Database;
     const ctx = yield* ExecutionContext;
 
-    // 2. Try to find existing user by email, or create if not found
+    // 3. Try to find existing user by email, or create if not found
     const existingUser = yield* db.users.findByEmail(userInfo.email).pipe(
       Effect.map((user) => user as typeof user | null),
       Effect.catchIf(
@@ -689,14 +702,14 @@ function processAuthenticatedUser(
       ctx.waitUntil(Effect.runPromise(emailEffect));
     }
 
-    // 3. Create a new session
+    // 4. Create a new session
     const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
     const session = yield* db.sessions.create({
       userId: user.id,
       data: { userId: user.id, expiresAt },
     });
 
-    // 4. Build redirect response with session cookie
+    // 5. Build redirect response with session cookie
     const redirectUrl = new URL(returnUrl || settings.siteUrl);
     redirectUrl.searchParams.set("success", "true");
     if (!existingUser) {
