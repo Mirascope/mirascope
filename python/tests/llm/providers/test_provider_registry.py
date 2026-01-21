@@ -1,11 +1,27 @@
 """Tests for provider registry functionality."""
 
+import os
+from collections.abc import Generator
+from contextlib import contextmanager
+
 import pytest
 
 from mirascope import llm
 from mirascope.llm.providers.provider_registry import (
     DEFAULT_AUTO_REGISTER_SCOPES,
 )
+
+
+@contextmanager
+def env_without(*keys: str) -> Generator[None, None, None]:
+    """Temporarily remove environment variables for testing."""
+    original_values = {key: os.environ.pop(key, None) for key in keys}
+    try:
+        yield
+    finally:
+        for key, value in original_values.items():
+            if value is not None:
+                os.environ[key] = value
 
 
 def test_auto_registered_providers() -> None:
@@ -55,15 +71,18 @@ def test_register_provider_with_multiple_scopes() -> None:
 
 def test_all_default_scopes_auto_register() -> None:
     """Test that all built-in providers can auto-register dynamically."""
-    for scope, provider_id in DEFAULT_AUTO_REGISTER_SCOPES.items():
+    for scope, fallback_chain in DEFAULT_AUTO_REGISTER_SCOPES.items():
+        # Get the primary (first) provider in the fallback chain
+        primary_provider_id = fallback_chain[0].provider_id
+
         # Skip mlx as it won't run in CI
-        if provider_id == "mlx":
+        if primary_provider_id == "mlx":
             continue
 
         # Test with a fake model under this scope
         model_id = f"{scope}test-model"
         provider = llm.providers.get_provider_for_model(model_id)
-        assert provider.id == provider_id
+        assert provider.id == primary_provider_id
 
 
 def test_explicit_registration_overrides_auto() -> None:
@@ -141,3 +160,110 @@ def test_overwrite_provider_registration() -> None:
     result = llm.providers.get_provider_for_model("custom/model")
     assert result.id == "anthropic"
     assert result is not provider1
+
+
+# =============================================================================
+# Mirascope Fallback Tests
+# =============================================================================
+
+
+def test_direct_provider_preferred_when_key_available() -> None:
+    """Test that direct provider is used when its API key is available."""
+    # Both ANTHROPIC_API_KEY and MIRASCOPE_API_KEY are set (via conftest)
+    llm.reset_provider_registry()
+    provider = llm.providers.get_provider_for_model("anthropic/claude-4-5-sonnet")
+
+    # Should use the direct Anthropic provider, not Mirascope
+    assert provider.id == "anthropic"
+    assert isinstance(provider, llm.providers.AnthropicProvider)
+
+
+def test_mirascope_fallback_when_direct_key_missing() -> None:
+    """Test fallback to Mirascope when direct provider key is missing."""
+    llm.reset_provider_registry()
+
+    with env_without("ANTHROPIC_API_KEY"):
+        provider = llm.providers.get_provider_for_model("anthropic/claude-4-5-sonnet")
+
+        # Should fall back to Mirascope provider
+        assert provider.id == "mirascope"
+        assert isinstance(provider, llm.providers.MirascopeProvider)
+
+
+def test_mirascope_fallback_registers_only_for_invoked_scope() -> None:
+    """Test that Mirascope fallback only registers for the specific scope used."""
+    llm.reset_provider_registry()
+
+    with env_without("GOOGLE_API_KEY"):
+        # Request a Google model - should fall back to Mirascope for google/ scope
+        google_provider = llm.providers.get_provider_for_model("google/gemini-2.5-pro")
+        assert google_provider.id == "mirascope"
+
+        # Now request an Anthropic model - should use direct Anthropic
+        # (ANTHROPIC_API_KEY is still set)
+        anthropic_provider = llm.providers.get_provider_for_model(
+            "anthropic/claude-4-5-sonnet"
+        )
+        assert anthropic_provider.id == "anthropic"
+
+        # Verify Mirascope was NOT registered for anthropic/ scope
+        # (it was only registered for google/)
+        assert google_provider is not anthropic_provider
+
+
+def test_missing_api_key_error_with_mirascope_fallback_suggestion() -> None:
+    """Test error message suggests Mirascope when it's a valid fallback."""
+    llm.reset_provider_registry()
+
+    with env_without("ANTHROPIC_API_KEY", "MIRASCOPE_API_KEY"):
+        with pytest.raises(llm.MissingAPIKeyError) as exc_info:
+            llm.providers.get_provider_for_model("anthropic/claude-4-5-sonnet")
+
+        error = exc_info.value
+        assert error.provider_id == "anthropic"
+        assert error.env_var == "ANTHROPIC_API_KEY"
+
+        # Error message should mention both options
+        message = str(error)
+        assert "ANTHROPIC_API_KEY" in message
+        assert "MIRASCOPE_API_KEY" in message
+        assert "Mirascope Router" in message
+
+
+def test_missing_api_key_error_without_mirascope_suggestion() -> None:
+    """Test error message doesn't suggest Mirascope for unsupported scopes."""
+    llm.reset_provider_registry()
+
+    with env_without("TOGETHER_API_KEY"):
+        with pytest.raises(llm.MissingAPIKeyError) as exc_info:
+            llm.providers.get_provider_for_model("together/meta-llama/Llama-3.3-70B")
+
+        error = exc_info.value
+        assert error.provider_id == "together"
+        assert error.env_var == "TOGETHER_API_KEY"
+
+        # Error message should NOT mention Mirascope (not a valid fallback)
+        message = str(error)
+        assert "TOGETHER_API_KEY" in message
+        assert "MIRASCOPE_API_KEY" not in message
+        assert "Mirascope Router" not in message
+
+
+def test_providers_without_api_key_requirement() -> None:
+    """Test that providers like Ollama work without any API keys."""
+    llm.reset_provider_registry()
+
+    # Remove all API keys - Ollama should still work
+    with env_without(
+        "ANTHROPIC_API_KEY",
+        "GOOGLE_API_KEY",
+        "MIRASCOPE_API_KEY",
+        "OPENAI_API_KEY",
+        "TOGETHER_API_KEY",
+        "OLLAMA_API_KEY",
+    ):
+        provider = llm.providers.get_provider_for_model("ollama/llama3.2")
+
+        # Should successfully return OllamaProvider
+        assert provider.id == "ollama"
+        assert isinstance(provider, llm.providers.OllamaProvider)

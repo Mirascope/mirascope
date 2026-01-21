@@ -175,30 +175,9 @@ def attach_mirascope_response(
     """
     span.set(
         **{
+            "mirascope.provider_id": response.provider_id,
+            "mirascope.model_id": response.model_id,
             "mirascope.trace.output": response.pretty(),
-            "mirascope.messages": serialize_mirascope_messages(response.messages[:-1]),
-            "mirascope.response.content": serialize_mirascope_content(response.content),
-        }
-    )
-    if (usage_json := serialize_mirascope_usage(response.usage)) is not None:
-        span.set(**{"mirascope.response.usage": usage_json})
-
-
-def attach_mirascope_response_attributes(
-    span: SpanProtocol, response: RootResponse[Any, Any]
-) -> None:
-    """Attach only the Mirascope-specific serialized attributes to a span.
-
-    Unlike attach_mirascope_response, this does NOT set mirascope.trace.output.
-    Use this when the output is set separately.
-
-    Sets the following attributes:
-    - mirascope.messages: Serialized input messages (excluding final assistant message)
-    - mirascope.response.content: Serialized response content
-    - mirascope.response.usage: Serialized usage (if available)
-    """
-    span.set(
-        **{
             "mirascope.messages": serialize_mirascope_messages(response.messages[:-1]),
             "mirascope.response.content": serialize_mirascope_content(response.content),
         }

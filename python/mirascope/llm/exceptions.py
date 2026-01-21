@@ -320,3 +320,41 @@ class NoRegisteredProviderError(Error):
         )
         super().__init__(message)
         self.model_id = model_id
+
+
+class MissingAPIKeyError(Error):
+    """Raised when no API key is available for a provider.
+
+    This error is raised during auto-registration when the required API key
+    environment variable is not set. If a Mirascope fallback is available,
+    the error message will suggest using MIRASCOPE_API_KEY as an alternative.
+    """
+
+    provider_id: str
+    """The provider that requires an API key."""
+
+    env_var: str
+    """The environment variable that should contain the API key."""
+
+    def __init__(
+        self,
+        provider_id: str,
+        env_var: str,
+        has_mirascope_fallback: bool = False,
+    ) -> None:
+        if has_mirascope_fallback:
+            message = (
+                f"No API key found for {provider_id}. Either:\n"
+                f"  1. Set {env_var} environment variable, or\n"
+                f"  2. Set MIRASCOPE_API_KEY for cross-provider support "
+                f"via Mirascope Router\n"
+                f"     (Learn more: https://mirascope.com/docs/router)"
+            )
+        else:
+            message = (
+                f"No API key found for {provider_id}. "
+                f"Set the {env_var} environment variable."
+            )
+        super().__init__(message)
+        self.provider_id = provider_id
+        self.env_var = env_var
