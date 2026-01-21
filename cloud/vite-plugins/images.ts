@@ -193,6 +193,13 @@ function getResponsiveConfig(
 }
 
 /**
+ * Check if a file path should be skipped based on skip patterns
+ */
+function shouldSkip(filePath: string, skipPatterns: RegExp[]): boolean {
+  return skipPatterns.some((pattern) => pattern.test(filePath));
+}
+
+/**
  * Check if the plugin should run for the current environment
  * Returns true if environments is empty (run for all) or if current environment is in the list
  */
@@ -278,7 +285,13 @@ async function validateWebPOnly(config: ImageConfig): Promise<void> {
 
   await scanDirectory(
     assetsDir,
-    (entry) => isNonWebPImage(entry.name),
+    (entry, fullPath) => {
+      // Skip files matching skip patterns
+      if (shouldSkip(fullPath, config.skipPatterns)) {
+        return false;
+      }
+      return isNonWebPImage(entry.name);
+    },
     (fullPath) => nonWebPFiles.push(path.relative(process.cwd(), fullPath)),
     config.scanConcurrency,
   );
@@ -317,9 +330,13 @@ async function generateResponsiveImages(config: ImageConfig): Promise<void> {
   // Recursively find all source images
   await scanDirectory(
     baseDir,
-    (entry) => {
+    (entry, fullPath) => {
       // Skip already resized variants
       if (entry.name.includes("-medium.") || entry.name.includes("-small.")) {
+        return false;
+      }
+      // Skip files matching skip patterns
+      if (shouldSkip(fullPath, config.skipPatterns)) {
         return false;
       }
       return isSourceImage(entry.name);
@@ -427,6 +444,12 @@ async function handleImageRequest(
 
   // Skip non-WebP requests
   if (!isWebPRequest(cleanUrl)) {
+    next();
+    return;
+  }
+
+  // Skip files matching skip patterns
+  if (shouldSkip(cleanUrl, config.skipPatterns)) {
     next();
     return;
   }
