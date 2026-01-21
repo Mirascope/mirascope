@@ -249,14 +249,15 @@ const queue = async (
   batch: MessageBatch,
   environment: WorkerEnv,
 ): Promise<void> => {
-  if (batch.queue === "router-metering") {
+  // Use startsWith to handle environment-suffixed queue names (e.g., "spans-ingest-staging")
+  if (batch.queue.startsWith("router-metering")) {
     await routerMeteringQueue.queue(
       batch as MessageBatch<RouterMeteringMessage>,
       environment,
     );
     return;
   }
-  if (batch.queue === "spans-ingest") {
+  if (batch.queue.startsWith("spans-ingest")) {
     await spanIngestQueue.queue(
       batch as MessageBatch<SpansIngestMessage>,
       environment,
