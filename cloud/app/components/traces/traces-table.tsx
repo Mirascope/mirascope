@@ -357,8 +357,12 @@ export function TracesTable({
             <TableHead className="w-[40%] min-w-[200px]">Name</TableHead>
             <TableHead className="w-[100px]">Duration</TableHead>
             <TableHead className="w-[220px]">Model</TableHead>
-            <TableHead className="w-[110px]">Input Tokens</TableHead>
-            <TableHead className="w-[110px]">Output Tokens</TableHead>
+            <TableHead className="w-[110px] whitespace-nowrap">
+              Input Tokens
+            </TableHead>
+            <TableHead className="w-[110px] whitespace-nowrap">
+              Output Tokens
+            </TableHead>
             <TableHead className="w-[180px]">Timestamp</TableHead>
           </TableRow>
         </TableHeader>

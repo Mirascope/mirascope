@@ -115,8 +115,14 @@ export interface SpanSearchInput {
   provider?: string[];
   /** Filter by function ID. */
   functionId?: string;
-  /** Filter by function name. */
+  /** Filter by function name (stored in function_name column). */
   functionName?: string;
+  /**
+   * Filter by span name prefix. Matches spans where name equals prefix
+   * or starts with prefix followed by a dot (e.g., "myFunc" matches
+   * "myFunc", "myFunc.call", "myFunc.stream").
+   */
+  spanNamePrefix?: string;
   /** Filter by error presence. */
   hasError?: boolean;
   /** Filter by minimum total tokens. */
@@ -847,6 +853,18 @@ function buildSearchWhereClause(input: SpanSearchInput): {
   if (input.functionName) {
     const functionNameKey = addParam("functionName", input.functionName);
     conditions.push(`s.function_name = {${functionNameKey}:String}`);
+  }
+
+  // Match span name exactly or with a method suffix (e.g., "myFunc" matches "myFunc", "myFunc.call", "myFunc.stream")
+  if (input.spanNamePrefix) {
+    const prefixKey = addParam("spanNamePrefix", input.spanNamePrefix);
+    const prefixDotKey = addParam(
+      "spanNamePrefixDot",
+      `${input.spanNamePrefix}.%`,
+    );
+    conditions.push(
+      `(s.name = {${prefixKey}:String} OR s.name LIKE {${prefixDotKey}:String})`,
+    );
   }
 
   if (input.hasError === true) {

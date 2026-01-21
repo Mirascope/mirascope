@@ -80,6 +80,7 @@ export const searchHandler = (environmentId: string, payload: SearchRequest) =>
       provider,
       functionId: payload.functionId,
       functionName: payload.functionName,
+      spanNamePrefix: payload.spanNamePrefix,
       hasError: payload.hasError,
       minTokens: payload.minTokens,
       maxTokens: payload.maxTokens,
