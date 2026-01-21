@@ -45,7 +45,10 @@
       },
       "queues": {
         "producers": [
-          { "queue": "router-metering-local", "binding": "ROUTER_METERING_QUEUE" },
+          {
+            "queue": "router-metering-local",
+            "binding": "ROUTER_METERING_QUEUE",
+          },
           { "queue": "spans-ingest-local", "binding": "SPANS_INGEST_QUEUE" },
         ],
         "consumers": [
