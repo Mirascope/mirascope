@@ -4,6 +4,7 @@ from .anthropic import (
     AnthropicModelId,
     AnthropicProvider,
 )
+from .azure import AzureModelId, AzureOpenAIProvider, AzureProvider
 from .base import BaseProvider, Params, Provider
 from .google import GoogleModelId, GoogleProvider
 from .load_provider import load, load_provider
@@ -23,6 +24,9 @@ __all__ = [
     "KNOWN_PROVIDER_IDS",
     "AnthropicModelId",
     "AnthropicProvider",
+    "AzureModelId",
+    "AzureOpenAIProvider",
+    "AzureProvider",
     "BaseOpenAICompletionsProvider",
     "BaseProvider",
     "GoogleModelId",

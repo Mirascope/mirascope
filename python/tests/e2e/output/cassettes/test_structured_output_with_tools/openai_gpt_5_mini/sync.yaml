@@ -1,0 +1,233 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Please look up the book with ISBN 0-7653-1178-X and
+      provide detailed info and a recommendation score","role":"user"}],"model":"gpt-5-mini","text":{"format":{"type":"json_schema","name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object","additionalProperties":false},"strict":true}},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '834'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5xWS2/bOBC++1cIPMcFJduylFuLomiLRTfY5NDuJhAoamSzpkQtOQxqBP7vBSlb
+        D9vKtnuz5+N8857RyywIiCjIbUA0mCajNInKdR6uVqyMYraiNE6XaQTAC0Z5EqY0DXlRlHkcr+KC
+        xvmK3DgKlX8HjicaVRto5VwDQygy5rBwHcdLukgi6jGDDK1xOlxVjQSEolXKGd9ttLK186tk0kAr
+        FlKKekNug5dZEAQBadgetNMv4BmkakCTWRAcWsMnyjPTC4+C1spp1lZKLxD1SSErAJmQZowa1Jaj
+        UPVIXrEfmbLYWMxQ7eASRKVkxpkc01WqAOn83jQ4X80rUYt5RKPVnCZzuj4m1NOS2+AfH2sbcV8r
+        M12pIk04dZViNKIJX8eQLniyXjNP7Elw30BbK2ZU7XLaQcZWFdN7Z/jJyw431xwo+bQD5TJkiXMg
+        iZM0iUKaQ5rEJSwvHSht7bPqczRwYqIzPMj0xlZQo8dfHokwef1Ibh8Jna/j1WIehutk/vWRHHoV
+        x561jvuf9cPbB3yI//o7//zl/X3+4eOHZJ2+/3PXa9Ss8g5uALNcqV0m6lKRNiGzIHjyNWqYZlKC
+        HJcZtW37tdHwLJQ12WkkWhe6Nmi0qhrMOONbyHawn8Q0INQuTcMXfe26eYCyVNoPYQWFsNUxnEFN
+        nXY3IoaVgPtMFI68FDAaCAP6WXDIUJxGrGRWIjlOrtIwDBWhakAztF4cvqFH6Q/svSuVrlj/f9AF
+        342qM8O3UA16tADDtWjOwh4V551Su/tjbH3vtDy9mTabDWgUYEZy54JACWfCgZg8+B83Z+jRb4Pa
+        5X8AHoYvCbO49Wtmiv1t++B/0jdscxHQkP3O4xPkokbYtAtzgt3mUnDmp3MP7LUw7vqnwTf39Dds
+        zq5YJxr+tUJD0a2/kcVrOb6SmNej6cCngd0uomudNQjkeO0GCCsK4ciZvBv2mj9es7MAfWH9sXTz
+        M1yy5Bl0rozA/WCIu3ltt8xWCe6dYBYV6QBzeSrOl+zUbJE/lNoFtgncogvconOD6oqZ74NP9+++
+        vPmvvdjBbiNWgKDNrw6g296vtNYnB//6fPxWN3nTV/vgtWpOt8N0nfs26I8HqiaTatNolTtu2gmb
+        4QbVtm671u9gYVguT19J1rBNv7qIqEefIeEiubkEBh83L/1x5Fsoek066sjzz5s0ugZc4+0OVK8c
+        L0fcqJDJHo0WtOt1a8bnqAJkBUO/1w+zw08AAAD//wMAea2PfLcKAAA=
+    headers:
+      CF-RAY:
+      - 9b1f5ce7beecd79b-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:43:43 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '2839'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '2842'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '4000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_6abe07accc40450cb8bacea83e5a0279
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"content":"Please look up the book with ISBN 0-7653-1178-X and
+      provide detailed info and a recommendation score","role":"user"},{"id":"rs_0082f7b155af26a50069492eed98c08190a0208c76e93c877a","summary":[],"type":"reasoning"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_nTATtT6RZbJNDSbFHF879DOk","name":"get_book_info","type":"function_call","id":"fc_0082f7b155af26a50069492eef41a8819086898210be986fe4","status":"completed"},{"call_id":"call_nTATtT6RZbJNDSbFHF879DOk","output":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25","type":"function_call_output"}],"model":"gpt-5-mini","text":{"format":{"type":"json_schema","name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object","additionalProperties":false},"strict":true}},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1325'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5xW247bOAx9z1cIek4Kx7k6bztACxTYXRSYviyawpAtKlEjS16JGjQY5N8XkhNf
+        ckO7T5PhIY8o8ZD0+4gQKjndEGrB1XmSrFOxKqaLBRPpki2SZJnNsxRAcD4t19MsybJCLNYzwdkK
+        xCwr6ThQmOIHlHihMdpBYy8tMASes4BNV8vlPJmt01nEHDL0LsSUpqoVIPAmqGDlYWeN1yEvwZSD
+        xiyVknpHN+R9RAghtGZHsCGewxsoU4OlI0JOzcEXyuHRs3lEwVoTIrVXKhqkvgTkHJBJ5YaoQ+tL
+        lEYP7BX7mRuPtccczQFuQTRG5SVTQ7rKcFAh712Nk8WkklpO0iRdTJL1JFmdHzTS0g35Fu/a3Lir
+        lXtYKZFkJZ+HShVZOuNiNk1nS+AC1pE4kuCxhqZWzBkd3rSFnK8qZo/h4O/RdhrfS6Byu8cZZGuR
+        xQzW5SzNBCRikWYw5XCbQQXOsV0PeCSKCJZGI+juVfqJDWgvRYGf2EZHB6a1QXYp5LfvA1CZXW1N
+        cQeJRBtC37cUJSrY0s2W/iUdFsbqDfm6B/JJaqbIx6qWFrZ0vKXM497Y6PlimeZGk1emOVhndHSo
+        2Q7clm4W83n4zxdKljG1/AgsBKZJsjzRNo/T+VebGrVGxesy56RDprFxDo7RidbMMqVADYWI1jcd
+        VVt4k8a7/NK0eaxuK9TamqrGvGTlHvIDHB9iFkJdpNF9j05dbceCEMZiU3gufXUuTk91IbptYscE
+        4DGXPJALCYOWdWDfZAk5yssQEMyrpt7UobHQvypCVYNl6KN5+iE5W2Ndz9kJYyvW/d/T0w9ndO7K
+        PVSsUyMHV1pZX107QppVMe7FmMPr+W6dxBueTU+64TVrsCjBDewhhaC3K2PPTL/GH+Mr9Jy3Qxve
+        vweehu0QNfqE/Y/G4X/SR4U/Yf8S8QfkUiPsmpH+gP2qY54d1LmSf4Lrb5w5unM6tfCvlxb4YBS1
+        J9574zsP8/w2LdgbRd2N7imrPwCbfdxDGOcykDP1pa+1uF5HVxeMhY3rPPRPfw3QN7CFcRKPvSZu
+        +7WZMnsjy2YseTS0BdztMrtkK7yOy/VRb9E/jTkQX5Mi/JW6adRQzOJIPr++/P2B3rTeDjAP7nlw
+        7+AwEStAsO5XG1C6Qj+R1ucA/3p//Jaa4tF3dfCsmo/l8LjOnQy65YGmznsrMWmNdX+CWq8b1cYZ
+        LB0r1OU7zsfV3o5XqQcfSrMkHd8Cvc+vViZxx/AuMhko8voDbLla3UPuEbcbqhc9H7KjQaY6OFtl
+        rdq9Gy6kCpBxhnGyn0an/wAAAP//AwChO3QoWwsAAA==
+    headers:
+      CF-RAY:
+      - 9b1f5cfa8982d79b-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:43:54 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '10387'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '10391'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999813'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 2ms
+      x-request-id:
+      - req_ad2941956bc24b40b7ce7628085e067b
+    status:
+      code: 200
+      message: OK
+version: 1

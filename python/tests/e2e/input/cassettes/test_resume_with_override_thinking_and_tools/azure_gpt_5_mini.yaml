@@ -1,0 +1,161 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '420'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.13.3
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/3VU2XbiOBB95yt0/NIzgbA4GEPP6YfErM0SFoeGTOZ0hC3bAlsyWkJMTv59ZBMS
+        yGR4MHZV3aqrW6p6yQGgOZC42IUCce07+FtZAHjJnqmPEoGIUI6jSRljyMRH7OH3cvKuQgR6TkHa
+        xcWMhk+Y+MCjDIgAga4kLkOuCEAbryiBjoPBSEYrxC4uHsgDud3ApAA4zYIlRwzsIBE8+6yUy2c4
+        kuGKAIwoiBldhShSHz2wIXSn/gL4hDLco4s8KEPxG8a46NAolgL99vDqEXiSOAJTAqAAUQJczGPK
+        YfiXgkHxjQMXcewT5AIeIwd72IFhmLydBXOwwcQF1APK7MgQppkUAVuVVHSiWAAV44QIsu+Kzlpy
+        AQhSyQRNEWFW5J3CGxATxQ4oiWGEhDq9yvBIHgtgF2AnyOA8xa8Q4Eikb0oUBTrwcSBHKk8L8gTE
+        SD2LD0QrfGpNQKUfpN0RTKIT32vh//t5JGkp2meX4c1PFNu03yfifqqrgiDz+RfgFK7M6hyfHK9n
+        369fn2Om+gOFZFl5S/ZurheDnk728q51b/flcsOug+b9xHPDtVnZ7Ktb1OQGt9r2YhIZ+QqebdfV
+        wRXetyw0m3e2aFrWUWUl1r/8xfP1bWcx+Vk3yZi097VabMbR7lfSpDO6NRfTjqx2u926afF5KQh3
+        tepgPOWjZN/v2U1h2ZMR021WomtrLI1ulPRh3EL2HWPrZUKcyZYJnDe4Pu+JG91JanC4y0+kz9mo
+        6uStGd7fJF6J1kmn1MANXht2nafkpoTK49EYDeub7TjurNrhwGrHU2//VLtbVDsdo7EK68ncvMqv
+        93kJK8kzGZlLblbNbaNRXi4niW/o1X0738fh3B9XoL/78UPLfaX4Px9qa4yGmboRdVF4DH9vh+Zh
+        gnkwVdeNpn3UZvbt+L35mpoQ9KzM5U/xQ8Q59LO8wzQv8BFBTG0h92Mo0yH5g/9ZPNRMyWW0NJki
+        h0hAtbXg+43SDjNn0w0iFpXZ1jKMQ9mTJXfmr5hvfkEFDM9dul74T17eVFVxeLr9ThajEgiGWCTp
+        oezWwj4ZAVXgjNZRxdyJ2McrfU7RSMciU/vQgDliHB+U9lGktLzUi8alF0IeZPU0htQSIxz13DTm
+        Crd/Qm/QHd6Tlc7o2L/s7/hkouVec/8CptkAQf4FAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 22 Dec 2025 10:47:58 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2155
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is the 100th fibonacci number?"},{"role":"assistant","content":null,"tool_calls":[{"id":"google_unknown_tool_id","type":"function","function":{"name":"compute_fib","arguments":"{\"n\":
+      100}"}}]},{"role":"tool","content":"218922995834555169026","tool_call_id":"google_unknown_tool_id"}],"model":"gpt-5-mini","tools":[{"type":"function","function":{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '619'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"protected_material_code":{"filtered":false,"detected":false},"protected_material_text":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}},"finish_reason":"stop","index":0,"logprobs":null,"message":{"annotations":[],"content":"218922995834555169026","refusal":null,"role":"assistant"}}],"created":1766400479,"id":"chatcmpl-CpXkFvbtdfQHIkRunJkKD9pykG8FZ","model":"gpt-5-mini-2025-08-07","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"jailbreak":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}}}],"system_fingerprint":null,"usage":{"completion_tokens":11,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":0,"rejected_prediction_tokens":0},"prompt_tokens":178,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":189}}
+
+        '
+    headers:
+      Content-Length:
+      - '1222'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 10:47:58 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 1a904bc7-2034-4338-9c2e-c166cb099bd0
+      azureml-model-session:
+      - d20251213051733-292ce4569f3c4ea8
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-5-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '100'
+      x-ratelimit-limit-tokens:
+      - '100000'
+      x-ratelimit-remaining-requests:
+      - '89'
+      x-ratelimit-remaining-tokens:
+      - '83107'
+      x-request-id:
+      - 07658f87-ad40-4cc3-92fe-b6c519b77c8a
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -5,7 +5,7 @@ from typing import get_type_hints
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import E2E_MODEL_IDS
+from tests.e2e.conftest import PARAMS_MODEL_IDS
 from tests.utils import (
     Snapshot,
     response_snapshot_dict,
@@ -34,7 +34,7 @@ def test_all_params_includes_every_param() -> None:
     )
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", PARAMS_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_params(
     model_id: llm.ModelId,

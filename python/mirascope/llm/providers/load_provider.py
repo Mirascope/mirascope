@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from .anthropic import AnthropicProvider
+from .azure import AzureProvider
 from .base import Provider
 from .google import GoogleProvider
 from .mlx import MLXProvider
@@ -32,6 +33,8 @@ def load_provider(
     match provider_id:
         case "anthropic":
             return AnthropicProvider(api_key=api_key, base_url=base_url)
+        case "azure":
+            return AzureProvider(api_key=api_key, base_url=base_url)
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)

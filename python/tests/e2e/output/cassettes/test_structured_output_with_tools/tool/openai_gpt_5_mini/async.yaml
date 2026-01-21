@@ -1,0 +1,242 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score","role":"user"}],"model":"gpt-5-mini","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1226'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//vFZLb+M2EL7nVxA6xwtaii07t+5ld4E2SJG26LYJCIoa2YwpUSWH2biB
+        /3tBynr5kU1aoCfLM5xvHt8Mhy8XhEQyj65JZMDWjFJa0ITmeZHS6RKA0vnyahkX02kcJ4vFdJlk
+        +ZzmcZrFVCzjosijSw+hs0cQ2MLoykIjFwY4Qs64103T+fyKJotZGnQWOTrrbYQuawUIe7CMi83K
+        aFf5uAquLDRiqZSsVtE1ebkghJCo5lsw3j6HJ1C6BhNdELJrHLeQY9dzGrRgjPaWlVMqCGTVGrAc
+        kEtlx1qLxgmUuhrJS/7MtMPaIUO9gWMlaq2Y4GoMV+oclI97VeNkNillJScxjWcTupjQdF/QABtd
+        kz9Drk3GPVf2FaZgkQnP1HJRFJAkaUoXNL0qGuAAgtsaGq641ZWvaaeyriy52XrHD0G2uzwVQCHO
+        B3DFY6ChVVIu5jSZxWKazIRIjgMoXBWqGmo0COJMZwQlNytXQoVB/3IfSZtV99H1fUQn6XyWTKbT
+        dDH5/T7a9SYenTWBh8/Hr/y37eNzrj/97LKbnz7/8Rn/vpl9u+stKl6GAFeALNN6w2RV6KgpyAUh
+        D4GjmhuuFKgxzWhc06+1gSepnWXtSDQhdG1QG13WyAQXa2Ab2J7VGUCofJmGJ3ruunmAotAmDGEJ
+        uXTlPp0Bp966GxHLC8Atk7kHLySMBsKCeZICGMp2xAruFEb7ydUGhqkilDUYji6Ipx/oXvqMfXSF
+        NiXv/w+6IJwbNlv0BCbTVuJ2kEwXd1PttZYCevQWiyulv0EeKLFtAfzANf3+l5Oma6aoOdTOWN/k
+        Jzq0a43Xm6NL4d1gjJXScCt0Dawplb+8uttFK8Y6F+H3YVQQe3xVnPUa5WCFkfW+paIftd4QVxOf
+        C/G5eO9SVyTbki93H28+fG8uOrWfiBIQjB3w3LRzDQYljOX+OrFZdSDzoUtUwc8Xr748UO7zsmh8
+        +w+Uu+57N6hwx3pPdO+6EzwMLHieS18Arm6HgXer6CCQ/fI7bIAQYFiKwfDkbfpmjn61QHAtLfFk
+        E9QEntFwgSTnyImsyEetN3fNoJOGQf9DOClkxRVp76ATXL6l8/4Dwy2X5yj+JXy8nePhyYg7XIdN
+        fg79h+bAv4Sv+eoooSH6bdCfAZcVwqp5k5xBd5mSIowa2wJ/LY3b/ij56o++w+e7hgKP2GhrfKIw
+        r2fzv4yWX0EHaxl1zZRe1UZnHpp2wnq4m4yrmmDDdpOWZ6p9fzrLV4PVIqvRA2/aPF8PFINn40v/
+        7BDrsIr2lnS04w4fjnFMT2lOAXe7fxDVMh6ho0auenWSpt26cHa86ktA7m8R72F3sfsHAAD//wMA
+        DfY5SxMMAAA=
+    headers:
+      CF-RAY:
+      - 9b1f5dca4c57e36d-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:44:21 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '3980'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '3985'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '4000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_15f867572dab4272af087e5422235a13
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score","role":"user"},{"id":"rs_000f030ddf7019ee0069492f11e8bc819398ffe337708074f7","summary":[],"type":"reasoning"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_jYaVyjxdoGQubNMHZHtzN5wS","name":"get_book_info","type":"function_call","id":"fc_000f030ddf7019ee0069492f14a2e08193b7ac60352c135cc3","status":"completed"},{"call_id":"call_jYaVyjxdoGQubNMHZHtzN5wS","output":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25","type":"function_call_output"}],"model":"gpt-5-mini","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1717'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//vFZZb+M2EH73ryD0bAeSLZ9vDXpg0Wyw2OwWu6gDgaJGNmuKVMlRGiPw
+        fy9IWpePIJsCfbI8w/nm+obDlwEhAc+CFQk0mDIJwzAPJ2GW5fMwWgKE4WwZL8d5NI3n03gRLScL
+        mOZLBuM8jqL5bLkMhhZCpX8BwxpGSQNezjRQhCyhVhfNZ7M4nCxmkdMZpFgZa8NUUQpAyLxRStlu
+        o1UlbVw5FQa8mAvB5SZYkZcBIYQEJd2DtvYZPIFQJehgQMjBO64hT1wvnBa0VtZSVkI4AZe1QZIB
+        Ui5MX2tQVwy5kj15QZ8TVWFZYYJqB+dKVEokjIo+XKEyEDbuTYmj6ajgko/G4Xg6ChejcH4sqIMN
+        VuRPl6vPuO2Vud6pWTSbu04tJ2kUUhaHGUCczqkDdiC4L8H3iholbU0blamKguq9dfzoZIfhpQBy
+        dj2AdDYdMxdACGxB0+kkWuRjli/PA8gr6arqatQJ4goznJLqTVWARKd/WQfIUcA6WK2Dj9xgqrRc
+        kS9bIL9ySQX5pSi5hnUwXAe0wq3S7uStpjJTkjxQmYE2SroDJd2AWQeraRzbf1UqOKMuvD1QazgO
+        w9mhjcQGnfh6uM+73789fL77iPlvP883+ed7yv6I7qJ7bC0kLVzeSVJwTQ1TJSS50gVFy9SGSkok
+        SeCrPyDk0RGipJoKAaLPKdSVH45SwxNXlUnq+fOBNZwrtSpKTBhlW0h2sL+q04AgbdLdEy1RmuGD
+        PFfaTXwBGa+KY5IdAlnrZh4NzQH3Cc8seM6hN30G9BNnkCCv5zmnlfB1CwwqDd1UEYoSNMXKiaOb
+        8Ch9xjY6X9Tmf4dy7lyX2cET6FQZjvtOMk3cvtpbxRm06DUWFUL9A5lriakLYKfbD9ffFdcNcwN/
+        qB7odqIujENDmA5lNoBJqtQu4TJXwVF/GL4P7M388wwk5LFXEHN+L131GmRgmOblkVLBnVI7UpXE
+        5kJsLtY7V5Kke/Lh4fb+5nxa+qk3ajsRBSBo0+mzp3MJGjn05fbuMqk8kdnQ7QVi/Xyw6uGJ8piX
+        QW3p31Eemu9Dp8JN19tGt64bwWPHgmYZtwWg4lM38GbvnQRy3LSnBHABug3sDC9e3W/u0VcDBLfc
+        ENtsgorAM2rKkGQUKeGS3Cq1e/CDTnwH7Q+hJHeXbn0H3bzv5vsPHa57ea3FX9zH23vcPXlcIK+g
+        /+QPvBPerZ9X0D85/RVwLhE2/gF0Bf1knb3mqD1KvtujP+Dzh4YCz7pR1/hCYV7P5n8ZLbuCTtYy
+        qjIRalNqlVrosBGW3d2kK+mDdduNG5qK+rFbGbrprBYue6/JOJ4PzxWdN+pL+xhhW7eKjpZhb8ed
+        vlLjyeSS5hJws/tb68ki7qGjQipa9WIRNuuiMv1VXwBSe4tYD4fB4V8AAAD//wMAPTXQQYAMAAA=
+    headers:
+      CF-RAY:
+      - 9b1f5de46fbbe36d-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 11:44:28 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '7110'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '7113'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '4000000'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_412ba4b0e31b41838b92462572c25dca
+    status:
+      code: 200
+      message: OK
+version: 1

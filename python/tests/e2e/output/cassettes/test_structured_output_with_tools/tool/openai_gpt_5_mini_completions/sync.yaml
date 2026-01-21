@@ -1,0 +1,232 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"role":"user","content":"Please
+      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}],"model":"gpt-5-mini","tool_choice":"required","tools":[{"type":"function","function":{"name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}},{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1102'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RTXW+bMBR951dY9zlMkJTw8VZNU/uyaNKUtdpSIcdcwKuxmW2mtVH++wQkmLQp
+        D8i6x+fc43Ptg0cI8AIyAqymljWt8D+3P2/vk/JrFW4Dvtls0yTe3j3c3hW1Tu9h0TPU/jcye2Z9
+        YqppBVqu5AgzjdRirxrG6/VNEKWreAAaVaDoaVVr/chvuOT+MlhGfpD4QXwi14ozNJCRXx4hhByG
+        f29TFvgPMhIszpUGjaEVQjZtIgS0En0FqDHcWCotLBzIlLQoe+eyE2IGWKVEzqgQrvH4HWZrlxUV
+        It//+PK9FPFNaR5rXumHzWv859ur5LN+o/RLOxgqO8mmjGb4VM/eNCMEJG0GboU23yv1nHNZqjcC
+        hADVVdegtL15OOyAm73cQbaDwI/X0coPwzjxH3dwhAvm0bu2fprForHsDBXv86JSKkt720NgTyfk
+        OM2m5JKbOtdIzXC0ecLeueHQCrqLIUKrVdPa3KpnHMSXq2RUBXfPHJou4xNqlaXCAWG4jhZXFPMC
+        LeXDnKerxSirsXBcd8VoV3A1A7zZKd/7uaY9JsBl5VSSdP1hAwcwhq3FIm81Fpxdntpt09g/xY+2
+        TUkPlsGg/ssZ5paj7mdSYEk7Mb4QMC/GYpOXXFaoW82nZ+Idvf8AAAD//wMAShPcdigEAAA=
+    headers:
+      CF-RAY:
+      - 9b1f90914a2aef1e-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:19:13 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '16126'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '16145'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999945'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_edac913a2b1e419586965d39095cb2c1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"role":"user","content":"Please
+      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"},{"role":"assistant","annotations":[],"tool_calls":[{"id":"call_bVESfl74fsXhigrWNz7qPzni","function":{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","name":"get_book_info"},"type":"function"}]},{"role":"tool","content":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25","tool_call_id":"call_bVESfl74fsXhigrWNz7qPzni"}],"model":"gpt-5-mini","tool_choice":"required","tools":[{"type":"function","function":{"name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}},{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1462'
+      content-type:
+      - application/json
+      cookie:
+      - <filtered>
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RTXW/TMBR9z6+w/NygkLYp5I2PfQhtEzAGU+lk3Tq3qYdjG9sZjKr/Hdldk2zr
+        8hAlPvece+6HNwkhVFS0JJSvwfPGyPSDmb+7zr8cHf2eL6/+ma9Xk+n3i4+fTi/O1O01HQWGXt4i
+        93vWK64bI9ELrXYwtwgeg+rrWVFMsunb6TgCja5QBlptfDpNG6FEmmf5NM3epNnsgbzWgqOjJfmZ
+        EELIJr6DTVXhX1qSbLQ/adA5qJGWXRAh1GoZTig4J5wH5emoB7lWHlVwrlopB4DXWjIOUvaJd89m
+        8N33CqRkmfiRz9rj83p+cvbn8qT4fDeWWSFOB/l20vcmGlq1inc9GuDdefkkGSFUQRO5jDXCguPa
+        IFtp24D3WDHdetN6Fr2zJ7KEULB126DyoSS6WVAvvMQFLRf0XDi/1FaV5NsaybFQIMlRY4TFBR0t
+        KLR+rW2MfG9BVVqRS1AVWqdVDDBQo1vQcjqZhL92KQWHUAO7RwjEPMuKLX1kaJsc+r4ZzMDiqnUg
+        nw8HlNI+6sfp3Dwg224RVkIJt2YWwcU+DseZ7BPGVLR9tDHUWN2Y0MJfGMXH2WSnSvulHqCz/AH1
+        2oPsgWJWjA4Isgo9iLhT3Rpz4Gusemq/ztBWQg+AZFDkczuHtHcNEKoeWM5fTtADnKMJG2UsVoI/
+        LroPsxiu/UthXaOjZerQ3gmOzAu0YSQVrqCVu9tI3b3z2LCVUDVaY0V3JZNt8h8AAP//AwCy0MEO
+        lAQAAA==
+    headers:
+      CF-RAY:
+      - 9b1f90f75b53ef1e-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 22 Dec 2025 12:19:18 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '5456'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '5477'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999919'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_150ff426546b4da8a1c465b5251463ae
+    status:
+      code: 200
+      message: OK
+version: 1
