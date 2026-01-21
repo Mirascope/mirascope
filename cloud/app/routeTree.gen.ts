@@ -51,6 +51,7 @@ import { Route as ApiV2HealthRouteImport } from './routes/api.v2.health'
 import { Route as ApiV2DocsRouteImport } from './routes/api.v2.docs'
 import { Route as ApiV2SplatRouteImport } from './routes/api.v2.$'
 import { Route as RouterV2ProviderSplatRouteImport } from './routes/router.v2.$provider.$'
+import { Route as CloudTraceViewTraceIdSpanIdRouteImport } from './routes/cloud/trace-view.$traceId.$spanId'
 
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
@@ -264,6 +265,12 @@ const RouterV2ProviderSplatRoute = RouterV2ProviderSplatRouteImport.update({
   path: '/router/v2/$provider/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CloudTraceViewTraceIdSpanIdRoute =
+  CloudTraceViewTraceIdSpanIdRouteImport.update({
+    id: '/trace-view/$traceId/$spanId',
+    path: '/trace-view/$traceId/$spanId',
+    getParentRoute: () => CloudRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/functions': typeof CloudFunctionsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
+  '/cloud/trace-view/$traceId/$spanId': typeof CloudTraceViewTraceIdSpanIdRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
 }
 export interface FileRoutesByTo {
@@ -348,6 +356,7 @@ export interface FileRoutesByTo {
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/functions': typeof CloudFunctionsIndexRoute
   '/cloud/settings': typeof CloudSettingsIndexRoute
+  '/cloud/trace-view/$traceId/$spanId': typeof CloudTraceViewTraceIdSpanIdRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
 }
 export interface FileRoutesById {
@@ -393,6 +402,7 @@ export interface FileRoutesById {
   '/docs/v1/$': typeof DocsV1SplatRoute
   '/cloud/functions/': typeof CloudFunctionsIndexRoute
   '/cloud/settings/': typeof CloudSettingsIndexRoute
+  '/cloud/trace-view/$traceId/$spanId': typeof CloudTraceViewTraceIdSpanIdRoute
   '/router/v2/$provider/$': typeof RouterV2ProviderSplatRoute
 }
 export interface FileRouteTypes {
@@ -439,6 +449,7 @@ export interface FileRouteTypes {
     | '/docs/v1/$'
     | '/cloud/functions'
     | '/cloud/settings/'
+    | '/cloud/trace-view/$traceId/$spanId'
     | '/router/v2/$provider/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -480,6 +491,7 @@ export interface FileRouteTypes {
     | '/docs/v1/$'
     | '/cloud/functions'
     | '/cloud/settings'
+    | '/cloud/trace-view/$traceId/$spanId'
     | '/router/v2/$provider/$'
   id:
     | '__root__'
@@ -524,6 +536,7 @@ export interface FileRouteTypes {
     | '/docs/v1/$'
     | '/cloud/functions/'
     | '/cloud/settings/'
+    | '/cloud/trace-view/$traceId/$spanId'
     | '/router/v2/$provider/$'
   fileRoutesById: FileRoutesById
 }
@@ -844,6 +857,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RouterV2ProviderSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cloud/trace-view/$traceId/$spanId': {
+      id: '/cloud/trace-view/$traceId/$spanId'
+      path: '/trace-view/$traceId/$spanId'
+      fullPath: '/cloud/trace-view/$traceId/$spanId'
+      preLoaderRoute: typeof CloudTraceViewTraceIdSpanIdRouteImport
+      parentRoute: typeof CloudRoute
+    }
   }
 }
 
@@ -893,6 +913,7 @@ interface CloudRouteChildren {
   CloudIndexRoute: typeof CloudIndexRoute
   CloudFunctionsFunctionNameRoute: typeof CloudFunctionsFunctionNameRoute
   CloudFunctionsIndexRoute: typeof CloudFunctionsIndexRoute
+  CloudTraceViewTraceIdSpanIdRoute: typeof CloudTraceViewTraceIdSpanIdRoute
 }
 
 const CloudRouteChildren: CloudRouteChildren = {
@@ -905,6 +926,7 @@ const CloudRouteChildren: CloudRouteChildren = {
   CloudIndexRoute: CloudIndexRoute,
   CloudFunctionsFunctionNameRoute: CloudFunctionsFunctionNameRoute,
   CloudFunctionsIndexRoute: CloudFunctionsIndexRoute,
+  CloudTraceViewTraceIdSpanIdRoute: CloudTraceViewTraceIdSpanIdRoute,
 }
 
 const CloudRouteWithChildren = CloudRoute._addFileChildren(CloudRouteChildren)
