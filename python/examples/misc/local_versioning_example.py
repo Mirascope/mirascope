@@ -20,12 +20,8 @@ from mirascope import llm, ops
 from mirascope.api.client import create_export_client
 from mirascope.ops._internal.exporters import MirascopeOTLPExporter
 
-os.environ["MIRASCOPE_API_KEY"] = "mk_O-znVN2LXoE5TAR4_N42IE9s0PWaJkELyHvqHxwRbzU"
-
 BASE_URL = os.getenv("MIRASCOPE_BASE_URL", "http://localhost:3000/api/v2")
-API_KEY = os.getenv(
-    "MIRASCOPE_API_KEY", "mk_O-znVN2LXoE5TAR4_N42IE9s0PWaJkELyHvqHxwRbzU"
-)
+API_KEY = os.getenv("MIRASCOPE_API_KEY")
 
 if not API_KEY:
     print("ERROR: MIRASCOPE_API_KEY environment variable is required")
