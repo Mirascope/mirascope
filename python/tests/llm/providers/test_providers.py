@@ -38,6 +38,17 @@ def test_register_provider_openai() -> None:
     assert provider.client.api_key == os.getenv("OPENAI_API_KEY")
 
 
+def test_register_provider_azure() -> None:
+    """Test that register_provider('azure') returns same instance on multiple calls."""
+    provider = llm.register_provider("azure")
+    provider2 = llm.register_provider("azure")
+
+    assert isinstance(provider, llm.providers.AzureProvider)
+    assert provider is provider2
+    assert provider.client is not None
+    assert provider.client.api_key == os.getenv("AZURE_OPENAI_API_KEY")
+
+
 @pytest.mark.skipif(sys.platform != "darwin", reason="MLX is only available on macOS")
 def test_get_register_provider_mlx() -> None:
     """Test that register_provider('mlx') returns same instance on multiple calls."""

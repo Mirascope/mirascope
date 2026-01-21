@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What''s the weather like in San
+      Francisco?"}],"model":"gpt-5-mini","tools":[{"type":"function","function":{"name":"get_current_weather","description":"Get
+      the current weather in a given location.\n\nArgs:\n    location: The city and
+      state, e.g. San Francisco, CA\n    unit: The temperature unit to use (fahrenheit
+      or celsius)","parameters":{"properties":{"location":{"description":"The city
+      and state, e.g. San Francisco, CA","title":"Location","type":"string"},"unit":{"default":"fahrenheit","description":"The
+      temperature unit to use (fahrenheit or celsius)","title":"Unit","type":"string"}},"required":["location","unit"],"additionalProperties":false,"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '726'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/v1/chat/completions
+  response:
+    body:
+      string: '{"choices":[{"content_filter_results":{},"finish_reason":"tool_calls","index":0,"logprobs":null,"message":{"annotations":[],"content":null,"refusal":null,"role":"assistant","tool_calls":[{"function":{"arguments":"{\"location\":\"San
+        Francisco, CA\",\"unit\":\"fahrenheit\"}","name":"get_current_weather"},"id":"call_gBDA0HabU3KxMtyH9AS4o3G5","type":"function"}]}}],"created":1768970564,"id":"chatcmpl-D0KLEHGD6qpgt1YYhPJKsUExWehmj","model":"gpt-5-mini-2025-08-07","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_results":{"hate":{"filtered":false,"severity":"safe"},"jailbreak":{"filtered":false,"detected":false},"self_harm":{"filtered":false,"severity":"safe"},"sexual":{"filtered":false,"severity":"safe"},"violence":{"filtered":false,"severity":"safe"}}}],"system_fingerprint":null,"usage":{"completion_tokens":97,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":64,"rejected_prediction_tokens":0},"prompt_tokens":211,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":308}}
+
+        '
+    headers:
+      Content-Length:
+      - '1089'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Jan 2026 04:42:45 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 243ae99a-6009-49ad-896c-240bfa37a612
+      azureml-model-session:
+      - d20251213060749-4c168926ab4c4fa3
+      x-accel-buffering:
+      - 'no'
+      x-content-type-options:
+      - nosniff
+      x-ms-client-request-id:
+      - Not-Set
+      x-ms-deployment-name:
+      - gpt-5-mini
+      x-ms-rai-invoked:
+      - 'true'
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '100'
+      x-ratelimit-limit-tokens:
+      - '100000'
+      x-ratelimit-remaining-requests:
+      - '97'
+      x-ratelimit-remaining-tokens:
+      - '99754'
+      x-request-id:
+      - 202c9996-726e-41df-adbf-294778588c32
+    status:
+      code: 200
+      message: OK
+version: 1

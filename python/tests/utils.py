@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
+import os
 from collections.abc import Generator
 from typing import Any, TypeAlias
 
@@ -12,6 +13,24 @@ import pytest
 from mirascope import llm
 
 Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
+
+_DUMMY_AZURE_OPENAI_ENDPOINT = "https://dummy.openai.azure.com"
+
+
+def _normalize_azure_endpoint(value: str) -> str:
+    endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+    if not endpoint:
+        return value
+    normalized_endpoint = endpoint.rstrip("/")
+    value = value.replace(
+        f"{normalized_endpoint}/openai/v1/",
+        f"{_DUMMY_AZURE_OPENAI_ENDPOINT}/openai/v1/",
+    )
+    value = value.replace(
+        f"{normalized_endpoint}/openai/v1", f"{_DUMMY_AZURE_OPENAI_ENDPOINT}/openai/v1"
+    )
+    value = value.replace(normalized_endpoint, _DUMMY_AZURE_OPENAI_ENDPOINT)
+    return value
 
 
 def format_snapshot(
@@ -117,7 +136,7 @@ def exception_snapshot_dict(exception: Exception) -> dict[str, Any]:
     return {
         "type": type(exception).__name__,
         **{
-            attr: str(getattr(exception, attr))
+            attr: _normalize_azure_endpoint(str(getattr(exception, attr)))
             for attr in dir(exception)
             if not attr.startswith("_") and not callable(getattr(exception, attr))
         },
