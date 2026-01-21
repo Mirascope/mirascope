@@ -65,7 +65,7 @@ else
   # URL-encode credentials to handle special characters (@, &, ?, :, etc.)
   encoded_user=$(printf %s "$clickhouse_user" | jq -sRr @uri)
   encoded_password=$(printf %s "$clickhouse_password" | jq -sRr @uri)
-  database_url="clickhouse://${host}:${migrate_port}/${clickhouse_database}?username=${encoded_user}&password=${encoded_password}${secure_param}&x-multi-statement=true&x-migrations-table=clickhouse_migrations&x-migrations-table-engine=MergeTree"
+  database_url="clickhouse://${host}:${migrate_port}/${clickhouse_database}?username=${encoded_user}&password=${encoded_password}${secure_param}&x-multi-statement=true&x-migrations-table=${clickhouse_database}.clickhouse_migrations&x-migrations-table-engine=MergeTree"
 fi
 
 # Global temp_dir for cleanup trap (must be global for EXIT trap to access)
@@ -133,7 +133,11 @@ case "$command" in
     fi
     ;;
   migrate)
-    run_migrate up
+    echo "Running ClickHouse migrations..."
+    echo "Database: $clickhouse_database"
+    echo "Host: ${clickhouse_url#*://}"
+    run_migrate up -verbose
+    echo "Migrations complete."
     ;;
   *)
     usage
