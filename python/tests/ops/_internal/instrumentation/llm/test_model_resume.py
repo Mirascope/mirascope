@@ -9,9 +9,7 @@ from unittest.mock import Mock
 import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
-    InMemorySpanExporter,
-)
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from mirascope import llm, ops
 from tests.ops.utils import span_snapshot
@@ -74,7 +72,7 @@ def test_model_resume_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The current weather in Tokyo is 72°F and sunny."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 14,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Tokyo?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_CeSmJnilYrx5gzGCtEYJkUwC","name":"get_weather","args":"{\\"location\\":\\"Tokyo\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_CeSmJnilYrx5gzGCtEYJkUwC","name":"get_weather","result":"Weather in Tokyo: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Tokyo?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_CeSmJnilYrx5gzGCtEYJkUwC","name":"get_weather","args":"{\\"location\\":\\"Tokyo\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_CeSmJnilYrx5gzGCtEYJkUwC","name":"get_weather","result":"Weather in Tokyo: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The current weather in Tokyo is 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
             },
@@ -130,7 +128,7 @@ async def test_model_resume_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Paris is sunny with a temperature of 72°F."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 16,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Paris?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_ck0mvg6B86ddvfXFnWultLpX","name":"get_weather","args":"{\\"location\\":\\"Paris\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_ck0mvg6B86ddvfXFnWultLpX","name":"get_weather","result":"Weather in Paris: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Paris?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_ck0mvg6B86ddvfXFnWultLpX","name":"get_weather","args":"{\\"location\\":\\"Paris\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_ck0mvg6B86ddvfXFnWultLpX","name":"get_weather","result":"Weather in Paris: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Paris is sunny with a temperature of 72°F."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":16,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":96}',
             },
@@ -187,7 +185,7 @@ def test_model_resume_stream_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in London is sunny, with a temperature of 72°F."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 17,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in London?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather","args":"{\\"location\\":\\"London\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather","result":"Weather in London: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in London?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather","args":"{\\"location\\":\\"London\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_n6ENKpuZMXStFHYooHMIdkI1","name":"get_weather","result":"Weather in London: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in London is sunny, with a temperature of 72°F."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":17,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":97}',
             },
@@ -245,7 +243,7 @@ async def test_model_resume_stream_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Berlin is currently 72°F and sunny."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 14,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Berlin?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_kP2gia5asZ8fLNuJfLOEZqvD","name":"get_weather","args":"{\\"location\\":\\"Berlin\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_kP2gia5asZ8fLNuJfLOEZqvD","name":"get_weather","result":"Weather in Berlin: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Berlin?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_kP2gia5asZ8fLNuJfLOEZqvD","name":"get_weather","args":"{\\"location\\":\\"Berlin\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_kP2gia5asZ8fLNuJfLOEZqvD","name":"get_weather","result":"Weather in Berlin: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Berlin is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
             },
@@ -301,7 +299,7 @@ def test_model_context_resume_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Sydney is currently 72°F and sunny."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 14,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Sydney?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_WaUuUqAuyaPXEDenDhDiTT86","name":"get_weather","args":"{\\"location\\":\\"Sydney\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_WaUuUqAuyaPXEDenDhDiTT86","name":"get_weather","result":"Weather in Sydney: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Sydney?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_WaUuUqAuyaPXEDenDhDiTT86","name":"get_weather","args":"{\\"location\\":\\"Sydney\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_WaUuUqAuyaPXEDenDhDiTT86","name":"get_weather","result":"Weather in Sydney: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Sydney is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
             },
@@ -358,7 +356,7 @@ async def test_model_context_resume_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Toronto is 72°F and sunny."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 13,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Toronto?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_kOQZ6ugCR9mv9T22cullWbcx","name":"get_weather","args":"{\\"location\\":\\"Toronto\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_kOQZ6ugCR9mv9T22cullWbcx","name":"get_weather","result":"Weather in Toronto: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Toronto?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_kOQZ6ugCR9mv9T22cullWbcx","name":"get_weather","args":"{\\"location\\":\\"Toronto\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_kOQZ6ugCR9mv9T22cullWbcx","name":"get_weather","result":"Weather in Toronto: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Toronto is 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":13,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":93}',
             },
@@ -416,7 +414,7 @@ def test_model_context_resume_stream_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Mumbai is currently 72°F and sunny."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 80,
                 "gen_ai.usage.output_tokens": 14,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Mumbai?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather","args":"{\\"location\\":\\"Mumbai\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather","result":"Weather in Mumbai: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Mumbai?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather","args":"{\\"location\\":\\"Mumbai\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_D3VTNzxwSAaUHBRiNLeJudFA","name":"get_weather","result":"Weather in Mumbai: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Mumbai is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":80,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":94}',
             },
@@ -475,7 +473,7 @@ async def test_model_context_resume_stream_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"The weather in Cairo is currently 72°F and sunny."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 81,
                 "gen_ai.usage.output_tokens": 14,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Cairo?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather","args":"{\\"location\\":\\"Cairo\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather","result":"Weather in Cairo: 72°F, sunny"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What\'s the weather in Cairo?"}],"name":null},{"role":"assistant","content":[{"type":"tool_call","id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather","args":"{\\"location\\":\\"Cairo\\"}"}],"name":null},{"role":"user","content":[{"type":"tool_output","id":"call_eg35cztygTdIOnJ7l1Ux1wHT","name":"get_weather","result":"Weather in Cairo: 72°F, sunny"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"The weather in Cairo is currently 72°F and sunny."}]',
                 "mirascope.response.usage": '{"input_tokens":81,"output_tokens":14,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":95}',
             },

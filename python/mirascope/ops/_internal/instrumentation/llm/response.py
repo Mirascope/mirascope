@@ -3,12 +3,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    cast,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, cast, overload
 
 from .....llm import (
     AsyncContextResponse,
@@ -25,7 +20,7 @@ from .....llm import (
     UserContent,
 )
 from ...spans import Span as MirascopeSpan
-from .serialize import attach_mirascope_response
+from .serialize import attach_mirascope_response, attach_mirascope_response_async
 
 if TYPE_CHECKING:
     pass
@@ -77,8 +72,8 @@ def _instrumented_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
@@ -133,15 +128,15 @@ async def _instrumented_async_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
             "AsyncResponse | AsyncResponse[FormattableT]",
             await _ORIGINAL_ASYNC_RESPONSE_RESUME(cast(Any, self), content),
         )
-        attach_mirascope_response(span, result)
+        await attach_mirascope_response_async(span, result)
         return result
 
 
@@ -193,8 +188,8 @@ def _instrumented_context_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
@@ -253,8 +248,8 @@ async def _instrumented_async_context_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
@@ -263,7 +258,7 @@ async def _instrumented_async_context_response_resume(
                 cast(Any, self), ctx, content
             ),
         )
-        attach_mirascope_response(span, result)
+        await attach_mirascope_response_async(span, result)
         return result
 
 
@@ -311,8 +306,8 @@ def _instrumented_stream_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
@@ -367,15 +362,15 @@ async def _instrumented_async_stream_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
             "AsyncStreamResponse | AsyncStreamResponse[FormattableT]",
             await _ORIGINAL_ASYNC_STREAM_RESPONSE_RESUME(cast(Any, self), content),
         )
-        attach_mirascope_response(span, result)
+        await attach_mirascope_response_async(span, result)
         return result
 
 
@@ -427,8 +422,8 @@ def _instrumented_context_stream_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
@@ -492,8 +487,8 @@ async def _instrumented_async_context_stream_response_resume(
         span.set(
             **{
                 "mirascope.type": "response_resume",
-                "mirascope.model_id": self.model_id,
-                "mirascope.provider_id": self.provider_id,
+                "mirascope.response.model_id": self.model_id,
+                "mirascope.response.provider_id": self.provider_id,
             }
         )
         result = cast(
@@ -502,7 +497,7 @@ async def _instrumented_async_context_stream_response_resume(
                 cast(Any, self), ctx, content
             ),
         )
-        attach_mirascope_response(span, result)
+        await attach_mirascope_response_async(span, result)
         return result
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Protocol
 
@@ -19,12 +20,15 @@ from .....llm.content.document import Base64DocumentSource, TextDocumentSource
 from .....llm.messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .....llm.responses.usage import Usage
 from ...utils import json_dumps
+from .cost import calculate_cost_async, calculate_cost_sync
 
 if TYPE_CHECKING:
     from opentelemetry.util.types import AttributeValue
 
     from .....llm.responses.root_response import RootResponse
     from .....llm.types import Jsonable
+
+logger = logging.getLogger(__name__)
 
 
 class SpanProtocol(Protocol):
@@ -162,6 +166,29 @@ def serialize_mirascope_usage(usage: Usage | None) -> AttributeValue | None:
     )
 
 
+def serialize_mirascope_cost(
+    input_cost: float,
+    output_cost: float,
+    total_cost: float,
+    cache_read_cost: float | None = None,
+    cache_write_cost: float | None = None,
+) -> str:
+    """Serialize cost to JSON for span attributes.
+
+    All costs are in centicents (1 centicent = $0.0001).
+    Consumers can divide by 10,000 to get dollar amounts.
+    """
+    return json_dumps(
+        {
+            "input_cost": input_cost,
+            "output_cost": output_cost,
+            "cache_read_cost": cache_read_cost,
+            "cache_write_cost": cache_write_cost,
+            "total_cost": total_cost,
+        }
+    )
+
+
 def attach_mirascope_response(
     span: SpanProtocol, response: RootResponse[Any, Any]
 ) -> None:
@@ -169,18 +196,105 @@ def attach_mirascope_response(
 
     Sets the following attributes:
     - mirascope.trace.output: Pretty-printed response
-    - mirascope.messages: Serialized input messages (excluding final assistant message)
+    - mirascope.response.messages: Serialized input messages (excluding final assistant message)
     - mirascope.response.content: Serialized response content
     - mirascope.response.usage: Serialized usage (if available)
+    - mirascope.response.cost: Serialized cost (if available)
     """
     span.set(
         **{
-            "mirascope.provider_id": response.provider_id,
-            "mirascope.model_id": response.model_id,
+            "mirascope.response.provider_id": response.provider_id,
+            "mirascope.response.model_id": response.model_id,
             "mirascope.trace.output": response.pretty(),
-            "mirascope.messages": serialize_mirascope_messages(response.messages[:-1]),
+            "mirascope.response.messages": serialize_mirascope_messages(
+                response.messages[:-1]
+            ),
             "mirascope.response.content": serialize_mirascope_content(response.content),
         }
     )
     if (usage_json := serialize_mirascope_usage(response.usage)) is not None:
         span.set(**{"mirascope.response.usage": usage_json})
+        logger.debug("Attached usage to span")
+    else:
+        logger.debug("No usage available, skipping cost calculation")
+
+    # Calculate and attach cost if usage is available
+    if response.usage is not None:
+        logger.debug("Attempting cost calculation (sync)")
+        cost = calculate_cost_sync(
+            response.provider_id, response.model_id, response.usage
+        )
+        if cost is not None:
+            span.set(
+                **{
+                    "mirascope.response.cost": serialize_mirascope_cost(
+                        input_cost=cost.input_cost_centicents,
+                        output_cost=cost.output_cost_centicents,
+                        total_cost=cost.total_cost_centicents,
+                        cache_read_cost=cost.cache_read_cost_centicents,
+                        cache_write_cost=cost.cache_write_cost_centicents,
+                    )
+                }
+            )
+            logger.debug(
+                "Attached cost to span: total=%s centicents", cost.total_cost_centicents
+            )
+        else:
+            logger.debug("Cost calculation returned None, not attaching cost to span")
+
+
+async def attach_mirascope_response_async(
+    span: SpanProtocol, response: RootResponse[Any, Any]
+) -> None:
+    """Attach Mirascope-specific response attributes to a span (async version).
+
+    Sets the following attributes:
+    - mirascope.trace.output: Pretty-printed response
+    - mirascope.response.messages: Serialized input messages (excluding final assistant message)
+    - mirascope.response.content: Serialized response content
+    - mirascope.response.usage: Serialized usage (if available)
+    - mirascope.response.cost: Serialized cost (if available)
+    """
+    span.set(
+        **{
+            "mirascope.response.provider_id": response.provider_id,
+            "mirascope.response.model_id": response.model_id,
+            "mirascope.trace.output": response.pretty(),
+            "mirascope.response.messages": serialize_mirascope_messages(
+                response.messages[:-1]
+            ),
+            "mirascope.response.content": serialize_mirascope_content(response.content),
+        }
+    )
+    if (usage_json := serialize_mirascope_usage(response.usage)) is not None:
+        span.set(**{"mirascope.response.usage": usage_json})
+        logger.debug("Attached usage to span (async)")
+    else:
+        logger.debug("No usage available, skipping cost calculation (async)")
+
+    # Calculate and attach cost if usage is available (async)
+    if response.usage is not None:
+        logger.debug("Attempting cost calculation (async)")
+        cost = await calculate_cost_async(
+            response.provider_id, response.model_id, response.usage
+        )
+        if cost is not None:
+            span.set(
+                **{
+                    "mirascope.response.cost": serialize_mirascope_cost(
+                        input_cost=cost.input_cost_centicents,
+                        output_cost=cost.output_cost_centicents,
+                        total_cost=cost.total_cost_centicents,
+                        cache_read_cost=cost.cache_read_cost_centicents,
+                        cache_write_cost=cost.cache_write_cost_centicents,
+                    )
+                }
+            )
+            logger.debug(
+                "Attached cost to span (async): total=%s centicents",
+                cost.total_cost_centicents,
+            )
+        else:
+            logger.debug(
+                "Cost calculation returned None, not attaching cost to span (async)"
+            )

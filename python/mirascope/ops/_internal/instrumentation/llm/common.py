@@ -2,24 +2,18 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import (
-    TYPE_CHECKING,
-    Protocol,
-    TypeAlias,
-    runtime_checkable,
-)
+from typing import TYPE_CHECKING, Protocol, TypeAlias, runtime_checkable
 from typing_extensions import TypeIs
 
 from opentelemetry import trace as otel_trace
 from opentelemetry.semconv._incubating.attributes import (
     gen_ai_attributes as GenAIAttributes,
 )
-from opentelemetry.semconv.attributes import (
-    error_attributes as ErrorAttributes,
-)
+from opentelemetry.semconv.attributes import error_attributes as ErrorAttributes
 from opentelemetry.trace import SpanKind, Status, StatusCode
 
 from .....llm import (
@@ -38,10 +32,9 @@ from .....llm import (
     ToolkitT,
     ToolSchema,
 )
-from ...configuration import (
-    get_tracer,
-)
+from ...configuration import get_tracer
 from ...utils import json_dumps
+from .cost import calculate_cost_async, calculate_cost_sync
 from .encode import (
     map_finish_reason,
     snapshot_from_root_response,
@@ -49,9 +42,16 @@ from .encode import (
 )
 from .serialize import (
     serialize_mirascope_content,
+    serialize_mirascope_cost,
     serialize_mirascope_messages,
     serialize_mirascope_usage,
 )
+
+logger = logging.getLogger(__name__)
+
+# Re-export for backwards compatibility
+_calculate_cost_sync = calculate_cost_sync
+_calculate_cost_async = calculate_cost_async
 
 if TYPE_CHECKING:
     from opentelemetry.trace import Span, Tracer
@@ -311,13 +311,101 @@ def attach_response(
 
     # Mirascope-specific attributes
     span.set_attribute(
-        "mirascope.messages", serialize_mirascope_messages(request_messages)
+        "mirascope.response.messages", serialize_mirascope_messages(request_messages)
     )
     span.set_attribute(
         "mirascope.response.content", serialize_mirascope_content(response.content)
     )
     if (usage_json := serialize_mirascope_usage(response.usage)) is not None:
         span.set_attribute("mirascope.response.usage", usage_json)
+
+    # Calculate and attach cost if usage is available
+    if response.usage is not None:
+        cost = _calculate_cost_sync(
+            response.provider_id, response.model_id, response.usage
+        )
+        if cost is not None:
+            span.set_attribute(
+                "mirascope.response.cost",
+                serialize_mirascope_cost(
+                    input_cost=cost.input_cost_centicents,
+                    output_cost=cost.output_cost_centicents,
+                    total_cost=cost.total_cost_centicents,
+                    cache_read_cost=cost.cache_read_cost_centicents,
+                    cache_write_cost=cost.cache_write_cost_centicents,
+                ),
+            )
+
+
+async def attach_response_async(
+    span: Span,
+    response: RootResponse[ToolkitT, FormattableT | None],
+    *,
+    request_messages: Sequence[Message],
+) -> None:
+    """Attach response attributes to a GenAI span (async version for cost calculation)."""
+    span.set_attribute(GenAIAttributes.GEN_AI_RESPONSE_MODEL, response.model_id)
+    span.set_attribute(
+        GenAIAttributes.GEN_AI_RESPONSE_FINISH_REASONS,
+        [map_finish_reason(response.finish_reason)],
+    )
+    response_id = _extract_response_id(getattr(response, "raw", None))
+    if response_id:
+        span.set_attribute(GenAIAttributes.GEN_AI_RESPONSE_ID, response_id)
+
+    snapshot = snapshot_from_root_response(
+        response,
+        request_messages=request_messages,
+    )
+    _set_json_attribute(
+        span.set_attribute,
+        key=GenAIAttributes.GEN_AI_SYSTEM_INSTRUCTIONS,
+        payload=snapshot.system_instructions,
+    )
+    _set_json_attribute(
+        span.set_attribute,
+        key=GenAIAttributes.GEN_AI_INPUT_MESSAGES,
+        payload=snapshot.inputs,
+    )
+    _set_json_attribute(
+        span.set_attribute,
+        key=GenAIAttributes.GEN_AI_OUTPUT_MESSAGES,
+        payload=snapshot.outputs,
+    )
+    if response.usage is not None:
+        span.set_attribute(
+            GenAIAttributes.GEN_AI_USAGE_INPUT_TOKENS, response.usage.input_tokens
+        )
+        span.set_attribute(
+            GenAIAttributes.GEN_AI_USAGE_OUTPUT_TOKENS, response.usage.output_tokens
+        )
+
+    # Mirascope-specific attributes
+    span.set_attribute(
+        "mirascope.response.messages", serialize_mirascope_messages(request_messages)
+    )
+    span.set_attribute(
+        "mirascope.response.content", serialize_mirascope_content(response.content)
+    )
+    if (usage_json := serialize_mirascope_usage(response.usage)) is not None:
+        span.set_attribute("mirascope.response.usage", usage_json)
+
+    # Calculate and attach cost if usage is available (async)
+    if response.usage is not None:
+        cost = await _calculate_cost_async(
+            response.provider_id, response.model_id, response.usage
+        )
+        if cost is not None:
+            span.set_attribute(
+                "mirascope.response.cost",
+                serialize_mirascope_cost(
+                    input_cost=cost.input_cost_centicents,
+                    output_cost=cost.output_cost_centicents,
+                    total_cost=cost.total_cost_centicents,
+                    cache_read_cost=cost.cache_read_cost_centicents,
+                    cache_write_cost=cost.cache_write_cost_centicents,
+                ),
+            )
 
 
 def _is_supported_param_value(value: object) -> TypeIs[ParamsValue]:

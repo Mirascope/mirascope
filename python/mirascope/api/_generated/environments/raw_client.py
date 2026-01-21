@@ -19,7 +19,6 @@ from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
 from ..types.rate_limit_error import RateLimitError
-from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 from .types.environments_create_response import EnvironmentsCreateResponse
 from .types.environments_get_analytics_response import EnvironmentsGetAnalyticsResponse
 from .types.environments_get_response import EnvironmentsGetResponse
@@ -130,9 +129,9 @@ class RawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -273,9 +272,9 @@ class RawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -392,9 +391,9 @@ class RawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -538,9 +537,9 @@ class RawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -649,9 +648,9 @@ class RawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -778,9 +777,9 @@ class RawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -899,9 +898,9 @@ class AsyncRawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1042,9 +1041,9 @@ class AsyncRawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1161,9 +1160,9 @@ class AsyncRawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1307,9 +1306,9 @@ class AsyncRawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1418,9 +1417,9 @@ class AsyncRawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1547,9 +1546,9 @@ class AsyncRawEnvironmentsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

@@ -49,6 +49,7 @@ from .common import (
     SpanContext,
     ToolsParam,
     attach_response,
+    attach_response_async,
     record_dropped_params,
     start_model_span,
 )
@@ -241,7 +242,7 @@ async def _instrumented_model_call_async(
             format=format,
         )
         if span_ctx.span is not None:
-            attach_response(
+            await attach_response_async(
                 span_ctx.span,
                 response,
                 request_messages=messages,
@@ -431,7 +432,7 @@ async def _instrumented_model_context_call_async(
             format=format,
         )
         if span_ctx.span is not None:
-            attach_response(
+            await attach_response_async(
                 span_ctx.span,
                 response,
                 request_messages=messages,
@@ -1156,7 +1157,7 @@ async def _instrumented_model_resume_async(
             content=content,
         )
         if span_ctx.span is not None:
-            attach_response(
+            await attach_response_async(
                 span_ctx.span,
                 cast("RootResponse[Any, FormattableT | None]", result),
                 request_messages=messages,
@@ -1330,7 +1331,7 @@ async def _instrumented_model_context_resume_async(
             content=content,
         )
         if span_ctx.span is not None:
-            attach_response(
+            await attach_response_async(
                 span_ctx.span,
                 cast("RootResponse[Any, FormattableT | None]", result),
                 request_messages=messages,

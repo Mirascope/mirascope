@@ -12,7 +12,6 @@ from ..errors.bad_request_error import BadRequestError
 from ..errors.service_unavailable_error import ServiceUnavailableError
 from ..errors.too_many_requests_error import TooManyRequestsError
 from ..types.rate_limit_error import RateLimitError
-from ..types.service_unavailable_error_body import ServiceUnavailableErrorBody
 
 
 class RawDocsClient:
@@ -76,9 +75,9 @@ class RawDocsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -158,9 +157,9 @@ class AsyncRawDocsClient:
                 raise ServiceUnavailableError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ServiceUnavailableErrorBody,
+                        typing.Optional[typing.Any],
                         parse_obj_as(
-                            type_=ServiceUnavailableErrorBody,  # type: ignore
+                            type_=typing.Optional[typing.Any],  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

@@ -10,9 +10,7 @@ import openai
 import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
-    InMemorySpanExporter,
-)
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from mirascope import llm, ops
 from mirascope.ops._internal.configuration import set_tracer
@@ -63,7 +61,7 @@ async def test_model_stream_async_exports_genai_span(
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 equals 4242."}],"finish_reason":"stop"}]',
                 "gen_ai.usage.input_tokens": 16,
                 "gen_ai.usage.output_tokens": 11,
-                "mirascope.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
+                "mirascope.response.messages": '[{"role":"user","content":[{"type":"text","text":"What is 4200 + 42?"}],"name":null}]',
                 "mirascope.response.content": '[{"type":"text","text":"4200 + 42 equals 4242."}]',
                 "mirascope.response.usage": '{"input_tokens":16,"output_tokens":11,"cache_read_tokens":0,"cache_write_tokens":0,"reasoning_tokens":0,"total_tokens":27}',
             },

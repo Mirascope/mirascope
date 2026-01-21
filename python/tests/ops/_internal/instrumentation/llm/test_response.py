@@ -51,8 +51,11 @@ def test_response_resume_exports_mirascope_span(
     assert "Response.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
     # Verify the pretty() output is captured
     trace_output = mirascope_span.attributes.get("mirascope.trace.output")
@@ -92,8 +95,11 @@ async def test_async_response_resume_exports_mirascope_span(
     assert "AsyncResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
 
 
@@ -130,8 +136,11 @@ def test_stream_response_resume_exports_mirascope_span(
     assert "StreamResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
 
 
@@ -167,8 +176,11 @@ def test_context_response_resume_exports_mirascope_span(
     assert "ContextResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
 
 
@@ -206,8 +218,11 @@ async def test_async_stream_response_resume_exports_mirascope_span(
     assert "AsyncStreamResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
 
 
@@ -244,8 +259,11 @@ async def test_async_context_response_resume_exports_mirascope_span(
     assert "AsyncContextResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
 
 
@@ -283,8 +301,11 @@ def test_context_stream_response_resume_exports_mirascope_span(
     assert "ContextStreamResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
     assert "mirascope.trace.output" in mirascope_span.attributes
 
 
@@ -323,6 +344,10 @@ async def test_async_context_stream_response_resume_exports_mirascope_span(
     assert "AsyncContextStreamResponse.resume" in mirascope_span.name
     assert mirascope_span.attributes is not None
     assert mirascope_span.attributes.get("mirascope.type") == "response_resume"
-    assert mirascope_span.attributes.get("mirascope.model_id") == "openai/gpt-4o-mini"
-    assert mirascope_span.attributes.get("mirascope.provider_id") == "openai"
+    assert (
+        mirascope_span.attributes.get("mirascope.response.model_id")
+        == "openai/gpt-4o-mini"
+    )
+    assert mirascope_span.attributes.get("mirascope.response.provider_id") == "openai"
+    assert "mirascope.trace.output" in mirascope_span.attributes
     assert "mirascope.trace.output" in mirascope_span.attributes
