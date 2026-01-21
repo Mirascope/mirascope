@@ -8,7 +8,7 @@ import {
 } from "@/tests/db";
 import { Effect, Layer } from "effect";
 import { eq } from "drizzle-orm";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { TestSubscriptionWithRealDatabaseFixture } from "@/tests/payments";
 import { organizations } from "@/db/schema/organizations";

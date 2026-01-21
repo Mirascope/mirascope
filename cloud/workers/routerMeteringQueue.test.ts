@@ -4,7 +4,7 @@
 
 import { describe, expect, it, TEST_DATABASE_URL } from "@/tests/db";
 import { Effect, Layer } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Payments } from "@/payments";
 import type { Message, MessageBatch } from "@cloudflare/workers-types";
 import type { WorkerEnv } from "@/workers/config";

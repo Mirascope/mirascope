@@ -6,7 +6,7 @@ import {
   MockDrizzleORM,
 } from "@/tests/db";
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import {
   AlreadyExistsError,
   DatabaseError,

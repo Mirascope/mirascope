@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { PROVIDER_CONFIGS, getProviderApiKey } from "@/api/router/providers";
 import { proxyToProvider } from "@/api/router/proxy";

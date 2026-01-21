@@ -6,7 +6,7 @@ import {
   MockDrizzleORM,
 } from "@/tests/db";
 import { Effect, Layer } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Payments } from "@/payments";
 import {
   validateRouterRequest,

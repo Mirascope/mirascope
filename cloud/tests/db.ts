@@ -2,7 +2,7 @@ import { Config, Context, Effect, Layer } from "effect";
 import { describe, expect } from "@effect/vitest";
 import { createCustomIt, withRollback } from "@/tests/shared";
 import { DrizzleORM, type DrizzleORMClient } from "@/db/client";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { PgClient } from "@effect/sql-pg";
 import { SqlClient } from "@effect/sql";
 import { CONNECTION_FILE } from "@/tests/global-setup";
@@ -231,7 +231,7 @@ const wrapEffectTest =
  * ```ts
  * import { it, expect } from "@/tests/db";
  * import { Effect } from "effect";
- * import { Database } from "@/db";
+ * import { Database } from "@/db/database";
  *
  * it.effect("creates a user", () =>
  *   Effect.gen(function* () {

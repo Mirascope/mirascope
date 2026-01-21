@@ -13,7 +13,7 @@
 
 import { Effect, Context, Layer } from "effect";
 import type { MessageBatch, Message } from "@cloudflare/workers-types";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Payments } from "@/payments";
 import { Settings } from "@/settings";
 import { type WorkerEnv } from "@/workers/config";

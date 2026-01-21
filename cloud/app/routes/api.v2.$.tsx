@@ -4,7 +4,7 @@ import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError } from "@/errors";
 import { authenticate, type PathParameters } from "@/auth";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { ClickHouseSearch } from "@/db/clickhouse/search";

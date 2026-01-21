@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { UnauthorizedError } from "@/errors";
 import type { ApiKeyInfo } from "@/db/schema";
 import { getApiKeyFromRequest } from "@/auth/api-key";

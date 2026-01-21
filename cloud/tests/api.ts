@@ -19,7 +19,7 @@ import {
 } from "@effect/platform";
 import { Settings, type SettingsConfig } from "@/settings";
 import { createMockSettings, MockSettingsLayer } from "@/tests/settings";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { Analytics } from "@/analytics";

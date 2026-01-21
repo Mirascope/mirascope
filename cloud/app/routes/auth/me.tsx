@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { runEffectResponse } from "@/app/lib/effect";
 import { getSessionIdFromCookie } from "@/auth/utils";
 

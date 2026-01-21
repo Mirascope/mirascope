@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { describe, it, expect, TestAuthFixture } from "@/tests/auth";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import {
   getSessionIdFromCookie,
   getOAuthStateFromCookie,
