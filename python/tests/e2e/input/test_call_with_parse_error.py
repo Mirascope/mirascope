@@ -21,7 +21,14 @@ def extract_passphrase(response: llm.AnyResponse) -> str:
     return "the cake is a lie"
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+PARSE_ERROR_MODEL_IDS = [
+    model_id
+    for model_id in E2E_MODEL_IDS
+    if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+]
+
+
+@pytest.mark.parametrize("model_id", PARSE_ERROR_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_parse_error(
     model_id: llm.ModelId,

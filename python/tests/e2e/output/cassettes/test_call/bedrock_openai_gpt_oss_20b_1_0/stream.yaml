@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"openai.gpt-oss-20b-1:0","stream":true,"stream_options":{"include_usage":true}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '148'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - OpenAI/Python 2.15.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.15.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1/chat/completions
+  response:
+    body:
+      string: "data: {\"choices\":[{\"delta\":{\"content\":\"\",\"role\":\"assistant\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"QEfsOV4bzHZRPNrOc6vSOkcbBHGf0olZJRSnOSMTozuRQuNyfTKZNrp6akVh2WDr0aoWO82kca5lmeplsZxzmcaoYfvF7vvqVs1gjhOw0JjsZp\"}],\"created\":1769185806,\"id\":\"chatcmpl-6c60a842-d37a-47a9-9bbe-3c981a790bba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"<reasoning>The user asks \\\"What
+        is 4200 + 42?\\\" We just need to give the sum: 4242. It's trivial. In addition,
+        check if any mention of policies like privacy or no.</reasoning>\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"3XjD9GOSd5aYC6qMaZTyCsP31FLWtRhz7lC6u8ni00xmozuAiAOeAY\"}],\"created\":1769185806,\"id\":\"chatcmpl-6c60a842-d37a-47a9-9bbe-3c981a790bba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"<reasoning> It's straightforward.
+        Provide the answer and maybe a bit of explanation.</reasoning>\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"HGL7Xz6AGkA1eRValv6cJVXCUBuF2Wjy9oyl6eZRsT2BlDXk5n6B92GOe0exbZCExb1IrEGUgXTs8R3IywmwLFhWi3ipGbALEMc6a3wX15JAv4PsO5Ecw03rjftYL3\"}],\"created\":1769185806,\"id\":\"chatcmpl-6c60a842-d37a-47a9-9bbe-3c981a790bba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{\"content\":\"4200\u202F+\u202F42\u202F=\u202F**4242**.\"},\"finish_reason\":null,\"index\":0,\"obfuscation\":\"0F0DGUTDwcpwxAtr3sS5D8lA23dyK06UAK9n57DqL2So6utDwCqIxXTfOyZA6vOY\"}],\"created\":1769185806,\"id\":\"chatcmpl-6c60a842-d37a-47a9-9bbe-3c981a790bba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\",\"index\":0,\"obfuscation\":\"rn1eenHjxLnUMXPcqvVPT6muKSIDoVodZXUrwpWi0pax4yhCka0Tv0JG9jGcJ3UWMpUz8TB4e\"}],\"created\":1769185806,\"id\":\"chatcmpl-6c60a842-d37a-47a9-9bbe-3c981a790bba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\"}\n\ndata:
+        {\"choices\":[],\"created\":1769185806,\"id\":\"chatcmpl-6c60a842-d37a-47a9-9bbe-3c981a790bba\",\"model\":\"openai.gpt-oss-20b-1:0\",\"object\":\"chat.completion.chunk\",\"service_tier\":\"default\",\"usage\":{\"completion_tokens\":79,\"prompt_tokens\":78,\"total_tokens\":157}}\n\ndata:
+        [DONE]\n\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 23 Jan 2026 16:30:06 GMT
+      Transfer-Encoding:
+      - chunked
+      X-Request-ID:
+      - f3682e3f-132b-43c3-9348-3f5e2f7b26d1
+      x-amzn-RequestId:
+      - f3682e3f-132b-43c3-9348-3f5e2f7b26d1
+    status:
+      code: 200
+      message: OK
+version: 1

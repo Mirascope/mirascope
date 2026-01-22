@@ -11,7 +11,7 @@
 #      - AWS_SECRET_ACCESS_KEY
 #      - AWS_REGION (optional, defaults to us-east-1)
 #    Option B (API key):
-#      - AWS_BEDROCK_OPENAI_API_KEY
+#      - AWS_BEARER_TOKEN_BEDROCK
 #
 # Note: OpenAI-compatible API availability varies by region. Check AWS documentation.
 

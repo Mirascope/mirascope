@@ -26,6 +26,13 @@ class Book(BaseModel):
     rating: int = Field(description="For testing purposes, the rating should be 7")
 
 
+STREAM_STRUCTURED_OUTPUT_MODEL_IDS = [
+    model_id
+    for model_id in STRUCTURED_OUTPUT_MODEL_IDS
+    if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+]
+
+
 # ============= SYNC TESTS =============
 
 
@@ -167,7 +174,7 @@ async def test_structured_output_async_context(
 # ============= STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STREAM_STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_stream(
@@ -201,7 +208,7 @@ def test_structured_output_stream(
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STREAM_STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_stream_context(
@@ -239,7 +246,7 @@ def test_structured_output_stream_context(
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STREAM_STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
@@ -274,7 +281,7 @@ async def test_structured_output_async_stream(
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
+@pytest.mark.parametrize("model_id", STREAM_STRUCTURED_OUTPUT_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio

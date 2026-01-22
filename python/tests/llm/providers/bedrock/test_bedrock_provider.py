@@ -293,6 +293,26 @@ def test_bedrock_provider_longest_prefix_match() -> None:
     assert route == "anthropic"
 
 
+def test_bedrock_provider_route_openai_model() -> None:
+    """Test BedrockProvider routes OpenAI-compatible model IDs."""
+    provider = BedrockProvider()
+    route = provider._route_provider(  # pyright: ignore[reportPrivateUsage]
+        "bedrock/openai.gpt-4"
+    )
+    assert route == "openai"
+
+
+def test_bedrock_provider_default_routing_scopes_has_openai() -> None:
+    """Test default routing scopes include OpenAI prefixes."""
+    from mirascope.llm.providers.bedrock.provider import (
+        _default_routing_scopes,  # pyright: ignore[reportPrivateUsage]
+    )
+
+    scopes = _default_routing_scopes()
+    assert "openai" in scopes
+    assert len(scopes["openai"]) > 0
+
+
 def test_bedrock_provider_initialization_with_anthropic_api_key() -> None:
     """Test BedrockProvider creates API key client for Anthropic subprovider."""
     from mirascope.llm.providers.bedrock.anthropic.provider import (
@@ -305,6 +325,16 @@ def test_bedrock_provider_initialization_with_anthropic_api_key() -> None:
     )
     subprovider = provider._get_anthropic_provider()  # pyright: ignore[reportPrivateUsage]
     assert isinstance(subprovider.client, BedrockAnthropicApiKeyClient)
+
+
+def test_bedrock_provider_initialization_with_openai_api_key() -> None:
+    """Test BedrockProvider creates API key client for OpenAI subprovider."""
+    provider = BedrockProvider(
+        openai_api_key="test-api-key",
+        aws_region="us-east-1",
+    )
+    subprovider = provider._get_openai_provider()  # pyright: ignore[reportPrivateUsage]
+    assert subprovider.client.api_key == "test-api-key"
 
 
 def test_resolve_region_with_aws_profile_botocore_available(

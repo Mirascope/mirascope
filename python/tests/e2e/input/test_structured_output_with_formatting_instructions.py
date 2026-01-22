@@ -27,7 +27,14 @@ class Book(BaseModel):
         """)
 
 
-@pytest.mark.parametrize("model_id", STRUCTURED_OUTPUT_MODEL_IDS)
+FORMAT_INSTRUCTIONS_MODEL_IDS = [
+    model_id
+    for model_id in STRUCTURED_OUTPUT_MODEL_IDS
+    if model_id != "bedrock/openai.gpt-oss-20b-1:0"
+]
+
+
+@pytest.mark.parametrize("model_id", FORMAT_INSTRUCTIONS_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_formatting_instructions(
