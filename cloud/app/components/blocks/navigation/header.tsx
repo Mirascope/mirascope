@@ -8,6 +8,7 @@ import ThemeSwitcher from "@/app/components/blocks/navigation/theme-switcher";
 import DesktopNavigation from "@/app/components/blocks/navigation/desktop-navigation";
 import MobileNavigation from "@/app/components/blocks/navigation/mobile-navigation";
 import ResponsiveSearchWrapper from "@/app/components/blocks/navigation/responsive-search-wrapper";
+import DocsSubNavbar from "@/app/components/blocks/navigation/docs-sub-navbar";
 import {
   useIsLandingPage,
   useIsRouterWaitlistPage,
@@ -24,6 +25,10 @@ export default function Header() {
   const currentPath = router.location.pathname;
   const isCloudRoute =
     currentPath === "/cloud" || currentPath.startsWith("/cloud/");
+
+  // Check if we're on docs pages (to show the section sub-navbar)
+  const isDocsRoute =
+    currentPath === "/docs" || currentPath.startsWith("/docs/");
 
   // Use the isLandingPage hook instead of router
   const isLandingPage = useIsLandingPage();
@@ -101,6 +106,9 @@ export default function Header() {
           </button>
         </div>
       </nav>
+
+      {/* Docs section sub-navbar - shows section links for docs pages */}
+      {isDocsRoute && <DocsSubNavbar />}
 
       {/* Mobile Menu */}
       <MobileNavigation

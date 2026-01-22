@@ -5,7 +5,7 @@ description: Learn how to use the @llm.prompt decorator for creating reusable pr
 
 # Prompts
 
-When working programmatically with LLMs, we often want reusable functions that encapsulate constructing messages and getting an LLM response. Using just what we've already learned about [Messages](/docs/llm/messages) and [Models](/docs/llm/models), we might write code like this:
+When working programmatically with LLMs, we often want reusable functions that encapsulate constructing messages and getting an LLM response. Using just what we've already learned about [Messages](/docs/learn/llm/messages) and [Models](/docs/learn/llm/models), we might write code like this:
 
 <CodeExample file="python/examples/prompts/basic_without_prompt.py" />
 
@@ -51,14 +51,14 @@ The `@llm.prompt` decorator accepts optional arguments for tools and structured 
 
 | Argument | Description |
 | --- | --- |
-| `tools` | List of tools the LLM can call. See [Tools](/docs/llm/tools). |
-| `format` | Response format for structured output. See [Structured Output](/docs/llm/structured-output). |
+| `tools` | List of tools the LLM can call. See [Tools](/docs/learn/llm/tools). |
+| `format` | Response format for structured output. See [Structured Output](/docs/learn/llm/structured-output). |
 
 We cover these arguments in their respective guides.
 When no arguments are needed, the parentheses are optional: `@llm.prompt` and `@llm.prompt()` are equivalent.
 
 ## Next Steps
 
-- [Calls](/docs/llm/calls) — Bundle a model with your prompt function
-- [Tools](/docs/llm/tools) — Let LLMs call functions
-- [Structured Output](/docs/llm/structured-output) — Parse responses into structured data
+- [Calls](/docs/learn/llm/calls) — Bundle a model with your prompt function
+- [Tools](/docs/learn/llm/tools) — Let LLMs call functions
+- [Structured Output](/docs/learn/llm/structured-output) — Parse responses into structured data

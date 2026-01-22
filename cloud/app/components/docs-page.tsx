@@ -13,11 +13,18 @@ type DocsPageProps = {
 /**
  * DocsPage component - Top-level documentation page component
  *
- * Handles metadata, layout and content rendering for all documentation pages
+ * Handles metadata, layout and content rendering for all documentation pages.
+ * Uses --header-height-with-selector to account for the sub-navbar.
  */
 const DocsPage: React.FC<DocsPageProps> = ({ content }) => {
   return (
-    <>
+    <div
+      style={
+        {
+          "--header-height": "var(--header-height-with-selector)",
+        } as React.CSSProperties
+      }
+    >
       <ModelProviderProvider>
         <ContentLayout>
           <ContentLayout.LeftSidebar className="pt-1" collapsible={true}>
@@ -37,7 +44,7 @@ const DocsPage: React.FC<DocsPageProps> = ({ content }) => {
           </ContentLayout.RightSidebar>
         </ContentLayout>
       </ModelProviderProvider>
-    </>
+    </div>
   );
 };
 

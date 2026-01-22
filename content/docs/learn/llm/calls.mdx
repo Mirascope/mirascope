@@ -5,7 +5,7 @@ description: Learn how to use the @llm.call decorator for bundling a model with 
 
 # Calls
 
-In the [Prompts](/docs/llm/prompts) guide, we talked about how the `@llm.prompt` decorator streamlines writing LLM powered functions. 
+In the [Prompts](/docs/learn/llm/prompts) guide, we talked about how the `@llm.prompt` decorator streamlines writing LLM powered functions. 
 
 The `@llm.call` decorator functions similarly to `@llm.prompt`, but bundles a specific model with your prompt function:
 
@@ -32,7 +32,7 @@ This is useful for A/B testing, switching providers in different environments, m
 <Note>
 This override mechanism only works with `@llm.call`. The `@llm.prompt` decorator always uses the model you pass directly—it ignores context overrides.
 
-`@llm.call` does this via `llm.use_model()`, which can be used to manually similar behavior. See [Models](/docs/llm/models).
+`@llm.call` does this via `llm.use_model()`, which can be used to manually similar behavior. See [Models](/docs/learn/llm/models).
 </Note>
 
 ## Decorator Arguments
@@ -42,9 +42,9 @@ The `@llm.call` decorator requires a model ID and accepts additional arguments:
 | Argument | Description |
 | --- | --- |
 | `model_id` | Required. The model to use (e.g., `"openai/gpt-4o"`). |
-| `temperature`, `max_tokens`, etc. | Model parameters. See [Models](/docs/llm/models). |
-| `tools` | List of tools the LLM can call. See [Tools](/docs/llm/tools). |
-| `format` | Response format for structured output. See [Structured Output](/docs/llm/structured-output). |
+| `temperature`, `max_tokens`, etc. | Model parameters. See [Models](/docs/learn/llm/models). |
+| `tools` | List of tools the LLM can call. See [Tools](/docs/learn/llm/tools). |
+| `format` | Response format for structured output. See [Structured Output](/docs/learn/llm/structured-output). |
 
 <CodeExample file="python/examples/calls/with_params.py" />
 
@@ -64,6 +64,6 @@ Calling `my_call(...)` is equivalent to `my_call.prompt(my_call.model, ...)`.
 
 ## Next Steps
 
-- [Thinking](/docs/llm/thinking) — Use extended reasoning capabilities
-- [Tools](/docs/llm/tools) — Let LLMs call functions
-- [Streaming](/docs/llm/streaming) — Stream responses in real-time
+- [Thinking](/docs/learn/llm/thinking) — Use extended reasoning capabilities
+- [Tools](/docs/learn/llm/tools) — Let LLMs call functions
+- [Streaming](/docs/learn/llm/streaming) — Stream responses in real-time

@@ -30,6 +30,14 @@ export interface DocSpec {
 }
 
 /**
+ * Product option for sections with multiple products (e.g., LLM/Ops in Learn)
+ */
+export interface ProductOption {
+  slug: string;
+  label: string;
+}
+
+/**
  * Section (top-level navigation)
  */
 export interface SectionSpec {
@@ -37,6 +45,7 @@ export interface SectionSpec {
   label: string; // Display name
   children: DocSpec[]; // Items in this section
   weight?: number; // Search weight for this section (multiplicative with product weight)
+  products?: ProductOption[]; // Optional product selector for sections with multiple products
 }
 
 /**
