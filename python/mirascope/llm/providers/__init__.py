@@ -31,6 +31,7 @@ from .azure import (
     AzureProvider,
 )
 from .base import BaseProvider, Provider
+from .bedrock import BedrockAnthropicProvider, BedrockModelId, BedrockProvider
 from .google import GoogleModelId, GoogleProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXModelId, MLXProvider
@@ -59,6 +60,9 @@ __all__ = [
     "AzureProvider",
     "BaseOpenAICompletionsProvider",
     "BaseProvider",
+    "BedrockAnthropicProvider",
+    "BedrockModelId",
+    "BedrockProvider",
     "GoogleModelId",
     "GoogleProvider",
     "MLXModelId",

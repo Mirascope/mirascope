@@ -6,6 +6,9 @@ from .anthropic import (
 from .azure import (
     AzureModelId,
 )
+from .bedrock import (
+    BedrockModelId,
+)
 from .google import (
     GoogleModelId,
 )
@@ -17,5 +20,11 @@ from .openai import (
 )
 
 ModelId: TypeAlias = (
-    AnthropicModelId | AzureModelId | GoogleModelId | OpenAIModelId | MLXModelId | str
+    AnthropicModelId
+    | AzureModelId
+    | BedrockModelId
+    | GoogleModelId
+    | OpenAIModelId
+    | MLXModelId
+    | str
 )
