@@ -68,7 +68,7 @@ const defaultComponents = {
     if (!className) {
       return (
         <code
-          className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm"
+          className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
           {...rest}
         >
           {children}
@@ -90,31 +90,31 @@ const defaultComponents = {
   ),
   blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote
-      className="mb-4 border-l-4 border-gray-300 pl-4 italic text-gray-700"
+      className="mb-4 border-l-4 border-border pl-4 italic text-muted-foreground"
       {...props}
     />
   ),
   table: (props: React.HTMLAttributes<HTMLTableElement>) => (
     <div className="mb-4 overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200" {...props} />
+      <table className="min-w-full divide-y divide-border" {...props} />
     </div>
   ),
   thead: (props: React.HTMLAttributes<HTMLTableSectionElement>) => (
-    <thead className="bg-gray-50" {...props} />
+    <thead className="bg-muted" {...props} />
   ),
   tbody: (props: React.HTMLAttributes<HTMLTableSectionElement>) => (
-    <tbody className="divide-y divide-gray-200 bg-white" {...props} />
+    <tbody className="divide-y divide-border bg-background" {...props} />
   ),
   tr: (props: React.HTMLAttributes<HTMLTableRowElement>) => <tr {...props} />,
   th: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => (
     <th
-      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground"
       {...props}
     />
   ),
   td: (props: React.TdHTMLAttributes<HTMLTableCellElement>) => (
     <td
-      className="whitespace-nowrap px-6 py-4 text-sm text-gray-900"
+      className="whitespace-nowrap px-6 py-4 text-sm text-foreground"
       {...props}
     />
   ),
