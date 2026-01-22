@@ -9,13 +9,13 @@ interactions:
       connection:
       - keep-alive
       host:
-      - v2.mirascope.com
+      - mirascope.com
       user-agent:
       - python-httpx/0.28.1
       x-fern-language:
       - Python
     method: GET
-    uri: https://v2.mirascope.com/functions/hash/2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e
+    uri: https://mirascope.com/api/v2/functions/hash/2820850484af684cd70ef2b89cc09bd16dffd6003b2e8bb3ed0907232e44144e
   response:
     body:
       string: !!binary |

@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Global settings for Mirascope SDK."""
 
-    base_url: str = Field(default="https://v2.mirascope.com")
+    base_url: str = Field(default="https://mirascope.com/api/v2")
     api_key: str | None = None
 
     def update(self, **kwargs: Any) -> None:  # noqa: ANN401
