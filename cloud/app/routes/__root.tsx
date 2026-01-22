@@ -71,20 +71,14 @@ function AppContent() {
   const isLandingPage = useIsLandingPage();
 
   return (
-    <div
-      className={
-        isLandingPage
-          ? "relative h-screen overflow-hidden"
-          : "flex min-h-screen flex-col"
-      }
-    >
+    <div className="flex min-h-screen flex-col">
       <Header />
       <div
         className={
           isCloudRoute
             ? "w-full grow pt-[60px]"
             : isLandingPage
-              ? "w-full"
+              ? "w-full pt-(--header-height)"
               : "mx-auto w-full max-w-7xl grow pt-(--header-height)"
         }
       >
@@ -92,11 +86,7 @@ function AppContent() {
           <Outlet />
         </main>
       </div>
-      {!isCloudRoute && (
-        <div className={isLandingPage ? "fixed right-0 bottom-0 left-0" : ""}>
-          <Footer />
-        </div>
-      )}
+      {!isCloudRoute && <Footer />}
       <Toaster />
       <TanStackRouterDevtools />
       <Scripts />

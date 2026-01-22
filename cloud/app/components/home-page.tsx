@@ -109,15 +109,9 @@ const LogoBanner = () => {
 // Hero block component with logo and text
 function HeroBlock() {
   return (
-    <div
-      className="relative min-h-screen"
-      style={{ marginTop: "calc(var(--header-height-base) * -1)" }}
-    >
+    <div className="relative">
       {/* Container that holds all hero content */}
-      <div
-        className="relative z-10 flex flex-col items-center justify-center px-4 pt-32 pb-8"
-        style={{ minHeight: "100vh" }}
-      >
+      <div className="relative z-10 flex flex-col items-center px-4 pt-8 pb-8">
         {/* Content wrapper */}
         <div className="flex flex-col items-center">
           <div
