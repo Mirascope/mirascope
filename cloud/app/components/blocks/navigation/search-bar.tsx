@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import DOMPurify from "dompurify";
 import { Search as SearchIcon } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import {
@@ -9,6 +10,17 @@ import { useIsLandingPage } from "@/app/components/blocks/theme-provider";
 import { SEARCH_BAR_STYLES, ANIMATION_TIMING } from "./styles";
 import { useIsMobile } from "@/app/hooks/is-mobile";
 import { isDevelopment } from "@/app/lib/site";
+
+/**
+ * Sanitizes search excerpt HTML to prevent XSS attacks.
+ * Only allows <mark> tags for search term highlighting.
+ */
+function sanitizeExcerpt(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ["mark"],
+    ALLOWED_ATTR: [],
+  });
+}
 
 // Component for an individual search result
 interface SearchResultProps {
@@ -70,7 +82,7 @@ function SearchResult({
         {/* Excerpt - always shown, italicized */}
         <p
           className="text-muted-foreground search-excerpt line-clamp-2 text-xs italic"
-          dangerouslySetInnerHTML={{ __html: excerpt }}
+          dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(excerpt) }}
         />
       </div>
     </Link>

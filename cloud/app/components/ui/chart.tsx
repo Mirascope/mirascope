@@ -74,6 +74,8 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null;
   }
 
+  // Safe: CSS is generated entirely from internal ChartConfig objects.
+  // No user input - only static theme colors and chart IDs from application config.
   return (
     <style
       dangerouslySetInnerHTML={{
