@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Settings } from "@/settings";
 import { runEffectResponse } from "@/app/lib/effect";
 import { getSessionIdFromCookie, clearSessionCookie } from "@/auth/utils";

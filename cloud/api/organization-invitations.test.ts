@@ -8,7 +8,7 @@ import {
   AcceptInvitationRequestSchema,
 } from "@/api/organization-invitations.schemas";
 import type { PublicOrganizationInvitation } from "@/db/schema";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { organizationInvitations } from "@/db/schema";
 import { eq } from "drizzle-orm";

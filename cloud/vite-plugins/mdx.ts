@@ -13,7 +13,7 @@
  *
  * Usage:
  * ```typescript
- * import mdx from "@/content/docs/v1/test.mdx";
+ * import mdx from "@/../content/docs/v1/test.mdx";
  *
  * // mdx is a PreprocessedMDX object (serializable JSON):
  * // - mdx.frontmatter: { title, description, etc. }

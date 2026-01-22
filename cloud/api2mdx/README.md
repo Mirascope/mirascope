@@ -23,7 +23,7 @@ For the Mirascope cloud app integration, use the generate script or `bun run gen
 bun run generate:api-docs \
   --source-path ../python \
   --package mirascope.llm \
-  --output content/docs/api \
+  --output ../content/docs/api \
   --api-root /docs/api
 ```
 

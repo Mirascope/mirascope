@@ -14,7 +14,7 @@ import {
   DEFAULT_LIST_OFFSET,
   listByFunctionHashHandler,
 } from "@/api/traces.handlers";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Authentication } from "@/auth";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 

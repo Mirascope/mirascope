@@ -122,6 +122,54 @@ export const useEnvironments = (organizationId: string | null, projectId: string
 };
 ```
 
+## Route Metadata (SEO & Social Cards)
+
+Route metadata (title, description) is managed differently for content vs static routes:
+
+### Content Routes (docs, blog posts, policy pages)
+
+Use `createContentRouteConfig()` from `@/app/lib/content/route-config.tsx`. Metadata comes from MDX frontmatter.
+
+```typescript
+// Example: docs.v1.$.tsx
+export const Route = createFileRoute("/docs/v1/$")(
+  createContentRouteConfig("/docs/v1/$", {
+    getMeta: getAllDocsMeta,
+    moduleMap: DOCS_MODULE_MAP,
+    prefix: "docs",
+    version: "v1",
+    component: DocsPage,
+  })
+);
+```
+
+### Static Routes (home, pricing, etc.)
+
+Use `createStaticRouteHead()` from `@/app/lib/seo/static-route-head.ts`. Metadata is defined in `@/app/lib/seo/static-routes.ts`.
+
+```typescript
+// Example: index.tsx
+import { createStaticRouteHead } from "@/app/lib/seo/static-route-head";
+
+export const Route = createFileRoute("/")({
+  head: createStaticRouteHead("/"),
+  component: HomePage,
+});
+```
+
+**Adding a new static route**: Edit `static-routes.ts` to add an entry:
+
+```typescript
+// static-routes.ts
+export const STATIC_ROUTE_REGISTRY = {
+  "/": { title: "Home", description: "..." },
+  "/pricing": { title: "Pricing", description: "..." },
+  // Add new routes here - keys are TanStack Router route IDs
+};
+```
+
+The social card generator (`vite-plugins/social-cards.ts`) automatically uses both registries.
+
 ## Design System, Styles, & UI Components
 
 The frontend uses [shadcn/ui](https://ui.shadcn.com/) with Tailwind CSS v4.

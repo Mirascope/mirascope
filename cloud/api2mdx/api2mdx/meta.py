@@ -157,7 +157,7 @@ def generate_meta_file_content(
     content.append(" */")
     content.append("")
     # Add imports
-    content.append('import type { SectionSpec } from "@/app/lib/content/spec";')
+    content.append('import type { SectionSpec } from "../../../cloud/app/lib/content/spec";')
     content.append("")
     # Add the export declaration
     content.append(

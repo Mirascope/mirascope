@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { AuthenticatedUser } from "@/auth";
 import type { PublicTag } from "@/db/schema";
 import type { CreateTagRequest, UpdateTagRequest } from "@/api/tags.schemas";

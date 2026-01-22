@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { ClickHouseSearch } from "@/db/clickhouse/search";
 import { AuthenticatedUser } from "@/auth";
 import type {

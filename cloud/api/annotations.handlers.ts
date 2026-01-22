@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Authentication } from "@/auth";
 import type { PublicAnnotation } from "@/db/schema/annotations";
 import type {

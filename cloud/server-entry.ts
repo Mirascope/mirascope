@@ -22,6 +22,7 @@ import {
   validateSettingsFromEnvironment,
   type CloudflareEnvironment,
 } from "@/settings";
+import { handleRedirect } from "@/redirects";
 
 /**
  * ExecutionContext service tag for Effect dependency injection.
@@ -242,6 +243,12 @@ const fetch: ExportedHandlerFetchHandler<WorkerEnv> = (
     }
   }
 
+  // Handle programmatic redirects
+  const redirectResponse = handleRedirect(request);
+  if (redirectResponse) {
+    return redirectResponse;
+  }
+
   return fetchHandler(request);
 };
 
@@ -249,14 +256,15 @@ const queue = async (
   batch: MessageBatch,
   environment: WorkerEnv,
 ): Promise<void> => {
-  if (batch.queue === "router-metering") {
+  // Use startsWith to handle environment-suffixed queue names (e.g., "spans-ingest-staging")
+  if (batch.queue.startsWith("router-metering")) {
     await routerMeteringQueue.queue(
       batch as MessageBatch<RouterMeteringMessage>,
       environment,
     );
     return;
   }
-  if (batch.queue === "spans-ingest") {
+  if (batch.queue.startsWith("spans-ingest")) {
     await spanIngestQueue.queue(
       batch as MessageBatch<SpansIngestMessage>,
       environment,

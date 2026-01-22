@@ -3,7 +3,7 @@ import { Context, Effect, Layer } from "effect";
 import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { Settings, type SettingsConfig } from "@/settings";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
 import { Analytics } from "@/analytics";

@@ -8,7 +8,7 @@
 import { Effect } from "effect";
 import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 import { authenticate } from "@/auth";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Payments } from "@/payments";
 import {
   InternalError,

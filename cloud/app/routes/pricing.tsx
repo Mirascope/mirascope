@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PricingPage, type UsageData } from "@/app/components/pricing-page";
 import { ButtonLink } from "@/app/components/ui/button-link";
 import { Button } from "@/app/components/ui/button";
-import { createPageHead } from "@/app/lib/seo/head";
+import { createStaticRouteHead } from "@/app/lib/seo/static-route-head";
 import { useAuth } from "@/app/contexts/auth";
 import {
   OrganizationProvider,
@@ -172,11 +172,6 @@ function PricingRoute() {
 }
 
 export const Route = createFileRoute("/pricing")({
-  head: () =>
-    createPageHead({
-      route: "/pricing",
-      title: "Pricing",
-      description: "Mirascope cloud's pricing plans and features",
-    }),
+  head: createStaticRouteHead("/pricing"),
   component: PricingRoute,
 });

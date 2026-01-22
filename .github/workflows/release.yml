@@ -31,3 +31,67 @@ jobs:
       - name: Publish Python Package
         working-directory: ./python
         run: uv publish
+
+  deploy-cloud-production:
+    runs-on: ubuntu-latest
+    needs: release
+    defaults:
+      run:
+        working-directory: cloud
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run database migrations
+        run: bun run db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: Run ClickHouse migrations
+        env:
+          CLICKHOUSE_URL: ${{ secrets.PRODUCTION_CLICKHOUSE_HOST }}
+          CLICKHOUSE_USER: ${{ secrets.PRODUCTION_CLICKHOUSE_USER }}
+          CLICKHOUSE_PASSWORD: ${{ secrets.PRODUCTION_CLICKHOUSE_PASSWORD }}
+          CLICKHOUSE_DATABASE: production
+          CLICKHOUSE_TLS_ENABLED: true
+          CLICKHOUSE_MIGRATE_NATIVE_PORT: 9440
+        run: bun run clickhouse:migrate
+
+      - name: Build for production
+        run: bun run build:production
+        env:
+          CLOUDFLARE_ENV: production
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ vars.PRODUCTION_VITE_STRIPE_PUBLISHABLE_KEY }}
+
+      - name: Deploy to Cloudflare Workers (Production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloud
+          command: deploy --env production
+          postCommands: |
+            echo "Setting production worker secrets..."
+            echo "${{ secrets.PRODUCTION_GITHUB_CLIENT_SECRET }}" | bunx wrangler secret put GITHUB_CLIENT_SECRET --env production
+            echo "${{ secrets.PRODUCTION_GOOGLE_CLIENT_SECRET }}" | bunx wrangler secret put GOOGLE_CLIENT_SECRET --env production
+            echo "${{ secrets.PRODUCTION_RESEND_API_KEY }}" | bunx wrangler secret put RESEND_API_KEY --env production
+            echo "${{ secrets.PRODUCTION_RESEND_AUDIENCE_SEGMENT_ID }}" | bunx wrangler secret put RESEND_AUDIENCE_SEGMENT_ID --env production
+            echo "${{ secrets.PRODUCTION_STRIPE_SECRET_KEY }}" | bunx wrangler secret put STRIPE_SECRET_KEY --env production
+            echo "${{ secrets.PRODUCTION_STRIPE_WEBHOOK_SECRET }}" | bunx wrangler secret put STRIPE_WEBHOOK_SECRET --env production
+            echo "${{ secrets.PRODUCTION_ANTHROPIC_API_KEY }}" | bunx wrangler secret put ANTHROPIC_API_KEY --env production
+            echo "${{ secrets.PRODUCTION_GEMINI_API_KEY }}" | bunx wrangler secret put GEMINI_API_KEY --env production
+            echo "${{ secrets.PRODUCTION_OPENAI_API_KEY }}" | bunx wrangler secret put OPENAI_API_KEY --env production
+            echo "${{ secrets.PRODUCTION_CLICKHOUSE_PASSWORD }}" | bunx wrangler secret put CLICKHOUSE_PASSWORD --env production
+            echo "${{ secrets.PRODUCTION_POSTHOG_API_KEY }}" | bunx wrangler secret put POSTHOG_API_KEY --env production
+            echo "${{ secrets.PRODUCTION_POSTHOG_HOST }}" | bunx wrangler secret put POSTHOG_HOST --env production
+            echo "${{ secrets.PRODUCTION_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" | bunx wrangler secret put GOOGLE_ANALYTICS_MEASUREMENT_ID --env production
+            echo "${{ secrets.PRODUCTION_GOOGLE_ANALYTICS_API_SECRET }}" | bunx wrangler secret put GOOGLE_ANALYTICS_API_SECRET --env production
+
+      - name: Deployment complete
+        run: echo "Successfully deployed to production at https://mirascope.com"

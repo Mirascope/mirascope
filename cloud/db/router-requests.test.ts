@@ -7,7 +7,7 @@ import {
   MockDrizzleORM,
 } from "@/tests/db";
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DatabaseError, NotFoundError, PermissionDeniedError } from "@/errors";
 import type { CreateRouterRequest } from "@/db/router-requests";
 

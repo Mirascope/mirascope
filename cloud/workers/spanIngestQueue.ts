@@ -34,7 +34,7 @@ import type {
   DurableObjectNamespace,
   MessageBatch,
 } from "@cloudflare/workers-types";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { ClickHouse } from "@/db/clickhouse/client";
 import { transformSpanForClickHouse } from "@/db/clickhouse/transform";
 import { DrizzleORM } from "@/db/client";

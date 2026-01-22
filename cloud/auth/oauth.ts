@@ -12,7 +12,8 @@
  * tested via integration tests rather than unit tests.
  */
 import { Effect, Schema, Layer } from "effect";
-import { Database, DEFAULT_SESSION_DURATION } from "@/db";
+import { Database } from "@/db/database";
+import { DEFAULT_SESSION_DURATION } from "@/db";
 import { NotFoundError, AlreadyExistsError, DatabaseError } from "@/errors";
 import { Settings, type SettingsConfig } from "@/settings";
 import { Emails } from "@/emails";

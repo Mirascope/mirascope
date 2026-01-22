@@ -1,6 +1,6 @@
 import { Effect, Either, Layer } from "effect";
 import { AuthService, createAuthService } from "@/auth/service";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { Settings, type SettingsConfig } from "@/settings";
 import { Emails } from "@/emails";

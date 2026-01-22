@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { Authentication } from "@/auth";
 import type { PublicFunction } from "@/db/schema/functions";
 import type { CreateFunctionRequest } from "@/api/functions.schemas";

@@ -347,9 +347,9 @@ export function UnifiedDemo({ className }: UnifiedDemoProps) {
       </div>
 
       {/* Main Content: Code on left, Traces/Messages on right */}
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col lg:flex-row">
         {/* Code Section - Left */}
-        <div className="border-slate-200 dark:border-border md:w-[55%] md:border-r">
+        <div className="border-slate-200 dark:border-border lg:w-[55%] lg:border-r">
           <CodeBlock
             code={getCodeExample(selectedProvider, selectedTrace.input)}
             language="python"
@@ -359,7 +359,7 @@ export function UnifiedDemo({ className }: UnifiedDemoProps) {
         </div>
 
         {/* Right Panel: Traces on top, Messages on bottom */}
-        <div className="bg-slate-50 dark:bg-primary/5 flex flex-col md:w-[45%]">
+        <div className="bg-slate-50 dark:bg-primary/5 flex flex-col lg:w-[45%]">
           {/* Traces Table */}
           <div className="border-slate-200 dark:border-border border-b">
             <div className="border-slate-200 dark:border-border bg-slate-100 dark:bg-primary/10 border-b px-3 py-1.5">

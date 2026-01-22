@@ -4,7 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
 import { authenticate } from "@/auth";
-import { Database } from "@/db";
+import { Database } from "@/db/database";
 import { DrizzleORM } from "@/db/client";
 import { generateSlug } from "@/db/slug";
 import { runEffect } from "@/app/lib/effect";

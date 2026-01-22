@@ -65,7 +65,9 @@ else
   # URL-encode credentials to handle special characters (@, &, ?, :, etc.)
   encoded_user=$(printf %s "$clickhouse_user" | jq -sRr @uri)
   encoded_password=$(printf %s "$clickhouse_password" | jq -sRr @uri)
-  database_url="clickhouse://${host}:${migrate_port}/${clickhouse_database}?username=${encoded_user}&password=${encoded_password}${secure_param}&x-multi-statement=true&x-migrations-table=clickhouse_migrations&x-migrations-table-engine=MergeTree"
+  # Use x-migrations-table-engine=MergeTree for ClickHouse Cloud compatibility
+  # (Shared databases don't support TinyLog, the default engine)
+  database_url="clickhouse://${host}:${migrate_port}/${clickhouse_database}?username=${encoded_user}&password=${encoded_password}${secure_param}&x-multi-statement=true&x-migrations-table-engine=MergeTree"
 fi
 
 # Global temp_dir for cleanup trap (must be global for EXIT trap to access)
@@ -93,11 +95,12 @@ prepare_migrations_directory() {
 
 run_migrate() {
   local action=$1
+  shift
   local migrations_dir
   migrations_dir="$(prepare_migrations_directory)"
 
   if command -v migrate >/dev/null 2>&1; then
-    TZ=UTC migrate -path "$migrations_dir" -database "$database_url" "$action"
+    TZ=UTC migrate -path "$migrations_dir" -database "$database_url" "$action" "$@"
     return
   fi
 
@@ -118,7 +121,7 @@ run_migrate() {
     migrate/migrate \
     -path /migrations \
     -database "$docker_database_url" \
-    "$action"
+    "$action" "$@"
 }
 
 case "$command" in
@@ -133,7 +136,11 @@ case "$command" in
     fi
     ;;
   migrate)
+    echo "Running ClickHouse migrations..."
+    echo "Database: $clickhouse_database"
+    echo "Host: ${clickhouse_url#*://}"
     run_migrate up
+    echo "Migrations complete."
     ;;
   *)
     usage

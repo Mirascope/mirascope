@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import DOMPurify from "dompurify";
 import LoadingContent from "@/app/components/blocks/loading-content";
 import mermaid, { type MermaidConfig } from "mermaid";
 import styles from "./mermaid-diagram.module.css";
@@ -41,7 +42,7 @@ export default function MermaidDiagram({
   function getThemeOptions(themeName: ThemeName): MermaidConfig {
     const baseConfig: MermaidConfig = {
       startOnLoad: false,
-      securityLevel: "loose",
+      securityLevel: "strict",
       fontFamily: "inherit",
     };
 
@@ -76,7 +77,11 @@ export default function MermaidDiagram({
       // Use a new ID for each render to avoid caching issues
       const renderId = `${uniqueId.current}-${Date.now()}`;
       const { svg } = await mermaid.render(renderId, chart);
-      setSvgContent(svg);
+      // Sanitize SVG output to prevent XSS attacks
+      const sanitizedSvg = DOMPurify.sanitize(svg, {
+        USE_PROFILES: { svg: true, svgFilters: true },
+      });
+      setSvgContent(sanitizedSvg);
       setError(null);
     } catch (err) {
       console.error("Mermaid rendering error:", err);
