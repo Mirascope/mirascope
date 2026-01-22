@@ -2,6 +2,7 @@ import { cn } from "@/app/lib/utils";
 import { useSunsetTime } from "@/app/hooks/sunset-time";
 import { BookOpen } from "lucide-react";
 import { ButtonLink } from "@/app/components/ui/button-link";
+import DiscordInviteButton from "@/app/components/blocks/branding/discord-invite-button";
 import homeStyles from "@/app/components/home-page.module.css";
 import { ResponsiveTextBlock } from "@/app/components/blocks/responsive-text-block";
 import { UnifiedDemo } from "@/app/components/landing/unified-demo";
@@ -155,8 +156,7 @@ function HeroBlock() {
             <BookOpen className="size-5" aria-hidden="true" />
             Mirascope Docs
           </ButtonLink>
-          <ButtonLink
-            href="/discord-invite"
+          <DiscordInviteButton
             variant="default"
             size="lg"
             className="box-shade w-full min-w-[200px] bg-mirple text-center font-handwriting font-bold text-white hover:bg-mirple-dark/90 sm:w-auto"
@@ -167,7 +167,7 @@ function HeroBlock() {
               alt="Discord"
               className="h-3.5 w-auto"
             />
-          </ButtonLink>
+          </DiscordInviteButton>
         </div>
       </div>
     </div>
