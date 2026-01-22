@@ -53,6 +53,7 @@ export default [
       "**/coverage/",
       "**/.wrangler/",
       "**/docker/",
+      "api2mdx/snapshots/",
       ".build-cache/",
     ],
   },

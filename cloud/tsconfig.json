@@ -1,5 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["api2mdx/snapshots"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

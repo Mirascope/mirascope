@@ -14,7 +14,7 @@ import ContentProcessor from "./app/lib/content/content-processor";
 
 // Init shared content processor instance
 const processor = new ContentProcessor({
-  contentDir: path.resolve(process.cwd(), "content"),
+  contentDir: path.resolve(process.cwd(), "../content"),
   verbose: true,
 });
 // Pre-run content processing at startup
