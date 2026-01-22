@@ -14,6 +14,14 @@ from tests.utils import (
     snapshot_test,
 )
 
+# Bedrock models are excluded because cassettes are not yet available
+REFUSAL_MODEL_IDS: list[llm.ModelId] = [
+    model_id for model_id in E2E_MODEL_IDS if not model_id.startswith("bedrock/")
+]
+
+# These model scopes will have an API-level refusal (finish_reason == "refusal")
+SCOPES_WITH_FORMAL_REFUSAL = {"openai"}
+
 # Models that return API-level refusal (finish_reason == "refusal")
 MODELS_WITH_FORMAL_REFUSAL: list[llm.ModelId] = [
     "openai/gpt-4o:completions",
@@ -25,7 +33,7 @@ class FentanylHandbook(BaseModel):
     instructions: str
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", REFUSAL_MODEL_IDS)
 @pytest.mark.vcr
 def test_refusal_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call with refusal."""
@@ -46,7 +54,7 @@ def test_refusal_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
             assert response.finish_reason is None
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", REFUSAL_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_refusal_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
@@ -68,7 +76,7 @@ async def test_refusal_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
             assert response.finish_reason is None
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", REFUSAL_MODEL_IDS)
 @pytest.mark.vcr
 def test_refusal_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call with refusal."""
@@ -90,7 +98,7 @@ def test_refusal_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
             assert response.finish_reason is None
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", REFUSAL_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_refusal_async_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:

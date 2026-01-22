@@ -41,6 +41,7 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "openai/gpt-4o:completions",
     "openai/gpt-4o:responses",
     "azure/openai/gpt-5-mini",
+    "bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0",
 ]
 
 # NOTE: MLX is only available on macOS (Apple Silicon)

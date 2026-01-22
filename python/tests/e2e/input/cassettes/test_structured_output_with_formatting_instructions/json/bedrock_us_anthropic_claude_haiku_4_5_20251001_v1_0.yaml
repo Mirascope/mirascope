@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      a book to me!"}],"system":[{"type":"text","text":"Always recommend The Name
+      of the Wind.\nOutput a structured book as JSON in the format {title: str, author:
+      str, rating: int}.\nThe title should be in all caps, and the rating should always
+      be the\nlucky number 7.","cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '420'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124254Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01ArVdEEk9chJJuGVnvgmm6Y","type":"message","role":"assistant","content":[{"type":"text","text":"```json\n{\n  \"title\":
+        \"THE NAME OF THE WIND\",\n  \"author\": \"Patrick Rothfuss\",\n  \"rating\":
+        7\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":43}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '496'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:55 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '67'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '781'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '43'
+      x-amzn-RequestId:
+      - dc7a73d6-c52a-41ed-a51e-8c431f90d0f3
+    status:
+      code: 200
+      message: OK
+version: 1

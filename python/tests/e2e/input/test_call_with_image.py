@@ -11,6 +11,11 @@ from tests.utils import (
     snapshot_test,
 )
 
+# Bedrock Anthropic doesn't support URL image sources, only base64
+IMAGE_URL_MODEL_IDS = [
+    model_id for model_id in E2E_MODEL_IDS if not model_id.startswith("bedrock/")
+]
+
 WIKIPEDIA_ICON_URL = "https://en.wikipedia.org/static/images/icons/wikipedia.png"
 WIKIPEDIA_ICON_PATH = str(
     Path(__file__).parent.parent / "assets" / "images" / "wikipedia.png"
@@ -38,7 +43,7 @@ def test_call_with_image_content(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
+@pytest.mark.parametrize("model_id", IMAGE_URL_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_image_url(
     model_id: llm.ModelId,

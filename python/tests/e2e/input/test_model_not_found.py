@@ -21,7 +21,13 @@ def get_nonexistent_model_id(model_id: llm.ModelId) -> llm.ModelId:
         # Check if there's a suffix after the model name (like :completions or :responses)
         if ":" in model_part:
             _, suffix = model_part.rsplit(":", 1)
+            # Bedrock needs anthropic prefix for routing to work
+            if model_scope == "bedrock":
+                return f"{model_scope}/us.anthropic.nonexistent-model-12345-v1:{suffix}"
             return f"{model_scope}/this-model-does-not-exist-12345:{suffix}"
+        # Bedrock needs anthropic prefix for routing to work
+        if model_scope == "bedrock":
+            return f"{model_scope}/us.anthropic.nonexistent-model-12345-v1:0"
         return f"{model_scope}/this-model-does-not-exist-12345"
     return "nonexistent-model-12345"
 
@@ -30,13 +36,20 @@ def _is_azure_model(model_id: llm.ModelId) -> bool:
     return model_id.startswith("azure/openai/")
 
 
+def _is_bedrock_model(model_id: llm.ModelId) -> bool:
+    return model_id.startswith("bedrock/")
+
+
 @pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_model_not_found(model_id: llm.ModelId) -> None:
     """Test that calling with a nonexistent model raises NotFoundError."""
     nonexistent_model = get_nonexistent_model_id(model_id)
+    # Azure and Bedrock return BadRequestError for invalid model identifiers
     expected_error = (
-        llm.BadRequestError if _is_azure_model(model_id) else llm.NotFoundError
+        llm.BadRequestError
+        if _is_azure_model(model_id) or _is_bedrock_model(model_id)
+        else llm.NotFoundError
     )
 
     @llm.call(nonexistent_model)
@@ -52,8 +65,11 @@ def test_model_not_found(model_id: llm.ModelId) -> None:
 def test_model_not_found_stream(model_id: llm.ModelId) -> None:
     """Test that streaming with a nonexistent model raises NotFoundError."""
     nonexistent_model = get_nonexistent_model_id(model_id)
+    # Azure and Bedrock return BadRequestError for invalid model identifiers
     expected_error = (
-        llm.BadRequestError if _is_azure_model(model_id) else llm.NotFoundError
+        llm.BadRequestError
+        if _is_azure_model(model_id) or _is_bedrock_model(model_id)
+        else llm.NotFoundError
     )
 
     @llm.call(nonexistent_model)

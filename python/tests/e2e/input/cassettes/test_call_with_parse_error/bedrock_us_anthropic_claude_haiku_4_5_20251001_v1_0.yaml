@@ -1,0 +1,238 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Find out the
+      secret and report back."}],"system":[{"type":"text","text":"Respond with a single
+      word: the passphrase.","cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '256'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124235Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_0128qwL7C9uL95fYiD4YN7oR","type":"message","role":"assistant","content":[{"type":"text","text":"I
+        appreciate the challenge, but I don''t see any hidden information, encrypted
+        message, or puzzle to solve in your message. You''ve simply asked me to find
+        a secret and report back.\n\nCould you provide:\n- An image, text, code, or
+        other content to analyze?\n- Clues about what kind of secret I''m looking
+        for?\n- Context about where the secret might be hidden?\n\nOnce you share
+        the actual puzzle or content, I''ll do my best to help uncover it!"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":27,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":108}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '827'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:37 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '27'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1725'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '108'
+      x-amzn-RequestId:
+      - b0c67c8c-a9d4-457e-848d-0ed615483856
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Find out the
+      secret and report back."},{"role":"assistant","content":"I appreciate the challenge,
+      but I don''t see any hidden information, encrypted message, or puzzle to solve
+      in your message. You''ve simply asked me to find a secret and report back.\n\nCould
+      you provide:\n- An image, text, code, or other content to analyze?\n- Clues
+      about what kind of secret I''m looking for?\n- Context about where the secret
+      might be hidden?\n\nOnce you share the actual puzzle or content, I''ll do my
+      best to help uncover it!"},{"role":"user","content":[{"type":"text","text":"Your
+      response could not be parsed: Incorrect passphrase. The correct passphrase is
+      ''cake''\n\nPlease ensure your response matches the expected format.","cache_control":{"type":"ephemeral"}}]}],"system":[{"type":"text","text":"Respond
+      with a single word: the passphrase.","cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '972'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124237Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01HkHqzNZzjnZ46mYUjHF24F","type":"message","role":"assistant","content":[{"type":"text","text":"I
+        understand now. Thank you for the clarification.\n\n**cake**"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":171,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":18}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '447'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:38 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '171'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '793'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '18'
+      x-amzn-RequestId:
+      - 3ac15a1c-b237-4fa7-8af2-9522d09f3e07
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Find out the
+      secret and report back."},{"role":"assistant","content":"I appreciate the challenge,
+      but I don''t see any hidden information, encrypted message, or puzzle to solve
+      in your message. You''ve simply asked me to find a secret and report back.\n\nCould
+      you provide:\n- An image, text, code, or other content to analyze?\n- Clues
+      about what kind of secret I''m looking for?\n- Context about where the secret
+      might be hidden?\n\nOnce you share the actual puzzle or content, I''ll do my
+      best to help uncover it!"},{"role":"user","content":"Your response could not
+      be parsed: Incorrect passphrase. The correct passphrase is ''cake''\n\nPlease
+      ensure your response matches the expected format."},{"role":"assistant","content":"I
+      understand now. Thank you for the clarification.\n\n**cake**"},{"role":"user","content":[{"type":"text","text":"Your
+      response could not be parsed: Incorrect passphrase. The correct passphrase is
+      ''cake''\n\nPlease ensure your response matches the expected format.","cache_control":{"type":"ephemeral"}}]}],"system":[{"type":"text","text":"Respond
+      with a single word: the passphrase.","cache_control":{"type":"ephemeral"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1246'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T124238Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_018Sac3ddzUUDcs3VaC2xPJ5","type":"message","role":"assistant","content":[{"type":"text","text":"cake"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":225,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":4}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '388'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:42:39 GMT
+      X-Amzn-Bedrock-Cache-Read-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Cache-Write-Input-Token-Count:
+      - '0'
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '225'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '746'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '4'
+      x-amzn-RequestId:
+      - c8bfcf01-a29e-4c8e-8af9-00139a1426f8
+    status:
+      code: 200
+      message: OK
+version: 1
