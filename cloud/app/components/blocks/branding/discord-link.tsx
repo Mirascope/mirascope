@@ -1,4 +1,5 @@
 import { cn } from "@/app/lib/utils";
+import { DISCORD_INVITE_URL } from "@/app/lib/site";
 
 interface DiscordLinkProps {
   className?: string;
@@ -7,7 +8,7 @@ interface DiscordLinkProps {
 export default function DiscordLink({ className }: DiscordLinkProps) {
   return (
     <a
-      href="/discord-invite"
+      href={DISCORD_INVITE_URL}
       target="_blank"
       rel="noopener noreferrer"
       className={cn("flex flex-col px-2 py-1", "nav-text", className)}

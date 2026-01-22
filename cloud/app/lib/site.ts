@@ -12,6 +12,9 @@ export const SITE_VERSION = "2.0.0-alpha.5";
 // Base URL for absolute URLs
 export const BASE_URL = "https://mirascope.com";
 
+// Discord invite URL (uses full URL to work in all environments including local dev)
+export const DISCORD_INVITE_URL = "https://mirascope.com/discord-invite";
+
 // Analytics constants
 export const GA_MEASUREMENT_ID = "G-DJHT1QG9GK";
 export const GTM_ID = "GTM-T8PZJDKM";
