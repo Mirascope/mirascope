@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is 4200
+      + 42?"}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '121'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AsyncAnthropicBedrock/Python 0.75.0
+      x-amz-date:
+      - 20260123T120132Z
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.75.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.13.3
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Kdj7DQeQuSSZByaUpLLBN5","type":"message","role":"assistant","content":[{"type":"text","text":"4200
+        + 42 = 4242"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":15}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '400'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 23 Jan 2026 12:01:33 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '17'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '662'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '15'
+      x-amzn-RequestId:
+      - 41cc9fbe-17b6-4ab8-b4a7-6fe9c7e3ae55
+    status:
+      code: 200
+      message: OK
+version: 1

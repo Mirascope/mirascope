@@ -10,6 +10,7 @@ from ..exceptions import MissingAPIKeyError, NoRegisteredProviderError
 from .anthropic import AnthropicProvider
 from .azure import AzureProvider
 from .base import Provider
+from .bedrock import BedrockProvider
 from .google import GoogleProvider
 from .mirascope import MirascopeProvider
 from .mlx import MLXProvider
@@ -56,6 +57,9 @@ DEFAULT_AUTO_REGISTER_SCOPES: dict[str, Sequence[ProviderDefault]] = {
     ],
     "azure/": [
         ProviderDefault("azure", "AZURE_OPENAI_API_KEY"),
+    ],
+    "bedrock/": [
+        ProviderDefault("bedrock", None),  # Uses AWS credentials from environment
     ],
     "google/": [
         ProviderDefault("google", "GOOGLE_API_KEY"),
@@ -114,6 +118,8 @@ def provider_singleton(
             return AnthropicProvider(api_key=api_key, base_url=base_url)
         case "azure":
             return AzureProvider(api_key=api_key, base_url=base_url)
+        case "bedrock":
+            return BedrockProvider()
         case "google":
             return GoogleProvider(api_key=api_key, base_url=base_url)
         case "mirascope":
