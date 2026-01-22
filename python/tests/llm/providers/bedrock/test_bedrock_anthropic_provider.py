@@ -184,8 +184,6 @@ def test_bedrock_anthropic_decode_response_with_routed_provider_id() -> None:
         provider_id="bedrock",
     )
     assert assistant_message.provider_id == "bedrock"
-
-
 def test_bedrock_anthropic_provider_initialization_with_api_key() -> None:
     """Test BedrockAnthropicProvider initialization with API key."""
     provider = BedrockAnthropicProvider(
