@@ -22,6 +22,13 @@ import {
 import { BASE_URL } from "@/app/lib/site";
 import { compileMDXContent } from "./mdx-compile";
 
+/**
+ * Cache for compiled MDX code.
+ * Persists across navigations within the same browser session,
+ * so pages only compile once per session.
+ */
+const compiledMdxCache = new Map<string, string>();
+
 // Valid route IDs from the generated route tree.
 import type { FileRouteTypes } from "@/app/routeTree.gen";
 type ValidRouteId = FileRouteTypes["id"];
@@ -166,7 +173,13 @@ export function createContentRouteConfig<
       }
 
       const preprocessedMdx = (await moduleLoader()).default;
-      const code = await compileMDXContent(preprocessedMdx.content);
+
+      // Check cache first, compile and cache if not found
+      let code = compiledMdxCache.get(meta.path);
+      if (!code) {
+        code = await compileMDXContent(preprocessedMdx.content);
+        compiledMdxCache.set(meta.path, code);
+      }
 
       return {
         meta,
